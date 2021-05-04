@@ -75,7 +75,7 @@ struct supply* thewin = 0;
 
 	//be careful: mac's yuv2 = actually uyvy
 	struct halfrel stack[0x80];
-	if(thewin)give_data_into_peer(thewin,_dst_, stack,0, 0,0, baseAddress,bytesTotal);
+	if(thewin)give_data_into_peer(thewin,_dst_, stack,0, 0,_uyvy_, baseAddress,bytesTotal);
     CVPixelBufferUnlockBaseAddress(imageBuffer,0);
 
 /*

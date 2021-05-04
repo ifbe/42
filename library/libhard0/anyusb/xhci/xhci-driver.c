@@ -1,5 +1,54 @@
 #include "libhard.h"
 #define xhci_print(fmt, ...) say("<%08lld,xhci>"fmt, timeread(), ##__VA_ARGS__)
+u32 in32(u16 port);
+void out32(u16 port, u32 data);
+void explaindevdesc(void*);
+void explaineverydesc(void*, int);
+int usbany_linkup(void*,int,void*,int);
+
+
+
+
+#define _addr_ hex32('a','d','d','r')	//prepare slotctx+ep0ctx
+#define _eval_ hex32('e','v','a','l')	//modify epctx
+#define _conf_ hex32('c','o','n','f')	//prepare ep*ctx
+struct UsbRequest{
+	//[0,3]
+	u8 bmRequestType;
+		//bit[0,4]: 0=device, 1=interface, 2=endpoint
+		//bit[5,6]: 0=normal, 1=class, 2=vendor
+		//bit7: 0=host to device, 1=device to host
+	u8 bRequest;
+		//0: GET_STATUS
+		//1: CLEAR_FEATURE
+		//3: SET_FEATURE
+		//5: SET_ADDRESS
+		//6: GET_DESCRIPTOR
+		//7: SET_DESCRIPTOR
+		//8: GET_CONFIGURATION
+		//9: SET_CONFIGURATION
+		//a: GET_INTERFACE
+		//b: SET_INTERFACE
+		//c: SYNCH_FRAME
+	u16 wValue;
+		//if(GET_DESCRIPTOR)hi = type, lo = index
+	//[4,7]
+	u16 wIndex;
+		//if(GET_DESCRIPTOR_string)wIndex = LANGID
+	u16 wLength;
+}__attribute__((packed));
+struct EndpointDescriptor{
+	u8          bLength;		//0: 0x09
+	u8  bDescriptorType;		//1: 0x05
+	u8 bEndpointAddress;		//2: endpoint number and direction
+	u8     bmAttributes;		//3: endpoint attribute
+	u16  wMaxPacketSize;		//[4,5]
+	u8        bInterval;		//6: interval between two access
+}__attribute__((packed));
+
+
+
+
 //speed
 #define SPEED_FS 1
 #define SPEED_LS 2
@@ -91,15 +140,6 @@
 #define TRB_completion_SplitTransationError        36
 //#define TRB_completion_VendorDefinedError 192-223
 //#define TRB_completion_VendorDefinedInfo 224-255
-u32 in32(u16 port);
-void out32(u16 port, u32 data);
-void explaindevdesc(void*);
-void explaineverydesc(void*, int);
-int usbany_linkup(void*,int,void*,int);
-
-
-
-
 //runtime registers
 struct InterruptRegisters{
 	volatile u32      IMAN;	//[00,03]: bit0=pending, bit1=enable
@@ -153,43 +193,6 @@ struct CapabilityRegisters{
 	volatile u32     RTSOFF;		//[18,1b]
 	volatile u32 CAPPARAMS2;		//[1c,1f]
 }__attribute__((packed));	//must volatile, must packed
-
-
-
-
-struct UsbRequest{
-	//[0,3]
-	u8 bmRequestType;
-		//bit[0,4]: 0=device, 1=interface, 2=endpoint
-		//bit[5,6]: 0=normal, 1=class, 2=vendor
-		//bit7: 0=host to device, 1=device to host
-	u8 bRequest;
-		//0: GET_STATUS
-		//1: CLEAR_FEATURE
-		//3: SET_FEATURE
-		//5: SET_ADDRESS
-		//6: GET_DESCRIPTOR
-		//7: SET_DESCRIPTOR
-		//8: GET_CONFIGURATION
-		//9: SET_CONFIGURATION
-		//a: GET_INTERFACE
-		//b: SET_INTERFACE
-		//c: SYNCH_FRAME
-	u16 wValue;
-		//if(GET_DESCRIPTOR)hi = type, lo = index
-	//[4,7]
-	u16 wIndex;
-		//if(GET_DESCRIPTOR_string)wIndex = LANGID
-	u16 wLength;
-}__attribute__((packed));
-struct EndpointDescriptor{
-	u8          bLength;		//0: 0x09
-	u8  bDescriptorType;		//1: 0x05
-	u8 bEndpointAddress;		//2: endpoint number and direction
-	u8     bmAttributes;		//3: endpoint attribute
-	u16  wMaxPacketSize;		//[4,5]
-	u8        bInterval;		//6: interval between two access
-}__attribute__((packed));
 
 
 
@@ -1310,7 +1313,7 @@ int xhci_InterruptTransferIn(struct item* xhci, int slotendp, void* sendbuf, int
 
 
 
-static int xhci_ontake(struct item* xhci, void* foot, void* stack, int sp, void* sbuf, int slen, void* rbuf, void* rlen)
+static int xhci_take(struct item* xhci,void* foot, void* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
 	if(0 == xhci)return 0;
 
@@ -1323,22 +1326,16 @@ static int xhci_ontake(struct item* xhci, void* foot, void* stack, int sp, void*
 	}
 	return 0;
 }
-static int xhci_ongive(
-	struct item* xhci, int SlotEndp,
-	u32 whom, u32 what,
-	void* sendbuf, int sendlen,
-	void* recvbuf, int recvlen)
+static int xhci_give(struct item* xhci,u32 SlotEndp, void* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
-	if('h' == whom){	//to xhci
-		switch(what){
-		case TRB_command_EnableSlot:	//alloc slot from xhci
-			return xhci_EnableSlot(xhci);
-		case TRB_command_AddressDevice:     //prepare slotctx+ep0ctx
+	if(cmd & 0x80000000){	//to xhci
+		switch(cmd&0x7fffffff){
+		case _addr_:     //prepare slotctx+ep0ctx
 			return xhci_AddressDevice(xhci, SlotEndp);
-		case TRB_command_EvaluateContext:     //modify ep0ctx
-			return xhci_EvaluateContext(xhci, SlotEndp, sendbuf, sendlen);
-		case TRB_command_ConfigureEndpoint:     //prepare ep*ctx
-			return xhci_ConfigureEndpoint(xhci, SlotEndp, sendbuf, sendlen);
+		case _eval_:     //modify ep0ctx
+			return xhci_EvaluateContext(xhci, SlotEndp, buf, len);
+		case _conf_:     //prepare ep*ctx
+			return xhci_ConfigureEndpoint(xhci, SlotEndp, buf, len);
 		}
 	}//to host
 
@@ -1346,19 +1343,19 @@ static int xhci_ongive(
 		int slot = SlotEndp & 0xff;
 		int DCI =(SlotEndp>>8) & 0xff;
 		if(DCI <= 1){		//to ep0
-			return xhci_ControlTransfer(xhci, SlotEndp, sendbuf, sendlen, recvbuf, recvlen);
+			return xhci_ControlTransfer(xhci, SlotEndp, arg, cmd, buf, len);
 		}
 
 		struct perxhci* xhcidata = (void*)(xhci->priv_data);
 		struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
 		switch(slotdata->myctx.epnctx[DCI].eptype){
 		case EPType_InterruptOut:
-			return xhci_InterruptTransferOut(xhci, SlotEndp, sendbuf, sendlen, recvbuf, recvlen);
+			return xhci_InterruptTransferOut(xhci, SlotEndp, arg, cmd, buf, len);
 		case EPType_InterruptIn:
-			return xhci_InterruptTransferIn(xhci, SlotEndp, sendbuf, sendlen, recvbuf, recvlen);
+			return xhci_InterruptTransferIn(xhci, SlotEndp, arg, cmd, buf, len);
 		case EPType_BulkOut:
 		case EPType_BulkIn:
-			return xhci_BulkTransfer(xhci, SlotEndp, sendbuf, sendlen, recvbuf, recvlen);
+			return xhci_BulkTransfer(xhci, SlotEndp, arg, cmd, buf, len);
 		}
 	}//to device
 
@@ -1793,8 +1790,8 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 	}
 
 	//callback functions
-	dev->ontaking = (void*)xhci_ontake;
-	dev->ongiving = (void*)xhci_ongive;
+	dev->ontaking = (void*)xhci_take;
+	dev->ongiving = (void*)xhci_give;
 	xhci_listall(dev, capreg->HCSPARAMS1>>24);
 	return 0;
 }

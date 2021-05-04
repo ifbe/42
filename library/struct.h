@@ -541,11 +541,15 @@ struct item
 		char padding5[8];
 	};
 	union{
-		int (*ontaking)(struct item* node,void* foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		int (*take_xxxxxxxx)(u64 node,u64 foot, u64 stack,u64 sp, u64 arg,u32 cmd, u64 buf,u32 len);
+		int (*take_pxpxpxpx)(struct item* node,u32 foot, struct halfrel* stack,u32 sp, void* arg,u32 cmd, void* buf,u32 len);
+		int (*ontaking)(struct item* node,void* foot, struct halfrel* stack,int sp, void* arg,int cmd, void* buf,int len);
 		char padding6[8];
 	};
 	union{
-		int (*ongiving)(struct item* node,void* foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		int (*give_xxxxxxxx)(u64 node,u64 foot, u64 stack,u64 sp, u64 arg,u32 cmd, u64 buf,u32 len);
+		int (*give_pxpxpxpx)(struct item* node,u32 foot, struct halfrel* stack,u32 sp, void* arg,u32 cmd, void* buf,u32 len);
+		int (*ongiving)(struct item* node,void* foot, struct halfrel* stack,int sp, void* arg,int cmd, void* buf,int len);
 		char padding7[8];
 	};
 

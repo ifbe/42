@@ -3,24 +3,10 @@
 
 
 
-//xhci command
-#define TRB_command_EnableSlot           9
-#define TRB_command_DisableSlot         10
-#define TRB_command_AddressDevice       11
-#define TRB_command_ConfigureEndpoint   12
-#define TRB_command_EvaluateContext     13
-#define TRB_command_ResetEndpoint       14
-#define TRB_command_StopEndpoint        15
-#define TRB_command_SetTRDequeuePointer 16
-#define TRB_command_ResetDevice         17
-#define TRB_command_ForceEvent          18		//Optional, used with virtualization only
-#define TRB_command_NegotiateBandwidth  19
-#define TRB_command_SetLatencyTolerance 20
-#define TRB_command_GetPortBandwidth    21
-#define TRB_command_ForceHeader         22
-#define TRB_command_NoOp                23
-#define TRB_command_GetExtendedProperty 24
-#define TRB_command_SetExtendedProperty 25
+#define _tohc_ 0x80000000
+#define _tohc_addr_ (_tohc_|hex32('a','d','d','r'))	//prepare slotctx+ep0ctx
+#define _tohc_eval_ (_tohc_|hex32('e','v','a','l'))	//modify epctx
+#define _tohc_conf_ (_tohc_|hex32('c','o','n','f'))	//prepare ep*ctx
 //usb bRequest
 #define GET_STATUS        0
 #define CLEAR_FEATURE     1

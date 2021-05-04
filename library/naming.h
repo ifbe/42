@@ -1,5 +1,6 @@
 #ifndef _NAMING_H 
 #define _NAMING_H
+//
 #define hex16(a,b) (a | (b<<8))
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
 #define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
@@ -346,4 +347,10 @@
 #define _drag_ hex32('d','r','a','g')
 #define _joy_ hex32('j','o','y',0)
 #define _kbd_ hex32('k','b','d',0)
+//
+#define _yuyv_ hex32('y','u','y','v')
+#define _uyvy_ hex32('u','y','v','y')
+#define _mjpg_ hex32('m','j','p','g')
+#define _h264_ hex32('h','2','6','4')
+//
 #endif

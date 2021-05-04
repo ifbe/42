@@ -273,19 +273,34 @@ static int usbstor_readdata(struct item* usb,void* foot,struct halfrel* stack,in
 		cbw.CmdData[8]   = blockcnt & 0xff;
 		for(j=9;j<16;j++)cbw.CmdData[j] = 0;
 
-		ret = info->host->ongiving(info->host,info->slot|(info->bulkout<<8),'d',0, &cbw, 0x1f, 0,0);
+		ret = info->host->give_pxpxpxpx(
+			info->host,info->slot|(info->bulkout<<8),
+			0,0,
+			&cbw, 0x1f,
+			0,0
+		);
 		if(ret < 0){
 			say("[usbdisk]error@send cbw\n");
 			break;
 		}
 
-		ret = info->host->ongiving(info->host,info->slot|(info->bulkin<<8), 'd',0, buf+bytecur-off, bytecnt, 0,0);
+		ret = info->host->give_pxpxpxpx(
+			info->host,info->slot|(info->bulkin<<8),
+			0,0,
+			buf+bytecur-off, bytecnt,
+			0,0
+		);
 		if(ret < 0){
 			say("[usbdisk]error@recv dat\n");
 			break;
 		}
 
-		ret = info->host->ongiving(info->host,info->slot|(info->bulkin<<8), 'd',0, &rsw, 0x0d, 0,0);
+		ret = info->host->give_pxpxpxpx(
+			info->host,info->slot|(info->bulkin<<8),
+			0,0,
+			&rsw, 0x0d,
+			0,0
+		);
 		if(ret < 0){
 			say("[usbdisk]error@recv csw\n");
 			break;
@@ -416,7 +431,12 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 				//if(ret < 0)return -9;
 
 				//inform the xHC of the endpoint
-				ret = xhci->ongiving(xhci,slot, 'h',TRB_command_ConfigureEndpoint, endpdesc,sizeof(struct EndpointDescriptor), 0,0);
+				ret = xhci->give_pxpxpxpx(
+					xhci,slot,
+					0,0,
+					0,_tohc_conf_,
+					endpdesc,sizeof(struct EndpointDescriptor)
+				);
 				if(ret < 0)return -9;
 			}
 			break;
@@ -433,7 +453,12 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 
 //------------------------set configuration------------------------
 	DEVICE_REQUEST_SET_CONFIGURATION(&req, confdesc->bConfigurationValue);
-	ret = xhci->ongiving(xhci,slot, 'd',0, &req,8, 0,0);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot,
+		0,0,
+		&req,8,
+		0,0
+	);
 
 
 //------------------------send INQUERY------------------------
@@ -458,12 +483,27 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	inqcbw->CmdData[4] = 0x24;	//SCSI allocation length
 	inqcbw->CmdData[5] =    0;	//SCSI control
 	for(j=6;j<16;j++)inqcbw->CmdData[j] = 0;
-	ret = xhci->ongiving(xhci,slot|(outaddr<<8),'d',0, inqcbw, 0x1f, 0,0);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot|(outaddr<<8),
+		0,0,
+		inqcbw, 0x1f,
+		0,0
+	);
 
-	ret = xhci->ongiving(xhci,slot|(inaddr<<8), 'd',0, inqrep, 0x24, 0,0);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot|(inaddr<<8),
+		0,0,
+		inqrep, 0x24,
+		0,0
+	);
 	printmemory(inqrep, 0x24);
 
-	ret = xhci->ongiving(xhci,slot|(inaddr<<8), 'd',0, inqcsw, 0x0d, 0,0);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot|(inaddr<<8),
+		0,0,
+		inqcsw, 0x0d,
+		0,0
+	);
 
 	printmemory(inqcsw, 0x0d);
 	if(0 != inqcsw->Status)say("[usbdisk]csw.status=%x\n", inqcsw->Status);
@@ -484,9 +524,19 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	turcbw->CmdLen       = 6;
 	turcbw->CmdData[0] = scsi_TestUnitReady;
 	for(j=1;j<16;j++)turcbw->CmdData[j] = 0;
-	ret = xhci->ongiving(xhci,slot|(outaddr<<8),'d',0, turcbw, 0x1f, 0,0);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot|(outaddr<<8),
+		0,0,
+		turcbw, 0x1f,
+		0,0
+	);
 
-	ret = xhci->ongiving(xhci,slot|(inaddr<<8), 'd',0, turcsw, 0x0d, 0,0);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot|(inaddr<<8),
+		0,0,
+		turcsw, 0x0d,
+		0,0
+	);
 
 	printmemory(turcsw, 0x0d);
 	if(0 != turcsw->Status)say("[usbdisk]csw.status=%x\n", turcsw->Status);
@@ -508,9 +558,19 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	capcbw->CmdLen       = 6;
 	capcbw->CmdData[0]   = scsi_ReadCapacity;
 	for(j=1;j<16;j++)capcbw->CmdData[j] = 0;
-	ret = xhci->ongiving(xhci,slot|(outaddr<<8),'d',0, capcbw, 0x1f, 0,0);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot|(outaddr<<8),
+		0,0,
+		capcbw, 0x1f,
+		0,0
+	);
 
-	ret = xhci->ongiving(xhci,slot|(inaddr<<8), 'd',0, caprep, 8, 0,0);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot|(inaddr<<8),
+		0,0,
+		caprep, 8,
+		0,0
+	);
 
 	printmemory(caprep, 8);
 	u32 blocklast = usbstor_endian(caprep->LastLBA_MsbNotLsb);
@@ -519,7 +579,12 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	int sh = usbstor_shift(totalsize);
 	say("blocklast=0x%x,blocksize=0x%x,totalsize=0x%llx(%d%cB)\n", blocklast, blocksize, totalsize, totalsize>>sh, KMGTPE[sh/10]);
 
-	ret = xhci->ongiving(xhci,slot|(inaddr<<8), 'd',0, capcsw, 0x0d, 0,0);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot|(inaddr<<8),
+		0,0,
+		capcsw, 0x0d,
+		0,0
+	);
 
 	printmemory(capcsw, 0x0d);
 	if(0 != capcsw->Status)say("[usbdisk]csw.status=%x\n", capcsw->Status);

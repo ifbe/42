@@ -382,7 +382,12 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 				//if(ret < 0)return -9;
 
 				//inform the xHC of the endpoint
-				ret = xhci->ongiving(xhci,slot, 'h',TRB_command_ConfigureEndpoint, endpdesc,sizeof(struct EndpointDescriptor), 0,0);
+				ret = xhci->give_pxpxpxpx(
+					xhci,slot,
+					0,0,
+					0,_tohc_conf_,
+					endpdesc,sizeof(struct EndpointDescriptor)
+				);
 				if(ret < 0)return -9;
 			}
 			break;
@@ -408,7 +413,12 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 //------------------------device side------------------------
 	if(2 == intfdesc->bInterfaceProtocol){		//mouse must set protocol
 	INTERFACE_REQUEST_SET_PROTOCOL(&req, 0, 0);
-	ret = xhci->ongiving(xhci,slot, 'd',0, &req,8, 0,0);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot,
+		0,0,
+		&req,8,
+		0,0
+	);
 	if(ret < 0)return -11;
 	}
 /*
@@ -419,7 +429,12 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 */
 	say("[usbhid]set_config\n");
 	DEVICE_REQUEST_SET_CONFIGURATION(&req, confdesc->bConfigurationValue);
-	ret = xhci->ongiving(xhci,slot, 'd',0, &req,8, 0,0);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot,
+		0,0,
+		&req,8,
+		0,0
+	);
 	if(ret < 0)return -10;
 
 //------------------------transfer ring------------------------
@@ -427,6 +442,11 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	usb->ongiving = (void*)usbhid_ongive;
 
 	if(pktlen > 0x40)pktlen = 0x40;
-	ret = xhci->ongiving(xhci,slot|(inaddr<<8), 'd',0, perusb->freebuf,pktlen, usb,0);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot|(inaddr<<8),
+		0,0,
+		perusb->freebuf,pktlen,
+		usb,0
+	);
 	return 0;
 }

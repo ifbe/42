@@ -23,7 +23,7 @@ void video_prep(struct own* my)
 {
 	my->y8u8v8a8 = memorycreate(1024*1024*4, 0);
 }
-void video_update(
+void yuvyuv4yuyv(
 	u8* dstbuf, int dstlen,
 	u8* srcbuf, int srclen)
 {
@@ -47,6 +47,33 @@ void video_update(
 			dst[4*x + 4] = src[2*x + 2];
 			dst[4*x + 5] = src[2*x + 1];
 			dst[4*x + 6] = src[2*x + 3];
+		}
+	}
+}
+void yuvyuv4uyvy(
+	u8* dstbuf, int dstlen,
+	u8* srcbuf, int srclen)
+{
+	if(0 == srcbuf)return;
+	if(0 == dstbuf)return;
+	printmemory(srcbuf, 0x10);
+
+	int x,y;
+	u8* dst;
+	u8* src;
+	for(y=0;y<480;y++)
+	{
+		dst = dstbuf + (y*640*4);
+		src = srcbuf + (y*640*2);
+		for(x=0;x<640;x+=2)		//if(macos)yuyv, else uyvy
+		{
+			dst[4*x + 0] = src[2*x + 1];
+			dst[4*x + 1] = src[2*x + 0];
+			dst[4*x + 2] = src[2*x + 2];
+
+			dst[4*x + 4] = src[2*x + 3];
+			dst[4*x + 5] = src[2*x + 0];
+			dst[4*x + 6] = src[2*x + 2];
 		}
 	}
 }
@@ -173,7 +200,7 @@ void video_dx11draw(
 	vbuf[5][4] = 1.0;
 	vbuf[5][5] = 0.0;
 
-	//video_update(data->tex[0].data, 1024*1024*4, srcbuf, 640*480*2);
+	//yuvyuv4yuyv(data->tex[0].data, 1024*1024*4, srcbuf, 640*480*2);
 	data->tex[0].w = 640;
 	data->tex[0].h = 480;
 	data->tex_enq[0] += 1;
@@ -297,7 +324,7 @@ void video_gl41draw(
 	vbuf[5][4] = 1.0;
 	vbuf[5][5] = 0.0;
 
-	//video_update(data->tex[0].data, 1024*1024*4, srcbuf, 640*480*2);
+	//yuvyuv4yuyv(data->tex[0].data, 1024*1024*4, srcbuf, 640*480*2);
 	data->tex[0].w = 640;
 	data->tex[0].h = 480;
 	data->tex_enq[0] += 1;
@@ -414,7 +441,12 @@ static void video_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int
 	if(_yuv_ == stack[sp-1].flag){
 		//say("@video_write.yuv: %llx,%x,%llx,%x\n", arg, key, buf, len);
 		own->yuyv = buf;
-		if(own->y8u8v8a8)video_update(own->y8u8v8a8, 1024*1024*4, buf, 640*480*2);
+		if(0 == own->y8u8v8a8)return;
+
+		switch(key){
+		case _uyvy_:yuvyuv4uyvy(own->y8u8v8a8, 1024*1024*4, buf, 640*480*2);break;
+		default:yuvyuv4yuyv(own->y8u8v8a8, 1024*1024*4, buf, 640*480*2);break;
+		}
 	}
 }
 static void video_discon(struct halfrel* self, struct halfrel* peer)

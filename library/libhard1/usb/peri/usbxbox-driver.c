@@ -192,7 +192,12 @@ int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 				//if(ret < 0)return -9;
 
 				//inform the xHC of the endpoint
-				ret = xhci->ongiving(xhci,slot, 'h',TRB_command_ConfigureEndpoint, endpdesc,sizeof(struct EndpointDescriptor), 0,0);
+				ret = xhci->give_pxpxpxpx(
+					xhci,slot,
+					0,0,
+					0,_tohc_conf_,
+					endpdesc,sizeof(struct EndpointDescriptor)
+				);
 				if(ret < 0)return -9;
 			}
 			break;
@@ -209,7 +214,12 @@ int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 //------------------------device side------------------------
 	say("[xboxhid]set_config\n");
 	DEVICE_REQUEST_SET_CONFIGURATION(&req, confdesc->bConfigurationValue);
-	ret = xhci->ongiving(xhci,slot, 'd',0, &req,8, 0,0);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot,
+		0,0,
+		&req,8,
+		0,0
+	);
 	if(ret < 0)return -10;
 
 
@@ -221,7 +231,12 @@ int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	tmp[2] = 0x00;
 	tmp[3] = 0x01;
 	tmp[4] = 0x00;
-	ret = xhci->ongiving(xhci,slot|(outaddr<<8), 'd',0, tmp,5, 0,0);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot|(outaddr<<8),
+		0,0,
+		tmp,5,
+		0,0
+	);
 
 
 //------------------------transfer ring------------------------
@@ -229,7 +244,12 @@ int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	usb->ongiving = (void*)xboxhid_ongive;
 
 	if(pktlen > 0x40)pktlen = 0x40;
-	ret = xhci->ongiving(xhci,slot|(inaddr<<8), 'd',0, perusb->freebuf,pktlen, usb,0);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot|(inaddr<<8),
+		0,0,
+		perusb->freebuf,pktlen,
+		usb,0
+	);
 	return 0;
 }
 int usbxbox_driver(struct item* usb, int xxx, struct item* xhci, int slot)
