@@ -6,8 +6,8 @@ int input(void*, int);
 
 void waiter(void* waiter)
 {
-	u64 t0;
-	u64 dt;
+	//u64 t0;
+	//u64 dt;
 	struct event* ev;
 
 	while(1){
@@ -28,5 +28,15 @@ void waiter_delete(struct item* wrk, u8* arg)
 {
 }
 void waiter_create(struct item* wrk, u8* arg, int argc, u8** argv)
+{
+}
+
+
+
+
+void waiter_exit()
+{
+}
+void waiter_init()
 {
 }

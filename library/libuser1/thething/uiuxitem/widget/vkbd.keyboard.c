@@ -98,7 +98,7 @@ void vkbd_draw_pixel(struct entity* win, struct style* sty)
 			x1 = ((x+1)*w/16)-1;
 			y1 = h-1-(y*h/32);
 			drawopaque_rect(win, 0x7fffffff, x0, y0, x1, y1);
-			drawstring_fit(win, rgb, x0, y0, x1, y1, (u8*)&c, l);
+			drawstring_fit(win, 0, x0, y0, x1, y1, (u8*)&c, l);
 		}
 	}
 }/*

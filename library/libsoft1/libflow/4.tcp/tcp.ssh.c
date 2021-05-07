@@ -283,7 +283,7 @@ byebye:
 int secureshell_write_0x14(u8* buf, int len, u8* dst, int cnt)
 {
 	int j;
-	int off;
+	int off=0;
 
 	//cookie unchanged
 	for(j=0;j<16;j++)dst[off+j] = j;

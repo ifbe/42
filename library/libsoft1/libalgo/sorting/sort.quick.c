@@ -9,6 +9,7 @@
 void sort_quick(u8* buf, int len)
 {
 	int j,k,tmp;
+	if(len<2)return;
 
 	j = 0;
 	k = len-1;

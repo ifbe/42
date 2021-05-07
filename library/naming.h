@@ -33,10 +33,11 @@
 #define _kernel_ hex64('k','e','r','n','e','l', 0, 0)
 #define _myml_ hex32('m','y','m','l')
 #define _mython_ hex64('m','y','t','h','o','n', 0, 0)
+#define _guiapp_ hex64('g','u','i','a','p','p', 0, 0)
+//
 #define _exiter_ hex64('e','x','i','t','e','r', 0, 0)
 #define _poller_ hex64('p','o','l','l','e','r', 0, 0)
 #define _pulser_ hex64('p','u','l','s','e','r', 0, 0)
-#define _realer_ hex64('r','e','a','l','e','r', 0, 0)
 #define _waiter_ hex64('w','a','i','t','e','r', 0, 0)
 //
 #define _cpu_ hex32('c','p','u',0)

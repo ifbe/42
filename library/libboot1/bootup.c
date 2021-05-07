@@ -4,35 +4,36 @@ void initstdev(void*);
 void freestdrel();
 void initstdrel(void*);
 //
-void initexiter(void*);
+void exiter_init(void*);
 void exiter_create(struct item*, u8*, int, u8**);
 void exiter(void*);
 //
-void initpulser(void*);
+void pulser_init(void*);
 void pulser_create(struct item*, u8*, int, u8**);
 void pulser(void*);
 //
-void initpoller(void*);
+void poller_init(void*);
 void poller_create(struct item*, u8*, int, u8**);
 void poller(void*);
 //
-void initrealer(void*);
-void realer_create(struct item*, u8*, int, u8**);
-void realer(void*);
-//
-void initwaiter(void*);
+void waiter_init(void*);
 void waiter_create(struct item*, u8*, int, u8**);
 void waiter(void*);
 //
+void compiler_init(void*);
 void compiler_create(struct item*, u8*, int, u8**);
 //
-void initkernel(void*);
+void kernel_init(void*);
 void kernel_create(struct item*, u8*, int, u8**);
 //
+void myml_init(void*);
 void myml_create(struct item*, u8*, int, u8**);
 //
-void initmython(void*);
+void mython_init(void*);
 void mython_create(struct item*, u8*, int, u8**);
+//
+void guiapp_init(void*);
+void guiapp_create(struct item*, u8*, int, u8**);
 
 
 
@@ -116,6 +117,13 @@ void* bootupcreate(u64 type, void* url, int argc, u8** argv)
 		mython_create(tmp, url, argc, argv);
 		return tmp;
 	}
+	if(_guiapp_ == type){
+		//self @ 0
+		tmp = bootup_alloc();
+		tmp->type = _guiapp_;
+		guiapp_create(tmp, url, argc, argv);
+		return tmp;
+	}
 
 	//
 	if(_exiter_ == type)
@@ -142,15 +150,6 @@ void* bootupcreate(u64 type, void* url, int argc, u8** argv)
 
 		poller_create(tmp, url, argc, argv);
 		threadcreate(poller, tmp);
-		return tmp;
-	}
-	if(_realer_ == type)
-	{
-		tmp = bootup_alloc();
-		tmp->type = _realer_;
-
-		realer_create(tmp, url, argc, argv);
-		threadcreate(realer, tmp);
 		return tmp;
 	}
 	if(_waiter_ == type)
@@ -224,11 +223,11 @@ void bootup_init(u8* addr)
 	initstdev( addr+0x100000);
 	initstdrel(addr+0x180000);
 
-	initkernel(addr - 0x200000);
-	initmython(addr - 0x200000);
+	kernel_init(addr - 0x200000);
+	mython_init(addr - 0x200000);
 
-	initpoller(addr - 0x200000);
-	initrealer(addr - 0x200000);
+	poller_init(addr - 0x200000);
+	waiter_init(addr - 0x200000);
 
 	say("[2,4):bootup inited\n");
 }

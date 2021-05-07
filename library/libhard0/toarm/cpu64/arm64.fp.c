@@ -1,5 +1,5 @@
 #include "libhard.h"
-#warning "this havn't been done"
+//#warning "this havn't been done"
 
 
 

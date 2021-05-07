@@ -55,7 +55,7 @@ static void piano_char(struct entity* act, u8* ch)
 		case '0':f = aaaa;break;
 		case '-':f = a__b;break;
 		case '=':f = bbbb;break;
-		default:break;
+		default: f = 0.00;break;
 	}
 
 	piano_gen(act->buf0, f);

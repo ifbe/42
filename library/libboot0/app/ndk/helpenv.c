@@ -1,5 +1,8 @@
 
 
+void poweroff()
+{
+}
 
 
 void freerunenv()

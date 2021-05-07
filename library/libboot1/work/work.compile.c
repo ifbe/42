@@ -33,3 +33,13 @@ int compiler_create(struct item* wrk, void* url, int argc, u8** argv)
 
 	return 0;
 }
+
+
+
+
+void compiler_init()
+{
+}
+void compiler_exit()
+{
+}

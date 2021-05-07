@@ -9,7 +9,6 @@ data/rbtree.c \
 loop/loop.exiter.c \
 loop/loop.poller.c \
 loop/loop.pulser.c \
-loop/loop.realer.c \
 loop/loop.waiter.c \
 std/stdev.c \
 std/stdin.c \
@@ -18,6 +17,7 @@ work/work.compile.c \
 work/work.kernel.c \
 work/work.myml.c \
 work/work.mython.c \
+work/work.guiapp.c \
 bootup.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 

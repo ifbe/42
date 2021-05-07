@@ -259,10 +259,10 @@ int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 
 
 
-void freekernel()
+void kernel_exit()
 {
 }
-void initkernel(void* addr)
+void kernel_init(void* addr)
 {
 	origin = addr + 0x000000;
 	worker = addr + 0x200000;

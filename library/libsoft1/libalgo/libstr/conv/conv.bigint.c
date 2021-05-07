@@ -92,9 +92,9 @@ int bigint2decstr(u8* p, u8* q, int len)
 	u8 ten[1] = {10};
 	u8 buf1[0x1000];
 	u8 buf2[0x1000];
-	u8* quotient;
-	u8* result;
-	u8* temp;
+	u8* quotient=0;
+	u8* result=0;
+	u8* temp=0;
 	int j,k;
 	if(len>=0x1000)return 0;
 

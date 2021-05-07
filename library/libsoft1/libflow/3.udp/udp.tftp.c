@@ -37,7 +37,7 @@ int tftpserver_read(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx,
 }
 int tftpserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
-	int ret;
+	int ret = 0;
 	u8* tmp;
 	u8 str[30];
 

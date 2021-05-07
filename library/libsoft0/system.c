@@ -257,6 +257,9 @@ void* systemcreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	case _Udp_:		//udp server
 	{
+		fd = createsocket(_Udp_, name);
+		if(0 >= fd)return 0;
+
 		obj[fd].type = _Udp_;
 		return 0;
 	}

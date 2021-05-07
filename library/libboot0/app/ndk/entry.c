@@ -15,7 +15,6 @@
 
 
 
-static u8* rawuniverse;
 static struct android_app* APP;
 void android_main(struct android_app* app)
 {
@@ -24,7 +23,7 @@ void android_main(struct android_app* app)
 	chdir("/sdcard/42/");
 
 	void* all = origincreate(_ndkmain_, 0, 0, 0);
-	void* thr = bootupcreate(0, 0, 0, 0);
+	void* thr = bootupcreate(_guiapp_, 0, 0, 0);
 
 	bootupdelete(thr);
 	origindelete(all);

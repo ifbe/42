@@ -173,6 +173,7 @@ int createsocket_raw(char* addr, int port)
 	ioctl(fd, SIOCSIFFLAGS, &ifopts);
 
 	//reuse
+	len=0;
 	ret = setsockopt(fd, SOL_SOCKET, SO_BINDTODEVICE, addr, len);
 	if(-1 == ret){
 		printf("errno=%d@SO_BINDTODEVICE\n",errno);

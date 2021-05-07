@@ -78,7 +78,6 @@ void datarun(u8* targetaddr,u8* runaddr,u64 want,u64 max)
 	long long offset=0;
 	long long count=0;
 	u64 logicpos=0;
-	max=max;		//delete warning currently
 
 	//printmemory(runaddr,0x40);
 	while(1)

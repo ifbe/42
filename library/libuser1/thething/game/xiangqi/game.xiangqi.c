@@ -695,7 +695,7 @@ static void xiangqi_delete(struct entity* act, u8* buf)
 }
 static void xiangqi_create(struct entity* act, void* str)
 {
-	int ret;
+	int ret=0;
 	void* buf;
 	if(0 == act)return;
 say("@xiangqi_create:%llx\n",str);

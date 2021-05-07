@@ -45,7 +45,7 @@ int quicserver_create(struct artery* ele, u8* url)
 
 int quicmaster_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
-	int ret;
+	int ret=0;
 	u8* tmp;
 	u8 str[30];
 

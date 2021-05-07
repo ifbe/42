@@ -257,6 +257,10 @@ opt64->heapreserve,
 opt64->heapcommit
 		);
 	}
+	else{
+		say("wrong magic=%x\n",opt->magic);
+		return 0;
+	}
 
 	//---------------pe.part2-------------
 	say(

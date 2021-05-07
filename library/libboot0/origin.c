@@ -61,7 +61,7 @@ void origin_init(u8* addr)
 
 int origindelete(void* addr)
 {
-	struct item* tmp;
+	struct item* tmp=0;
 	if(0 == addr)return 0;
 
 	tmp = addr;
@@ -87,7 +87,7 @@ int origindelete(void* addr)
 void* origincreate(u64 type, void* func, int argc, u8** argv)
 {
 	int j;
-	struct item* tmp;
+	struct item* tmp=0;
 
 	switch(type){
 	//app

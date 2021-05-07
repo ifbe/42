@@ -91,12 +91,12 @@ void loadimgfrompng(u8* buf, int len, int* width, int* height, int* depth, int* 
 	*width = upng_get_width(upng);
 	*height = upng_get_height(upng);
 	*depth = upng_get_bpp(upng) / 8;
-	say("%d,%d,%d\n",w,h,d);
-
 
 	w = *width;
 	h = *height;
 	d = *depth;
+	say("%d,%d,%d\n",w,h,d);
+
 	src = upng_get_buffer(upng);
 	dst = buf;
 	for(j=0;j<w*h;j++)
@@ -181,6 +181,7 @@ void loadtexfromfile(struct texture* tex, char* name)
 	else if(0 == ncmp(tmp, "png", 3))loadimgfrompng(buf, len, &w, &h, &d, &s);
 	else if(0 == ncmp(tmp, "ppm", 3))loadimgfromppm(buf, len, &w, &h, &d, &s);
 	else if(0 == ncmp(tmp, "tga", 3))loadimgfromtga(buf, len, &w, &h, &d, &s);
+	else w=h=0;
 
 	tex->w = w;
 	tex->h = h;

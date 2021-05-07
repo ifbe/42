@@ -33,7 +33,7 @@ int findtail(char* p)
 }
 int findhead(char* p)
 {
-	int j;
+	int j=0;
 	int flag=0;
 	while(1)
 	{

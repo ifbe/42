@@ -144,13 +144,13 @@ static int drawvt100_1b(u8* p, struct txtcfg* cfg)
 	}
 
 	//1b 5b J
-	if(p[j+2] == 'J')
+	if(p[2] == 'J')
 	{
 		return 3;
 	}
 
 	//1b 5b K
-	if(p[j+2] == 'K')
+	if(p[2] == 'K')
 	{
 		return 3;
 	}

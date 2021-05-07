@@ -255,9 +255,9 @@ int mython_create(struct item* wrk, void* url, int argc, u8** argv)
 
 
 
-void freemython()
+void mython_init()
 {
 }
-void initmython()
+void mython_exit()
 {
 }

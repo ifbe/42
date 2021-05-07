@@ -575,3 +575,12 @@ int myml_create(struct item* wrk, void* url, int argc, u8** argv)
 	poller(wrk);
 	return 0;
 }
+
+
+
+void myml_init()
+{
+}
+void myml_exit()
+{
+}

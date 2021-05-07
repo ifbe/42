@@ -132,10 +132,10 @@ void poller_create(struct item* wrk, u8* arg, int argc, u8** argv)
 
 
 
-void freepoller()
+void poller_free()
 {
 }
-void initpoller(void* addr)
+void poller_init(void* addr)
 {
 	supply = addr + 0xc00000;
 	entity = addr + 0xe00000;
