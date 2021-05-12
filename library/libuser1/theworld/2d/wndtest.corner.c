@@ -320,21 +320,6 @@ void corner_gl41_popup(
 
 
 
-void corner_draw_gl41_nocam(
-	struct entity* act, struct style* pin,
-	struct entity* wnd, struct style* sty)
-{
-	gl41data_before(wnd);
-	gl41data_whcam(wnd, sty);
-
-	corver_gl41_hover(act, pin, wnd, sty);
-
-	corner_gl41_drag(act, pin, wnd, sty);
-
-	corner_gl41_popup(act, pin, wnd, sty);
-
-	gl41data_after(wnd);
-}
 void corner_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
@@ -571,6 +556,40 @@ static int corner_event(
 
 
 
+void corner_wnd(
+	struct entity* ent, struct style* slot,
+	struct entity* wnd, struct style* area,
+	_syn* stack,int sp)
+{
+	gl41data_before(wnd);
+	gl41data_whcam(wnd, area);
+
+	struct relation* rel = ent->orel0;
+	while(1){
+		if(0 == rel)break;
+
+		if(_ent_ == rel->dsttype){
+			stack[sp+0].pchip = rel->psrcchip;
+			stack[sp+0].pfoot = rel->psrcfoot;
+			stack[sp+0].flag = rel->srcflag;
+			stack[sp+1].pchip = rel->pdstchip;
+			stack[sp+1].pfoot = rel->pdstfoot;
+			stack[sp+1].flag = rel->dstflag;
+			entity_take(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, 0,0, 0,0);
+		}
+
+		rel = samesrcnextdst(rel);
+	}
+	//corver_gl41_hover(act, pin, wnd, sty);
+	//corner_gl41_drag(act, pin, wnd, sty);
+	//corner_gl41_popup(act, pin, wnd, sty);
+
+	gl41data_after(wnd);
+}
+
+
+
+
 static int corner_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@corner_read\n");
@@ -582,13 +601,14 @@ static int corner_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 		corner_draw_pixel(ent,slot, caller,area);
 		break;
 	case _gl41full_:
-		corner_draw_gl41_nocam(ent,slot, caller,area);
+		corner_wnd(ent,slot, caller,area, stack,sp);
 		break;
 	}
 	return 0;
 }
 static int corner_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	printmemory(buf,16);
 	return 0;
 }
 static int corner_discon(struct halfrel* self, struct halfrel* peer)

@@ -197,7 +197,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 					y = AMotionEvent_getY(ev, j);
 					why[0] = j;
 					why[0] = x+(y<<16)+(why[0]<<48);
-					why[1] = 0x4070;
+					why[1] = touch_move;
 					why[2] = (u64)(theapp->userData);
 					//fullwindow_write(theapp->userData, (void*)why);
 					eventwrite(why[0], why[1], why[2], why[3]);
@@ -205,8 +205,8 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 			}
 			else
 			{
-				if((0==a)|(5==a))a = 0x2b70;
-				else if((1==a)|(6==a))a = 0x2d70;
+				if((0==a)|(5==a))a = touch_onto;
+				else if((1==a)|(6==a))a = touch_away;
 
 				x = AMotionEvent_getX(ev, j);
 				y = AMotionEvent_getY(ev, j);

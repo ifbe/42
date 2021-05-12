@@ -1,4 +1,6 @@
 #include "libuser.h"
+#define _corner_ hex64('c', 'o', 'r', 'n', 'e', 'r', 0, 0)
+#define _wndmgr_ hex64('w', 'n', 'd', 'm', 'g', 'r', 0, 0)
 #define CLIENT data0
 #define SERVER data1
 #define RAWBUF buf2
@@ -275,13 +277,27 @@ static void terminal_draw_gl41(
 static void terminal_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 {
 	struct entity* wor;struct style* geom;
+	struct entity* cam;struct style* camg;
 	struct entity* wnd;struct style* area;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	cam = stack[sp-4].pchip;camg = stack[sp-4].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	terminal_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
 static void terminal_wrl_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 {
+	struct entity* mgr;struct style* geom;
+	struct entity* wnd;struct style* area;
+	mgr = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-4].pchip;area = stack[sp-4].pfoot;
+
+	int j;
+	struct fstyle fs;
+	for(j=0;j<3;j++)fs.vc[j] = fs.vr[j] = fs.vf[j] = fs.vt[j] = 0.0;
+	fs.vr[0] = area->fs.vq[0] * wnd->fbwidth / 2.0;
+	fs.vf[1] = area->fs.vq[1] * wnd->fbheight/ 2.0;
+	fs.vt[2] = 1.0;
+	terminal_draw_gl41(ent,slot, mgr,(void*)&fs, wnd,area);
 }
 static void terminal_wnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
 {
@@ -326,6 +342,10 @@ static void terminal_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,
 	case _gl41full_:
 	case _vk12full_:
 		terminal_wnd(ent,slot, caller,area);
+		break;
+	case _corner_:
+	case _wndmgr_:
+		terminal_wrl_wnd(ent,slot, stack,sp);
 		break;
 	default:
 		terminal_wrl_cam_wnd(ent,slot, stack,sp);

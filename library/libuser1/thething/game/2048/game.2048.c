@@ -1,4 +1,6 @@
 #include "libuser.h"
+#define _corner_ hex64('c', 'o', 'r', 'n', 'e', 'r', 0, 0)
+#define _wndmgr_ hex64('w', 'n', 'd', 'm', 'g', 'r', 0, 0)
 #define DATBUF buf0
 #define DATLEN data1
 void new2048(void*);
@@ -6,6 +8,7 @@ void left2048(void*);
 void right2048(void*);
 void up2048(void*);
 void down2048(void*);
+void gl41data_whcam(struct entity* wnd, struct style* area);
 
 
 
@@ -168,21 +171,6 @@ static void the2048_draw_dx11(
 		}
 	}
 }*/
-static void the2048_draw_gl41_nocam(
-	struct entity* act, struct style* part,
-	struct entity* wnd, struct style* area)
-{
-	struct fstyle fs;
-	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
-	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
-	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
-	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
-
-	gl41data_before(wnd);
-	gl41data_01cam(wnd);
-	gl41solid_rect(wnd, 0x00ff00, fs.vc, fs.vr, fs.vf);
-	gl41data_after(wnd);
-}
 static void the2048_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
@@ -235,6 +223,24 @@ static void the2048_draw_gl41(
 			gl41decimal(ctx, ~rgb, tc, tr, tf, val2048[tab[y][x]]);
 		}
 	}
+}
+static void the2048_draw_gl41_nocam(
+	struct entity* act, struct style* part,
+	struct entity* wnd, struct style* area)
+{
+	int j;
+	struct fstyle fs;
+	for(j=0;j<3;j++)fs.vc[j] = fs.vr[j] = fs.vf[j] = fs.vt[j] = 0.0;
+	fs.vr[0] = area->fs.vq[0] * wnd->fbwidth / 2.0;
+	fs.vf[1] = area->fs.vq[1] * wnd->fbheight/ 2.0;
+	fs.vt[2] = 1.0;
+
+	gl41data_before(wnd);
+	//gl41data_01cam(wnd);
+	//gl41solid_rect(wnd, 0x00ff00, fs.vc, fs.vr, fs.vf);
+	gl41data_whcam(wnd, area);
+	the2048_draw_gl41(act,part, 0,(void*)&fs, wnd,area);
+	gl41data_after(wnd);
 }
 static void the2048_draw_json(
 	struct entity* act, struct style* pin,
@@ -412,6 +418,25 @@ static void the2048_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* a
 		break;
 	}
 }
+static void the2048_wrl_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+{
+	struct entity* mgr;struct style* geom;
+	struct entity* wnd;struct style* area;
+	mgr = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-4].pchip;area = stack[sp-4].pfoot;
+
+	int j;
+	struct fstyle fs;
+	for(j=0;j<3;j++)fs.vc[j] = fs.vr[j] = fs.vf[j] = fs.vt[j] = 0.0;
+	fs.vr[0] = area->fs.vq[0] * wnd->fbwidth / 4.0;
+	fs.vf[1] = area->fs.vq[1] * wnd->fbheight/ 4.0;
+	fs.vt[2] = 1.0;
+	the2048_draw_gl41(ent,slot, mgr,(void*)&fs, wnd,area);
+}
+
+
+
+
 static void the2048_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@the2048_read\n");
@@ -435,6 +460,10 @@ static void the2048_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 	case _mt20full_:
 	case _vk12full_:
 		say("caller@%p\n", caller);
+		break;
+	case _corner_:
+	case _wndmgr_:
+		the2048_wrl_wnd(ent,slot, stack,sp);
 		break;
 	default:
 		the2048_read_bycam(ent,slot, stack,sp, arg,key);

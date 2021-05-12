@@ -1,5 +1,7 @@
 #include "libuser.h"
+#define _corner_ hex64('c','o','r','n','e','r', 0, 0)
 #define _term_ hex32('t','e','r','m')
+#define _2048_ hex32('2','0','4','8')
 void* style_alloc();
 void* style_recycle();
 
@@ -8,23 +10,37 @@ void* style_recycle();
 
 static void guiapp_wndctx(struct supply* wnd)
 {
-	//wnd-> = ;
-	struct style* toterm = style_alloc();
-	toterm->fshape.vc[0] = 0.0;
-	toterm->fshape.vc[1] = 0.0;
-	toterm->fshape.vq[0] = 1.0;
-	toterm->fshape.vq[1] = 1.0;
+	struct entity* mgr = entitycreate(_corner_,0, 0, 0);
+	struct style* mgr_to_wnd = style_alloc();
+	struct style* wnd_to_mgr = style_alloc();
+	wnd_to_mgr->fshape.vc[0] = 0.0;
+	wnd_to_mgr->fshape.vc[1] = 0.0;
+	wnd_to_mgr->fshape.vq[0] = 1.0;
+	wnd_to_mgr->fshape.vq[1] = 1.0;
+	struct relation* rel0 = relationcreate(mgr,mgr_to_wnd, _ent_,0, wnd,wnd_to_mgr, _ent_,0);
+	relationlinkup((void*)&rel0->srcchip, (void*)&rel0->dstchip);
 
 
-	//things
-	struct entity* termnode = entitycreate(_term_,0, 0, 0);
-	struct style* termfoot = style_alloc();
+	struct entity* term = entitycreate(_term_,0, 0, 0);
+	struct style* term_to_mgr = style_alloc();
+	struct style* mgr_to_term = style_alloc();
+	mgr_to_term->fshape.vc[0] = 0.0;
+	mgr_to_term->fshape.vc[1] = 0.0;
+	mgr_to_term->fshape.vq[0] = 1.0;
+	mgr_to_term->fshape.vq[1] = 1.0;
+	struct relation* rel1 = relationcreate(term,term_to_mgr, _ent_,0, mgr,mgr_to_term, _ent_,0);
+	relationlinkup((void*)&rel1->srcchip, (void*)&rel1->dstchip);
 
 
-	//relation
-	struct relation* rel;
-	rel = relationcreate(termnode,termfoot, _ent_,0, wnd,toterm, _ent_,0);
-	relationlinkup((void*)&rel->srcchip, (void*)&rel->dstchip);
+	struct entity* game = entitycreate(_2048_,0, 0, 0);
+	struct style* game_to_mgr = style_alloc();
+	struct style* mgr_to_game = style_alloc();
+	mgr_to_game->fshape.vc[0] = 0.0;
+	mgr_to_game->fshape.vc[1] = 0.0;
+	mgr_to_game->fshape.vq[0] = 1.0;
+	mgr_to_game->fshape.vq[1] = 1.0;
+	struct relation* rel2 = relationcreate(game,game_to_mgr, _ent_,0, mgr,mgr_to_game, _ent_,0);
+	relationlinkup((void*)&rel2->srcchip, (void*)&rel2->dstchip);
 }
 
 

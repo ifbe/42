@@ -127,7 +127,7 @@ themind/user/yoda/yoda.c \
 themind/mind.c \
 theworld/2d/wndtest.naked.c \
 theworld/2d/wndtest.titled.c \
-theworld/2d/wndtest.edge.c \
+theworld/2d/wndtest.corner.c \
 theworld/3d/scene.c \
 theworld/3d/uiux.axis.c \
 theworld/3d/uiux.guide.c \

@@ -513,7 +513,7 @@ ${LIB42}/libuser1/themind/user/yoda/yoda.c
 ${LIB42}/libuser1/themind/mind.c
 ${LIB42}/libuser1/theworld/2d/wndtest.naked.c
 ${LIB42}/libuser1/theworld/2d/wndtest.titled.c
-${LIB42}/libuser1/theworld/2d/wndtest.edge.c
+${LIB42}/libuser1/theworld/2d/wndtest.corner.c
 ${LIB42}/libuser1/theworld/3d/scene.c
 ${LIB42}/libuser1/theworld/3d/uiux.axis.c
 ${LIB42}/libuser1/theworld/3d/uiux.guide.c
