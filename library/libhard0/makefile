@@ -78,9 +78,11 @@ toarm/rpi/rpi.sdhci.c \
 toarm/rpi/rpi.sdhost.c \
 toarm/rpi/rpi.sdhci.emmc2.c \
 toarm/rpi/rpi.gpio.c \
-toarm/rpi/rpi.uart.c \
 toarm/rpi/rpi.i2c.c \
 toarm/rpi/rpi.spi.c \
+toarm/rpi/rpi.uart.c \
+toarm/rpi/rpi.pcie.c \
+toarm/rpi/rpi.xhci.c \
 toarm/pi34.c
 barepi64_o = $(patsubst %.c, %.o, $(barepi64_c))
 

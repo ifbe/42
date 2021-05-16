@@ -1,4 +1,6 @@
 #include "libhard.h"
+int raspi_version();
+//
 void* getdtb();
 void parsedevmap_dtb();
 //
@@ -9,6 +11,9 @@ void initsystmr(void*);
 //
 void initsdhci(void*);
 void initsdhost(void*);
+//
+void brcmpcie_init();
+void brcmxhci_init();
 
 
 
@@ -61,4 +66,9 @@ void inithardware()
 	//sdhost
 	p = devicecreate(_mmc_, 0, 0, 0);
 	initsdhost(p);
+
+	if(4 == raspi_version()){
+		brcmpcie_init();
+		brcmxhci_init();
+	}
 }

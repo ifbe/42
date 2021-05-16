@@ -1,11 +1,15 @@
 #include "libhard.h"
+#define PCIE_HOST_BASE 0xFD500000
+#define PCIE_HOST_END  (PCIE_HOST_BASE + 0x930F)
 
 
 
 
-void pcie_init()
+void brcmpcie_init()
 {
+    say("@brcmpcie_init\n");
+    printmmio((void*)PCIE_HOST_BASE, 0x40);
 }
-void pcie_exit()
+void brcmpcie_exit()
 {
 }

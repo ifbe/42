@@ -696,7 +696,8 @@ int usbany_linkup(struct item* usb, int xxx, struct item* xhci, int slot)
 		switch(devdesc->idProduct){
 		case 0x05c4:
 		case 0x09cc:
-		case 0x0ba0:return usbds4_driver(usb,xxx, xhci,slot);
+		case 0x0ba0:
+		case 0x0ce6:return usbds4_driver(usb,xxx, xhci,slot);
 		}
 	}
 

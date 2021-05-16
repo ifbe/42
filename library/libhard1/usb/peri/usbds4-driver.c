@@ -249,9 +249,10 @@ int usbds4_driver(struct item* usb, int xxx, struct item* xhci, int slot)
 
     //check version
 	switch(devdesc->idProduct){
-    case 0x05c4:say("[usbds4]ver=origin\n");break;
-    case 0x09cc:say("[usbds4]ver=ps4pro\n");break;
-    case 0x0ba0:say("[usbds4]ver=adapter\n");break;
+	case 0x05c4:say("[usbds4]ver=origin\n");break;
+	case 0x09cc:say("[usbds4]ver=ps4pro\n");break;
+	case 0x0ba0:say("[usbds4]ver=adapter\n");break;
+	case 0x0ce6:say("[usbds5]ver=ps5\n");break;
 	}
 
 	//composite device, all interface
