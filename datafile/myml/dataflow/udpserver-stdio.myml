@@ -1,0 +1,18 @@
+<system>
+udphost{
+fmt:UDP
+url:0.0.0.0:9999
+}
+</system>
+
+
+<supply>
+stdio{
+fmt:std
+}
+</supply>
+
+
+<relation>
+(udphost, 0, dst) -> (stdio, 0, dst)
+</relation>

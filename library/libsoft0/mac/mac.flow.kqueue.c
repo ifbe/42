@@ -16,6 +16,11 @@ int readsocket(int, void*, void*, int);
 
 
 
+union addrv4v6{
+	struct sockaddr sa;		//just make compiler happy
+	struct sockaddr_in v4;
+	struct sockaddr_in6 v6;
+};
 static struct sysobj* obj;
 static void* buf;
 static int kqfd = 0;
@@ -147,7 +152,7 @@ int kqueuethread(int argc, const char * argv[])
 			}//Tcp
 
 			case _TCP_:{
-				socklen_t len = sizeof(struct sockaddr_in);
+				socklen_t len = sizeof(union addrv4v6);
 				int cc = accept(fd, (struct sockaddr *)(here->peer), &len);
 				if(cc <= 0)break;
 
@@ -164,7 +169,8 @@ int kqueuethread(int argc, const char * argv[])
 					child->selfobj = child;
 					child->tempfd = fd;
 					child->tempobj = here;
-
+					say("accept:listen=%d,incoming=%d\n", fd, cc);
+					printmemory(here->peer, sizeof(union addrv4v6));
 					memcpy(child->peer, here->peer, 32);
 					kqueue_add(cc);
 					//eventwrite('+', _fd_, cc, timeread());

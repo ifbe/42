@@ -25,6 +25,11 @@ int parsemyandto(void*,int, void*,int, char**,int*, char**,int*);
 
 
 
+union addrv4v6{
+	struct sockaddr sa;		//just make compiler happy
+	struct sockaddr_in v4;
+	struct sockaddr_in6 v6;
+};
 struct sysobj* obj;
 
 
@@ -138,10 +143,27 @@ int createsocket_raw(char* addr, int port)
 int createsocket_udpserver(char* addr, int port)
 {
 	int fd,ret;
-	struct sockaddr_in* self;
+	int sockfmt,socklen;
+	union addrv4v6 sockbuf;
+
+	memset(&sockbuf, 0, sizeof(sockbuf));
+	if(1){
+		sockfmt = AF_INET;
+		socklen = sizeof(struct sockaddr_in);
+		sockbuf.v4.sin_family = sockfmt;
+		sockbuf.v4.sin_port = htons(port);
+		sockbuf.v4.sin_addr.s_addr = htons(INADDR_ANY);
+	}
+	else{
+		sockfmt = AF_INET6;
+		socklen = sizeof(struct sockaddr_in6);
+		sockbuf.v6.sin6_family = sockfmt;
+		sockbuf.v6.sin6_port = htons(port);
+		sockbuf.v6.sin6_addr = in6addr_any;
+	}
 
 	//create
-	fd = socket(AF_INET, SOCK_DGRAM, 0);
+	fd = socket(sockfmt, SOCK_DGRAM, 0);
 	if(-1 == fd){
 		printf("errno=%d@socket\n",errno);
 		return 0;
@@ -159,15 +181,8 @@ int createsocket_udpserver(char* addr, int port)
 		return 0;
 	}
 
-	//self
-	self = (void*)obj[fd].self;
-	memset(self, 0, sizeof(struct sockaddr_in));
-	self->sin_family = AF_INET;
-	self->sin_port = htons(port);
-	self->sin_addr.s_addr = htons(INADDR_ANY);
-
 	//bind
-	ret = bind(fd, (void*)self, sizeof(struct sockaddr_in));
+	ret = bind(fd, &sockbuf.sa, socklen);
 	if(-1 == ret){
 		printf("errno=%d@bind\n",errno);
 		close(fd);
@@ -175,6 +190,7 @@ int createsocket_udpserver(char* addr, int port)
 	}
 
 	//done
+	memcpy(obj[fd].self, &sockbuf, socklen);
 	kqueue_add(fd);
 	return fd;
 }
@@ -246,11 +262,28 @@ if((0 != myaddr) && (0 != myport)){
 }
 int createsocket_tcpserver(char* addr, int port)
 {
-	int fd,ret;
-	struct sockaddr_in* self;
+	int fd,ret,size;
+	int sockfmt,socklen;
+	union addrv4v6 sockbuf;
+
+	memset(&sockbuf, 0, sizeof(sockbuf));
+	if(0){
+		sockfmt = AF_INET;
+		socklen = sizeof(struct sockaddr_in);
+		sockbuf.v4.sin_family = sockfmt;
+		sockbuf.v4.sin_port = htons(port);
+		sockbuf.v4.sin_addr.s_addr = htons(INADDR_ANY);
+	}
+	else{
+		sockfmt = AF_INET6;
+		socklen = sizeof(struct sockaddr_in6);
+		sockbuf.v6.sin6_family = sockfmt;
+		sockbuf.v6.sin6_port = htons(port);
+		sockbuf.v6.sin6_addr = in6addr_any;
+	}
 
 	//create
-	fd = socket(AF_INET, SOCK_STREAM, 0);
+	fd = socket(sockfmt, SOCK_STREAM, 0);
 	if(-1 == fd){
 		printf("errno=%d@socket\n",errno);
 		return 0;
@@ -261,30 +294,23 @@ int createsocket_tcpserver(char* addr, int port)
 	}
 
 	//reuse
-	ret = 1;
-	ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
+	size = 1;
+	ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &size, 4);
 	if(ret < 0){
 		printf("errno=%d@SO_REUSEADDR\n",errno);
 		return 0;
 	}
 #ifdef SO_REUSEPORT
-	ret = 1;
-	ret = setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &ret, 4);
+	size = 1;
+	ret = setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &size, 4);
 	if(ret < 0){
 		printf("errno=%d@SO_REUSEPORT\n",errno);
 		return 0;
 	}
 #endif
 
-	//self
-	self = (void*)obj[fd].self;
-	memset(self, 0, sizeof(struct sockaddr_in));
-	self->sin_family = AF_INET;
-	self->sin_port = htons(port);
-	self->sin_addr.s_addr = htons(INADDR_ANY);
-
 	//bind
-	ret = bind(fd, (void*)self, sizeof(struct sockaddr_in));
+	ret = bind(fd, &sockbuf.sa, socklen);
 	if(-1 == ret){
 		printf("errno=%d@bind\n",errno);
 		close(fd);
@@ -295,6 +321,7 @@ int createsocket_tcpserver(char* addr, int port)
 	listen(fd, 5);
 
 	//done
+	memcpy(obj[fd].self, &sockbuf, socklen);
 	kqueue_add(fd);
 	return fd;
 }
@@ -449,11 +476,13 @@ int readsocket(int fd, void* tmp, void* buf, int len)
 	type = obj[fd].type;
 	if(_UDP_ == type)
 	{
-		ret = sizeof(struct sockaddr_in);
+		cnt = sizeof(union addrv4v6);
 		ret = recvfrom(
 			fd, buf, len, 0,
-			tmp, (void*)&ret
+			tmp, (void*)&cnt
 		);
+		//printf("socklen=%d\n",cnt);
+		//printmemory(tmp, 32);
 		return ret;
 	}
 
