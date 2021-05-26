@@ -17,6 +17,7 @@ usb/peri/usbds4-driver.c \
 usb/peri/usbxbox-driver.c \
 usb/func/usbhid-driver.c \
 usb/func/usbstor-driver.c \
+eth/eth.c \
 driver.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 

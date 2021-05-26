@@ -98,7 +98,7 @@ static int kernel_pollloop(struct item* wrk)
 
 		for(j=0;j<10;j++){
 			dev = &device[j];
-			if(_xhci_ == dev->type){
+			if( (_xhci_ == dev->type) | (_eth_ == dev->type) ){
 				if(dev->ontaking)dev->ontaking(dev,0, 0,0, 0,0, 0,0);
 			}
 		}
@@ -187,7 +187,7 @@ static int kernel_failloop(struct item* wrk)
 			//poll all
 			for(j=0;j<10;j++){
 				dev = &device[j];
-				if(_xhci_ == dev->type){
+				if( (_xhci_ == dev->type)|(_eth_ == dev->type) ){
 					if(dev->ontaking)dev->ontaking(dev,0, 0,0, 0,0, 0,0);
 				}
 			}

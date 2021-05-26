@@ -5,14 +5,10 @@ int parsefv(float* vec, int flen, u8* str, int slen);
 
 
 struct joint{
-	float x;
-	float y;
-	float z;
+	float here[3];
 	int exist;
 
-	float gradx;
-	float grady;
-	float gradz;
+	float grad[3];
 	int sure;
 };
 static int parsejoint_oneline(u8* buf, struct joint* jo)
@@ -29,7 +25,7 @@ static int parsejoint_oneline(u8* buf, struct joint* jo)
 	return 0;
 
 found:
-	parsefv(&jo->x, 3, buf+j, 16);
+	parsefv(jo->here, 3, buf+j, 16);
 	jo->exist = 1;
 	return 1;
 }
@@ -42,10 +38,10 @@ static int parsejoint(struct joint* jo, u8* buf)
 			if(j-k<4)break;
 			k = parsejoint_oneline(buf+tmp, &jo[ioff]);
 			if(k){
-				jo[ioff].gradx = 0.0;
-				jo[ioff].grady = 0.0;
-				jo[ioff].gradz = 0.0;
-				say("%d: %f,%f,%f\n", ioff, jo[ioff].x, jo[ioff].y, jo[ioff].z);
+				jo[ioff].grad[0] = 0.0;
+				jo[ioff].grad[1] = 0.0;
+				jo[ioff].grad[2] = 0.0;
+				say("%d: %f,%f,%f\n", ioff, jo[ioff].here[0], jo[ioff].here[1], jo[ioff].here[2]);
 				ioff += 1;
 			}
 			if(buf[j] < 0xa)break;
@@ -67,9 +63,9 @@ static void force_decent_spring(struct entity* ent, struct joint* jo, _syn* stac
 		if(0 == jo[j].exist)break;
 		if(0 != jo[j].sure)continue;
 
-		jo[j].gradx = 0.0;
-		jo[j].grady = 0.0;
-		jo[j].gradz = 0.0;
+		jo[j].grad[0] = 0.0;
+		jo[j].grad[1] = 0.0;
+		jo[j].grad[2] = 0.0;
 		take_data_from_them(ent,'a'+j, stack,sp, 0,'R', jo,j);
 	}
 
@@ -77,10 +73,10 @@ static void force_decent_spring(struct entity* ent, struct joint* jo, _syn* stac
 		if(0 == jo[j].exist)break;
 		if(0 != jo[j].sure)continue;
 
-		jo[j].x -= jo[j].gradx;
-		jo[j].y -= jo[j].grady;
-		jo[j].z -= jo[j].gradz;
-		say("@force_decent_spring: %f,%f,%f\n",jo[j].x, jo[j].y, jo[j].z);
+		jo[j].here[0] -= jo[j].grad[0];
+		jo[j].here[1] -= jo[j].grad[1];
+		jo[j].here[2] -= jo[j].grad[2];
+		say("@force_decent_spring: %f,%f,%f\n",jo[j].here[0], jo[j].here[1], jo[j].here[2]);
 	}
 }
 static void force_decent_stick(struct entity* ent, struct joint* jo, _syn* stack,int sp)
@@ -90,19 +86,19 @@ static void force_decent_stick(struct entity* ent, struct joint* jo, _syn* stack
 		if(0 == jo[j].exist)break;
 		if(0 != jo[j].sure)continue;
 
-		jo[j].gradx = 0.0;
-		jo[j].grady = 0.0;
-		jo[j].gradz = 0.0;
+		jo[j].grad[0] = 0.0;
+		jo[j].grad[1] = 0.0;
+		jo[j].grad[2] = 0.0;
 		take_data_from_them(ent,'a'+j, stack,sp, 0,'V', jo,j);
 	}
 	for(j=1;j<16;j++){
 		if(0 == jo[j].exist)break;
 		if(0 != jo[j].sure)continue;
 
-		jo[j].x -= jo[j].gradx;
-		jo[j].y -= jo[j].grady;
-		jo[j].z -= jo[j].gradz;
-		say("force_decent_stick:%f,%f,%f\n",jo[j].x, jo[j].y, jo[j].z);
+		jo[j].here[0] -= jo[j].grad[0];
+		jo[j].here[1] -= jo[j].grad[1];
+		jo[j].here[2] -= jo[j].grad[2];
+		say("force_decent_stick:%f,%f,%f\n",jo[j].here[0], jo[j].here[1], jo[j].here[2]);
 	}
 }
 
@@ -130,12 +126,12 @@ static void force_draw_gl41(
 	tr[0] = tf[1] = tu[2] = 10.0;
 	for(j=0;j<16;j++){
 		if(0 == jo[j].exist)break;
-		gl41solid_sphere(wnd, 0x808080, &jo[j].x,tr,tf,tu);
+		gl41solid_sphere(wnd, 0x808080, jo[j].here,tr,tf,tu);
 	}
 	tr[0] = tf[1] = tu[2] = 100.0;
 	for(j=0;j<16;j++){
 		if(0 == jo[j].exist)break;
-		gl41ascii_center(wnd, 0xff0000, &jo[j].x,tr,tu,'a'+j);
+		gl41ascii_center(wnd, 0xff0000, jo[j].here,tr,tu,'a'+j);
 	}
 }
 void force_read_board(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)

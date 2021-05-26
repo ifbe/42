@@ -3,14 +3,10 @@
 #define B_PEERFOOT iwn
 #define LVAL fdata1
 struct joint{
-	float x;
-	float y;
-	float z;
+	float here[3];
 	int exist;
 
-	float gradx;
-	float grady;
-	float gradz;
+	float grad[3];
 	int sure;
 };
 
@@ -52,8 +48,8 @@ void stick_read_force(struct entity* ent, struct entity* sup, struct joint* jo, 
 	int b = ent->B_PEERFOOT - 'a';
 	say("@stick_read_force: %d,%d\n",a,b);
 
-	float* va = &jo[a].x;
-	float* vb = &jo[b].x;
+	float* va = jo[a].here;
+	float* vb = jo[b].here;
 	gl41line(sup, 0xffffff, va, vb);
 
 	int j;
@@ -94,12 +90,12 @@ static void stick_read_a(struct entity* ent, int key, struct joint* jo,int thiso
 	if(theother < 0)return;
 	if(theother > 8)return;
 
-	float myx = jo[thisone].x;
-	float myy = jo[thisone].y;
-	float myz = jo[thisone].z;
-	float urx = jo[theother].x;
-	float ury = jo[theother].y;
-	float urz = jo[theother].z;
+	float myx = jo[thisone].here[0];
+	float myy = jo[thisone].here[1];
+	float myz = jo[thisone].here[2];
+	float urx = jo[theother].here[0];
+	float ury = jo[theother].here[1];
+	float urz = jo[theother].here[2];
 	say("@stick_read_a: %d=%f,%f,%f, %d=%f,%f,%f\n",thisone,myx,myy,myz, theother,urx,ury,urz);
 
 	float dx = myx-urx;
@@ -110,9 +106,9 @@ static void stick_read_a(struct entity* ent, int key, struct joint* jo,int thiso
 	dy = 4*lenlen*(myy - ury);
 	dz = 4*lenlen*(myz - urz);
 	say("derivative: %f,%f,%f\n",dx,dy,dz);
-	jo[thisone].gradx += dx/10000000;
-	jo[thisone].grady += dy/10000000;
-	jo[thisone].gradz += dz/10000000;
+	jo[thisone].grad[0] += dx/10000000;
+	jo[thisone].grad[1] += dy/10000000;
+	jo[thisone].grad[2] += dz/10000000;
 }
 static void stick_read_b(struct entity* ent, int key, struct joint* jo,int thisone)
 {
@@ -122,12 +118,12 @@ static void stick_read_b(struct entity* ent, int key, struct joint* jo,int thiso
 	if(theother < 0)return;
 	if(theother > 8)return;
 
-	float myx = jo[thisone].x;
-	float myy = jo[thisone].y;
-	float myz = jo[thisone].z;
-	float urx = jo[theother].x;
-	float ury = jo[theother].y;
-	float urz = jo[theother].z;
+	float myx = jo[thisone].here[0];
+	float myy = jo[thisone].here[1];
+	float myz = jo[thisone].here[2];
+	float urx = jo[theother].here[0];
+	float ury = jo[theother].here[1];
+	float urz = jo[theother].here[2];
 	say("@stick_read_b: %d=%f,%f,%f, %d=%f,%f,%f\n",thisone,myx,myy,myz, theother,urx,ury,urz);
 
 	float dx = myx-urx;
@@ -138,9 +134,9 @@ static void stick_read_b(struct entity* ent, int key, struct joint* jo,int thiso
 	dy = 4*lenlen*(myy - ury);
 	dz = 4*lenlen*(myz - urz);
 	say("derivative: %f,%f,%f\n",dx,dy,dz);
-	jo[thisone].gradx += dx/10000000;
-	jo[thisone].grady += dy/10000000;
-	jo[thisone].gradz += dz/10000000;
+	jo[thisone].grad[0] += dx/10000000;
+	jo[thisone].grad[1] += dy/10000000;
+	jo[thisone].grad[2] += dz/10000000;
 }
 
 

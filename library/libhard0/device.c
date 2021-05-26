@@ -133,8 +133,13 @@ void* devicecreate(u64 type, void* name, int argc, u8** argv)
 		p->hfmt = _mmc_;
 		return p;
 	}
-	if(_i2c_ == type)
-	{
+	if(_eth_ == type){
+		struct item* p = device_alloc();
+		p->type = _eth_;
+		p->hfmt = _eth_;
+		return p;
+	}
+	if(_i2c_ == type){
 		int fd = i2c_create(name, 0, argc, argv);
 		if(fd <= 0)return 0;
 
@@ -143,8 +148,7 @@ void* devicecreate(u64 type, void* name, int argc, u8** argv)
 
 		return &dev[fd];
 	}
-	if(_spi_ == type)
-	{
+	if(_spi_ == type){
 		int fd = spi_create(name, 0, argc, argv);
 		if(fd <= 0)return 0;
 

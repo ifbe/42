@@ -45,9 +45,12 @@
 #define _tmr_ hex32('t','m','r',0)
 #define _bus_ hex32('b','u','s',0)
 #define _pci_ hex32('p','c','i',0)
+#define _eth_ hex32('e','t','h',0)
 #define _mmc_ hex32('m','m','c',0)
 #define _ide_ hex32('i','d','e',0)
 #define _ahci_ hex32('a','h','c','i')
+#define _nvme_ hex32('n','v','m','e')
+#define _ehci_ hex32('e','h','c','i')
 #define _xhci_ hex32('x','h','c','i')
 //
 #define _dbg_ hex32('d','b','g',0)

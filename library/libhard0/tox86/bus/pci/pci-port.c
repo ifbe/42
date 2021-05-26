@@ -7,6 +7,8 @@ void ide_portinit(struct item* dev, u32 addr);
 void ahci_portinit(struct item* dev, u32 addr);
 void nvme_portinit(struct item* dev, u32 addr);
 //
+void e1000_portinit(struct item* dev, u32 addr);
+//
 u32 in32(u16 port);
 void out32(u16 port, u32 data);
 void say(void*, ...);
@@ -77,12 +79,18 @@ void initpci_port()
 		case 0x0108:
 			switch((type>>8)&0xff){
 			case 0x02:
-			case 0x03:xx = devicecreate(0, 0, 0, 0);nvme_portinit(xx, addr);break;
+			case 0x03:
+				xx = devicecreate(_nvme_, 0, 0, 0);
+				nvme_portinit(xx, addr);
+				break;
 			}
 			break;
 
 		case 0x0200:
-			//if(0x100e8086 == idid)e1000_portinit(addr);
+			if(0x100e8086 == idid){
+				xx = devicecreate(_eth_, 0, 0, 0);
+				e1000_portinit(xx, addr);
+			}
 			break;
 
 		case 0x0c03:
@@ -90,7 +98,10 @@ void initpci_port()
 			//case 0x00:uhci_portinit(addr);break;
 			//case 0x10:ohci_portinit(addr);break;
 			//case 0x20:ehci_portinit(addr);break;
-			case 0x30:xx = devicecreate(_xhci_, 0, 0, 0);xhci_portinit(xx, addr);break;
+			case 0x30:
+				xx = devicecreate(_xhci_, 0, 0, 0);
+				xhci_portinit(xx, addr);
+				break;
 			}//usbver
 			break;
 

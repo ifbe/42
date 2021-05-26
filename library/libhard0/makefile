@@ -177,6 +177,7 @@ tox86/cpu64/x64.paging.c \
 tox86/cpu64vt/x64.vt.c \
 tox86/cpu64svm/x64.svm.c \
 tox86/bus/input/8042.c \
+tox86/bus/ethernet/e1000.c \
 tox86/bus/pci/pci-port.c \
 tox86/bus/pci/pci-mmio.c \
 tox86/irq/irq.c \
