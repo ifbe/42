@@ -93,13 +93,15 @@ int give_data_into_orel(void* chip,int ftype, struct halfrel* stack,int sp, void
 
 
 
-static u8* mmioaddr = 0;
-static u8 macaddr[8] = {};
-//
-static u8 rxdesc[16*32];
-static u8 txdesc[16*32];
-static u8 txbuffer[0x800*32];
-static u8 rxbuffer[0x800*32];
+struct perdev{
+	u8* mmioaddr;
+	u8 macaddr[8];
+	//
+	u8* rxdesc;
+	u8* txdesc;
+	u8* txbuffer;
+	u8* rxbuffer;
+};
 
 
 
@@ -115,14 +117,15 @@ struct RecvDesc
 };
 static int e1000_read(struct item* e1000,void* foot, void* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
-	if(0 == mmioaddr)return -1;
+	struct perdev* per = (void*)(e1000->priv_data);
+	if(0 == per->mmioaddr)return -1;
 
 	//changed = tail+1
-	volatile u32 tail = *(volatile u32*)(mmioaddr+0x2818);
+	volatile u32 tail = *(volatile u32*)(per->mmioaddr+0x2818);
 	tail = (tail+1)%32;
 
 	//desc = changed
-	u8* desc = rxdesc + 0x10*tail;
+	u8* desc = per->rxdesc + 0x10*tail;
 	u8 stat = desc[12];
 	if(0 == (stat&0x1))return 0;
 
@@ -131,8 +134,8 @@ static int e1000_read(struct item* e1000,void* foot, void* stack,int sp, void* a
 	desc[12] = 0;		//status写0
 
 	//next
-	volatile u32 dummy = *(volatile u32*)(mmioaddr+0xc0);	//必须读，防止被优化
-	*(u32*)(mmioaddr+0x2818) = tail;
+	volatile u32 dummy = *(volatile u32*)(per->mmioaddr+0xc0);	//必须读，防止被优化
+	*(u32*)(per->mmioaddr+0x2818) = tail;
 
 	//recv
 	u8* pkt = *(u8**)(desc);
@@ -159,26 +162,26 @@ struct TransDesc
 };
 static int e1000_write(struct item* e1000,void* foot, void* stack,int sp, void* arg,int cmd, u8* buf, int len)
 {
-	//error return
-	if(0 == mmioaddr)return -1;
+	struct perdev* per = (void*)(e1000->priv_data);
+	if(0 == per->mmioaddr)return -1;
 
 	//txdesc
-	u32 head = *(u32*)(mmioaddr+0x3810);
-	u8* desc = txdesc + 0x10*head;
+	u32 head = *(u32*)(per->mmioaddr+0x3810);
+	u8* desc = per->txdesc + 0x10*head;
 
 	//put data
 	int j;
 	u8* dst = (u8*)( *(u64*)desc );
 	for(j=0;j<len;j++)dst[j] = buf[j];
-	for(j=0;j<6;j++)dst[j+6] = macaddr[j];
+	for(j=0;j<6;j++)dst[j+6] = per->macaddr[j];
 
 	//fill desc: reportstatus, insert fcs/crc, end of packet
 	*(u16*)(desc+8) = len;
 	*(u8*)(desc+11) = (1<<3) | (1<<1) | 1;
 
 	//new tail
-	u32 tail = *(u32*)(mmioaddr+0x3818);
-	*(u32*)(mmioaddr+0x3818) = (tail+1)%8;
+	u32 tail = *(u32*)(per->mmioaddr+0x3818);
+	*(u32*)(per->mmioaddr+0x3818) = (tail+1)%8;
 
 	//check send
 	u64 timeout=0;
@@ -244,8 +247,17 @@ static u32 eepromread(u8* mmio, u32 addr)
 }
 void e1000_mmioinit(struct item* dev, u8* mmio)
 {
-	mmioaddr = mmio;
+	struct perdev* per = (void*)(dev->priv_data);
+	per->mmioaddr = mmio;
 	say("e1000@mmio:%llx{\n", mmio);
+
+
+	//
+	u8* tmp = memorycreate(0x100000, 0x100000);
+	per->rxdesc = tmp;
+	per->txdesc = tmp+0x10000;
+	per->rxbuffer = tmp+0x40000;
+	per->txbuffer = tmp+0x80000;
 
 
 	//---------------------macaddr-------------------
@@ -254,22 +266,22 @@ void e1000_mmioinit(struct item* dev, u8* mmio)
 		u64 mac01 = eepromread(mmio, 0);
 		u64 mac23 = eepromread(mmio, 1);
 		u64 mac45 = eepromread(mmio, 2);
-		*(u64*)macaddr = (mac45<<32) + (mac23<<16) + mac01;
+		*(u64*)per->macaddr = (mac45<<32) + (mac23<<16) + mac01;
 	}
 	else{
 		u64 lo = *(u32*)(mmio+0x5400);	//receive address low
 		u64 hi = *(u32*)(mmio+0x5404);
 		say("lo=%x,hi=%x\n", lo, hi);
-		*(u64*)macaddr = ((hi&0xffff)<<32) + lo;
+		*(u64*)per->macaddr = ((hi&0xffff)<<32) + lo;
 	}
-	say("macaddr=%llx\n", *(u64*)macaddr);
+	say("macaddr=%llx\n", *(u64*)per->macaddr);
 	//------------------------------------------
 
 
 	//-----------------control-----------------
 	//set link up
-	volatile u32 tmp = *(volatile u32*)(mmio+0);
-	*(volatile u32*)(mmio+0) = tmp | (1<<6);
+	volatile u32 ctl = *(volatile u32*)(mmio+0);
+	*(volatile u32*)(mmio+0) = ctl | (1<<6);
 
 	//clear multicast table array
 	int j;
@@ -285,13 +297,13 @@ void e1000_mmioinit(struct item* dev, u8* mmio)
 
 	//--------------------receive descriptor---------------------
 	for(j=0;j<32*16;j++){
-		rxdesc[j] = 0;
+		per->rxdesc[j] = 0;
 	}
 	for(j=0;j<32;j++){
-		*(u64*)(rxdesc+0x10*j) = (u64)rxbuffer + 0x800*j;	//每个2048B
+		*(u64*)(per->rxdesc+0x10*j) = (u64)per->rxbuffer + 0x800*j;	//每个2048B
 	}
-	*(u32*)(mmio+0x2800) = ((u64)rxdesc) & 0xffffffff;	//addrlow
-	*(u32*)(mmio+0x2804) = ((u64)rxdesc) >>        32;	//addrhigh
+	*(u32*)(mmio+0x2800) = ((u64)per->rxdesc) & 0xffffffff;	//addrlow
+	*(u32*)(mmio+0x2804) = ((u64)per->rxdesc) >>        32;	//addrhigh
 	*(u32*)(mmio+0x2808) =      32*16;	//32个*每个16B
 	*(u32*)(mmio+0x2810) =          0;	//head
 	*(u32*)(mmio+0x2818) =         31;	//tail
@@ -312,14 +324,14 @@ void e1000_mmioinit(struct item* dev, u8* mmio)
 
 	//----------------transmit descriptor-----------------
 	for(j=0;j<32*16;j++){
-		txdesc[j] = 0;
+		per->txdesc[j] = 0;
 	}
 	for(j=0;j<8;j++)
 	{
-		*(u64*)(txdesc+0x10*j) = (u64)txbuffer+0x800*j;	//每个2048B
+		*(u64*)(per->txdesc+0x10*j) = (u64)per->txbuffer+0x800*j;	//每个2048B
 	}
-	*(u32*)(mmio+0x3800) = ((u64)txdesc) & 0xffffffff;	//addrlow
-	*(u32*)(mmio+0x3804) = ((u64)txdesc) >>        32;	//addrhigh
+	*(u32*)(mmio+0x3800) = ((u64)per->txdesc) & 0xffffffff;	//addrlow
+	*(u32*)(mmio+0x3804) = ((u64)per->txdesc) >>        32;	//addrhigh
 	*(u32*)(mmio+0x3808) =       8*16;	//8个*每个16B
 	*(u32*)(mmio+0x3810) =          0;	//head
 	*(u32*)(mmio+0x3818) =          0;	//tail

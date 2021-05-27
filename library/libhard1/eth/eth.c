@@ -3,6 +3,24 @@
 
 
 
+struct udp{
+	u16 srcport;
+	u16 dstport;
+	u16 udplen;
+	u16 udpsum;
+};
+struct ipv4{
+	u8      iphead;         //[0xe]
+	u8         tos;         //[0xf]
+	u16     length;         //[0x10,0x11]
+	u16         id;         //[0x12,0x13]
+	u16 fragoffset;         //[0x14,0x15]
+	u8         ttl;         //[0x16]
+	u8    protocol;         //[0x17]
+	u16   checksum;         //[0x18,0x19]
+	u8    ipsrc[4];         //[0x1a,0x1d]
+	u8    ipdst[4];         //[0x1e,0x21]
+};
 struct dhcp{
 	//ether
 	u8 macdst[6];           //[0,5]
@@ -123,6 +141,46 @@ void dhcprequest(struct dhcp* dhcp)
 
 
 
+int parsepacket_udp(u8* buf, int len)
+{
+	struct udp* p = (void*)buf;
+	int src = swap16(p->srcport);
+	int dst = swap16(p->dstport);
+	//int len = swap16(p->udplen);
+	say("srcport=%d,dstport=%d\n", src, dst);
+	printmemory(buf+8, len-8);
+}
+int parsepacket_ipv4(u8* buf, int len)
+{
+	struct ipv4* p = (void*)buf;
+	int headlen = (p->iphead&0xf)<<2;
+	int length = swap16(p->length);
+	int proto = p->protocol;
+	say("length=%x,proto=%x\n", length, proto);
+	say("srcaddr=%d.%d.%d.%d, dstaddr=%d.%d.%d.%d\n",
+		p->ipsrc[0],p->ipsrc[1],p->ipsrc[2],p->ipsrc[3],
+		p->ipdst[0],p->ipdst[1],p->ipdst[2],p->ipdst[3]);
+	switch(proto){
+	case 0x11:parsepacket_udp(buf+headlen, len-headlen);break;
+	default:printmemory(buf+headlen, len-headlen);
+	}
+}
+int parsepacket_mac(u8* buf, int len)
+{
+	int ret = 6+6+2;
+	printmemory(buf, ret);
+
+	int type = (buf[12]<<8) + buf[13];
+	switch(type){
+	case 0x0800:parsepacket_ipv4(buf+ret, len-ret);break;
+	default:printmemory(buf+ret, len-ret);
+	}
+	return ret;
+}
+
+
+
+
 int eth_take(struct item* e1000,void* foot, void* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
 	return 0;
@@ -130,7 +188,9 @@ int eth_take(struct item* e1000,void* foot, void* stack,int sp, void* arg,int cm
 int eth_give(struct item* e1000,void* foot, void* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
 	say("@eth_give\n");
-	printmemory(buf,len);
+	//printmemory(buf,len);
+
+	parsepacket_mac(buf, len);
 	return 0;
 }
 
