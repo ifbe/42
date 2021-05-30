@@ -254,10 +254,10 @@ void e1000_mmioinit(struct item* dev, u8* mmio)
 
 	//
 	u8* tmp = memorycreate(0x100000, 0x100000);
-	per->rxdesc = tmp;
-	per->txdesc = tmp+0x10000;
-	per->rxbuffer = tmp+0x40000;
-	per->txbuffer = tmp+0x80000;
+	per->rxdesc = tmp+0x40000;
+	per->txdesc = tmp+0x50000;
+	per->rxbuffer = tmp+0x80000;
+	per->txbuffer = tmp+0xc0000;
 
 
 	//---------------------macaddr-------------------
@@ -300,7 +300,7 @@ void e1000_mmioinit(struct item* dev, u8* mmio)
 		per->rxdesc[j] = 0;
 	}
 	for(j=0;j<32;j++){
-		*(u64*)(per->rxdesc+0x10*j) = (u64)per->rxbuffer + 0x800*j;	//每个2048B
+		*(u64*)(per->rxdesc+0x10*j) = (u64)per->rxbuffer + (j<<12);
 	}
 	*(u32*)(mmio+0x2800) = ((u64)per->rxdesc) & 0xffffffff;	//addrlow
 	*(u32*)(mmio+0x2804) = ((u64)per->rxdesc) >>        32;	//addrhigh
@@ -328,7 +328,7 @@ void e1000_mmioinit(struct item* dev, u8* mmio)
 	}
 	for(j=0;j<8;j++)
 	{
-		*(u64*)(per->txdesc+0x10*j) = (u64)per->txbuffer+0x800*j;	//每个2048B
+		*(u64*)(per->txdesc+0x10*j) = (u64)per->txbuffer + (j<<12);
 	}
 	*(u32*)(mmio+0x3800) = ((u64)per->txdesc) & 0xffffffff;	//addrlow
 	*(u32*)(mmio+0x3804) = ((u64)per->txdesc) >>        32;	//addrhigh

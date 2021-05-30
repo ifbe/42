@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <strings.h>
 #include <math.h>
 #include <jni.h>
 #include <errno.h>
@@ -11,8 +11,6 @@
 #include <android/log.h>
 #include <android_native_app_glue.h>
 #include "libuser.h"
-#define LOG_TAG "finalanswer"
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 void* getapp();
 void* pollenv();
 void initobject(void*);
@@ -35,6 +33,7 @@ static int width = 0;
 static int height = 0;
 //
 static struct android_app* theapp = 0;
+static int candraw = 0;
 
 
 
@@ -74,19 +73,19 @@ void openwindow()
 	};
 	context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttribs);
 	if (context == EGL_NO_CONTEXT) {
-		LOGI("eglCreateContext failed with error 0x%04x", eglGetError());
+		say("eglCreateContext failed with error 0x%04x\n", eglGetError());
 		return;
 	}
 
 	if (eglMakeCurrent(display, surface, surface, context) == EGL_FALSE) {
-		LOGI("eglMakeCurrent failed with error 0x%04x", eglGetError());
+		say("eglMakeCurrent failed with error 0x%04x\n", eglGetError());
 		return;
 	}
 
-	LOGI("GL Version = %s\n", glGetString(GL_VERSION));
-	LOGI("GL Vendor = %s\n", glGetString(GL_VENDOR));
-	LOGI("GL Renderer = %s\n", glGetString(GL_RENDERER));
-	LOGI("GL Extensions = %s\n", glGetString(GL_EXTENSIONS));
+	say("GL Version = %s\n", glGetString(GL_VERSION));
+	say("GL Vendor = %s\n", glGetString(GL_VENDOR));
+	say("GL Renderer = %s\n", glGetString(GL_RENDERER));
+	say("GL Extensions = %s\n", glGetString(GL_EXTENSIONS));
 }
 void closewindow()
 {
@@ -101,65 +100,103 @@ void closewindow()
 	context = EGL_NO_CONTEXT;
 	surface = EGL_NO_SURFACE;
 }
+void cleanwindow()
+{
+	int j;
+	struct supply* wnd = theapp->userData;
+
+	struct gl41data** cam = wnd->glfull_camera;
+	for(j=0;j<64;j++){
+		if(cam[j])bzero(&cam[j]->dst, sizeof(struct gldst));
+	}
+
+	struct gl41data** lit = wnd->glfull_light;
+	for(j=0;j<64;j++){
+		if(lit[j])bzero(&lit[j]->dst, sizeof(struct gldst));
+	}
+
+	struct gl41data** solid = wnd->glfull_solid;
+	for(j=0;j<64;j++){
+		if(solid[j])bzero(&solid[j]->dst, sizeof(struct gldst));
+	}
+
+	struct gl41data** opaque = wnd->glfull_opaque;
+	for(j=0;j<64;j++){
+		if(opaque[j])bzero(&opaque[j]->dst, sizeof(struct gldst));
+	}
+}
+
+
+
+
 static void handle_cmd(struct android_app* app, int32_t cmd)
 {
-	LOGI("app=%llx,cmd=%x\n", (u64)app, cmd);
-	if(APP_CMD_START == cmd)
-	{
-		LOGI("APP_CMD_START");
-	}
-	else if(APP_CMD_RESUME == cmd)
-	{
-		LOGI("APP_CMD_RESUME");
-	}
-	else if(APP_CMD_PAUSE == cmd)
-	{
-		LOGI("APP_CMD_PAUSE");
-	}
-	else if(APP_CMD_STOP == cmd)
-	{
-		LOGI("APP_CMD_STOP");
-	}
-	else if(APP_CMD_DESTROY == cmd)
-	{
-		LOGI("APP_CMD_DESTROY");
-	}
-	else if(APP_CMD_GAINED_FOCUS == cmd)
-	{
-		LOGI("APP_CMD_GAINED_FOCUS");
-	}
-	else if(APP_CMD_LOST_FOCUS == cmd)
-	{
-		LOGI("APP_CMD_LOST_FOCUS");
-	}
-	else if(APP_CMD_INIT_WINDOW == cmd)
-	{
-		LOGI("APP_CMD_INIT_WINDOW");
-		openwindow();
-	}
-	else if(APP_CMD_WINDOW_RESIZED == cmd)
-	{
-		LOGI("APP_CMD_WINDOW_RESIZED");
-	}
-	else if(APP_CMD_TERM_WINDOW == cmd)
-	{
-		LOGI("APP_CMD_TERM_WINDOW");
-		closewindow();
-	}
-	else if(APP_CMD_SAVE_STATE == cmd)
-	{
-		LOGI("APP_CMD_SAVE_STATE");
+	say("app=%llx,cmd=%x\n", (u64)app, cmd);
+	switch(cmd){
+	case APP_CMD_DESTROY:
+		say("APP_CMD_DESTROY\n");
+		break;
+	case APP_CMD_SAVE_STATE:
+		say("APP_CMD_SAVE_STATE\n");
 		//app->savedState = malloc(sizeof(SavedState));
 		//app->savedStateSize = sizeof(SavedState);
 		//app->savedState = appState->savedState;
-	}
-	else if(APP_CMD_CONFIG_CHANGED == cmd)
-	{
-		LOGI("APP_CMD_CONFIG_CHANGED");
-	}
-	else
-	{
-		LOGI("Unknown CMD: %d", cmd);
+		break;
+
+	case APP_CMD_START:
+		say("APP_CMD_START\n");
+		break;
+	case APP_CMD_STOP:
+		say("APP_CMD_STOP\n");
+		break;
+
+	case APP_CMD_RESUME:
+		say("APP_CMD_RESUME\n");
+		break;
+	case APP_CMD_PAUSE:
+		say("APP_CMD_PAUSE\n");
+		break;
+
+	case APP_CMD_INIT_WINDOW:
+		say("APP_CMD_INIT_WINDOW\n");
+		openwindow();
+		candraw = 1;
+		break;
+	case APP_CMD_TERM_WINDOW:
+		say("APP_CMD_TERM_WINDOW\n");
+		candraw = 0;
+		closewindow();
+		cleanwindow();
+		break;
+
+	case APP_CMD_GAINED_FOCUS:
+		say("APP_CMD_GAINED_FOCUS\n");
+		break;
+	case APP_CMD_LOST_FOCUS:
+		say("APP_CMD_LOST_FOCUS\n");
+		break;
+
+	case APP_CMD_WINDOW_RESIZED:
+		say("APP_CMD_WINDOW_RESIZED\n");
+		break;
+	case APP_CMD_CONFIG_CHANGED:
+		say("APP_CMD_CONFIG_CHANGED\n");
+		break;
+	case APP_CMD_INPUT_CHANGED:
+		say("APP_CMD_INPUT_CHANGED\n");
+		break;
+	case APP_CMD_WINDOW_REDRAW_NEEDED:
+		say("APP_CMD_WINDOW_REDRAW_NEEDED\n");
+		break;
+	case APP_CMD_CONTENT_RECT_CHANGED:
+		say("APP_CMD_CONTENT_RECT_CHANGED\n");
+		break;
+	case APP_CMD_LOW_MEMORY:
+		say("APP_CMD_LOW_MEMORY\n");
+		break;
+
+	default:
+		say("Unknown CMD: %d\n", cmd);
 	}
 	//appState->running = (appState->resumed && appState->windowInitialized && appState->focused);
 }
@@ -169,12 +206,12 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 	int x,y,a,c,j;
 	int32_t type;
 	int32_t source;
-	//LOGI("app=%llx,ev=%llx\n", (u64)app, (u64)ev);
+	//say("app=%llx,ev=%llx\n", (u64)app, (u64)ev);
 
 	type = AInputEvent_getType(ev);
 	if(AINPUT_EVENT_TYPE_KEY == type)
 	{
-		LOGI("!!!!!!!\n");
+		say("!!!!!!!\n");
 		eventwrite(0,0,0,0);
 		app->destroyRequested = 1;
 	}
@@ -185,7 +222,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 		{
 			a = AMotionEvent_getAction(ev);
 			c = AMotionEvent_getPointerCount(ev);
-			LOGI("a=%x,c=%x\n",a,c);
+			say("a=%x,c=%x\n",a,c);
 
 			j = (a>>8)&0xf;
 			a &= 0xf;
@@ -244,8 +281,10 @@ int checkevent()
 int window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(wnd != theapp->userData)return 0;
-	fullwindow_take(wnd,foot, stack,sp, arg,key, buf,len);
-	eglSwapBuffers(display, surface);
+	if(candraw){
+		fullwindow_take(wnd,foot, stack,sp, arg,key, buf,len);
+		eglSwapBuffers(display, surface);
+	}
 	checkevent();
 	return 0;
 }
