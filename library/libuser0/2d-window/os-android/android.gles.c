@@ -135,6 +135,7 @@ static void handle_cmd(struct android_app* app, int32_t cmd)
 	switch(cmd){
 	case APP_CMD_DESTROY:
 		say("APP_CMD_DESTROY\n");
+		eventwrite(0,0,0,0);
 		break;
 	case APP_CMD_SAVE_STATE:
 		say("APP_CMD_SAVE_STATE\n");
@@ -203,33 +204,31 @@ static void handle_cmd(struct android_app* app, int32_t cmd)
 static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 {
 	u64 why[4];
-	int x,y,a,c,j;
+	int x,y,z;
+	int act,cnt,j;
 	int32_t type;
 	int32_t source;
 	//say("app=%llx,ev=%llx\n", (u64)app, (u64)ev);
 
 	type = AInputEvent_getType(ev);
-	if(AINPUT_EVENT_TYPE_KEY == type)
-	{
-		say("!!!!!!!\n");
-		eventwrite(0,0,0,0);
-		app->destroyRequested = 1;
-	}
-	else if(AINPUT_EVENT_TYPE_MOTION == type)
-	{
+	switch(type){
+	case AINPUT_EVENT_TYPE_KEY:
+		act = AKeyEvent_getKeyCode(ev);
+		say("AINPUT_EVENT_TYPE_KEY:%x\n", act);
+		//app->destroyRequested = 1;
+		break;
+	case AINPUT_EVENT_TYPE_MOTION:
 		source = AInputEvent_getSource(ev);
-		if(AINPUT_SOURCE_TOUCHSCREEN == source)
-		{
-			a = AMotionEvent_getAction(ev);
-			c = AMotionEvent_getPointerCount(ev);
-			say("a=%x,c=%x\n",a,c);
+		if(AINPUT_SOURCE_TOUCHSCREEN == source){
+			act = AMotionEvent_getAction(ev);
+			cnt = AMotionEvent_getPointerCount(ev);
+			say("act=%x,cnt=%x\n", act, cnt);
 
-			j = (a>>8)&0xf;
-			a &= 0xf;
-			if(2 == a)
-			{
-				for(j=0;j<c;j++)
-				{
+			j = (act>>8)&0xf;
+			act &= 0xf;
+			switch(act){
+			case 2:
+				for(j=0;j<cnt;j++){
 					x = AMotionEvent_getX(ev, j);
 					y = AMotionEvent_getY(ev, j);
 					why[0] = j;
@@ -239,26 +238,36 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 					//fullwindow_write(theapp->userData, (void*)why);
 					eventwrite(why[0], why[1], why[2], why[3]);
 				}
+				return 0;
+			case 0:
+			case 5:
+				act = touch_onto;
+				break;
+			case 1:
+			case 6:
+				act = touch_away;
+				break;
+			default:
+				say("AMotionEvent_getAction=%x\n",act);
+				return 0;
 			}
-			else
-			{
-				if((0==a)|(5==a))a = touch_onto;
-				else if((1==a)|(6==a))a = touch_away;
 
-				x = AMotionEvent_getX(ev, j);
-				y = AMotionEvent_getY(ev, j);
-				why[0] = AMotionEvent_getPointerId(ev, j);
-				why[0] = x+(y<<16)+(why[0]<<48);
-				why[1] = a;
-				why[2] = (u64)(theapp->userData);
-				//fullwindow_write(theapp->userData, (void*)why);
-				eventwrite(why[0], why[1], why[2], why[3]);
-			}
+			x = AMotionEvent_getX(ev, j);
+			y = AMotionEvent_getY(ev, j);
+			why[0] = AMotionEvent_getPointerId(ev, j);
+			why[0] = x+(y<<16)+(why[0]<<48);
+			why[1] = act;
+			why[2] = (u64)(theapp->userData);
+			//fullwindow_write(theapp->userData, (void*)why);
+			eventwrite(why[0], why[1], why[2], why[3]);
+		}//AINPUT_SOURCE_TOUCHSCREEN
+		else if(AINPUT_SOURCE_TRACKBALL == source){
+			say("AINPUT_SOURCE_TRACKBALL\n");
 		}
-		else if(AINPUT_SOURCE_TRACKBALL == source)
-		{
-		}
-	}
+		break;
+	default:
+		say("AInputEvent_getType=%x\n",type);
+	}//switch
 	return 0;
 }
 int checkevent()
