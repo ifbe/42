@@ -9,6 +9,7 @@
 #include <GLES3/gl3.h>
 #include <GLES3/gl3ext.h>
 #include <android/log.h>
+#include <android/sensor.h>
 #include <android_native_app_glue.h>
 #include "libuser.h"
 void* getapp();
@@ -25,6 +26,12 @@ void fullwindow_give(void*,void*, void*,int, void*,int, void*,int);
 
 
 
+//
+ASensorManager* sensorManager;
+ASensorEventQueue* sensorEventQueue;
+const ASensor* acc = 0;
+const ASensor* gyr = 0;
+const ASensor* mag = 0;
 //
 static EGLDisplay display = EGL_NO_DISPLAY;
 static EGLContext context = EGL_NO_CONTEXT;
@@ -172,9 +179,30 @@ static void handle_cmd(struct android_app* app, int32_t cmd)
 
 	case APP_CMD_GAINED_FOCUS:
 		say("APP_CMD_GAINED_FOCUS\n");
+		if(gyr){
+			ASensorEventQueue_enableSensor(sensorEventQueue, gyr);
+			ASensorEventQueue_setEventRate(sensorEventQueue, gyr, (1000L/60)*1000);
+		}
+		if(acc){
+			ASensorEventQueue_enableSensor(sensorEventQueue, acc);
+			ASensorEventQueue_setEventRate(sensorEventQueue, acc, (1000L/60)*1000);
+		}
+		if(mag){
+			ASensorEventQueue_enableSensor(sensorEventQueue, mag);
+			ASensorEventQueue_setEventRate(sensorEventQueue, mag, (1000L/60)*1000);
+		}
 		break;
 	case APP_CMD_LOST_FOCUS:
 		say("APP_CMD_LOST_FOCUS\n");
+		if(gyr){
+			ASensorEventQueue_disableSensor(sensorEventQueue, gyr);
+		}
+		if(acc){
+			ASensorEventQueue_disableSensor(sensorEventQueue, acc);
+		}
+		if(mag){
+			ASensorEventQueue_disableSensor(sensorEventQueue, mag);
+		}
 		break;
 
 	case APP_CMD_WINDOW_RESIZED:
@@ -268,7 +296,8 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 	default:
 		say("AInputEvent_getType=%x\n",type);
 	}//switch
-	return 0;
+
+	return 1;
 }
 int checkevent()
 {
@@ -279,6 +308,27 @@ int checkevent()
 	while((ident=ALooper_pollAll(0, NULL, &events, (void**)&source)) >= 0)
 	{
 		if(source)source->process(theapp, source);
+
+		if (ident == LOOPER_ID_USER) {
+			ASensorEvent ev;
+			float* v = ev.vector.v;
+			if( (0!=gyr) | (0!=acc) | (0!=mag) ){
+				while (ASensorEventQueue_getEvents(sensorEventQueue, &ev, 1) > 0) {
+					switch(ev.type){
+					case ASENSOR_TYPE_GYROSCOPE:
+						say("gyr: x=%f,y=%f,z=%f\n", v[0], v[1], v[2]);
+						break;
+					case ASENSOR_TYPE_ACCELEROMETER:
+						say("acc: x=%f,y=%f,z=%f\n",-v[0],-v[1],-v[2]);
+						break;
+					case ASENSOR_TYPE_MAGNETIC_FIELD:
+						say("mag: x=%f,y=%f,z=%f\n", v[0], v[1], v[2]);
+						break;
+					}
+				}
+			}
+		}
+
 		if(theapp->destroyRequested)return 0;
 	}
 	return 0;
@@ -337,6 +387,13 @@ void initwindow()
 	theapp = getapp();
 	theapp->onAppCmd = handle_cmd;
 	theapp->onInputEvent = handle_input;
+
+	sensorManager = ASensorManager_getInstanceForPackage("com.example.finalanswer");
+	sensorEventQueue = ASensorManager_createEventQueue(sensorManager, theapp->looper, LOOPER_ID_USER, 0, 0);
+	gyr = ASensorManager_getDefaultSensor(sensorManager, ASENSOR_TYPE_GYROSCOPE);
+	acc = ASensorManager_getDefaultSensor(sensorManager, ASENSOR_TYPE_ACCELEROMETER);
+	mag = ASensorManager_getDefaultSensor(sensorManager, ASENSOR_TYPE_MAGNETIC_FIELD);
+
 	while(0==height)checkevent();
 }
 void freewindow()
