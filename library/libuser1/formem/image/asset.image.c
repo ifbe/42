@@ -152,31 +152,32 @@ void loadimgfromtga(u8* buf, int len, int* width, int* height, int* depth, int* 
 
 
 
-void savefilefromtex(char* name, struct texture* tex)
+int savefilefromtex(char* name, struct texture* tex)
 {
+	return 0;
 }
-void loadtexfromfile(struct texture* tex, char* name)
+int loadtexfromfile(struct texture* tex, char* name)
 {
 	int w,h,d,s;
 	int len;
 	u8* buf;
 	u8* tmp;
-	if(0 == tex)return;
-	if(0 == name)return;
+	if(0 == tex)return -1;
+	if(0 == name)return -2;
 
 	buf = tex->data;
-	if(0 == buf)return;
+	if(0 == buf)return -3;
 
 	tmp = getsuffix(name);
-	if(0 == tmp)return;
+	if(0 == tmp)return -4;
 
 	len = openreadclose(name, 0, buf, 0x1000000);
 	if(len <= 0){
 		say("len=%d, %s\n", len, name);
-		return;
+		return -5;
 	}
 
-	if(0 == tmp[0])return;
+	if(0 == tmp[0])return -6;
 	else if(0 == ncmp(tmp, "jpg", 3))loadimgfromjpg(buf, len, &w, &h, &d, &s);
 	else if(0 == ncmp(tmp, "png", 3))loadimgfrompng(buf, len, &w, &h, &d, &s);
 	else if(0 == ncmp(tmp, "ppm", 3))loadimgfromppm(buf, len, &w, &h, &d, &s);
@@ -185,6 +186,7 @@ void loadtexfromfile(struct texture* tex, char* name)
 
 	tex->w = w;
 	tex->h = h;
+	return 0;
 }
 
 

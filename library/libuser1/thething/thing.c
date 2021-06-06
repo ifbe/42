@@ -48,6 +48,7 @@ void stereo_register(void*);
 //cam
 void freecam_register(void*);
 void orthcam_register(void*);
+void vrbox_register(void*);
 void vrglass_register(void*);
 
 //dxgl
@@ -340,6 +341,9 @@ void thing_init(void* addr)
 	tmp -= sizeof(struct entity);
 
 	orthcam_register(tmp);
+	tmp -= sizeof(struct entity);
+
+	vrbox_register(tmp);
 	tmp -= sizeof(struct entity);
 
 	vrglass_register(tmp);

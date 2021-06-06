@@ -169,6 +169,7 @@ int dhcppacket_parse(u8* buf, int len)
 	say("id@%p\n", p->chaddr);
 	say("hostname=%.64s\n", p->sname);
 	say("bootfile=%.128s\n", p->file);
+	return 0;
 }
 int udppacket_parse(u8* buf, int len)
 {
@@ -179,6 +180,7 @@ int udppacket_parse(u8* buf, int len)
 	say("srcport=%d,dstport=%d\n", src, dst);
 	if((67 == src)&&(68 == dst))dhcppacket_parse(buf+8, len-8);
 	else printmemory(buf+8, len-8);
+	return 0;
 }
 int ipv4packet_parse(u8* buf, int len)
 {
@@ -194,6 +196,7 @@ int ipv4packet_parse(u8* buf, int len)
 	case 0x11:udppacket_parse(buf+headlen, len-headlen);break;
 	default:printmemory(buf+headlen, len-headlen);
 	}
+	return 0;
 }
 int macpacket_parse(u8* buf, int len)
 {

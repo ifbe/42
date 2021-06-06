@@ -32,9 +32,9 @@ set(CMAKE_SHARED_LINKER_FLAGS
 
 set(LIB42 "../../../../../../../library")
 set(libboot0
-${LIB42}/libboot0/app/ndk/entry.c
-${LIB42}/libboot0/app/ndk/helpenv.c
-${LIB42}/libboot0/app/ndk/helpuart.c
+${LIB42}/libboot0/app/ndk_appglue/entry.c
+${LIB42}/libboot0/app/ndk_appglue/helpenv.c
+${LIB42}/libboot0/app/ndk_appglue/helpuart.c
 ${LIB42}/libboot0/app/memory.c
 ${LIB42}/libboot0/app/initer.c
 ${LIB42}/libboot0/origin.c
@@ -73,7 +73,7 @@ if(ANDROID_ABI STREQUAL armeabi-v7a)
 	)
 elseif(ANDROID_ABI STREQUAL arm64-v8a)
 	set(libhard0
-	${LIB42}/libhard0/toarm/cpu64/arm64.fp.c
+	${LIB42}/libhard0/toarm/cpu32/arm.fp.c	#todo: cpu64/arm64.fp.c
 	${LIB42}/libhard0/device.c
 	${LIB42}/libhard0/inlinux/linux.wire.bt.c
 	${LIB42}/libhard0/inlinux/linux.wire.gpio.c
@@ -533,6 +533,7 @@ ${LIB42}/libuser1/theworld/neural/nn.cnn.c
 ${LIB42}/libuser1/theworld/neural/nn.rnn.c
 ${LIB42}/libuser1/theworld/capture/cam/cam.free.c
 ${LIB42}/libuser1/theworld/capture/cam/cam.ortho.c
+${LIB42}/libuser1/theworld/capture/cam/cam.vrbox.c
 ${LIB42}/libuser1/theworld/capture/cam/cam.vrglass.c
 ${LIB42}/libuser1/theworld/capture/mic/mic.mono.c
 ${LIB42}/libuser1/theworld/capture/mic/mic.stereo.c

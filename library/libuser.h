@@ -138,8 +138,8 @@ int ncmp(void*,void*,int);
 //
 int openreadclose(void*, int, void*, int);
 int openwriteclose(void*, int, void*, int);
-void savefilefromtex(char* name, struct texture* tex);
-void loadtexfromfile(struct texture* tex, char* name);
+int savefilefromtex(char* name, struct texture* tex);
+int loadtexfromfile(struct texture* tex, char* name);
 //
 int md5sum(void*, void*, int);
 int sha1sum(void*, void*, int);

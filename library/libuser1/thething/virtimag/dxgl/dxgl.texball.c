@@ -14,8 +14,21 @@ struct own{
 };
 static void texball_prep(struct own* my, char* str)
 {
-	my->tex.data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(&my->tex, str);
+	my->tex.data = memorycreate(2048*2048*4, 4);
+	if(0 == my->tex.data)return;
+
+	int j = loadtexfromfile(&my->tex, str);
+	if(j >= 0)return;
+
+	int x,y;
+	u32* buf = my->tex.data;
+	for(y=0;y<2048;y++){
+		for(x=0;x<2048;x++){
+			buf[y*2048+x] = 0xff0000 | ((y&0xff)<<8) | (x&0xff);
+		}
+	}
+	my->tex.w = 2048;
+	my->tex.h = 2048;
 }
 
 
@@ -178,6 +191,14 @@ static void texball_gl41draw(
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* none)
 {
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
+	//say("c(%f,%f,%f),r(%f,%f,%f),f(%f,%f,%f),t(%f,%f,%f)\n", vc[0],vc[1],vc[2], vr[0],vr[1],vr[2], vf[0],vf[1],vf[2], vu[0],vu[1],vu[2]);
+	//gl41line_sphere(ctx, 0xff00ff, vc, vr, vf, vu);
+	//gl41line_prism4(ctx, 0xff00ff, vc, vr, vf, vu);
+
 	struct own* my = act->OWNBUF;
 	if(0 == my)return;
 
@@ -186,14 +207,9 @@ static void texball_gl41draw(
 
 	void* vbuf = src->vtx[0].vbuf;
 	void* ibuf = src->vtx[0].ibuf;
-	float* vc = geom->fs.vc;
-	float* vr = geom->fs.vr;
-	float* vf = geom->fs.vf;
-	float* vu = geom->fs.vt;
 	carveplanet(vbuf, ibuf, vc, vr, vf, vu);
 	src->vbuf_enq += 1;
 	src->ibuf_enq += 1;
-
 	gl41data_insert(ctx, 's', src, 1);
 }
 

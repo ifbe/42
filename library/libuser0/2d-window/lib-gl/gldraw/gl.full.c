@@ -76,7 +76,7 @@ void update_onedraw(struct gldst* dst, struct mysrc* src)
 				w = src->tex[j].w;
 				h = src->tex[j].h;
 				dst->tex[j] = uploadtexture(dst, dst->tex[j], buf0, fmt, w, h);
-				//say("texture:(%llx,%x,%x,%x)->%x\n", buf0, fmt, w, h, fd);
+				//say("texture:(%llx,%x,%x,%x)->%x\n", buf0, fmt, w, h, dst->tex[j]);
 			}
 		}
 
@@ -307,7 +307,7 @@ void fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41
 
 
 
-int fullwindow_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int fullwindow_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
 	//say("@gl41wnd0_read\n");
 	//say("%d,%llx@fullwindow_renderwnd\n", rsp, stack);
@@ -336,7 +336,7 @@ int fullwindow_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int idx,
 			stack[sp+1].pfoot = rel->pdstfoot;
 			//stack[sp+1].type = rel->dsttype;
 			stack[sp+1].flag = rel->dstflag;
-			entity_take(rel->pdstchip,rel->pdstfoot, stack,sp+2, 0,0, 0,0);
+			entity_take(rel->pdstchip,rel->pdstfoot, stack,sp+2, arg,cmd, 0,0);
 
 			//upload
 			fullwindow_upload(wnd->glfull_camera, wnd->glfull_light, wnd->glfull_solid, wnd->glfull_opaque);
@@ -350,7 +350,7 @@ int fullwindow_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int idx,
 	}
 	return 0;
 }
-int fullwindow_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int fullwindow_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
 	float x,y,x0,y0,xn,yn;
 	short* v;
@@ -392,7 +392,7 @@ found:
 	stack[sp+1].pchip = rel->pdstchip;
 	stack[sp+1].pfoot = rel->pdstfoot;
 	stack[sp+1].flag = rel->dstflag;
-	entity_give(rel->pdstchip, rel->pdstfoot, stack,sp+2, 0,0, ev,0);
+	entity_give(rel->pdstchip, rel->pdstfoot, stack,sp+2, arg,cmd, ev,0);
 	return 0;
 }
 void fullwindow_delete(struct supply* ogl)

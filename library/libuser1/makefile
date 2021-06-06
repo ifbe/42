@@ -147,6 +147,7 @@ theworld/neural/nn.cnn.c \
 theworld/neural/nn.rnn.c \
 theworld/capture/cam/cam.free.c \
 theworld/capture/cam/cam.ortho.c \
+theworld/capture/cam/cam.vrbox.c \
 theworld/capture/cam/cam.vrglass.c \
 theworld/capture/mic/mic.mono.c \
 theworld/capture/mic/mic.stereo.c \

@@ -585,7 +585,6 @@ static int freecam_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 
 	switch(caller->type){
 	case _wnd_:
-	case _fbo_:
 		return freecam_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);
 	default:
 		return freecam_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
