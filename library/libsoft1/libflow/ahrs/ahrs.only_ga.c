@@ -113,6 +113,18 @@ int easyag_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
+void easyag_search(struct artery* ele)
+{
+}
+void easyag_modify(struct artery* ele, int foot, float* f, int cmd, float* buf, int len)
+{
+	imuupdate(f[0],f[1],f[2], f[3],f[4],f[5]);
+
+	buf[0] = q[0];
+	buf[1] = q[1];
+	buf[2] = q[2];
+	buf[3] = q[3];
+}
 void easyag_delete(struct artery* ele)
 {
 }

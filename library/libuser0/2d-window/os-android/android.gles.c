@@ -11,8 +11,11 @@
 #include <android/log.h>
 #include <android_native_app_glue.h>
 #include "libuser.h"
+#define _quat_ hex32('q','u','a','t')
 #define _sens_ hex32('s','e','n','s')
+#define _easyag_ hex64('e','a','s','y','a','g', 0, 0)
 void checkevent();
+void easyag_modify(void*,int, void*,int, void*,int);
 //
 void initobject(void*);
 void initshader(void*);
@@ -36,25 +39,30 @@ static int height = 0;
 static struct supply* thewnd = 0;
 static int candraw = 0;
 //
-vec3 sensor[3];
+struct artery* fusion = 0;
+vec3 sensor[3] = {
+	{0,0,0},
+	{0,0,0},
+	{0,0,0}
+};
 
 
 
 
-int window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
 	if(wnd != thewnd)return 0;
 	if(candraw){
-		fullwindow_take(wnd,foot, stack,sp, arg,key, buf,len);
+		fullwindow_take(wnd,foot, stack,sp, arg,cmd, buf,len);
 		eglSwapBuffers(display, surface);
 	}
 	checkevent();
 	return 0;
 }
-int window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
 	switch(wnd->fmt){
-	default:fullwindow_give(wnd,foot, stack,sp, arg,key, buf,len);
+	default:fullwindow_give(wnd,foot, stack,sp, arg,cmd, buf,len);
 	}
 	return 0;
 }
@@ -89,6 +97,7 @@ void windowcreate(struct supply* wnd, void* arg)
 void initwindow()
 {
 	while(0==height)checkevent();
+	fusion = arterycreate(_easyag_, 0, 0, 0);
 }
 void freewindow()
 {
@@ -208,7 +217,11 @@ void sendtowindow(int k, float* v)
 		sensor[2][2] = v[2];
 		break;
 	}
+	if(0 == fusion)return;
+
+	vec4 quaternion;
+	easyag_modify(fusion,0, sensor,0, quaternion,0);
 
 	struct halfrel st[32];
-	window_give(thewnd,0, st,0, 0,_sens_, sensor,6);
+	window_give(thewnd,0, st,0, 0,_quat_, quaternion,6);
 }

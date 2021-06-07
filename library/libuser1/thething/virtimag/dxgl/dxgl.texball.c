@@ -22,9 +22,14 @@ static void texball_prep(struct own* my, char* str)
 
 	int x,y;
 	u32* buf = my->tex.data;
-	for(y=0;y<2048;y++){
+	for(y=0;y<1024;y++){
 		for(x=0;x<2048;x++){
-			buf[y*2048+x] = 0xff0000 | ((y&0xff)<<8) | (x&0xff);
+			buf[y*2048+x] = ((y&0x3f)<<18) | ((x&0x3f)<<10);
+		}
+	}
+	for(y=1024;y<2048;y++){
+		for(x=0;x<2048;x++){
+			buf[y*2048+x] = ((y&0x3f)<<10) | ((x&0x3f)<<2);
 		}
 	}
 	my->tex.w = 2048;

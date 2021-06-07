@@ -43,28 +43,30 @@ static int vrbox_draw_gl41(
 	float lf = vec3_getlen(vf);
 	float lt = vec3_getlen(vt);
 	for(j=0;j<3;j++){
-		tc[j] = vc[j] + vr[j]*0.5 + vt[j]*0.2;
+		tc[j] = vc[j];
 		tr[j] = vr[j];
 		tf[j] = vf[j];
 		tt[j] = vt[j];
 	}
-	vec3_setlen(tr, lf/2);
-	vec3_setlen(tf, lf/2);
-	vec3_setlen(tt, lf/2);
+	vec3_setlen(tr, lf*0.5);
+	vec3_setlen(tf, lf*0.5);
+	vec3_setlen(tt, lf*0.5);
+
+	tc[2] -= (lr+lt)*0.5;
+	gl41line(wnd,0xff00ff,vc,tc);
 	gl41opaque_sphere(wnd,0x8000ff00, tc,tr,tf,tt);
 	return 0;
 }
 static int vrbox_event(struct entity* act, struct fstyle* pin, struct event* ev, int len)
 {
-	short* t;
-	struct fstyle* obb;
 	struct halfrel* self;
 	struct halfrel* peer;
-	//say("vrbox_event@%llx:%x,%x\n", act, ev->why, ev->what);
-
 	relationsearch(act, _in_, &self, &peer);
-	obb = peer->pfoot;
 
+	struct fstyle* obb = peer->pfoot;
+	if(0 == obb)return 0;
+
+	short* t;
 	switch(ev->what){
 	case 0x4070:
 	case touch_move:
@@ -116,6 +118,32 @@ static int vrbox_event(struct entity* act, struct fstyle* pin, struct event* ev,
 static int vrbox_sensor(struct entity* act, struct fstyle* pin, float* f, int len)
 {
 	say("g(%f,%f,%f),a(%f,%f,%f),m(%f,%f,%f)\n",f[0],f[1],f[2],f[3],f[4],f[5],f[6],f[7],f[8]);
+	return 1;
+}
+static int vrbox_quaternion(struct entity* act, struct fstyle* pin, float* q, int len)
+{
+	//say("q(%f,%f,%f,%f)\n",q[0],q[1],q[2],q[3]);
+
+	struct halfrel* self;
+	struct halfrel* peer;
+	relationsearch(act, _in_, &self, &peer);
+
+	struct fstyle* obb = peer->pfoot;
+	if(0 == obb)return 0;
+
+	float* vr = obb->vr;
+	float* vf = obb->vf;
+	float* vt = obb->vt;
+	vr[0] = 1.0;vr[1] = 0.0;vr[2] = 0.0;
+	vf[0] = 0.0;vf[1] = 0.0;vf[2] =-1.0;
+	vt[0] = 0.0;vt[1] = 1.0;vt[2] = 0.0;
+	quaternion_rotate(vr, q);
+	quaternion_rotate(vf, q);
+	quaternion_rotate(vt, q);
+	//say("r(%f,%f,%f),f(%f,%f,%f),t(%f,%f,%f)\n", vr[0],vr[1],vr[2], vf[0],vf[1],vf[2], vt[0],vt[1],vt[2]);
+	vec3_setlen(vr, vr[3]);
+	vec3_setlen(vt, vt[3]);
+	vec3_setlen(vf, vf[3]);
 	return 1;
 }
 
@@ -215,9 +243,9 @@ void vrbox_frustum(struct fstyle* frus, struct fstyle* plane)
 		(plane->vc[1] + plane->vt[1] - eye[1])*uy +
 		(plane->vc[2] + plane->vt[2] - eye[2])*uz;
 	frus->vn[3] = 
-		(plane->vc[0] - eye[0])*fx +
-		(plane->vc[1] - eye[1])*fy +
-		(plane->vc[2] - eye[2])*fz;
+		(plane->vc[0] - plane->vf[0] - eye[0])*fx +
+		(plane->vc[1] - plane->vf[1] - eye[1])*fy +
+		(plane->vc[2] - plane->vf[2] - eye[2])*fz;
 	frus->vf[3] = frus->vn[3]*1000*1000;
 /*	say("vrbox_frustum: (%f,%f), (%f,%f), (%f,%f), (%f,%f,%f)\n",
 		frus->vn[3], frus->vf[3], frus->vl[3], frus->vr[3], frus->vb[3], frus->vt[3],
@@ -333,8 +361,17 @@ static int vrbox_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int 
 static int vrbox_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
 #define _sens_ hex32('s','e','n','s')
-	if(_sens_ == cmd)vrbox_sensor(ent,0, buf,0);
-	else vrbox_event(ent, 0, buf, 0);
+#define _quat_ hex32('q','u','a','t')
+	switch(cmd){
+	case _quat_:
+		vrbox_quaternion(ent,0, buf,0);
+		break;
+	case _sens_:
+		vrbox_sensor(ent,0, buf,0);
+		break;
+	default:
+		vrbox_event(ent, 0, buf, 0);
+	}
 	return 0;
 }
 static void vrbox_discon(struct halfrel* self, struct halfrel* peer)
