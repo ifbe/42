@@ -60,7 +60,7 @@ static void guiapp_wnd_to_mgr(struct supply* wnd)
 }
 static void guiapp_wnd_to_3d(struct supply* wnd)
 {
-	struct entity* abc = entitycreate(_texball_,0, 0, 0);
+	struct entity* abc = entitycreate(_texball_,"datafile/jpg/texball-warehouse.jpg", 0, 0);
 	struct entity* wrd = entitycreate(_virtual_,0, 0, 0);
 	struct entity* cam = entitycreate(_vrbox_,0, 0, 0);
 
@@ -70,7 +70,7 @@ static void guiapp_wnd_to_3d(struct supply* wnd)
 	wrd_to_cam->fshape.vc[1] = 0.0;
 	wrd_to_cam->fshape.vc[2] = 1.0;		//1m
 	wrd_to_cam->fshape.vq[0] = 0.0;
-	wrd_to_cam->fshape.vq[1] =-0.4;		//30cm
+	wrd_to_cam->fshape.vq[1] =-0.3;		//30cm
 	wrd_to_cam->fshape.vq[2] = 0.0;		//1m
 	wrd_to_cam->fshape.vr[0] = 0.04;
 	wrd_to_cam->fshape.vr[1] = 0.0;

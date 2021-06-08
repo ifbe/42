@@ -227,6 +227,10 @@ int checkevent()
 	}
 	return 0;
 }
+void* getassetmgr()
+{
+	return theapp->activity->assetManager;
+}
 
 
 
@@ -237,6 +241,10 @@ void android_main(struct android_app* app)
 	theapp = app;
 	theapp->onAppCmd = handle_cmd;
 	theapp->onInputEvent = handle_input;
+	LOGI("internalDataPath=%s\n",theapp->activity->internalDataPath);
+	LOGI("externalDataPath=%s\n",theapp->activity->externalDataPath);
+	LOGI("assetManager=%p\n",theapp->activity->assetManager);
+
 
 	sensorManager = ASensorManager_getInstanceForPackage("com.example.finalanswer");
 	sensorEventQueue = ASensorManager_createEventQueue(sensorManager, theapp->looper, LOOPER_ID_USER, 0, 0);
@@ -244,11 +252,12 @@ void android_main(struct android_app* app)
 	acc = ASensorManager_getDefaultSensor(sensorManager, ASENSOR_TYPE_ACCELEROMETER);
 	mag = ASensorManager_getDefaultSensor(sensorManager, ASENSOR_TYPE_MAGNETIC_FIELD);
 
+
 	void* all = origincreate(_ndkmain_, 0, 0, 0);
 	void* thr = bootupcreate(_guiapp_, 0, 0, 0);
-
 	bootupdelete(thr);
 	origindelete(all);
+
 
 	exit(0);
 }

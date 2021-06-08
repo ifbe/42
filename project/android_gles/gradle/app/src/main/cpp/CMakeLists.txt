@@ -130,11 +130,11 @@ ${LIB42}/libhard1/usb/func/usbstor-driver.c
 ${LIB42}/libhard1/driver.c
 )
 set(libsoft0
+${LIB42}/libsoft0/android/android.memory.file.c
 ${LIB42}/libsoft0/linux/linux.flow.epoll.c
 ${LIB42}/libsoft0/linux/linux.flow.socket.c
 ${LIB42}/libsoft0/linux/linux.flow.ptmx.c
 ${LIB42}/libsoft0/linux/linux.flow.tty.c
-${LIB42}/libsoft0/linux/linux.memory.file.c
 ${LIB42}/libsoft0/linux/linux.memory.folder.c
 ${LIB42}/libsoft0/linux/linux.multitask.process.c
 ${LIB42}/libsoft0/linux/linux.multitask.thread.c
