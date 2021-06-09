@@ -14,7 +14,7 @@ struct own{
 };
 static void texball_prep(struct own* my, char* str)
 {
-	my->tex.data = memorycreate(2048*2048*4, 4);
+	my->tex.data = memorycreate(4096*2048*4, 4);
 	if(0 == my->tex.data)return;
 
 	int j = loadtexfromfile(&my->tex, str);
