@@ -61,7 +61,7 @@ static void guiapp_wnd_to_mgr(struct supply* wnd)
 static void guiapp_wnd_to_3d(struct supply* wnd)
 {
 	//struct entity* abc = entitycreate(_texball_,"datafile/jpg/texball-grassland.jpg", 0, 0);
-	struct entity* abc = entitycreate(_texball_,"datafile/jpg/4k360d.jpg", 0, 0);
+	struct entity* abc = entitycreate(_texball_,"datafile/jpg/360d-park.jpg", 0, 0);
 	struct entity* wrd = entitycreate(_virtual_,0, 0, 0);
 	struct entity* cam = entitycreate(_vrbox_,0, 0, 0);
 

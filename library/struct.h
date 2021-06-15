@@ -109,6 +109,23 @@ struct vertex{
 	u8 opaque;		//0=solid, n=opaque
 	u8 flag;		//4b align
 };
+struct dataasset{
+	u64 type;
+	union{
+		u64 addr;
+		struct uniform uni;
+		struct texture tex;
+		struct vertex vtx;
+	};
+};
+struct timespace{
+	u64 time;		//when to draw this
+	u64 cmd;
+};
+
+
+
+
 struct mysrc
 {
 	u32 type;
@@ -1089,8 +1106,9 @@ struct entity
 		u64 data0;
 		float fdata0;
 		double ddata0;
-
 		void* buf0;
+		void** dataasset;
+	
 		struct pcmdata*  pcmeasy_mic;
 		struct pcmdata** pcmfull_mic;
 		struct dx11data*  dxeasy_camera;
@@ -1104,8 +1122,9 @@ struct entity
 		u64 data1;
 		float fdata1;
 		double ddata1;
-
 		void* buf1;
+		void** timespace;
+
 		struct pcmdata*  pcmeasy_wall;
 		struct pcmdata** pcmfull_wall;
 		struct dx11data*  dxeasy_light;

@@ -4,16 +4,26 @@
 double squareroot(double);
 
 //
-#define T 0.001
-#define beta 0.1
+#define beta 1.0
+#define qx per->q[0]
+#define qy per->q[1]
+#define qz per->q[2]
+#define qw per->q[3]
+#define gx pg[0]
+#define gy pg[1]
+#define gz pg[2]
+#define ax pa[0]
+#define ay pa[1]
+#define az pa[2]
+#define mx pm[0]
+#define my pm[1]
+#define mz pm[2]
 //
-static float q[4];
-#define qx q[0]
-#define qy q[1]
-#define qz q[2]
-#define qw q[3]
-//
-static float integralx, integraly, integralz;
+struct perimu{
+	float q[4];
+	float integralx, integraly, integralz;
+	float dt;
+};
 
 
 
@@ -29,9 +39,7 @@ static float invSqrt(float x) {
 	y = y * (1.5f - (halfx * y * y));
 	return y;
 }
-void madgwickupdate6(
-	float gx, float gy, float gz,
-	float ax, float ay, float az)
+void madgwickupdate6(struct perimu* per, float* pg, float* pa)
 {
 	float recipNorm;
 	float s0, s1, s2, s3;
@@ -90,10 +98,10 @@ void madgwickupdate6(
 
 
 	// Integrate rate of change of quaternion to yield quaternion
-	qw += qDot1 * T;
-	qx += qDot2 * T;
-	qy += qDot3 * T;
-	qz += qDot4 * T;
+	qw += qDot1 * per->dt;
+	qx += qDot2 * per->dt;
+	qy += qDot3 * per->dt;
+	qz += qDot4 * per->dt;
 
 
 	// Normalise quaternion
@@ -103,10 +111,7 @@ void madgwickupdate6(
 	qy *= recipNorm;
 	qz *= recipNorm;
 }
-void madgwickupdate9(
-	float gx, float gy, float gz,
-	float ax, float ay, float az,
-	float mx, float my, float mz)
+void madgwickupdate9(struct perimu* per, float* pg, float* pa, float* pm)
 {
 	float norm;
 	float hx, hy;
@@ -127,7 +132,7 @@ void madgwickupdate9(
 
 
 	// Normalise accelerometer measurement
-	norm = squareroot(ax * ax + ay * ay + az * az);
+	norm = -squareroot(ax * ax + ay * ay + az * az);
 	ax /= norm;
 	ay /= norm;
 	az /= norm;   
@@ -214,10 +219,10 @@ void madgwickupdate9(
 
 
 	// Integrate rate of change of quaternion to yield quaternion
-	qw += qDot1 * T;
-	qx += qDot2 * T;
-	qy += qDot3 * T;
-	qz += qDot4 * T;
+	qw += qDot1 * per->dt;
+	qx += qDot2 * per->dt;
+	qy += qDot3 * per->dt;
+	qz += qDot4 * per->dt;
 
 
 	// Normalise quaternion
@@ -249,14 +254,15 @@ int madgwick_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 {
 	say("@madgwick_write\n");
 
+	struct perimu* per = (void*)art->data;
 	float* f = (void*)buf;
 	switch(len){
-		case 9:madgwickupdate9(f[0],f[1],f[2], f[3],f[4],f[5], f[6],f[7],f[8]);break;
-		case 6:madgwickupdate6(f[0],f[1],f[2], f[3],f[4],f[5]);break;
+		case 9:madgwickupdate9(per, &f[0], &f[3], &f[6]);break;
+		case 6:madgwickupdate6(per, &f[0], &f[3]);break;
 		default:say("err@madgwick_write:len=%d\n", len);return 0;
 	}
 
-	give_data_into_peer(art,_dst_, stack,sp, 0,0, q,4);
+	give_data_into_peer(art,_dst_, stack,sp, 0,0, per->q,4);
 	return 0;
 }
 int madgwick_discon(struct halfrel* self, struct halfrel* peer)
@@ -273,6 +279,20 @@ int madgwick_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
+void madgwick_search(struct artery* ele)
+{
+}
+void madgwick_modify(struct artery* ele, int foot, float* f, int cmd, float* buf, int len)
+{
+	struct perimu* per = (void*)ele->data;
+
+	madgwickupdate9(per, &f[0], &f[3], &f[6]);
+
+	buf[0] = qx;
+	buf[1] = qy;
+	buf[2] = qz;
+	buf[3] = qw;
+}
 int madgwick_delete(struct artery* ele)
 {
 	return 0;
@@ -281,8 +301,13 @@ int madgwick_create(struct artery* ele, u8* url)
 {
 	say("@madgwick_create\n");
 
-	qw = 1.0;
+	struct perimu* per = (void*)ele->data;
+
 	qx = qy = qz = 0.0;
-	integralx = integraly = integralz = 0.0;
+	qw = 1.0;
+
+	per->integralx = per->integraly = per->integralz = 0.0;
+
+	per->dt = 0.016;
 	return 1;
 }

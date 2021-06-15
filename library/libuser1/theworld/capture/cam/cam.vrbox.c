@@ -38,12 +38,14 @@ static int vrbox_draw_gl41(
 	gl41line_prism4(wnd, 0xff0000, vc, vr, vf, vt);
 
 	int j;
-	vec3 tc,tr,tf,tt;
+	vec3 tr,tf,tt;
+	vec3 north,earth;
 	float lr = vec3_getlen(vr);
 	float lf = vec3_getlen(vf);
 	float lt = vec3_getlen(vt);
 	for(j=0;j<3;j++){
-		tc[j] = vc[j];
+		earth[j] = vc[j];
+		north[j] = vc[j];
 		tr[j] = vr[j];
 		tf[j] = vf[j];
 		tt[j] = vt[j];
@@ -52,9 +54,13 @@ static int vrbox_draw_gl41(
 	vec3_setlen(tf, lf*0.5);
 	vec3_setlen(tt, lf*0.5);
 
-	tc[2] -= (lr+lt)*0.5;
-	gl41line(wnd,0xff00ff,vc,tc);
-	gl41opaque_sphere(wnd,0x8000ff00, tc,tr,tf,tt);
+	earth[2] -= (lr+lt)*0.5;
+	gl41line(wnd,0xff00ff,vc,earth);
+	gl41opaque_sphere(wnd,0x8000ff00, earth,tr,tf,tt);
+
+	north[1] += (lr+lt)*0.5;
+	gl41line(wnd,0x00ffff,vc,north);
+	gl41opaque_sphere(wnd,0x8000ff00, north,tr,tf,tt);
 	return 0;
 }
 static int vrbox_event(struct entity* act, struct fstyle* pin, struct event* ev, int len)

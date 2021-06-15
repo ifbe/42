@@ -208,6 +208,7 @@ int checkevent()
 					switch(ev.type){
 					case ASENSOR_TYPE_GYROSCOPE:
 						//say("gyr: x=%f,y=%f,z=%f\n", v[0], v[1], v[2]);
+						//say("time=%lld\n",ev.timestamp);
 						sendtowindow('g', v);
 						break;
 					case ASENSOR_TYPE_ACCELEROMETER:

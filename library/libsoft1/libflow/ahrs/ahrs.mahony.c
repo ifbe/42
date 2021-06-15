@@ -258,6 +258,18 @@ int mahony_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
+void mahony_search(struct artery* ele)
+{
+}
+void mahony_modify(struct artery* ele, int foot, float* f, int cmd, float* buf, int len)
+{
+	mahonyupdate9(f[0],f[1],f[2], f[3],f[4],f[5], f[6],f[7],f[8]);
+
+	buf[0] = q[0];
+	buf[1] = q[1];
+	buf[2] = q[2];
+	buf[3] = q[3];
+}
 int mahony_delete(struct artery* ele)
 {
 	return 0;

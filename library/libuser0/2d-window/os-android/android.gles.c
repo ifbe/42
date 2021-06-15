@@ -13,14 +13,20 @@
 #include "libuser.h"
 #define _quat_ hex32('q','u','a','t')
 #define _sens_ hex32('s','e','n','s')
-#define _easyag_ hex64('e','a','s','y','a','g', 0, 0)
+#define _easyag_  hex64('e','a','s','y','a','g', 0 , 0 )
+#define _mahony_  hex64('m','a','h','o','n','y', 0 , 0 )
+#define _madgwick_ hex64('m','a','d','g','w','i','c','k')
 void checkevent();
+//
 void easyag_modify(void*,int, void*,int, void*,int);
+void mahony_modify(void*,int, void*,int, void*,int);
+void madgwick_modify(void*,int, void*,int, void*,int);
 //
 void initobject(void*);
 void initshader(void*);
 void inittexture(void*);
 void initvertex(void*);
+//
 void fullwindow_create(void*);
 void fullwindow_delete(void*);
 void fullwindow_take(void*,void*, void*,int, void*,int, void*,int);
@@ -40,6 +46,7 @@ static struct supply* thewnd = 0;
 static int candraw = 0;
 //
 struct artery* fusion = 0;
+int age[3] = {0};
 vec3 sensor[3] = {
 	{0,0,0},
 	{0,0,0},
@@ -97,7 +104,9 @@ void windowcreate(struct supply* wnd, void* arg)
 void initwindow()
 {
 	while(0==height)checkevent();
-	fusion = arterycreate(_easyag_, 0, 0, 0);
+	//fusion = arterycreate(_easyag_, 0, 0, 0);
+	//fusion = arterycreate(_mahony_, 0, 0, 0);
+	fusion = arterycreate(_madgwick_, 0, 0, 0);
 }
 void freewindow()
 {
@@ -205,22 +214,31 @@ void sendtowindow(int k, float* v)
 		sensor[0][0] = v[0];
 		sensor[0][1] = v[1];
 		sensor[0][2] = v[2];
-		break;
+		age[0] = 1;
+		break;		//send packet
 	case 'a':
 		sensor[1][0] = -v[0];
 		sensor[1][1] = -v[1];
 		sensor[1][2] = -v[2];
-		break;
+		age[1] = 1;
+		return;		//record only
 	case 'm':
+		//say("%f,%f,%f\n", v[0],v[1],v[2]);
 		sensor[2][0] = v[0];
 		sensor[2][1] = v[1];
 		sensor[2][2] = v[2];
-		break;
+		age[2] = 1;
+		return;		//record only
 	}
 	if(0 == fusion)return;
+	if(0 == age[0])return;
+	if(0 == age[1])return;
+	if(0 == age[2])return;
 
 	vec4 quaternion;
-	easyag_modify(fusion,0, sensor,0, quaternion,0);
+	//easyag_modify(fusion,0, sensor,0, quaternion,0);
+	//mahony_modify(fusion,0, sensor,0, quaternion,0);
+	madgwick_modify(fusion,0, sensor,0, quaternion,0);
 
 	struct halfrel st[32];
 	window_give(thewnd,0, st,0, 0,_quat_, quaternion,6);
