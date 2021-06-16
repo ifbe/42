@@ -1,5 +1,4 @@
-#include "libsoft.h"
-void loadtexfromfile(struct texture* tex, char* name);
+#include "libuser.h"
 void saveppmfromimg(char* name, int offs, u8* buf, int len, int width, int height);
 
 
