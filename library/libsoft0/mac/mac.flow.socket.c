@@ -142,7 +142,7 @@ int createsocket_raw(char* addr, int port)
 }
 int createsocket_udpserver(char* addr, int port)
 {
-	int fd,ret;
+	int fd,ret,size;
 	int sockfmt,socklen;
 	union addrv4v6 sockbuf;
 
@@ -174,8 +174,8 @@ int createsocket_udpserver(char* addr, int port)
 	}
 
 	//reuse
-	ret = 1;
-	ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
+	size = 1;
+	ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &size, 4);
 	if(ret < 0){
 		printf("errno=%d@setsockopt\n",errno);
 		return 0;

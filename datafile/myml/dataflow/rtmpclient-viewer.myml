@@ -1,0 +1,18 @@
+<system>
+tcp{
+fmt:tcp
+url:127.0.0.1:1935
+}
+</system>
+
+
+<artery>
+rtmp{
+fmt:rtmp
+}
+</artery>
+
+
+<relation>
+(tcp, 0, dst) -> (rtmp, 0, sock)
+</relation>

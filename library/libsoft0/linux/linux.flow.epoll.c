@@ -24,6 +24,11 @@ int readsocket(int, void*, void*, int);
 
 
 
+union addrv4v6{
+	struct sockaddr sa;		//just make compiler happy
+	struct sockaddr_in v4;
+	struct sockaddr_in6 v6;
+};
 static struct sysobj* obj;
 static void* buf;
 static int alive = 0;
@@ -168,7 +173,7 @@ static void* epollthread(void* p)
 				case _TCP_:{
 					while(1)
 					{
-						socklen_t len = sizeof(struct sockaddr_in);
+						socklen_t len = sizeof(union addrv4v6);
 						cc = accept(fd, (struct sockaddr*)(here->peer), &len);
 						printf("cc=%x,errno=%d\n",cc,errno);
 						if(cc <= 0)break;

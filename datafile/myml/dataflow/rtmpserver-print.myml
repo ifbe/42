@@ -1,0 +1,18 @@
+<system>
+tcphost{
+fmt:TCP
+url:0.0.0.0:1935
+}
+</system>
+
+
+<artery>
+dbg{
+fmt:dbghex
+}
+</artery>
+
+
+<relation>
+(tcphost, 0, dst) -> (dbg, 0, src)
+</relation>
