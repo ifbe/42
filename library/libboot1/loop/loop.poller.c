@@ -55,7 +55,7 @@ int supplyevent(struct halfrel* stack, struct event* e)
 		case _gl41none_:
 		case _gl41easy_:
 		case _gl41full_:
-		case _gl41coop_:
+		case _gl41cmdq_:
 		default:{
 			stack[1].pchip = win;
 			supply_give(win,0, stack,2, 0,0, &ev,0);break;

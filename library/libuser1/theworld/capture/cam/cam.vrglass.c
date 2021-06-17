@@ -319,7 +319,6 @@ static int vrglass_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 	switch(caller->fmt){
 	case _rgba_:
 		break;
-	case _gl41fbog_:
 	case _gl41full_:
 		return vrglass_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);
 	default:

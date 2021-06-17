@@ -375,8 +375,8 @@ int entity_take(_ent* act,void* foot, _syn* stack,int sp, void* arg,int key, voi
 	case _touchobj_:return touchobj_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _clickray_:return clickray_taking(act,foot, stack,sp, arg,key, buf,len);
 
-	case _gl41data_:return gl41data_taking(act,foot, stack,sp, arg,key, buf,len);
-	case _gl41coop_:return gl41coop_taking(act,foot, stack,sp, arg,key, buf,len);
+	//case _gl41data_:return gl41data_taking(act,foot, stack,sp, arg,key, buf,len);
+	//case _gl41coop_:return gl41coop_taking(act,foot, stack,sp, arg,key, buf,len);
 
 	//case _field_:return field_taking(act,foot, stack,sp, arg,key, buf,len);
 	//case _fluid_:return fluid_taking(act,foot, stack,sp, arg,key, buf,len);
@@ -430,8 +430,8 @@ int entity_give(_ent* act,void* foot, _syn* stack,int sp, void* arg,int key, voi
 	case _touchobj_:return touchobj_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _clickray_:return clickray_giving(act,foot, stack,sp, arg,key, buf,len);
 
-	case _gl41data_:return gl41data_giving(act,foot, stack,sp, arg,key, buf,len);
-	case _gl41coop_:return gl41coop_giving(act,foot, stack,sp, arg,key, buf,len);
+	//case _gl41data_:return gl41data_giving(act,foot, stack,sp, arg,key, buf,len);
+	//case _gl41coop_:return gl41coop_giving(act,foot, stack,sp, arg,key, buf,len);
 
 	//case _field_:return field_giving(act,foot, stack,sp, arg,key, buf,len);
 	//case _fluid_:return fluid_giving(act,foot, stack,sp, arg,key, buf,len);
@@ -491,8 +491,8 @@ int entitydiscon(struct halfrel* self, struct halfrel* peer)
 	case _touchobj_:return touchobj_discon(self, peer);
 	case _clickray_:return clickray_discon(self, peer);
 
-	case _gl41data_:return gl41data_discon(self, peer);
-	case _gl41coop_:return gl41coop_discon(self, peer);
+	//case _gl41data_:return gl41data_discon(self, peer);
+	//case _gl41coop_:return gl41coop_discon(self, peer);
 
 	//case _field_:return field_discon(self, peer);
 	//case _fluid_:return fluid_discon(self, peer);
@@ -552,8 +552,8 @@ int entitylinkup(struct halfrel* self, struct halfrel* peer)
 	case _touchobj_:return touchobj_linkup(self, peer);
 	case _clickray_:return clickray_linkup(self, peer);
 
-	case _gl41data_:return gl41data_linkup(self, peer);
-	case _gl41coop_:return gl41coop_linkup(self, peer);
+	//case _gl41data_:return gl41data_linkup(self, peer);
+	//case _gl41coop_:return gl41coop_linkup(self, peer);
 
 	//case _field_:return field_linkup(self, peer);
 	//case _fluid_:return fluid_linkup(self, peer);
@@ -868,7 +868,7 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		return act;
 	}
 
-	case _gl41data_:
+/*	case _gl41data_:
 	{
 		act = entity_alloc();
 		act->fmt = act->type = _gl41data_;
@@ -881,7 +881,8 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		act->fmt = act->type = _gl41coop_;
 		gl41coop_create(act, buf, argc, argv);
 		return act;
-	}
+	}*/
+
 	}//switch
 
 	//

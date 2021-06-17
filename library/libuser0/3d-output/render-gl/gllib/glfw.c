@@ -20,6 +20,11 @@ void fullwindow_delete(void*);
 void fullwindow_take(void*,void*, void*,int, void*,int, void*,int);
 void fullwindow_give(void*,void*, void*,int, void*,int, void*,int);
 //
+void cmdqwindow_create(void*);
+void cmdqwindow_delete(void*);
+void cmdqwindow_take(void*,void*, void*,int, void*,int, void*,int);
+void cmdqwindow_give(void*,void*, void*,int, void*,int, void*,int);
+//
 static u8 uppercase[] = {
 	' ', '!','\"', '#', '$', '%', '&','\"',		//20,27
 	'(', ')', '*', '+', '<', '_', '>', '?',		//28,2f
@@ -54,6 +59,7 @@ t1 = timeread();
 	switch(ogl->fmt){
 		case _gl41none_:nonewindow_take(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _gl41easy_:easywindow_take(ogl,foot, stack,sp, arg,idx, buf,len);break;
+		case _gl41cmdq_:cmdqwindow_take(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _gl41full_:
 		default:fullwindow_take(ogl,foot, stack,sp, arg,idx, buf,len);break;
 	}
@@ -89,6 +95,7 @@ void window_give(_sup* ogl,void* foot, _syn* stack,int sp, void* arg,int idx, vo
 	switch(ogl->fmt){
 		case _gl41none_:nonewindow_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _gl41easy_:easywindow_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
+		case _gl41cmdq_:cmdqwindow_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _gl41full_:
 		default:fullwindow_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
 	}
@@ -366,6 +373,7 @@ void windowdelete(struct supply* ogl)
 	switch(ogl->fmt){
 		case _gl41none_:nonewindow_delete(ogl);glfwDestroyWindow(ogl->glwnd);break;
 		case _gl41easy_:easywindow_delete(ogl);glfwDestroyWindow(ogl->glwnd);break;
+		case _gl41cmdq_:cmdqwindow_delete(ogl);glfwDestroyWindow(ogl->glwnd);break;
 		default:        fullwindow_delete(ogl);glfwDestroyWindow(ogl->glwnd);break;
 	}
 }
@@ -375,17 +383,6 @@ void windowcreate(struct supply* ogl, void* arg)
 	struct supply* share = 0;
 
 	switch(ogl->fmt){
-	case _gl41coop_:{
-		rel = ogl->orel0;
-		if(rel)share = (void*)(rel->dstchip);
-
-		ogl->width = 1024;
-		ogl->height = 768;
-		ogl->depth = 1024;
-
-		windowopen_coop(ogl, share);
-		break;
-	}
 	case _gl41none_:{
 		ogl->width = 1024;
 		ogl->height = 768;
@@ -402,6 +399,18 @@ void windowcreate(struct supply* ogl, void* arg)
 
 		windowopen_root(ogl);
 		easywindow_create(ogl);
+		break;
+	}
+	case _gl41cmdq_:{
+		rel = ogl->orel0;
+		if(rel)share = (void*)(rel->dstchip);
+
+		ogl->width = 1024;
+		ogl->height = 768;
+		ogl->depth = 1024;
+
+		windowopen_root(ogl);
+		cmdqwindow_create(ogl);
 		break;
 	}
 	default:{

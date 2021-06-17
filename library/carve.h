@@ -41,22 +41,50 @@ struct vertex{
 	u8 opaque;		//0=solid, n=opaque
 	u8 flag;		//4b align
 };
+struct drawqueue{
+	u32 type;		//clean, +tex, +vtx, tex0=tex[0] ...
+	u32 typesub;
+	u32 dst;
+	u32 src;
+};
 struct per3d{
     //cpu data
     struct shader* sha;
 	struct uniform* uni;
     struct texture* tex;
     struct vertex* vtx;
+	struct drawqueue* queue;
 
-    //gpu data
-    u64* sbo;
-    u64* ubo;
-    u64* tbo;
-    u64* vbo;
+    //dx
+	void* dx_texture[7];
+	void* dx_resource[7];
+	void* dx_sampler[7];
+	void* dx_constant;
+	void* dx_vbuf;
+	void* dx_ibuf;
+	void* dx_layout;
 
-    //pipeline state
-    u64* fbo;
-    u64* vao;
+    //gl
+    u64* gl_sbo;
+    u64* gl_ubo;
+    u64* gl_tbo;
+    u64* gl_vbo;
+    u64* gl_fbo;
+    u64* gl_vao;
+
+	//mt
+	void* mt_fbo;
+	void* mt_pipeline;
+	void* mt_depthstencil;
+	void* mt_blend;
+	void* mt_shader;
+	void* mt_vert;
+	void* mt_frag;
+	void* mt_texture[7];
+	void* mt_sampler[7];
+	void* mt_uniform;
+	void* mt_vbuf;
+	void* mt_ibuf;
 };
 
 

@@ -1011,12 +1011,12 @@ void overview_drag(struct entity* win, int x0, int y0, int x1, int y1)
 					win_s, 0, _sup_, 0
 				);
 			}
-			else if(win_s->type){
+/*			else if(win_s->type){
 				if(_sup_ == win_s->type)win_d = supplycreate(_gl41coop_, win_s, 0, 0);
 			}
 			else if(win_d->type){
 				if(_sup_ == win_s->type)win_s = supplycreate(_gl41coop_, win_d, 0, 0);
-			}
+			}*/
 		}
 		else if(y1 < 24)
 		{

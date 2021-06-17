@@ -286,7 +286,7 @@
 #define _dx11none_ hex64('d','x','1','1','n','o','n','e')
 #define _dx11easy_ hex64('d','x','1','1','e','a','s','y')
 #define _dx11full_ hex64('d','x','1','1','f','u','l','l')
-#define _dx11coop_ hex64('d','x','1','1','c','o','o','p')
+#define _dx11cmdq_ hex64('d','x','1','1','c','m','d','q')
 //
 #define _dx11data_ hex64('d','x','1','1','d','a','t','a')
 #define _dx11fbo6_ hex64('d','x','1','1','f','b','o','6')
@@ -297,7 +297,7 @@
 #define _mt20none_ hex64('m','t','2','0','n','o','n','e')
 #define _mt20easy_ hex64('m','t','2','0','e','a','s','y')
 #define _mt20full_ hex64('m','t','2','0','f','u','l','l')
-#define _mt20coop_ hex64('m','t','2','0','c','o','o','p')
+#define _mt20cmdq_ hex64('m','t','2','0','c','m','d','q')
 //
 #define _mt20data_ hex64('m','t','2','0','d','a','t','a')
 #define _mt20fbo6_ hex64('m','t','2','0','f','b','o','6')
@@ -308,18 +308,12 @@
 #define _gl41none_ hex64('g','l','4','1','n','o','n','e')
 #define _gl41easy_ hex64('g','l','4','1','e','a','s','y')
 #define _gl41full_ hex64('g','l','4','1','f','u','l','l')
-#define _gl41coop_ hex64('g','l','4','1','c','o','o','p')
-//
-#define _gl41data_ hex64('g','l','4','1','d','a','t','a')
-#define _gl41fbo6_ hex64('g','l','4','1','f','b','o','6')
-#define _gl41fboc_ hex64('g','l','4','1','f','b','o','c')
-#define _gl41fbod_ hex64('g','l','4','1','f','b','o','d')
-#define _gl41fbog_ hex64('g','l','4','1','f','b','o','g')
+#define _gl41cmdq_ hex64('g','l','4','1','c','m','d','q')
 //
 #define _vk12none_ hex64('v','k','1','2','n','o','n','e')
 #define _vk12easy_ hex64('v','k','1','2','e','a','s','y')
 #define _vk12full_ hex64('v','k','1','2','f','u','l','l')
-#define _vk12coop_ hex64('v','k','1','2','c','o','o','p')
+#define _vk12cmdq_ hex64('v','k','1','2','c','m','d','q')
 //
 #define _vk12data_ hex64('v','k','1','2','d','a','t','a')
 #define _vk12fbo6_ hex64('v','k','1','2','f','b','o','6')
