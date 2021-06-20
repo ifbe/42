@@ -1,6 +1,6 @@
 <supply>
 opengl{
-fmt:gl41easy
+fmt:gl41cmdq
 title:"42"
 width:1024
 height:1024

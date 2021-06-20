@@ -59,7 +59,7 @@ void formem_exit()
 }
 void formem_init(void* addr)
 {
-	asset_create();
+	//asset_create();
 
 	hexedit_init(addr);
 

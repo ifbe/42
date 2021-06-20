@@ -16,7 +16,7 @@ int openreadclose(void* name, int off, void* buf, int len)
 {
 	int ret;
 	int fd = startfile(name, 'r');
-	if(fd <= 0)return fd;
+	if(fd < 0)return fd;
 
 	ret = readfile(0, fd, "", off, buf, len);
 
@@ -27,7 +27,7 @@ int openwriteclose(void* name, int off, void* buf, int len)
 {
 	int ret;
 	int fd = startfile(name, 'w');
-	if(fd <= 0)return fd;
+	if(fd < 0)return fd;
 
 	ret = writefile(0, fd, "", off, buf, len);
 
