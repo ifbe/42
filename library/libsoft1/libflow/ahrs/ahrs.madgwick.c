@@ -4,7 +4,7 @@
 double squareroot(double);
 
 //
-#define beta 1.0
+#define beta 0.5
 #define qx per->q[0]
 #define qy per->q[1]
 #define qz per->q[2]

@@ -2,26 +2,9 @@
 #define _in_ hex32('i','n', 0, 0)
 #define MATBUF buf0
 #define CAMBUF buf1
+void quaternion4axisandangle(float* q, float* a, float angle);
 void world2clip_projz0z1_transpose(mat4 mat, struct fstyle* frus);
 void world2clip_projznzp_transpose(mat4 mat, struct fstyle* frus);
-
-
-
-
-static void vrbox_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
-{
-}
-static void vrbox_modify(struct entity* act)
-{
-}
-static void vrbox_delete(struct entity* act)
-{
-}
-static void vrbox_create(struct entity* act, void* str)
-{
-	act->MATBUF = memorycreate(64*2, 0);
-	act->CAMBUF = memorycreate(0x1000, 0);
-}
 
 
 
@@ -137,15 +120,19 @@ static int vrbox_quaternion(struct entity* act, struct fstyle* pin, float* q, in
 	struct fstyle* obb = peer->pfoot;
 	if(0 == obb)return 0;
 
+	//fix quaternion: head west => heading north
+	vec4 fix = {0, 0, SQRT2/2, SQRT2/2};
+	quaternion_multiply(fix, q);
+
 	float* vr = obb->vr;
 	float* vf = obb->vf;
 	float* vt = obb->vt;
 	vr[0] = 1.0;vr[1] = 0.0;vr[2] = 0.0;
 	vf[0] = 0.0;vf[1] = 0.0;vf[2] =-1.0;
 	vt[0] = 0.0;vt[1] = 1.0;vt[2] = 0.0;
-	quaternion_rotate(vr, q);
-	quaternion_rotate(vf, q);
-	quaternion_rotate(vt, q);
+	quaternion_rotate(vr, fix);
+	quaternion_rotate(vf, fix);
+	quaternion_rotate(vt, fix);
 	//say("r(%f,%f,%f),f(%f,%f,%f),t(%f,%f,%f)\n", vr[0],vr[1],vr[2], vf[0],vf[1],vf[2], vt[0],vt[1],vt[2]);
 	vec3_setlen(vr, vr[3]);
 	vec3_setlen(vt, vt[3]);
@@ -337,6 +324,24 @@ static int vrbox_read_bywnd(_ent* ent,void* slot, _syn* stack,int sp, void* arg,
 		break;
 	}
 	return 0;
+}
+
+
+
+
+static void vrbox_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+{
+}
+static void vrbox_modify(struct entity* act)
+{
+}
+static void vrbox_delete(struct entity* act)
+{
+}
+static void vrbox_create(struct entity* act, void* str)
+{
+	act->MATBUF = memorycreate(64*2, 0);
+	act->CAMBUF = memorycreate(0x1000, 0);
 }
 
 

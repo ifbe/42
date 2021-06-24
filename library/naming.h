@@ -8,6 +8,9 @@
 #define PI 3.1415926535897932384626433832795028841971693993151
 #define tau PI*2
 //
+#define SQRT2 1.4142135623730951
+#define SQRT3 1.7320508075688772
+//
 #define _ent_ hex32('e','n','t',0)
 #define _sup_ hex32('s','u','p',0)
 #define _art_ hex32('a','r','t',0)
