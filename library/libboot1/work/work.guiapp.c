@@ -71,7 +71,7 @@ static void guiapp_wnd_to_3d(struct supply* wnd)
 	wrd_to_cam->fshape.vc[1] = 0.0;
 	wrd_to_cam->fshape.vc[2] = 1.0;		//1m
 	wrd_to_cam->fshape.vq[0] = 0.0;
-	wrd_to_cam->fshape.vq[1] =-0.3;		//30cm
+	wrd_to_cam->fshape.vq[1] =-0.2;		//20cm
 	wrd_to_cam->fshape.vq[2] = 0.0;		//1m
 	wrd_to_cam->fshape.vr[0] = 0.04;
 	wrd_to_cam->fshape.vr[1] = 0.0;
