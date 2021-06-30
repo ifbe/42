@@ -119,9 +119,9 @@ int clickray_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx,
 	struct style* area = stack[sp-4].pfoot;
 say("%.8s->%.8s->%.8s\n",&wnd->fmt, &cam->fmt, &ent->fmt);
 /*	switch(wnd->fmt){
-	case _gl41full_:
-	case _dx11full_:
-	case _mt20full_:
+	case _gl41list_:
+	case _dx11list_:
+	case _mt20list_:
 	}
 */
 	struct event* ev = buf;

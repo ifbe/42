@@ -100,7 +100,7 @@ static void skill_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 //say("fmt=%.8s\n", &sup->fmt);
 
 	switch(wnd->fmt){
-	case _gl41full_:
+	case _gl41list_:
 		skill_read_bywnd(ent,slot, wnd,area);
 		break;
 	case _virtual_:

@@ -259,10 +259,10 @@ static void oscillo_read_bycam(_ent* ent,void* slot, _syn* stack,int sp)
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	switch(wnd->fmt){
-	case _dx11full_:
-	case _mt20full_:
-	case _gl41full_:
-	case _vk12full_:
+	case _dx11list_:
+	case _mt20list_:
+	case _gl41list_:
+	case _vk12list_:
 		oscillo_gl41draw(ent,slot, wor,geom, wnd,area);
 		break;
 	}
@@ -287,7 +287,7 @@ static void oscillo_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 	case _rgba_:
 		oscillo_draw_pixel(ent,slot, wnd,area);
 		break;
-	case _gl41full_:
+	case _gl41list_:
 		oscillo_read_bywnd(ent,slot, wnd,area);
 		break;
 	default:

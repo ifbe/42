@@ -600,7 +600,7 @@ static int corner_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 	case _rgba_:
 		corner_draw_pixel(ent,slot, caller,area);
 		break;
-	case _gl41full_:
+	case _gl41list_:
 		corner_wnd(ent,slot, caller,area, stack,sp);
 		break;
 	}

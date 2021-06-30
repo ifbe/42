@@ -203,7 +203,7 @@ static void skillbar_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(wnd->fmt){
-	case _gl41full_:
+	case _gl41list_:
 		break;
 	default:
 		skillbar_wrl_cam_wnd(ent,slot, stack,sp);

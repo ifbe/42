@@ -87,7 +87,7 @@ static void status_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,in
 //say("fmt=%.8s\n", &sup->fmt);
 
 	switch(wnd->fmt){
-	case _gl41full_:
+	case _gl41list_:
 		status_read_bywnd(ent,slot, wnd,area);
 		break;
 	case _virtual_:

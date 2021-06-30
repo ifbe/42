@@ -87,7 +87,7 @@ static void minimap_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 //say("fmt=%.8s\n", &sup->fmt);
 
 	switch(wnd->fmt){
-	case _gl41full_:
+	case _gl41list_:
 		minimap_read_bywnd(ent,slot, wnd,area);
 		break;
 	case _virtual_:

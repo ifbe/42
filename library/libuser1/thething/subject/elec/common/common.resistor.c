@@ -134,7 +134,7 @@ static void resistor_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,
 	switch(caller->fmt){
 	case _rgba_:
 		break;
-	case _gl41full_:
+	case _gl41list_:
 		break;
 	default:
 		resistor_read_bycam(ent,foot, stack,sp);break;

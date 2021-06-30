@@ -217,7 +217,7 @@ static void imagelight_taking(_ent* ent,void* slot, _syn* stack,int sp, void* ar
 	switch(caller->fmt){
 	case _rgba_:
 		break;
-	case _gl41full_:
+	case _gl41list_:
 		imagelight_wnd(ent,slot, stack,sp);
 		break;
 	default:

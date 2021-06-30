@@ -264,7 +264,7 @@ static void pmos_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int 
 	switch(caller->fmt){
 	case _rgba_:
 		break;
-	case _gl41full_:
+	case _gl41list_:
 		break;
 	default:
 		pmos_wrl_cam_wnd(ent,foot, stack,sp);

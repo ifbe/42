@@ -498,8 +498,8 @@ static void terrain_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 	dup = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	switch(wnd->fmt){
-	case _dx11full_:terrain_dx11draw(ent,slot, wor,geom, dup,camg, wnd,area);break;
-	case _gl41full_:terrain_gl41draw(ent,slot, wor,geom, dup,camg, wnd,area);break;
+	case _dx11list_:terrain_dx11draw(ent,slot, wor,geom, dup,camg, wnd,area);break;
+	case _gl41list_:terrain_gl41draw(ent,slot, wor,geom, dup,camg, wnd,area);break;
 	}
 }
 
@@ -521,7 +521,7 @@ static void terrain_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 	switch(caller->fmt){
 	case _rgba_:
 		break;
-	case _gl41full_:
+	case _gl41list_:
 		break;
 	default:
 		terrain_wrl_cam_wnd(ent,slot, stack,sp);

@@ -75,7 +75,7 @@ static void elevator_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,
 	switch(caller->fmt){
 	case _rgba_:
 		break;
-	case _gl41full_:
+	case _gl41list_:
 		break;
 	default:
 		elevator_wrl_cam_wnd(ent,foot, stack,sp);

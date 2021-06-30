@@ -267,7 +267,7 @@ static void fractal_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 	switch(caller->fmt){
 	case _rgba_:
 		break;
-	case _gl41full_:
+	case _gl41list_:
 		break;
 	default:
 		fractal_wrl_cam_wnd(ent,slot, stack,sp);

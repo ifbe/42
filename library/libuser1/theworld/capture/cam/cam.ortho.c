@@ -257,7 +257,7 @@ static int orthcam_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 	if(0 == caller)return 0;
 
 	switch(caller->fmt){
-	case _gl41full_:
+	case _gl41list_:
 		return orthcam_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);
 	default:
 		return orthcam_read_bycam(ent,foot, stack,sp, arg,key, buf,len);

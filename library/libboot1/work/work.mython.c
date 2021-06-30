@@ -73,7 +73,7 @@ void term_window(int argc, u8** argv)
 	if(0 == ent)return;
 
 	struct style* toterm = style_alloc();
-	if(_gl41full_ == wnd->fmt){
+	if(_gl41list_ == wnd->fmt){
 		toterm->fshape.vc[0] = 0.0;
 		toterm->fshape.vc[1] = 0.0;
 		toterm->fshape.vq[0] = 1.0;

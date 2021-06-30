@@ -140,7 +140,7 @@ static void example_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 	case _rgba_:
 		example_draw_pixel(ent,slot, caller, area);
 		break;
-	case _gl41full_:
+	case _gl41list_:
 		example_wnd(ent,slot, stack,sp);
 		break;
 	case _scene3d_:

@@ -466,7 +466,7 @@ static int freecam_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* ar
 	case _tui_:
 	case _rgba_:
 		return 0;
-	case _gl41full_:
+	case _gl41list_:
 		 freecam_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 	return 0;
@@ -512,7 +512,7 @@ static int freecam_read_bywnd(_ent* ent,void* slot, _syn* stack,int sp, void* ar
 		entity_take(stack[sp+1].pchip, 0, stack, sp+2, m, ent->DRAWTYPE, 0, 0);
 		break;
 
-	case _dx11full_:
+	case _dx11list_:
 		//clear all
 		dx11data_before(wnd);
 		//camera matrix
@@ -526,7 +526,7 @@ static int freecam_read_bywnd(_ent* ent,void* slot, _syn* stack,int sp, void* ar
 		dx11data_after(wnd);
 		break;
 
-	case _gl41full_:
+	case _gl41list_:
 		//clear all
 		gl41data_before(wnd);
 		//camera matrix
@@ -540,7 +540,7 @@ static int freecam_read_bywnd(_ent* ent,void* slot, _syn* stack,int sp, void* ar
 		gl41data_after(wnd);
 		break;
 
-	case _mt20full_:
+	case _mt20list_:
 		mt20data_before(wnd);
 		//camera
 		freecam_ratio(wor, geom, wnd, area);

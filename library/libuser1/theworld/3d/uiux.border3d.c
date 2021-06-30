@@ -70,7 +70,7 @@ int border3d_taking(struct entity* ent,void* foot, struct halfrel* stack,int sp,
 	switch(caller->fmt){
 	case _rgba_:
 		break;
-	case _gl41full_:
+	case _gl41list_:
 		break;
 	}
 

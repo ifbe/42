@@ -337,10 +337,10 @@ static void terminal_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,
 	case _rgba_:
 		terminal_draw_pixel(ent,slot, caller,area);
 		break;
-	case _dx11full_:
-	case _mt20full_:
-	case _gl41full_:
-	case _vk12full_:
+	case _dx11list_:
+	case _mt20list_:
+	case _gl41list_:
+	case _vk12list_:
 		terminal_wnd(ent,slot, caller,area);
 		break;
 	case _corner_:
@@ -364,10 +364,10 @@ static void terminal_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,
 
 	switch(wnd->fmt){
 	case _rgba_:
-	case _dx11full_:
-	case _mt20full_:
-	case _gl41full_:
-	case _vk12full_:
+	case _dx11list_:
+	case _mt20list_:
+	case _gl41list_:
+	case _vk12list_:
 		terminal_write_bywnd(ent,foot, stack,sp, buf,len);
 		return;
 	}

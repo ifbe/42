@@ -102,10 +102,10 @@ static void printboard_world_camera_window(_ent* ent,void* slot, _syn* stack,int
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	switch(wnd->fmt){
-	case _dx11full_:
-	case _mt20full_:
-	case _gl41full_:
-	case _vk12full_:
+	case _dx11list_:
+	case _mt20list_:
+	case _gl41list_:
+	case _vk12list_:
 		printboard_gl41draw(ent,slot, wor,geom, wnd,area);
 		break;
 	}
@@ -118,7 +118,7 @@ int printboard_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int ke
 	switch(caller->fmt){
 	case _rgba_:
 		break;
-	case _gl41full_:
+	case _gl41list_:
 		break;
 	default:
 		printboard_world_camera_window(ent,slot, stack,sp, arg,key);

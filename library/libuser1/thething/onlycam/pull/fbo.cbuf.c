@@ -247,7 +247,7 @@ static void cbuffer_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,i
 	switch(caller->fmt){
 	case _rgba_:
 		break;
-	case _gl41full_:
+	case _gl41list_:
 		cbuffer_wnd(ent,foot, stack,sp);
 		break;
 	default:

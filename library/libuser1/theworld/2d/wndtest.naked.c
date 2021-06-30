@@ -40,7 +40,7 @@ int rgbanode_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, v
 
 	//slot type unknown: do work based on caller fmt
 	switch(caller->fmt){
-	case _gl41full_:
+	case _gl41list_:
 		break;
 	default:
 		break;

@@ -310,13 +310,13 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		windowcreate(win, arg, argc, argv);
 		return win;
 	}
-	case _gl41full_:
+	case _gl41list_:
 	{
 		win = supply_alloc();
 		if(0 == win)return 0;
 
 		win->type = _wnd_;
-		win->fmt = _gl41full_;
+		win->fmt = _gl41list_;
 		windowcreate(win, arg, argc, argv);
 		return win;
 	}

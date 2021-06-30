@@ -558,8 +558,8 @@ static void stl3d_world_camera_window(_ent* ent,void* slot, _syn* stack,int sp, 
 	}
 
 	switch(wnd->fmt){
-	case _dx11full_:stl3d_dx11draw(ent,slot, scn,geom, wrd,camg, wnd,area);break;
-	case _gl41full_:stl3d_gl41draw(ent,slot, scn,geom, wrd,camg, wnd,area);break;
+	case _dx11list_:stl3d_dx11draw(ent,slot, scn,geom, wrd,camg, wnd,area);break;
+	case _gl41list_:stl3d_gl41draw(ent,slot, scn,geom, wrd,camg, wnd,area);break;
 	}
 }
 static void stl3d_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
@@ -577,7 +577,7 @@ static void stl3d_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 	switch(caller->fmt){
 	case _rgba_:
 		break;
-	case _gl41full_:
+	case _gl41list_:
 		break;
 	default:
 		stl3d_world_camera_window(ent,slot, stack,sp, arg,key);

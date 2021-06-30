@@ -316,7 +316,7 @@ static void water_wrl_cam_wnd(_ent* ent,void* foot, _syn* stack,int sp)
 	struct waterbuf* water = ent->CTXBUF;
 	if(0 == water)return;
 
-	if(_gl41full_ == wnd->fmt)world2clip_projznzp_transpose(water->wvp, &geom->frus);
+	if(_gl41list_ == wnd->fmt)world2clip_projznzp_transpose(water->wvp, &geom->frus);
 	else world2clip_projz0z1_transpose(water->wvp, &geom->frus);
 
 	//create or update fbo
@@ -344,7 +344,7 @@ static void water_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 	switch(caller->fmt){
 	case _rgba_:
 		break;
-	case _gl41full_:
+	case _gl41list_:
 		break;
 	default:
 		water_wrl_cam_wnd(ent,slot, stack,sp);

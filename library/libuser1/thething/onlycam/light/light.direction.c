@@ -318,7 +318,7 @@ static void dirlight_wrl_cam_wnd(_ent* ent,void* foot, _syn* stack,int sp)
 
 	struct sunbuf* sun = ent->OWNBUF;
 	dirlight_frustum(&geom->frus, &geom->fs);
-	if(_gl41full_ == wnd->fmt)world2clip_orthznzp_transpose(sun->wvp, &geom->frus);
+	if(_gl41list_ == wnd->fmt)world2clip_orthznzp_transpose(sun->wvp, &geom->frus);
 	else world2clip_orthz0z1_transpose(sun->wvp, &geom->frus);
 
 	dirlight_cam_update(ent,foot, wor,geom, wnd,area);
@@ -344,7 +344,7 @@ static void dirlight_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,
 	switch(caller->fmt){
 	case _rgba_:
 		break;
-	case _gl41full_:
+	case _gl41list_:
 		break;
 	default:
 		dirlight_wrl_cam_wnd(ent,slot, stack,sp);

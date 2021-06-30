@@ -259,7 +259,7 @@ static int vrglass_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* ar
 	case _tui_:
 	case _rgba_:
 		return 0;
-	case _gl41full_:
+	case _gl41list_:
 		 vrglass_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 	return 0;
@@ -319,7 +319,7 @@ static int vrglass_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 	switch(caller->fmt){
 	case _rgba_:
 		break;
-	case _gl41full_:
+	case _gl41list_:
 		return vrglass_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);
 	default:
 		return vrglass_read_bycam(ent,foot, stack,sp, arg,key, buf,len);

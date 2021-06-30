@@ -54,7 +54,7 @@ int supplyevent(struct halfrel* stack, struct event* e)
 	{
 		case _gl41none_:
 		case _gl41easy_:
-		case _gl41full_:
+		case _gl41list_:
 		case _gl41cmdq_:
 		default:{
 			stack[1].pchip = win;

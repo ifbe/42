@@ -282,7 +282,7 @@ static int hexedit_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,in
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(caller->fmt){
-	case _gl41full_:
+	case _gl41list_:
 		hexedit_read_bywnd(ent,slot, stack,sp);break;
 	default:
 		hexedit_read_bycam(ent,slot, stack,sp);break;
@@ -297,7 +297,7 @@ static int hexedit_giving(_ent* ent,void* slot, _syn* stack,int sp, void* arg,in
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(caller->fmt){
-	case _gl41full_:
+	case _gl41list_:
 	default:
 		hexedit_event(ent,slot, caller,area, buf);break;
 	}

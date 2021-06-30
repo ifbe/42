@@ -94,7 +94,7 @@ static void pointlight_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	if(_gl41full_ == wnd->fmt){
+	if(_gl41list_ == wnd->fmt){
 		pointlight_light(ent,slot, wor,geom, wnd,area);
 		pointlight_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
@@ -118,7 +118,7 @@ static void pointlight_taking(_ent* ent,void* slot, _syn* stack,int sp, void* ar
 	switch(caller->fmt){
 	case _rgba_:
 		break;
-	case _gl41full_:
+	case _gl41list_:
 		break;
 	default:
 		pointlight_wrl_cam_wnd(ent,slot, stack,sp);

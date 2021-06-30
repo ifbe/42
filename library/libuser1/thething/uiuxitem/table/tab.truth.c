@@ -171,7 +171,7 @@ static int truth_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int 
 	struct entity* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 	switch(wnd->fmt){
-	case _gl41full_:
+	case _gl41list_:
 		truth_read_bywnd(ent,slot, wnd,area);break;
 	}
 	return 0;
@@ -185,7 +185,7 @@ static int truth_giving(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int 
 	struct entity* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 	switch(wnd->fmt){
-	case _gl41full_:truth_write_bywnd(ent,slot, wnd,area, stack,sp, buf,len);break;
+	case _gl41list_:truth_write_bywnd(ent,slot, wnd,area, stack,sp, buf,len);break;
 	}
 	return 0;
 }

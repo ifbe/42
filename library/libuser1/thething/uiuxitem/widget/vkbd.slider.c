@@ -85,7 +85,7 @@ static void slider_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct sty
 	slider_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
 	gl41data_after(wnd);
 
-	if(_dx11full_ == wnd->fmt)dx11data_nocam(wnd);
+	if(_dx11list_ == wnd->fmt)dx11data_nocam(wnd);
 	else gl41data_nocam(wnd);
 }
 static void slider_write_bywnd(_ent* ent,void* foot, _syn* stack,int sp, struct event* ev,int len)
@@ -125,10 +125,10 @@ static int slider_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int
 	switch(wnd->fmt){
 	case _rgba_:
 		break;
-	case _dx11full_:
-	case _mt20full_:
-	case _gl41full_:
-	case _vk12full_:
+	case _dx11list_:
+	case _mt20list_:
+	case _gl41list_:
+	case _vk12list_:
 		slider_read_bywnd(ent,foot, wnd,area);
 		break;
 	}
@@ -138,7 +138,7 @@ static int slider_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int
 {
 	struct supply* wnd = stack[sp-2].pchip;
 	switch(wnd->fmt){
-	case _gl41full_:{
+	case _gl41list_:{
 		slider_write_bywnd(ent,foot, stack,sp, buf,len);break;
 	}
 	}

@@ -696,8 +696,8 @@ void windowcreate(struct supply* wnd)
 {
 	//wnd->tier
 	//wnd->type
-	wnd->fmt = _mt20full_;
-	wnd->vfmt= _mt20full_;
+	wnd->fmt = _mt20list_;
+	wnd->vfmt= _mt20list_;
 
 	wnd->width = 1024;
 	wnd->height = 768;

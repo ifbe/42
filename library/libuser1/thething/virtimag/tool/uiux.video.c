@@ -415,8 +415,8 @@ static void video_read_bycam(_ent* ent,void* slot, _syn* stack,int sp)
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	switch(wnd->fmt){
-	case _dx11full_:video_dx11draw(ent,slot, wor,geom, wnd,area);break;
-	case _gl41full_:video_gl41draw(ent,slot, wor,geom, wnd,area);break;
+	case _dx11list_:video_dx11draw(ent,slot, wor,geom, wnd,area);break;
+	case _gl41list_:video_gl41draw(ent,slot, wor,geom, wnd,area);break;
 	}
 }
 static void video_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

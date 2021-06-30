@@ -1059,8 +1059,8 @@ int windowcreate(struct supply* wnd)
 {
 	//wnd->tier
 	//wnd->type
-	wnd->fmt = _dx11full_;
-	wnd->vfmt= _dx11full_;
+	wnd->fmt = _dx11list_;
+	wnd->vfmt= _dx11list_;
 
 	wnd->width = wnd->fbwidth = 1024;
 	wnd->height= wnd->fbheight= 768;

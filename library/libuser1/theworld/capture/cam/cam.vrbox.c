@@ -284,7 +284,7 @@ static int vrbox_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* arg,
 	case _tui_:
 	case _rgba_:
 		return 0;
-	case _gl41full_:
+	case _gl41list_:
 		 vrbox_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 	return 0;
@@ -362,7 +362,7 @@ static int vrbox_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int 
 	switch(caller->fmt){
 	case _rgba_:
 		break;
-	case _gl41full_:
+	case _gl41list_:
 		return vrbox_read_bywnd(ent,foot, stack,sp, arg,cmd, buf,len);
 	default:
 		return vrbox_read_bycam(ent,foot, stack,sp, arg,cmd, buf,len);

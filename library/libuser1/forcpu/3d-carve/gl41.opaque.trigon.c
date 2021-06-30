@@ -77,11 +77,11 @@ static int opaque3d_fill(struct entity* win, struct mysrc* src)
 {
 	if(0 == src->vs){
 		switch(win->fmt){
-		case _gl41full_:
+		case _gl41list_:
 			src->vs = gl41opaquetrigon_vert;
 			src->fs = gl41opaquetrigon_frag;
 			break;
-		case _dx11full_:
+		case _dx11list_:
 			src->vs = dx11opaquetrigon_vert;
 			src->fs = dx11opaquetrigon_frag;
 			break;

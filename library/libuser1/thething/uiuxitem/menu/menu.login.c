@@ -95,7 +95,7 @@ static void login_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(wnd->fmt){
-	case _gl41full_:
+	case _gl41list_:
 		break;
 	default:
 		login_wrl_cam_wnd(ent,slot, stack,sp);

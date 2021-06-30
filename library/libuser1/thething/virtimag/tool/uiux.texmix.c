@@ -235,7 +235,7 @@ static int texmix_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 	if(0 == stack)return 0;
 
 	switch(wnd->fmt){
-	case _gl41full_:
+	case _gl41list_:
 		texmix_read_bywnd(ent,slot, wnd,area);
 		break;
 	default:

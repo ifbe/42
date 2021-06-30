@@ -379,7 +379,7 @@ static void piano_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int
 	switch(caller->fmt){
 	case _rgba_:
 		break;
-	case _gl41full_:
+	case _gl41list_:
 		piano_wnd(ent,foot, stack,sp);
 		break;
 	default:
@@ -396,7 +396,7 @@ static void piano_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int
 
 	struct supply* sup = stack[sp-2].pchip;
 	switch(sup->fmt){
-		case _gl41full_:piano_write_bywnd(ent,foot, stack,sp, arg,key, buf,len);break;
+		case _gl41list_:piano_write_bywnd(ent,foot, stack,sp, arg,key, buf,len);break;
 	}
 }
 static void piano_discon(struct halfrel* self, struct halfrel* peer)

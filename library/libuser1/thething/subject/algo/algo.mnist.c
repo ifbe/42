@@ -271,7 +271,7 @@ static void mnist_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int
 	switch(caller->fmt){
 	case _rgba_:
 		break;
-	case _gl41full_:
+	case _gl41list_:
 		mnist_wnd(ent,foot, stack,sp);
 		break;
 	default:
@@ -283,7 +283,7 @@ static int mnist_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int 
 {
 	struct entity* xxx = stack[sp-2].pchip;
 	switch(xxx->fmt){
-	case _gl41full_:mnist_write_bywnd(ent,buf);break;
+	case _gl41list_:mnist_write_bywnd(ent,buf);break;
 	}
 	return 0;
 }

@@ -118,7 +118,7 @@ static void spectrum_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,
 	if(0 == stack)return;
 
 	switch(wnd->fmt){
-	case _gl41full_:
+	case _gl41list_:
 		break;
 	default:
 		spectrum_take_bycam(ent,slot, stack,sp);

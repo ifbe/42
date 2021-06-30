@@ -183,7 +183,7 @@ int force_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, vo
 
 	//slot type unknown: do work based on caller fmt
 	switch(caller->fmt){
-	case _gl41full_:
+	case _gl41list_:
 		break;
 	default:
 		if(jo[0].exist){

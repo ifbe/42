@@ -184,7 +184,7 @@ int htmlroot_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key,
 
 	//slot type unknown: do work based on caller fmt
 	switch(caller->fmt){
-	case _gl41full_:
+	case _gl41list_:
 		htmlroot_taketext(ent,slot, stack,sp);
 		htmlroot_draw_gl41_nocam(ent,slot, caller,area);
 		break;

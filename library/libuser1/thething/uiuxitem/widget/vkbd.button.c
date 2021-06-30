@@ -71,7 +71,7 @@ static void button_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct sty
 	button_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
 	gl41data_after(wnd);
 
-	if(_dx11full_ == wnd->fmt)dx11data_nocam(wnd);
+	if(_dx11list_ == wnd->fmt)dx11data_nocam(wnd);
 	else gl41data_nocam(wnd);
 }
 
@@ -87,10 +87,10 @@ static void button_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 	case _rgba_:
 		button_draw_pixel(ent,foot, (void*)wnd,area);
 		break;
-	case _dx11full_:
-	case _mt20full_:
-	case _gl41full_:
-	case _vk12full_:
+	case _dx11list_:
+	case _mt20list_:
+	case _gl41list_:
+	case _vk12list_:
 		button_read_bywnd(ent,foot, (void*)wnd,area);
 		break;
 	default:

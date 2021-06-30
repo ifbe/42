@@ -112,7 +112,7 @@ static void h2o_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int k
 	switch(caller->fmt){
 	case _rgba_:
 		break;
-	case _gl41full_:
+	case _gl41list_:
 		break;
 	default:
 		h2o_wrl_cam_wnd(ent,foot, stack,sp);

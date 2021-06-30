@@ -98,15 +98,15 @@ static int line3d_fill(struct entity* win, struct mysrc* src)
 {
 	if(0 == src->vs){
 		switch(win->fmt){
-		case _gl41full_:
+		case _gl41list_:
 			src->vs = gl41solidline_vert;
 			src->fs = gl41solidline_frag;
 			break;
-		case _dx11full_:
+		case _dx11list_:
 			src->vs = dx11solidline_vert;
 			src->fs = dx11solidline_frag;
 			break;
-		case _mt20full_:
+		case _mt20list_:
 			src->vs = shadersource;
 			break;
 		default:return -3;

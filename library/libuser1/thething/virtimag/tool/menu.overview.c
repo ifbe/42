@@ -1248,7 +1248,7 @@ static int overview_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(caller->fmt){
-	case _gl41full_:
+	case _gl41list_:
 		overview_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
@@ -1265,7 +1265,7 @@ static int overview_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,i
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(wnd->fmt){
-	case _gl41full_:
+	case _gl41list_:
 		overview_write_bywnd(ent,slot, wnd,area, buf);
 		break;
 	}

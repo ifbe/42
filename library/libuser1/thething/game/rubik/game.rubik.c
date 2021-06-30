@@ -914,10 +914,10 @@ static void rubikscube_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	switch(wnd->fmt){
-	case _dx11full_:
-	case _mt20full_:
-	case _gl41full_:
-	case _vk12full_:
+	case _dx11list_:
+	case _mt20list_:
+	case _gl41list_:
+	case _vk12list_:
 		rubikscube_draw_gl41(ent,slot, wor,geom, wnd,area);
 		break;
 	}
@@ -941,7 +941,7 @@ static void rubikscube_taking(_ent* ent,void* foot, _syn* stack,int sp, void* ar
 	switch(caller->fmt){
 	case _rgba_:
 		break;
-	case _gl41full_:
+	case _gl41list_:
 		break;
 	default:
 		rubikscube_wrl_cam_wnd(ent,foot, stack,sp);

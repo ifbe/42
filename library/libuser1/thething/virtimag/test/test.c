@@ -174,7 +174,7 @@ void test_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, vo
 		break;
 	case _gl41easy_:
 		test_tickgl(ent,slot, caller,area);
-	case _gl41full_:
+	case _gl41list_:
 		break;
 	default:
 		test_wrl_cam_wnd(ent,slot, stack,sp);

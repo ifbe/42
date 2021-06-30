@@ -60,7 +60,7 @@ t1 = timeread();
 		case _gl41none_:nonewindow_take(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _gl41easy_:easywindow_take(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _gl41cmdq_:cmdqwindow_take(ogl,foot, stack,sp, arg,idx, buf,len);break;
-		case _gl41full_:
+		case _gl41list_:
 		default:fullwindow_take(ogl,foot, stack,sp, arg,idx, buf,len);break;
 	}
 t2 = timeread();
@@ -96,7 +96,7 @@ void window_give(_sup* ogl,void* foot, _syn* stack,int sp, void* arg,int idx, vo
 		case _gl41none_:nonewindow_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _gl41easy_:easywindow_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _gl41cmdq_:cmdqwindow_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
-		case _gl41full_:
+		case _gl41list_:
 		default:fullwindow_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
 	}
 }

@@ -107,7 +107,7 @@ static void tardis_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,in
 		break;
 	case _rgba_:
 		break;
-	case _gl41full_:
+	case _gl41list_:
 		break;
 	default:
 		tardis_wrl_cam_wnd(ent,slot, stack,sp);

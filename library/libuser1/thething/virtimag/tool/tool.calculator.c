@@ -258,7 +258,7 @@ static void calculator_taking(_ent* ent,void* slot, _syn* stack,int sp, void* ar
 	switch(caller->fmt){
 	case _rgba_:
 		break;
-	case _gl41full_:
+	case _gl41list_:
 		calculator_wnd(ent,slot, caller,area);
 		break;
 	default:
@@ -274,7 +274,7 @@ static void calculator_giving(_ent* ent,void* foot, _syn* stack,int sp, void* ar
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(wnd->fmt){
-	case _gl41full_:{
+	case _gl41list_:{
 		calculator_write_bywnd(ent,slot, wnd,area, buf);break;
 	}
 	}

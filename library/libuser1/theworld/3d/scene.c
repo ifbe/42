@@ -51,7 +51,7 @@ int scene3d_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, 
 	switch(caller->fmt){
 	case _rgba_:
 		break;
-	case _gl41full_:
+	case _gl41list_:
 		break;
 	}
 

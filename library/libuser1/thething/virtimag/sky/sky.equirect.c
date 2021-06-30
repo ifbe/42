@@ -308,8 +308,8 @@ static void texball_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	switch(wnd->fmt){
-	case _dx11full_:texball_dx11draw(ent,slot, wor,geom, wnd,area);break;
-	case _gl41full_:texball_gl41draw(ent,slot, wor,geom, wnd,area);break;
+	case _dx11list_:texball_dx11draw(ent,slot, wor,geom, wnd,area);break;
+	case _gl41list_:texball_gl41draw(ent,slot, wor,geom, wnd,area);break;
 	}
 }
 static void texball_wrl_wnd(_ent* ent,void* slot, _syn* stack,int sp)
@@ -337,7 +337,7 @@ static void texball_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 	switch(caller->fmt){
 	case _rgba_:
 		break;
-	case _gl41full_:
+	case _gl41list_:
 		texball_wnd(ent,slot, caller,area);
 		break;
 	default:

@@ -221,7 +221,7 @@ static void fslist_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,in
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(wnd->fmt){
-	case _gl41full_:
+	case _gl41list_:
 		fslist_read_bywnd(ent,slot, wnd,area);
 		break;
 	}
@@ -234,7 +234,7 @@ static void fslist_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(wnd->fmt){
-	case _gl41full_:
+	case _gl41list_:
 		fslist_write_bywnd(ent,slot, wnd,area, buf);
 		break;
 	}
