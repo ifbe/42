@@ -49,8 +49,9 @@ forcpu/intersect/intersect.rect.c \
 forcpu/intersect/intersect.sphere.c \
 forcpu/forcpu.c \
 forgpu/dx11/dx11.ctx.c \
-forgpu/gl41/gl41.coop.c \
 forgpu/gl41/gl41.data.c \
+forgpu/gl41/gl41.mode.cmdq.c \
+forgpu/gl41/gl41.mode.list.c \
 forgpu/metal/metal.ctx.c \
 fornpu/npu.c \
 forspu/al10/al10.c \

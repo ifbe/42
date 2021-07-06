@@ -230,6 +230,7 @@
 #define _border2d_ hex64('b','o','r','d','e','r','2','d')
 #define _border3d_ hex64('b','o','r','d','e','r','3','d')
 #define _scene3d_  hex64('s','c','e','n','e','3','d', 0)
+#define _wndmgr_  hex64('w','n','d','m','g','r', 0, 0)
 //
 #define _reality_ hex64('r','e','a','l','i','t','y', 0)
 #define _virtual_ hex64('v','i','r','t','u','a','l', 0)

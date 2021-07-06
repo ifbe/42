@@ -360,6 +360,9 @@ ${LIB42}/libsoft1/libphys/phys.fluid.c
 ${LIB42}/libsoft1/artery.c
 )
 set(libuser0
+${LIB42}/libuser0/1d-cmdline/android/android.stdio.c
+${LIB42}/libuser0/2d-window/os-android/android.gles.c
+${LIB42}/libuser0/2d-camera/os-android/android.cam.c
 ${LIB42}/libuser0/3d-output/render-gl/gldraw/gl.none.c
 ${LIB42}/libuser0/3d-output/render-gl/gldraw/gl.easy.c
 ${LIB42}/libuser0/3d-output/render-gl/gldraw/gl.full.c
@@ -373,11 +376,8 @@ ${LIB42}/libuser0/3d-output/render-gl/globj/globj.shader.c
 ${LIB42}/libuser0/3d-output/render-gl/globj/globj.texture.c
 ${LIB42}/libuser0/3d-output/render-gl/globj/globj.varray.c
 ${LIB42}/libuser0/3d-output/render-gl/globj/globj.vertex.c
-${LIB42}/libuser0/2d-window/os-android/android.gles.c
-${LIB42}/libuser0/2d-camera/os-android/android.cam.c
 ${LIB42}/libuser0/sound-micphone/os-android/android.mic.c
 ${LIB42}/libuser0/sound-speaker/os-android/android.speaker.c
-${LIB42}/libuser0/cmdline/android/android.stdio.c
 ${LIB42}/libuser0/gamepad/android/android.gamepad.c
 ${LIB42}/libuser0/systray/android/android.tray.c
 ${LIB42}/libuser0/gadget-sensor/sensor.ahrs.c
@@ -436,8 +436,9 @@ ${LIB42}/libuser1/forcpu/intersect/intersect.rect.c
 ${LIB42}/libuser1/forcpu/intersect/intersect.sphere.c
 ${LIB42}/libuser1/forcpu/forcpu.c
 ${LIB42}/libuser1/forgpu/dx11/dx11.ctx.c
-${LIB42}/libuser1/forgpu/gl41/gl41.coop.c
 ${LIB42}/libuser1/forgpu/gl41/gl41.data.c
+${LIB42}/libuser1/forgpu/gl41/gl41.mode.cmdq.c
+${LIB42}/libuser1/forgpu/gl41/gl41.mode.list.c
 ${LIB42}/libuser1/forgpu/metal/metal.ctx.c
 ${LIB42}/libuser1/fornpu/npu.c
 ${LIB42}/libuser1/forspu/al10/al10.c

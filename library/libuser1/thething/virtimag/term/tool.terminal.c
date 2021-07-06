@@ -1,6 +1,5 @@
 #include "libuser.h"
 #define _corner_ hex64('c', 'o', 'r', 'n', 'e', 'r', 0, 0)
-#define _wndmgr_ hex64('w', 'n', 'd', 'm', 'g', 'r', 0, 0)
 #define CLIENT data0
 #define SERVER data1
 #define RAWBUF buf2

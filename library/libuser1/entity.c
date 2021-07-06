@@ -141,6 +141,12 @@ int scene3d_linkup(void*, void*);
 int scene3d_discon(void*, void*);
 int scene3d_giving(void*,void*, void*,int, void*,int, void*,int);
 int scene3d_taking(void*,void*, void*,int, void*,int, void*,int);
+int wndmgr_create(void*, void*, int, u8**);
+int wndmgr_delete(void*, void*);
+int wndmgr_linkup(void*, void*);
+int wndmgr_discon(void*, void*);
+int wndmgr_give(void*,void*, void*,int, void*,int, void*,int);
+int wndmgr_take(void*,void*, void*,int, void*,int, void*,int);
 
 //
 int reality_create(void*, void*, int, u8**);
@@ -398,6 +404,7 @@ int entity_take(_ent* act,void* foot, _syn* stack,int sp, void* arg,int key, voi
 	case _border2d_:return border2d_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _border3d_:return border3d_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _scene3d_:return scene3d_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _wndmgr_:return wndmgr_take(act,foot, stack,sp, arg,key, buf,len);
 
 	case _reality_:return reality_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _virtual_:return virtual_taking(act,foot, stack,sp, arg,key, buf,len);
@@ -453,6 +460,7 @@ int entity_give(_ent* act,void* foot, _syn* stack,int sp, void* arg,int key, voi
 	case _border2d_:return border2d_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _border3d_:return border3d_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _scene3d_:return scene3d_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _wndmgr_:return wndmgr_give(act,foot, stack,sp, arg,key, buf,len);
 
 	case _reality_:return reality_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _virtual_:return virtual_giving(act,foot, stack,sp, arg,key, buf,len);
@@ -726,6 +734,13 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		act = entity_alloc();
 		act->fmt = act->type = _scene3d_;
 		scene3d_create(act, buf, argc, argv);
+		return act;
+	}
+	case _wndmgr_:
+	{
+		act = entity_alloc();
+		act->fmt = act->type = _wndmgr_;
+		wndmgr_create(act, buf, argc, argv);
 		return act;
 	}
 

@@ -19,15 +19,15 @@
 
 
 
-void cmdqwindow_take(_sup* win,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void cmdqwindow_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
-	float w = win->width;
-	float h = win->height;
-	float fbw = win->fbwidth;
-	float fbh = win->fbheight;
+	float w = wnd->width;
+	float h = wnd->height;
+	float fbw = wnd->fbwidth;
+	float fbh = wnd->fbheight;
 
-	float x = win->ix0;
-	float y = h-1 - win->iy0;
+	float x = wnd->ix0;
+	float y = h-1 - wnd->iy0;
 	float r = x / w;
 	float g = y / h;
 	float b = 0.0;
@@ -47,6 +47,15 @@ void cmdqwindow_take(_sup* win,void* foot, _syn* stack,int sp, void* arg,int idx
 	//clear screen
 	glClearColor(r, g, b, a);
 	glClear(GL_COLOR_BUFFER_BIT);	//GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT
+
+	struct relation* rel = wnd->orel0;
+	while(1){
+		if(0 == rel)break;
+
+		entity_take(rel->pdstchip,rel->dst, stack,sp+2, arg,cmd, 0,0);
+
+		rel = samesrcnextdst(rel);
+	}
 }
 void cmdqwindow_give(_sup* win,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {

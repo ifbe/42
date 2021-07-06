@@ -246,13 +246,40 @@ int wndmgr_rgba_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key
 }
 
 
+int wndmgr_gl41cmdq_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	say("wndmgr_gl41cmdq:take\n");
+	return 0;
+}
 
 
 int wndmgr_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	return wndmgr_rgba_take(wnd,foot, stack,sp, arg,key, buf,len);
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		wndmgr_rgba_take(wnd,foot, stack,sp, arg,key, buf,len);
+		break;
+	case _gl41cmdq_:
+		wndmgr_gl41cmdq_take(wnd,foot, stack,sp, arg,key, buf,len);
+		break;
+	}
+	return 0;
 }
 int wndmgr_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return wndmgr_rgba_give(wnd,foot, stack,sp, arg,key, buf,len);
+}
+
+
+
+
+
+void wndmgr_delete(struct entity* act, u8* buf)
+{
+}
+void wndmgr_create(struct entity* act, u8* buf)
+{
 }
