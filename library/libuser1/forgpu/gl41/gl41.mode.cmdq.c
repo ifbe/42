@@ -3,47 +3,48 @@
 
 
 
-int gl41coop_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+void gl41cmdq_clear(struct entity* ent)
 {
-	//0: locate target
-
-	//1: tmp = my.vao
-
-	//2: copy all
-
-	//3: my.vao = tmp
-
-	return 0;
-}
-int gl41coop_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
-{
-	return 0;
-}
-int gl41coop_discon(struct halfrel* self, struct halfrel* peer)
-{
-	return 0;
-}
-int gl41coop_linkup(struct halfrel* self, struct halfrel* peer)
-{
-	return 0;
+	u64* code = ent->gl41cmdq_code;
+	code[0] = hex32('c','l','r',0);
 }
 
 
 
 
-int gl41coop_search(struct entity* act)
+int gl41cmdq_search(struct entity* act)
 {
 	return 0;
 }
-int gl41coop_modify(struct entity* act)
+int gl41cmdq_modify(struct entity* act)
 {
 	return 0;
 }
-int gl41coop_delete(struct entity* act)
+int gl41cmdq_delete(struct entity* act)
 {
 	return 0;
 }
-int gl41coop_create(struct entity* act, void* addr)
+int gl41cmdq_create(struct entity* act, void* addr)
+{
+	return 0;
+}
+
+
+
+
+int gl41cmdq_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	return 0;
+}
+int gl41cmdq_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	return 0;
+}
+int gl41cmdq_discon(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+int gl41cmdq_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

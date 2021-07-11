@@ -19,35 +19,43 @@
 
 
 
+#define _clr_ hex32('c','l','r',0)
+void cmdqwindow_execute(_sup* wnd)
+{
+	int j;
+	float w = wnd->fbwidth;
+	float h = wnd->fbheight;
+	u64* data = wnd->gl41cmdq_data;
+	u64* code = wnd->gl41cmdq_code;
+	for(j=0;j<1;j++){
+		say("code[0] = %.4s\n", &code[0]);
+		switch(code[0]){
+		case _clr_:
+
+			//viewport can not change clearcolor area
+			glViewport(0, 0, w, h);
+
+			//but scissor can ...
+			glScissor(0, 0, w, h);
+			glEnable(GL_SCISSOR_TEST);
+
+			//clear screen
+			glClearColor(0, 0, 0, 1);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+			break;
+		default:
+			break;
+		}//switch
+
+	}//for
+}
+
+
+
+
 void cmdqwindow_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
-	float w = wnd->width;
-	float h = wnd->height;
-	float fbw = wnd->fbwidth;
-	float fbh = wnd->fbheight;
-
-	float x = wnd->ix0;
-	float y = h-1 - wnd->iy0;
-	float r = x / w;
-	float g = y / h;
-	float b = 0.0;
-	float a = 0.0;
-
-	//fbw != w, fbh != h, so ...
-	x *= fbw / w;
-	y *= fbh / h;
-
-	//viewport can not change clearcolor area
-	glViewport(0, 0, x, y);
-
-	//but scissor can ...
-	glScissor(0, 0, x, y);
-	glEnable(GL_SCISSOR_TEST);
-
-	//clear screen
-	glClearColor(r, g, b, a);
-	glClear(GL_COLOR_BUFFER_BIT);	//GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT
-
 	struct relation* rel = wnd->orel0;
 	while(1){
 		if(0 == rel)break;
@@ -56,23 +64,20 @@ void cmdqwindow_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd
 
 		rel = samesrcnextdst(rel);
 	}
+
+	cmdqwindow_execute(wnd);
 }
 void cmdqwindow_give(_sup* win,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
-	struct event* ev = buf;
-	if(0x2b70 == ev->what){
-		short* t = (void*)ev;
-		win->ix0 = t[0];
-		win->iy0 = t[1];
-		//say("%d,%d\n",t[0],t[1]);
-	}
 }
-void cmdqwindow_delete(struct supply* win)
+void cmdqwindow_delete(struct supply* ogl)
 {
 }
-void cmdqwindow_create(struct supply* win)
+void cmdqwindow_create(struct supply* ogl)
 {
-	win->fmt = _gl41cmdq_;
-	win->ix0 = win->width / 2;
-	win->iy0 = win->height / 2;
+	ogl->fmt = _gl41cmdq_;
+	ogl->vfmt= _gl41cmdq_;
+
+	ogl->gl41cmdq_data = memorycreate(0x100000, 0);
+	ogl->gl41cmdq_code = memorycreate(0x100000, 0);
 }

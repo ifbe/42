@@ -1,4 +1,5 @@
 #include "libuser.h"
+int gl41cmdq_clear(void*);
 
 
 
@@ -246,9 +247,10 @@ int wndmgr_rgba_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key
 }
 
 
-int wndmgr_gl41cmdq_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int wndmgr_gl41cmdq_take(_sup* mgr,void* foot, _ent* wnd,void* sty)
 {
-	say("wndmgr_gl41cmdq:take\n");
+	say("wndmgr_gl41cmdq_take\n");
+	gl41cmdq_clear(wnd);
 	return 0;
 }
 
@@ -262,8 +264,10 @@ int wndmgr_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, voi
 	case _rgba_:
 		wndmgr_rgba_take(wnd,foot, stack,sp, arg,key, buf,len);
 		break;
+	case _gl41list_:
+		break;
 	case _gl41cmdq_:
-		wndmgr_gl41cmdq_take(wnd,foot, stack,sp, arg,key, buf,len);
+		wndmgr_gl41cmdq_take(wnd,foot, caller,area);
 		break;
 	}
 	return 0;

@@ -484,6 +484,7 @@ struct supply
 		struct dx11data** dxfull_camera;
 		struct gl41data*  gleasy_camera;
 		struct gl41data** glfull_camera;
+		u64* gl41cmdq_data;
 		struct mt20data*  mteasy_camera;
 		struct mt20data** mtfull_camera;
 	};
@@ -496,6 +497,7 @@ struct supply
 		struct dx11data** dxfull_light;
 		struct gl41data*  gleasy_light;
 		struct gl41data** glfull_light;
+		u64* gl41cmdq_code;
 		struct mt20data*  mteasy_light;
 		struct mt20data** mtfull_light;
 	};
@@ -691,6 +693,7 @@ struct entity
 		struct dx11data** dxfull_camera;
 		struct gl41data*  gleasy_camera;
 		struct gl41data** glfull_camera;
+		u64* gl41cmdq_data;
 		struct mt20data*  mteasy_camera;
 		struct mt20data** mtfull_camera;
 	};
@@ -707,6 +710,7 @@ struct entity
 		struct dx11data** dxfull_light;
 		struct gl41data*  gleasy_light;
 		struct gl41data** glfull_light;
+		u64* gl41cmdq_code;
 		struct mt20data*  mteasy_light;
 		struct mt20data** mtfull_light;
 	};
