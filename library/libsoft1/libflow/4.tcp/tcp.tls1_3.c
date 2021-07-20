@@ -406,11 +406,11 @@ int tls1v3_clienthello(u8* dst, int len)
 
 
 
-int tls1v3client_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int tls1v3client_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int tls1v3client_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int tls1v3client_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	int j;
 	say("@tls1v3client_write:len=%x\n",len);
@@ -455,32 +455,32 @@ int tls1v3client_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	say("@tls1v3client_linkup:%.4s\n",&self->flag);
 	if(_src_ == self->flag){
-		struct artery* art = self->pchip;
-		u8* buf = art->buf0;
+		_obj* art = self->pchip;
+		u8* buf = art->priv_ptr;
 		int ret = tls1v3_clienthello(buf, 0x10000);
 		give_data_into_peer(art,_src_, 0,0, 0,0, buf,ret);
 	}
 	return 0;
 }
-int tls1v3client_dartte(struct artery* art)
+int tls1v3client_dartte(_obj* art)
 {
 	return 0;
 }
-int tls1v3client_create(struct artery* art, u8* url)
+int tls1v3client_create(_obj* art, u8* url)
 {
 	say("@tls1v3client_create\n");
-	art->buf0 = memorycreate(0x100000, 0);
+	art->priv_ptr = memorycreate(0x100000, 0);
 	return 0;
 }
 
 
 
 
-int tls1v3server_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int tls1v3server_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int tls1v3server_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int tls1v3server_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	say("@tls1v3server_write\n");
 	return 0;
@@ -493,11 +493,11 @@ int tls1v3server_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int tls1v3server_dartte(struct artery* art)
+int tls1v3server_dartte(_obj* art)
 {
 	return 0;
 }
-int tls1v3server_create(struct artery* art, u8* url)
+int tls1v3server_create(_obj* art, u8* url)
 {
 	return 0;
 }
@@ -505,11 +505,11 @@ int tls1v3server_create(struct artery* art, u8* url)
 
 
 
-int tls1v3master_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int tls1v3master_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int tls1v3master_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int tls1v3master_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	say("@tls1v3master_write\n");
 	printmemory(buf,len);
@@ -524,11 +524,11 @@ int tls1v3master_linkup(struct halfrel* self, struct halfrel* peer)
 	say("@tls1v3master_linkup\n");
 	return 0;
 }
-int tls1v3master_dartte(struct artery* art)
+int tls1v3master_dartte(_obj* art)
 {
 	return 0;
 }
-int tls1v3master_create(struct artery* art, u8* url)
+int tls1v3master_create(_obj* art, u8* url)
 {
 	say("@tls1v3master_create\n");
 	return 0;

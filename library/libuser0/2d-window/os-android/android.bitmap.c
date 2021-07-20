@@ -23,7 +23,7 @@ void death();
 
 
 static void* world;
-static struct supply* supply;
+static _obj* supply;
 //
 static int pressed=0;
 static int xxxx=0;

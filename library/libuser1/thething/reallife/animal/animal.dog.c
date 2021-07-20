@@ -11,7 +11,7 @@ void robodog_calc(vec3 joint, vec3 vector, vec3 shaft, float rotate)
 	vector[1] += joint[1];
 	vector[2] += joint[2];
 }
-void gl41solid_jointandpole(struct entity* ctx, u32 rgb, vec3 joint, vec3 target, vec3 shaft)
+void gl41solid_jointandpole(_obj* ctx, u32 rgb, vec3 joint, vec3 target, vec3 shaft)
 {
 	int j;
 	vec3 tc,tr,tf,tu;
@@ -37,7 +37,7 @@ void gl41solid_jointandpole(struct entity* ctx, u32 rgb, vec3 joint, vec3 target
 	vec3_setlen(tu, 50);
 	gl41solid_prism4(ctx, rgb, tc,tr,tf,tu);
 }
-void robodog_leg(struct entity* ctx, float* f, int lr, vec3 joint, vec3 vector, vec3 shaft)
+void robodog_leg(_obj* ctx, float* f, int lr, vec3 joint, vec3 vector, vec3 shaft)
 {
 	int j;
 	vec3 tc;
@@ -71,14 +71,14 @@ void robodog_leg(struct entity* ctx, float* f, int lr, vec3 joint, vec3 vector, 
 
 
 static void robodog_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void robodog_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* scn, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* scn, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int j;
 	float* f;
@@ -99,7 +99,7 @@ static void robodog_draw_gl41(
 	}
 	gl41solid_prism4(ctx, 0x202020, tc, tr, vf, tt);
 
-	f = act->buf0;
+	f = act->listptr.buf0;
 	if(0 == f)return;
 
 	//left, near
@@ -135,49 +135,49 @@ static void robodog_draw_gl41(
 	robodog_leg(ctx, &f[9],-1, tc,tr,tf);
 }
 static void robodog_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void robodog_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void robodog_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void robodog_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-void robodog_write_float(struct entity* act, float* src, int len)
+void robodog_write_float(_obj* act, float* src, int len)
 {
 	int j;
-	float* dst = act->buf0;
+	float* dst = act->listptr.buf0;
 	for(j=0;j<12;j++)dst[j] = src[j];
 }
-void robodog_write_int(struct entity* act, int* src, int len)
+void robodog_write_int(_obj* act, int* src, int len)
 {
 	int j;
-	float* dst = act->buf0;
+	float* dst = act->listptr.buf0;
 	for(j=0;j<12;j++)dst[j] = src[j]*PI/50.0;
 }
 
 
 
 
-static void robodog_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void robodog_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -187,7 +187,7 @@ static void robodog_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void robodog_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void robodog_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -196,10 +196,10 @@ static void robodog_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,i
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -209,7 +209,7 @@ static void robodog_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void robodog_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void robodog_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("robodog_write\n");
 
@@ -226,23 +226,23 @@ static void robodog_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void robodog_modify(struct entity* act)
+static void robodog_modify(_obj* act)
 {
 }
-static void robodog_search(struct entity* act)
+static void robodog_search(_obj* act)
 {
 }
-static void robodog_delete(struct entity* act)
+static void robodog_delete(_obj* act)
 {
 	if(0 == act)return;
 	//if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void robodog_create(struct entity* act, u8* url, int argc, u8** argv)
+static void robodog_create(_obj* act, u8* url, int argc, u8** argv)
 {
 	float* f;
 	if(0 == act)return;
 
-	f = act->buf0 = memorycreate(0x1000, 0);
+	f = act->listptr.buf0 = memorycreate(0x1000, 0);
 	f[ 0] = 0.0;
 	f[ 1] = PI/12;
 	f[ 2] = PI*0.7;
@@ -260,10 +260,10 @@ static void robodog_create(struct entity* act, u8* url, int argc, u8** argv)
 
 
 
-void robodog_register(struct entity* p)
+void robodog_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('r', 'o', 'b', 'o', 'd', 'o', 'g', 0);
+	p->hfmt = hex64('r', 'o', 'b', 'o', 'd', 'o', 'g', 0);
 
 	p->oncreate = (void*)robodog_create;
 	p->ondelete = (void*)robodog_delete;

@@ -19,11 +19,11 @@ int rdpclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int rdpclient_delete(struct artery* art)
+int rdpclient_delete(_obj* art)
 {
 	return 0;
 }
-int rdpclient_create(struct artery* art, void* arg)
+int rdpclient_create(_obj* art, void* arg)
 {
 	return 0;
 }
@@ -47,11 +47,11 @@ int rdpserver_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int rdpserver_delete(struct artery* art)
+int rdpserver_delete(_obj* art)
 {
 	return 0;
 }
-int rdpserver_create(struct artery* art, void* arg)
+int rdpserver_create(_obj* art, void* arg)
 {
 	return 0;
 }
@@ -75,11 +75,11 @@ int rdpmaster_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int rdpmaster_delete(struct artery* art)
+int rdpmaster_delete(_obj* art)
 {
 	return 0;
 }
-int rdpmaster_create(struct artery* art, void* arg)
+int rdpmaster_create(_obj* art, void* arg)
 {
 	return 0;
 }

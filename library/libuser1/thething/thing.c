@@ -223,131 +223,131 @@ void thing_exit()
 }
 void thing_init(void* addr)
 {
-	void* tmp = addr +0x100000 -sizeof(struct entity);
+	void* tmp = addr +0x100000 -sizeof(_obj);
 
 
 
 
 //----------------------gear--------------------
 	spurgear_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	planetary_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 
 
 
 //----------------------chem--------------------
 	ch4_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	h2o_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	diamond_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	graphene_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 
 
 
 //-------------------chip.baseunit-----------------
 	vsrc_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	resistor_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	mosfet_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	finfet_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 
 
 
 //-------------------chip.baseunit-----------------
 	pmos_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	nmos_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	nand_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	nor_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	xor_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	xnor_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	fulladd_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	halfadd_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	autocmos_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	not_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	mem_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	dff_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	hbridge_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	rectify_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 
 
 
 //----------------------tab-----------------------
 	karnaugh_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	truth_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 
 
 
 //----------------------mic-----------------------
 	monomic_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	stereo_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 
 
 
 //----------------------cam------------------------
 	freecam_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	orthcam_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	vrbox_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	vrglass_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 
 
@@ -355,188 +355,188 @@ void thing_init(void* addr)
 //----------------------dxgl-----------------------
 //.fbo
 	glass_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	mirror_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	portal_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	water_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 //.light
 	dirlight_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	imagelight_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	projector_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	pointlight_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	spotlight_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 //.else
 	curtain_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	field_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	ground_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	particle_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	skydome_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	terrain_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	texball_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	texbox_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	weather_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 
 
 
 //---------------------algo----------------------
 	algorithm_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	bintree_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	bplus_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	graph_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	mnist_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 
 
 
 //----------------------game----------------------
 	the2048_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	chess_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	klotski_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	maze_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	ooxx_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	pegged_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	poker_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	rubikscube_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	snake_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	sudoku_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	tetris_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	weiqi_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	xiangqi_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 
 
 
 //--------------------hack-------------------------
 	browser_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	fslist_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	pwmtool_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	rawdump_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 
 
 
 //----------------------item-----------------------
 	clock_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	house_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	mario_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	mobius_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	motor_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	piano_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	satellite_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	stair_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	tardis_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	spring_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	stick_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 
 
 
 //----------------------file----------------------
 	flower_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	grass_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	tree_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 
 
@@ -544,27 +544,27 @@ void thing_init(void* addr)
 //----------------------file----------------------
 //.biology
 	dna_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 //.factory
 	gcode_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	gerber_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 //.model
 	geometry_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	obj3d_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	stl3d_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	wrl3d_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 
 
@@ -572,162 +572,162 @@ void thing_init(void* addr)
 
 //----------------------real----------------------
 	theear_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	theeye_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	screen_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	speaker_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 
 
 
 //----------------------robo----------------------
 	balance_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	dancemat_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	drone_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	human_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	otto_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	rccar_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	robodog_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 
 
 
 //----------------------test----------------------
 	calib3d_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	codeimg_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	doodle_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	example_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	fractal_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	palette_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	planet_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 
 
 
 //------------------------tool--------------------
 	calculator_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	font_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	sketchpad_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	terminal_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 
 
 
 //-------------postprocess-----------------
 	cbuffer_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	gbuffer_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 
 
 
 //-------------------uiux------------------
 	minimap_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	oscillo_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	picture_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	qrcode_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	spectrum_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	skill_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	status_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	texmix_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	video_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	voxel_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 
 
 
 //-------------------bar-------------------
 	skillbar_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	tabbar_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 
 
 
 //-------------------edit------------------
 	hexedit_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	mmioedit_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 
 
 
 //-------------------vkbd------------------
 	button_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	slider_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	vjoy_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	vkbd_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 
 
@@ -735,37 +735,37 @@ void thing_init(void* addr)
 //-------------------menu------------------
 //.2d
 	corner_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	pointer_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 //.3d
 	camman_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	picker_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 //.else
 	login_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	overview_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	detail_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 
 
 //----------------vmhw-------------------
 	arm64_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	x8664_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 
 	vmddr_register(tmp);
-	tmp -= sizeof(struct entity);
+	tmp -= sizeof(_obj);
 }

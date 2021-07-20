@@ -3,7 +3,7 @@
 
 
 
-void drawentity(struct entity* win, int val, int x0, int y0, int xn, int yn)
+void drawentity(_obj* win, int val, int x0, int y0, int xn, int yn)
 {
 	void* buf;
 	int x,y;
@@ -25,14 +25,14 @@ void drawentity(struct entity* win, int val, int x0, int y0, int xn, int yn)
 			{
 				case 0:buf = &win->tier;break;
 				case 1:buf = &win->type;break;
-				case 2:buf = &win->fmt; break;
+				case 2:buf = &win->hfmt; break;
 				//case 3:buf = &win->vfmt;break;
 			}
 			drawstring_fit(win, 0xffffff, xa, ya, xb, yb, buf, 8);
 		}
 	}
 }
-void carveentity(struct entity* win, int val, vec3 vc, vec3 vr, vec3 vf)
+void carveentity(_obj* win, int val, vec3 vc, vec3 vr, vec3 vf)
 {
 	int x,y;
 	void* buf;
@@ -59,7 +59,7 @@ void carveentity(struct entity* win, int val, vec3 vc, vec3 vr, vec3 vf)
 			{
 				case 0:buf = &win->tier;break;
 				case 1:buf = &win->type;break;
-				case 2:buf = &win->fmt; break;
+				case 2:buf = &win->hfmt; break;
 				//case 3:buf = &win->vfmt;break;
 			}
 
@@ -78,7 +78,7 @@ void carveentity(struct entity* win, int val, vec3 vc, vec3 vr, vec3 vf)
 
 
 
-void detail_draw_gl41_node(struct entity* ctx, struct entity* one, vec3 vc, vec3 vr, vec3 vf)
+void detail_draw_gl41_node(_obj* ctx, _obj* one, vec3 vc, vec3 vr, vec3 vf)
 {
 	int j;
 	vec3 tr,tf;
@@ -87,9 +87,9 @@ void detail_draw_gl41_node(struct entity* ctx, struct entity* one, vec3 vc, vec3
 		tf[j] = vf[j]*2;
 	}
 	gl41line_circle(ctx, 0x404040, vc,tr,tf);
-	gl41string_center(ctx, 0xff0000, vc,vr,vf, (void*)&one->fmt, 8);
+	gl41string_center(ctx, 0xff0000, vc,vr,vf, (void*)&one->hfmt, 8);
 }
-void detail_draw_gl41_foot(struct entity* ctx, void* aaa, void* bbb, vec3 src, vec3 dst, vec3 vr, vec3 vf, vec3 vt)
+void detail_draw_gl41_foot(_obj* ctx, void* aaa, void* bbb, vec3 src, vec3 dst, vec3 vr, vec3 vf, vec3 vt)
 {
 	int j;
 	vec3 tc,t0,tr,tf;
@@ -122,9 +122,9 @@ void detail_draw_gl41_foot(struct entity* ctx, void* aaa, void* bbb, vec3 src, v
 	gl41string_center(ctx, 0xff0000, t0, tr, tf, bbb, 4);
 }
 int detail_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int j,k,cnt;
 	float a,c,s;
@@ -178,8 +178,8 @@ int detail_draw_gl41(
 	return 0;
 }
 int detail_draw_pixel(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom)
 {
 	return 0;
 }
@@ -187,10 +187,10 @@ int detail_draw_pixel(
 
 
 
-static void detail_take_bycam(_ent* ent,void* slot, _syn* stack,int sp)
+static void detail_take_bycam(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	if(0 == stack)return;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
@@ -201,13 +201,13 @@ static void detail_take_bycam(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void detail_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void detail_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 	if(0 == stack)return;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _tui_:
 		break;
 	case _rgba_:
@@ -226,7 +226,7 @@ static void detail_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,in
 		break;
 	}
 }
-static int detail_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int detail_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 1;
 }
@@ -241,16 +241,16 @@ static void detail_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-void detail_search(struct entity* act)
+void detail_search(_obj* act)
 {
 }
-void detail_modify(struct entity* act)
+void detail_modify(_obj* act)
 {
 }
-void detail_delete(struct entity* act)
+void detail_delete(_obj* act)
 {
 }
-void detail_create(struct entity* act, void* str)
+void detail_create(_obj* act, void* str)
 {
     say("@detail_create\n");
 }
@@ -258,10 +258,10 @@ void detail_create(struct entity* act, void* str)
 
 
 
-void detail_register(struct entity* p)
+void detail_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('d', 'e', 't', 'a', 'i', 'l', 0, 0);
+	p->hfmt = hex64('d', 'e', 't', 'a', 'i', 'l', 0, 0);
 
 	p->oncreate = (void*)detail_create;
 	p->ondelete = (void*)detail_delete;

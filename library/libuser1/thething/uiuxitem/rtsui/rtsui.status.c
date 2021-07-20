@@ -4,9 +4,9 @@
 
 
 static void status_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	float* vc = geom->fshape.vc;
 	float* vr = geom->fshape.vr;
@@ -15,46 +15,46 @@ static void status_draw_gl41(
 	gl41solid_rect(ctx,0x808080, vc,vr,vf);
 }
 static void status_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void status_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void status_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void status_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void status_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-static void status_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key)
+static void status_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	status_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void status_read_byuiux(_ent* ent,void* slot, _syn* stack,int sp)
+static void status_read_byuiux(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* uuu;struct style* area;
-	struct entity* wnd;struct style* rect;
+	_obj* uuu;struct style* area;
+	_obj* wnd;struct style* rect;
 	uuu = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 	wnd = stack[sp-4].pchip;rect = stack[sp-4].pfoot;
 
@@ -73,20 +73,20 @@ static void status_read_byuiux(_ent* ent,void* slot, _syn* stack,int sp)
 
 	status_draw_gl41(ent,slot, 0,(void*)&fs, wnd,rect);
 }
-static void status_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
+static void status_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
 {
 }
 
 
 
 
-static void status_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void status_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* wnd = stack[sp-2].pchip;
+	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
-//say("fmt=%.8s\n", &sup->fmt);
+//say("fmt=%.8s\n", &sup->hfmt);
 
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _gl41list_:
 		status_read_bywnd(ent,slot, wnd,area);
 		break;
@@ -98,7 +98,7 @@ static void status_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,in
 		break;
 	}
 }
-static void status_giving(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void status_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void status_discon(struct halfrel* self, struct halfrel* peer)
@@ -111,26 +111,26 @@ static void status_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void status_search(struct entity* act)
+static void status_search(_obj* act)
 {
 }
-static void status_modify(struct entity* act)
+static void status_modify(_obj* act)
 {
 }
-static void status_delete(struct entity* act)
+static void status_delete(_obj* act)
 {
 }
-static void status_create(struct entity* act, u8* arg)
+static void status_create(_obj* act, u8* arg)
 {
 }
 
 
 
 
-void status_register(struct entity* p)
+void status_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('s','t','a','t','u','s', 0, 0);
+	p->hfmt = hex64('s','t','a','t','u','s', 0, 0);
 
 	p->oncreate = (void*)status_create;
 	p->ondelete = (void*)status_delete;

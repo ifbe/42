@@ -27,23 +27,23 @@ static void speakercallback(void* ptr, AudioQueueRef aq, AudioQueueBufferRef buf
 	status = AudioQueueEnqueueBuffer(aq, buf_ref, 0, NULL);
 	printf ("Enqueue status: %d\n", status);
 */
-	struct supply* sup = ptr;
-	say("@audioqueue.callback: %llx, %d, %d\n", sup, sup->aqenq, sup->aqdeq);
+	_obj* sup = ptr;
+	say("@audioqueue.callback: %llx, %d, %d\n", sup, sup->pcmeasy.aqenq, sup->pcmeasy.aqdeq);
 }
 
 
 
 
-int speaker_take(_sup* spk,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int speaker_take(_obj* spk,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	if(spk->orel0)take_data_from_peer(spk,_ctx_, stack,sp, 0,0, 0,0);
 
-	struct pcmdata* pcm = spk->pcmeasy_data;
+	struct pcmdata* pcm = spk->pcmeasy.data;
 	if(0 == pcm)return 0;
 	say("fmt=%x,chan=%d,rate=%d,count=%d,buf=%llx\n", pcm->fmt, pcm->chan, pcm->rate, pcm->count, pcm->buf);
 
-	AudioQueueRef aqref = spk->aqref;
-	AudioQueueBuffer** aqctx = spk->aqctx;
+	AudioQueueRef aqref = spk->pcmeasy.aqref;
+	AudioQueueBuffer** aqctx = spk->pcmeasy.aqctx;
 
 	int j,cnt;
 	short* src = pcm->buf;
@@ -59,14 +59,14 @@ int speaker_take(_sup* spk,void* foot, _syn* stack,int sp, void* arg, int idx, v
 	usleep(1000*1000);
 	return 0;
 }
-int speaker_give(_sup* spk,void* foot, _syn* stack,int sp, void* arg, int idx, short* buf, int len)
+int speaker_give(_obj* spk,void* foot, _syn* stack,int sp, void* arg, int idx, short* buf, int len)
 {
 	int j;
 	say("@speakerwrite: len=%x\n", len);
 
-	AudioQueueRef aqref = spk->aqref;
-	AudioQueueBuffer** aqctx = spk->aqctx;
-	int enq = spk->aqenq;
+	AudioQueueRef aqref = spk->pcmeasy.aqref;
+	AudioQueueBuffer** aqctx = spk->pcmeasy.aqctx;
+	int enq = spk->pcmeasy.aqenq;
 
 	short* dst = aqctx[enq]->mAudioData;
 	for(j=0;j<len/2;j++)dst[j] = buf[j];
@@ -75,7 +75,7 @@ int speaker_give(_sup* spk,void* foot, _syn* stack,int sp, void* arg, int idx, s
 	j = AudioQueueEnqueueBuffer(aqref, aqctx[enq], 0, NULL);
 	//say("j=%d\n", j);
 
-	spk->aqenq = (enq+1)%2;
+	spk->pcmeasy.aqenq = (enq+1)%2;
 	return 0;
 }
 int speakerstop()
@@ -98,11 +98,11 @@ int speakerchoose()
 {
 	return 0;
 }
-int speakerdelete(struct supply* win)
+int speakerdelete(_obj* win)
 {
 	return 0;
 }
-int speakercreate(struct supply* win)
+int speakercreate(_obj* win)
 {
 	AudioStreamBasicDescription fmt = {0};
 	fmt.mSampleRate = 44100;
@@ -122,26 +122,26 @@ int speakercreate(struct supply* win)
 	}
 	else{
 		printf("NewOutput status: %d\n", status);
-		win->aqref = aq;
+		win->pcmeasy.aqref = aq;
 	}
 
 	//1.aqctx
 	int j;
-	AudioQueueBufferRef* buf_ref = win->aqctx = malloc(0x1000);
+	AudioQueueBufferRef* buf_ref = win->pcmeasy.aqctx = malloc(0x1000);
 	for(j=0;j<2;j++){
-		status = AudioQueueAllocateBuffer(win->aqref, 2*44100, &buf_ref[j]);
+		status = AudioQueueAllocateBuffer(win->pcmeasy.aqref, 2*44100, &buf_ref[j]);
 		printf ("[%d]Allocate status: %d\n", j, status);
 	}
 
-	status = AudioQueueSetParameter(win->aqref, kAudioQueueParam_Volume, 0.5);
+	status = AudioQueueSetParameter(win->pcmeasy.aqref, kAudioQueueParam_Volume, 0.5);
 	printf ("Volume status: %d\n", status);
 
-	status = AudioQueueStart(win->aqref, NULL);
+	status = AudioQueueStart(win->pcmeasy.aqref, NULL);
 	printf ("Start status: %d\n", status);
 
 	//2.aqidx
-	win->aqenq = 0;
-	win->aqdeq = 0;
+	win->pcmeasy.aqenq = 0;
+	win->pcmeasy.aqdeq = 0;
 	return 0;
 }
 

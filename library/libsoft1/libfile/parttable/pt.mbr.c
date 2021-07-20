@@ -129,7 +129,7 @@ int parse_mbr(u8* src, struct parsed* out)
 
 
 
-int mount_mbr_one(_art* art, struct mbrpart* part)
+int mount_mbr_one(_obj* art, struct mbrpart* part)
 {
 	u64 start,count;
 	if(0 == part->parttype)return 0;
@@ -145,7 +145,7 @@ int mount_mbr_one(_art* art, struct mbrpart* part)
 	case 0x0c:
 	case 0x1c:
 	{
-		struct artery* tmp = arterycreate(_fat_,0,0,0);
+		_obj* tmp = arterycreate(_fat_,0,0,0);
 		if(0 == tmp)return 0;
 		struct relation* rel = relationcreate(tmp,0,_art_,_src_, art,(void*)(start<<9),_art_,_dst_);
 		if(0 == rel)return 0;
@@ -156,7 +156,7 @@ int mount_mbr_one(_art* art, struct mbrpart* part)
 
 	return 0;
 }
-int mount_mbr(_art* art, u8* src)
+int mount_mbr(_obj* art, u8* src)
 {
 	int j;
 	src += 0x1be;
@@ -169,21 +169,21 @@ int mount_mbr(_art* art, u8* src)
 
 
 
-static int mbrclient_showinfo(_art* art)
+static int mbrclient_showinfo(_obj* art)
 {
-	u8* mbr = art->buf0;
+	u8* mbr = art->listptr.buf0;
 	return parse_mbr(mbr, 0);
 }
-static int mbrclient_showpart(_art* art,void* foot, void* buf,int len)
+static int mbrclient_showpart(_obj* art,void* foot, void* buf,int len)
 {
-	u8* mbr = art->buf0;
+	u8* mbr = art->listptr.buf0;
 	return parse_mbr(mbr, buf);
 }
 
 
 
 
-static int mbrclient_ontake(_art* art,void* foot, _syn* stack,int sp, u8* arg, int off, u8* buf, int len)
+static int mbrclient_ontake(_obj* art,void* foot, _syn* stack,int sp, u8* arg, int off, u8* buf, int len)
 {
 	u64 offs;
 	//say("@mbrclient_ontake\n");
@@ -199,7 +199,7 @@ takedata:
 	offs = (u64)foot + off;		//foot->offs + idx		//partoffs + dataoffs
 	return take_data_from_peer(art,_src_, stack,sp+2, arg,offs, buf,len);
 }
-static int mbrclient_ongive(_art* art,void* foot, _syn* stack,int sp, u8* arg, int idx, u8* buf, int len)
+static int mbrclient_ongive(_obj* art,void* foot, _syn* stack,int sp, u8* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
@@ -214,17 +214,17 @@ int mbrclient_discon(struct halfrel* self, struct halfrel* peer)
 int mbrclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	say("@mbrclient_linkup:%x\n",self->flag);
-	struct artery* ele = self->pchip;
+	_obj* ele = self->pchip;
 	if(0 == ele)return 0;
-	void* buf = ele->buf0;
+	void* buf = ele->listptr.buf0;
 	if(0 == buf)return 0;
 
 	//read
 	int ret;
 	struct item* xxx = peer->pchip;
 	if((_sys_ == xxx->tier)|(_art_ == xxx->tier)){
-		struct sysobj* obj = peer->pchip;
-		ret = readfile(obj, obj->selffd, "", 0, buf, 0x10000);
+		_obj* obj = peer->pchip;
+		ret = file_take(obj,0, "",0, buf,0x10000);
 		if(0x10000 != ret)return -1;
 	}
 	else{
@@ -232,7 +232,7 @@ int mbrclient_linkup(struct halfrel* self, struct halfrel* peer)
 			ret = xxx->ontaking(xxx,peer->pfoot, 0,0, 0,0, buf, 0x10000);
 		}
 		else{
-			ret = take_data_from_peer(ele,_src_, 0,0, "",0, ele->buf0,0x1000);
+			ret = take_data_from_peer(ele,_src_, 0,0, "",0, ele->listptr.buf0,0x1000);
 		}
 		if(0x10000 != ret)return -1;
 	}
@@ -241,18 +241,18 @@ int mbrclient_linkup(struct halfrel* self, struct halfrel* peer)
 	parse_mbr(buf, 0);
 	return 0;
 }
-int mbrclient_delete(struct artery* art)
+int mbrclient_delete(_obj* art)
 {
-	if(art->buf0){
-		memorydelete(art->buf0);
-		art->buf0 = 0;
+	if(art->listptr.buf0){
+		memorydelete(art->listptr.buf0);
+		art->listptr.buf0 = 0;
 	}
 	return 0;
 }
-int mbrclient_create(struct artery* art)
+int mbrclient_create(_obj* art)
 {
 	say("@mbrclient_create\n");
-	art->buf0 = memorycreate(0x100000, 0);
+	art->listptr.buf0 = memorycreate(0x100000, 0);
 
 	art->ongiving = (void*)mbrclient_ongive;
 	art->ontaking = (void*)mbrclient_ontake;

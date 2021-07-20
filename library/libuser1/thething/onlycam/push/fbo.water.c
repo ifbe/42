@@ -2,11 +2,11 @@
 #define _fbo_ hex32('f','b','o',0)
 void world2clip_projz0z1_transpose(mat4 mat, struct fstyle* frus);
 void world2clip_projznzp_transpose(mat4 mat, struct fstyle* frus);
-void gl41data_insert(struct entity* ctx, int type, struct gl41data* src, int cnt);
-void gl41data_addcam(struct entity* wnd, struct gl41data* data);
+void gl41data_insert(_obj* ctx, int type, struct gl41data* src, int cnt);
+void gl41data_addcam(_obj* wnd, struct gl41data* data);
 
 
-#define CTXBUF buf0
+#define CTXBUF listptr.buf0
 struct waterbuf{
 	mat4 wvp;
 	float time;
@@ -18,28 +18,28 @@ struct waterbuf{
 
 
 static void water_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void water_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void water_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void water_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void water_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
@@ -148,10 +148,10 @@ void water_frustum(struct fstyle* frus, struct fstyle* obb, vec3 cam)
 	frus->vt[3] = t;
 }
 static void water_gl41fbo_update(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* wrl, struct style* camg,
-	struct supply* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* wrl, struct style* camg,
+	_obj* wnd, struct style* area)
 {
 	struct waterbuf* water = act->CTXBUF;
 	if(0 == water)return;
@@ -181,9 +181,9 @@ void water_gl41fbo_prepare(struct mysrc* src)
 
 
 static void water_gl41geom_update(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -298,13 +298,13 @@ void water_gl41geom_prepare(struct gl41data* data, struct waterbuf* water, char*
 
 
 
-static void water_wrl_cam_wnd(_ent* ent,void* foot, _syn* stack,int sp)
+static void water_wrl_cam_wnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
 	if(0 == stack)return;
 
-	struct entity* wor;struct style* geom;
-	struct entity* dup;struct style* camg;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* dup;struct style* camg;
+	_obj* wnd;struct style* area;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	dup = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -316,7 +316,7 @@ static void water_wrl_cam_wnd(_ent* ent,void* foot, _syn* stack,int sp)
 	struct waterbuf* water = ent->CTXBUF;
 	if(0 == water)return;
 
-	if(_gl41list_ == wnd->fmt)world2clip_projznzp_transpose(water->wvp, &geom->frus);
+	if(_gl41list_ == wnd->hfmt)world2clip_projznzp_transpose(water->wvp, &geom->frus);
 	else world2clip_projz0z1_transpose(water->wvp, &geom->frus);
 
 	//create or update fbo
@@ -329,7 +329,7 @@ static void water_wrl_cam_wnd(_ent* ent,void* foot, _syn* stack,int sp)
 
 
 
-static void water_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void water_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -338,10 +338,10 @@ static void water_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -351,7 +351,7 @@ static void water_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 		break;
 	}
 }
-static void water_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void water_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void water_discon(struct halfrel* self, struct halfrel* peer)
@@ -364,10 +364,10 @@ static void water_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void water_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static void water_search(_obj* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 	struct relation* rel;
-	struct entity* world;
+	_obj* world;
 	struct fstyle* obb = 0;
 	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
@@ -383,13 +383,13 @@ static void water_search(struct entity* act, u32 foot, struct halfrel* self[], s
 		rel = samedstnextsrc(rel);
 	}
 }
-static void water_modify(struct entity* act)
+static void water_modify(_obj* act)
 {
 }
-static void water_delete(struct entity* act)
+static void water_delete(_obj* act)
 {
 }
-static void water_create(struct entity* act, char* str)
+static void water_create(_obj* act, char* str)
 {
 	if(0 == act)return;
 
@@ -405,10 +405,10 @@ static void water_create(struct entity* act, char* str)
 
 
 
-void water_register(struct entity* p)
+void water_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('w', 'a', 't', 'e', 'r', 0, 0, 0);
+	p->hfmt = hex64('w', 'a', 't', 'e', 'r', 0, 0, 0);
 
 	p->oncreate = (void*)water_create;
 	p->ondelete = (void*)water_delete;

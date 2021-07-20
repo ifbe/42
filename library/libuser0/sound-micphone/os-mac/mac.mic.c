@@ -9,7 +9,7 @@ static int alive = 0;
 //
 static short* ibuf = 0;
 static int icur = 0;
-void* micphonelistener(struct supply* win)
+void* micphonelistener(_obj* win)
 {
 	int j;
 	struct halfrel stack[0x80];
@@ -24,11 +24,11 @@ void* micphonelistener(struct supply* win)
 
 
 
-int micphone_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+int micphone_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 	return 0;
 }
-int micphone_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+int micphone_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 	return 0;
 }
@@ -40,11 +40,11 @@ int micphonestart()
 {
 	return 0;
 }
-int micphonedelete(struct supply* win)
+int micphonedelete(_obj* win)
 {
 	return 0;
 }
-int micphonecreate(struct supply* win)
+int micphonecreate(_obj* win)
 {
 	ibuf = memorycreate(0x100000, 0);
 	icur = 0;

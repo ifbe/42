@@ -18,7 +18,7 @@ static int w = 0;
 static int h = 0;
 static int fbw = 0;
 static int fbh = 0;
-void window_update(struct supply* wnd,void* test, int x0,int y0, int xn,int yn)
+void window_update(_obj* wnd,void* test, int x0,int y0, int xn,int yn)
 {
 	if(0 == lfb)return;
 	if(x0 < 0)x0 = 0;
@@ -57,7 +57,7 @@ void window_update(struct supply* wnd,void* test, int x0,int y0, int xn,int yn)
 
 
 
-void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == lfb)return;
 	wndmgr_take(wnd,foot, stack,sp, arg,key, buf,len);
@@ -65,7 +65,7 @@ void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, vo
 	//10fps? update whole window
 	window_update(wnd,0, 0,0, w,h);
 }
-void window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(foot){
 		int w = wnd->width;
@@ -101,10 +101,10 @@ void windowsearch()
 void windowmodify()
 {
 }
-void windowdelete(struct supply* wnd)
+void windowdelete(_obj* wnd)
 {
 }
-void windowcreate(struct supply* wnd)
+void windowcreate(_obj* wnd)
 {
 	getscreen(&lfb, &fmt, &w, &h, &fbw, &fbh);
 	say("lfb=%p,fmt=%.8s, w=%d,h=%d, fbw=0x%x,fbh=0x%x\n", lfb,&fmt, w,h, fbw,fbh);

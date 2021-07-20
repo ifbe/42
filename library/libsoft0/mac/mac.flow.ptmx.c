@@ -17,6 +17,18 @@ int kqueue_add(int);
 
 
 static struct sysobj* obj;
+
+
+
+
+void initshell(void* addr)
+{
+	signal(SIGCHLD, SIG_IGN);
+	obj = addr;
+}
+void freeshell()
+{
+}
 void systemshell_child(char* p)
 {
 	int ret;
@@ -39,33 +51,7 @@ void systemshell_child(char* p)
 
 
 
-int readshell(int fd, int off, char* buf, int len)
-{
-	int ret;
-	ret = read(fd, buf, len);
-	return ret;
-}
-int writeshell(int fd, int off, char* buf, int len)
-{
-	int ret;
-	ret = write(fd, buf, len);
-	return ret;
-}
-int listshell(char* p)
-{
-	int ret = system("ls /dev/pts/");
-	return 0;
-}
-int changeshell(char* p, int speed)
-{
-	return 0;
-}
-int stopshell(int fd)
-{
-	close(fd);
-	return 0;
-}
-int startshell(char* p, int baud)
+int shell_create(char* p, int baud)
 {
 	int fd;
 	int ret;
@@ -107,15 +93,33 @@ int startshell(char* p, int baud)
 	kqueue_add(fd);
 	return fd;
 }
-
-
-
-
-void freeshell()
+int shell_delete(int fd)
 {
+	close(fd);
+	return 0;
 }
-void initshell(void* addr)
+int shell_search(char* p)
 {
-	signal(SIGCHLD, SIG_IGN);
-	obj = addr;
+	int ret = system("ls /dev/pts/");
+	return 0;
+}
+int shell_modify(char* p, int speed)
+{
+	return 0;
+}
+
+
+
+
+int shell_take(int fd, int off, char* buf, int len)
+{
+	int ret;
+	ret = read(fd, buf, len);
+	return ret;
+}
+int shell_give(int fd, int off, char* buf, int len)
+{
+	int ret;
+	ret = write(fd, buf, len);
+	return ret;
 }

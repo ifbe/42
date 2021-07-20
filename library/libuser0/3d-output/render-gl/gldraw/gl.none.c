@@ -19,15 +19,15 @@
 
 
 
-void nonewindow_take(_sup* win,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void nonewindow_take(_obj* win,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
-	float w = win->width;
-	float h = win->height;
-	float fbw = win->fbwidth;
-	float fbh = win->fbheight;
+	float w = win->whdf.width;
+	float h = win->whdf.height;
+	float fbw = win->whdf.fbwidth;
+	float fbh = win->whdf.fbheight;
 
-	float x = win->ix0;
-	float y = h-1 - win->iy0;
+	float x = win->whdf.ix0;
+	float y = h-1 - win->whdf.iy0;
 	float r = x / w;
 	float g = y / h;
 	float b = 0.0;
@@ -48,22 +48,22 @@ void nonewindow_take(_sup* win,void* foot, _syn* stack,int sp, void* arg,int idx
 	glClearColor(r, g, b, a);
 	glClear(GL_COLOR_BUFFER_BIT);	//GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT
 }
-void nonewindow_give(_sup* win,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void nonewindow_give(_obj* win,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	struct event* ev = buf;
 	if(0x2b70 == ev->what){
 		short* t = (void*)ev;
-		win->ix0 = t[0];
-		win->iy0 = t[1];
+		win->whdf.ix0 = t[0];
+		win->whdf.iy0 = t[1];
 		//say("%d,%d\n",t[0],t[1]);
 	}
 }
-void nonewindow_delete(struct supply* win)
+void nonewindow_delete(_obj* win)
 {
 }
-void nonewindow_create(struct supply* win)
+void nonewindow_create(_obj* win)
 {
-	win->fmt = _gl41none_;
-	win->ix0 = win->width / 2;
-	win->iy0 = win->height / 2;
+	win->hfmt = _gl41none_;
+	win->whdf.ix0 = win->whdf.width / 2;
+	win->whdf.iy0 = win->whdf.height / 2;
 }

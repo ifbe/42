@@ -9,11 +9,11 @@
 
 
 
-int qu2eu_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int qu2eu_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int qu2eu_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int qu2eu_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	say("@qu2eu_write: foot=%.4s, len=0x%x\n", &foot, len);
 
@@ -40,7 +40,7 @@ int qu2eu_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int qu2eu_create(struct artery* ele, u8* url)
+int qu2eu_create(_obj* ele, u8* url)
 {
 	say("@qu2eu_create\n");
 	return 1;

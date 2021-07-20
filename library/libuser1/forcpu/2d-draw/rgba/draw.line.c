@@ -4,14 +4,14 @@
 
 
 
-void drawline(struct entity* win, u32 rgb,
+void drawline(_obj* win, u32 rgb,
 	int x0, int y0, int x1, int y1)
 {
 	int dx,dy,sx,sy,e1,e2;
-	int width = win->width;
-	int height = win->height;
-	int stride = win->fbwidth>>2;
-	u32* buf = (u32*)(win->rgbabuf);
+	int width = win->whdf.width;
+	int height = win->whdf.height;
+	int stride = win->whdf.fbwidth>>2;
+	u32* buf = (u32*)(win->rgbanode.buf);
 
 	if(x0 < x1){dx = x1-x0;sx = 1;}
 	else {dx = x0-x1;sx = -1;}
@@ -33,7 +33,7 @@ void drawline(struct entity* win, u32 rgb,
 		if(e2 < dy){e1 += dx;y0 += sy;}
 	}
 }
-void drawline_arrow(struct entity* win, u32 rgb,
+void drawline_arrow(_obj* win, u32 rgb,
 	int x0, int y0, int x1, int y1)
 {
 	float x,y,a,b;
@@ -55,14 +55,14 @@ void drawline_arrow(struct entity* win, u32 rgb,
 	b = y1 + 0.5*x + halfsqrt3*y;
 	drawline(win, rgb, x1, y1, (int)a, (int)b);
 }
-void drawline_bezier(struct entity* win, u32 rgb,
+void drawline_bezier(_obj* win, u32 rgb,
 	int x1, int y1, int x2, int y2, int xc, int yc)
 {
 	int x,y,t;
-	int width = win->width;
-	int height = win->height;
-	int stride = win->fbwidth>>2;
-	u32* buf = (u32*)(win->rgbabuf);
+	int width = win->whdf.width;
+	int height = win->whdf.height;
+	int stride = win->whdf.fbwidth>>2;
+	u32* buf = (u32*)(win->rgbanode.buf);
 
 	for(t=0;t<1000;t++)
 	{
@@ -81,14 +81,14 @@ void drawline_bezier(struct entity* win, u32 rgb,
 
 
 
-void drawline_triangle(struct entity* win, u32 rgb,
+void drawline_triangle(_obj* win, u32 rgb,
 	int x1, int y1, int x2, int y2, int x3, int y3)
 {
 	drawline(win, rgb, x1, y1, x2, y2);
 	drawline(win, rgb, x1, y1, x3, y3);
 	drawline(win, rgb, x2, y2, x3, y3);
 }
-void drawline_choose(struct entity* win, u32 rgb,
+void drawline_choose(_obj* win, u32 rgb,
 	int x1, int y1, int x2, int y2)
 {
 	int t;
@@ -122,15 +122,15 @@ void drawline_choose(struct entity* win, u32 rgb,
 	drawline(win,rgb, x2,y2, x2   ,y2-dy);
 	drawline(win,rgb, x2,y2, x2-dx,y2   );
 }
-void drawline_rect(struct entity* win, u32 rgb,
+void drawline_rect(_obj* win, u32 rgb,
 	int x1, int y1, int x2, int y2)
 {
 	int x,y,n;
 	int startx,endx,starty,endy;
-	int width = win->width;
-	int height = win->height;
-	int stride = win->fbwidth>>2;
-	u32* buf = (u32*)(win->rgbabuf);
+	int width = win->whdf.width;
+	int height = win->whdf.height;
+	int stride = win->whdf.fbwidth>>2;
+	u32* buf = (u32*)(win->rgbanode.buf);
 
 	if(x1<x2){startx=x1;endx=x2;}
 	else{startx=x2;endx=x1;}
@@ -179,15 +179,15 @@ void drawline_rect(struct entity* win, u32 rgb,
 		}
 	}
 }
-void drawline_circle(struct entity* win, u32 rgb,
+void drawline_circle(_obj* win, u32 rgb,
 	int cx, int cy, int radius)
 {
 	int x, y, ret;
 	int x1, y1, x2, y2;
-	int width = win->width;
-	int height = win->height;
-	int stride = win->fbwidth>>2;
-	u32* buf = (u32*)(win->rgbabuf);
+	int width = win->whdf.width;
+	int height = win->whdf.height;
+	int stride = win->whdf.fbwidth>>2;
+	u32* buf = (u32*)(win->rgbanode.buf);
 
 	y1=cy-radius;
 	if(y1<0)y1=0;
@@ -214,11 +214,11 @@ void drawline_circle(struct entity* win, u32 rgb,
 		buf[ (y*stride) + x2 ] = rgb;
 	}
 }
-void drawline_oval(struct entity* win, u32 rgb,
+void drawline_oval(_obj* win, u32 rgb,
 	int cx, int cy, int rx, int ry, int fx, int fy)
 {
 }
-void drawline_sector(struct entity* win, u32 rgb,
+void drawline_sector(_obj* win, u32 rgb,
 	int cx, int cy, int radius, int start, int end)
 {
 }
@@ -226,14 +226,14 @@ void drawline_sector(struct entity* win, u32 rgb,
 
 
 
-void drawaxis(struct entity* win)
+void drawaxis(_obj* win)
 {
-	int w = win->width;
-	int h = win->height;
+	int w = win->whdf.width;
+	int h = win->whdf.height;
 	drawline(win, 0xffffff, w/2, 0, w/2, h);
 	drawline(win, 0xffffff, 0, h/2, w, h/2);
 }
-void select_2d(struct entity* win, u32 rgb, struct fstyle* sty, u32 flag)
+void select_2d(_obj* win, u32 rgb, struct fstyle* sty, u32 flag)
 {
 	int lb[2];
 	int lu[2];

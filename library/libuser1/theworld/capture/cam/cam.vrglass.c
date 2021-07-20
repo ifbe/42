@@ -1,23 +1,23 @@
 #include "libuser.h"
 #define _in_ hex32('i','n', 0, 0)
-#define MATBUF buf0
-#define CAMBUF buf1
+#define MATBUF listptr.buf0
+#define CAMBUF listptr.buf1
 void world2clip_projz0z1_transpose(mat4 mat, struct fstyle* frus);
 void world2clip_projznzp_transpose(mat4 mat, struct fstyle* frus);
 
 
 
 
-static void vrglass_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static void vrglass_search(_obj* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 }
-static void vrglass_modify(struct entity* act)
+static void vrglass_modify(_obj* act)
 {
 }
-static void vrglass_delete(struct entity* act)
+static void vrglass_delete(_obj* act)
 {
 }
-static void vrglass_create(struct entity* act, void* str)
+static void vrglass_create(_obj* act, void* str)
 {
 	act->MATBUF = memorycreate(64*2, 0);
 	act->CAMBUF = memorycreate(0x1000, 0);
@@ -27,9 +27,9 @@ static void vrglass_create(struct entity* act, void* str)
 
 
 static int vrglass_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* scn, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	int x,y,j;
 	vec3 tc;
@@ -55,7 +55,7 @@ static int vrglass_draw_gl41(
 	}
 	return 0;
 }
-static int vrglass_event(struct entity* act, struct fstyle* pin, struct event* ev, int len)
+static int vrglass_event(_obj* act, struct fstyle* pin, struct event* ev, int len)
 {
 	short* t;
 	struct fstyle* obb;
@@ -69,24 +69,24 @@ static int vrglass_event(struct entity* act, struct fstyle* pin, struct event* e
 	switch(ev->what){
 	case 0x4070:
 	case touch_move:
-		if(0 == act->fwn)return 0;
+		if(0 == act->whdf.fwn)return 0;
 		t = (void*)ev;
 
-		obb->vq[0] += t[0] - act->fxn;
-		obb->vq[2] -= t[1] - act->fyn;
-		act->fxn = t[0];
-		act->fyn = t[1];
+		obb->vq[0] += t[0] - act->whdf.fxn;
+		obb->vq[2] -= t[1] - act->whdf.fyn;
+		act->whdf.fxn = t[0];
+		act->whdf.fyn = t[1];
 		return 0;
 	case 0x2b70:
 	case touch_onto:
 		t = (void*)ev;
-		act->fxn = t[0];
-		act->fyn = t[1];
-		act->fwn = 1;
+		act->whdf.fxn = t[0];
+		act->whdf.fyn = t[1];
+		act->whdf.fwn = 1;
 		return 0;
 	case 0x2d70:
 	case touch_away:
-		act->fwn = 0;
+		act->whdf.fwn = 0;
 		return 0;
 	}
 
@@ -117,12 +117,12 @@ static int vrglass_event(struct entity* act, struct fstyle* pin, struct event* e
 
 
 void vrglass_ratio(
-	struct entity* wrd, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* wrd, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	struct fstyle* rect = &area->fshape;
-	float dx = rect->vq[0] * wnd->fbwidth;
-	float dy = rect->vq[1] * wnd->fbheight;
+	float dx = rect->vq[0] * wnd->whdf.fbwidth;
+	float dy = rect->vq[1] * wnd->whdf.fbheight;
 
 	struct fstyle* shape = &geom->fshape;
 	float lr = vec3_getlen(shape->vr);
@@ -220,8 +220,8 @@ void vrglass_frustum(struct fstyle* frus, struct fstyle* plane)
 		frus->vc[0], frus->vc[1], frus->vc[2]);*/
 }
 static void vrglass_matrix(
-	struct entity* act, struct style* part,
-	struct entity* wrd, struct style* geom)
+	_obj* act, struct style* part,
+	_obj* wrd, struct style* geom)
 {
 	struct fstyle* frus = &geom->frus;
 
@@ -230,9 +230,9 @@ static void vrglass_matrix(
 	//printmat4(mat);
 }
 static void vrglass_camera(
-	struct entity* act, struct style* part,
-	struct entity* wrd, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* part,
+	_obj* wrd, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	struct fstyle* frus = &geom->frus;
 	struct gl41data* data = act->CAMBUF;
@@ -242,20 +242,20 @@ static void vrglass_camera(
 	data->dst.arg[1].fmt = 'v';
 	data->dst.arg[1].name = "camxyz";
 	data->dst.arg[1].data = frus->vc;
-	wnd->glfull_camera[0] = act->CAMBUF;
+	wnd->gl41list.camera[0] = act->CAMBUF;
 }
 
 
 
 
-static int vrglass_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vrglass_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _tui_:
 	case _rgba_:
 		return 0;
@@ -264,7 +264,7 @@ static int vrglass_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* ar
 	}
 	return 0;
 }
-static int vrglass_read_bywnd(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vrglass_read_bywnd(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 //find world from camera
 	struct halfrel* tmp[2];
@@ -278,12 +278,12 @@ static int vrglass_read_bywnd(_ent* ent,void* slot, _syn* stack,int sp, void* ar
 
 //[-2,-1]: wnd,area -> cam,togl
 //[+0,+1]: cam,towr -> wor,geom
-	struct entity* wnd;struct style* area;
-	struct entity* wor;struct style* geom;
+	_obj* wnd;struct style* area;
+	_obj* wor;struct style* geom;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 	wor = stack[sp+1].pchip;geom = stack[sp+1].pfoot;
 
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	default:
 		//clear all
 		gl41data_before(wnd);
@@ -304,11 +304,11 @@ static int vrglass_read_bywnd(_ent* ent,void* slot, _syn* stack,int sp, void* ar
 
 
 
-static int vrglass_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vrglass_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return 0;
 
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	//foot defined behavior
@@ -316,7 +316,7 @@ static int vrglass_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 	}
 
 	//caller defined behavior
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -326,7 +326,7 @@ static int vrglass_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 	}
 	return 0;
 }
-static int vrglass_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vrglass_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	vrglass_event(ent, 0, buf, 0);
 	return 0;
@@ -341,10 +341,10 @@ static void vrglass_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-void vrglass_register(struct entity* p)
+void vrglass_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('v', 'r', 'g', 'l', 'a', 's', 's', 0);
+	p->hfmt = hex64('v', 'r', 'g', 'l', 'a', 's', 's', 0);
 
 	p->oncreate = (void*)vrglass_create;
 	p->ondelete = (void*)vrglass_delete;

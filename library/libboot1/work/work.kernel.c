@@ -21,46 +21,46 @@ volatile static u64 heartbeat_poll = 0;
 
 
 
-static void kernel_wndctx(struct supply* wnd)
+static void kernel_wndctx(_obj* wnd)
 {
 	//wnd-> = ;
 	struct style* toterm = style_alloc();
-	toterm->fshape.vc[0] = wnd->width/2;
-	toterm->fshape.vc[1] = wnd->height/2;
+	toterm->fshape.vc[0] = wnd->whdf.width/2;
+	toterm->fshape.vc[1] = wnd->whdf.height/2;
 	toterm->fshape.vc[2] = 0;
 	toterm->fshape.vc[3] = 9999.0;		//event owner
-	toterm->fshape.vr[0] = wnd->width/2;
+	toterm->fshape.vr[0] = wnd->whdf.width/2;
 	toterm->fshape.vr[1] = 0;
 	toterm->fshape.vf[0] = 0;
-	toterm->fshape.vf[1] = wnd->height/2;
+	toterm->fshape.vf[1] = wnd->whdf.height/2;
 	struct style* togame = style_alloc();
-	togame->fshape.vc[0] = wnd->width*3/4;
-	togame->fshape.vc[1] = wnd->height/4;
+	togame->fshape.vc[0] = wnd->whdf.width*3/4;
+	togame->fshape.vc[1] = wnd->whdf.height/4;
 	togame->fshape.vc[2] = 0;
 	togame->fshape.vc[3] = 0;
-	togame->fshape.vr[0] = wnd->width/5;
+	togame->fshape.vr[0] = wnd->whdf.width/5;
 	togame->fshape.vr[1] = 0;
 	togame->fshape.vf[0] = 0;
-	togame->fshape.vf[1] = wnd->height/5;
+	togame->fshape.vf[1] = wnd->whdf.height/5;
 	struct style* toedit = style_alloc();
-	toedit->fshape.vc[0] = wnd->width*3/4;
-	toedit->fshape.vc[1] = wnd->height*3/4;
+	toedit->fshape.vc[0] = wnd->whdf.width*3/4;
+	toedit->fshape.vc[1] = wnd->whdf.height*3/4;
 	toedit->fshape.vc[2] = 0;
 	toedit->fshape.vc[3] = 0;
-	toedit->fshape.vr[0] = wnd->width/5;
+	toedit->fshape.vr[0] = wnd->whdf.width/5;
 	toedit->fshape.vr[1] = 0;
 	toedit->fshape.vf[0] = 0;
-	toedit->fshape.vf[1] = wnd->height/5;
+	toedit->fshape.vf[1] = wnd->whdf.height/5;
 
 
 	//things
-	struct entity* termnode = entitycreate(_term_,0, 0, 0);
+	_obj* termnode = entitycreate(_term_,0, 0, 0);
 	struct style* termfoot = style_alloc();
 
-	struct entity* gamenode = entitycreate(_clock_,0, 0, 0);
+	_obj* gamenode = entitycreate(_clock_,0, 0, 0);
 	struct style* gamefoot = style_alloc();
 
-	struct entity* editnode = entitycreate(_mmioedit_,0, 0, 0);
+	_obj* editnode = entitycreate(_mmioedit_,0, 0, 0);
 	struct style* editfoot = style_alloc();
 
 
@@ -87,7 +87,7 @@ static int kernel_pollloop(struct item* wrk)
 	struct item* dev;
 	struct halfrel stack[0x80];
 
-	struct supply* wnd = wrk->priv_ptr;
+	_obj* wnd = wrk->priv_ptr;
 	stack[0].pchip = wrk;
 	stack[1].pchip = wnd;
 	say("pollloop: stack@%p,window@%p\n", stack, wnd);
@@ -123,7 +123,7 @@ static int kernel_drawloop(struct item* wrk)
 	u64 t0,t1;
 	struct halfrel stack[0x80];
 
-	struct supply* wnd = wrk->priv_ptr;
+	_obj* wnd = wrk->priv_ptr;
 	stack[0].pchip = wrk;
 	stack[1].pchip = wnd;
 	say("drawloop: stack@%p,window@%p\n", stack, wnd);
@@ -155,7 +155,7 @@ static int kernel_failloop(struct item* wrk)
 {
 	int j;
 	struct item* dev;
-	struct supply* wnd = wrk->priv_ptr;
+	_obj* wnd = wrk->priv_ptr;
 
 	struct halfrel stack[0x80];
 	stack[0].pchip = wrk;
@@ -228,8 +228,8 @@ static int kernel_idleloop(struct item* wrk)
 int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 {
 	//debug device
-	//struct supply* tty = supplycreate(_tty_, 0, 0, 0);
-	struct supply* wnd = supplycreate(_wnd_, 0, 0, 0);
+	//_obj* tty = supplycreate(_tty_, 0, 0, 0);
+	_obj* wnd = supplycreate(_wnd_, 0, 0, 0);
 	wrk->priv_ptr = wnd;
 
 	//hardware prepare

@@ -167,15 +167,15 @@ void drawascii_alpha(u8* buf, int w, int h, int xx, int yy, u8 ch)
 
 
 
-void drawascii(struct entity* win, u32 rgb, int xx, int yy, u8 ch)
+void drawascii(_obj* win, u32 rgb, int xx, int yy, u8 ch)
 {
 	u8 temp;
 	u8* points;
 	int x,y,offset;
-	int width = win->width;
-	int height = win->height;
-	int stride = win->fbwidth>>2;
-	u32* screen = (u32*)(win->rgbabuf);
+	int width = win->whdf.width;
+	int height = win->whdf.height;
+	int stride = win->whdf.fbwidth>>2;
+	u32* screen = (u32*)(win->rgbanode.buf);
 
 	if((xx<0)|(xx+8>width)|(yy<0)|(yy+16>height))return;
 	if((ch<=0x20)|(ch>=0x80))ch = 0x20;
@@ -197,7 +197,7 @@ void drawascii(struct entity* win, u32 rgb, int xx, int yy, u8 ch)
 		}//x
 	}//y
 }
-void drawstring(struct entity* win, u32 rgb, int x, int y, u8* buf, int len)
+void drawstring(_obj* win, u32 rgb, int x, int y, u8* buf, int len)
 {
 	int j;
 	if(0 == buf)return;
@@ -213,13 +213,13 @@ void drawstring(struct entity* win, u32 rgb, int x, int y, u8* buf, int len)
 
 
 
-void drawfloat(struct entity* win, u32 rgb, int x, int y, float data)
+void drawfloat(_obj* win, u32 rgb, int x, int y, float data)
 {
 	u8 mystr[100];
 	float2decstr(data, mystr);
 	drawstring(win, rgb, x, y, mystr, 0);
 }
-void drawdouble(struct entity* win, u32 rgb, int x, int y, double data)
+void drawdouble(_obj* win, u32 rgb, int x, int y, double data)
 {
 	u8 mystr[100];
 	double2decstr(data, mystr);
@@ -229,7 +229,7 @@ void drawdouble(struct entity* win, u32 rgb, int x, int y, double data)
 
 
 
-void drawhex8(struct entity* win, u32 rgb, int x, int y, u8 ch)
+void drawhex8(_obj* win, u32 rgb, int x, int y, u8 ch)
 {
 	int i;
 	u8 temp = ch;
@@ -244,14 +244,14 @@ void drawhex8(struct entity* win, u32 rgb, int x, int y, u8 ch)
 	if(ch>0x39)ch+=0x7;
 	drawascii(win, rgb, x+8, y, ch);
 }
-void drawhex32(struct entity* win, u32 rgb, int x, int y, u32 ch)
+void drawhex32(_obj* win, u32 rgb, int x, int y, u32 ch)
 {
 	drawhex8(win, rgb, x+ 0, y, (ch>> 0)&0xff);
 	drawhex8(win, rgb, x+16, y, (ch>> 8)&0xff);
 	drawhex8(win, rgb, x+32, y, (ch>>16)&0xff);
 	drawhex8(win, rgb, x+48, y, (ch>>24)&0xff);
 }
-void drawhexadecimal(struct entity* win, u32 rgb, int x, int y, u64 hex)
+void drawhexadecimal(_obj* win, u32 rgb, int x, int y, u64 hex)
 {
 	char ch;
 	int i = 0;
@@ -277,14 +277,14 @@ void drawhexadecimal(struct entity* win, u32 rgb, int x, int y, u64 hex)
 
 
 
-void drawdec8(struct entity* win, u32 rgb, int x, int y, u8 ch)
+void drawdec8(_obj* win, u32 rgb, int x, int y, u8 ch)
 {
 	u8 hi = (ch/10)%10;
 	u8 lo = ch%10;
 	drawascii(win, rgb, x+0, y, 0x30+hi);
 	drawascii(win, rgb, x+8, y, 0x30+lo);
 }
-void drawdecimal(struct entity* win, u32 rgb, int x, int y, int dec)
+void drawdecimal(_obj* win, u32 rgb, int x, int y, int dec)
 {
 	char ch;
 	int i,count;
@@ -321,7 +321,7 @@ void drawdecimal(struct entity* win, u32 rgb, int x, int y, int dec)
 
 
 int drawtext(
-	struct entity* win, u32 rgb,
+	_obj* win, u32 rgb,
 	int x0, int y0, int x1, int y1,
 	u8* buf, int len)
 {
@@ -351,7 +351,7 @@ int drawtext(
 	return j;
 }/*
 int drawtext_reverse(
-	struct entity* win, u32 rgb,
+	_obj* win, u32 rgb,
 	int x0, int y0, int x1, int y1,
 	u8* buf, int len)
 {
@@ -384,15 +384,15 @@ int drawtext_reverse(
 
 
 
-void drawascii_fit(struct entity* win, u32 rgb, int x0, int y0, int x1, int y1, u8 ch)
+void drawascii_fit(_obj* win, u32 rgb, int x0, int y0, int x1, int y1, u8 ch)
 {
 	u8 temp;
 	u8* points;
 	int x,y,j,k,m,n,scale,offset;
-	int width = win->width;
-	int height = win->height;
-	int stride = win->fbwidth>>2;
-	u32* screen = (u32*)(win->rgbabuf);
+	int width = win->whdf.width;
+	int height = win->whdf.height;
+	int stride = win->whdf.fbwidth>>2;
+	u32* screen = (u32*)(win->rgbanode.buf);
 
 	if((ch<=0x20)|(ch>=0x80))ch = 0x20;
 	points = asciitable + (ch<<4);
@@ -429,7 +429,7 @@ void drawascii_fit(struct entity* win, u32 rgb, int x0, int y0, int x1, int y1, 
 		}//x
 	}//y
 }
-void drawstring_fit(struct entity* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len)
+void drawstring_fit(_obj* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len)
 {
 	int j,scale;
 	if(0 == buf)return;
@@ -459,7 +459,7 @@ void drawstring_fit(struct entity* win, u32 rgb, int x0, int y0, int x1, int y1,
 		);
 	}
 }
-void drawdec_fit(struct entity* win, u32 rgb, int x0, int y0, int x1, int y1, int dec)
+void drawdec_fit(_obj* win, u32 rgb, int x0, int y0, int x1, int y1, int dec)
 {
 	int len = 0;
 	u8 ch[22];
@@ -481,6 +481,6 @@ void drawdec_fit(struct entity* win, u32 rgb, int x0, int y0, int x1, int y1, in
 
 	drawstring_fit(win, rgb, x0, y0, x1, y1, ch+22-len, len);
 }
-void drawhex_fit(struct entity* win, u32 rgb, int x0, int y0, int x1, int y1, u64 dec)
+void drawhex_fit(_obj* win, u32 rgb, int x0, int y0, int x1, int y1, u64 dec)
 {
 }

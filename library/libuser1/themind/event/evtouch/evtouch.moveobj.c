@@ -1,5 +1,5 @@
 #include "libuser.h"
-void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
+void gl41data_convert(_obj* wnd, struct style* area, struct event* ev, vec3 v);
 
 
 
@@ -26,16 +26,16 @@ float qw;
 
 
 
-int touchobj_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int touchobj_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int touchobj_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int touchobj_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	struct event* ev = buf;
 	short* t = buf;
 
-	struct finger* fg = ent->buf0;
+	struct finger* fg = ent->priv_ptr;
 	if(touch_away == ev->what){
 		if(t[3] < 0)return 0;
 		if(t[3] <10)return 0;
@@ -85,20 +85,20 @@ int touchobj_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int touchobj_search(struct entity* win)
+int touchobj_search(_obj* win)
 {
 	return 0;
 }
-int touchobj_modify(struct entity* win)
+int touchobj_modify(_obj* win)
 {
 	return 0;
 }
-int touchobj_delete(struct entity* win)
+int touchobj_delete(_obj* win)
 {
 	return 0;
 }
-int touchobj_create(struct entity* act, void* flag)
+int touchobj_create(_obj* act, void* flag)
 {
-	act->buf0 = memorycreate(0x1000, 0);
+	act->priv_ptr = memorycreate(0x1000, 0);
 	return 0;
 }

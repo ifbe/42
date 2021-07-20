@@ -5,9 +5,9 @@
 
 /*
 static void field_draw_dx11(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	int x,y,z;
 	vec3 ta,tb;
@@ -19,7 +19,7 @@ static void field_draw_dx11(
 	float* vf = geom->fs.vf;
 	float* vt = geom->fs.vt;
 
-	float* vec = act->buf0;
+	float* vec = act->listptr.buf0;
 	for(z=0;z<20;z++){
 	for(y=0;y<20;y++){
 	for(x=0;x<20;x++){
@@ -63,9 +63,9 @@ static void field_draw_dx11(
 	}
 }*/
 static void field_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	int x,y,z;
 	float tx,ty,tl;
@@ -80,7 +80,7 @@ static void field_draw_gl41(
 	float* vt = geom->fs.vt;
 	gl41line_prism4(wnd, 0xffffff, vc, vr, vf, vt);
 
-	vec = act->buf0;
+	vec = act->listptr.buf0;
 	for(z=0;z<20;z++){
 	for(y=0;y<20;y++){
 	for(x=0;x<20;x++){
@@ -128,28 +128,28 @@ static void field_draw_gl41(
 	}
 }
 static void field_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void field_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void field_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void field_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void field_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("field(%x,%x,%x)\n",win,act,sty);
 }
@@ -157,13 +157,13 @@ static void field_draw_cli(
 
 
 
-static void field_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void field_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _dx11list_:
 	case _mt20list_:
 	case _gl41list_:
@@ -176,7 +176,7 @@ static void field_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void field_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void field_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -185,10 +185,10 @@ static void field_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -198,7 +198,7 @@ static void field_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 		break;
 	}
 }
-static void field_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void field_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void field_discon(struct halfrel* self, struct halfrel* peer)
@@ -209,8 +209,8 @@ static void field_linkup(struct halfrel* self, struct halfrel* peer)
 	int x,y,z;
 	float ax,ay,az;
 
-	struct entity* act = (void*)(self->chip);
-	float* vec = act->buf0;
+	_obj* act = (void*)(self->chip);
+	float* vec = act->listptr.buf0;
 
 	struct fstyle* sty = (void*)(peer->foot);
 	float* vc = sty->vc;
@@ -236,31 +236,31 @@ static void field_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void field_search(struct entity* act)
+static void field_search(_obj* act)
 {
 }
-static void field_modify(struct entity* act)
+static void field_modify(_obj* act)
 {
 }
-static void field_delete(struct entity* act)
+static void field_delete(_obj* act)
 {
-	if(act->buf0){
-		memorydelete(act->buf0);
-		act->buf0 = 0;
+	if(act->listptr.buf0){
+		memorydelete(act->listptr.buf0);
+		act->listptr.buf0 = 0;
 	}
 }
-static void field_create(struct entity* act)
+static void field_create(_obj* act)
 {
-	float* buf = act->buf0 = memorycreate(0x100000, 0);
+	float* buf = act->listptr.buf0 = memorycreate(0x100000, 0);
 }
 
 
 
 
-void field_register(struct entity* p)
+void field_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('f', 'i', 'e', 'l', 'd', 0, 0, 0);
+	p->hfmt = hex64('f', 'i', 'e', 'l', 'd', 0, 0, 0);
 
 	p->oncreate = (void*)field_create;
 	p->ondelete = (void*)field_delete;

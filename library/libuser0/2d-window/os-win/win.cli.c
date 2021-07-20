@@ -31,10 +31,10 @@ void windowstop()
 void windowstart()
 {
 }
-void windowdelete(struct supply* w)
+void windowdelete(_obj* w)
 {
 }
-void windowcreate(struct supply* w)
+void windowcreate(_obj* w)
 {
 	w->fmt = _cli_;
 	w->vfmt = 0;

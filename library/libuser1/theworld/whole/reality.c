@@ -3,12 +3,12 @@
 
 
 
-int reality_taking(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int reality_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@reality_read\n");
 	return 0;
 }
-int reality_giving(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int reality_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -25,19 +25,19 @@ int reality_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int reality_search(struct entity* world)
+int reality_search(_obj* world)
 {
 	return 0;
 }
-int reality_modify(struct entity* world)
+int reality_modify(_obj* world)
 {
 	return 0;
 }
-int reality_delete(struct entity* world)
+int reality_delete(_obj* world)
 {
 	return 0;
 }
-int reality_create(struct entity* world, void* str)
+int reality_create(_obj* world, void* str)
 {
 	return 0;
 }

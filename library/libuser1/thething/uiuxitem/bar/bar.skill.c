@@ -1,5 +1,5 @@
 #include "libuser.h"
-void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
+void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 
 
 
@@ -101,14 +101,14 @@ void skillbar_ctxforwnd(struct gl41data* data, char* str)
 
 
 static void skillbar_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void skillbar_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	int x,y,k,t;
 	vec3 tc, tr, tf;
@@ -118,7 +118,7 @@ static void skillbar_draw_gl41(
 	float* vu = geom->fs.vt;
 	gl41line_rect(wnd, 0xff00ff, vc, vr, vf);
 
-	struct mysrc* src = act->buf0;
+	struct mysrc* src = act->listptr.buf0;
 	if(0 == src)return;
 	float (*vbuf)[6] = src->vtx[0].vbuf;
 	if(0 == vbuf)return;
@@ -161,23 +161,23 @@ static void skillbar_draw_gl41(
 	gl41data_insert(wnd, 's', src, 1);
 }
 static void skillbar_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void skillbar_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void skillbar_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void skillbar_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("skillbar(%x,%x,%x)\n",win,act,sty);
 }
@@ -185,10 +185,10 @@ static void skillbar_draw_cli(
 
 
 
-static void skillbar_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void skillbar_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	skillbar_draw_gl41(ent,slot, wor,geom, wnd,area);
@@ -197,12 +197,12 @@ static void skillbar_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void skillbar_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void skillbar_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* wnd = stack[sp-2].pchip;
+	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _gl41list_:
 		break;
 	default:
@@ -210,7 +210,7 @@ static void skillbar_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,
 		break;
 	}
 }
-static void skillbar_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void skillbar_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void skillbar_discon(struct halfrel* self, struct halfrel* peer)
@@ -223,23 +223,23 @@ static void skillbar_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void skillbar_search(struct entity* act)
+static void skillbar_search(_obj* act)
 {
 }
-static void skillbar_modify(struct entity* act)
+static void skillbar_modify(_obj* act)
 {
 }
-static void skillbar_delete(struct entity* act)
+static void skillbar_delete(_obj* act)
 {
 	if(0 == act)return;
-	memorydelete(act->buf0);
-	act->buf0 = 0;
+	memorydelete(act->listptr.buf0);
+	act->listptr.buf0 = 0;
 }
-static void skillbar_create(struct entity* act, void* str)
+static void skillbar_create(_obj* act, void* str)
 {
 	if(0 == act)return;
 
-	struct gl41data* data = act->buf0 = memorycreate(0x1000, 0);
+	struct gl41data* data = act->listptr.buf0 = memorycreate(0x1000, 0);
 	if(0 == str)str = "datafile/jpg/cartoon.jpg";
 	skillbar_ctxforwnd(data, str);
 }
@@ -247,10 +247,10 @@ static void skillbar_create(struct entity* act, void* str)
 
 
 
-void skillbar_register(struct entity* p)
+void skillbar_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('s', 'k', 'i', 'l', 'l', 0, 0, 0);
+	p->hfmt = hex64('s', 'k', 'i', 'l', 'l', 0, 0, 0);
 
 	p->oncreate = (void*)skillbar_create;
 	p->ondelete = (void*)skillbar_delete;

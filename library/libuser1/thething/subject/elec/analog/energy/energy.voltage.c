@@ -1,6 +1,6 @@
 #include "libuser.h"
-#define P_PEERFOOT ixn
-#define N_PEERFOOT iyn
+#define P_PEERFOOT whdf.ixn
+#define N_PEERFOOT whdf.iyn
 struct wireindex{
 	int off;
 	int cnt;
@@ -14,28 +14,28 @@ struct wireindex{
 
 
 static void vsrc_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void vsrc_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void vsrc_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void vsrc_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void vsrc_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
@@ -43,9 +43,9 @@ static void vsrc_draw_cli(
 
 
 static void vsrc_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* scn, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	int j;
 	u64 time;
@@ -80,13 +80,13 @@ static void vsrc_draw_gl41(
 		tr[j] = vr[j]/2;
 		tf[j] = vf[j]/2;
 	}
-	gl41float(wnd, 0xffffff, tc,tr,tf, act->fx0);
+	gl41float(wnd, 0xffffff, tc,tr,tf, act->whdf.fx0);
 }
-static void vsrc_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void vsrc_read_bycam(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	if(stack&&('v' == key)){
 		slot = stack[sp-1].pfoot;
 		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
@@ -98,7 +98,7 @@ static void vsrc_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,
 
 
 
-static void vsrc_read_p(struct entity* ent, int key, struct wireindex* sts, int thisone)
+static void vsrc_read_p(_obj* ent, int key, struct wireindex* sts, int thisone)
 {
 	if('V' != key)return;
 
@@ -110,11 +110,11 @@ static void vsrc_read_p(struct entity* ent, int key, struct wireindex* sts, int 
 	float vthis = sts[thisone].volt;
 	say("@n: %d,%f, %d,%f\n",thisone,vthis, theother,vthat);
 
-	float delta = vthis/2 - (vthat + ent->fx0)/2;
+	float delta = vthis/2 - (vthat + ent->whdf.fx0)/2;
 	say("vsrc_read_p: %f,%f\n", sts[thisone].grad, delta);
 	sts[thisone].grad += delta;
 }
-static void vsrc_read_n(struct entity* ent, int key, struct wireindex* sts, int thisone)
+static void vsrc_read_n(_obj* ent, int key, struct wireindex* sts, int thisone)
 {
 	if('V' != key)return;
 
@@ -126,7 +126,7 @@ static void vsrc_read_n(struct entity* ent, int key, struct wireindex* sts, int 
 	float vthis = sts[thisone].volt;
 	say("@n: %d,%f, %d,%f\n",thisone,vthis, theother,vthat);
 
-	float delta = vthis/2 - (vthat - ent->fx0)/2;
+	float delta = vthis/2 - (vthat - ent->whdf.fx0)/2;
 	say("vsrc_read_n: %f,%f\n", sts[thisone].grad, delta);
 	sts[thisone].grad += delta;
 }
@@ -134,7 +134,7 @@ static void vsrc_read_n(struct entity* ent, int key, struct wireindex* sts, int 
 
 
 
-static void vsrc_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void vsrc_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	switch(stack[sp-1].flag){
 		case 'p':vsrc_read_p(ent,key, buf,len);break;
@@ -142,12 +142,12 @@ static void vsrc_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int 
 		default:vsrc_read_bycam(ent,foot, stack,sp, arg,key, buf,len);break;
 	}
 }
-static void vsrc_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void vsrc_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@vsrc_write: %.4s\n", &foot);
 	if('n' == stack[sp-1].flag){
 		struct wireindex* sts = buf;
-		float volt = sts->volt + ent->fx0;
+		float volt = sts->volt + ent->whdf.fx0;
 		give_data_into_peer(ent,'p', stack,sp, 0,0, &volt,0);
 	}
 }
@@ -156,7 +156,7 @@ static void vsrc_discon(struct halfrel* self, struct halfrel* peer)
 }
 static void vsrc_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	struct entity* ent = self->pchip;
+	_obj* ent = self->pchip;
 	switch(self->flag){
 		case 'p':ent->P_PEERFOOT = peer->flag;break;
 		case 'n':ent->N_PEERFOOT = peer->flag;break;
@@ -166,29 +166,29 @@ static void vsrc_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void vsrc_search(struct entity* act, u8* buf)
+static void vsrc_search(_obj* act, u8* buf)
 {
 }
-static void vsrc_modify(struct entity* act, u8* buf)
+static void vsrc_modify(_obj* act, u8* buf)
 {
 }
-static void vsrc_delete(struct entity* act, u8* buf)
+static void vsrc_delete(_obj* act, u8* buf)
 {
 }
-static void vsrc_create(struct entity* act, void* arg, int argc, u8** argv)
+static void vsrc_create(_obj* act, void* arg, int argc, u8** argv)
 {
 	if(0 == arg)return;
-	decstr2float(arg, &act->fx0);
-	say("V=%f\n",act->fx0);
+	decstr2float(arg, &act->whdf.fx0);
+	say("V=%f\n",act->whdf.fx0);
 }
 
 
 
 
-void vsrc_register(struct entity* p)
+void vsrc_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex32('v','s','r','c');
+	p->hfmt = hex32('v','s','r','c');
 
 	p->oncreate = (void*)vsrc_create;
 	p->ondelete = (void*)vsrc_delete;

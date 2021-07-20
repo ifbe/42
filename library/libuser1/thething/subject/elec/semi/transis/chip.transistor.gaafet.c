@@ -4,28 +4,28 @@
 
 
 static void gaafet_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void gaafet_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void gaafet_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void gaafet_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void gaafet_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
@@ -33,9 +33,9 @@ static void gaafet_draw_cli(
 
 
 static void gaafet_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* scn, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	int j;
 	vec3 tc,tr,tf,tu;
@@ -49,26 +49,26 @@ static void gaafet_draw_gl41(
 
 
 
-static void gaafet_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void gaafet_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	gaafet_draw_gl41(ent, slot, wor,geom, wnd,area);
 }
-static void gaafet_wrl_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void gaafet_wrl_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 }
-static void gaafet_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void gaafet_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 }
 
 
 
 
-static void gaafet_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gaafet_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -76,11 +76,11 @@ static void gaafet_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,in
 	switch(stack[sp-1].flag){
 	}
 
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	//caller defined behavior
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -90,7 +90,7 @@ static void gaafet_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,in
 		gaafet_wrl_cam_wnd(ent,slot, stack,sp);
 	}
 }
-static void gaafet_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gaafet_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void gaafet_discon(struct halfrel* self, struct halfrel* peer)
@@ -103,30 +103,30 @@ static void gaafet_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void gaafet_search(struct entity* act, u8* buf)
+static void gaafet_search(_obj* act, u8* buf)
 {
 }
-static void gaafet_modify(struct entity* act, u8* buf)
+static void gaafet_modify(_obj* act, u8* buf)
 {
 }
-static void gaafet_delete(struct entity* act, u8* buf)
+static void gaafet_delete(_obj* act, u8* buf)
 {
 }
-static void gaafet_create(struct entity* act, void* arg, int argc, u8** argv)
+static void gaafet_create(_obj* act, void* arg, int argc, u8** argv)
 {
-	act->ix0 = 0;	//D
-	act->iy0 = 0;	//S
-	act->iz0 = 0;	//G
-	act->iw0 = 0;	//B
+	act->whdf.ix0 = 0;	//D
+	act->whdf.iy0 = 0;	//S
+	act->whdf.iz0 = 0;	//G
+	act->whdf.iw0 = 0;	//B
 }
 
 
 
 
-void gaafet_register(struct entity* p)
+void gaafet_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('g','a','a','f','e','t', 0, 0);
+	p->hfmt = hex64('g','a','a','f','e','t', 0, 0);
 
 	p->oncreate = (void*)gaafet_create;
 	p->ondelete = (void*)gaafet_delete;

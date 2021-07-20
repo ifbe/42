@@ -5,8 +5,8 @@ u32 getrandom();
 
 
 static void example_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	u32 bg,fg;
 	int cx, cy, ww, hh;
@@ -19,10 +19,10 @@ static void example_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 
 	bg = getrandom()&0xffffff;
@@ -31,9 +31,9 @@ static void example_draw_pixel(
 	drawhexadecimal(win, fg, cx, cy, bg);
 }
 static void example_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* wrl, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* wrl, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	vec3 tc, tr, tf, tu, f;
 	float* vc = geom->fs.vc;
@@ -82,49 +82,49 @@ static void example_draw_gl41(
 	gl41solid_sphere(wnd, 0x87cefa, tc, tr, tf, tu);
 }
 static void example_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void example_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void example_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void example_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-static void example_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void example_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	example_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void example_wrl_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void example_wrl_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 }
-static void example_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void example_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 }
 
 
 
 
-static void example_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void example_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -133,10 +133,10 @@ static void example_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		example_draw_pixel(ent,slot, caller, area);
 		break;
@@ -151,7 +151,7 @@ static void example_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void example_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void example_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void example_discon(struct halfrel* self, struct halfrel* peer)
@@ -164,28 +164,28 @@ static void example_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void example_search(struct entity* act)
+static void example_search(_obj* act)
 {
 }
-static void example_modify(struct entity* act)
+static void example_modify(_obj* act)
 {
 }
-static void example_delete(struct entity* act)
-{
-	if(0 == act)return;
-}
-static void example_create(struct entity* act)
+static void example_delete(_obj* act)
 {
 	if(0 == act)return;
 }
+static void example_create(_obj* act)
+{
+	if(0 == act)return;
+}
 
 
 
 
-void example_register(struct entity* p)
+void example_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('e', 'x', 'a', 'm', 'p', 'l', 'e', 0);
+	p->hfmt = hex64('e', 'x', 'a', 'm', 'p', 'l', 'e', 0);
 
 	p->oncreate = (void*)example_create;
 	p->ondelete = (void*)example_delete;

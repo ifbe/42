@@ -4,8 +4,8 @@
 
 
 static void geometry_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int cx = sty->fs.vc[0];
 	int cy = sty->fs.vc[1];
@@ -16,17 +16,17 @@ static void geometry_draw_pixel(
 	drawsolid_rect(win, 0x808080, cx-ww, cy-hh, cx+ww, cy+hh);
 }
 static void geometry_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* scn, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	vec3 t1,t2;
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vu = geom->fs.vt;
-	int dimen = act->iw0;
-	int shape = act->iwn;
+	int dimen = act->whdf.iw0;
+	int shape = act->whdf.iwn;
 	//say("%d,%d\n",dimen,shape);
 
 	if('q' == shape){
@@ -125,46 +125,46 @@ static void geometry_draw_gl41(
 	}
 }
 static void geometry_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void geometry_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void geometry_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void geometry_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void geometry_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
 	char c;
 	if(_char_ == ev->what)
 	{
 		c = ev->why;
-		if((c>='0') && (c<='9'))act->iw0 = c;
-		if((c>='a') && (c<='z'))act->iwn = c;
+		if((c>='0') && (c<='9'))act->whdf.iw0 = c;
+		if((c>='a') && (c<='z'))act->whdf.iwn = c;
 	}
 }
 
 
 
 
-static void geometry_world_camera_window(_ent* ent,void* slot, _syn* stack,int sp)
+static void geometry_world_camera_window(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* scn;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* scn;struct style* geom;
+	_obj* wnd;struct style* area;
 
 	scn = stack[sp-1].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -174,11 +174,11 @@ static void geometry_world_camera_window(_ent* ent,void* slot, _syn* stack,int s
 
 
 
-static void geometry_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void geometry_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	//foot defined behavior
@@ -186,7 +186,7 @@ static void geometry_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,
 	}
 
 	//caller defined behavior
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 	        break;
 	case _gl41list_:
@@ -195,7 +195,7 @@ static void geometry_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,
 		geometry_world_camera_window(ent,slot, stack,sp);
 	}
 }
-static void geometry_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void geometry_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void geometry_discon(struct halfrel* self, struct halfrel* peer)
@@ -208,16 +208,16 @@ static void geometry_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void geometry_search(struct entity* act, u8* buf)
+static void geometry_search(_obj* act, u8* buf)
 {
 }
-static void geometry_modify(struct entity* act, u8* buf)
+static void geometry_modify(_obj* act, u8* buf)
 {
 }
-static void geometry_delete(struct entity* act, u8* buf)
+static void geometry_delete(_obj* act, u8* buf)
 {
 }
-static void geometry_create(struct entity* act, u8* buf)
+static void geometry_create(_obj* act, u8* buf)
 {
 	int dimen = '3';
 	int shape = 'p';
@@ -225,17 +225,17 @@ static void geometry_create(struct entity* act, u8* buf)
 		dimen = buf[0];
 		shape = buf[1];
 	}
-	act->iw0 = dimen;
-	act->iwn = shape;
+	act->whdf.iw0 = dimen;
+	act->whdf.iwn = shape;
 }
 
 
 
 
-void geometry_register(struct entity* p)
+void geometry_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex32('g','e','o','m');
+	p->hfmt = hex32('g','e','o','m');
 
 	p->oncreate = (void*)geometry_create;
 	p->ondelete = (void*)geometry_delete;

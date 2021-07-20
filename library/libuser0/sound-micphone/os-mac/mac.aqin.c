@@ -21,11 +21,11 @@ static void micphonecallback(void* ptr, AudioQueueRef inaq, AudioQueueBufferRef 
 
 
 
-int micphone_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+int micphone_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 	return 0;
 }
-int micphone_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+int micphone_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 	return 0;
 }
@@ -37,11 +37,11 @@ int micphonestart()
 {
 	return 0;
 }
-int micphonedelete(struct supply* win)
+int micphonedelete(_obj* win)
 {
 	return 0;
 }
-int micphonecreate(struct supply* win)
+int micphonecreate(_obj* win)
 {
 	AudioStreamBasicDescription fmt = {0};
 	fmt.mSampleRate = 44100;
@@ -60,11 +60,11 @@ int micphonecreate(struct supply* win)
 	}
 	else{
 		printf("NewInput status: %d\n", status);
-		win->aqref = aq;
+		win->pcmeasy.aqref = aq;
 	}
 
 	int j;
-	AudioQueueBufferRef* buf_ref = win->aqctx = malloc(0x1000);
+	AudioQueueBufferRef* buf_ref = win->pcmeasy.aqctx = malloc(0x1000);
 	for(j=0;j<16;j++){
 		status = AudioQueueAllocateBuffer(aq, 2*1024, &buf_ref[j]);
 		printf("[%d]Allocate status: %d\n", j, status);
@@ -73,14 +73,14 @@ int micphonecreate(struct supply* win)
 		printf("[%d]Enqueue status: %d\n", j, status);
 	}
 
-	win->aqref = aq;
+	win->pcmeasy.aqref = aq;
 	status = AudioQueueSetParameter(aq, kAudioQueueParam_Volume, 1.0);
 	printf ("Volume status: %d\n", status);
 
 	status = AudioQueueStart(aq, NULL);
 	printf ("Start status: %d\n", status);
 
-	win->aqctx = buf_ref;
+	win->pcmeasy.aqctx = buf_ref;
 	return 0;
 }
 

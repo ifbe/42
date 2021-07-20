@@ -160,7 +160,7 @@ static void rawinputlistall()
 byebye:
 	free(ridl);
 }
-void joycreate(struct supply* win)
+void joycreate(_obj* win)
 {
 	rawinputlistall();
 	threadcreate(gamepadthread, win);

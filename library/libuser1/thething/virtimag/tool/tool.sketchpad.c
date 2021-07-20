@@ -1,8 +1,8 @@
 #include "libuser.h"
-#define CTXBUF buf0
-#define DATBUF buf1
+#define CTXBUF listptr.buf0
+#define DATBUF listptr.buf1
 int copypath(u8* path, u8* data);
-void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
+void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 //
 double calculator(void* postfix, u64 x, u64 y);
 double sketchpad(void*, double, double);
@@ -64,9 +64,9 @@ static void sketchpad_ctxforwnd(struct mysrc* src, char* vs, char* fs)
 	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
 }
 static void sketchpad_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* scn, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -127,7 +127,7 @@ static void sketchpad_draw_gl41(
 	gl41data_insert(wnd, 's', act->CTXBUF, 1);
 }
 /*
-static void wangge(struct entity* win)
+static void wangge(_obj* win)
 {
 	int temp;
 	int x,y;
@@ -192,14 +192,14 @@ static void wangge(struct entity* win)
 	}//横线
 
 }
-static void tuxiang(struct entity* win)
+static void tuxiang(_obj* win)
 {
 	int x, y;
 	int value1, value2, counter;
 	double rx, ry, hello;
 
 	int width = win->stride;
-	int height = win->height;
+	int height = win->whdf.height;
 	u32* buf = win->rawbuf;
 
 
@@ -254,14 +254,14 @@ static void tuxiang(struct entity* win)
 }
 */
 static void sketchpad_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	double rx,ry,rw;
 	int x,y,w,counter;
 	int cx, cy, ww, hh;
-	int stride = win->fbwidth;
-	u32* buf = win->rgbabuf;
+	int stride = win->whdf.fbwidth;
+	u32* buf = win->rgbanode.buf;
 	u8* databuf = act->DATBUF;
 
 	if(sty)
@@ -273,10 +273,10 @@ static void sketchpad_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 
 	for(y=0;y<hh*2;y++)
@@ -327,27 +327,27 @@ skipthese:
 	drawstring(win, 0xcccccc, cx-ww, cy-hh+48, result, 0);
 }
 static void sketchpad_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void sketchpad_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void sketchpad_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x, y;
 	int value1, value2, counter;
 	double rx, ry, hello;
 	u8* databuf = act->DATBUF;
 
-	int width = win->width;
-	int height = win->height;
-	u8* p = win->rgbabuf;
+	int width = win->whdf.width;
+	int height = win->whdf.height;
+	u8* p = win->rgbanode.buf;
 
 	for(x=0;x<width*height*4;x++)p[x] = 0;
 	for(y=0;y<height;y++)
@@ -394,14 +394,14 @@ static void sketchpad_draw_tui(
 	}
 }
 static void sketchpad_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("sketchpad(%x,%x,%x)\n",win,act,sty);
 }
 static void sketchpad_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
 	int ret;
@@ -506,10 +506,10 @@ static void sketchpad_event(
 
 
 
-static void sketchpad_take_bycam(_ent* ent,void* slot, _syn* stack,int sp)
+static void sketchpad_take_bycam(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	if(0 == stack)return;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
@@ -520,13 +520,13 @@ static void sketchpad_take_bycam(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void sketchpad_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void sketchpad_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 	if(0 == stack)return;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _tui_:
 		break;
 	case _rgba_:
@@ -545,7 +545,7 @@ static void sketchpad_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg
 		break;
 	}
 }
-static void sketchpad_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void sketchpad_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void sketchpad_discon(struct halfrel* self, struct halfrel* peer)
@@ -558,17 +558,17 @@ static void sketchpad_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void sketchpad_search(struct entity* act)
+static void sketchpad_search(_obj* act)
 {
 }
-static void sketchpad_modify(struct entity* act)
+static void sketchpad_modify(_obj* act)
 {
 }
-static void sketchpad_delete(struct entity* act)
+static void sketchpad_delete(_obj* act)
 {
 	if(0 == act)return;
 }
-static void sketchpad_create(struct entity* act, void* str, int argc, u8** argv)
+static void sketchpad_create(_obj* act, void* str, int argc, u8** argv)
 {
 	int j;
 	u8 vspath[128];
@@ -603,10 +603,10 @@ static void sketchpad_create(struct entity* act, void* str, int argc, u8** argv)
 
 
 
-void sketchpad_register(struct entity* p)
+void sketchpad_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('s', 'k', 'e', 't', 'c', 'h', 0, 0);
+	p->hfmt = hex64('s', 'k', 'e', 't', 'c', 'h', 0, 0);
 
 	p->oncreate = (void*)sketchpad_create;
 	p->ondelete = (void*)sketchpad_delete;

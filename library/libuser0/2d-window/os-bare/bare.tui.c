@@ -3,7 +3,7 @@
 
 
 
-void windowwrite(struct supply* src)
+void windowwrite(_obj* src)
 {
 	int x,y;
 	u8 bg=0,fg=0,c=0;
@@ -56,10 +56,10 @@ void windowstop()
 void windowstart()
 {
 }
-void windowdelete(struct supply* w)
+void windowdelete(_obj* w)
 {
 }
-void windowcreate(struct supply* w)
+void windowcreate(_obj* w)
 {
 	w->fmt = _tui_;
 	w->vfmt = 0;

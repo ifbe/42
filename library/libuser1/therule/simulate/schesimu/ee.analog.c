@@ -66,7 +66,7 @@ static void analog_voltage(struct wireindex* dst, float* volt)
 
 	dst->sure = 1;
 }
-static void analog_emulate(struct entity* ent, struct wireindex* sts, u8* buf, int len)
+static void analog_emulate(_obj* ent, struct wireindex* sts, u8* buf, int len)
 {
 	//clear, ensure
 	int j,k;
@@ -79,7 +79,7 @@ static void analog_emulate(struct entity* ent, struct wireindex* sts, u8* buf, i
 	sts[0].volt = (float)(buf[0]-0x30);
 	give_data_into_them(ent,'a', 0,0, 0,0, &sts[0],0);
 }
-static void analog_decent_V(struct entity* ent, struct wireindex* sts)
+static void analog_decent_V(_obj* ent, struct wireindex* sts)
 {
 	int j;
 	for(j=1;j<16;j++){
@@ -97,7 +97,7 @@ static void analog_decent_V(struct entity* ent, struct wireindex* sts)
 		say("%f\n",sts[j].volt);
 	}
 }
-static void analog_decent_R(struct entity* ent, struct wireindex* sts)
+static void analog_decent_R(_obj* ent, struct wireindex* sts)
 {
 	int j;
 	for(j=1;j<16;j++){
@@ -120,9 +120,9 @@ static void analog_decent_R(struct entity* ent, struct wireindex* sts)
 
 
 static void analog_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* scn, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -130,9 +130,9 @@ static void analog_draw_gl41(
 	float* vt = geom->fs.vt;
 	gl41solid_rect(wnd, 0x404040, vc, vr, vf);
 
-	struct wireindex* sts = act->buf0;
+	struct wireindex* sts = act->listptr.buf0;
 	if(0 == sts)return;
-	float* dat = act->buf1;
+	float* dat = act->listptr.buf1;
 	if(0 == dat)return;
 
 	analog_decent_R(act, sts);
@@ -166,17 +166,17 @@ static void analog_draw_gl41(
 		gl41float(wnd, rgb, tc,tr,tf, sts[k].volt);
 	}
 }
-void analog_read_board(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+void analog_read_board(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	if(0 == stack)return;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	analog_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-int analog_read_child(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int analog_read_child(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct relation* rel = ent->orel0;
 	while(1){
@@ -194,11 +194,11 @@ int analog_read_child(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int ke
 	}
 	return 0;
 }
-int analog_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int analog_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return 0;
 
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	//foot defined behavior
@@ -206,7 +206,7 @@ int analog_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, v
 	}
 
 	//caller defined behavior
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -217,9 +217,9 @@ int analog_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, v
 	analog_read_board(ent,foot, stack,sp, arg,key, buf,len);
 	return 0;
 }
-int analog_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int analog_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct wireindex* sts = ent->buf0;
+	struct wireindex* sts = ent->listptr.buf0;
 	if(0 == sts)return 0;
 
 	struct event* ev;
@@ -258,29 +258,29 @@ int analog_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int analog_search(struct entity* scene)
+int analog_search(_obj* scene)
 {
 	return 0;
 }
-int analog_modify(struct entity* scene)
+int analog_modify(_obj* scene)
 {
 	return 0;
 }
-int analog_delete(struct entity* scene)
+int analog_delete(_obj* scene)
 {
 	return 0;
 }
-int analog_create(struct entity* scene, void* arg, int argc, u8** argv)
+int analog_create(_obj* scene, void* arg, int argc, u8** argv)
 {
 	int ret;
 	say("@analog_create\n");
 	if(0 == arg)return 0;
 
-	scene->buf0 = memorycreate(0x10000, 0);
-	ret = openreadclose(arg, 0, scene->buf0, 0x10000);
+	scene->listptr.buf0 = memorycreate(0x10000, 0);
+	ret = openreadclose(arg, 0, scene->listptr.buf0, 0x10000);
 	if(ret <= 0)return 0;
 
-	scene->buf1 = memorycreate(0x10000, 0);
-	parsewiring(scene->buf0, scene->buf1);
+	scene->listptr.buf1 = memorycreate(0x10000, 0);
+	parsewiring(scene->listptr.buf0, scene->listptr.buf1);
 	return 0;
 }

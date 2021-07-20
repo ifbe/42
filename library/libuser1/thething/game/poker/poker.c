@@ -4,8 +4,8 @@
 
 
 static void poker_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int j, cx, cy, ww, hh;
 	if(sty)
@@ -17,10 +17,10 @@ static void poker_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
 
@@ -51,38 +51,38 @@ static void poker_draw_pixel(
 	}
 }
 static void poker_draw_gl41(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void poker_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void poker_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void poker_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void poker_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-static void poker_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void poker_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void poker_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void poker_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void poker_discon(struct halfrel* self, struct halfrel* peer)
@@ -95,33 +95,33 @@ static void poker_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void poker_search(struct entity* act)
+static void poker_search(_obj* act)
 {
 }
-static void poker_modify(struct entity* act)
+static void poker_modify(_obj* act)
 {
 }
-static void poker_delete(struct entity* act)
+static void poker_delete(_obj* act)
 {
 	if(0 == act)return;
-	if(act->buf0){
-		memorydelete(act->buf0);
-		act->buf0 = 0;
+	if(act->listptr.buf0){
+		memorydelete(act->listptr.buf0);
+		act->listptr.buf0 = 0;
 	}
 }
-static void poker_create(struct entity* act)
+static void poker_create(_obj* act)
 {
 	if(0 == act)return;
-	act->buf0 = memorycreate(108, 0);
+	act->listptr.buf0 = memorycreate(108, 0);
 }
 
 
 
 
-void poker_register(struct entity* p)
+void poker_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('p', 'o', 'k', 'e', 'r', 0, 0, 0);
+	p->hfmt = hex64('p', 'o', 'k', 'e', 'r', 0, 0, 0);
 
 	p->oncreate = (void*)poker_create;
 	p->ondelete = (void*)poker_delete;

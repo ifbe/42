@@ -187,18 +187,18 @@ int portspace_giving(void*,void*, void*,int, void*,int, void*,int);
 int portspace_taking(void*,void*, void*,int, void*,int, void*,int);
 
 //gl41 helper
-int gl41data_create(_ent*, void*, int, u8**);
-int gl41data_delete(_ent*);
+int gl41data_create(_obj*, void*, int, u8**);
+int gl41data_delete(_obj*);
 int gl41data_linkup(void*, void*);
 int gl41data_discon(void*, void*);
-int gl41data_taking(_ent*,void*, _syn*,int, void*,int, void*,int);
-int gl41data_giving(_ent*,void*, _syn*,int, void*,int, void*,int);
-int gl41coop_create(_ent*, void*, int, u8**);
-int gl41coop_delete(_ent*);
+int gl41data_taking(_obj*,void*, _syn*,int, void*,int, void*,int);
+int gl41data_giving(_obj*,void*, _syn*,int, void*,int, void*,int);
+int gl41coop_create(_obj*, void*, int, u8**);
+int gl41coop_delete(_obj*);
 int gl41coop_linkup(void*, void*);
 int gl41coop_discon(void*, void*);
-int gl41coop_taking(_ent*,void*, void*,int, void*,int, void*,int);
-int gl41coop_giving(_ent*,void*, void*,int, void*,int, void*,int);
+int gl41coop_taking(_obj*,void*, void*,int, void*,int, void*,int);
+int gl41coop_giving(_obj*,void*, void*,int, void*,int, void*,int);
 
 //event
 int cam1rd_create(void*, void*, int, u8**);
@@ -253,19 +253,19 @@ int wander_giving(void*,void*, void*,int, void*,int, void*,int);
 
 
 
-static struct entity* entity = 0;
+static _obj* entity = 0;
 static int actlen = 0;
 static struct style* style = 0;
 static int stylen = 0;
 void* entity_alloc()
 {
 	int j,max;
-	struct entity* act;
+	_obj* act;
 
-	max = 0x100000 / sizeof(struct entity);
+	max = 0x100000 / sizeof(_obj);
 	for(j=0;j<max;j++){
 		act = &entity[j];
-		if(0 == act->fmt)return act;
+		if(0 == act->hfmt)return act;
 	}
 	return 0;
 }
@@ -300,23 +300,23 @@ void* entitycreate_clone(u64 fmt, u8* arg, int argc, u8** argv)
 	int j;
 	u8* src;
 	u8* dst;
-	struct entity* ent;
-	struct entity* tmp = 0x100000 + (void*)entity;
+	_obj* ent;
+	_obj* tmp = 0x100000 + (void*)entity;
 
 	for(j=1;j<256;j++){
 		tmp = &tmp[-1];		//prev
-		if(fmt == tmp->fmt)goto found;
+		if(fmt == tmp->hfmt)goto found;
 	}
 	return 0;
 
 found:
 	ent = entity_alloc();
 	dst = (void*)ent;
-	for(j=0;j<sizeof(struct entity);j++)dst[j] = 0;
+	for(j=0;j<sizeof(_obj);j++)dst[j] = 0;
 
 	ent->tier = tmp->tier;
 	ent->type = tmp->type;
-	ent->fmt  = tmp->fmt;
+	ent->hfmt  = tmp->hfmt;
 	ent->vfmt = tmp->vfmt;
 
 	ent->oncreate = tmp->oncreate;
@@ -335,7 +335,7 @@ found:
 
 
 /*
-void entityinput_touch(struct supply* win, struct event* ev)
+void entityinput_touch(_obj* win, struct event* ev)
 {
 	int x,y,z,btn;
 	if('p' != (ev->what & 0xff))return;
@@ -369,7 +369,7 @@ void entityinput_touch(struct supply* win, struct event* ev)
 
 
 
-int entity_take(_ent* act,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int entity_take(_obj* act,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	switch(act->type){
 	case _cam1rd_:return cam1rd_taking(act,foot, stack,sp, arg,key, buf,len);
@@ -424,7 +424,7 @@ int entity_take(_ent* act,void* foot, _syn* stack,int sp, void* arg,int key, voi
 	if(0 == act->ontaking)return 0;
 	return act->ontaking(act,foot, stack,sp, arg,key, buf,len);
 }
-int entity_give(_ent* act,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int entity_give(_obj* act,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	switch(act->type){
 	case _cam1rd_:return cam1rd_giving(act,foot, stack,sp, arg,key, buf,len);
@@ -482,7 +482,7 @@ int entity_give(_ent* act,void* foot, _syn* stack,int sp, void* arg,int key, voi
 }
 int entitydiscon(struct halfrel* self, struct halfrel* peer)
 {
-	struct entity* act;
+	_obj* act;
 	if(0 == self)return 0;
 	act = self->pchip;
 	if(0 == act)return 0;
@@ -543,7 +543,7 @@ int entitydiscon(struct halfrel* self, struct halfrel* peer)
 }
 int entitylinkup(struct halfrel* self, struct halfrel* peer)
 {
-	struct entity* act;
+	_obj* act;
 	if(0 == self)return 0;
 	act = self->pchip;
 	if(0 == act)return 0;
@@ -606,10 +606,10 @@ int entitylinkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int entitydelete(void* p)
+int entitydelete(_obj* p)
 {
 	if(0 == p)return 0;
-	struct entity* act = p;
+	_obj* act = p;
 
 	switch(act->type){
 		case _orig_:return 0;
@@ -623,7 +623,7 @@ int entitydelete(void* p)
 }
 void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 {
-	struct entity* act;
+	_obj* act;
 	//say("%llx,%llx\n", type, buf);
 
 	switch(type){
@@ -631,42 +631,42 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 	case _reality_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _reality_;
+		act->hfmt = act->type = _reality_;
 		reality_create(act, buf, argc, argv);
 		return act;
 	}
 	case _virtual_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _virtual_;
+		act->hfmt = act->type = _virtual_;
 		virtual_create(act, buf, argc, argv);
 		return act;
 	}
 	case _htmlroot_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _htmlroot_;
+		act->hfmt = act->type = _htmlroot_;
 		htmlroot_create(act, buf, argc, argv);
 		return act;
 	}
 	case _xamlroot_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _xamlroot_;
+		act->hfmt = act->type = _xamlroot_;
 		xamlroot_create(act, buf, argc, argv);
 		return act;
 	}
 	case _mmio_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _mmio_;
+		act->hfmt = act->type = _mmio_;
 		mmiospace_create(act, buf, argc, argv);
 		return act;
 	}
 	case _port_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _port_;
+		act->hfmt = act->type = _port_;
 		portspace_create(act, buf, argc, argv);
 		return act;
 	}
@@ -675,28 +675,28 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 	case _sch_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _sch_;
+		act->hfmt = act->type = _sch_;
 		schematic_create(act, buf, argc, argv);
 		return act;
 	}
 	case _pcb_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _pcb_;
+		act->hfmt = act->type = _pcb_;
 		printboard_create(act, buf, argc, argv);
 		return act;
 	}
 	case _analog_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _analog_;
+		act->hfmt = act->type = _analog_;
 		analog_create(act, buf, argc, argv);
 		return act;
 	}
 	case _digital_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _digital_;
+		act->hfmt = act->type = _digital_;
 		digital_create(act, buf, argc, argv);
 		return act;
 	}
@@ -704,42 +704,42 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 	case _axis3d_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _axis3d_;
+		act->hfmt = act->type = _axis3d_;
 		axis3d_create(act, buf, argc, argv);
 		return act;
 	}
 	case _guide3d_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _guide3d_;
+		act->hfmt = act->type = _guide3d_;
 		guide3d_create(act, buf, argc, argv);
 		return act;
 	}
 	case _border2d_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _border2d_;
+		act->hfmt = act->type = _border2d_;
 		border2d_create(act, buf, argc, argv);
 		return act;
 	}
 	case _border3d_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _border3d_;
+		act->hfmt = act->type = _border3d_;
 		border3d_create(act, buf, argc, argv);
 		return act;
 	}
 	case _scene3d_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _scene3d_;
+		act->hfmt = act->type = _scene3d_;
 		scene3d_create(act, buf, argc, argv);
 		return act;
 	}
 	case _wndmgr_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _wndmgr_;
+		act->hfmt = act->type = _wndmgr_;
 		wndmgr_create(act, buf, argc, argv);
 		return act;
 	}
@@ -748,14 +748,14 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
  	case _baby_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _baby_;
+		act->hfmt = act->type = _baby_;
 		baby_create(act, buf, argc, argv);
 		return act;
 	}
 	case _test_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _test_;
+		act->hfmt = act->type = _test_;
 		test_create(act, buf, argc, argv);
 		return act;
 	}
@@ -764,21 +764,21 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 	case _cam1rd_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _cam1rd_;
+		act->hfmt = act->type = _cam1rd_;
 		cam1rd_create(act, buf, argc, argv);
 		return act;
 	}
 	case _cam3rd_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _cam3rd_;
+		act->hfmt = act->type = _cam3rd_;
 		cam3rd_create(act, buf, argc, argv);
 		return act;
 	}
 	case _camrts_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _camrts_;
+		act->hfmt = act->type = _camrts_;
 		camrts_create(act, buf, argc, argv);
 		return act;
 	}
@@ -786,35 +786,35 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 	case _follow_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _follow_;
+		act->hfmt = act->type = _follow_;
 		follow_create(act, buf, argc, argv);
 		return act;
 	}
 	case _lookat_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _lookat_;
+		act->hfmt = act->type = _lookat_;
 		lookat_create(act, buf, argc, argv);
 		return act;
 	}
 	case _wander_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _wander_;
+		act->hfmt = act->type = _wander_;
 		wander_create(act, buf, argc, argv);
 		return act;
 	}
 	case _touchobj_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _touchobj_;
+		act->hfmt = act->type = _touchobj_;
 		touchobj_create(act, buf, argc, argv);
 		return act;
 	}
 	case _clickray_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _clickray_;
+		act->hfmt = act->type = _clickray_;
 		clickray_create(act, buf, argc, argv);
 		return act;
 	}
@@ -823,21 +823,21 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 	case _virtimu_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _virtimu_;
+		act->hfmt = act->type = _virtimu_;
 		virtimu_create(act, buf, argc, argv);
 		return act;
 	}
 	case _carcon_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _carcon_;
+		act->hfmt = act->type = _carcon_;
 		carcon_create(act, buf, argc, argv);
 		return act;
 	}
 	case _flycon_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _flycon_;
+		act->hfmt = act->type = _flycon_;
 		flycon_create(act, buf, argc, argv);
 		return act;
 	}
@@ -848,21 +848,21 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 	case _force_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _force_;
+		act->hfmt = act->type = _force_;
 		force_create(act, buf, argc, argv);
 		return act;
 	}
 	case _graveasy_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _graveasy_;
+		act->hfmt = act->type = _graveasy_;
 		graveasy_create(act, buf, argc, argv);
 		return act;
 	}
 	case _gravtest_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _gravtest_;
+		act->hfmt = act->type = _gravtest_;
 		gravtest_create(act, buf, argc, argv);
 		return act;
 	}
@@ -871,14 +871,14 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 	case _bdc_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _bdc_;
+		act->hfmt = act->type = _bdc_;
 		toycar_create(act, buf, argc, argv);
 		return act;
 	}
 	case _step_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _step_;
+		act->hfmt = act->type = _step_;
 		stepcar_create(act, buf, argc, argv);
 		return act;
 	}
@@ -886,14 +886,14 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 /*	case _gl41data_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _gl41data_;
+		act->hfmt = act->type = _gl41data_;
 		gl41data_create(act, buf, argc, argv);
 		return act;
 	}
 	case _gl41coop_:
 	{
 		act = entity_alloc();
-		act->fmt = act->type = _gl41coop_;
+		act->hfmt = act->type = _gl41coop_;
 		gl41coop_create(act, buf, argc, argv);
 		return act;
 	}*/
@@ -927,15 +927,15 @@ void* entitysearch(u8* buf, int len)
 {
 	int j,k;
 	u8* p;
-	struct entity* act;
+	_obj* act;
 	if(0 == buf)
 	{
 		for(j=0;j<0x100;j++)
 		{
 			act = &entity[j];
-			if(0 == act->fmt)break;
+			if(0 == act->hfmt)break;
 			say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
-				&act->tier, &act->type, &act->fmt, &act->fmt);
+				&act->tier, &act->type, &act->hfmt, &act->hfmt);
 		}
 		if(0 == j)say("empty entity\n");
 	}
@@ -943,8 +943,8 @@ void* entitysearch(u8* buf, int len)
 	{
 		for(j=0;j<0x100;j++)
 		{
-			if(0 == entity[j].fmt)break;
-			p = (void*)(&entity[j].fmt);
+			if(0 == entity[j].hfmt)break;
+			p = (void*)(&entity[j].hfmt);
 
 			for(k=0;k<8;k++)
 			{
@@ -984,7 +984,7 @@ void entity_init(u8* addr)
 	entity = (void*)(addr+0x000000);
 	style = (void*)(addr+0x100000);
 
-#define max (0x100000/sizeof(struct entity))
+#define max (0x100000/sizeof(_obj))
 	for(j=0;j<0x200000;j++)addr[j] = 0;
 	for(j=0;j<max;j++)entity[j].tier = _ent_;
 

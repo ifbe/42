@@ -3,12 +3,12 @@
 
 
 
-int portspace_taking(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int portspace_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@portspace_read\n");
 	return 0;
 }
-int portspace_giving(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int portspace_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -25,19 +25,19 @@ int portspace_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int portspace_search(struct entity* world)
+int portspace_search(_obj* world)
 {
 	return 0;
 }
-int portspace_modify(struct entity* world)
+int portspace_modify(_obj* world)
 {
 	return 0;
 }
-int portspace_delete(struct entity* world)
+int portspace_delete(_obj* world)
 {
 	return 0;
 }
-int portspace_create(struct entity* world, void* str)
+int portspace_create(_obj* world, void* str)
 {
 	return 0;
 }

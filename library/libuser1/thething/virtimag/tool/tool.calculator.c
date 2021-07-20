@@ -1,8 +1,8 @@
 #include "libuser.h"
-void gl41data_before(struct entity* wnd);
-void gl41data_after(struct entity* wnd);
-void gl41data_01cam(struct entity* wnd);
-void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
+void gl41data_before(_obj* wnd);
+void gl41data_after(_obj* wnd);
+void gl41data_01cam(_obj* wnd);
+void gl41data_convert(_obj* wnd, struct style* area, struct event* ev, vec3 v);
 //
 void postfix2binarytree(void* postfix, void* out);
 void infix2postfix(void* infix, void* postfix);
@@ -28,8 +28,8 @@ static u8 table[4][8] = {
 
 
 static void calculator_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	u32 fg;
 	int x,y;
@@ -43,10 +43,10 @@ static void calculator_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 	drawsolid_rect(win, 0x222222, cx-ww, cy-hh, cx+ww, cy);
 
@@ -76,9 +76,9 @@ static void calculator_draw_pixel(
 	}
 }
 static void calculator_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int j,x,y,rgb;
 	vec3 tc,tr,tf;
@@ -130,23 +130,23 @@ static void calculator_draw_gl41(
 	}
 }
 static void calculator_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void calculator_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void calculator_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void calculator_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("calc(%x,%x,%x)\n",win,act,sty);
 	say("buffer:%s\n", infix);
@@ -157,7 +157,7 @@ static void calculator_draw_cli(
 
 
 
-void calculator_char(struct entity* ent, struct style* slot, int key)
+void calculator_char(_obj* ent, struct style* slot, int key)
 {
 	int j;
 	double final;
@@ -196,7 +196,7 @@ void calculator_char(struct entity* ent, struct style* slot, int key)
 		}
 	}
 }
-static void calculator_write_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area, struct event* ev)
+static void calculator_write_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area, struct event* ev)
 {
 	if('p' == (ev->what&0xff)){
 		vec3 xyz;
@@ -216,17 +216,17 @@ static void calculator_write_bywnd(_ent* ent,struct style* slot, _ent* wnd,struc
 
 
 
-static void calculator_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void calculator_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	if(0 == stack)return;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	calculator_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void calculator_wnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
+static void calculator_wnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
 {
 	struct fstyle fs;
 	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
@@ -243,7 +243,7 @@ static void calculator_wnd(_ent* ent,struct style* slot, _ent* wnd,struct style*
 
 
 
-static void calculator_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void calculator_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -252,10 +252,10 @@ static void calculator_taking(_ent* ent,void* slot, _syn* stack,int sp, void* ar
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -266,14 +266,14 @@ static void calculator_taking(_ent* ent,void* slot, _syn* stack,int sp, void* ar
 		break;
 	}
 }
-static void calculator_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void calculator_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//struct entity* ent = stack[sp-1].pchip;
+	//_obj* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
-	struct entity* wnd = stack[sp-2].pchip;
+	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _gl41list_:{
 		calculator_write_bywnd(ent,slot, wnd,area, buf);break;
 	}
@@ -289,21 +289,21 @@ static void calculator_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void calculator_search(struct entity* act)
+static void calculator_search(_obj* act)
 {
 }
-static void calculator_modify(struct entity* act)
+static void calculator_modify(_obj* act)
 {
 }
-static void calculator_delete(struct entity* act)
+static void calculator_delete(_obj* act)
 {
 	if(0 == act)return;
 }
-static void calculator_create(struct entity* act)
+static void calculator_create(_obj* act)
 {
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf0 = buffer;
-	if(_copy_ == act->type)act->buf0 = memorycreate(128, 0);
+	if(_orig_ == act->type)act->listptr.buf0 = buffer;
+	if(_copy_ == act->type)act->listptr.buf0 = memorycreate(128, 0);
 
 	buffer[0] = '1';
 	buffer[1] = '+';
@@ -315,10 +315,10 @@ static void calculator_create(struct entity* act)
 
 
 
-void calculator_register(struct entity* p)
+void calculator_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex32('c', 'a', 'l', 'c');
+	p->hfmt = hex32('c', 'a', 'l', 'c');
 
 	p->oncreate = (void*)calculator_create;
 	p->ondelete = (void*)calculator_delete;

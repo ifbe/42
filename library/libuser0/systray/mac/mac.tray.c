@@ -3,7 +3,7 @@
 
 
 
-void traycreate(struct supply* win)
+void traycreate(_obj* win)
 {
 }
 void inittray()

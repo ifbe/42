@@ -6,12 +6,12 @@ int obb_ray(struct fstyle* obb, vec3 ray[], vec3 out[]);
 
 
 
-int joystick2style(struct entity* win, struct fstyle* sty, int aaa, short* tmp)
+int joystick2style(_obj* win, struct fstyle* sty, int aaa, short* tmp)
 {
 	float c,s;
 	float tx,ty,tz;
 	int x0,y0,sign = -1;
-	if(_vbo_ == win->fmt)sign = 1;
+	if(_vbo_ == win->hfmt)sign = 1;
 
 	x0 = tmp[0];
 	if(x0 < -8192)x0 = -1;
@@ -248,10 +248,10 @@ int joystick2style(struct entity* win, struct fstyle* sty, int aaa, short* tmp)
 
 	return 0;
 }
-int keyboard2style(struct entity* win, struct fstyle* sty, short* tmp)
+int keyboard2style(_obj* win, struct fstyle* sty, short* tmp)
 {
 	int sign = -1;
-	if(_vbo_ == win->fmt)sign = 1;
+	if(_vbo_ == win->hfmt)sign = 1;
 	if(0x4b == tmp[0])
 	{
 		//left
@@ -286,7 +286,7 @@ int keyboard2style(struct entity* win, struct fstyle* sty, short* tmp)
 	}
 	return 0;
 }
-int entityinput_editor_target(struct entity* win, struct event* ev)
+int entityinput_editor_target(_obj* win, struct event* ev)
 {
 	float c,s,tx,ty,norm;
 	struct relation* orel;
@@ -297,7 +297,7 @@ int entityinput_editor_target(struct entity* win, struct event* ev)
 	int z = ((ev->why)>>32)&0xffff;
 	int id = ((ev->why)>>48)&0xffff;
 
-	if(_vbo_ == win->fmt)sign = 1;
+	if(_vbo_ == win->hfmt)sign = 1;
 	else sign = -1;
 
 	orel = win->oreln;
@@ -449,7 +449,7 @@ int entityinput_editor_target(struct entity* win, struct event* ev)
 
 
 /*
-int playwith3d_pick(struct entity* root, struct entity* twig, struct entity* act, int x, int y)
+int playwith3d_pick(_obj* root, _obj* twig, _obj* act, int x, int y)
 {
 	int ret;
 	vec3 ray[2];
@@ -457,8 +457,8 @@ int playwith3d_pick(struct entity* root, struct entity* twig, struct entity* act
 	struct fstyle* sty;
 	struct relation* rel;
 
-	float w = root->width;
-	float h = root->height;
+	float w = root->whdf.width;
+	float h = root->whdf.height;
 	float fx = (float)x / w;
 	float fy = (float)y / h;
 
@@ -500,7 +500,7 @@ int playwith3d_pick(struct entity* root, struct entity* twig, struct entity* act
 	if(rel)relation_choose(twig, rel);
 	return 0;
 }
-int playwith3d_move(struct entity* root, struct entity* twig, int x0, int y0, int xn, int yn)
+int playwith3d_move(_obj* root, _obj* twig, int x0, int y0, int xn, int yn)
 {
 	int ret;
 	float dx, dy;
@@ -510,8 +510,8 @@ int playwith3d_move(struct entity* root, struct entity* twig, int x0, int y0, in
 	struct fstyle* sty;
 	struct relation* rel;
 
-	float w = root->width;
-	float h = root->height;
+	float w = root->whdf.width;
+	float h = root->whdf.height;
 	float fx0 = (float)x0 / w;
 	float fy0 = (float)y0 / h;
 	float fxn = (float)xn / w;
@@ -571,13 +571,13 @@ found:
 
 
 static int picker_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int flag;
 	vec3 tc;
 	struct relation* rel;
-	struct entity* www;
+	_obj* www;
 	struct fstyle* sss;
 	//gl41frustum(win, &win->camera);
 	//gl41line_prism4(win, 0xff00ff, win->target.vc, win->target.vr, win->target.vf, win->target.vu);
@@ -597,7 +597,7 @@ static int picker_draw(
 		if(_sup_ == rel->dsttype)
 		{
 			www = (void*)(rel->dstchip);
-			//if(_fg3d_ == www->fmt)goto found;
+			//if(_fg3d_ == www->hfmt)goto found;
 		}
 
 		rel = samesrcnextdst(rel);
@@ -626,12 +626,12 @@ found:
 	return 0;
 }
 static int picker_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
 	short* t;
-	struct entity* www = 0;
+	_obj* www = 0;
 	struct relation* rel = win->orel0;
 	//say("@picker_swrite:%llx,%llx\n", ev->what, ev->why);
 
@@ -642,7 +642,7 @@ static int picker_event(
 		if(_sup_ == rel->dsttype)
 		{
 			www = (void*)(rel->dstchip);
-			//if(_fg3d_ == www->fmt)goto found;
+			//if(_fg3d_ == www->hfmt)goto found;
 		}
 
 		rel = samesrcnextdst(rel);
@@ -670,11 +670,11 @@ found:
 
 
 
-static int picker_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int picker_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
-static int picker_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int picker_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -689,16 +689,16 @@ static void picker_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void picker_search(struct entity* act)
+static void picker_search(_obj* act)
 {
 }
-static void picker_modify(struct entity* act)
+static void picker_modify(_obj* act)
 {
 }
-static void picker_delete(struct entity* act)
+static void picker_delete(_obj* act)
 {
 }
-static void picker_create(struct entity* act, void* addr)
+static void picker_create(_obj* act, void* addr)
 {
     say("@picker_create\n");
 }
@@ -706,10 +706,10 @@ static void picker_create(struct entity* act, void* addr)
 
 
 
-void picker_register(struct entity* p)
+void picker_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('p', 'i', 'c', 'k', 'e', 'r', 0, 0);
+	p->hfmt = hex64('p', 'i', 'c', 'k', 'e', 'r', 0, 0);
 
 	p->oncreate = (void*)picker_create;
 	p->ondelete = (void*)picker_delete;

@@ -1,7 +1,7 @@
 #include "libuser.h"
 void drawascii_bitmap(u8* buf, int ch);
-void dx11ascii_test(struct entity* wnd, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void gl41ascii_test(struct entity* wnd, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void dx11ascii_test(_obj* wnd, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void gl41ascii_test(_obj* wnd, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
 
 
 
@@ -12,9 +12,9 @@ static int chosen = 0x4040;
 
 /*
 static void font_dx11draw(
-	struct entity* act, struct style* part,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* part,
+	_obj* scn, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -24,9 +24,9 @@ static void font_dx11draw(
 	dx11ascii_test(wnd, 0xffffff, vc, vr, vf);
 }*/
 static void font_gl41draw(
-	struct entity* act, struct style* part,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* part,
+	_obj* scn, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -36,8 +36,8 @@ static void font_gl41draw(
 	gl41ascii_test(wnd, 0xffffff, vc, vr, vf);
 }
 static void font_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x,y,m,n;
 	int cx, cy, ww, hh;
@@ -50,10 +50,10 @@ static void font_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 	drawsolid_rect(win, 0x101010, cx-ww, cy-hh, cx+ww, cy+hh);
 
@@ -97,23 +97,23 @@ static void font_draw_pixel(
 	drawhexadecimal(win, 0xff0000, cx-32, cy-16, chosen);
 }
 static void font_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void font_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void font_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void font_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x,y;
 	u8 ch;
@@ -145,7 +145,7 @@ static void font_draw_cli(
 
 
 static void font_event(
-	struct entity* act, struct style* pin,
+	_obj* act, struct style* pin,
 	struct event* ev, int len)
 {
 	int k = 0;
@@ -192,14 +192,14 @@ static void font_event(
 
 
 
-static void font_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void font_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _dx11list_:
 	case _mt20list_:
 	case _gl41list_:
@@ -208,17 +208,17 @@ static void font_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 		break;
 	}
 }
-static void font_wrl_wnd(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+static void font_wrl_wnd(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 }
-static void font_wnd(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+static void font_wnd(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 }
 
 
 
 
-static void font_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void font_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -227,10 +227,10 @@ static void font_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int 
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		font_draw_pixel(ent,slot, caller,area);
 		break;
@@ -241,7 +241,7 @@ static void font_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int 
 		break;
 	}
 }
-static void font_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void font_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	printmemory(buf,16);
 	font_event(ent, 0, buf, len);
@@ -256,28 +256,28 @@ static void font_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void font_search(struct entity* act)
+static void font_search(_obj* act)
 {
 }
-static void font_modify(struct entity* act)
+static void font_modify(_obj* act)
 {
 }
-static void font_delete(struct entity* act)
-{
-	if(0 == act)return;
-}
-static void font_create(struct entity* act)
+static void font_delete(_obj* act)
 {
 	if(0 == act)return;
 }
+static void font_create(_obj* act)
+{
+	if(0 == act)return;
+}
 
 
 
 
-void font_register(struct entity* p)
+void font_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex32('f', 'o', 'n', 't');
+	p->hfmt = hex32('f', 'o', 'n', 't');
 
 	p->oncreate = (void*)font_create;
 	p->ondelete = (void*)font_delete;

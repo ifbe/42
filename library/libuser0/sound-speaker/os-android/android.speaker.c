@@ -3,11 +3,11 @@
 
 
 
-int speaker_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int speaker_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int speaker_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int speaker_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
@@ -31,11 +31,11 @@ int speakerchoose()
 {
 	return 0;
 }
-int speakerdelete(struct supply* win)
+int speakerdelete(_obj* win)
 {
 	return 0;
 }
-int speakercreate(struct supply* win)
+int speakercreate(_obj* win)
 {
 	return 0;
 }

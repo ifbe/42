@@ -23,6 +23,31 @@ static struct item* dri;
 static int drilen = 0;
 static void* bbb;
 static int bbblen = 0;
+
+
+
+
+void driver_init(u8* addr)
+{
+	say("[6,8):driver initing\n");
+
+	int j;
+	dri = (void*)(addr+0x000000);
+	bbb = (void*)(addr+0x100000);
+
+#define max (0x100000/sizeof(struct item))
+	for(j=0;j<0x200000;j++)addr[j] = 0;
+	for(j=0;j<max;j++)dri[j].tier = _dri_;
+
+	//drivercreate(_usb_, 0);
+	say("[6,8):driver inited\n");
+}
+void driver_exit()
+{
+	say("[6,8):driver exiting\n");
+
+	say("[6,8):driver exited\n");
+}
 void* driver_alloc()
 {
 	void* addr = &dri[drilen];
@@ -36,51 +61,6 @@ void driver_recycle()
 
 
 
-int driver_take(struct item* dri,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
-{
-	switch(dri->type){
-		case _mpu9250_:mpu9250_read(dri,foot, stack,sp, arg,idx, buf,len);break;
-		case _lsm9ds1_:lsm9ds1_read(dri,foot, stack,sp, arg,idx, buf,len);break;
-	}
-	return 0;
-}
-int driver_give(struct item* dri,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
-{
-	//say("@driverwrite\n");
-	switch(dri->type){
-		case _mpu9250_:return mpu9250_write(dri,foot, stack,sp, arg,idx, buf,len);break;
-		case _lsm9ds1_:return lsm9ds1_write(dri,foot, stack,sp, arg,idx, buf,len);break;
-	}
-	return 0;
-}
-int driverdiscon(struct halfrel* self, struct halfrel* peer)
-{
-	struct item* ele = (void*)(self->chip);
-	say("@driverdiscon\n");
-	switch(ele->type){
-		case _mpu9250_:return mpu9250_discon(self, peer);break;
-		case _lsm9ds1_:return lsm9ds1_discon(self, peer);break;
-	}
-	return 0;
-}
-int driverlinkup(struct halfrel* self, struct halfrel* peer)
-{
-	struct item* ele = (void*)(self->chip);
-	say("@driverlinkup\n");
-	switch(ele->type){
-		case _mpu9250_:return mpu9250_linkup(self, peer);break;
-		case _lsm9ds1_:return lsm9ds1_linkup(self, peer);break;
-	}
-	return 0;
-}
-
-
-
-
-int driverdelete(void* this)
-{
-	return 0;
-}
 void* drivercreate(u64 type, void* url, int argc, u8** argv)
 {
 	struct item* dr;
@@ -107,6 +87,23 @@ void* drivercreate(u64 type, void* url, int argc, u8** argv)
 
 	return 0;
 }
+int driverdelete(_obj* this)
+{
+	return 0;
+}
+int driversearch(u8* buf, int len)
+{
+	int j,k=0;
+	for(j=0;j<64;j++)
+	{
+		if(0 == dri[j].type)continue;
+		say("[%04x]: %.8s\n", j, &dri[j].type);
+		k++;
+	}
+
+	if(0 == k)say("empth driver\n");
+	return 0;
+}
 int drivermodify(int argc, u8** argv)
 {
 	int j;
@@ -126,41 +123,44 @@ int drivermodify(int argc, u8** argv)
 	}
 	return 0;
 }
-int driversearch(u8* buf, int len)
-{
-	int j,k=0;
-	for(j=0;j<64;j++)
-	{
-		if(0 == dri[j].type)continue;
-		say("[%04x]: %.8s\n", j, &dri[j].type);
-		k++;
-	}
 
-	if(0 == k)say("empth driver\n");
+
+
+
+int driverlinkup(struct halfrel* self, struct halfrel* peer)
+{
+	struct item* ele = (void*)(self->chip);
+	say("@driverlinkup\n");
+	switch(ele->type){
+		case _mpu9250_:return mpu9250_linkup(self, peer);break;
+		case _lsm9ds1_:return lsm9ds1_linkup(self, peer);break;
+	}
 	return 0;
 }
-
-
-
-
-void driver_exit()
+int driverdiscon(struct halfrel* self, struct halfrel* peer)
 {
-	say("[6,8):driver exiting\n");
-
-	say("[6,8):driver exited\n");
+	struct item* ele = (void*)(self->chip);
+	say("@driverdiscon\n");
+	switch(ele->type){
+		case _mpu9250_:return mpu9250_discon(self, peer);break;
+		case _lsm9ds1_:return lsm9ds1_discon(self, peer);break;
+	}
+	return 0;
 }
-void driver_init(u8* addr)
+int driver_take(struct item* dri,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	say("[6,8):driver initing\n");
-
-	int j;
-	dri = (void*)(addr+0x000000);
-	bbb = (void*)(addr+0x100000);
-
-#define max (0x100000/sizeof(struct item))
-	for(j=0;j<0x200000;j++)addr[j] = 0;
-	for(j=0;j<max;j++)dri[j].tier = _dri_;
-
-	//drivercreate(_usb_, 0);
-	say("[6,8):driver inited\n");
+	switch(dri->type){
+		case _mpu9250_:mpu9250_read(dri,foot, stack,sp, arg,idx, buf,len);break;
+		case _lsm9ds1_:lsm9ds1_read(dri,foot, stack,sp, arg,idx, buf,len);break;
+	}
+	return 0;
+}
+int driver_give(struct item* dri,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+{
+	//say("@driverwrite\n");
+	switch(dri->type){
+		case _mpu9250_:return mpu9250_write(dri,foot, stack,sp, arg,idx, buf,len);break;
+		case _lsm9ds1_:return lsm9ds1_write(dri,foot, stack,sp, arg,idx, buf,len);break;
+	}
+	return 0;
 }

@@ -3,10 +3,10 @@
 
 
 
-static void stereo_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void stereo_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void stereo_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void stereo_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void stereo_discon(struct halfrel* self, struct halfrel* peer)
@@ -19,26 +19,26 @@ static void stereo_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void stereo_search(struct entity* act)
+static void stereo_search(_obj* act)
 {
 }
-static void stereo_modify(struct entity* act)
+static void stereo_modify(_obj* act)
 {
 }
-static void stereo_delete(struct entity* act)
+static void stereo_delete(_obj* act)
 {
 }
-static void stereo_create(struct entity* act)
+static void stereo_create(_obj* act)
 {
 }
 
 
 
 
-void stereo_register(struct entity* p)
+void stereo_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('s', 't', 'e', 'r', 'e', 'o', 0, 0);
+	p->hfmt = hex64('s', 't', 'e', 'r', 'e', 'o', 0, 0);
 
 	p->oncreate = (void*)stereo_create;
 	p->ondelete = (void*)stereo_delete;

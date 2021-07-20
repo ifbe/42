@@ -4,14 +4,14 @@
 
 
 static void grass_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void grass_draw_gl41(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int j,k;
 	vec3 v0,v1,v2;
@@ -21,7 +21,7 @@ static void grass_draw_gl41(
 	float* vf = geom->fs.vf;
 	float* vt = geom->fs.vt;
 
-	float* f = act->buf0;
+	float* f = act->listptr.buf0;
 	for(k=0;k<8192;k++){
 		x0 = f[6*k+0];
 		y0 = f[6*k+1];
@@ -48,33 +48,33 @@ static void grass_draw_gl41(
 	}
 }
 static void grass_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void grass_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void grass_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void grass_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-static void grass_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void grass_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -84,7 +84,7 @@ static void grass_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void grass_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void grass_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -93,10 +93,10 @@ static void grass_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -106,7 +106,7 @@ static void grass_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int
 		break;
 	}
 }
-static void grass_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void grass_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void grass_discon(struct halfrel* self, struct halfrel* peer)
@@ -119,19 +119,19 @@ static void grass_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void grass_search(struct entity* act)
+static void grass_search(_obj* act)
 {
 }
-static void grass_modify(struct entity* act)
+static void grass_modify(_obj* act)
 {
 }
-static void grass_delete(struct entity* act)
+static void grass_delete(_obj* act)
 {
 }
-static void grass_create(struct entity* act)
+static void grass_create(_obj* act)
 {
 	int j,k;
-	float* f = act->buf0 = memorycreate(4*6*0x10000, 0);
+	float* f = act->listptr.buf0 = memorycreate(4*6*0x10000, 0);
 	for(j=0;j<2048;j++){
 		f[j*24+0] = (getrandom()&0xffff)/32768.0 - 1.0;
 		f[j*24+1] = (getrandom()&0xffff)/32768.0 - 1.0;
@@ -151,10 +151,10 @@ static void grass_create(struct entity* act)
 
 
 
-void grass_register(struct entity* p)
+void grass_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('g','r','a','s','s', 0, 0, 0);
+	p->hfmt = hex64('g','r','a','s','s', 0, 0, 0);
 
 	p->oncreate = (void*)grass_create;
 	p->ondelete = (void*)grass_delete;

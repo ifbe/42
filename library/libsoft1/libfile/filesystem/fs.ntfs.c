@@ -581,10 +581,10 @@ int explainntfshead()
 	say("indexsize:%x\n",indexsize);
 
 	//保存开头几个mft,然后开始	//32个扇区=16个mft=0x4000
-	readfile(0, 0,
+/*	file_take(0, 0,
 		"", (ntfssector+mftcluster*clustersize)*0x200,
 		mft0, 32*0x200
-	);
+	);*/
 	//printmemory(mft0,0x400);		//	$Mft
 	//printmemory(mft0+0x400*5,0x400);	//	.
 	//printmemory(mft0+0x400*7,0x400);	//	$Boot
@@ -645,7 +645,7 @@ static int ntfs_start(u64 sector)
 	ntfssector=sector;
 
 	//读PBR，检查失败就返回
-	ret = readfile(0, 0, "", ntfssector*0x200, pbr, 0x200);
+	//ret = file_take(0, 0, "", ntfssector*0x200, pbr, 0x200);
 	ret = check_ntfs(pbr);
 	if(ret==0)return -1;
 
@@ -690,13 +690,13 @@ void ntfs_delete()
 
 
 int ntfsclient_write(
-	struct artery* ele, void* sty,
-	struct sysobj* obj, void* pin,
+	_obj* ele, void* sty,
+	_obj* obj, void* pin,
 	u8* buf, int len)
 {
 	return 0;
 }
-int ntfsclient_create(struct artery* ele, u8* url)
+int ntfsclient_create(_obj* ele, u8* url)
 {
 	return 0;
 }

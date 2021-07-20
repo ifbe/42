@@ -3,7 +3,7 @@
 
 
 
-int htmlprintf(struct entity* win, int j, char* fmt, ...)
+int htmlprintf(_obj* win, int j, char* fmt, ...)
 {
 	__builtin_va_list arg;
 	struct str** ctx;
@@ -14,7 +14,7 @@ int htmlprintf(struct entity* win, int j, char* fmt, ...)
 
 	__builtin_va_start(arg, fmt);
 
-	ctx = win->htmlctx;
+	ctx = win->html.ctx;
 	len = ctx[j]->len;
 	buf = ctx[j]->buf;
 	ctx[j]->len += myvsnprintf(buf+len, 0xffff8-len, fmt, arg);

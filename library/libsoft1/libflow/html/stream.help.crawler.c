@@ -3,12 +3,12 @@
 
 
 
-int crawler_read(_art* art,void* foot, _syn* stack,int sp, u8* arg, int idx, void** buf, int len)
+int crawler_read(_obj* art,void* foot, _syn* stack,int sp, u8* arg, int idx, void** buf, int len)
 {
 	say("@crawler_read\n");
 	return 0;
 }
-int crawler_write(_art* art,void* foot, _syn* stack,int sp, u8* arg, int idx, void* buf, int len)
+int crawler_write(_obj* art,void* foot, _syn* stack,int sp, u8* arg, int idx, void* buf, int len)
 {
 	say("@crawler_write\n");
 	printmemory(buf, len);
@@ -26,12 +26,12 @@ int crawler_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int crawler_delete(struct artery* ele)
+int crawler_delete(_obj* ele)
 {
 	say("@crawler_delete\n");
 	return 0;
 }
-int crawler_create(struct artery* ele, u8* url)
+int crawler_create(_obj* ele, u8* url)
 {
 	say("@crawler_create\n");
 	return 1;

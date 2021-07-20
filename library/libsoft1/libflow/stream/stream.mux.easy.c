@@ -5,11 +5,11 @@
 
 
 
-int easymux_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int easymux_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int easymux_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int easymux_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	switch(stack[sp-1].flag){
 	case _by_:
@@ -36,11 +36,11 @@ int easymux_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int easymux_delete(struct artery* ele, u8* url)
+int easymux_delete(_obj* ele, u8* url)
 {
 	return 0;
 }
-int easymux_create(struct artery* ele, u8* url)
+int easymux_create(_obj* ele, u8* url)
 {
 	say("@easymux_create\n");
 	return 1;

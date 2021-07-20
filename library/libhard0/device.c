@@ -20,6 +20,34 @@ static struct item* dev;
 static int devlen = 0;
 static void* aaa;
 static int aaalen = 0;
+
+
+
+
+void device_init(u8* addr)
+{
+	say("[4,6):device initing\n");
+
+	int j;
+	dev = (void*)(addr+0x000000);
+	aaa = (void*)(addr+0x100000);
+	devlen = 0;
+	aaalen = 0;
+
+#define max (0x100000/sizeof(struct item))
+	for(j=0;j<0x200000;j++)addr[j]=0;
+	for(j=0;j<max;j++)dev[j].tier = _dev_;
+
+	say("[4,6):device inited\n");
+}
+void device_exit()
+{
+	say("[4,6):device exiting\n");
+
+	freehardware();
+
+	say("[4,6):device exited\n");
+}
 void* device_alloc()
 {
 	void* addr = &dev[devlen];
@@ -33,53 +61,6 @@ void device_recycle()
 
 
 
-int device_take(struct item* dev,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
-{
-	//say("@deviceread\n");
-	if(dev->ontaking){
-		return dev->ontaking(dev,foot, stack,sp, arg,idx, buf,len);
-	}
-
-	int fd = dev->priv_fd;
-	switch(dev->type){
-		case _i2c_:return i2c_read(fd, idx, buf, len);break;
-		case _spi_:return spi_read(fd, idx, buf, len);break;
-	}
-	return 0;
-}
-int device_give(struct item* dev,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
-{
-	u8 t[2];
-	if(0 == buf){
-		t[0] = len;
-		buf = t;
-		len = 1;
-	}
-
-	int fd = dev->priv_fd;
-	switch(dev->type){
-		case _i2c_:return i2c_write(fd, idx, buf, len);break;
-		case _spi_:return spi_write(fd, idx, buf, len);break;
-	}
-	return 0;
-}
-int devicediscon(struct halfrel* self, struct halfrel* peer)
-{
-	return 0;
-}
-int devicelinkup(struct halfrel* self, struct halfrel* peer)
-{
-	say("@devicelinkup\n");
-	return 0;
-}
-
-
-
-
-int devicedelete(void* this)
-{
-	return 0;
-}
 void* devicecreate(u64 type, void* name, int argc, u8** argv)
 {
 	if(0 == type){
@@ -158,6 +139,25 @@ void* devicecreate(u64 type, void* name, int argc, u8** argv)
 	}
 	return 0;
 }
+int devicedelete(_obj* this)
+{
+	return 0;
+}
+int devicesearch(u8* buf, int len)
+{
+	int j,k=0;
+	struct item* p;
+	for(j=0;j<64;j++)
+	{
+		p = &dev[j];
+		if(0 == p->type)continue;
+		say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j, &p->tier, &p->type, &p->hfmt, &p->vfmt);
+		k++;
+	}
+
+	if(0 == k)say("empth device\n");
+	return 0;
+}
 int devicemodify(int argc, u8** argv)
 {
 	int j;
@@ -177,46 +177,46 @@ int devicemodify(int argc, u8** argv)
 	}
 	return 0;
 }
-int devicesearch(u8* buf, int len)
-{
-	int j,k=0;
-	struct item* p;
-	for(j=0;j<64;j++)
-	{
-		p = &dev[j];
-		if(0 == p->type)continue;
-		say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j, &p->tier, &p->type, &p->hfmt, &p->vfmt);
-		k++;
-	}
 
-	if(0 == k)say("empth device\n");
+
+
+
+int devicelinkup(struct halfrel* self, struct halfrel* peer)
+{
+	say("@devicelinkup\n");
 	return 0;
 }
-
-
-
-
-void device_exit()
+int devicediscon(struct halfrel* self, struct halfrel* peer)
 {
-	say("[4,6):device exiting\n");
-
-	freehardware();
-
-	say("[4,6):device exited\n");
+	return 0;
 }
-void device_init(u8* addr)
+int device_take(struct item* dev,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
-	say("[4,6):device initing\n");
+	//say("@deviceread\n");
+	if(dev->ontaking){
+		return dev->ontaking(dev,foot, stack,sp, arg,idx, buf,len);
+	}
 
-	int j;
-	dev = (void*)(addr+0x000000);
-	aaa = (void*)(addr+0x100000);
-	devlen = 0;
-	aaalen = 0;
+	int fd = dev->priv_fd;
+	switch(dev->type){
+		case _i2c_:return i2c_read(fd, idx, buf, len);break;
+		case _spi_:return spi_read(fd, idx, buf, len);break;
+	}
+	return 0;
+}
+int device_give(struct item* dev,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+{
+	u8 t[2];
+	if(0 == buf){
+		t[0] = len;
+		buf = t;
+		len = 1;
+	}
 
-#define max (0x100000/sizeof(struct item))
-	for(j=0;j<0x200000;j++)addr[j]=0;
-	for(j=0;j<max;j++)dev[j].tier = _dev_;
-
-	say("[4,6):device inited\n");
+	int fd = dev->priv_fd;
+	switch(dev->type){
+		case _i2c_:return i2c_write(fd, idx, buf, len);break;
+		case _spi_:return spi_write(fd, idx, buf, len);break;
+	}
+	return 0;
 }

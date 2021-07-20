@@ -3,11 +3,11 @@
 
 
 
-int xamlroot_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
+int xamlroot_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
 {
 	return 0;
 }
-int xamlroot_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
+int xamlroot_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
 {
 	return 0;
 }
@@ -24,19 +24,19 @@ int xamlroot_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int xamlroot_search(struct entity* world)
+int xamlroot_search(_obj* world)
 {
 	return 0;
 }
-int xamlroot_modify(struct entity* world)
+int xamlroot_modify(_obj* world)
 {
 	return 0;
 }
-int xamlroot_delete(struct entity* world)
+int xamlroot_delete(_obj* world)
 {
 	return 0;
 }
-int xamlroot_create(struct entity* world, void* str)
+int xamlroot_create(_obj* world, void* str)
 {
 	return 0;
 }

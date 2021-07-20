@@ -1,8 +1,8 @@
 #include "libuser.h"
-#define F32BUF buf0
-#define CTXBUF buf1
+#define F32BUF listptr.buf0
+#define CTXBUF listptr.buf1
 #define COUNT (0x100000/36)
-void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
+void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 
 
 
@@ -85,14 +85,14 @@ void particle_ctxforwnd(struct gl41data* data, float* vbuf)
 
 
 static void particle_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void particle_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* scn, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	int j;
 	float x,y,z;
@@ -157,23 +157,23 @@ static void particle_draw_gl41(
 	gl41data_insert(wnd, 's', act->CTXBUF, 1);
 }
 static void particle_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void particle_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void particle_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void particle_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("particle(%x,%x,%x)\n",win,act,sty);
 }
@@ -181,10 +181,10 @@ static void particle_draw_cli(
 
 
 
-static void particle_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void particle_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	particle_draw_gl41(ent,slot, wor,geom, wnd,area);
@@ -193,7 +193,7 @@ static void particle_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void particle_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void particle_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -202,10 +202,10 @@ static void particle_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -215,7 +215,7 @@ static void particle_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,
 		break;
 	}
 }
-static void particle_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void particle_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void particle_discon(struct halfrel* self, struct halfrel* peer)
@@ -228,17 +228,17 @@ static void particle_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void particle_search(struct entity* act)
+static void particle_search(_obj* act)
 {
 }
-static void particle_modify(struct entity* act)
+static void particle_modify(_obj* act)
 {
 }
-static void particle_delete(struct entity* act)
+static void particle_delete(_obj* act)
 {
 	if(0 == act)return;
 }
-static void particle_create(struct entity* act)
+static void particle_create(_obj* act)
 {
 	if(0 == act)return;
 
@@ -270,10 +270,10 @@ static void particle_create(struct entity* act)
 
 
 
-void particle_register(struct entity* p)
+void particle_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('p', 'a', 'r', 't', 'i', 'c', 'l', 'e');
+	p->hfmt = hex64('p', 'a', 'r', 't', 'i', 'c', 'l', 'e');
 
 	p->oncreate = (void*)particle_create;
 	p->ondelete = (void*)particle_delete;

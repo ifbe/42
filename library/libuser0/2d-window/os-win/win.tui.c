@@ -18,7 +18,7 @@ static HANDLE output;
 
 
 
-DWORD WINAPI windowthread(struct supply* win)
+DWORD WINAPI windowthread(_obj* win)
 {
 	int j,ret,tmp;
 	u64 x,y,w;
@@ -256,7 +256,7 @@ static void gotoxy(int x, int y)
 	pos.Y = bInfo.srWindow.Top + y;
 	SetConsoleCursorPosition(output, pos);
 }
-void windowdraw(struct supply* win)
+void windowdraw(_obj* win)
 {
 	int x,y;
 	u8 ch, bg=0, fg=7;
@@ -309,7 +309,7 @@ void windowdraw(struct supply* win)
 
 
 
-void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//read context
 	tuinode_read(wnd,0, stack,sp, arg,key, buf,len);
@@ -317,7 +317,7 @@ void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, vo
 	//update screen
 	windowdraw(wnd);
 }
-void window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 void windowstop()
@@ -336,10 +336,10 @@ void windowmodify()
 void windowsearch()
 {
 }
-void windowdelete(struct supply* w)
+void windowdelete(_obj* w)
 {
 }
-void windowcreate(struct supply* w)
+void windowcreate(_obj* w)
 {
 	int width,height;
 	CONSOLE_SCREEN_BUFFER_INFO bInfo;

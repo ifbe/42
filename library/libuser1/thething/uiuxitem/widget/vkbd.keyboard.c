@@ -1,14 +1,14 @@
 #include "libuser.h"
-void dx11solid_rect(struct entity* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
+void dx11solid_rect(_obj* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void gl41data_convert(_obj* wnd, struct style* area, struct event* ev, vec3 v);
 
 
 
 
-static int vkbd_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static int vkbd_search(_obj* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 	struct relation* rel;
-	struct entity* world;
+	_obj* world;
 
 	rel = act->irel0;
 	while(1){
@@ -23,30 +23,30 @@ static int vkbd_search(struct entity* act, u32 foot, struct halfrel* self[], str
 	}
 	return 0;
 }
-static int vkbd_modify(struct entity* act)
+static int vkbd_modify(_obj* act)
 {
 	return 0;
 }
-static int vkbd_delete(struct entity* act)
+static int vkbd_delete(_obj* act)
 {
 	return 0;
 }
-static int vkbd_create(struct entity* act, u8* str)
+static int vkbd_create(_obj* act, u8* str)
 {
-	act->iw0 = 0;
+	act->whdf.iw0 = 0;
 	return 0;
 }
 
 
 
 
-void vkbd_draw_pixel(struct entity* win, struct style* sty)
+void vkbd_draw_pixel(_obj* win, struct style* sty)
 {
 	u8 ch[8];
 	int c,l,rgb;
 	int x,y,x0,y0,x1,y1;
-	int w = win->width;
-	int h = win->height;
+	int w = win->whdf.width;
+	int h = win->whdf.height;
 	//if(win->vkbdw < 0)return;
 
 	//drawsolid_rect(win, 0x202020, 0, h*3/4, w, h);
@@ -103,9 +103,9 @@ void vkbd_draw_pixel(struct entity* win, struct style* sty)
 	}
 }/*
 void vkbd_draw_dx11(
-	struct entity* act, struct style* part,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* part,
+	_obj* scn, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	int x,y,j,dat;
 	vec3 tc,tr,tf;
@@ -124,7 +124,7 @@ void vkbd_draw_dx11(
 				tf[j] = vf[j]/8.5;
 				tc[j] = vc[j] + vr[j]*(x-7.5)/8.0 + vf[j]*(y-3.5)/4.0;
 			}
-			if((act->iw0)&&(x == act->ix0)&&(y == act->iy0)){
+			if((act->whdf.iw0)&&(x == act->whdf.ix0)&&(y == act->whdf.iy0)){
 				dx11solid_rect(wnd, 0x80ff0000, tc, tr, tf);
 			}
 			else{
@@ -147,9 +147,9 @@ void vkbd_draw_dx11(
 	}
 }*/
 void vkbd_draw_gl41(
-	struct entity* act, struct style* part,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* part,
+	_obj* scn, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	int x,y,j;
 	int dat,flag;
@@ -169,7 +169,7 @@ void vkbd_draw_gl41(
 				tf[j] = vf[j]/8.5;
 				tc[j] = vc[j] + vr[j]*(x-7.5)/8.0 + vf[j]*(y-3.5)/4.0;
 			}
-			if((act->iw0)&&(x == act->ix0)&&(y == act->iy0)){
+			if((act->whdf.iw0)&&(x == act->whdf.ix0)&&(y == act->whdf.iy0)){
 				gl41opaque_rect(wnd, 0x80ff0000, tc, tr, tf);
 			}
 			else{
@@ -199,13 +199,13 @@ void vkbd_draw_gl41(
 		}//forx
 	}//fory
 }
-void vkbd_draw_html(struct entity* win, struct style* sty)
+void vkbd_draw_html(_obj* win, struct style* sty)
 {
 }
-void vkbd_draw_tui(struct entity* win, struct style* sty)
+void vkbd_draw_tui(_obj* win, struct style* sty)
 {
 }
-void vkbd_draw_cli(struct entity* win, struct style* sty)
+void vkbd_draw_cli(_obj* win, struct style* sty)
 {
 }
 
@@ -213,8 +213,8 @@ void vkbd_draw_cli(struct entity* win, struct style* sty)
 
 
 static int vkbd_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
 	short tmp[4];
@@ -222,8 +222,8 @@ static int vkbd_event(
 	//say("vkbd_keyboard_write\n");
 	//if(win->vkbdw <= 0)return 0;
 
-	w = win->width;
-	h = win->height;
+	w = win->whdf.width;
+	h = win->whdf.height;
 	x = (ev->why)&0xffff;
 	y = ((ev->why)>>16)&0xffff;
 	if(y < h*3/4)return 0;
@@ -241,7 +241,7 @@ static int vkbd_event(
 
 
 /*
-static void vkbd_read_bydx11(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
+static void vkbd_read_bydx11(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
 {
 	struct fstyle fs;
 	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
@@ -254,7 +254,7 @@ static void vkbd_read_bydx11(_ent* ent,struct style* slot, _ent* wnd,struct styl
 	dx11data_01cam(wnd);
 	dx11data_after(wnd);
 }*/
-static void vkbd_wnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
+static void vkbd_wnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
 {
 	struct fstyle fs;
 	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.5;
@@ -262,7 +262,7 @@ static void vkbd_wnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
 	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
 	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-0.5;
 
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _dx11list_:
 		dx11data_before(wnd);
 		vkbd_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
@@ -283,9 +283,9 @@ static void vkbd_wnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
 		break;
 	}
 }
-static void vkbd_write_bywnd(_ent* ent,void* foot, _syn* stack,int sp, struct event* ev,int len)
+static void vkbd_write_bywnd(_obj* ent,void* foot, _syn* stack,int sp, struct event* ev,int len)
 {
-	struct entity* wnd;struct style* area;
+	_obj* wnd;struct style* area;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	if(_char_ == ev->what){
@@ -295,16 +295,16 @@ static void vkbd_write_bywnd(_ent* ent,void* foot, _syn* stack,int sp, struct ev
 	if('p' == (ev->what&0xff)){
 		vec3 xyz;
 		gl41data_convert(wnd, area, ev, xyz);
-		ent->ix0 = xyz[0] * 16;
-		ent->iy0 = xyz[1] * 8;
+		ent->whdf.ix0 = xyz[0] * 16;
+		ent->whdf.iy0 = xyz[1] * 8;
 
-		if(0x2b70 == ev->what)ent->iw0 = 1;
+		if(0x2b70 == ev->what)ent->whdf.iw0 = 1;
 		if(0x2d70 == ev->what){
-			ent->iw0 = 0;
+			ent->whdf.iw0 = 0;
 
 			struct event tmp;
-			int x = ent->ix0;
-			int y = ent->iy0;
+			int x = ent->whdf.ix0;
+			int y = ent->whdf.iy0;
 			tmp.why = x + y*16;
 			tmp.what = _char_;
 			give_data_into_peer(ent,_evto_, stack,sp, 0,0, &tmp,0x20);
@@ -315,12 +315,12 @@ static void vkbd_write_bywnd(_ent* ent,void* foot, _syn* stack,int sp, struct ev
 
 
 
-static int vkbd_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vkbd_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* wnd = stack[sp-2].pchip;
+	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _dx11list_:
 	case _gl41list_:
 	case _mt20list_:
@@ -328,10 +328,10 @@ static int vkbd_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int k
 	}
 	return 0;
 }
-static int vkbd_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vkbd_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* wnd = stack[sp-2].pchip;
-	switch(wnd->fmt){
+	_obj* wnd = stack[sp-2].pchip;
+	switch(wnd->hfmt){
 	case _dx11list_:
 	case _gl41list_:
 		vkbd_write_bywnd(ent,foot, stack,sp, buf,len);break;
@@ -350,10 +350,10 @@ static int vkbd_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-void vkbd_register(struct entity* p)
+void vkbd_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex32('v', 'k', 'b', 'd');
+	p->hfmt = hex32('v', 'k', 'b', 'd');
 
 	p->oncreate = (void*)vkbd_create;
 	p->ondelete = (void*)vkbd_delete;

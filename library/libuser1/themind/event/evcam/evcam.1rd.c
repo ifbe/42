@@ -5,8 +5,8 @@
 
 
 struct privdata{
-	struct entity* cam;
-	struct entity* tar;
+	_obj* cam;
+	_obj* tar;
 
 	struct style* caminworld;
 	struct style* tarinworld;
@@ -27,10 +27,10 @@ struct privdata{
 
 
 
-void* cam1rd_findgeom(struct entity* ent)
+void* cam1rd_findgeom(_obj* ent)
 {
 	struct relation* rel;
-	struct entity* world;
+	_obj* world;
 	if(0 == ent)return 0;
 
 	rel = ent->irel0;
@@ -57,9 +57,9 @@ void* cam1rd_findgeom(struct entity* ent)
 
 
 
-int cam1rd_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int cam1rd_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct privdata* own = ent->buf0;
+	struct privdata* own = ent->priv_ptr;
 	if(0 == own)return 0;
 
 	struct style* cam = own->caminworld;
@@ -97,7 +97,7 @@ int cam1rd_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, v
 	cam->fs.vt[2] = tar->fs.vt[2];
 	return 0;
 }
-int cam1rd_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, struct event* ev, int len)
+int cam1rd_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, struct event* ev, int len)
 {
 	return 0;
 }
@@ -109,8 +109,8 @@ int cam1rd_discon(struct halfrel* self, struct halfrel* peer)
 int cam1rd_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	say("@cam1rd_linkup\n");
-	struct entity* ent = self->pchip;
-	struct privdata* own = ent->buf0;
+	_obj* ent = self->pchip;
+	struct privdata* own = ent->priv_ptr;
 	switch(self->flag){
 	case _cam_:own->cam = peer->pchip;break;
 	case _tar_:own->tar = peer->pchip;break;
@@ -121,20 +121,20 @@ int cam1rd_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int cam1rd_search(struct entity* win)
+int cam1rd_search(_obj* win)
 {
 	return 0;
 }
-int cam1rd_modify(struct entity* win)
+int cam1rd_modify(_obj* win)
 {
 	return 0;
 }
-int cam1rd_delete(struct entity* win)
+int cam1rd_delete(_obj* win)
 {
 	return 0;
 }
-int cam1rd_create(struct entity* act, void* flag)
+int cam1rd_create(_obj* act, void* flag)
 {
-	struct privdata* own = act->buf0 = memorycreate(0x1000, 0);
+	struct privdata* own = act->priv_ptr = memorycreate(0x1000, 0);
 	return 0;
 }

@@ -4,14 +4,14 @@
 
 
 static void flower_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void flower_draw_gl41(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int j;
 	float len;
@@ -51,33 +51,33 @@ static void flower_draw_gl41(
 	}
 }
 static void flower_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void flower_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void flower_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void flower_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-static void flower_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void flower_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -87,7 +87,7 @@ static void flower_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void flower_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void flower_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -96,10 +96,10 @@ static void flower_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -109,7 +109,7 @@ static void flower_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 		break;
 	}
 }
-static void flower_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void flower_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void flower_discon(struct halfrel* self, struct halfrel* peer)
@@ -122,26 +122,26 @@ static void flower_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void flower_search(struct entity* act)
+static void flower_search(_obj* act)
 {
 }
-static void flower_modify(struct entity* act)
+static void flower_modify(_obj* act)
 {
 }
-static void flower_delete(struct entity* act)
+static void flower_delete(_obj* act)
 {
 }
-static void flower_create(struct entity* act)
+static void flower_create(_obj* act)
 {
 }
 
 
 
 
-void flower_register(struct entity* p)
+void flower_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('f','l','o','w','e','r', 0, 0);
+	p->hfmt = hex64('f','l','o','w','e','r', 0, 0);
 
 	p->oncreate = (void*)flower_create;
 	p->ondelete = (void*)flower_delete;

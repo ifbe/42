@@ -11,10 +11,10 @@ void* thatgeom;
 void* self;
 void* selfgeom;
 };
-void* lookat_where(struct entity* ent)
+void* lookat_where(_obj* ent)
 {
 	struct relation* rel;
-	struct entity* world;
+	_obj* world;
 
 	rel = ent->irel0;
 	while(1){
@@ -54,15 +54,15 @@ void lookat_doit(struct fstyle* this, struct fstyle* that)
 
 
 
-int lookat_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int lookat_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int lookat_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int lookat_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	say("@lookat_write:%.4s\n",&foot);
 	if(_clk_ == stack[sp-1].flag){
-		struct privdata* own = ent->buf0;
+		struct privdata* own = ent->priv_ptr;
 		if(0 == own->that)return 0;
 		if(0 == own->self)return 0;
 
@@ -83,8 +83,8 @@ int lookat_discon(struct halfrel* self, struct halfrel* peer)
 }
 int lookat_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	struct entity* ent = self->pchip;
-	struct privdata* own = ent->buf0;
+	_obj* ent = self->pchip;
+	struct privdata* own = ent->priv_ptr;
 	say("@lookat_linkup: %.4s\n", &self->flag);
 
     switch(self->flag){
@@ -97,21 +97,21 @@ int lookat_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int lookat_search(struct entity* win)
+int lookat_search(_obj* win)
 {
 	return 0;
 }
-int lookat_modify(struct entity* win)
+int lookat_modify(_obj* win)
 {
 	return 0;
 }
-int lookat_delete(struct entity* win)
+int lookat_delete(_obj* win)
 {
 	return 0;
 }
-int lookat_create(struct entity* act, void* flag)
+int lookat_create(_obj* act, void* flag)
 {
-	struct privdata* own = act->buf0 = memorycreate(0x1000, 0);
+	struct privdata* own = act->priv_ptr = memorycreate(0x1000, 0);
 	own->self = 0;
 	own->selfgeom = 0;
 	own->that = 0;

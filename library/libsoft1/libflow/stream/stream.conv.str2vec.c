@@ -6,11 +6,11 @@ int parsefv(float* fbuf, int flen, u8* sbuf, int slen);
 
 
 
-int str2vec_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int str2vec_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int str2vec_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int str2vec_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	int j,cnt;
 	float* f;
@@ -43,11 +43,11 @@ int str2vec_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int str2vec_delete(struct artery* art)
+int str2vec_delete(_obj* art)
 {
 	return 0;
 }
-int str2vec_create(struct artery* art, u8* url)
+int str2vec_create(_obj* art, u8* url)
 {
 	say("@str2vec_create\n");
 	return 1;

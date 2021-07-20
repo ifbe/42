@@ -23,8 +23,8 @@ GLSL_VERSION
 
 
 static void spectrum_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -36,38 +36,38 @@ static void spectrum_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 }
 static void spectrum_draw_gl41(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	struct mysrc* src = (void*)(pin->data[0]);
 	src->vbuf_enq += 1;
 	//say("@spectrum_draw_gl41\n");
 }
 static void spectrum_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void spectrum_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void spectrum_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void spectrum_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
@@ -75,8 +75,8 @@ static void spectrum_draw_cli(
 
 
 static void spectrum_data(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	float* buf, int len)
 {
 	int t = act->vlen;
@@ -92,10 +92,10 @@ static void spectrum_data(
 
 
 
-static void spectrum_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spectrum_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void spectrum_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spectrum_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void spectrum_discon(struct halfrel* self, struct halfrel* peer)
@@ -106,9 +106,9 @@ static void spectrum_linkup(struct halfrel* self, struct halfrel* peer)
 	struct datapair* pair;
 	struct mysrc* src;
 	struct gldst* dst;
-	struct entity* act = (void*)(self->chip);
+	_obj* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
+	_obj* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	if(_data_ == self->flag)return;
 /*
@@ -149,13 +149,13 @@ static void spectrum_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void spectrum_search(struct entity* act)
+static void spectrum_search(_obj* act)
 {
 }
-static void spectrum_modify(struct entity* act)
+static void spectrum_modify(_obj* act)
 {
 }
-static void spectrum_delete(struct entity* act)
+static void spectrum_delete(_obj* act)
 {
 	if(0 == act)return;
 	if(act->ibuf){
@@ -167,7 +167,7 @@ static void spectrum_delete(struct entity* act)
 		act->vbuf = 0;
 	}
 }
-static void spectrum_create(struct entity* act, void* str)
+static void spectrum_create(_obj* act, void* str)
 {
 	int j,k;
 	u16* uu;
@@ -198,10 +198,10 @@ static void spectrum_create(struct entity* act, void* str)
 
 
 
-void spectrum_register(struct entity* p)
+void spectrum_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('s', 'p', 'e', 'c', 't', 'r', 'u', 'm');
+	p->hfmt = hex64('s', 'p', 'e', 'c', 't', 'r', 'u', 'm');
 
 	p->oncreate = (void*)spectrum_create;
 	p->ondelete = (void*)spectrum_delete;

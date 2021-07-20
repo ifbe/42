@@ -26,8 +26,8 @@ double getsin(double);
 
 
 //
-static struct supply* win;
-static struct supply* src;
+static _obj* win;
+static _obj* src;
 static u8* fontdata;
 //
 static int queuehead = 0;
@@ -910,7 +910,7 @@ void callback_move(int x,int y)
 
 
 
-void* uievent(struct supply* p)
+void* uievent(_obj* p)
 {
 	int ret;
 	int argc=1;
@@ -944,10 +944,10 @@ void* uievent(struct supply* p)
 	glutMotionFunc(callback_move);
 	glutMainLoop();
 }
-void window_take(struct supply* wnd)
+void window_take(_obj* wnd)
 {
 }
-void window_give(struct supply* wnd)
+void window_give(_obj* wnd)
 {
 	queuehead++;
 }
@@ -960,7 +960,7 @@ void windowlist()
 void windowstop()
 {
 }
-void windowstart(struct supply* this)
+void windowstart(_obj* this)
 {
 	if(this->type == hex32('b','u','f',0))
 	{

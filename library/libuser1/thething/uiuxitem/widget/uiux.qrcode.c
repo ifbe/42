@@ -1,14 +1,14 @@
 #include "libuser.h"
-#define DATBUF buf0
-#define DATLEN data1
+#define DATBUF listptr.buf0
+#define DATLEN listu64.data2
 int qrcode_generate(void* src, void* dst, int len);
 
 
 
 
 static void qrcode_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	u8* sbuf;
 	u32 color;
@@ -24,10 +24,10 @@ static void qrcode_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 
 	sbuf = act->DATBUF;
@@ -52,9 +52,9 @@ static void qrcode_draw_pixel(
 	}
 }
 static void qrcode_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	vec3 tc, tr, tf, tu;
 	float* vc = geom->fs.vc;
@@ -88,23 +88,23 @@ static void qrcode_draw_gl41(
 	}
 }
 static void qrcode_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void qrcode_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void qrcode_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x,y;
-	int width = win->width;
-	int height = win->height;
-	u8* p = (u8*)(win->textbuf);
+	int width = win->whdf.width;
+	int height = win->whdf.height;
+	u8* p = (u8*)(win->tuitext.buf);
 
 	u8* sbuf = act->DATBUF;
 	int slen = act->DATLEN;
@@ -124,8 +124,8 @@ static void qrcode_draw_tui(
 	}
 }
 static void qrcode_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("qrcode(%x,%x,%x)\n",win,act,sty);
 }
@@ -133,10 +133,10 @@ static void qrcode_draw_cli(
 
 
 
-static void qrcode_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+static void qrcode_read_bycam(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	if(0 == stack)return;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
@@ -147,12 +147,12 @@ static void qrcode_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* ar
 
 
 
-static void qrcode_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void qrcode_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* wnd = stack[sp-2].pchip;
+	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _rgba_:
 		qrcode_draw_pixel(ent, foot, wnd, area);
 		break;
@@ -161,7 +161,7 @@ static void qrcode_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 		break;
 	}
 }
-static void qrcode_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void qrcode_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void qrcode_discon(struct halfrel* self, struct halfrel* peer)
@@ -174,18 +174,18 @@ static void qrcode_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void qrcode_search(struct entity* act)
+static void qrcode_search(_obj* act)
 {
 }
-static void qrcode_modify(struct entity* act)
+static void qrcode_modify(_obj* act)
 {
 }
-static void qrcode_delete(struct entity* act)
+static void qrcode_delete(_obj* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf0);
+	if(act->DATBUF)memorydelete(act->DATBUF);
 }
-static void qrcode_create(struct entity* act)
+static void qrcode_create(_obj* act)
 {
 	if(0 == act)return;
 	act->DATBUF = memorycreate(49*49, 0);
@@ -196,10 +196,10 @@ static void qrcode_create(struct entity* act)
 
 
 
-void qrcode_register(struct entity* p)
+void qrcode_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('q', 'r', 'c', 'o', 'd', 'e', 0, 0);
+	p->hfmt = hex64('q', 'r', 'c', 'o', 'd', 'e', 0, 0);
 
 	p->oncreate = (void*)qrcode_create;
 	p->ondelete = (void*)qrcode_delete;

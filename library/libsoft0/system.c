@@ -21,26 +21,26 @@ int freewatcher();
 //shell
 int initshell(void*);
 int freeshell();
-int startshell(void*, int);
-int stopshell(int);
-int readshell( int, int, void*, int);
-int writeshell(int, int, void*, int);
+void* shell_create(void*, int);
+int shell_delete(void*);
+int shell_take(void*,void*, void*,int, void*,int);
+int shell_give(void*,void*, void*,int, void*,int);
 //uart
 int inituart(void*);
 int freeuart();
-int uart_delete(int);
-int uart_create(void*, int);
-int uart_read( int, int, void*, int);
-int uart_write(int, int, void*, int);
+void* uart_create(void*, int);
+int uart_delete(void*);
+int uart_take(void*,void*, void*,int, void*,int);
+int uart_give(void*,void*, void*,int, void*,int);
 //socket
 int initsocket(void*);
 int freesocket();
-int createsocket(int fmt, void* url);
-int deletesocket(int);
-int searchsocket(int);
-int modifysocket(int);
-int readsocket( int,void*,void*, int);
-int writesocket(int,void*,void*, int);
+void* socket_create(int fmt, void* url);
+int socket_delete(void*);
+int socket_search(int);
+int socket_modify(int);
+int socket_take(void*,void*, void*,int, void*,int);
+int socket_give(void*,void*, void*,int, void*,int);
 //
 int parseuart(void*, int*, void*);
 int ncmp(void*, void*, int);
@@ -50,7 +50,7 @@ int cmp(void*, void*);
 
 
 //
-static struct sysobj* obj = 0;
+static struct item* obj = 0;
 static int objlen = 0;
 static void* ppp = 0;
 static int ppplen = 0;
@@ -58,107 +58,51 @@ static int ppplen = 0;
 
 
 
-int system_take(_sys* sys,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+void system_init(u8* addr)
 {
-	switch(sys->type){
-		case _FILE_:
-		case _file_:return readfile(sys, sys->selffd, arg, idx, buf, len);
-	}
-	return 0;
+	say("[8,a):system initing\n");
+
+	int j;
+	obj = (void*)(addr+0x000000);
+	ppp = (void*)(addr+0x100000);
+
+#define max (0x100000/sizeof(struct item))
+	for(j=0;j<0x200000;j++)addr[j]=0;
+	for(j=0;j<max;j++)obj[j].tier = _sys_;
+
+	initrandom(addr);
+	initsignal(addr);
+	initwatcher(addr);
+	initshell(addr);
+	inituart(addr);
+	initsocket(addr);
+	initfilemgr(addr);
+
+	initprocess();
+	initthread();
+
+	say("[8,a):system inited\n");
 }
-int system_give(_sys* sys,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+void system_exit()
 {
-	switch(sys->type){
-		case _FILE_:
-		case _file_:{
-			return writefile(sys, sys->selffd, arg, idx, buf, len);
-		}
-		case _ptmx_:{
-			return writeshell(sys->selffd, idx, buf, len);
-			break;
-		}
-		case _uart_:{
-			return uart_write(sys->selffd, idx, buf, len);
-			break;
-		}
-		case _TCP_:{
-			sys = sys->tempobj;
-			if(0 == sys)return -1;
-		}
-		default:{
-			return writesocket(sys->selffd, arg, buf, len);
-		}
-	}
-	return 0;
-}
-int systemdiscon(struct halfrel* self, struct halfrel* peer)
-{
-	say("@system_discon\n");
-	return 0;
-}
-int systemlinkup(struct halfrel* self, struct halfrel* peer)
-{
-	say("@system_linkup\n");
-	return 0;
+	say("[8,a):system exiting\n");
+
+	freesocket();
+	freeuart();
+	freeshell();
+	freewatcher();
+	freesignal();
+	freerandom();
+
+	say("[8,a):system exited\n");
 }
 
 
 
 
-int systemdelete(void* addr)
-{
-	int fd;
-	struct sysobj* oo;
-	struct relation* rel;
-	if(0 == addr)return 0;
-
-	oo = addr;
-	fd = oo->selffd;
-
-
-	//del irel, orel
-	rel = oo->irel0;
-	if(0 != rel){
-		relationdiscon((void*)&rel->srcchip, (void*)&rel->dstchip);
-		relationdelete(rel);
-	}
-	oo->irel0 = oo->ireln = 0;
-
-	rel = oo->orel0;
-	if(0 != rel){
-		relationdiscon((void*)&rel->srcchip, (void*)&rel->dstchip);
-		relationdelete(rel);
-	}
-	oo->orel0 = oo->oreln = 0;
-
-
-	//del it self
-	switch(oo->type){
-	case _file_:{
-		stopfile(fd);
-		break;
-	}
-	case _ptmx_:{
-		stopshell(fd);
-		break;
-	}
-	case _uart_:{
-		uart_delete(fd);
-		break;
-	}
-	default:{
-		deletesocket(fd);
-	}
-	}
-	oo->type = 0;
-	oo->type = 0;
-	oo->fmt = 0;
-	oo->name = 0;
-	return 0;
-}
 void* systemcreate(u64 type, void* argstr, int argc, u8** argv)
 {
-	int j,k,fd,ret;
+	int j,k,ret;
 	u8 host[0x100];	//127.0.0.1
 	int port;	//2222
 	u8* url;	//dir/file.html
@@ -185,113 +129,155 @@ void* systemcreate(u64 type, void* argstr, int argc, u8** argv)
 	if(0 == type)return 0;
 
 	//file family
+	struct item* per = 0;
 	switch(type){
 	case _FILE_:
-	{
-		fd = startfile(name, 'w');
-		if(fd <= 0)return 0;
+		per = file_create(name, 'w');
+		if(0 == per)return 0;
 
-		obj[fd].type = _FILE_;
-		obj[fd].selffd = fd;
-		return &obj[fd];
-	}
+		per->type = _FILE_;
+		return per;
+
 	case _file_:
-	{
-		fd = startfile(name, 'r');
-		if(fd <= 0)return 0;
+		per = file_create(name, 'r');
+		if(0 == per)return 0;
 
-		obj[fd].type = _file_;
-		obj[fd].selffd = fd;
-		return &obj[fd];
-	}
+		per->type = _file_;
+		return per;
+
 	case _ptmx_:
-	{
 		parseuart(host, &port, name);
 		say("parse: %s, %d\n", host, port);
 
-		fd = startshell(host, port);
-		if(fd <= 0)return 0;
+		per = shell_create(host, port);
+		if(0 == per)return 0;
 
-		obj[fd].type = _ptmx_;
-		obj[fd].selffd = fd;
-		return &obj[fd];
-	}
+		per->type = _ptmx_;
+		return per;
+
 	case _uart_:
-	{
 		parseuart(host, &port, name);
 		say("parse: %s, %d\n", host, port);
 
-		fd = uart_create(host, port);
-		if(fd <= 0)return 0;
+		per = uart_create(host, port);
+		if(0 == per)return 0;
 
-		obj[fd].type = _uart_;
-		obj[fd].selffd = fd;
-		return &obj[fd];
-	}
+		per->type = _uart_;
+		return per;
+
 	case _RAW_:		//raw server
-	{
-		fd = createsocket(_RAW_, name);
-		if(0 >= fd)return 0;
+		per = socket_create(_RAW_, name);
+		if(0 == per)return 0;
 
-		obj[fd].type = _RAW_;
-		obj[fd].selffd = fd;
-		return &obj[fd];
-	}
+		per->type = _RAW_;
+		return per;
+
 	case _raw_:		//raw client
-	{
-		fd = createsocket(_raw_, name);
-		if(0 >= fd)return 0;
+		per = socket_create(_raw_, name);
+		if(0 == per)return 0;
 
-		obj[fd].type = _raw_;
-		obj[fd].selffd = fd;
-		return &obj[fd];
-	}
+		per->type = _raw_;
+		return per;
+
 	case _UDP_:		//udp master
-	{
-		fd = createsocket(_UDP_, name);
-		if(0 >= fd)return 0;
+		per = socket_create(_UDP_, name);
+		if(0 == per)return 0;
 
-		obj[fd].type = _UDP_;
-		obj[fd].selffd = fd;
-		return &obj[fd];
-	}
+		per->type = _UDP_;
+		return per;
+
 	case _Udp_:		//udp server
-	{
-		fd = createsocket(_Udp_, name);
-		if(0 >= fd)return 0;
+		per = socket_create(_Udp_, name);
+		if(0 == per)return 0;
 
-		obj[fd].type = _Udp_;
-		return 0;
-	}
+		per->type = _Udp_;
+		return per;
+
 	case _udp_:		//udp client
-	{
-		fd = createsocket(_udp_, name);
-		if(0 >= fd)return 0;
+		per = socket_create(_udp_, name);
+		if(0 == per)return 0;
 
-		obj[fd].type = _udp_;
-		obj[fd].selffd = fd;
-		return &obj[fd];
-	}
+		per->type = _udp_;
+		return per;
+
 	case _TCP_:		//tcp master
-	{
-		fd = createsocket(_TCP_, name);
-		if(0 >= fd)return 0;
+		per = socket_create(_TCP_, name);
+		if(0 == per)return 0;
 
-		obj[fd].type = _TCP_;
-		obj[fd].selffd = fd;
-		return &obj[fd];
-	}
+		per->type = _TCP_;
+		return per;
+
 	case _tcp_:		//tcp client
+		per = socket_create(_tcp_, name);
+		if(0 == per)return 0;
+
+		per->type = _tcp_;
+		return per;
+	}
+
+	return 0;
+}
+int systemdelete(struct item* oo)
+{
+	struct relation* rel;
+	if(0 == oo)return 0;
+
+
+	//del irel, orel
+	rel = oo->irel0;
+	if(0 != rel){
+		relationdiscon((void*)&rel->srcchip, (void*)&rel->dstchip);
+		relationdelete(rel);
+	}
+	oo->irel0 = oo->ireln = 0;
+
+	rel = oo->orel0;
+	if(0 != rel){
+		relationdiscon((void*)&rel->srcchip, (void*)&rel->dstchip);
+		relationdelete(rel);
+	}
+	oo->orel0 = oo->oreln = 0;
+
+
+	//del it self
+	switch(oo->type){
+	case _file_:{
+		file_delete(oo);
+		break;
+	}
+	case _ptmx_:{
+		shell_delete(oo);
+		break;
+	}
+	case _uart_:{
+		uart_delete(oo);
+		break;
+	}
+	default:{
+		socket_delete(oo);
+	}
+	}
+	oo->type = 0;
+	oo->type = 0;
+	oo->hfmt = 0;
+	oo->vfmt = 0;
+	return 0;
+}
+void* systemsearch(u8* buf, int len)
+{
+	int j,k=0;
+	struct item* tmp;
+	for(j=0;j<0x1000;j++)
 	{
-		fd = createsocket(_tcp_, name);
-		if(0 >= fd)return 0;
+		tmp = &obj[j];
+		if(0 == tmp->type)continue;
 
-		obj[fd].type = _tcp_;
-		obj[fd].selffd = fd;
-		return &obj[fd];
-	}
+		k++;
+		say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
+			&tmp->tier, &tmp->type, &tmp->hfmt, &tmp->vfmt);
 	}
 
+	if(0 == k)say("empth system\n");
 	return 0;
 }
 void* systemmodify(int argc, u8** argv)
@@ -313,62 +299,46 @@ void* systemmodify(int argc, u8** argv)
 	}
 	return 0;
 }
-void* systemsearch(u8* buf, int len)
+
+
+
+
+int systemlinkup(struct halfrel* self, struct halfrel* peer)
 {
-	int j,k=0;
-	struct sysobj* tmp;
-	for(j=0;j<0x1000;j++)
-	{
-		tmp = &obj[j];
-		if(0 == tmp->type)continue;
-
-		k++;
-		say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
-			&tmp->tier, &tmp->type, &tmp->fmt, &tmp->name);
-	}
-
-	if(0 == k)say("empth system\n");
+	say("@system_linkup\n");
 	return 0;
 }
-
-
-
-
-void system_exit()
+int systemdiscon(struct halfrel* self, struct halfrel* peer)
 {
-	say("[8,a):system exiting\n");
-
-	freesocket();
-	freeuart();
-	freeshell();
-	freewatcher();
-	freesignal();
-	freerandom();
-
-	say("[8,a):system exited\n");
+	say("@system_discon\n");
+	return 0;
 }
-void system_init(u8* addr)
+int system_take(_obj* sys,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
-	say("[8,a):system initing\n");
-
-	int j;
-	obj = (void*)(addr+0x000000);
-	ppp = (void*)(addr+0x100000);
-
-#define max (0x100000/sizeof(struct sysobj))
-	for(j=0;j<0x200000;j++)addr[j]=0;
-	for(j=0;j<max;j++)obj[j].tier = _sys_;
-
-	initrandom(addr);
-	initsignal(addr);
-	initwatcher(addr);
-	initshell(addr);
-	inituart(addr);
-	initsocket(addr);
-	initfilemgr();
-
-	initprocess();
-	initthread();
-
-	say("[8,a):system inited\n");
+	switch(sys->type){
+	case _FILE_:
+	case _file_:
+		return file_take(sys, 0, arg, cmd, buf, len);
+	}
+	return 0;
+}
+int system_give(_obj* sys,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
+{
+	switch(sys->type){
+	case _FILE_:
+	case _file_:
+		return file_give(sys,0, arg,cmd, buf,len);
+	case _ptmx_:
+		return shell_give(sys,0, arg,cmd, buf,len);
+		break;
+	case _uart_:
+		return uart_give(sys,0, arg,cmd, buf,len);
+		break;
+	case _TCP_:
+		sys = sys->sockinfo.child;
+		if(0 == sys)return -1;
+	default:
+		return socket_give(sys,0, arg,cmd, buf,len);
+	}
+	return 0;
 }

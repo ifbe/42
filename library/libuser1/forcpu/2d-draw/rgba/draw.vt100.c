@@ -239,7 +239,7 @@ static int drawvt100_1b(u8* p, struct txtcfg* cfg)
 
 
 int drawvt100(
-	struct entity* win, u32 rgb,
+	_obj* win, u32 rgb,
 	int x0, int y0, int x1, int y1,
 	u8* buf, int len)
 {
@@ -332,7 +332,7 @@ int drawvt100(
 
 
 
-void drawterm(struct entity* win, struct uartterm* term, int x0, int y0, int x1, int y1)
+void drawterm(_obj* win, struct uartterm* term, int x0, int y0, int x1, int y1)
 {
 	u32 bg, fg;
 	int x,y;

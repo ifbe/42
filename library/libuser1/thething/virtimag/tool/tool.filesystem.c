@@ -1,12 +1,12 @@
 #include "libuser.h"
-#define PATHBUF buf0
-#define LISTBUF buf1
+#define PATHBUF listptr.buf0
+#define LISTBUF listptr.buf1
 int copypath(void* path, void* data);
 int readfolder(void* url, int fd, void* arg, int off, void* buf, int len);
-void gl41data_before(struct entity* wnd);
-void gl41data_after(struct entity* wnd);
-void gl41data_whcam(struct entity* wnd, struct style* area);
-void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
+void gl41data_before(_obj* wnd);
+void gl41data_after(_obj* wnd);
+void gl41data_whcam(_obj* wnd, struct style* area);
+void gl41data_convert(_obj* wnd, struct style* area, struct event* ev, vec3 v);
 
 
 static u32 rainbow[8] = {
@@ -54,21 +54,21 @@ static int fslist_copy(struct str* path, u8* name)
 	say("%s\n", path->buf);
 	return 0;
 }
-static void fslist_write_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area, struct event* ev)
+static void fslist_write_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area, struct event* ev)
 {
 	if('p' == (ev->what&0xff)){
 		vec3 xyz;
 		gl41data_convert(wnd, area, ev, xyz);
 		say("%f,%f\n",xyz[0],xyz[1]);
 
-		float dx = area->fs.vq[0] * wnd->width;
-		float dy = area->fs.vq[1] * wnd->height;
-		ent->ix0 = (int)(8*xyz[0]);
-		ent->iy0 = (int)(8*(1.0-xyz[1])*dy/dx);
-		say("%d,%d\n",ent->ix0,ent->iy0);
+		float dx = area->fs.vq[0] * wnd->whdf.width;
+		float dy = area->fs.vq[1] * wnd->whdf.height;
+		ent->whdf.ix0 = (int)(8*xyz[0]);
+		ent->whdf.iy0 = (int)(8*(1.0-xyz[1])*dy/dx);
+		say("%d,%d\n",ent->whdf.ix0,ent->whdf.iy0);
 
 		if(0x2d70 == ev->what){
-			int id = ent->ix0 + (ent->iy0*8);
+			int id = ent->whdf.ix0 + (ent->whdf.iy0*8);
 			say("%d\n",id);
 
 			int j,k;
@@ -101,28 +101,28 @@ static void fslist_write_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct st
 
 
 static void fslist_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void fslist_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void fslist_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void fslist_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void fslist_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
@@ -130,9 +130,9 @@ static void fslist_draw_cli(
 
 
 static void fslist_draw_gl41(
-	struct entity* act, struct style* part,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* part,
+	_obj* scn, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -160,7 +160,7 @@ static void fslist_draw_gl41(
 		if('\n'== list->buf[tail]){
 			y = cnt/8;
 			x = cnt%8;
-			if((x==act->ix0)&&(y==act->iy0)){
+			if((x==act->whdf.ix0)&&(y==act->whdf.iy0)){
 				bg = 0xffffff;
 				fg = 0xff0000;
 				scale = 1.1;
@@ -197,13 +197,13 @@ static void fslist_draw_gl41(
 	for(j=0;j<3;j++){tc[j] = vc[j] -vr[j] -vf[j] +vt[j]/100.0;}
 	gl41string(wnd,0xffffff, tc,tr,tf, path->buf,path->len);
 }
-static void fslist_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
+static void fslist_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
 {
 	int j;
 	struct fstyle fs;
 	for(j=0;j<3;j++)fs.vc[j] = fs.vr[j] = fs.vf[j] = fs.vt[j] = 0.0;
-	fs.vr[0] = area->fs.vq[0] * wnd->fbwidth / 2.0;
-	fs.vf[1] = area->fs.vq[1] * wnd->fbheight/ 2.0;
+	fs.vr[0] = area->fs.vq[0] * wnd->whdf.fbwidth / 2.0;
+	fs.vf[1] = area->fs.vq[1] * wnd->whdf.fbheight/ 2.0;
 	fs.vt[2] = 1.0;
 
 	gl41data_before(wnd);
@@ -215,25 +215,25 @@ static void fslist_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct sty
 
 
 
-static void fslist_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void fslist_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* wnd = stack[sp-2].pchip;
+	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _gl41list_:
 		fslist_read_bywnd(ent,slot, wnd,area);
 		break;
 	}
 }
-static void fslist_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void fslist_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//struct entity* ent = stack[sp-1].pchip;
+	//_obj* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
-	struct entity* wnd = stack[sp-2].pchip;
+	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _gl41list_:
 		fslist_write_bywnd(ent,slot, wnd,area, buf);
 		break;
@@ -249,13 +249,13 @@ static void fslist_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void fslist_search(struct entity* act)
+static void fslist_search(_obj* act)
 {
 }
-static void fslist_modify(struct entity* act)
+static void fslist_modify(_obj* act)
 {
 }
-static void fslist_delete(struct entity* act)
+static void fslist_delete(_obj* act)
 {
 	if(0 == act)return;
 	if(act->PATHBUF){
@@ -267,7 +267,7 @@ static void fslist_delete(struct entity* act)
 		act->LISTBUF = 0;
 	}
 }
-static void fslist_create(struct entity* act, void* arg, int argc, u8** argv)
+static void fslist_create(_obj* act, void* arg, int argc, u8** argv)
 {
 	if(0 == arg)arg = "datafile/myml/";
 
@@ -282,9 +282,9 @@ static void fslist_create(struct entity* act, void* arg, int argc, u8** argv)
 
 
 
-void fslist_register(struct entity* p)
+void fslist_register(_obj* p)
 {
-	p->fmt = hex64('f','s','l','i','s','t', 0, 0);
+	p->hfmt = hex64('f','s','l','i','s','t', 0, 0);
 
 	p->oncreate = (void*)fslist_create;
 	p->ondelete = (void*)fslist_delete;

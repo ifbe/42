@@ -2,11 +2,11 @@
 #define _fbo_ hex32('f','b','o',0)
 void world2clip_projz0z1_transpose(mat4 mat, struct fstyle* frus);
 void world2clip_projznzp_transpose(mat4 mat, struct fstyle* frus);
-void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
+void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 
 
-#define CAMBUF buf0
-#define CTXBUF buf1
+#define CAMBUF listptr.buf0
+#define CTXBUF listptr.buf1
 struct glassbuf{
 	mat4 mvp;
 	u8 data[0];
@@ -42,28 +42,28 @@ GLSL_VERSION
 
 
 static void glass_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void glass_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void glass_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void glass_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void glass_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
@@ -173,10 +173,10 @@ void glass_frustum(struct fstyle* frus, struct fstyle* obb, vec3 cam)
 	frus->vt[3] = t;
 }
 static void glass_forfbo_update(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* wrl, struct style* camg,
-	struct supply* fbo, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* wrl, struct style* camg,
+	_obj* fbo, struct style* area)
 {
 	//frus from shape and eye
 	struct fstyle* shap = &geom->fshape;
@@ -196,7 +196,7 @@ static void glass_forfbo_update(
 	data->dst.arg[1].fmt = 'v';
 	data->dst.arg[1].name = "camxyz";
 	data->dst.arg[1].data = frus->vc;
-	fbo->glfull_camera[0] = data;
+	fbo->gl41list.camera[0] = data;
 }
 static void glass_forfbo_prepare(struct gl41data* data)
 {
@@ -207,9 +207,9 @@ static void glass_forfbo_prepare(struct gl41data* data)
 
 //for window
 static void glass_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	struct glassbuf* glass = act->CTXBUF;
 	if(0 == glass)return;
@@ -268,7 +268,7 @@ static void glass_draw_gl41(
 	src->vbuf_enq += 1;
 	gl41data_insert(ctx, 'o', src, 1);
 }
-void glass_forwnd_update(struct entity* act, struct style* slot, struct supply* fbo, struct style* rect)
+void glass_forwnd_update(_obj* act, struct style* slot, _obj* fbo, struct style* rect)
 {
 	struct glassbuf* glass = act->CTXBUF;
 	if(0 == glass)return;
@@ -277,7 +277,7 @@ void glass_forwnd_update(struct entity* act, struct style* slot, struct supply* 
 	if(0 == data)return;
 
 	data->dst.texname[0] = "tex0";
-	data->src.tex[0].glfd = fbo->tex0;
+	data->src.tex[0].glfd = fbo->gl41list.tex[0];
 	data->src.tex[0].fmt = '!';
 	data->src.tex_enq[0] += 1;
 }
@@ -312,11 +312,11 @@ void glass_forwnd_prepare(struct gl41data* data)
 
 
 
-static void glass_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void glass_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* dup;struct style* camg;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* dup;struct style* camg;
+	_obj* wnd;struct style* area;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	dup = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -328,7 +328,7 @@ static void glass_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 	if(ret <= 0)return;
 
 	//update matrix for fbo
-	struct supply* fbo = rel[1]->pchip;
+	_obj* fbo = rel[1]->pchip;
 	struct style* rect = rel[1]->pfoot;
 	glass_forfbo_update(ent,slot, wor,geom, dup,camg, fbo,rect);
 
@@ -344,7 +344,7 @@ static void glass_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void glass_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void glass_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -353,10 +353,10 @@ static void glass_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -366,7 +366,7 @@ static void glass_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 		break;
 	}
 }
-static void glass_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void glass_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void glass_discon(struct halfrel* self, struct halfrel* peer)
@@ -379,13 +379,13 @@ static void glass_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void glass_search(struct entity* act)
+static void glass_search(_obj* act)
 {
 }
-static void glass_modify(struct entity* act)
+static void glass_modify(_obj* act)
 {
 }
-static void glass_delete(struct entity* act)
+static void glass_delete(_obj* act)
 {
 	if(0 == act)return;
 	if(act->CTXBUF){
@@ -397,7 +397,7 @@ static void glass_delete(struct entity* act)
 		act->CAMBUF = 0;
 	}
 }
-static void glass_create(struct entity* act, void* str)
+static void glass_create(_obj* act, void* str)
 {
 	struct glassbuf* glass;
 	struct gl41data* data;
@@ -417,10 +417,10 @@ static void glass_create(struct entity* act, void* str)
 
 
 
-void glass_register(struct entity* p)
+void glass_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('g', 'l', 'a', 's', 's', 0, 0, 0);
+	p->hfmt = hex64('g', 'l', 'a', 's', 's', 0, 0, 0);
 
 	p->oncreate = (void*)glass_create;
 	p->ondelete = (void*)glass_delete;

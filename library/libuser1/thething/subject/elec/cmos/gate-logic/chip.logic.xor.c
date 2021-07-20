@@ -1,14 +1,14 @@
 #include "libuser.h"
-void gl41line_pmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
-void gl41line_nmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
+void gl41line_pmos(_obj* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
+void gl41line_nmos(_obj* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
 
 
 
 
 static void xor_draw_gl41_12t(
-	struct entity* ent, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* ent, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int j;
 	vec3 tc,tr,tf,tt;
@@ -56,32 +56,32 @@ static void xor_draw_gl41_12t(
 	}
 	gl41line(ctx, 0x0000ff, tc,tr);
 
-	u32 acolor = ent->ix0 ? 0xff0000 : 0x0000ff;
-	u32 xcolor = ent->ix0 ? 0x0000ff : 0xff0000;	//x=a'
-	u32 bcolor = ent->ix0 ? 0xff0000 : 0x0000ff;
-	u32 ycolor = ent->ix0 ? 0x0000ff : 0xff0000;	//y=b'
-	u32 ocolor = ent->iz0 ? 0xff0000 : 0x0000ff;
+	u32 acolor = ent->whdf.ix0 ? 0xff0000 : 0x0000ff;
+	u32 xcolor = ent->whdf.ix0 ? 0x0000ff : 0xff0000;	//x=a'
+	u32 bcolor = ent->whdf.ix0 ? 0xff0000 : 0x0000ff;
+	u32 ycolor = ent->whdf.ix0 ? 0x0000ff : 0xff0000;	//y=b'
+	u32 ocolor = ent->whdf.iz0 ? 0xff0000 : 0x0000ff;
 	u32 mcolor[8] = {
 		0xffffff, 0xffffff,
 		0xffffff, 0xffffff,
 		0xffffff, 0xffffff,
 		0xffffff, 0xffffff
 	};
-	if(1 == ent->ix0){
+	if(1 == ent->whdf.ix0){
 		mcolor[0] = 0xff0000;
-		if(0 == ent->ix0)mcolor[2] = 0xff0000;
+		if(0 == ent->whdf.ix0)mcolor[2] = 0xff0000;
 	}
-	if(0 == ent->ix0){
+	if(0 == ent->whdf.ix0){
 		mcolor[1] = 0xff0000;
-		if(1 == ent->ix0)mcolor[3] = 0xff0000;
+		if(1 == ent->whdf.ix0)mcolor[3] = 0xff0000;
 	}
-	if(1 == ent->ix0){
+	if(1 == ent->whdf.ix0){
 		mcolor[6] = 0x0000ff;
-		if(1 == ent->ix0)mcolor[4] = 0x0000ff;
+		if(1 == ent->whdf.ix0)mcolor[4] = 0x0000ff;
 	}
-	if(0 == ent->ix0){
+	if(0 == ent->whdf.ix0){
 		mcolor[7] = 0x0000ff;
-		if(0 == ent->ix0)mcolor[5] = 0x0000ff;
+		if(0 == ent->whdf.ix0)mcolor[5] = 0x0000ff;
 	}
 
 	//p: a', a, b, b'
@@ -158,9 +158,9 @@ static void xor_draw_gl41_12t(
 	gl41line(ctx, ocolor, tc,tr);
 }
 static void xor_draw_gl41(
-	struct entity* ent, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* ent, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int j;
 	vec3 tc,tr,tf,tt;
@@ -170,10 +170,10 @@ static void xor_draw_gl41(
 	float* vt = geom->fs.vt;
 	gl41line_rect(ctx, 0x404040, vc, vr, vf);
 
-	u32 acolor = ent->iy0 ? 0xff0000 : 0x0000ff;
-	u32 bcolor = ent->ix0 ? 0xff0000 : 0x0000ff;
-	u32 xcolor = ent->ix0 ? 0x0000ff : 0xff0000;
-	u32 ocolor = ent->iz0 ? 0xff0000 : 0x0000ff;
+	u32 acolor = ent->whdf.iy0 ? 0xff0000 : 0x0000ff;
+	u32 bcolor = ent->whdf.ix0 ? 0xff0000 : 0x0000ff;
+	u32 xcolor = ent->whdf.ix0 ? 0x0000ff : 0xff0000;
+	u32 ocolor = ent->whdf.iz0 ? 0xff0000 : 0x0000ff;
 
 	//b
 	for(j=0;j<3;j++){
@@ -200,7 +200,7 @@ static void xor_draw_gl41(
 	//left
 	u32 left_p = 0xffffff;
 	u32 left_n = 0xffffff;
-	if(ent->ix0)left_n = 0x0000ff;
+	if(ent->whdf.ix0)left_n = 0x0000ff;
 	else left_p = 0xff0000;
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] -vr[j]*5/8 +vf[j]*1/4;
@@ -233,8 +233,8 @@ static void xor_draw_gl41(
 	//tg
 	u32 tg_p = 0xffffff;
 	u32 tg_n = 0xffffff;
-	if(0 == ent->ix0){
-		if(ent->iy0)tg_p = tg_n = 0xff0000;
+	if(0 == ent->whdf.ix0){
+		if(ent->whdf.iy0)tg_p = tg_n = 0xff0000;
 		else tg_p = tg_n = 0x0000ff;
 	}
 	for(j=0;j<3;j++){
@@ -270,12 +270,12 @@ static void xor_draw_gl41(
 	//right
 	u32 right_p = 0xffffff;
 	u32 right_n = 0xffffff;
-	if(ent->ix0){
-		if(ent->iy0)right_n = 0x0000ff;
+	if(ent->whdf.ix0){
+		if(ent->whdf.iy0)right_n = 0x0000ff;
 		else right_p = 0xff0000;
 	}
 	else{
-		if(ent->iy0)right_n = 0xff0000;
+		if(ent->whdf.iy0)right_n = 0xff0000;
 		else right_p = 0x0000ff;
 	}
 	for(j=0;j<3;j++){
@@ -312,8 +312,8 @@ static void xor_draw_gl41(
 	gl41line(ctx, ocolor, tc,tr);
 }
 static void xor_draw_pixel(
-	struct entity* ent, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* ent, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -325,40 +325,40 @@ static void xor_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 }
 static void xor_draw_json(
-	struct entity* ent, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* ent, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void xor_draw_html(
-	struct entity* ent, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* ent, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void xor_draw_tui(
-	struct entity* ent, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* ent, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void xor_draw_cli(
-	struct entity* ent, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* ent, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-static void xor_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void xor_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -368,7 +368,7 @@ static void xor_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void xor_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void xor_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -377,10 +377,10 @@ static void xor_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int k
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -390,15 +390,15 @@ static void xor_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int k
 		break;
 	}
 }
-static void xor_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static void xor_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	u8 tmp;
 	if(_src_ == stack[sp-1].flag){
 		tmp = buf[0] - 0x30;
 		if((tmp >= 0)&&(tmp <= 3)){
-			ent->ix0 = (tmp>>0)&1;
-			ent->iy0 = (tmp>>1)&1;
-			ent->iz0 = ent->ix0 ^ ent->iy0;
+			ent->whdf.ix0 = (tmp>>0)&1;
+			ent->whdf.iy0 = (tmp>>1)&1;
+			ent->whdf.iz0 = ent->whdf.ix0 ^ ent->whdf.iy0;
 		}
 	}
 }
@@ -412,29 +412,29 @@ static void xor_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void xor_search(struct entity* ent, u8* buf)
+static void xor_search(_obj* ent, u8* buf)
 {
 }
-static void xor_modify(struct entity* ent, u8* buf)
+static void xor_modify(_obj* ent, u8* buf)
 {
 }
-static void xor_delete(struct entity* ent, u8* buf)
+static void xor_delete(_obj* ent, u8* buf)
 {
 }
-static void xor_create(struct entity* ent, u8* buf)
+static void xor_create(_obj* ent, u8* buf)
 {
-	ent->ix0 = getrandom()&1;
-	ent->iy0 = getrandom()&1;
-	ent->iz0 = ent->ix0 ^ ent->iy0;
+	ent->whdf.ix0 = getrandom()&1;
+	ent->whdf.iy0 = getrandom()&1;
+	ent->whdf.iz0 = ent->whdf.ix0 ^ ent->whdf.iy0;
 }
 
 
 
 
-void xor_register(struct entity* p)
+void xor_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex32('x','o','r', 0);
+	p->hfmt = hex32('x','o','r', 0);
 
 	p->oncreate = (void*)xor_create;
 	p->ondelete = (void*)xor_delete;

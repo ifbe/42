@@ -7,10 +7,10 @@ static u8 data[144];
 
 
 
-static void mahjong_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mahjong_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void mahjong_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mahjong_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void mahjong_discon(struct halfrel* self, struct halfrel* peer)
@@ -23,34 +23,34 @@ static void mahjong_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void mahjong_search(struct entity* act)
+static void mahjong_search(_obj* act)
 {
 }
-static void mahjong_modify(struct entity* act)
+static void mahjong_modify(_obj* act)
 {
 }
-static void mahjong_delete(struct entity* act)
+static void mahjong_delete(_obj* act)
 {
 	if(0 == act)return;
-	if(act->buf0){
-		memorydelete(act->buf0);
-		act->buf0 = 0;
+	if(act->listptr.buf0){
+		memorydelete(act->listptr.buf0);
+		act->listptr.buf0 = 0;
 	}
 }
-static void mahjong_create(struct entity* act)
+static void mahjong_create(_obj* act)
 {
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf0 = data;
-	if(_copy_ == act->type)act->buf0 = memorycreate(144, 0);
+	if(_orig_ == act->type)act->listptr.buf0 = data;
+	if(_copy_ == act->type)act->listptr.buf0 = memorycreate(144, 0);
 }
 
 
 
 
-void mahjong_register(struct entity* p)
+void mahjong_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('m', 'a', 'h', 'j', 'o', 'n', 'g', 0);
+	p->hfmt = hex64('m', 'a', 'h', 'j', 'o', 'n', 'g', 0);
 
 	p->oncreate = (void*)mahjong_create;
 	p->ondelete = (void*)mahjong_delete;

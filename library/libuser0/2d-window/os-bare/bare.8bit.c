@@ -6,7 +6,7 @@
 void windowread()
 {
 }
-void windowwrite(struct supply* src)
+void windowwrite(_obj* src)
 {
 	int x,y;
 	u8* ibuf = src->buf;
@@ -25,10 +25,10 @@ void windowstop()
 void windowstart()
 {
 }
-void windowdelete(struct supply* win)
+void windowdelete(_obj* win)
 {
 }
-void windowcreate(struct supply* win)
+void windowcreate(_obj* win)
 {
 	win->fmt = hex32('8','b','i','t');
 	win->vfmt = 0;

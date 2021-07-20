@@ -1,7 +1,7 @@
 #include "libuser.h"
-#define A_PEERFOOT iw0
-#define B_PEERFOOT iwn
-#define LVAL fdata1
+#define A_PEERFOOT whdf.iw0
+#define B_PEERFOOT whdf.iwn
+#define LVAL listf32.f0
 struct joint{
 	float here[3];
 	int exist;
@@ -14,35 +14,35 @@ struct joint{
 
 
 static void stick_draw_pixel(
-	struct entity* ent, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* ent, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void stick_draw_json(
-	struct entity* ent, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* ent, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void stick_draw_html(
-	struct entity* ent, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* ent, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void stick_draw_tui(
-	struct entity* ent, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* ent, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void stick_draw_cli(
-	struct entity* ent, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* ent, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-void stick_read_force(struct entity* ent, struct entity* sup, struct joint* jo, int len)
+void stick_read_force(_obj* ent, _obj* sup, struct joint* jo, int len)
 {
 	int a = ent->A_PEERFOOT - 'a';
 	int b = ent->B_PEERFOOT - 'a';
@@ -82,7 +82,7 @@ void stick_read_force(struct entity* ent, struct entity* sup, struct joint* jo, 
 
 
 
-static void stick_read_a(struct entity* ent, int key, struct joint* jo,int thisone)
+static void stick_read_a(_obj* ent, int key, struct joint* jo,int thisone)
 {
 	if('V' != key)return;
 
@@ -110,7 +110,7 @@ static void stick_read_a(struct entity* ent, int key, struct joint* jo,int thiso
 	jo[thisone].grad[1] += dy/10000000;
 	jo[thisone].grad[2] += dz/10000000;
 }
-static void stick_read_b(struct entity* ent, int key, struct joint* jo,int thisone)
+static void stick_read_b(_obj* ent, int key, struct joint* jo,int thisone)
 {
 	if('V' != key)return;
 
@@ -142,7 +142,7 @@ static void stick_read_b(struct entity* ent, int key, struct joint* jo,int thiso
 
 
 
-static void stick_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void stick_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	switch(stack[sp-1].flag){
 	case 'a':stick_read_a(ent,key, buf,len);break;
@@ -150,7 +150,7 @@ static void stick_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int
 	case 'f':stick_read_force(ent,stack[sp-8].pchip, buf,len);break;
 	}
 }
-static void stick_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void stick_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void stick_discon(struct halfrel* self, struct halfrel* peer)
@@ -159,7 +159,7 @@ static void stick_discon(struct halfrel* self, struct halfrel* peer)
 static void stick_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	say("@stick_linkup: %.4s,%.4s\n", &self->flag, &peer->flag);
-	struct entity* ent = self->pchip;
+	_obj* ent = self->pchip;
 	switch(self->flag){
 		case 'a':ent->A_PEERFOOT = peer->flag;break;
 		case 'b':ent->B_PEERFOOT = peer->flag;break;
@@ -169,17 +169,17 @@ static void stick_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void stick_search(struct entity* ent)
+static void stick_search(_obj* ent)
 {
 }
-static void stick_modify(struct entity* ent)
+static void stick_modify(_obj* ent)
 {
 }
-static void stick_delete(struct entity* ent)
+static void stick_delete(_obj* ent)
 {
 	if(0 == ent)return;
 }
-static void stick_create(struct entity* ent, void* arg, int argc, u8** argv)
+static void stick_create(_obj* ent, void* arg, int argc, u8** argv)
 {
 	if(0 == ent)return;
 	int j;
@@ -194,10 +194,10 @@ static void stick_create(struct entity* ent, void* arg, int argc, u8** argv)
 
 
 
-void stick_register(struct entity* p)
+void stick_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('s', 't', 'i', 'c','k', 0, 0, 0);
+	p->hfmt = hex64('s', 't', 'i', 'c','k', 0, 0, 0);
 
 	p->oncreate = (void*)stick_create;
 	p->ondelete = (void*)stick_delete;

@@ -105,7 +105,7 @@ int parse_gpt(u8* src, struct parsed* out)
 
 
 
-void mount_gpt_one(_art* art, struct gptpart* part)
+void mount_gpt_one(_obj* art, struct gptpart* part)
 {
 	if(0 == part->lba_start)return;
 	printmemory(part, 0x80);
@@ -127,14 +127,14 @@ void mount_gpt_one(_art* art, struct gptpart* part)
 	say("[%016llx,%016llx]:	type=%.8s, name=%s\n", part->lba_start, part->lba_end, &type, name);
 
 	if((_efi_ == type)|(_fat_ == type)){
-		struct artery* tmp = arterycreate(_fat_,0,0,0);
+		_obj* tmp = arterycreate(_fat_,0,0,0);
 		if(0 == tmp)return;
 		struct relation* rel = relationcreate(tmp,0,_art_,_src_, art,(void*)(part->lba_start<<9),_art_,_dst_);
 		if(0 == rel)return;
 		arterylinkup((void*)&rel->dst, (void*)&rel->src);
 	}
 }
-void mount_gpt(_art* art, u8* src)
+void mount_gpt(_obj* art, u8* src)
 {
 	int j,k;
 	u32 crc;
@@ -155,21 +155,21 @@ void mount_gpt(_art* art, u8* src)
 
 
 
-static int gptclient_showinfo(_art* art)
+static int gptclient_showinfo(_obj* art)
 {
-	u8* gpt = art->buf0;
+	u8* gpt = art->listptr.buf0;
 	return parse_gpt(gpt, 0);
 }
-static int gptclient_showpart(_art* art,void* foot, void* buf,int len)
+static int gptclient_showpart(_obj* art,void* foot, void* buf,int len)
 {
-	u8* gpt = art->buf0;
+	u8* gpt = art->listptr.buf0;
 	return parse_gpt(gpt, buf);
 }
 
 
 
 
-int gptclient_ontake(_art* art,void* foot, _syn* stack,int sp, u8* arg,int idx, u8* buf,int len)
+int gptclient_ontake(_obj* art,void* foot, _syn* stack,int sp, u8* arg,int idx, u8* buf,int len)
 {
 	int ret;
 	u64 offs;
@@ -189,7 +189,7 @@ takedata:
 	//say("gpt.ret=%x\n",ret);
 	return ret;
 }
-int gptclient_ongive(_art* art,void* foot, _syn* stack,int sp, u8* arg,int idx, u8* buf,int len)
+int gptclient_ongive(_obj* art,void* foot, _syn* stack,int sp, u8* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
@@ -203,9 +203,9 @@ int gptclient_discon(struct halfrel* self, struct halfrel* peer)
 }
 int gptclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	struct artery* ele = self->pchip;
+	_obj* ele = self->pchip;
 	if(0 == ele)return 0;
-	void* buf = ele->buf0;
+	void* buf = ele->listptr.buf0;
 	if(0 == buf)return 0;
 
 	//read
@@ -218,18 +218,18 @@ int gptclient_linkup(struct halfrel* self, struct halfrel* peer)
 	parse_gpt(buf, 0);
 	return 0;
 }
-int gptclient_delete(struct artery* ele)
+int gptclient_delete(_obj* ele)
 {
-	if(ele->buf0){
-		memorydelete(ele->buf0);
-		ele->buf0 = 0;
+	if(ele->listptr.buf0){
+		memorydelete(ele->listptr.buf0);
+		ele->listptr.buf0 = 0;
 	}
 	return 0;
 }
-int gptclient_create(struct artery* art, u8* url)
+int gptclient_create(_obj* art, u8* url)
 {
 	say("@gptclient_create\n");
-	art->buf0 = memorycreate(0x10000, 0);
+	art->listptr.buf0 = memorycreate(0x10000, 0);
 
 	art->ongiving = (void*)gptclient_ongive;
 	art->ontaking = (void*)gptclient_ontake;

@@ -1,14 +1,14 @@
 #include "libuser.h"
-void gl41line_pmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
-void gl41line_nmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
+void gl41line_pmos(_obj* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
+void gl41line_nmos(_obj* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
 
 
 
 
 static void fulladd_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int x,y,j;
 	vec3 tc,tr,tf,tt;
@@ -33,7 +33,7 @@ static void fulladd_draw_gl41(
 	}
 */
 	//ia
-	u32 iacolor = act->ix0 ? 0xff0000 : 0x0000ff;
+	u32 iacolor = act->whdf.ix0 ? 0xff0000 : 0x0000ff;
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] -vr[j] -vf[j]*2/8;
 		tr[j] = tc[j] +vr[j]*3/4;
@@ -61,7 +61,7 @@ static void fulladd_draw_gl41(
 	gl41line(ctx, iacolor, tc,tr);
 
 	//ib
-	u32 ibcolor = act->iy0 ? 0xff0000 : 0x0000ff;
+	u32 ibcolor = act->whdf.iy0 ? 0xff0000 : 0x0000ff;
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] -vr[j] -vf[j]/8;
 		tr[j] = tc[j] +vr[j]*7/8;
@@ -79,7 +79,7 @@ static void fulladd_draw_gl41(
 	gl41line(ctx, ibcolor, tc,tr);
 
 	//ic
-	u32 iccolor = act->iz0 ? 0xff0000 : 0x0000ff;
+	u32 iccolor = act->whdf.iz0 ? 0xff0000 : 0x0000ff;
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] -vr[j] +vf[j]*6/8;
 		tr[j] = tc[j] +vr[j]*6/8;
@@ -102,7 +102,7 @@ static void fulladd_draw_gl41(
 	gl41line(ctx, iccolor, tc,tr);
 
 	//oc
-	u32 occolor = act->iyn ? 0xff0000 : 0x0000ff;
+	u32 occolor = act->whdf.iyn ? 0xff0000 : 0x0000ff;
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] +vr[j] -vf[j]*4/8;
 		tr[j] = tc[j] -vr[j]/8;
@@ -110,7 +110,7 @@ static void fulladd_draw_gl41(
 	gl41line(ctx, occolor, tc,tr);
 
 	//os
-	u32 oscolor = act->ixn ? 0xff0000 : 0x0000ff;
+	u32 oscolor = act->whdf.ixn ? 0xff0000 : 0x0000ff;
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] +vr[j] +vf[j]*4/8;
 		tr[j] = tc[j] -vr[j]*5/8;
@@ -118,8 +118,8 @@ static void fulladd_draw_gl41(
 	gl41line(ctx, oscolor, tc,tr);
 
 	//bot,0
-	u32 m0p = (0 == act->iy0) ? iacolor : 0xffffff;
-	u32 m0n = (1 == act->iy0) ? 0x0000ff : 0xffffff;
+	u32 m0p = (0 == act->whdf.iy0) ? iacolor : 0xffffff;
+	u32 m0n = (1 == act->whdf.iy0) ? 0x0000ff : 0xffffff;
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] -vr[j]*5/8 -vf[j]*3/8;
 		tr[j] = vr[j]/8;
@@ -140,8 +140,8 @@ static void fulladd_draw_gl41(
 	gl41line(ctx, bot0to1, tc,tr);
 
 	//bot,1
-	u32 m1p = (0 == act->ix0) ? ibcolor : 0xffffff;
-	u32 m1n = (1 == act->ix0) ? bot0to1 : 0xffffff;
+	u32 m1p = (0 == act->whdf.ix0) ? ibcolor : 0xffffff;
+	u32 m1n = (1 == act->whdf.ix0) ? bot0to1 : 0xffffff;
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] -vr[j]*1/8 -vf[j]*3/8;
 		tr[j] = vr[j]/8;
@@ -297,38 +297,38 @@ static void fulladd_draw_gl41(
 
 
 static void fulladd_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void fulladd_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void fulladd_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void fulladd_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void fulladd_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-static void fulladd_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void fulladd_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -338,7 +338,7 @@ static void fulladd_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void fulladd_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void fulladd_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -347,10 +347,10 @@ static void fulladd_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,i
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -360,7 +360,7 @@ static void fulladd_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void fulladd_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static void fulladd_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	u8 x,y,z,tmp;
 	//say("@fulladd_write:%x\n",buf[0]);
@@ -368,12 +368,12 @@ static void fulladd_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,i
 	if(_src_ == stack[sp-1].flag){
 		tmp = buf[0] - 0x30;
 		if((tmp >= 0)&&(tmp <= 7)){
-			x = ent->ix0 = (tmp>>0)&1;
-			y = ent->iy0 = (tmp>>1)&1;
-			z = ent->iz0 = (tmp>>2)&1;
+			x = ent->whdf.ix0 = (tmp>>0)&1;
+			y = ent->whdf.iy0 = (tmp>>1)&1;
+			z = ent->whdf.iz0 = (tmp>>2)&1;
 
-			ent->ixn = (x+y+z)&1;
-			ent->iyn = (x+y+z)>>1;
+			ent->whdf.ixn = (x+y+z)&1;
+			ent->whdf.iyn = (x+y+z)>>1;
 		}
 	}
 }
@@ -387,32 +387,32 @@ static void fulladd_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void fulladd_search(struct entity* act, u8* buf)
+static void fulladd_search(_obj* act, u8* buf)
 {
 }
-static void fulladd_modify(struct entity* act, u8* buf)
+static void fulladd_modify(_obj* act, u8* buf)
 {
 }
-static void fulladd_delete(struct entity* act, u8* buf)
+static void fulladd_delete(_obj* act, u8* buf)
 {
 }
-static void fulladd_create(struct entity* act, u8* buf)
+static void fulladd_create(_obj* act, u8* buf)
 {
-	int x = act->ix0 = getrandom()&1;
-	int y = act->iy0 = getrandom()&1;
-	int z = act->iz0 = getrandom()&1;
+	int x = act->whdf.ix0 = getrandom()&1;
+	int y = act->whdf.iy0 = getrandom()&1;
+	int z = act->whdf.iz0 = getrandom()&1;
 
-	act->ixn = (x+y+z)&1;
-	act->iyn = (x+y+z)>>1;
+	act->whdf.ixn = (x+y+z)&1;
+	act->whdf.iyn = (x+y+z)>>1;
 }
 
 
 
 
-void fulladd_register(struct entity* p)
+void fulladd_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('f','u','l','l','a','d','d', 0);
+	p->hfmt = hex64('f','u','l','l','a','d','d', 0);
 
 	p->oncreate = (void*)fulladd_create;
 	p->ondelete = (void*)fulladd_delete;

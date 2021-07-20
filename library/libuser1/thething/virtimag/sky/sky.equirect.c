@@ -1,8 +1,8 @@
 #include "libuser.h"
-#define OWNBUF buf0
+#define OWNBUF listptr.buf0
 void carveplanet(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void dx11data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
-void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
+void dx11data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
+void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 
 
 
@@ -107,9 +107,9 @@ static void texball_dx11prep(struct own* my)
 	src->ibuf_enq = 0;
 }
 static void texball_dx11draw(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* none)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* none)
 {
 	struct own* my = act->OWNBUF;
 	if(0 == my)return;
@@ -192,9 +192,9 @@ static void texball_gl41prep(struct own* my)
 	data->src.ibuf_enq = 0;
 }
 static void texball_gl41draw(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* none)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* none)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -222,8 +222,8 @@ static void texball_gl41draw(
 
 
 static void texball_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {/*
 	u32 tmp;
 	u32* dst;
@@ -239,23 +239,23 @@ static void texball_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 
-	xmax = act->width;
+	xmax = act->whdf.width;
 	if(xmax >= ww*2)xmax = ww*2;
-	ymax = act->height;
+	ymax = act->whdf.height;
 	if(ymax >= hh*2)ymax = hh*2;
 	stride = win->stride;
 	for(y=0;y<ymax;y++)
 	{
 		dst = (win->buf) + (cy-hh+y)*stride*4 + (cx-ww)*4;
-		src = (act->buf) + 4*y*(act->width);
+		src = (act->buf) + 4*y*(act->whdf.width);
 		//say("y=%d,%llx,%llx\n",y,dst,src);
-		if('b' == ((win->fmt)&0xff))
+		if('b' == ((win->hfmt)&0xff))
 		{
 			for(x=0;x<xmax;x++)dst[x] = src[x];
 		}
@@ -270,29 +270,29 @@ static void texball_draw_pixel(
 	}*/
 }
 static void texball_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void texball_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void texball_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void texball_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("texball(%x,%x,%x)\n",win,act,sty);
 }
 static void texball_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
@@ -300,29 +300,29 @@ static void texball_event(
 
 
 
-static void texball_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void texball_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _dx11list_:texball_dx11draw(ent,slot, wor,geom, wnd,area);break;
 	case _gl41list_:texball_gl41draw(ent,slot, wor,geom, wnd,area);break;
 	}
 }
-static void texball_wrl_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void texball_wrl_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 }
-static void texball_wnd(_ent* ent,void* slot, _ent* wnd,void* area)
+static void texball_wnd(_obj* ent,void* slot, _obj* wnd,void* area)
 {
 }
 
 
 
 
-static void texball_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void texball_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -331,10 +331,10 @@ static void texball_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -345,7 +345,7 @@ static void texball_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void texball_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void texball_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void texball_discon(struct halfrel* self, struct halfrel* peer)
@@ -359,17 +359,17 @@ static void texball_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void texball_search(struct entity* act)
+static void texball_search(_obj* act)
 {
 }
-static void texball_modify(struct entity* act)
+static void texball_modify(_obj* act)
 {
 }
-static void texball_delete(struct entity* act)
+static void texball_delete(_obj* act)
 {
 	if(0 == act)return;
 }
-static void texball_create(struct entity* act, void* str)
+static void texball_create(_obj* act, void* str)
 {
 	if(0 == act)return;
 
@@ -386,10 +386,10 @@ static void texball_create(struct entity* act, void* str)
 
 
 
-void texball_register(struct entity* p)
+void texball_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('t', 'e', 'x', 'b', 'a', 'l', 'l', 0);
+	p->hfmt = hex64('t', 'e', 'x', 'b', 'a', 'l', 'l', 0);
 
 	p->oncreate = (void*)texball_create;
 	p->ondelete = (void*)texball_delete;

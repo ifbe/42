@@ -19,11 +19,11 @@ int dhcpclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int dhcpclient_delete(struct artery* ele)
+int dhcpclient_delete(_obj* ele)
 {
 	return 0;
 }
-int dhcpclient_create(struct artery* ele, u8* url)
+int dhcpclient_create(_obj* ele, u8* url)
 {
 	return 0;
 }
@@ -47,11 +47,11 @@ int dhcpserver_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int dhcpserver_delete(struct artery* ele)
+int dhcpserver_delete(_obj* ele)
 {
 	return 0;
 }
-int dhcpserver_create(struct artery* ele, u8* url)
+int dhcpserver_create(_obj* ele, u8* url)
 {
 	return 0;
 }

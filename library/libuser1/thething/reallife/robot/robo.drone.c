@@ -6,9 +6,9 @@
 
 
 static void drone_forgl41_actual(
-	struct entity* act, struct style* part,
-	struct entity* scn, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* part,
+	_obj* scn, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int j;
 	float dt;
@@ -114,9 +114,9 @@ static void drone_forgl41_actual(
 	gl41solid_propeller(ctx, 0xffffff, tc, kr, kf, ku, -1, dt);
 }
 static void drone_forgl41_estimate(
-	struct entity* act, struct style* part,
-	struct entity* scn, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* part,
+	_obj* scn, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int j;
 	float dt;
@@ -193,8 +193,8 @@ static void drone_forgl41_estimate(
 	gl41ascii_center(ctx, 0xffffff, tc, kr, kf, '4');
 }
 static void drone_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -206,40 +206,40 @@ static void drone_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 }
 static void drone_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void drone_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void drone_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void drone_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-void drone_write_quaternion(struct entity* act, float* q)
+void drone_write_quaternion(_obj* act, float* q)
 {
 	struct relation* rel;
-	struct entity* world;
+	_obj* world;
 	struct style* sty = 0;
 	say("drone_quat: %f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
 
@@ -269,7 +269,7 @@ void drone_write_quaternion(struct entity* act, float* q)
 	sty->fshape.vt[1] = l*(2.0 * (q[1]*q[2] - q[0]*q[3]));
 	sty->fshape.vt[2] = l*(1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0);
 }
-void drone_write_euler(struct entity* act, float* f)
+void drone_write_euler(_obj* act, float* f)
 {
 	vec4 q;
 	float rx = f[0]*PI/360;
@@ -294,10 +294,10 @@ void drone_write_euler(struct entity* act, float* f)
 
 
 
-static void drone_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void drone_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -312,15 +312,15 @@ static void drone_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void drone_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void drone_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -330,7 +330,7 @@ static void drone_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int
 		break;
 	}
 }
-static void drone_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void drone_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(_quat_ == stack[sp-1].flag)drone_write_quaternion(ent, buf);
 	else drone_write_euler(ent, buf);
@@ -345,18 +345,18 @@ static void drone_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void drone_modify(struct entity* act)
+static void drone_modify(_obj* act)
 {
 }
-static void drone_search(struct entity* act)
+static void drone_search(_obj* act)
 {
 }
-static void drone_delete(struct entity* act)
+static void drone_delete(_obj* act)
 {
 	if(0 == act)return;
 	//if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void drone_create(struct entity* act)
+static void drone_create(_obj* act)
 {
 	if(0 == act)return;
 	//if(_orig_ == act->type)act->buf = buffer;
@@ -366,10 +366,10 @@ static void drone_create(struct entity* act)
 
 
 
-void drone_register(struct entity* p)
+void drone_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('d', 'r', 'o', 'n', 'e', 0, 0, 0);
+	p->hfmt = hex64('d', 'r', 'o', 'n', 'e', 0, 0, 0);
 
 	p->oncreate = (void*)drone_create;
 	p->ondelete = (void*)drone_delete;

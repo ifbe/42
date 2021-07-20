@@ -3,11 +3,11 @@
 
 
 
-int dbgf32_read(struct artery* art,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int dbgf32_read(_obj* art,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
-int dbgf32_write(struct artery* art,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int dbgf32_write(_obj* art,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	int j;
 	float* f;
@@ -32,7 +32,7 @@ int dbgf32_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int dbgf32_create(struct artery* ele, u8* url)
+int dbgf32_create(_obj* ele, u8* url)
 {
 	say("@dbgf32_create\n");
 	return 1;

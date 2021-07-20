@@ -225,7 +225,7 @@ static const struct wl_shell_surface_listener shell_surface_listener = {
 
 
 
-void* uievent(struct supply* p)
+void* uievent(_obj* p)
 {
 	struct wl_shm_pool* pool;
 	int ret;
@@ -310,10 +310,10 @@ void* uievent(struct supply* p)
 
 	wl_display_disconnect(display);
 }
-void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-void window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	wl_display_dispatch(display);
 	wl_surface_damage(surface, 0, 0, wnd->width, wnd->height);
@@ -332,10 +332,10 @@ void windowstart()
 void windowstop()
 {
 }
-void windowdelete(struct supply* w)
+void windowdelete(_obj* w)
 {
 }
-void windowcreate(struct supply* w)
+void windowcreate(_obj* w)
 {
 	u64 align;
 	w->rgbaalloc = malloc(2048*1024*4 + 0x100000);

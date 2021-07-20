@@ -5,14 +5,14 @@
 
 
 static void mobius_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void mobius_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* scn, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	int j,rgb;
 	float a,c,s;
@@ -34,7 +34,7 @@ static void mobius_draw_gl41(
 	tf[2] = vf[2]*0.75;
 	gl41line_circle(wnd, 0xff0000, tc, tr, tf);
 
-	act->ix0 = (timeread()/10000) % 360;
+	act->whdf.ix0 = (timeread()/10000) % 360;
 	for(j=0;j<180;j++)
 	{
 		a = j*PI/90;
@@ -75,39 +75,39 @@ static void mobius_draw_gl41(
 		tu[1] = y * n;
 		tu[2] = z * n;
 
-		if(j == act->ix0)rgb = 0xff0000;
+		if(j == act->whdf.ix0)rgb = 0xff0000;
 		else rgb = 0x808080;
 		gl41solid_prism4(wnd, rgb, tc, tr, tf, tu);
 	}
 }
 static void mobius_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void mobius_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void mobius_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void mobius_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-static void mobius_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void mobius_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -117,7 +117,7 @@ static void mobius_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void mobius_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mobius_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -126,10 +126,10 @@ static void mobius_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -139,7 +139,7 @@ static void mobius_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 		break;
 	}
 }
-static void mobius_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mobius_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void mobius_discon(struct halfrel* self, struct halfrel* peer)
@@ -152,18 +152,18 @@ static void mobius_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void mobius_search(struct entity* act)
+static void mobius_search(_obj* act)
 {
 }
-static void mobius_modify(struct entity* act)
+static void mobius_modify(_obj* act)
 {
 }
-static void mobius_delete(struct entity* act)
+static void mobius_delete(_obj* act)
 {
 	if(0 == act)return;
 	//if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void mobius_create(struct entity* act)
+static void mobius_create(_obj* act)
 {
 	if(0 == act)return;
 	//if(_orig_ == act->type)act->buf = buffer;
@@ -173,10 +173,10 @@ static void mobius_create(struct entity* act)
 
 
 
-void mobius_register(struct entity* p)
+void mobius_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('m', 'o', 'b', 'i', 'u', 's', 0, 0);
+	p->hfmt = hex64('m', 'o', 'b', 'i', 'u', 's', 0, 0);
 
 	p->oncreate = (void*)mobius_create;
 	p->ondelete = (void*)mobius_delete;

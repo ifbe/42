@@ -12,7 +12,7 @@ int termwrite(void* buf, int len);
 
 
 
-void terminalthread(struct supply* win)
+void terminalthread(_obj* win)
 {
 	int ret;
 	struct event ev;
@@ -42,10 +42,10 @@ void stdio_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, voi
 {
 	lowlevel_output(buf, len);
 }
-void stdio_delete(struct supply* win)
+void stdio_delete(_obj* win)
 {
 }
-void stdio_create(struct supply* win)
+void stdio_create(_obj* win)
 {
 	termwrite("\n", 1);
 	threadcreate(terminalthread, win);

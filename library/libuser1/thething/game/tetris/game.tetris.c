@@ -32,8 +32,8 @@ static u8 data[HEIGHT][WIDTH];
 
 
 static void tetris_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	u32 c;
 	int x, y, cx, cy, ww, hh;
@@ -46,10 +46,10 @@ static void tetris_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
 
@@ -88,9 +88,9 @@ static void tetris_draw_pixel(
 */
 }
 static void tetris_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* wrl, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* wrl, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	int x,y;
 	vec3 tc, tr, tf, tu, f;
@@ -122,13 +122,13 @@ static void tetris_draw_gl41(
 	}
 }
 static void tetris_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void tetris_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x,y;
 
@@ -151,13 +151,13 @@ static void tetris_draw_html(
 	htmlprintf(win, 2, "</div>\n");
 }
 static void tetris_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x,y;
-	int w = win->width;
-	int h = win->height;
-	char* p = win->textbuf;
+	int w = win->whdf.width;
+	int h = win->whdf.height;
+	char* p = win->tuitext.buf;
 
 	for(x=0;x<w*h*4;x++)p[x]=0;
 	if(h>=HEIGHT)
@@ -196,8 +196,8 @@ static void tetris_draw_tui(
 	}
 }
 static void tetris_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
@@ -205,8 +205,8 @@ static void tetris_draw_cli(
 
 
 static void tetris_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
 	int ret;
@@ -239,10 +239,10 @@ static void tetris_event(
 
 
 
-static void tetris_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void tetris_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -252,7 +252,7 @@ static void tetris_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void tetris_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void tetris_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -261,10 +261,10 @@ static void tetris_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -274,7 +274,7 @@ static void tetris_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 		break;
 	}
 }
-static void tetris_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void tetris_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void tetris_discon(struct halfrel* self, struct halfrel* peer)
@@ -287,36 +287,36 @@ static void tetris_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void tetris_search(struct entity* act)
+static void tetris_search(_obj* act)
 {
 }
-static void tetris_modify(struct entity* act)
+static void tetris_modify(_obj* act)
 {
 }
-static void tetris_delete(struct entity* act)
+static void tetris_delete(_obj* act)
 {
 	if(0 == act)return;
-	if(act->buf0){
-		memorydelete(act->buf0);
-		act->buf0 = 0;
+	if(act->listptr.buf0){
+		memorydelete(act->listptr.buf0);
+		act->listptr.buf0 = 0;
 	}
 }
-static void tetris_create(struct entity* act)
+static void tetris_create(_obj* act)
 {
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf0 = data;
-	if(_copy_ == act->type)act->buf0 = memorycreate(WIDTH*HEIGHT, 0);
+	if(_orig_ == act->type)act->listptr.buf0 = data;
+	if(_copy_ == act->type)act->listptr.buf0 = memorycreate(WIDTH*HEIGHT, 0);
 
-	tetris_generate(act->buf0, WIDTH, HEIGHT);
+	tetris_generate(act->listptr.buf0, WIDTH, HEIGHT);
 }
 
 
 
 
-void tetris_register(struct entity* p)
+void tetris_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('t', 'e', 't', 'r', 'i', 's', 0, 0);
+	p->hfmt = hex64('t', 'e', 't', 'r', 'i', 's', 0, 0);
 
 	p->oncreate = (void*)tetris_create;
 	p->ondelete = (void*)tetris_delete;

@@ -28,7 +28,7 @@ static u8 uppercase[] = {
 
 
 
-void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	SDL_Event ev;
 	SDL_Keysym sym;
@@ -153,7 +153,7 @@ void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, vo
 		}
 	}
 }
-void window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//SDL_Event ev;  
 	//ev.type = SDL_USEREVENT;  
@@ -171,14 +171,14 @@ void windowstop()
 void windowstart()
 {
 }
-void windowdelete(struct supply* wnd)
+void windowdelete(_obj* wnd)
 {
 	SDL_DestroyTexture(wnd->sdltex);
 	SDL_DestroyRenderer(wnd->sdlren);
 	SDL_DestroyWindow(wnd->sdlwnd); 
 	SDL_Quit(); 
 }
-void windowcreate(struct supply* wnd)
+void windowcreate(_obj* wnd)
 {
 	//data
 	wnd->fmt = _rgba_;

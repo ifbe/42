@@ -24,7 +24,7 @@ static int bpp = 0;
 
 
 
-void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	int x,y,ret;
 	u8* canvas;
@@ -62,7 +62,7 @@ void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, vo
 		write(fbfd, canvas, fbtotalbyte);
 	}
 }
-void window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len)
+void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 }
 void windowlist()
@@ -77,11 +77,11 @@ void windowstop()
 void windowstart()
 {
 }
-void windowdelete(struct supply* w)
+void windowdelete(_obj* w)
 {
 	if(fbfd != -1)close(fbfd);
 }
-void windowcreate(struct supply* sup, void* arg)
+void windowcreate(_obj* sup, void* arg)
 {
 	int j;
 	if(0 == arg)arg = "/dev/fb0";

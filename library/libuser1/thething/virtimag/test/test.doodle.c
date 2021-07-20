@@ -13,8 +13,8 @@ static u8 buffer[16];
 
 
 void doodle_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	float c,s,f;
 	int x0,y0,x1,y1;
@@ -28,10 +28,10 @@ void doodle_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 
 	//circle
@@ -60,9 +60,9 @@ void doodle_draw_pixel(
 	drawline_bezier(win, 0xffffff, x0, y0, x1, y1, px, py);
 }
 static void doodle_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* wrl, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* wrl, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	float a,c,s;
 	vec3 tc, tr, tf, tu, f;
@@ -123,29 +123,29 @@ static void doodle_draw_gl41(
 	gl41line(wnd, 0xffffff, tc, tu);
 }
 static void doodle_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void doodle_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void doodle_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void doodle_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("doodle(%x,%x,%x)\n", act, pin, win, sty);
 }
 static void doodle_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
 	u64 what = ev->what;
@@ -160,10 +160,10 @@ static void doodle_event(
 
 
 
-static void doodle_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void doodle_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void doodle_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void doodle_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void doodle_discon(struct halfrel* self, struct halfrel* peer)
@@ -176,28 +176,26 @@ static void doodle_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void doodle_search(struct entity* act)
+static void doodle_search(_obj* act)
 {
 }
-static void doodle_modify(struct entity* act)
+static void doodle_modify(_obj* act)
 {
 }
-static void doodle_delete(struct entity* act)
+static void doodle_delete(_obj* act)
 {
 }
-static void doodle_create(struct entity* act)
+static void doodle_create(_obj* act)
 {
-	if(0 == act)return;
-	act->buf0 = ((void*)act) + 0x100;
 }
 
 
 
 
-void doodle_register(struct entity* p)
+void doodle_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('d', 'o', 'o', 'd', 'l', 'e', 0, 0);
+	p->hfmt = hex64('d', 'o', 'o', 'd', 'l', 'e', 0, 0);
 
 	p->oncreate = (void*)doodle_create;
 	p->ondelete = (void*)doodle_delete;

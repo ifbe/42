@@ -14,8 +14,8 @@ static u8 buffer[16];
 
 
 static void algorithm_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int cx = sty->fs.vc[0];
 	int cy = sty->fs.vc[1];
@@ -55,29 +55,29 @@ static void algorithm_draw_pixel(
 */
 }
 static void algorithm_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* wrl, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* wrl, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 }
 static void algorithm_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void algorithm_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void algorithm_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void algorithm_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("algorithm(%x,%x,%x)\n",win,act,sty);
 }
@@ -86,8 +86,8 @@ static void algorithm_draw_cli(
 
 
 static void algorithm_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
 	u64 key = ev->why;
@@ -124,10 +124,10 @@ static void algorithm_event(
 
 
 
-static void algorithm_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void algorithm_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -137,7 +137,7 @@ static void algorithm_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void algorithm_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void algorithm_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -146,10 +146,10 @@ static void algorithm_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -159,7 +159,7 @@ static void algorithm_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg
 		break;
 	}
 }
-static void algorithm_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void algorithm_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void algorithm_discon(struct halfrel* self, struct halfrel* peer)
@@ -172,26 +172,26 @@ static void algorithm_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void algorithm_search(struct entity* act)
+static void algorithm_search(_obj* act)
 {
 }
-static void algorithm_modify(struct entity* act)
+static void algorithm_modify(_obj* act)
 {
 }
-static void algorithm_delete(struct entity* act)
+static void algorithm_delete(_obj* act)
 {
 }
-static void algorithm_create(struct entity* act)
+static void algorithm_create(_obj* act)
 {
 }
 
 
 
 
-void algorithm_register(struct entity* p)
+void algorithm_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex32('a', 'l', 'g', 'o');
+	p->hfmt = hex32('a', 'l', 'g', 'o');
 
 	p->oncreate = (void*)algorithm_create;
 	p->ondelete = (void*)algorithm_delete;

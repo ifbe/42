@@ -3,11 +3,11 @@
 
 
 
-int tftpclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int tftpclient_read(_obj* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int tftpclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int tftpclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
@@ -19,11 +19,11 @@ int tftpclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int tftpclient_delete(struct artery* ele)
+int tftpclient_delete(_obj* ele)
 {
 	return 0;
 }
-int tftpclient_create(struct artery* ele, u8* url)
+int tftpclient_create(_obj* ele, u8* url)
 {
 	return 0;
 }
@@ -31,11 +31,11 @@ int tftpclient_create(struct artery* ele, u8* url)
 
 
 
-int tftpserver_read(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int tftpserver_read(_obj* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int tftpserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int tftpserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	int ret = 0;
 	u8* tmp;
@@ -73,11 +73,11 @@ int tftpserver_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int tftpserver_delete(struct artery* ele)
+int tftpserver_delete(_obj* ele)
 {
 	return 0;
 }
-int tftpserver_create(struct artery* ele, u8* url)
+int tftpserver_create(_obj* ele, u8* url)
 {
 	return 0;
 }

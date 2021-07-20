@@ -3,11 +3,11 @@
 
 
 
-int vncclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int vncclient_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int vncclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int vncclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	say("@vncclient_write: %llx,%.4s\n", art, &foot);
 	printmemory(buf, len);
@@ -27,11 +27,11 @@ int vncclient_linkup(struct halfrel* self, struct halfrel* peer)
 	}
 	return 0;
 }
-int vncclient_delete(struct artery* art)
+int vncclient_delete(_obj* art)
 {
 	return 0;
 }
-int vncclient_create(struct artery* art, void* arg)
+int vncclient_create(_obj* art, void* arg)
 {
 	return 0;
 }
@@ -39,11 +39,11 @@ int vncclient_create(struct artery* art, void* arg)
 
 
 
-int vncserver_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int vncserver_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int vncserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int vncserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
@@ -55,11 +55,11 @@ int vncserver_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int vncserver_delete(struct artery* art)
+int vncserver_delete(_obj* art)
 {
 	return 0;
 }
-int vncserver_create(struct artery* art, void* arg)
+int vncserver_create(_obj* art, void* arg)
 {
 	return 0;
 }
@@ -67,11 +67,11 @@ int vncserver_create(struct artery* art, void* arg)
 
 
 
-int vncmaster_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int vncmaster_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int vncmaster_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int vncmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
@@ -83,11 +83,11 @@ int vncmaster_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int vncmaster_delete(struct artery* art)
+int vncmaster_delete(_obj* art)
 {
 	return 0;
 }
-int vncmaster_create(struct artery* art, void* arg)
+int vncmaster_create(_obj* art, void* arg)
 {
 	return 0;
 }

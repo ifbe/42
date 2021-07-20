@@ -16,7 +16,7 @@ static void joystick_sendevent(struct halfrel* stack,int sp, struct xyzwpair* pa
 {
 	u8 buf[4];
 	struct event ev;
-	struct supply* joy;
+	_obj* joy;
 	//say("@joystick_sendevent:%d\n", j);
 	//printmemory(matchtable, 32);
 
@@ -223,7 +223,7 @@ static void joystick_ds4(struct xyzwpair* pair, const float* f, const u8* u)
 	if(u[16])pair->w0 |= joyl_down;
 	if(u[17])pair->w0 |= joyl_left;
 }
-static void thread_joystick(struct supply* joy)
+static void thread_joystick(_obj* joy)
 {
 	int j, k;
 	int c1, c2;
@@ -281,10 +281,10 @@ static void callback_joystick(int id, int ev)
 
 
 
-void joydelete(struct supply* joy)
+void joydelete(_obj* joy)
 {
 }
-void joycreate(struct supply* joy)
+void joycreate(_obj* joy)
 {
 	int j;
 	for(j=0;j<10;j++){

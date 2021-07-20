@@ -240,7 +240,7 @@ void render_material(struct gl41data* cam, struct gl41data* lit, struct gl41data
 		else glDrawArrays(GL_TRIANGLES, 0, vtx->vbuf_h);
 	}
 }
-void render_target(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque, struct supply* wnd, struct fstyle* area)
+void render_target(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque, _obj* wnd, struct fstyle* area)
 {
 	//say("fullwindow_render:%llx,%llx,%llx,%llx,%llx,%llx\n",cam,lit,solid,opaque,wnd,area);
 	int j;
@@ -252,10 +252,10 @@ void render_target(struct gl41data** cam, struct gl41data** lit, struct gl41data
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 	else{
-		x0 = area->vc[0] * wnd->fbwidth;
-		y0 = area->vc[1] * wnd->fbheight;
-		ww = area->vq[0] * wnd->fbwidth;
-		hh = area->vq[1] * wnd->fbheight;
+		x0 = area->vc[0] * wnd->whdf.fbwidth;
+		y0 = area->vc[1] * wnd->whdf.fbheight;
+		ww = area->vq[0] * wnd->whdf.fbwidth;
+		hh = area->vq[1] * wnd->whdf.fbheight;
 		glViewport(x0, y0, ww, hh);
 		glScissor(x0, y0, ww, hh);
 		glClearColor(0.1, 0.1, 0.1, 1.0);
@@ -266,9 +266,9 @@ void render_target(struct gl41data** cam, struct gl41data** lit, struct gl41data
 	glEnable(GL_DEPTH_TEST);
 
 #ifndef __ANDROID__
-	glPointSize(4.0*wnd->fbwidth/wnd->width);
+	glPointSize(4.0*wnd->whdf.fbwidth/wnd->whdf.width);
 #endif
-	glLineWidth(4.0*wnd->fbwidth/wnd->width);
+	glLineWidth(4.0*wnd->whdf.fbwidth/wnd->whdf.width);
 
 	//solid
 	for(j=0;j<64;j++){
@@ -291,7 +291,7 @@ void render_target(struct gl41data** cam, struct gl41data** lit, struct gl41data
 	glDisable(GL_BLEND);
 	glDepthMask(GL_TRUE);
 }
-void fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque, struct supply* wnd, struct fstyle* area)
+void fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque, _obj* wnd, struct fstyle* area)
 {
 	int j;
 	for(j=8;j>0;j--){
@@ -307,15 +307,15 @@ void fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41
 
 
 
-int fullwindow_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
+int fullwindow_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
 	//say("@gl41wnd0_read\n");
 	//say("%d,%llx@fullwindow_renderwnd\n", rsp, stack);
 	//say("gl41wnd0_read:%llx,%llx,%llx,%x,%llx,%d\n",self,peer,stack,rsp,buf,len);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glViewport(0, 0, wnd->fbwidth, wnd->fbheight);
-	glScissor(0, 0, wnd->fbwidth, wnd->fbheight);
+	glViewport(0, 0, wnd->whdf.fbwidth, wnd->whdf.fbheight);
+	glScissor(0, 0, wnd->whdf.fbwidth, wnd->whdf.fbheight);
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -339,18 +339,18 @@ int fullwindow_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd,
 			entity_take(rel->pdstchip,rel->pdstfoot, stack,sp+2, arg,cmd, 0,0);
 
 			//upload
-			fullwindow_upload(wnd->glfull_camera, wnd->glfull_light, wnd->glfull_solid, wnd->glfull_opaque);
+			fullwindow_upload(wnd->gl41list.camera, wnd->gl41list.light, wnd->gl41list.solid, wnd->gl41list.opaque);
 
 			//render
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			fullwindow_render(wnd->glfull_camera, wnd->glfull_light, wnd->glfull_solid, wnd->glfull_opaque, wnd, area);
+			fullwindow_render(wnd->gl41list.camera, wnd->gl41list.light, wnd->gl41list.solid, wnd->gl41list.opaque, wnd, area);
 		}
 
 		rel = samesrcnextdst(rel);
 	}
 	return 0;
 }
-int fullwindow_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
+int fullwindow_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
 	float x,y,x0,y0,xn,yn;
 	short* v;
@@ -364,27 +364,27 @@ int fullwindow_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd,
 		while(1){
 			if(0 == rel)return 0;
 			sty = rel->psrcfoot;
-			x0 = sty->vc[0] * wnd->width;
-			y0 = sty->vc[1] * wnd->height;
-			xn = sty->vq[0] * wnd->width + x0;
-			yn = sty->vq[1] * wnd->height + y0;
+			x0 = sty->vc[0] * wnd->whdf.width;
+			y0 = sty->vc[1] * wnd->whdf.height;
+			xn = sty->vq[0] * wnd->whdf.width + x0;
+			yn = sty->vq[1] * wnd->whdf.height + y0;
 
 			v = (short*)ev;
 			x = v[0];
-			y = (wnd->height-1) - v[1];
+			y = (wnd->whdf.height-1) - v[1];
 			if( (x>x0) && (x<xn) && (y>y0) && (y<yn) )goto found;
 			rel = samesrcprevdst(rel);
 		}
 		return 0;
 	}
 	else{
-		rel = wnd->glevto;
+		rel = wnd->gl41list.glevto;
 		if(0 == rel)rel = wnd->oreln;
 		if(0 == rel)return 0;
 	}
 
 found:
-	wnd->glevto = rel;
+	wnd->gl41list.glevto = rel;
 	stack[sp+0].pchip = rel->psrcchip;
 	stack[sp+0].pfoot = rel->psrcfoot;
 	stack[sp+0].flag = rel->srcflag;
@@ -395,16 +395,16 @@ found:
 	entity_give(rel->pdstchip, rel->pdstfoot, stack,sp+2, arg,cmd, ev,0);
 	return 0;
 }
-void fullwindow_delete(struct supply* ogl)
+void fullwindow_delete(_obj* ogl)
 {
 }
-void fullwindow_create(struct supply* ogl)
+void fullwindow_create(_obj* ogl)
 {
-	ogl->fmt = _gl41list_;
+	ogl->hfmt = _gl41list_;
 	ogl->vfmt= _gl41list_;
 
-	ogl->glfull_camera = memorycreate(0x10000, 0);
-	ogl->glfull_light  = memorycreate(0x10000, 0);
-	ogl->glfull_solid  = memorycreate(0x10000, 0);
-	ogl->glfull_opaque = memorycreate(0x10000, 0);
+	ogl->gl41list.camera = memorycreate(0x10000, 0);
+	ogl->gl41list.light  = memorycreate(0x10000, 0);
+	ogl->gl41list.solid  = memorycreate(0x10000, 0);
+	ogl->gl41list.opaque = memorycreate(0x10000, 0);
 }

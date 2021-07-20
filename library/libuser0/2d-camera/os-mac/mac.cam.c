@@ -9,7 +9,7 @@ static int alive = 0;
 //
 static u8* ibuf = 0;
 static int icur = 0;
-void* visionlistener(struct supply* win)
+void* visionlistener(_obj* win)
 {
 	int x,y;
 	struct halfrel stack[0x80];
@@ -66,11 +66,11 @@ int videostart()
 {
 	return 0;
 }
-int videodelete(struct supply* win)
+int videodelete(_obj* win)
 {
 	return 0;
 }
-int videocreate(struct supply* win)
+int videocreate(_obj* win)
 {
 	ibuf = memorycreate(0x100000, 0);
 	for(icur=0;icur<640*48082;icur++)ibuf[icur] = 0x66;

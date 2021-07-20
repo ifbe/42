@@ -1,5 +1,6 @@
 #include "libsoft.h"
-#define _ok_ hex16('o','k')
+#define BUF buflen.buf
+#define LEN buflen.len
 int findzero(void*);
 int findhead(void*);
 int findtail(void*);
@@ -56,11 +57,11 @@ void httpparser(u8* buf, int len, struct httpparsed* p)
 
 
 
-int httpclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int httpclient_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int httpclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int httpclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	int j,k;
 	say("@httpclient_write:%p,%p\n", art, foot);
@@ -71,13 +72,13 @@ int httpclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int id
 		break;
 	}
 	case _src_:{
-		if(art->stage1 >= 2){
+		if(art->vfmt >= 2){
             //src to dst
 			give_data_into_peer(art,_dst_, stack,sp, 0,0, buf,len);
 			return 0;
 		}
 
-		if(art->stage1 == 1){
+		if(art->vfmt == 1){
             //recv: http reply0
             //send: http data
 			k = 0;
@@ -97,7 +98,7 @@ int httpclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int id
 					j++;
 				}
 			}
-			art->stage1 = 2;
+			art->vfmt = 2;
 		}
 
 	}//src
@@ -112,35 +113,32 @@ int httpclient_discon(struct halfrel* self, struct halfrel* peer, void* arg, int
 }
 int httpclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	struct artery* art;
-	struct sysobj* obj;
+	_obj* art;
+	_obj* obj;
 	say("@httpclient_linkup: %.4s\n", &self->flag);
 
 	art = self->pchip;
 	if(_src_ == self->flag){
-		give_data_into_peer(art,_src_, 0,0, 0,0, art->buf0,art->len);
-		art->stage1 = 1;
+		give_data_into_peer(art,_src_, 0,0, 0,0, art->BUF,art->LEN);
+		art->vfmt = 1;
 	}
 	return 0;
 }
-int httpclient_delete(struct artery* ele)
+int httpclient_delete(_obj* ele)
 {
 	return 0;
 }
-int httpclient_create(struct artery* ele, u8* url)
+int httpclient_create(_obj* ele, u8* url)
 {
 	int j;
-	u8* buf;
-	int hlen;
-	void* host;
-	int clen;
-	void* ctxt;
-	ele->stage1 = 0;
+	ele->vfmt = 0;
 	if(0 == url)return 0;
 	if(0 == url[0])return 0;
 	//printmemory(url, 32);
 
 	//get host
+	int hlen;
+	void* host;
 	for(j=0;j<32;j++){
 		if(url[j] <= 0x20)break;
 		if('/' == url[j])break;
@@ -149,43 +147,41 @@ int httpclient_create(struct artery* ele, u8* url)
 	hlen = j;
 
 	//get ctx
+	int clen;
+	u8* ctxt;
 	if('/' != url[j]){
-		ctxt = "/";
+		ctxt = (u8*)"/";
 		clen = 1;
 	}
 	else{
-		buf = url + j;
+		ctxt = url + j;
 		for(j=0;j<256;j++){
-			if(buf[j] <= 0x20)break;
+			if(ctxt[j] <= 0x20)break;
 		}
-		if(buf[j] > 0x20)return 0;
-		ctxt = buf;
+		if(ctxt[j] > 0x20)return 0;
 		clen = j;
 	}
 
 	//http req0
-	buf = ele->buf0 = ele->data;
-	if(0 == buf)return 0;
-
-	ele->len = mysnprintf(buf, 0x80,
+	ele->LEN = mysnprintf(ele->BUF, 0xf0,
 		"GET %.*s HTTP/1.1\r\n"
 		"Host: %.*s\r\n"
 		"\r\n",
 		clen, ctxt,
 		hlen, host
 	);
-	say("%.*s\n", ele->len, buf);
+	say("%.*s\n", ele->LEN, ele->BUF);
 	return 0;
 }
 
 
 
 
-int httpserver_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int httpserver_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int httpserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int httpserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {/*
 	u8 tmp[0x1000];
 	if(0 == buf)
@@ -213,11 +209,11 @@ int httpserver_linkup(struct halfrel* self, struct halfrel* peer)
 	say("@httpserver_linkup: %.4s\n", &self->flag);
 	return 0;
 }
-int httpserver_delete(struct artery* ele)
+int httpserver_delete(_obj* ele)
 {
 	return 0;
 }
-int httpserver_create(struct artery* ele, u8* url)
+int httpserver_create(_obj* ele, u8* url)
 {
 	return 0;
 }
@@ -225,7 +221,7 @@ int httpserver_create(struct artery* ele, u8* url)
 
 
 
-int httpmaster_write_bydst(_art* art,void* foot, _syn* stack,int sp, struct httpparsed* arg, int idx, u8* buf, int len)
+int httpmaster_write_bydst(_obj* art,void* foot, _syn* stack,int sp, struct httpparsed* arg, int idx, u8* buf, int len)
 {
 	int ret;
 	u8 tmp[0x400];
@@ -246,7 +242,7 @@ if(0 == idx){
 	give_data_into_peer(art,_src_, stack,sp, 0,0, buf,len);
 	return 0;
 }
-int httpmaster_write_bysrc(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int httpmaster_write_bysrc(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	struct httpparsed p;
 	httpparser(buf, len, &p);
@@ -255,11 +251,11 @@ int httpmaster_write_bysrc(_art* art,void* foot, _syn* stack,int sp, void* arg, 
 	if((0 != p.Connection)&&(0 != p.Upgrade))
 	{
 		if(0==stack|sp<2)return 0;
-		struct sysobj* TCP = stack[sp-2].pchip;
+		_obj* TCP = stack[sp-2].pchip;
 		if(0 == TCP)return 0;
-		struct sysobj* Tcp = TCP->tempobj;
+		_obj* Tcp = TCP->sockinfo.child;
 		if(0 == Tcp)return 0;
-		struct artery* Ws = arterycreate(_Ws_, 0, 0, 0);
+		_obj* Ws = arterycreate(_Ws_, 0, 0, 0);
 		if(0 == Ws)return 0;
 		struct relation* rel = relationcreate(Ws, 0, _art_, _src_, Tcp, 0, _sys_, _dst_);
 		if(0 == rel)return 0;
@@ -324,7 +320,7 @@ int httpmaster_write_bysrc(_art* art,void* foot, _syn* stack,int sp, void* arg, 
 	//systemdelete(obj);
 	return 0;
 }
-int httpmaster_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int httpmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	say("@httpmaster_write:%p,%p\n", art, foot);
 	switch(stack[sp-1].flag){
@@ -333,7 +329,7 @@ int httpmaster_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int id
 	}
 	return 0;
 }
-int httpmaster_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int httpmaster_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
@@ -345,11 +341,11 @@ int httpmaster_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int httpmaster_delete(struct artery* ele)
+int httpmaster_delete(_obj* ele)
 {
 	return 0;
 }
-int httpmaster_create(struct artery* ele, u8* url)
+int httpmaster_create(_obj* ele, u8* url)
 {
 	return 0;
 }

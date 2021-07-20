@@ -96,11 +96,11 @@ void speakerstop()
 void speakerstart()
 {
 }
-void speakerdelete(struct supply* win)
+void speakerdelete(_obj* win)
 {
 	if(s_out)pa_simple_free(s_out);
 }
-void speakercreate(struct supply* win)
+void speakercreate(_obj* win)
 {
 	int error;
 

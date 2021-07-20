@@ -59,14 +59,14 @@ int window_give(void*,void*, void*,int, void*,int, void*,int);
 
 
 //
-static struct supply* supply = 0;
+static _obj* supply = 0;
 static int winlen = 0;
 static struct style* pinid = 0;
 static int pinlen = 0;
 void* supply_alloc()
 {
 	int j;
-	struct supply* win;
+	_obj* win;
 	for(j=0;j<0x100;j++)
 	{
 		if(0 == supply[j].type)break;
@@ -102,7 +102,7 @@ void pinid_recycle()
 
 
 
-int supply_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int supply_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	switch(sup->type){
 		case _std_:return stdio_take(sup,foot, stack,sp, arg,idx, buf,len);
@@ -116,7 +116,7 @@ int supply_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, voi
 	}
 	return 0;
 }
-int supply_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int supply_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	switch(sup->type){
 		case _std_:return stdio_give(sup,foot, stack,sp, arg,idx, buf,len);
@@ -128,7 +128,7 @@ int supply_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, voi
 		case _fbo_:
 		case _wnd_:return window_give(sup,foot, stack,sp, arg, idx, buf, len);
 	}
-	switch(sup->fmt){
+	switch(sup->hfmt){
 		case _ahrs_:return ahrs_give(sup,foot, stack,sp, arg, idx, buf, len);
 		case _slam_:return slam_give(sup,foot, stack,sp, arg, idx, buf, len);
 	}
@@ -143,10 +143,9 @@ int supplylinkup(struct halfrel* self, struct halfrel* peer)
 {
 	say("@supplylinkup\n");
 
-	struct supply* win;
 	if(0 == self)return 0;
 
-	win = (void*)(self->chip);
+	_obj* win = (void*)(self->chip);
 	if(0 == win)return 0;
 
 	return 0;
@@ -155,7 +154,7 @@ int supplylinkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int supplydelete(struct supply* win)
+int supplydelete(_obj* win)
 {
 	if(0 == win)return 0;
 
@@ -170,14 +169,14 @@ int supplydelete(struct supply* win)
 
 	//3.cleanup
 	win->type = 0;
-	win->fmt = 0;
+	win->hfmt = 0;
 	return 0;
 }
 void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 {
 	int j = 0;
-	struct supply* win;
-	struct supply* sub;
+	_obj* win;
+	_obj* sub;
 
 	switch(type){
 //-------------------tobe delete--------------
@@ -187,7 +186,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		if(0 == win)return 0;
 
 		win->type = _sensor_;
-		win->fmt = _ahrs_;
+		win->hfmt = _ahrs_;
 		ahrs_create(win, arg, argc, argv);
 		return win;
 	}
@@ -197,7 +196,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		if(0 == win)return 0;
 
 		win->type = _sensor_;
-		win->fmt = _slam_;
+		win->hfmt = _slam_;
 		slam_create(win, arg, argc, argv);
 		return win;
 	}
@@ -209,7 +208,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		if(0 == win)return 0;
 
 		win->type = _joy_;
-		win->fmt = _joy_;
+		win->hfmt = _joy_;
 		joycreate(win, arg, argc, argv);
 		return win;
 	}
@@ -219,7 +218,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		if(0 == win)return 0;
 
 		win->type = _std_;
-		win->fmt = _std_;
+		win->hfmt = _std_;
 		stdio_create(win, arg, argc, argv);
 		return win;
 	}
@@ -229,7 +228,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		if(0 == win)return 0;
 
 		win->type = _tray_;
-		win->fmt = _tray_;
+		win->hfmt = _tray_;
 		traycreate(win, arg, argc, argv);
 		return win;
 	}
@@ -241,7 +240,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		if(0 == win)return 0;
 
 		win->type = _mic_;
-		win->fmt = hex32('p','c','m',0);
+		win->hfmt = hex32('p','c','m',0);
 		micphonecreate(win, arg, argc, argv);
 		return win;
 	}
@@ -253,7 +252,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		if(0 == win)return 0;
 
 		win->type = _spk_;
-		win->fmt = hex32('p','c','m',0);
+		win->hfmt = hex32('p','c','m',0);
 		speakercreate(win, arg, argc, argv);
 		return win;
 	}
@@ -265,7 +264,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		if(0 == win)return 0;
 
 		win->type = _cam_;
-		win->fmt = hex32('y','u','v',0);
+		win->hfmt = hex32('y','u','v',0);
 		videocreate(win, arg, argc, argv);
 		return win;
 	}
@@ -275,7 +274,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		if(0 == win)return 0;
 
 		win->type = _cam_;
-		win->fmt = hex32('h','o','l','o');
+		win->hfmt = hex32('h','o','l','o');
 		//hologram_create(win, arg, argc, argv);
 		return win;
 	}
@@ -296,7 +295,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		if(0 == win)return 0;
 
 		win->type = _wnd_;
-		win->fmt = _gl41none_;
+		win->hfmt = _gl41none_;
 		windowcreate(win, arg, argc, argv);
 		return win;
 	}
@@ -306,7 +305,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		if(0 == win)return 0;
 
 		win->type = _wnd_;
-		win->fmt = _gl41easy_;
+		win->hfmt = _gl41easy_;
 		windowcreate(win, arg, argc, argv);
 		return win;
 	}
@@ -316,7 +315,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		if(0 == win)return 0;
 
 		win->type = _wnd_;
-		win->fmt = _gl41list_;
+		win->hfmt = _gl41list_;
 		windowcreate(win, arg, argc, argv);
 		return win;
 	}
@@ -326,7 +325,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		if(0 == win)return 0;
 
 		win->type = _wnd_;
-		win->fmt = _gl41cmdq_;
+		win->hfmt = _gl41cmdq_;
 		windowcreate(win, arg, argc, argv);
 		return win;
 	}
@@ -358,14 +357,14 @@ void* supplysearch(u8* buf, int len)
 {
 	int j,k;
 	u8* p;
-	struct supply* win;
+	_obj* win;
 	if(0 == buf)
 	{
 		for(j=0;j<0x100;j++)
 		{
 			win = &supply[j];
 			if(0 == win->type)break;
-			say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j, &win->tier, &win->type, &win->fmt, &win->vfmt);
+			say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j, &win->tier, &win->type, &win->hfmt, &win->vfmt);
 		}
 		if(0 == j)say("empty supply\n");
 	}
@@ -382,8 +381,8 @@ void* supplysearch(u8* buf, int len)
 */
 		for(j=0;j<0x100;j++)
 		{
-			if(0 == supply[j].fmt)break;
-			p = (void*)(&supply[j].fmt);
+			if(0 == supply[j].hfmt)break;
+			p = (void*)(&supply[j].hfmt);
 
 			for(k=0;k<8;k++)
 			{
@@ -417,7 +416,7 @@ void supply_init(u8* addr)
 	supply = (void*)(addr+0x000000);
 	pinid = (void*)(addr+0x100000);
 
-#define max (0x100000/sizeof(struct supply))
+#define max (0x100000/sizeof(_obj))
 	for(j=0;j<0x200000;j++)addr[j]=0;
 	for(j=0;j<max;j++)supply[j].tier = _sup_;
 

@@ -4,7 +4,7 @@ void invmvp(vec3 v, struct style* sty);
 
 
 
-void gl41boundingvolume(struct entity* win, u32 rgb, struct fstyle* sty, u32 flag)
+void gl41boundingvolume(_obj* win, u32 rgb, struct fstyle* sty, u32 flag)
 {
 	float* vc = sty->vc;
 	float* vr = sty->vr;
@@ -12,7 +12,7 @@ void gl41boundingvolume(struct entity* win, u32 rgb, struct fstyle* sty, u32 fla
 	float* vu = sty->vt;
 	gl41line_prism4(win, rgb, vc, vr, vf, vu);
 }
-void gl41axis(struct entity* win)
+void gl41axis(_obj* win)
 {
 	vec3 va, vb;
 	va[0] = -10000.0;
@@ -37,7 +37,7 @@ void gl41axis(struct entity* win)
 	vb[2] = 10000.0;
 	gl41line(win, 0x0000ff, va, vb);
 }
-void gl41frustum(struct entity* ctx, struct fstyle* frus)
+void gl41frustum(_obj* ctx, struct fstyle* frus)
 {
 	vec3 lbn,rbn,ltn,rtn;
 	vec3 lbf,rbf,ltf,rtf;
@@ -98,7 +98,7 @@ void gl41frustum(struct entity* ctx, struct fstyle* frus)
 	//say("(%f,%f,%f)->(%f,%f,%f)->(%f,%f,%f)\n",vc[0],vc[1],vc[2],lbn[0],lbn[1],lbn[2],rtn[0],rtn[1],rtn[2]);
 	//say("(%f,%f,%f)->(%f,%f,%f)->(%f,%f,%f)\n",vc[0],vc[1],vc[2],lbf[0],lbf[1],lbf[2],rtf[0],rtf[1],rtf[2]);
 }/*
-void gl41frustum(struct entity* win, struct fstyle* sty)
+void gl41frustum(_obj* win, struct fstyle* sty)
 {
 	vec3 tc, tr, tf;
 	float* vc = sty->vc;
@@ -150,13 +150,13 @@ void gl41frustum(struct entity* win, struct fstyle* sty)
 	tc[2] = vc[2] + (vn[2] + vr[2] + vu[2])*1000.0;
 	gl41line(win, 0xffffff, vc, tc);
 }
-void carvecamera(struct entity* win, struct entity* w)
+void carvecamera(_obj* win, _obj* w)
 {
 	vec3 va0,vb0,vc0,vd0;
 	vec3 va1,vb1,vc1,vd1;
 	vec3 va,vb,vv;
-	float x = (float)(w->width);
-	float y = (float)(w->height);
+	float x = (float)(w->whdf.width);
+	float y = (float)(w->whdf.height);
 
 	//left,bot,near
 	va0[0] = -1.0;

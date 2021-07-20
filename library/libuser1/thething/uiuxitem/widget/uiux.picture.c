@@ -1,6 +1,6 @@
 #include "libuser.h"
-#define CTXBUF buf0
-void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
+#define CTXBUF priv_ptr
+void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 
 
 
@@ -63,9 +63,9 @@ static void picture_ctxforwnd(struct gl41data* data, char* str, float* angle)
 	data->src.vbuf_enq = 42;
 }
 static void picture_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -73,8 +73,8 @@ static void picture_draw_gl41(
 	float* vu = geom->fs.vt;
 	if(0 == act->CTXBUF)return;
 /*
-	act->fx0 = ((timeread()%5000000)/5000000.0)*tau;
-	//say("%f\n",act->fx0);
+	act->whdf.fx0 = ((timeread()%5000000)/5000000.0)*tau;
+	//say("%f\n",act->whdf.fx0);
 */
 	struct mysrc* src = act->CTXBUF;
 	if(0 == src)return;
@@ -131,28 +131,28 @@ static void picture_draw_gl41(
 
 
 static void picture_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void picture_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void picture_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void picture_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void picture_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("picture(%x,%x,%x)\n",win,act,sty);
 }
@@ -160,17 +160,17 @@ static void picture_draw_cli(
 
 
 
-static void picture_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void picture_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	if(0 == stack)return;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	picture_draw_gl41(ent,foot, wor,geom, wnd,area);
 }
-static void picture_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void picture_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@picture_write\n");
 	give_data_into_peer(ent,_evto_, stack,sp, 0,0, "calibrate\n", 10);
@@ -185,19 +185,19 @@ static void picture_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void picture_search(struct entity* act)
+static void picture_search(_obj* act)
 {
 }
-static void picture_modify(struct entity* act)
+static void picture_modify(_obj* act)
 {
 }
-static void picture_delete(struct entity* act)
+static void picture_delete(_obj* act)
 {
 	if(0 == act)return;
 	memorydelete(act->CTXBUF);
 	act->CTXBUF = 0;
 }
-static void picture_create(struct entity* act, void* str)
+static void picture_create(_obj* act, void* str)
 {
 	if(0 == act)return;
 
@@ -205,16 +205,16 @@ static void picture_create(struct entity* act, void* str)
 	if(0 == act->CTXBUF)return;
 
 	if(0 == str)str = "datafile/jpg/cartoon.jpg";
-	picture_ctxforwnd(act->CTXBUF, str, &act->fx0);
+	picture_ctxforwnd(act->CTXBUF, str, &act->whdf.fx0);
 }
 
 
 
 
-void picture_register(struct entity* p)
+void picture_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('p', 'i', 'c', 't', 'u', 'r', 'e', 0);
+	p->hfmt = hex64('p', 'i', 'c', 't', 'u', 'r', 'e', 0);
 
 	p->oncreate = (void*)picture_create;
 	p->ondelete = (void*)picture_delete;

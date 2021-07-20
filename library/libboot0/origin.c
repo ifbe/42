@@ -19,25 +19,6 @@ int openwriteclose(void*, int, void*, int);
 
 static struct item* ori;
 static int orilen = 0;
-void* origin_alloc()
-{
-	void* addr = &ori[orilen];
-	orilen += 1;
-	return addr;
-}
-void origin_recycle()
-{
-}
-void origin_exit()
-{
-	say("[0,2):origin exiting\n");
-
-	freerunenv();
-	freeserial();
-
-	freestdin();
-	freestdout();
-}
 void origin_init(u8* addr)
 {
 	int j;
@@ -55,35 +36,29 @@ void origin_init(u8* addr)
 
 	say("[0,2):origin inited\n");
 }
-
-
-
-
-int origindelete(void* addr)
+void origin_exit()
 {
-	struct item* tmp=0;
-	if(0 == addr)return 0;
+	say("[0,2):origin exiting\n");
 
-	tmp = addr;
-	say("origindelete:%.8s\n", &tmp->type);
+	freerunenv();
+	freeserial();
 
-	switch(tmp->type){
-	case _start_:
-	case _efimain_:{
-		death();
-		break;
-	}
-	case _main_:
-	case _win32_:
-	case _ndkmain_:{
-		death();
-
-		openwriteclose("universe.bin", 0, ori, 0x1000000);
-		memorydelete(ori);
-	}
-	}
-	return 0;
+	freestdin();
+	freestdout();
 }
+void* origin_alloc()
+{
+	void* addr = &ori[orilen];
+	orilen += 1;
+	return addr;
+}
+void origin_recycle()
+{
+}
+
+
+
+
 void* origincreate(u64 type, void* func, int argc, u8** argv)
 {
 	int j;
@@ -128,6 +103,41 @@ void* origincreate(u64 type, void* func, int argc, u8** argv)
 	}
 	return 0;
 }
+int origindelete(_obj* tmp)
+{
+	if(0 == tmp)return 0;
+	say("origindelete:%.8s\n", &tmp->type);
+
+	switch(tmp->type){
+	case _start_:
+	case _efimain_:{
+		death();
+		break;
+	}
+	case _main_:
+	case _win32_:
+	case _ndkmain_:{
+		death();
+
+		//openwriteclose("universe.bin", 0, ori, 0x1000000);
+		memorydelete(ori);
+	}
+	}
+	return 0;
+}
+int originsearch(u8* buf, int len)
+{
+	int j,k=0;
+	for(j=0;j<64;j++)
+	{
+		if(0 == ori[j].type)continue;
+		say("[%04x]: %.8s\n", j, &ori[j].type);
+		k++;
+	}
+
+	if(0 == k)say("empth origin\n");
+	return 0;
+}
 int originmodify(int argc, u8** argv)
 {
 	int j;
@@ -147,37 +157,24 @@ int originmodify(int argc, u8** argv)
 	}
 	return 0;
 }
-int originsearch(u8* buf, int len)
+
+
+
+
+int originlinkup(struct halfrel* self, struct halfrel* peer)
 {
-	int j,k=0;
-	for(j=0;j<64;j++)
-	{
-		if(0 == ori[j].type)continue;
-		say("[%04x]: %.8s\n", j, &ori[j].type);
-		k++;
-	}
-
-	if(0 == k)say("empth origin\n");
-	return 0;
-}
-
-
-
-
-int origin_take(struct item* ori,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
-{
-	return 0;
-}
-int origin_give(struct item* ori,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
-{
+	say("@originlinkup\n");
 	return 0;
 }
 int origindiscon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int originlinkup(struct halfrel* self, struct halfrel* peer)
+int origin_take(struct item* ori,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	say("@originlinkup\n");
+	return 0;
+}
+int origin_give(struct item* ori,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+{
 	return 0;
 }

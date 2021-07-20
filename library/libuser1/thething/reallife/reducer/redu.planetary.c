@@ -3,16 +3,16 @@
 
 
 
-static void planetary_search(struct entity* act, u8* buf)
+static void planetary_search(_obj* act, u8* buf)
 {
 }
-static void planetary_modify(struct entity* act, u8* buf)
+static void planetary_modify(_obj* act, u8* buf)
 {
 }
-static void planetary_delete(struct entity* act, u8* buf)
+static void planetary_delete(_obj* act, u8* buf)
 {
 }
-static void planetary_create(struct entity* act, u8* buf)
+static void planetary_create(_obj* act, u8* buf)
 {
 }
 
@@ -20,9 +20,9 @@ static void planetary_create(struct entity* act, u8* buf)
 
 
 static void planetary_draw_gl41(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int j;
 	float r,a,c,s;
@@ -64,38 +64,38 @@ static void planetary_draw_gl41(
 	gl41solid_rotategear(ctx, 0x808080, tc, tr, tf, vt, 18, r);
 }
 static void planetary_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* wnd, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* wnd, struct style* sty)
 {
 }
 static void planetary_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void planetary_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void planetary_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void planetary_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-static void planetary_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void planetary_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -105,7 +105,7 @@ static void planetary_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void planetary_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void planetary_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -114,10 +114,10 @@ static void planetary_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -127,7 +127,7 @@ static void planetary_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg
 		break;
 	}
 }
-static void planetary_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void planetary_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void planetary_discon(struct halfrel* self, struct halfrel* peer)
@@ -140,10 +140,10 @@ static void planetary_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-void planetary_register(struct entity* p)
+void planetary_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('p','l','a','n','e','t','a','r');
+	p->hfmt = hex64('p','l','a','n','e','t','a','r');
 
 	p->oncreate = (void*)planetary_create;
 	p->ondelete = (void*)planetary_delete;

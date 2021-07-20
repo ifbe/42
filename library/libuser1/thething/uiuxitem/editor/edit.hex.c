@@ -1,9 +1,9 @@
 #include "libuser.h"
 int utf2unicode(u8* src,u32* dst);
 int windowread(int type, void* buf);
-void gl41data_before(struct entity* wnd);
-void gl41data_after(struct entity* wnd);
-void gl41data_01cam(struct entity* wnd);
+void gl41data_before(_obj* wnd);
+void gl41data_after(_obj* wnd);
+void gl41data_01cam(_obj* wnd);
 
 
 
@@ -13,10 +13,10 @@ static u8* universe = 0;
 
 
 
-static int hexedit_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static int hexedit_search(_obj* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 	struct relation* rel;
-	struct entity* world;
+	_obj* world;
 
 	rel = act->irel0;
 	while(1){
@@ -31,28 +31,28 @@ static int hexedit_search(struct entity* act, u32 foot, struct halfrel* self[], 
 	}
 	return 0;
 }
-static void hexedit_modify(struct entity* act)
+static void hexedit_modify(_obj* act)
 {
 }
-static void hexedit_delete(struct entity* act)
+static void hexedit_delete(_obj* act)
 {
 	if(0 == act)return;
 }
-static void hexedit_create(struct entity* act, void* arg, int argc, u8** argv)
+static void hexedit_create(_obj* act, void* arg, int argc, u8** argv)
 {
 	if(0 == act)return;
-	act->ix0 = 0;
-	act->iy0 = 0;
-	act->iz0 = 0;
-	act->iw0 = 0;
+	act->whdf.ix0 = 0;
+	act->whdf.iy0 = 0;
+	act->whdf.iz0 = 0;
+	act->whdf.iw0 = 0;
 
-	act->ixn = 0;
-	act->iyn = 0;
+	act->whdf.ixn = 0;
+	act->whdf.iyn = 0;
 
-	if(0 == arg)act->buf0 = universe;
+	if(0 == arg)act->listptr.buf0 = universe;
 	else{
-		act->buf0 = memorycreate(0x100000, 0);
-		openreadclose(arg, 0, act->buf0, 0x100000);
+		act->listptr.buf0 = memorycreate(0x100000, 0);
+		openreadclose(arg, 0, act->listptr.buf0, 0x100000);
 	}
 }
 
@@ -60,8 +60,8 @@ static void hexedit_create(struct entity* act, void* arg, int argc, u8** argv)
 
 
 static void hexedit_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	u32 unicode, color;
 	int x,y,j;
@@ -75,16 +75,16 @@ static void hexedit_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
 
 	ww &= 0xfff0;
 	hh &= 0xfff0;
-	if(act->iw0 == 0)		//hex
+	if(act->whdf.iw0 == 0)		//hex
 	{
 		for(y=-hh;y<hh;y+=16)
 		{
@@ -136,9 +136,9 @@ static void hexedit_draw_pixel(
 	}
 }
 static void hexedit_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* scn, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	int x,y,j,rgb;
 	vec3 tc,tr,tf;
@@ -149,7 +149,7 @@ static void hexedit_draw_gl41(
 	//gl41solid_rect(wnd, 0x00ff00, vc,vr,vf);
 
 	u8 ch;
-	u8* buf = act->buf0;
+	u8* buf = act->listptr.buf0;
 	for(y=0;y<32;y++){
 		for(x=0;x<32;x++){
 			for(j=0;j<3;j++){
@@ -159,32 +159,32 @@ static void hexedit_draw_gl41(
 			}
 			gl41line_rect(wnd, 0xff0000, tc,tr,tf);
 
-			ch = buf[act->iz0 + y*32 + x];
-			if((x == act->ixn)&&(y == act->iyn))rgb = 0x00ff00;
+			ch = buf[act->whdf.iz0 + y*32 + x];
+			if((x == act->whdf.ixn)&&(y == act->whdf.iyn))rgb = 0x00ff00;
 			else rgb = 0xffffff;
-			if(act->iw0)gl41ascii_center(wnd, rgb, tc,tr,tf,ch);
+			if(act->whdf.iw0)gl41ascii_center(wnd, rgb, tc,tr,tf,ch);
 			else gl41hex8_center(wnd, rgb, tc,tr,tf,ch);
 		}
 	}
 }
 static void hexedit_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void hexedit_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void hexedit_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void hexedit_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("hex(%x,%x,%x)\n",win,act,sty);
 }
@@ -193,8 +193,8 @@ static void hexedit_draw_cli(
 
 
 static void hexedit_event(
-	struct entity* act, struct style* slot,
-	struct supply* wnd, struct style* area,
+	_obj* act, struct style* slot,
+	_obj* wnd, struct style* area,
 	struct event* ev)
 {
 	int j,ret;
@@ -203,62 +203,62 @@ static void hexedit_event(
 	//say("%x,%x\n",type,key);
 
 	if(_char_ == type){
-		if('	' == key)act->iw0 ^= 1;
+		if('	' == key)act->whdf.iw0 ^= 1;
 	}
 
 	if(_kbd_ == type){
 	switch(key){
 		case kbd_up:{
-			if(act->iz0 >= 0x20)act->iz0 -= 0x20;
+			if(act->whdf.iz0 >= 0x20)act->whdf.iz0 -= 0x20;
 			break;
 		}
 		case kbd_down:{
-			if(act->iz0 <= 0x1000000-0x20)act->iz0 += 0x20;
+			if(act->whdf.iz0 <= 0x1000000-0x20)act->whdf.iz0 += 0x20;
 			break;
 		}
 		case kbd_left:{
-			if(act->iz0 >= 0x10000)act->iz0 -= 0x10000;
+			if(act->whdf.iz0 >= 0x10000)act->whdf.iz0 -= 0x10000;
 			break;
 		}
 		case kbd_right:{
-			if(act->iz0 <= 0x1000000-0x10000)act->iz0 += 0x10000;
+			if(act->whdf.iz0 <= 0x1000000-0x10000)act->whdf.iz0 += 0x10000;
 			break;
 		}
 	}//switch(key)
-	say("%x\n",act->iz0);
+	say("%x\n",act->whdf.iz0);
 	}//if(kbd)
 
 	if(0x4070 == type){
-		int w = wnd->width;
-		int h = wnd->height;
+		int w = wnd->whdf.width;
+		int h = wnd->whdf.height;
 		int x0 = w*area->fs.vc[0];
 		int y0 = h*area->fs.vc[1];
 		int dx = w*area->fs.vq[0];
 		int dy = h*area->fs.vq[1];
 
 		short* t = (void*)ev;
-		act->ixn = (t[0]-x0)*32/dx;
-		act->iyn = (t[1]-y0)*32/dy;
-		//say("%d,%d\n",act->ixn,act->iyn);
+		act->whdf.ixn = (t[0]-x0)*32/dx;
+		act->whdf.iyn = (t[1]-y0)*32/dy;
+		//say("%d,%d\n",act->whdf.ixn,act->whdf.iyn);
 	}
 }
 
 
 
 
-static void hexedit_read_bycam(_ent* ent,void* slot, _syn* stack,int sp)
+static void hexedit_read_bycam(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	if(0 == stack)return;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	hexedit_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void hexedit_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp)
+static void hexedit_read_bywnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
-	struct entity* wnd;struct style* area;
+	_obj* wnd;struct style* area;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	struct fstyle fs;
@@ -274,14 +274,14 @@ static void hexedit_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp)
 
 
 
-static int hexedit_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int hexedit_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return 0;
 
-	struct entity* caller = stack[sp-2].pchip;
+	_obj* caller = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _gl41list_:
 		hexedit_read_bywnd(ent,slot, stack,sp);break;
 	default:
@@ -289,14 +289,14 @@ static int hexedit_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,in
 	}
 	return 0;
 }
-static int hexedit_giving(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int hexedit_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return 0;
 
-	struct supply* caller = stack[sp-2].pchip;
+	_obj* caller = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _gl41list_:
 	default:
 		hexedit_event(ent,slot, caller,area, buf);break;
@@ -313,10 +313,10 @@ static void hexedit_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-void hexedit_register(struct entity* p)
+void hexedit_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('h', 'e', 'x', 'e','d','i','t', 0);
+	p->hfmt = hex64('h', 'e', 'x', 'e','d','i','t', 0);
 
 	p->oncreate = (void*)hexedit_create;
 	p->ondelete = (void*)hexedit_delete;

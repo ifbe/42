@@ -1,17 +1,17 @@
 #include "libuser.h"
 #define _truthtable_ hex32('t','r','u','e')
-void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
-void gl41data_before(struct entity* wnd);
-void gl41data_after(struct entity* wnd);
-void gl41data_01cam(struct entity* wnd);
+void gl41data_convert(_obj* wnd, struct style* area, struct event* ev, vec3 v);
+void gl41data_before(_obj* wnd);
+void gl41data_after(_obj* wnd);
+void gl41data_01cam(_obj* wnd);
 
 
 
 
-static int karnaugh_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static int karnaugh_search(_obj* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 	struct relation* rel;
-	struct entity* world;
+	_obj* world;
 
 	rel = act->irel0;
 	while(1){
@@ -26,18 +26,18 @@ static int karnaugh_search(struct entity* act, u32 foot, struct halfrel* self[],
 	}
 	return 0;
 }
-static int karnaugh_modify(struct entity* act)
+static int karnaugh_modify(_obj* act)
 {
 	return 0;
 }
-static int karnaugh_delete(struct entity* act)
+static int karnaugh_delete(_obj* act)
 {
 	return 0;
 }
-static int karnaugh_create(struct entity* act, u8* str)
+static int karnaugh_create(_obj* act, u8* str)
 {
 	int j;
-	u8* out = (void*)&act->data0;
+	u8* out = (void*)&act->listu64.data0;
 	for(j=0;j<16;j++)out[j] = getrandom()&1;
 	return 0;
 }
@@ -45,12 +45,12 @@ static int karnaugh_create(struct entity* act, u8* str)
 
 
 
-void karnaugh_draw_gl41_4x4(struct entity* wnd, struct entity* act, vec3 vc, vec3 vr, vec3 vf)
+void karnaugh_draw_gl41_4x4(_obj* wnd, _obj* act, vec3 vc, vec3 vr, vec3 vf)
 {
 	int x,y,j,rgb;
 	vec3 tc,tr,tf;
 	u8 ch[4];
-	u8* out = (void*)&act->data0;
+	u8* out = (void*)&act->listu64.data0;
 
 	for(j=0;j<3;j++){
 		tr[j] = vr[j]/4.1;
@@ -63,7 +63,7 @@ void karnaugh_draw_gl41_4x4(struct entity* wnd, struct entity* act, vec3 vc, vec
 		ch[3] = '0' + out[y*4 +3];
 		for(x=0;x<4;x++){
 			for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(2*x-3)/4 +vf[j]*(3-2*y)/4;
-			if((x == act->ix0)&&(y == act->iy0))rgb = 0xff00ff;
+			if((x == act->whdf.ix0)&&(y == act->whdf.iy0))rgb = 0xff00ff;
 			else rgb = 0xffffff;
 			gl41line_rect(wnd, 0xffffff, tc, tr, tf);
 			gl41ascii_center(wnd, rgb, tc, tr, tf, ch[x]);
@@ -82,9 +82,9 @@ void karnaugh_draw_gl41_4x4(struct entity* wnd, struct entity* act, vec3 vc, vec
 	}
 }
 void karnaugh_draw_gl41(
-	struct entity* act, struct style* part,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* part,
+	_obj* scn, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	int x,y,j;
 	vec3 tc,tr,tf;
@@ -137,23 +137,23 @@ void karnaugh_draw_gl41(
 	}
 	karnaugh_draw_gl41_4x4(wnd, act, tc, tr, tf);
 }
-void karnaugh_draw_pixel(struct entity* win, struct style* sty)
+void karnaugh_draw_pixel(_obj* win, struct style* sty)
 {
 }
-void karnaugh_draw_html(struct entity* win, struct style* sty)
+void karnaugh_draw_html(_obj* win, struct style* sty)
 {
 }
-void karnaugh_draw_tui(struct entity* win, struct style* sty)
+void karnaugh_draw_tui(_obj* win, struct style* sty)
 {
 }
-void karnaugh_draw_cli(struct entity* win, struct style* sty)
+void karnaugh_draw_cli(_obj* win, struct style* sty)
 {
 }
 
 
 
 
-static void karnaugh_read_bywnd(_ent* ent,struct style* slot, _ent* wnd, struct style* area)
+static void karnaugh_read_bywnd(_obj* ent,struct style* slot, _obj* wnd, struct style* area)
 {
 	struct fstyle fs;
 	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
@@ -165,27 +165,27 @@ static void karnaugh_read_bywnd(_ent* ent,struct style* slot, _ent* wnd, struct 
 	gl41data_01cam(wnd);
 	gl41data_after(wnd);
 }
-static void karnaugh_write_bywnd(_ent* ent,struct style* slot, _ent* wnd, struct style* area,
+static void karnaugh_write_bywnd(_obj* ent,struct style* slot, _obj* wnd, struct style* area,
 	_syn* stack,int sp, struct event* ev,int len)
 {
 	if('p' == (ev->what&0xff)){
 		vec3 xyz;
 		gl41data_convert(wnd, area, ev, xyz);
-		ent->ix0 = (int)(5*xyz[0]) -1;
-		ent->iy0 = (int)(5*(1.0-xyz[1])) -1;
+		ent->whdf.ix0 = (int)(5*xyz[0]) -1;
+		ent->whdf.iy0 = (int)(5*(1.0-xyz[1])) -1;
 
 		if(0x2b70 == ev->what){
-			u8* out = (void*)&ent->data0;
-			int x = ent->ix0;
-			int y = ent->iy0;
+			u8* out = (void*)&ent->listu64.data0;
+			int x = ent->whdf.ix0;
+			int y = ent->whdf.iy0;
 			if((x >= 0)&&(x <= 3)&&(y >= 0)&&(y <= 3))out[y*4+x] ^= 1;
 			give_data_into_peer(ent, _truthtable_, stack,sp, 0,0, out,16);
 		}
 	}
 }
-static int karnaugh_write_bytruthtable(struct entity* ent, u8* i)
+static int karnaugh_write_bytruthtable(_obj* ent, u8* i)
 {
-	u8* o = (void*)&ent->data0;
+	u8* o = (void*)&ent->listu64.data0;
 	printmemory(i, 16);
 
 	o[0] = i[0];
@@ -211,26 +211,26 @@ static int karnaugh_write_bytruthtable(struct entity* ent, u8* i)
 
 
 
-static int karnaugh_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int karnaugh_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* wnd = stack[sp-2].pchip;
+	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _gl41list_:
 		karnaugh_read_bywnd(ent,slot, wnd,area);
 		break;
 	}
 	return 0;
 }
-static int karnaugh_giving(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int karnaugh_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(_truthtable_ == stack[sp-1].flag){
 		return karnaugh_write_bytruthtable(ent, buf);
 	}
 
-	struct entity* wnd = stack[sp-2].pchip;
+	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _gl41list_:
 		karnaugh_write_bywnd(ent,slot, wnd,area, stack,sp, buf,len);
 		break;
@@ -249,10 +249,10 @@ static int karnaugh_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-void karnaugh_register(struct entity* p)
+void karnaugh_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('k','a','r','n','a','u','g','h');
+	p->hfmt = hex64('k','a','r','n','a','u','g','h');
 
 	p->oncreate = (void*)karnaugh_create;
 	p->ondelete = (void*)karnaugh_delete;

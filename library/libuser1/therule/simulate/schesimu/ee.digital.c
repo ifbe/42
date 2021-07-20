@@ -1,7 +1,7 @@
 #include "libuser.h"
-#define PERPIN buf0
-#define VERTEX buf1
-#define STAMP data3
+#define PERPIN listptr.buf0
+#define VERTEX listptr.buf1
+#define STAMP listu64.data4
 int parsefv(float* vec, int flen, u8* str, int slen);
 
 
@@ -55,7 +55,7 @@ static int parsewiring(u8* buf, float* dat)
 
 
 
-static int digital_recur(_syn* stack,int sp, struct entity* ent)
+static int digital_recur(_syn* stack,int sp, _obj* ent)
 {
 	int j;
 	for(j=0;j<sp;j++){
@@ -63,10 +63,10 @@ static int digital_recur(_syn* stack,int sp, struct entity* ent)
 	}
 	return 0;
 }
-static void digital_broadcast(struct entity* ent, int pin, _syn* stack,int sp, u8* buf, int len)
+static void digital_broadcast(_obj* ent, int pin, _syn* stack,int sp, u8* buf, int len)
 {
 	struct relation* rel;
-	struct entity* chip;
+	_obj* chip;
 
 	rel = ent->irel0;
 	while(1){
@@ -100,7 +100,7 @@ next2:
 		rel = samesrcnextdst(rel);
 	}
 }
-void digital_complex(struct entity* ent,struct wireindex* sts, _syn* stack,int sp, u8* buf,int len)
+void digital_complex(_obj* ent,struct wireindex* sts, _syn* stack,int sp, u8* buf,int len)
 {
 	int j;
 	u8 any = 0;
@@ -203,9 +203,9 @@ static u32 digital_color(int val)
 	return 0xffffff;
 }
 static void digital_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* scn, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -239,10 +239,10 @@ static void digital_draw_gl41(
 		}
 	}
 }
-void digital_read_board(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key)
+void digital_read_board(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	if(0 == stack)return;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
@@ -253,11 +253,11 @@ void digital_read_board(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int 
 
 
 
-int digital_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int digital_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return 0;
 
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	//foot defined behavior
@@ -265,7 +265,7 @@ int digital_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, 
 	}
 
 	//caller defined behavior
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -275,7 +275,7 @@ int digital_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, 
 	digital_read_board(ent,foot, stack,sp, arg,key);
 	return 0;
 }
-int digital_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+int digital_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	struct wireindex* sts = ent->PERPIN;
 	if(0 == sts)return 0;
@@ -321,19 +321,19 @@ int digital_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int digital_search(struct entity* scene)
+int digital_search(_obj* scene)
 {
 	return 0;
 }
-int digital_modify(struct entity* scene)
+int digital_modify(_obj* scene)
 {
 	return 0;
 }
-int digital_delete(struct entity* scene)
+int digital_delete(_obj* scene)
 {
 	return 0;
 }
-int digital_create(struct entity* scene, void* arg, int argc, u8** argv)
+int digital_create(_obj* scene, void* arg, int argc, u8** argv)
 {
 	int ret;
 	say("@digital_create\n");

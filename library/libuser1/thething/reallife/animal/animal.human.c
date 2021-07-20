@@ -1,5 +1,5 @@
 #include "libuser.h"
-void gl41solid_bodypart(struct entity*, u32, vec3, vec3);
+void gl41solid_bodypart(_obj*, u32, vec3, vec3);
 
 
 
@@ -77,10 +77,10 @@ static vec3 bonevertc[15] = {
 
 
 
-static void human_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static void human_search(_obj* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 	struct relation* rel;
-	struct entity* world;
+	_obj* world;
 	struct fstyle* obb = 0;
 	//say("human_search\n");
 
@@ -96,26 +96,26 @@ static void human_search(struct entity* act, u32 foot, struct halfrel* self[], s
 		rel = samedstnextsrc(rel);
 	}
 }
-static void human_modify(struct entity* act)
+static void human_modify(_obj* act)
 {
 }
-static void human_delete(struct entity* act)
+static void human_delete(_obj* act)
 {
 	if(0 == act)return;
 	//if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void human_create(struct entity* act)
+static void human_create(_obj* act)
 {
 	if(0 == act)return;
-	act->fz0 = 0;
+	act->whdf.fz0 = 0;
 }
 
 
 
 
 static void human_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -127,16 +127,16 @@ static void human_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 }
 static void human_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int j,k;
 	vec3 t0, t1;
@@ -184,23 +184,23 @@ static void human_draw_gl41(
 	}
 }
 static void human_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void human_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void human_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void human_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
@@ -208,8 +208,8 @@ static void human_draw_cli(
 
 
 static int human_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
 	struct halfrel* self;
@@ -330,10 +330,10 @@ static int human_event(
 
 
 
-static void human_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void human_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -343,7 +343,7 @@ static void human_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void human_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void human_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -352,10 +352,10 @@ static void human_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -365,7 +365,7 @@ static void human_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int
 		break;
 	}
 }
-static int human_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int human_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -379,10 +379,10 @@ static void human_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-void human_register(struct entity* p)
+void human_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('h', 'u', 'm', 'a', 'n', 0, 0, 0);
+	p->hfmt = hex64('h', 'u', 'm', 'a', 'n', 0, 0, 0);
 
 	p->oncreate = (void*)human_create;
 	p->ondelete = (void*)human_delete;

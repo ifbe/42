@@ -10,8 +10,8 @@ static u8 data[3][3];
 
 
 static void ooxx_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x, y, cx, cy, ww, hh;
 	if(sty)
@@ -23,10 +23,10 @@ static void ooxx_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 	drawsolid_rect(win, 0x222222, cx-ww, cy-hh, cx+ww, cy+hh);
 
@@ -64,9 +64,9 @@ static void ooxx_draw_pixel(
 	}//fory
 }
 static void ooxx_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* wrl, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* wrl, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -75,13 +75,13 @@ static void ooxx_draw_gl41(
 	gl41solid_rect(wnd, 0x444444, vc, vr, vf);
 }
 static void ooxx_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void ooxx_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x,y;
 	char p[2];
@@ -108,13 +108,13 @@ static void ooxx_draw_html(
 	htmlprintf(win, 2, "</div>\n");
 }
 static void ooxx_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void ooxx_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	u8 ch;
 	int x,y;
@@ -136,15 +136,15 @@ static void ooxx_draw_cli(
 
 
 void ooxx_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
 	char val;
 	int x,y;
 /*
-	int width = haha->width;
-	int height = haha->height;
+	int width = haha->whdf.width;
+	int height = haha->whdf.height;
 	int min = (width<height) ? width:height;
 */
 	int min = 512;
@@ -172,10 +172,10 @@ say("%d,%d\n",x,y);
 
 
 
-static void ooxx_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void ooxx_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -185,7 +185,7 @@ static void ooxx_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void ooxx_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void ooxx_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -194,10 +194,10 @@ static void ooxx_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int 
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -207,7 +207,7 @@ static void ooxx_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int 
 		break;
 	}
 }
-static void ooxx_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void ooxx_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void ooxx_discon(struct halfrel* self, struct halfrel* peer)
@@ -220,25 +220,25 @@ static void ooxx_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void ooxx_search(struct entity* act)
+static void ooxx_search(_obj* act)
 {
 }
-static void ooxx_modify(struct entity* act)
+static void ooxx_modify(_obj* act)
 {
 }
-static void ooxx_delete(struct entity* act)
+static void ooxx_delete(_obj* act)
 {
 	if(0 == act)return;
-	if(act->buf0){
-		memorydelete(act->buf0);
-		act->buf0 = 0;
+	if(act->listptr.buf0){
+		memorydelete(act->listptr.buf0);
+		act->listptr.buf0 = 0;
 	}
 }
-static void ooxx_create(struct entity* act)
+static void ooxx_create(_obj* act)
 {
 	int x,y;
 	if(0 == act)return;
-	act->buf0 = memorycreate(16, 0);
+	act->listptr.buf0 = memorycreate(16, 0);
 
 	turn = 0;
 	for(y=0;y<3;y++){
@@ -251,10 +251,10 @@ static void ooxx_create(struct entity* act)
 
 
 
-void ooxx_register(struct entity* p)
+void ooxx_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex32('o', 'o', 'x', 'x');
+	p->hfmt = hex32('o', 'o', 'x', 'x');
 
 	p->oncreate = (void*)ooxx_create;
 	p->ondelete = (void*)ooxx_delete;

@@ -3,7 +3,7 @@
 
 
 
-void window_take(struct supply* win)
+void window_take(_obj* win)
 {
 }
 void window_give()
@@ -13,10 +13,10 @@ void window_give()
 
 
 
-void windowdelete(struct supply* w)
+void windowdelete(_obj* w)
 {
 }
-void windowcreate(struct supply* w)
+void windowcreate(_obj* w)
 {
 	w->fmt = _cli_;
 	w->vfmt = 0;

@@ -5,7 +5,7 @@
 
 
 
-static struct supply* working;
+static _obj* working;
 static WAVEFORMATEX fmt;
 static int alive = 0;
 //
@@ -93,10 +93,10 @@ void speakerstop()
 void speakerstart()
 {
 }
-void speakerdelete(struct supply* win)
+void speakerdelete(_obj* win)
 {
 }
-void speakercreate(struct supply* win)
+void speakercreate(_obj* win)
 {
 	int j,ret;
 	working = win;

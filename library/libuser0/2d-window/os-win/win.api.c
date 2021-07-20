@@ -30,7 +30,7 @@ static RECT rt, re;
 
 
 
-int window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	MSG msg;
 	BITMAPINFO info;
@@ -78,15 +78,15 @@ int window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, voi
 	wnd->spsave = 0;
 	return 0;
 }
-int window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
-int windowstop(struct supply* win)
+int windowstop(_obj* win)
 {
 	return 0;
 }
-int windowstart(struct supply* win)
+int windowstart(_obj* win)
 {
 	return 0;
 }
@@ -108,7 +108,7 @@ int windowchange()
 	//SetWindowText(win, "hahahaha");
 	return 0;
 }
-int windowdelete(struct supply* wnd)
+int windowdelete(_obj* wnd)
 {/*
 	PostThreadMessage(
 		uithread,
@@ -129,7 +129,7 @@ int windowdelete(struct supply* wnd)
 	if(alivecount == 0)eventwrite(0,0,0,0);
 	return 0;
 }
-int windowcreate(struct supply* wnd)
+int windowcreate(_obj* wnd)
 {
 	if(0 == wnd)return 0;
 
@@ -224,7 +224,7 @@ int windowcreate(struct supply* wnd)
 
 
 
-static int whichfinger(struct supply* wnd, int old, int new)
+static int whichfinger(_obj* wnd, int old, int new)
 {
 	int k;
 	int* tab = wnd->perwnd;
@@ -238,7 +238,7 @@ found:
 	if(old != new)tab[k] = new;
 	return k;
 }
-static void restorestackdeliverevent(struct supply* wnd, struct event* ev)
+static void restorestackdeliverevent(_obj* wnd, struct event* ev)
 {
 	u64* save = wnd->spsave;
 	if(0 == save){
@@ -253,7 +253,7 @@ static void restorestackdeliverevent(struct supply* wnd, struct event* ev)
 LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	u64 addr = GetWindowLongPtr(wnd, GWLP_USERDATA);
-	struct supply* win = (void*)addr;
+	_obj* win = (void*)addr;
 
 	struct event ev;
 	switch (msg)

@@ -1,20 +1,21 @@
 #include "libuser.h"
 #define _ann_ hex32('a','n','n', 0)
-#define IMAGE buf0
-#define LABEL buf1
-#define WEIGH buf2
+#define WEIGHT listptr.buf0
+#define RESULT listptr.buf1
+#define IMAGE listptr.buf2
+#define LABEL listptr.buf3
 int copypath(u8* path, u8* data);
-void gl41data_before(struct entity* wnd);
-void gl41data_after(struct entity* wnd);
-void gl41data_01cam(struct entity* wnd);
+void gl41data_before(_obj* wnd);
+void gl41data_after(_obj* wnd);
+void gl41data_01cam(_obj* wnd);
 
 
 
 
-static int mnist_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static int mnist_search(_obj* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 	struct relation* rel;
-	struct entity* world;
+	_obj* world;
 
 	rel = act->irel0;
 	while(1){
@@ -29,15 +30,15 @@ static int mnist_search(struct entity* act, u32 foot, struct halfrel* self[], st
 	}
 	return 0;
 }
-static int mnist_modify(struct entity* act)
+static int mnist_modify(_obj* act)
 {
 	return 0;
 }
-static int mnist_delete(struct entity* act)
+static int mnist_delete(_obj* act)
 {
 	return 0;
 }
-static int mnist_create(struct entity* act, void* arg, int argc, u8** argv)
+static int mnist_create(_obj* act, void* arg, int argc, u8** argv)
 {
 	int j;
 	u8 path[128];
@@ -51,21 +52,21 @@ static int mnist_create(struct entity* act, void* arg, int argc, u8** argv)
 	if(0 == label)return 0;
 
 	copypath(path, image);
-	act->buf0 = memorycreate(0x800000, 0);
-	openreadclose(path, 0, act->buf0, 0x800000);
+	act->IMAGE = memorycreate(0x800000, 0);
+	openreadclose(path, 0, act->IMAGE, 0x800000);
 
 	copypath(path, label);
-	act->buf1 = memorycreate(0x10000, 0);
-	openreadclose(path, 0, act->buf1, 0x10000);
+	act->LABEL = memorycreate(0x10000, 0);
+	openreadclose(path, 0, act->LABEL, 0x10000);
 
-	act->ix0 = act->iy0 = act->iz0 = 0;
+	act->whdf.ix0 = act->whdf.iy0 = act->whdf.iz0 = 0;
 	return 0;
 }
 
 
 
 
-void mnist_draw_gl41_lt(struct entity* wnd, u8* img, int id, float* vc, float* vr, float* vf, float* vt)
+void mnist_draw_gl41_lt(_obj* wnd, u8* img, int id, float* vc, float* vr, float* vf, float* vt)
 {
 	int x,y,j;
 	vec3 tc,tr,tf;
@@ -88,7 +89,7 @@ void mnist_draw_gl41_lt(struct entity* wnd, u8* img, int id, float* vc, float* v
 	}
 	gl41hexadecimal(wnd, 0xffffff, tc, tr, tf, id);
 }
-void mnist_draw_gl41_lb(struct entity* wnd, int val, float* vc, float* vr, float* vf, float* vt)
+void mnist_draw_gl41_lb(_obj* wnd, int val, float* vc, float* vr, float* vf, float* vt)
 {
 	int y,j;
 	vec3 tc,tr,tf;
@@ -105,7 +106,7 @@ void mnist_draw_gl41_lb(struct entity* wnd, int val, float* vc, float* vr, float
 		else gl41float(wnd, 0xffffff, tc, tr, tf, 0.0);
 	}
 }
-void mnist_draw_gl41_rt(struct entity* wnd, float* weight, float* vc, float* vr, float* vf, float* vt)
+void mnist_draw_gl41_rt(_obj* wnd, float* weight, float* vc, float* vr, float* vf, float* vt)
 {
 	int x,y,j;
 	vec3 tc,tr,tf;
@@ -134,7 +135,7 @@ if(0 == weight)return;
 	}
 	}
 }
-void mnist_draw_gl41_rb(struct entity* wnd, float* result, float* vc, float* vr, float* vf, float* vt)
+void mnist_draw_gl41_rb(_obj* wnd, float* result, float* vc, float* vr, float* vf, float* vt)
 {
 	int x,y,j;
 	vec3 tc,tr,tf;
@@ -157,9 +158,9 @@ void mnist_draw_gl41_rb(struct entity* wnd, float* result, float* vc, float* vr,
 	}
 }
 void mnist_draw_gl41(
-	struct entity* act, struct style* part,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* part,
+	_obj* scn, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	int x,y,z;
 	vec3 tc,tr,tf;
@@ -170,76 +171,76 @@ void mnist_draw_gl41(
 	gl41line_rect(wnd, 0x808080, vc, vr, vf);
 
 	int j;
-	int id = act->iz0;
-	u8* image = act->buf0;
-	u8* label = act->buf1;
+	int id = act->whdf.iz0;
+	u8* image = act->IMAGE;
+	u8* label = act->LABEL;
 	if(0 == image)return;
 	if(0 == label)return;
 	mnist_draw_gl41_lt(wnd, &image[16+id*28*28], id, vc,vr,vf,vt);
 	mnist_draw_gl41_lb(wnd, label[8+id], vc,vr,vf,vt);
 
-	float* weight = act->buf2;
-	float* result = act->buf3;
+	float* weight = act->WEIGHT;
+	float* result = act->RESULT;
 	if(0 == weight)return;
 	if(0 == result)return;
-	if(act->iw0)give_data_into_peer(act,_ann_, 0,0, 0,0, &image[16+id*28*28], label[8+id]);
+	if(act->whdf.iw0)give_data_into_peer(act,_ann_, 0,0, 0,0, &image[16+id*28*28], label[8+id]);
 	else take_data_from_peer(act,_ann_, 0,0, 0,0, &image[16+id*28*28], label[8+id]);
 	mnist_draw_gl41_rt(wnd, weight, vc,vr,vf,vt);
 	mnist_draw_gl41_rb(wnd, result, vc,vr,vf,vt);
 
 	//update weight
-	if(act->iw0){
-		act->iz0 = (act->iz0+1)%10000;
+	if(act->whdf.iw0){
+		act->whdf.iz0 = (act->whdf.iz0+1)%10000;
 	}
 }
-void mnist_draw_pixel(struct entity* win, struct style* sty)
+void mnist_draw_pixel(_obj* win, struct style* sty)
 {
 }
-void mnist_draw_html(struct entity* win, struct style* sty)
+void mnist_draw_html(_obj* win, struct style* sty)
 {
 }
-void mnist_draw_tui(struct entity* win, struct style* sty)
+void mnist_draw_tui(_obj* win, struct style* sty)
 {
 }
-void mnist_draw_cli(struct entity* win, struct style* sty)
+void mnist_draw_cli(_obj* win, struct style* sty)
 {
 }
 
 
 
 
-static void mnist_write_bywnd(struct entity* ent, struct event* ev)
+static void mnist_write_bywnd(_obj* ent, struct event* ev)
 {
 //say("%x,%x\n",ev->what,ev->why);
 	if(_kbd_ == ev->what){
-		if(kbd_left == ev->why)ent->iz0 -= 1;
-		if(kbd_right == ev->why)ent->iz0 += 1;
-say("%d\n", ent->iz0);
+		if(kbd_left == ev->why)ent->whdf.iz0 -= 1;
+		if(kbd_right == ev->why)ent->whdf.iz0 += 1;
+say("%d\n", ent->whdf.iz0);
 	}
 	if(_char_ == ev->what){
-		if(0x20 == ev->why)ent->iw0 ^= 1;
+		if(0x20 == ev->why)ent->whdf.iw0 ^= 1;
 	}
 }
 
 
 
 
-static void mnist_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void mnist_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	mnist_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void mnist_wrl_ywnd(_ent* ent,void* foot, _syn* stack,int sp)
+static void mnist_wrl_ywnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
 }
-static void mnist_wnd(_ent* ent,void* foot, _syn* stack,int sp)
+static void mnist_wnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
 //wnd.area -> cam.gl41, cam.slot -> world.geom
-	struct entity* wnd;struct style* area;
+	_obj* wnd;struct style* area;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	struct fstyle fs;
@@ -256,7 +257,7 @@ static void mnist_wnd(_ent* ent,void* foot, _syn* stack,int sp)
 
 
 
-static void mnist_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mnist_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -265,10 +266,10 @@ static void mnist_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -279,10 +280,10 @@ static void mnist_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int
 		break;
 	}
 }
-static int mnist_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int mnist_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* xxx = stack[sp-2].pchip;
-	switch(xxx->fmt){
+	_obj* xxx = stack[sp-2].pchip;
+	switch(xxx->hfmt){
 	case _gl41list_:mnist_write_bywnd(ent,buf);break;
 	}
 	return 0;
@@ -293,13 +294,13 @@ static int mnist_discon(struct halfrel* self, struct halfrel* peer)
 }
 static int mnist_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	struct entity* ent;
-	struct artery* art;
+	_obj* ent;
+	_obj* art;
 	if(_ann_ == self->flag){
 		ent = self->pchip;
 		art = peer->pchip;
-		ent->buf2 = art->buf0;
-		ent->buf3 = art->buf1;
+		ent->WEIGHT = art->WEIGHT;
+		ent->RESULT = art->RESULT;
 	}
 	return 0;
 }
@@ -307,10 +308,10 @@ static int mnist_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-void mnist_register(struct entity* p)
+void mnist_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('m', 'n', 'i', 's', 't', 0, 0, 0);
+	p->hfmt = hex64('m', 'n', 'i', 's', 't', 0, 0, 0);
 
 	p->oncreate = (void*)mnist_create;
 	p->ondelete = (void*)mnist_delete;

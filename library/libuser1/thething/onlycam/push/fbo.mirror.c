@@ -1,11 +1,11 @@
 #include "libuser.h"
 void world2clip_projz0z1_transpose(mat4 mat, struct fstyle* frus);
 void world2clip_projznzp_transpose(mat4 mat, struct fstyle* frus);
-void gl41data_insert(struct entity* ctx, int type, struct gl41data* data, int cnt);
-void gl41data_addcam(struct entity* wnd, struct gl41data* data);
+void gl41data_insert(_obj* ctx, int type, struct gl41data* data, int cnt);
+void gl41data_addcam(_obj* wnd, struct gl41data* data);
 
 
-#define CTXBUF buf0
+#define CTXBUF listptr.buf0
 struct mirrbuf{
 	mat4 wvp;
 	struct gl41data geom;
@@ -40,28 +40,28 @@ GLSL_VERSION
 
 
 static void mirror_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void mirror_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void mirror_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void mirror_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void mirror_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
@@ -169,10 +169,10 @@ static void mirror_frustum(struct fstyle* frus, struct fstyle* obb, vec3 cam)
 	frus->vt[3] = t;
 }
 static void mirror_gl41fbo_update(
-	struct entity* act, struct style* part,
-	struct entity* wrd, struct style* geom,
-	struct entity* wrl, struct style* camg,
-	struct supply* wnd, struct style* area)
+	_obj* act, struct style* part,
+	_obj* wrd, struct style* geom,
+	_obj* wrl, struct style* camg,
+	_obj* wnd, struct style* area)
 {
 	struct mirrbuf* mirr = act->CTXBUF;
 	struct gl41data* data = &mirr->dest;
@@ -199,9 +199,9 @@ void mirror_gl41fbo_prepare(struct mysrc* src)
 
 
 static void mirror_gl41geom_update(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -299,12 +299,12 @@ void mirror_gl41geom_prepare(struct mysrc* src)
 //[-6,-5]: wnd,area -> cam,togl
 //[-4,-3]: cam,gl41 -> wor,camg		//the camera taking photo
 //[-2,-1]: wor,geom -> ent,gl41		//the entity being taken
-static void mirror_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void mirror_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	if(0 == stack)return;
-	struct entity* wor;struct style* geom;
-	struct entity* dup;struct style* camg;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* dup;struct style* camg;
+	_obj* wnd;struct style* area;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	dup = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -314,7 +314,7 @@ static void mirror_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 	mirror_frustum(&geom->frus, &geom->fshape, camg->frus.vc);
 
 	//wvp from frus
-	if(_gl41list_ == wnd->fmt)world2clip_projznzp_transpose(mirr->wvp, &geom->frus);
+	if(_gl41list_ == wnd->hfmt)world2clip_projznzp_transpose(mirr->wvp, &geom->frus);
 	else world2clip_projz0z1_transpose(mirr->wvp, &geom->frus);
 
 	//create or update fbo
@@ -327,7 +327,7 @@ static void mirror_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void mirror_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mirror_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -336,10 +336,10 @@ static void mirror_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,in
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -349,7 +349,7 @@ static void mirror_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,in
 		break;
 	}
 }
-static void mirror_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mirror_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void mirror_discon(struct halfrel* self, struct halfrel* peer)
@@ -362,16 +362,16 @@ static void mirror_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void mirror_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static void mirror_search(_obj* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 }
-static void mirror_modify(struct entity* act)
+static void mirror_modify(_obj* act)
 {
 }
-static void mirror_delete(struct entity* act)
+static void mirror_delete(_obj* act)
 {
 }
-static void mirror_create(struct entity* act, void* str)
+static void mirror_create(_obj* act, void* str)
 {
 	if(0 == act)return;
 
@@ -385,10 +385,10 @@ static void mirror_create(struct entity* act, void* str)
 
 
 
-void mirror_register(struct entity* p)
+void mirror_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('m', 'i', 'r', 'r', 'o', 'r', 0, 0);
+	p->hfmt = hex64('m', 'i', 'r', 'r', 'o', 'r', 0, 0);
 
 	p->oncreate = (void*)mirror_create;
 	p->ondelete = (void*)mirror_delete;

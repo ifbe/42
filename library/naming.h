@@ -11,6 +11,11 @@
 #define SQRT2 1.4142135623730951
 #define SQRT3 1.7320508075688772
 //
+#define _ok_ hex16('o','k')
+#define _no_ hex16('n','o')
+#define _good_ hex32('g','o','o','d')
+#define _fail_ hex32('f','a','i','l')
+//
 #define _ent_ hex32('e','n','t',0)
 #define _sup_ hex32('s','u','p',0)
 #define _art_ hex32('a','r','t',0)

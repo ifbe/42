@@ -1,8 +1,8 @@
 #include "libuser.h"
-#define CTXBUF buf0
-#define LITBUF buf1
+#define CTXBUF listptr.buf0
+#define LITBUF listptr.buf1
 void carveplanet(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
+void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 
 
 
@@ -46,10 +46,10 @@ void imagelight_litforwnd(struct gl41data* data, char* str)
 	//say("w=%d,h=%d\n",data->src.tex[0].w, data->src.tex[0].h);
 }
 static void imagelight_lightupdate(
-	struct entity* act, struct style* slot,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* wnd, struct style* area)
 {
-	wnd->glfull_light[0] = act->LITBUF;
+	wnd->gl41list.light[0] = act->LITBUF;
 }
 
 
@@ -83,9 +83,9 @@ void imagelight_ctxforwnd(struct mysrc* src, char* str)
 	src->ibuf_enq = 0;
 }
 static void imagelight_draw_gl41(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* none)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* none)
 {
 	struct mysrc* src = act->CTXBUF;
 	if(0 == src)return;
@@ -107,8 +107,8 @@ static void imagelight_draw_gl41(
 
 
 static void imagelight_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {/*
 	u32 tmp;
 	u32* dst;
@@ -124,23 +124,23 @@ static void imagelight_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 
-	xmax = act->width;
+	xmax = act->whdf.width;
 	if(xmax >= ww*2)xmax = ww*2;
-	ymax = act->height;
+	ymax = act->whdf.height;
 	if(ymax >= hh*2)ymax = hh*2;
 	stride = win->stride;
 	for(y=0;y<ymax;y++)
 	{
 		dst = (win->buf) + (cy-hh+y)*stride*4 + (cx-ww)*4;
-		src = (act->buf) + 4*y*(act->width);
+		src = (act->buf) + 4*y*(act->whdf.width);
 		//say("y=%d,%llx,%llx\n",y,dst,src);
-		if('b' == ((win->fmt)&0xff))
+		if('b' == ((win->hfmt)&0xff))
 		{
 			for(x=0;x<xmax;x++)dst[x] = src[x];
 		}
@@ -155,29 +155,29 @@ static void imagelight_draw_pixel(
 	}*/
 }
 static void imagelight_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void imagelight_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void imagelight_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void imagelight_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("imagelight(%x,%x,%x)\n",win,act,sty);
 }
 static void imagelight_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
@@ -185,24 +185,24 @@ static void imagelight_event(
 
 
 
-static void imagelight_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void imagelight_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	imagelight_draw_gl41(ent,slot, wor,geom, wnd,area);
 	imagelight_lightupdate(ent,slot, wnd,area);
 }
-static void imagelight_wnd(_ent* ent,void* foot, _syn* stack,int sp)
+static void imagelight_wnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
 }
 
 
 
 
-static void imagelight_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void imagelight_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -211,10 +211,10 @@ static void imagelight_taking(_ent* ent,void* slot, _syn* stack,int sp, void* ar
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -225,7 +225,7 @@ static void imagelight_taking(_ent* ent,void* slot, _syn* stack,int sp, void* ar
 		break;
 	}
 }
-static void imagelight_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void imagelight_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void imagelight_discon(struct halfrel* self, struct halfrel* peer)
@@ -239,17 +239,17 @@ static void imagelight_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void imagelight_search(struct entity* act)
+static void imagelight_search(_obj* act)
 {
 }
-static void imagelight_modify(struct entity* act)
+static void imagelight_modify(_obj* act)
 {
 }
-static void imagelight_delete(struct entity* act)
+static void imagelight_delete(_obj* act)
 {
 	if(0 == act)return;
 }
-static void imagelight_create(struct entity* act, void* str)
+static void imagelight_create(_obj* act, void* str)
 {
 	void* buf;
 	if(0 == act)return;
@@ -268,10 +268,10 @@ static void imagelight_create(struct entity* act, void* str)
 
 
 
-void imagelight_register(struct entity* p)
+void imagelight_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('i','m','a','g','e','l','i','t');
+	p->hfmt = hex64('i','m','a','g','e','l','i','t');
 
 	p->oncreate = (void*)imagelight_create;
 	p->ondelete = (void*)imagelight_delete;

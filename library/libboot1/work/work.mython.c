@@ -1,7 +1,7 @@
 #include "libboot.h"
 void poweroff();
 //
-void* filesearch(void*, int);
+void* file_search(void*, int);
 //
 void* threadsearch(void*, int);
 //
@@ -63,7 +63,7 @@ u64 u64fromstr(u8* buf)
 }
 void term_window(int argc, u8** argv)
 {
-	struct supply* wnd = supplycreate(_wnd_, 0, 0, 0);
+	_obj* wnd = supplycreate(_wnd_, 0, 0, 0);
 	if(0 == wnd)return;
 	if(argc <=1)return;
 
@@ -73,22 +73,22 @@ void term_window(int argc, u8** argv)
 	if(0 == ent)return;
 
 	struct style* toterm = style_alloc();
-	if(_gl41list_ == wnd->fmt){
+	if(_gl41list_ == wnd->hfmt){
 		toterm->fshape.vc[0] = 0.0;
 		toterm->fshape.vc[1] = 0.0;
 		toterm->fshape.vq[0] = 1.0;
 		toterm->fshape.vq[1] = 1.0;
 	}
 	else{
-		toterm->fshape.vc[0] = wnd->width/2;
-		toterm->fshape.vc[1] = wnd->height/2;
+		toterm->fshape.vc[0] = wnd->whdf.width/2;
+		toterm->fshape.vc[1] = wnd->whdf.height/2;
 		toterm->fshape.vc[2] = 0;
 		toterm->fshape.vc[3] = 9999.0;
-		toterm->fshape.vr[0] = wnd->width/2;
+		toterm->fshape.vr[0] = wnd->whdf.width/2;
 		toterm->fshape.vr[1] = 0;
 		toterm->fshape.vr[2] = 0.0;
 		toterm->fshape.vf[0] = 0;
-		toterm->fshape.vf[1] = wnd->height/2;
+		toterm->fshape.vf[1] = wnd->whdf.height/2;
 		toterm->fshape.vf[2] = 0.0;
 	}
 
@@ -159,7 +159,7 @@ void term_memory(int argc, u8** argv)
 }
 void term_file(int argc, u8** argv)
 {
-	if(argc <= 1)filesearch(0, 0);
+	if(argc <= 1)file_search(0, 0);
 }
 void term_thread(int argc, u8** argv)
 {

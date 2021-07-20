@@ -29,8 +29,8 @@ GLSL_VERSION
 
 
 static void mario_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	u32 tmp;
 	u32* dst;
@@ -46,24 +46,24 @@ static void mario_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
-	if(0 == act->buf0)return;
+	if(0 == act->listptr.buf0)return;
 
-	xmax = act->width;
+	xmax = act->whdf.width;
 	if(xmax >= ww*2)xmax = ww*2;
-	ymax = act->height;
+	ymax = act->whdf.height;
 	if(ymax >= hh*2)ymax = hh*2;
-	stride = win->fbwidth;
+	stride = win->whdf.fbwidth;
 	for(y=0;y<ymax;y++)
 	{
-		dst = (win->rgbabuf) + (cy-hh+y)*stride*4 + (cx-ww)*4;
-		src = (act->buf0) + 4*y*(act->width);
+		dst = (win->rgbanode.buf) + (cy-hh+y)*stride*4 + (cx-ww)*4;
+		src = (act->listptr.buf0) + 4*y*(act->whdf.width);
 		//say("y=%d,%llx,%llx\n",y,dst,src);
-		if('b' == ((win->fmt)&0xff))
+		if('b' == ((win->hfmt)&0xff))
 		{
 			for(x=0;x<xmax;x++)dst[x] = src[x];
 		}
@@ -78,9 +78,9 @@ static void mario_draw_pixel(
 	}
 }
 static void mario_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* wrl, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* wrl, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	int x,t;
 	float* vc = geom->fs.vc;
@@ -89,7 +89,7 @@ static void mario_draw_gl41(
 	float* vu = geom->fs.vt;
 	gl41line_rect(wnd, 0xffffff, vc, vr, vf);
 
-	struct mysrc* src = act->buf0;
+	struct mysrc* src = act->listptr.buf0;
 	if(0 == src)return;
 	float (*vbuf)[6] = src->vtx[0].vbuf;
 	if(0 == vbuf)return;
@@ -324,23 +324,23 @@ static void mario_draw_gl41(
 	src->vbuf_enq += 1;
 }
 static void mario_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void mario_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void mario_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void mario_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("mario(%x,%x,%x)\n",win,act,sty);
 }
@@ -348,10 +348,10 @@ static void mario_draw_cli(
 
 
 
-static void mario_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void mario_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	mario_draw_gl41(ent,slot, wor,geom, wnd,area);
@@ -360,7 +360,7 @@ static void mario_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void mario_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mario_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -369,10 +369,10 @@ static void mario_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -382,7 +382,7 @@ static void mario_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 		break;
 	}
 }
-static void mario_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mario_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void mario_discon(struct halfrel* self, struct halfrel* peer)
@@ -395,24 +395,24 @@ static void mario_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void mario_search(struct entity* act)
+static void mario_search(_obj* act)
 {
 }
-static void mario_modify(struct entity* act)
+static void mario_modify(_obj* act)
 {
 }
-static void mario_delete(struct entity* act)
+static void mario_delete(_obj* act)
 {
 	if(0 == act)return;
-	if(act->buf0){
-		memorydelete(act->buf0);
-		act->buf0 = 0;
+	if(act->listptr.buf0){
+		memorydelete(act->listptr.buf0);
+		act->listptr.buf0 = 0;
 	}
 }
-static void mario_create(struct entity* act, void* str)
+static void mario_create(_obj* act, void* str)
 {
 	if(0 == act)return;
-	struct gl41data* data = act->buf0 = memorycreate(0x1000, 0);
+	struct gl41data* data = act->listptr.buf0 = memorycreate(0x1000, 0);
 	if(0 == data)return;
 
 	//shader
@@ -447,10 +447,10 @@ static void mario_create(struct entity* act, void* str)
 
 
 
-void mario_register(struct entity* p)
+void mario_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('m', 'a', 'r', 'i', 'o', 0, 0, 0);
+	p->hfmt = hex64('m', 'a', 'r', 'i', 'o', 0, 0, 0);
 
 	p->oncreate = (void*)mario_create;
 	p->ondelete = (void*)mario_delete;

@@ -1,13 +1,13 @@
 #include "libuser.h"
-void gl41line_pmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
-void gl41line_nmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
+void gl41line_pmos(_obj* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
+void gl41line_nmos(_obj* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
 
 
 
 
 static void nor_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -19,16 +19,16 @@ static void nor_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 }
 static void nor_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int j;
 	vec3 tc,tr,tf,tt;
@@ -67,15 +67,15 @@ static void nor_draw_gl41(
 
 	u8 pstatus[2];
 	u8 nstatus[2];
-	if(act->ix0){pstatus[0] = 0;nstatus[0] = 1;}
+	if(act->whdf.ix0){pstatus[0] = 0;nstatus[0] = 1;}
 	else        {pstatus[0] = 1;nstatus[0] = 0;}
-	if(act->iy0){pstatus[1] = 0;nstatus[1] = 1;}
+	if(act->whdf.iy0){pstatus[1] = 0;nstatus[1] = 1;}
 	else        {pstatus[1] = 1;nstatus[1] = 0;}
-	//say("%d,%d,%d,%d,%d,%d\n",act->ix0,act->iy0, pstatus[0],pstatus[1], nstatus[0],nstatus[1]);
+	//say("%d,%d,%d,%d,%d,%d\n",act->whdf.ix0,act->whdf.iy0, pstatus[0],pstatus[1], nstatus[0],nstatus[1]);
 
-	u32 xcolor = act->ix0 ? 0xff0000 : 0x0000ff;
-	u32 ycolor = act->iy0 ? 0xff0000 : 0x0000ff;
-	u32 ocolor = act->iz0 ? 0xff0000 : 0x0000ff;
+	u32 xcolor = act->whdf.ix0 ? 0xff0000 : 0x0000ff;
+	u32 ycolor = act->whdf.iy0 ? 0xff0000 : 0x0000ff;
+	u32 ocolor = act->whdf.iz0 ? 0xff0000 : 0x0000ff;
 	u32 pcolor[2] = {0xffffff, 0xffffff};
 	u32 ncolor[2] = {0xffffff, 0xffffff};
 	if(nstatus[0])ncolor[0] = 0x0000ff;
@@ -147,33 +147,33 @@ static void nor_draw_gl41(
 	gl41line(ctx, ocolor, tc,tr);
 }
 static void nor_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void nor_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void nor_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void nor_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-static void nor_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void nor_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -183,7 +183,7 @@ static void nor_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void nor_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void nor_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -192,10 +192,10 @@ static void nor_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int k
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -205,25 +205,25 @@ static void nor_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int k
 		break;
 	}
 }
-static void nor_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static void nor_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	u8 tmp;
 	say("@norgate_write:%x\n",buf[0]);
 
 	if('a' == stack[sp-1].flag){
-		if('0' == buf[0])ent->ix0 = 0;
-		else if('1' == buf[0])ent->ix0 = 1;
+		if('0' == buf[0])ent->whdf.ix0 = 0;
+		else if('1' == buf[0])ent->whdf.ix0 = 1;
 		else return;
 	}
 	else if('b' == stack[sp-1].flag){
-		if('0' == buf[0])ent->iy0 = 0;
-		else if('1' == buf[0])ent->iy0 = 1;
+		if('0' == buf[0])ent->whdf.iy0 = 0;
+		else if('1' == buf[0])ent->whdf.iy0 = 1;
 		else return;
 	}
 	else return;
 
-	ent->iz0 = !(ent->ix0 | ent->iy0);
-	tmp = ent->iz0 + 0x30;
+	ent->whdf.iz0 = !(ent->whdf.ix0 | ent->whdf.iy0);
+	tmp = ent->whdf.iz0 + 0x30;
 	give_data_into_peer(ent,'o', stack,sp, 0,0, &tmp,1);
 }
 static void nor_discon(struct halfrel* self, struct halfrel* peer)
@@ -236,29 +236,29 @@ static void nor_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void nor_search(struct entity* act, u8* buf)
+static void nor_search(_obj* act, u8* buf)
 {
 }
-static void nor_modify(struct entity* act, u8* buf)
+static void nor_modify(_obj* act, u8* buf)
 {
 }
-static void nor_delete(struct entity* act, u8* buf)
+static void nor_delete(_obj* act, u8* buf)
 {
 }
-static void nor_create(struct entity* act, u8* buf)
+static void nor_create(_obj* act, u8* buf)
 {
-	act->ix0 = getrandom()&1;
-	act->iy0 = getrandom()&1;
-	act->iz0 = !(act->ix0 | act->iy0);
+	act->whdf.ix0 = getrandom()&1;
+	act->whdf.iy0 = getrandom()&1;
+	act->whdf.iz0 = !(act->whdf.ix0 | act->whdf.iy0);
 }
 
 
 
 
-void nor_register(struct entity* p)
+void nor_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex32('n','o','r', 0);
+	p->hfmt = hex32('n','o','r', 0);
 
 	p->oncreate = (void*)nor_create;
 	p->ondelete = (void*)nor_delete;

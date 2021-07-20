@@ -39,33 +39,33 @@ void systemshell_child(char* p)
 
 
 
-int readshell(int fd, int off, char* buf, int len)
+int shell_take(int fd, int off, char* buf, int len)
 {
 	int ret;
 	ret = read(fd, buf, len);
 	return ret;
 }
-int writeshell(int fd, int off, char* buf, int len)
+int shell_give(int fd, int off, char* buf, int len)
 {
 	int ret;
 	ret = write(fd, buf, len);
 	return ret;
 }
-int listshell(char* p)
+int shell_search(char* p)
 {
 	int ret = system("ls /dev/pts/");
 	return 0;
 }
-int changeshell(char* p, int speed)
+int shell_modify(char* p, int speed)
 {
 	return 0;
 }
-int stopshell(int fd)
+int shell_delete(int fd)
 {
 	close(fd);
 	return 0;
 }
-int startshell(char* p)
+int shell_create(char* p)
 {
 	int fd;
 	int ret;

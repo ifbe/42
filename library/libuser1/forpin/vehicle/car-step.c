@@ -71,7 +71,7 @@ static void stepcar_status(int EN)
 
 
 
-int stepcar_print(struct entity* ent,void* foot, struct halfrel* stack,int sp, u8* buf, int len)
+int stepcar_print(_obj* ent,void* foot, struct halfrel* stack,int sp, u8* buf, int len)
 {
 	int j;
 	int ret = 0;
@@ -88,21 +88,21 @@ int stepcar_print(struct entity* ent,void* foot, struct halfrel* stack,int sp, u
 
 
 
-int stepcar_taking(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
+int stepcar_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	if(0 == stack)return 0;
 
-	struct entity* caller = stack[sp-2].pchip;
+	_obj* caller = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	default:
 		return stepcar_print(ent,foot, stack,sp, buf,len);
 	}
 
 	return 0;
 }
-int stepcar_giving(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
+int stepcar_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	say("@stepcar_write\n");
 	printmemory(buf, len);
@@ -131,13 +131,13 @@ void stepcar_discon(struct halfrel* self, struct halfrel* peer)
 void stepcar_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
-int stepcar_delete(struct supply* win)
+int stepcar_delete(_obj* win)
 {
 	int j;
 	for(j=0;j<9;j++)gpiostop(table[j]);
 	return 0;
 }
-int stepcar_create(struct supply* win)
+int stepcar_create(_obj* win)
 {
 	int j;
 	for(j=0;j<9;j++)table[j] = gpiostart(name[j], 'o');

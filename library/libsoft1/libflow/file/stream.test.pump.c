@@ -3,11 +3,11 @@
 
 
 
-int pump_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int pump_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int pump_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int pump_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	int ret;
 	u8 tmp[0x1000];
@@ -32,7 +32,7 @@ int pump_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int pump_create(struct artery* ele, u8* url)
+int pump_create(_obj* ele, u8* url)
 {
 	say("@pump_create\n");
 	return 1;

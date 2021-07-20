@@ -242,7 +242,7 @@ void madgwickupdate9(struct perimu* per, float* pg, float* pa, float* pm)
 
 
 
-int madgwick_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int madgwick_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	say("@madgwick_read\n");
 
@@ -250,11 +250,11 @@ int madgwick_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, 
 	take_data_from_peer(art,_src_, stack,sp, 0,0, f,10);
 	return 0;
 }
-int madgwick_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int madgwick_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	say("@madgwick_write\n");
 
-	struct perimu* per = (void*)art->data;
+	struct perimu* per = (void*)art->priv_256b;
 	float* f = (void*)buf;
 	switch(len){
 		case 9:madgwickupdate9(per, &f[0], &f[3], &f[6]);break;
@@ -279,12 +279,12 @@ int madgwick_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-void madgwick_search(struct artery* ele)
+void madgwick_search(_obj* ele)
 {
 }
-void madgwick_modify(struct artery* ele, int foot, float* f, int cmd, float* buf, int len)
+void madgwick_modify(_obj* ele, int foot, float* f, int cmd, float* buf, int len)
 {
-	struct perimu* per = (void*)ele->data;
+	struct perimu* per = (void*)ele->priv_256b;
 
 	madgwickupdate9(per, &f[0], &f[3], &f[6]);
 
@@ -293,15 +293,15 @@ void madgwick_modify(struct artery* ele, int foot, float* f, int cmd, float* buf
 	buf[2] = qz;
 	buf[3] = qw;
 }
-int madgwick_delete(struct artery* ele)
+int madgwick_delete(_obj* ele)
 {
 	return 0;
 }
-int madgwick_create(struct artery* ele, u8* url)
+int madgwick_create(_obj* ele, u8* url)
 {
 	say("@madgwick_create\n");
 
-	struct perimu* per = (void*)ele->data;
+	struct perimu* per = (void*)ele->priv_256b;
 
 	qx = qy = qz = 0.0;
 	qw = 1.0;

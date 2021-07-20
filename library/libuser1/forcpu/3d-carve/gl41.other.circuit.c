@@ -3,7 +3,7 @@
 
 
 
-void gl41line_pmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt)
+void gl41line_pmos(_obj* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt)
 {
 	int j,k;
 	vec3 t1,t2;
@@ -58,7 +58,7 @@ void gl41line_pmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec
 	}
 	gl41line(wnd, orgb, t1,t2);
 }
-void gl41line_nmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt)
+void gl41line_nmos(_obj* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt)
 {
 	int j,k;
 	vec3 t1,t2;

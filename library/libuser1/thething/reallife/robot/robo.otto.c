@@ -5,14 +5,14 @@
 
 
 static void otto_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void otto_draw_gl41(
-	struct entity* act, struct style* part,
-	struct entity* scn, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* part,
+	_obj* scn, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	vec3 tc,tr,tf,tt;
 	float* vc = geom->fs.vc;
@@ -107,33 +107,33 @@ static void otto_draw_gl41(
 	gl41solid_prism4(ctx, 0x808080, tc, tr,tf,tt);
 }
 static void otto_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void otto_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void otto_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void otto_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-static void otto_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void otto_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -143,7 +143,7 @@ static void otto_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void otto_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void otto_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -152,10 +152,10 @@ static void otto_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int 
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -165,7 +165,7 @@ static void otto_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int 
 		break;
 	}
 }
-static void otto_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void otto_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void otto_discon(struct halfrel* self, struct halfrel* peer)
@@ -178,18 +178,18 @@ static void otto_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void otto_modify(struct entity* act)
+static void otto_modify(_obj* act)
 {
 }
-static void otto_search(struct entity* act)
+static void otto_search(_obj* act)
 {
 }
-static void otto_delete(struct entity* act)
+static void otto_delete(_obj* act)
 {
 	if(0 == act)return;
 	//if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void otto_create(struct entity* act)
+static void otto_create(_obj* act)
 {
 	if(0 == act)return;
 	//if(_orig_ == act->type)act->buf = buffer;
@@ -199,10 +199,10 @@ static void otto_create(struct entity* act)
 
 
 
-void otto_register(struct entity* p)
+void otto_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex32('o', 't', 't', 'o');
+	p->hfmt = hex32('o', 't', 't', 'o');
 
 	p->oncreate = (void*)otto_create;
 	p->ondelete = (void*)otto_delete;

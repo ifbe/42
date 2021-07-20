@@ -8,7 +8,7 @@
 
 
 
-void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct relation* rel = wnd->orel0;
 	while(1){
@@ -25,7 +25,7 @@ void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, vo
 		rel = samesrcnextdst(rel);
 	}
 }
-void window_give(struct supply* win,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(_obj* win,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 void windowlist()
@@ -40,10 +40,10 @@ void windowstart()
 void windowstop()
 {
 }
-void windowdelete(struct supply* w)
+void windowdelete(_obj* w)
 {
 }
-void windowcreate(struct supply* w)
+void windowcreate(_obj* w)
 {
 	w->fmt = _cli_;
 	w->vfmt = 0;

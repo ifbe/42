@@ -1,7 +1,7 @@
 #include "libuser.h"
-#define GERBUF buf0
-#define DSTBUF buf1
-#define CNTBUF data2
+#define GERBUF listptr.buf0
+#define DSTBUF listptr.buf1
+#define CNTBUF listu64.data4
 
 
 
@@ -68,17 +68,17 @@ int gcode_parse(float* dst, u8* buf)
 
 
 
-static void gcode_search(struct entity* act)
+static void gcode_search(_obj* act)
 {
 }
-static void gcode_modify(struct entity* act)
+static void gcode_modify(_obj* act)
 {
 }
-static void gcode_delete(struct entity* act)
+static void gcode_delete(_obj* act)
 {
 	if(0 == act)return;
 }
-static void gcode_create(struct entity* act, void* arg)
+static void gcode_create(_obj* act, void* arg)
 {
 	int cnt;
 	u8* buf;
@@ -102,9 +102,9 @@ static void gcode_create(struct entity* act, void* arg)
 
 
 static void gcode_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -123,10 +123,10 @@ static void gcode_draw_gl41(
 
 
 
-static void gcode_world_camera_window(_ent* ent,void* slot, _syn* stack,int sp)
+static void gcode_world_camera_window(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* scn;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* scn;struct style* geom;
+	_obj* wnd;struct style* area;
 
 	scn = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -137,11 +137,11 @@ static void gcode_world_camera_window(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void gcode_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gcode_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	//foot defined behavior
@@ -149,7 +149,7 @@ static void gcode_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 	}
 
 	//caller defined behavior
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 	        break;
 	case _gl41list_:
@@ -158,7 +158,7 @@ static void gcode_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 		gcode_world_camera_window(ent,slot, stack,sp);
 	}
 }
-static void gcode_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gcode_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void gcode_discon(struct halfrel* self, struct halfrel* peer)
@@ -171,10 +171,10 @@ static void gcode_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-void gcode_register(struct entity* p)
+void gcode_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('g', 'c', 'o', 'd', 'e', 0, 0, 0);
+	p->hfmt = hex64('g', 'c', 'o', 'd', 'e', 0, 0, 0);
 
 	p->oncreate = (void*)gcode_create;
 	p->ondelete = (void*)gcode_delete;

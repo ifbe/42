@@ -1,7 +1,8 @@
 #include "libuser.h"
 #define level 4
-#define CODE data2
-#define TIME data3
+#define DATA listptr.buf0
+#define CODE listu64.data4
+#define TIME listu64.data5
 void rubikscube_generate(void*, int);
 void rubikscube_solve(void*, int);
 
@@ -196,8 +197,8 @@ static int rubikscube_shouldrotate(int x, int y, int face, int code)
 
 
 static void rubikscube_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	u32 bg;
 	int x, y, cx, cy, ww, hh;
@@ -210,14 +211,14 @@ static void rubikscube_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
 
-	u8 (*buf)[4][4] = act->buf0;
+	u8 (*buf)[4][4] = act->DATA;
 	if(0 == buf)return;
 
 	for(y=0;y<level;y++)
@@ -293,9 +294,9 @@ static void rubikscube_draw_pixel(
 	}
 }/*
 static void rubikscube_draw_dx11(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int x,y,rgb;
 	float c,s;
@@ -306,7 +307,7 @@ static void rubikscube_draw_dx11(
 	float* vf = geom->fs.vf;
 	float* vu = geom->fs.vt;
 
-	u8 (*buf)[4][4] = act->buf0;
+	u8 (*buf)[4][4] = act->DATA;
 	if(0 == buf)return;
 
 	if(act->CODE){
@@ -484,9 +485,9 @@ static void rubikscube_draw_dx11(
 	}
 }*/
 static void rubikscube_draw_gl41(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int x,y,rgb;
 	float c,s;
@@ -497,7 +498,7 @@ static void rubikscube_draw_gl41(
 	float* vf = geom->fs.vf;
 	float* vu = geom->fs.vt;
 
-	u8 (*buf)[4][4] = act->buf0;
+	u8 (*buf)[4][4] = act->DATA;
 	if(0 == buf)return;
 
 	if(act->CODE){
@@ -675,9 +676,9 @@ static void rubikscube_draw_gl41(
 	}
 }/*
 static void rubikscube_draw_mt20(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int x,y,rgb;
 	float c,s;
@@ -688,7 +689,7 @@ static void rubikscube_draw_mt20(
 	float* vf = geom->fs.vf;
 	float* vu = geom->fs.vt;
 
-	u8 (*buf)[4][4] = act->buf0;
+	u8 (*buf)[4][4] = act->DATA;
 	if(0 == buf)return;
 
 	if(act->CODE){
@@ -866,23 +867,23 @@ static void rubikscube_draw_mt20(
 	}
 }*/
 static void rubikscube_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void rubikscube_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void rubikscube_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void rubikscube_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("rubik(%x,%x,%x)\n",win,act,sty);
 }
@@ -891,8 +892,8 @@ static void rubikscube_draw_cli(
 
 
 static void rubikscube_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
 	if(ev->what == _kbd_)
@@ -906,14 +907,14 @@ static void rubikscube_event(
 
 
 
-static void rubikscube_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void rubikscube_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _dx11list_:
 	case _mt20list_:
 	case _gl41list_:
@@ -926,7 +927,7 @@ static void rubikscube_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void rubikscube_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void rubikscube_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -935,10 +936,10 @@ static void rubikscube_taking(_ent* ent,void* foot, _syn* stack,int sp, void* ar
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -948,7 +949,7 @@ static void rubikscube_taking(_ent* ent,void* foot, _syn* stack,int sp, void* ar
 		break;
 	}
 }
-static void rubikscube_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void rubikscube_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	u8* p = buf;
 	ent->CODE = p[0];
@@ -964,21 +965,21 @@ static void rubikscube_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void rubikscube_search(struct entity* act)
+static void rubikscube_search(_obj* act)
 {
 }
-static void rubikscube_modify(struct entity* act)
+static void rubikscube_modify(_obj* act)
 {
 }
-static void rubikscube_delete(struct entity* act)
+static void rubikscube_delete(_obj* act)
 {
 	if(0 == act)return;
-	if(act->buf0){
-		memorydelete(act->buf0);
-		act->buf0 = 0;
+	if(act->DATA){
+		memorydelete(act->DATA);
+		act->DATA = 0;
 	}
 }
-static void rubikscube_create(struct entity* act, void* str)
+static void rubikscube_create(_obj* act, void* str)
 {
 	int ret;
 	void* buf;
@@ -986,7 +987,7 @@ static void rubikscube_create(struct entity* act, void* str)
 //printmemory(str,4);
 
 	//malloc
-	buf = act->buf0 = memorycreate(6 * level * level, 0);
+	buf = act->DATA = memorycreate(6 * level * level, 0);
 	if(0 == buf)return;
 
 	//read
@@ -999,10 +1000,10 @@ static void rubikscube_create(struct entity* act, void* str)
 
 
 
-void rubikscube_register(struct entity* p)
+void rubikscube_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('r', 'u', 'b', 'i', 'k', 0, 0, 0);
+	p->hfmt = hex64('r', 'u', 'b', 'i', 'k', 0, 0, 0);
 
 	p->oncreate = (void*)rubikscube_create;
 	p->ondelete = (void*)rubikscube_delete;

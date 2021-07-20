@@ -40,6 +40,41 @@ void guiapp_create(struct item*, u8*, int, u8**);
 
 static struct item* wrk;
 static int wrklen = 0;
+
+
+
+
+void bootup_init(u8* addr)
+{
+	say("[2,4):bootup initing\n");
+
+	int j;
+	wrk = (void*)(addr+0x000000);
+
+#define max (0x100000/sizeof(struct item))
+	for(j=0;j<0x200000;j++)addr[j]=0;
+	for(j=0;j<max;j++)wrk[j].tier = _wrk_;
+
+	initstdev( addr+0x100000);
+	initstdrel(addr+0x180000);
+
+	kernel_init(addr - 0x200000);
+	mython_init(addr - 0x200000);
+
+	poller_init(addr - 0x200000);
+	waiter_init(addr - 0x200000);
+
+	say("[2,4):bootup inited\n");
+}
+void bootup_exit()
+{
+	say("[2,4):bootup exiting\n");
+
+	freestdev();
+	freestdrel();
+
+	say("[2,4):bootup exited\n");
+}
 void* bootup_alloc()
 {
 	void* addr = &wrk[wrklen];
@@ -53,42 +88,11 @@ void bootup_recycle()
 
 
 
-int bootup_take(struct item* wrk,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
-{
-	return 0;
-}
-int bootup_give(struct item* wrk,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
-{
-	return 0;
-}
-int bootupdiscon(struct halfrel* self, struct halfrel* peer)
-{
-	return 0;
-}
-int bootuplinkup(struct halfrel* self, struct halfrel* peer)
-{
-	say("@bootuplinkup\n");
-	return 0;
-}
-
-
-
-
-int bootupdelete(void* addr)
-{
-	struct item* tmp;
-	if(0 == addr)return 0;
-
-	tmp = addr;
-	say("bootupdelete:%.8s\n", &tmp->type);
-
-	return 0;
-}
 void* bootupcreate(u64 type, void* url, int argc, u8** argv)
 {
 	struct item* tmp;
 
-	//
+	//say("type=%.8s\n",&type);
 	if(_compiler_ == type){
 		//self @ 0
 		tmp = bootup_alloc();
@@ -164,6 +168,26 @@ void* bootupcreate(u64 type, void* url, int argc, u8** argv)
 
 	return 0;
 }
+int bootupdelete(struct item* tmp)
+{
+	if(0 == tmp)return 0;
+	say("bootupdelete:%.8s\n", &tmp->type);
+
+	return 0;
+}
+int bootupsearch(u8* buf, int len)
+{
+	int j,k=0;
+	for(j=0;j<64;j++)
+	{
+		if(0 == wrk[j].type)continue;
+		say("[%04x]: %.8s\n", j, &wrk[j].type);
+		k++;
+	}
+
+	if(0 == k)say("empth bootup\n");
+	return 0;
+}
 int bootupmodify(int argc, u8** argv)
 {
 	int j;
@@ -183,51 +207,24 @@ int bootupmodify(int argc, u8** argv)
 	}
 	return 0;
 }
-int bootupsearch(u8* buf, int len)
-{
-	int j,k=0;
-	for(j=0;j<64;j++)
-	{
-		if(0 == wrk[j].type)continue;
-		say("[%04x]: %.8s\n", j, &wrk[j].type);
-		k++;
-	}
 
-	if(0 == k)say("empth bootup\n");
+
+
+
+int bootuplinkup(struct halfrel* self, struct halfrel* peer)
+{
+	say("@bootuplinkup\n");
 	return 0;
 }
-
-
-
-
-void bootup_exit()
+int bootupdiscon(struct halfrel* self, struct halfrel* peer)
 {
-	say("[2,4):bootup exiting\n");
-
-	freestdev();
-	freestdrel();
-
-	say("[2,4):bootup exited\n");
+	return 0;
 }
-void bootup_init(u8* addr)
+int bootup_take(struct item* wrk,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
-	say("[2,4):bootup initing\n");
-
-	int j;
-	wrk = (void*)(addr+0x000000);
-
-#define max (0x100000/sizeof(struct item))
-	for(j=0;j<0x200000;j++)addr[j]=0;
-	for(j=0;j<max;j++)wrk[j].tier = _wrk_;
-
-	initstdev( addr+0x100000);
-	initstdrel(addr+0x180000);
-
-	kernel_init(addr - 0x200000);
-	mython_init(addr - 0x200000);
-
-	poller_init(addr - 0x200000);
-	waiter_init(addr - 0x200000);
-
-	say("[2,4):bootup inited\n");
+	return 0;
+}
+int bootup_give(struct item* wrk,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+{
+	return 0;
 }

@@ -4,10 +4,10 @@ u32 getrandom();
 
 
 
-void draw8bit_rect(struct entity* win, u8 rgb, int x0, int y0, int x1, int y1)
+void draw8bit_rect(_obj* win, u8 rgb, int x0, int y0, int x1, int y1)
 {
 	int x,y;
-	u8* buf = win->rgbabuf;
+	u8* buf = win->rgbanode.buf;
 	for(y=y0;y<=y1;y++)
 	{
 		for(x=x0;x<=x1;x++)
@@ -20,15 +20,15 @@ void draw8bit_rect(struct entity* win, u8 rgb, int x0, int y0, int x1, int y1)
 
 
 
-void drawicon_1(struct entity* win, u32 rgb,
+void drawicon_1(_obj* win, u32 rgb,
 	int x0, int y0, int x1, int y1)
 {
 	u32 r,g,b,a;
 	int x,y,m,n;
-	int width = win->width;
-	int height = win->height;
-	int stride = win->fbwidth>>2;
-	u32* fb = (u32*)(win->rgbabuf);
+	int width = win->whdf.width;
+	int height = win->whdf.height;
+	int stride = win->whdf.fbwidth>>2;
+	u32* fb = (u32*)(win->rgbanode.buf);
 
 	for(y=y0;y<y1;y++)
 	{
@@ -56,19 +56,19 @@ void drawicon_1(struct entity* win, u32 rgb,
 		}
 	}
 }
-void drawicon_normal(struct entity* win, u32 rgb,
+void drawicon_normal(_obj* win, u32 rgb,
 	int x0, int y0, int x1, int y1, u8* buf, int len)
 {
 }
-void drawicon_focused(struct entity* win, u32 rgb,
+void drawicon_focused(_obj* win, u32 rgb,
 	int x0, int y0, int x1, int y1, u8* buf, int len)
 {
 }
-void drawicon_pressed(struct entity* win, u32 rgb,
+void drawicon_pressed(_obj* win, u32 rgb,
 	int x0, int y0, int x1, int y1, u8* buf, int len)
 {
 }
-void drawicon_disabled(struct entity* win, u32 rgb,
+void drawicon_disabled(_obj* win, u32 rgb,
 	int x0, int y0, int x1, int y1, u8* buf, int len)
 {
 }
@@ -76,16 +76,16 @@ void drawicon_disabled(struct entity* win, u32 rgb,
 
 
 
-void drawopaque_rect(struct entity* win, u32 rgb,
+void drawopaque_rect(_obj* win, u32 rgb,
 	int x1, int y1, int x2, int y2)
 {
 	u8 r,g,b,a;
 	int x,y,z;
 	int startx,endx,starty,endy;
-	int width = win->width;
-	int height = win->height;
-	int stride = win->fbwidth>>2;
-	u8* buf = (u8*)(win->rgbabuf);
+	int width = win->whdf.width;
+	int height = win->whdf.height;
+	int stride = win->whdf.fbwidth>>2;
+	u8* buf = (u8*)(win->rgbanode.buf);
 
 	if(x1<=x2){startx=x1;endx=x2;}
 	else{startx=x2;endx=x1;}
@@ -122,7 +122,7 @@ void drawopaque_rect(struct entity* win, u32 rgb,
 
 
 
-void drawarrorkey2d(struct entity* win, u32 rgb,
+void drawarrorkey2d(_obj* win, u32 rgb,
 	int x0, int y0, int x1, int y1, u8* buf, int t)
 {
 	u32 c;
@@ -179,7 +179,7 @@ void drawarrorkey2d(struct entity* win, u32 rgb,
 	drawsolid_circle(win, c, cx+r*t*4/3, cy-r*2/3, r/3);
 	drawascii_fit(win, 0xffffff, cx+r*t*4/3-r/3, cy-r, cx+r*t*4/3+r/3, cy-r/3, buf[7]&0x7f);
 }
-void drawborder2d(struct entity* win, struct style* sty, void* name)
+void drawborder2d(_obj* win, struct style* sty, void* name)
 {
 	int cx = sty->fs.vc[0];
 	int cy = sty->fs.vc[1];

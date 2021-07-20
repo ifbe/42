@@ -4,8 +4,8 @@
 
 
 static void hbridge_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -17,16 +17,16 @@ static void hbridge_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 }
 static void hbridge_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	u8 gate[3][2] = {{0,1},{1,0},{0,0}};
 	int x,y,z,j;
@@ -98,43 +98,43 @@ static void hbridge_draw_gl41(
 	}
 }
 static void hbridge_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void hbridge_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void hbridge_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void hbridge_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-static void hbridge_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void hbridge_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	hbridge_draw_gl41(ent, slot, wor,geom, wnd,area);
 }
-static void hbridge_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void hbridge_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	//foot defined behavior
@@ -142,7 +142,7 @@ static void hbridge_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 	}
 
 	//caller defined behavior
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -151,7 +151,7 @@ static void hbridge_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 		hbridge_wrl_cam_wnd(ent,slot, stack,sp);
 	}
 }
-static void hbridge_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void hbridge_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void hbridge_discon(struct halfrel* self, struct halfrel* peer)
@@ -164,26 +164,26 @@ static void hbridge_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void hbridge_search(struct entity* act, u8* buf)
+static void hbridge_search(_obj* act, u8* buf)
 {
 }
-static void hbridge_modify(struct entity* act, u8* buf)
+static void hbridge_modify(_obj* act, u8* buf)
 {
 }
-static void hbridge_delete(struct entity* act, u8* buf)
+static void hbridge_delete(_obj* act, u8* buf)
 {
 }
-static void hbridge_create(struct entity* act, u8* buf)
+static void hbridge_create(_obj* act, u8* buf)
 {
 }
 
 
 
 
-void hbridge_register(struct entity* p)
+void hbridge_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('h','b','r','i','d','g','e',0);
+	p->hfmt = hex64('h','b','r','i','d','g','e',0);
 
 	p->oncreate = (void*)hbridge_create;
 	p->ondelete = (void*)hbridge_delete;

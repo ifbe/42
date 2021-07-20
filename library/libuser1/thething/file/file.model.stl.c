@@ -1,14 +1,14 @@
 #include "libuser.h"
 #define _int_ hex32('i','n','t', 0)
-#define CTXBUF buf0
+#define CTXBUF listptr.buf0
 //
 int copypath(u8* path, u8* data);
 void parsevertfromstl(struct fstyle* sty, int* vbuf_h, u8* buf, int len);
 //
-void dx11data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
+void dx11data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 //
-void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
-void gl41solid_spheretest(struct entity* win, u32 rgb, vec3 vc);
+void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
+void gl41solid_spheretest(_obj* win, u32 rgb, vec3 vc);
 //
 void world2local(mat4 mat, struct fstyle* src, struct fstyle* dst);
 void local2world(mat4 mat, struct fstyle* src, struct fstyle* dst);
@@ -36,6 +36,7 @@ struct privdata{
 	int vbuf_h;
 	int vbuf_len;
 	void* vbuf;
+	int chosen;
 
 	struct gl41data gl41;
 	struct dx11data dx11;
@@ -114,7 +115,7 @@ static void stl3d_readdata(struct privdata* own, char* str)
 	own->vbuf = memorycreate(own->vbuf_len, 0);
 	openreadclose(str, 0, own->vbuf, own->vbuf_len);
 }
-static void stl3d_modify_matter(struct entity* act, int* src, int len)
+static void stl3d_modify_matter(_obj* act, int* src, int len)
 {
 	int j;
 	struct privdata* own = act->CTXBUF;
@@ -169,7 +170,7 @@ static int stl3d_intersect_world(float* out, float* vbuf, int cnt, vec3 w_ro, ve
 	//todo: return worldxyz, not localxyz
 	return stl3d_intersect_local(out, vbuf, cnt, l_ro,l_rd);
 }
-static void stl3d_modify_ray(struct entity* act, vec3 ray[])
+static void stl3d_modify_ray(_obj* act, vec3 ray[])
 {
 	struct privdata* own = act->CTXBUF;
 	if(0 == own)return;
@@ -177,12 +178,12 @@ static void stl3d_modify_ray(struct entity* act, vec3 ray[])
 	mat4 mat;
 	world2local(mat, own->worldgeom, own->localgeom);
 
-	int ret = stl3d_intersect_world(&act->fx0, own->vbuf, own->vbuf_h/3, ray[0],ray[1], mat);
+	int ret = stl3d_intersect_world(&act->whdf.fx0, own->vbuf, own->vbuf_h/3, ray[0],ray[1], mat);
 	if(ret < 0)return;
 
 	//save id
 	say("hit:%d\n",ret);
-	act->data3 = 4*6*3*ret;
+	own->chosen = 4*6*3*ret;
 
 	//on hit
 	vec3 to;
@@ -219,10 +220,10 @@ static void stl3d_dx11prep(struct privdata* own, char* vs, char* fs)
 	vtx->vbuf = own->vbuf;
 }
 static void stl3d_dx11draw(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* wrd, struct style* camg,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* wrd, struct style* camg,
+	_obj* wnd, struct style* area)
 {
 	struct privdata* own = act->CTXBUF;
 	if(0 == own)return;
@@ -275,10 +276,10 @@ static void stl3d_gl41prep(struct privdata* own, char* vs, char* fs)
 	vtx->vbuf = own->vbuf;
 }
 static void stl3d_gl41draw(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* wrd, struct style* camg,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* wrd, struct style* camg,
+	_obj* wnd, struct style* area)
 {/*
 	gl41line_prism4(wnd, 0xff00ff, geom->fs.vc, geom->fs.vr, geom->fs.vf, geom->fs.vt);
 	gl41line_rect(wnd, 0xff00ff, geom->fs.vc, geom->fs.vr, geom->fs.vf);
@@ -291,12 +292,12 @@ static void stl3d_gl41draw(
 	mat4_transposefrom(own->objmat, mat);
 
 	vec3 tc,td;
-	float* f = own->vbuf + act->data3;
-	tc[0] = act->fx0 + f[3]*100.0;
-	tc[1] = act->fy0 + f[4]*100.0;
-	tc[2] = act->fz0 + f[5]*100.0;
+	float* f = own->vbuf + own->chosen;
+	tc[0] = act->whdf.fx0 + f[3]*100.0;
+	tc[1] = act->whdf.fy0 + f[4]*100.0;
+	tc[2] = act->whdf.fz0 + f[5]*100.0;
 	stl3d_mat4vec3(td, mat, tc);
-	stl3d_mat4vec3(tc, mat, &act->fx0);
+	stl3d_mat4vec3(tc, mat, &act->whdf.fx0);
 	gl41solid_spheretest(wnd, 0xff00ff, tc);
 	gl41line(wnd, 0xffffff, tc, td);
 
@@ -315,16 +316,16 @@ static void stl3d_gl41draw(
 
 
 static void stl3d_rgba_test(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
-void stl3d_rgba_theone(struct entity* wnd, struct style* area, float* point, float* primi, mat4 mat)
+void stl3d_rgba_theone(_obj* wnd, struct style* area, float* point, float* primi, mat4 mat)
 {
-	int dx = wnd->width * area->fs.vq[0] / 2;
-	int dy = wnd->height* area->fs.vq[1] / 2;
-	int cx = wnd->width * area->fs.vc[0] + dx;
-	int cy = wnd->height* area->fs.vc[1] + dy;
+	int dx = wnd->whdf.width * area->fs.vq[0] / 2;
+	int dy = wnd->whdf.height* area->fs.vq[1] / 2;
+	int cx = wnd->whdf.width * area->fs.vc[0] + dx;
+	int cy = wnd->whdf.height* area->fs.vc[1] + dy;
 	//say("%d,%d,%d,%d\n", cx,cy, dx,dy);
 
 	int x0,y0, x1,y1, x2,y2;
@@ -354,10 +355,10 @@ void stl3d_rgba_theone(struct entity* wnd, struct style* area, float* point, flo
 	drawsolid_triangle(wnd, 0xffff00, x0,y0, x1,y1, x2,y2);
 }
 static void stl3d_rgba_raster(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* wrd, struct style* camg,
-	struct entity* wnd, struct style* area,
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* wrd, struct style* camg,
+	_obj* wnd, struct style* area,
 	mat4 clip_from_world)
 {
 	//say("@stl3d: raster\n");
@@ -372,17 +373,17 @@ static void stl3d_rgba_raster(
 		wnd, area, stl3d_position, stl3d_fragment,
 		own->vbuf, 6, 6*3, own->vbuf_h/3,
 		m, own);
-	stl3d_rgba_theone(wnd,area, &act->fx0,own->vbuf + act->data3, m);
+	stl3d_rgba_theone(wnd,area, &act->whdf.fx0,own->vbuf + own->chosen, m);
 }
 static void stl3d_rgba_raytrace(
-	struct entity* act, struct style* part,
-	struct entity* scn, struct style* geom,
-	struct entity* wrd, struct style* camg,
-	struct entity* wnd, struct style* area,
+	_obj* act, struct style* part,
+	_obj* scn, struct style* geom,
+	_obj* wrd, struct style* camg,
+	_obj* wnd, struct style* area,
 	mat4 clip_from_world)
 {
-	int w = wnd->width;
-	int h = wnd->height;
+	int w = wnd->whdf.width;
+	int h = wnd->whdf.height;
 	int dx = w * area->fs.vq[0];
 	int dy = h * area->fs.vq[1];
 	int x0 = w * area->fs.vc[0];
@@ -398,8 +399,8 @@ static void stl3d_rgba_raytrace(
 	world2local(mat, own->worldgeom, own->localgeom);
 	clip2world_projznzp(inv, &camg->frus);
 
-	void* rgba = wnd->rgbabuf;
-	int stride = wnd->fbwidth;
+	void* rgba = wnd->rgbanode.buf;
+	int stride = wnd->whdf.fbwidth;
 
 	int x,y,j,ret;
 	vec4 ro,rd, vv,oo;
@@ -425,20 +426,20 @@ static void stl3d_rgba_raytrace(
 	local2world(world_from_local, &part->fs, &geom->fs);
 	mat4_multiplyfrom(m, clip_from_world, world_from_local);
 
-	stl3d_rgba_theone(wnd,area, &act->fx0,own->vbuf + act->data3, m);
+	stl3d_rgba_theone(wnd,area, &act->whdf.fx0,own->vbuf + own->chosen, m);
 }
 
 
 
 
 static void stl3d_tui_test(
-	struct entity* act, struct style* pin,
-	struct entity* wnd, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* wnd, struct style* sty)
 {
 	int x,y;
-	int width = wnd->width;
-	int height = wnd->height;
-	u8* buf = (u8*)(wnd->textbuf);
+	int width = wnd->whdf.width;
+	int height = wnd->whdf.height;
+	u8* buf = (u8*)(wnd->tuitext.buf);
 
 	for(y=0;y<height;y++){
 		for(x=0;x<width;x++){
@@ -447,17 +448,17 @@ static void stl3d_tui_test(
 	}
 }
 static void stl3d_tui_raytrace(
-	struct entity* act, struct style* part,
-	struct entity* scn, struct style* geom,
-	struct entity* wrd, struct style* camg,
-	struct entity* wnd, struct style* area,
+	_obj* act, struct style* part,
+	_obj* scn, struct style* geom,
+	_obj* wrd, struct style* camg,
+	_obj* wnd, struct style* area,
 	mat4 clip_from_world)
 {
 	int x,y,j;
 	int top,bot,rgb,val;
-	int www = wnd->width;
-	int hhh = wnd->height;
-	u8* buf = (u8*)(wnd->textbuf);
+	int www = wnd->whdf.width;
+	int hhh = wnd->whdf.height;
+	u8* buf = (u8*)(wnd->tuitext.buf);
 	//say("%d,%d,%d,%d\n", x0,y0, xn,yn);
 
 	struct privdata* own = act->CTXBUF;
@@ -514,18 +515,18 @@ static void stl3d_tui_raytrace(
 
 
 static void stl3d_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void stl3d_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void stl3d_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("stl3d(%x,%x,%x)\n",win,act,sty);
 }
@@ -536,37 +537,37 @@ static void stl3d_draw_cli(
 //[-6,-5]: wnd -> cam
 //[-4,-3]: cam -> world
 //[-2,-1]: world -> stl3d
-static void stl3d_world_camera_window(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key)
+static void stl3d_world_camera_window(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key)
 {
-	struct entity* scn;struct style* geom;
-	struct entity* wrd;struct style* camg;
-	struct entity* wnd;struct style* area;
+	_obj* scn;struct style* geom;
+	_obj* wrd;struct style* camg;
+	_obj* wnd;struct style* area;
 
 	scn = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wrd = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 
-	if(_rgba_ == wnd->fmt){
+	if(_rgba_ == wnd->hfmt){
 		if(0==key)stl3d_rgba_raster(ent,slot, scn,geom, wrd,camg, wnd,area, arg);
 		else stl3d_rgba_raytrace(ent,slot, scn,geom, wrd,camg, wnd,area, arg);
 		return;
 	}
-	if(_tui_ == wnd->fmt){
+	if(_tui_ == wnd->hfmt){
 		//stl3d_tui_test(ent,slot, wnd,area);
 		stl3d_tui_raytrace(ent,slot, scn,geom, wrd,camg, wnd,area, arg);
 		return;
 	}
 
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _dx11list_:stl3d_dx11draw(ent,slot, scn,geom, wrd,camg, wnd,area);break;
 	case _gl41list_:stl3d_gl41draw(ent,slot, scn,geom, wrd,camg, wnd,area);break;
 	}
 }
-static void stl3d_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void stl3d_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	//foot defined behavior
@@ -574,7 +575,7 @@ static void stl3d_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 	}
 
 	//caller defined behavior
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -583,7 +584,7 @@ static void stl3d_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 		stl3d_world_camera_window(ent,slot, stack,sp, arg,key);
 	}
 }
-static void stl3d_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void stl3d_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(_int_ == stack[sp-1].flag)stl3d_modify_matter(ent, buf,len);
 	else stl3d_modify_ray(ent, buf);
@@ -593,7 +594,7 @@ static void stl3d_discon(struct halfrel* self, struct halfrel* peer)
 }
 static void stl3d_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	struct entity* act = self->pchip;
+	_obj* act = self->pchip;
 	if(0 == act)return;
 	struct style* pin = self->pfoot;
 	if(0 == pin)return;
@@ -624,17 +625,17 @@ static void stl3d_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void stl3d_search(struct entity* act)
+static void stl3d_search(_obj* act)
 {
 }
-static void stl3d_modify(struct entity* act)
+static void stl3d_modify(_obj* act)
 {
 }
-static void stl3d_delete(struct entity* act)
+static void stl3d_delete(_obj* act)
 {
 	if(0 == act)return;
 }
-static void stl3d_create(struct entity* act, void* str, int argc, u8** argv)
+static void stl3d_create(_obj* act, void* str, int argc, u8** argv)
 {
 	int j;
 	char* stl = 0;
@@ -685,10 +686,10 @@ static void stl3d_create(struct entity* act, void* str, int argc, u8** argv)
 
 
 
-void stl3d_register(struct entity* p)
+void stl3d_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('s','t','l','3','d', 0, 0, 0);
+	p->hfmt = hex64('s','t','l','3','d', 0, 0, 0);
 
 	p->oncreate = (void*)stl3d_create;
 	p->ondelete = (void*)stl3d_delete;

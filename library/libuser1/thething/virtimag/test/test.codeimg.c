@@ -1,7 +1,7 @@
 #include "libuser.h"
-#define GL41BUF buf1
-#define RGBABUF buf0
-void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
+#define GL41BUF listptr.buf1
+#define RGBABUF listptr.buf0
+void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 void scale_image(void* src, void* dst,
 	int sw, int sh, int sx1, int sy1, int sx2, int sy2,
 	int dw, int dh, int dx1, int dy1, int dx2, int dy2);
@@ -164,13 +164,13 @@ unsigned char BLUE6(int i,int j)
 
 
 static void codeimg_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x,y;
-	int width = win->width;
-	int height = win->height;
-	int stride = win->fbwidth;
+	int width = win->whdf.width;
+	int height = win->whdf.height;
+	int stride = win->whdf.fbwidth;
 	int cx, cy, ww, hh;
 	if(sty)
 	{
@@ -181,13 +181,13 @@ static void codeimg_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 	u32* src = (u32*)(act->RGBABUF);
-	u32* dst = (u32*)(win->rgbabuf);
+	u32* dst = (u32*)(win->rgbanode.buf);
 
 	scale_image(src, dst,
 		1024, 1024, 0, 0, 1024, 1024,
@@ -195,9 +195,9 @@ static void codeimg_draw_pixel(
 	);
 }
 static void codeimg_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* scn, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -256,23 +256,23 @@ static void codeimg_draw_gl41(
 	gl41data_insert(wnd, 's', src, 1);
 }
 static void codeimg_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void codeimg_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void codeimg_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void codeimg_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("codeimg(%x,%x,%x)\n",win,act,sty);
 }
@@ -281,8 +281,8 @@ static void codeimg_draw_cli(
 
 
 static void codeimg_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
@@ -290,10 +290,10 @@ static void codeimg_event(
 
 
 
-static void codeimg_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void codeimg_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -303,7 +303,7 @@ static void codeimg_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void codeimg_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void codeimg_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -312,10 +312,10 @@ static void codeimg_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -325,7 +325,7 @@ static void codeimg_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void codeimg_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void codeimg_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void codeimg_discon(struct halfrel* self, struct halfrel* peer)
@@ -338,17 +338,17 @@ static void codeimg_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void codeimg_search(struct entity* act)
+static void codeimg_search(_obj* act)
 {
 }
-static void codeimg_modify(struct entity* act)
+static void codeimg_modify(_obj* act)
 {
 }
-static void codeimg_delete(struct entity* act)
+static void codeimg_delete(_obj* act)
 {
 	if(0 == act)return;
 }
-static void codeimg_create(struct entity* act)
+static void codeimg_create(_obj* act)
 {
 	int x,y;
 	int rr,gg,bb;
@@ -357,8 +357,8 @@ static void codeimg_create(struct entity* act)
 
 	//own
 	rgba = act->RGBABUF = memorycreate(1024*1024*4, 0);
-	act->width = 1024;
-	act->height = 1024;
+	act->whdf.width = 1024;
+	act->whdf.height = 1024;
 	for(y=0;y<1024;y++){
 		for(x=0;x<1024;x++){
 			rr = RED4(x,y);
@@ -381,8 +381,8 @@ static void codeimg_create(struct entity* act)
 	struct texture* tex = &data->src.tex[0];
 	tex->fmt = hex32('r','g','b','a');
 	tex->data = act->RGBABUF;
-	tex->w = act->width;
-	tex->h = act->height;
+	tex->w = act->whdf.width;
+	tex->h = act->whdf.height;
 
 	data->dst.texname[0] = "tex0";
 	data->src.tex_enq[0] = 42;
@@ -402,10 +402,10 @@ static void codeimg_create(struct entity* act)
 
 
 
-void codeimg_register(struct entity* p)
+void codeimg_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('c', 'o', 'd', 'e', 'i', 'm', 'g', 0);
+	p->hfmt = hex64('c', 'o', 'd', 'e', 'i', 'm', 'g', 0);
 
 	p->oncreate = (void*)codeimg_create;
 	p->ondelete = (void*)codeimg_delete;

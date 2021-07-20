@@ -6,8 +6,8 @@ void quaternion_rotatefrom(float* o, float* v, float* q);
 
 
 struct privdata{
-	struct entity* cam;
-	struct entity* tar;
+	_obj* cam;
+	_obj* tar;
 
 	struct style* caminworld;
 	struct style* tarinworld;
@@ -136,10 +136,10 @@ int cam3rd_movecam(struct privdata* own, struct fstyle* cam, struct fstyle* tar,
 	cam->vt[2] = cam->vr[0]*cam->vf[1] - cam->vr[1]*cam->vf[0];
 	return 0;
 }
-void* cam3rd_findgeom(struct entity* ent)
+void* cam3rd_findgeom(_obj* ent)
 {
 	struct relation* rel;
-	struct entity* world;
+	_obj* world;
 	if(0 == ent)return 0;
 
 	rel = ent->irel0;
@@ -166,9 +166,9 @@ void* cam3rd_findgeom(struct entity* ent)
 
 
 
-int cam3rd_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int cam3rd_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct privdata* own = ent->buf0;
+	struct privdata* own = ent->priv_ptr;
 	if(0 == own)return 0;
 
 	struct style* cam = own->caminworld;
@@ -208,10 +208,10 @@ int cam3rd_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, v
 	cam->fs.vt[2] = cam->fs.vr[0]*cam->fs.vf[1] - cam->fs.vr[1]*cam->fs.vf[0];
 	return 0;
 }
-int cam3rd_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, struct event* ev, int len)
+int cam3rd_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, struct event* ev, int len)
 {
 	//printmemory(ev,16);
-	struct privdata* own = ent->buf0;
+	struct privdata* own = ent->priv_ptr;
 	if(0 == own)return 0;
 
 	struct style* camgeom = own->caminworld;
@@ -306,8 +306,8 @@ int cam3rd_discon(struct halfrel* self, struct halfrel* peer)
 int cam3rd_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	say("@cam3rd_linkup\n");
-	struct entity* ent = self->pchip;
-	struct privdata* own = ent->buf0;
+	_obj* ent = self->pchip;
+	struct privdata* own = ent->priv_ptr;
 	switch(self->flag){
 	case _cam_:own->cam = peer->pchip;break;
 	case _tar_:own->tar = peer->pchip;break;
@@ -318,21 +318,21 @@ int cam3rd_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int cam3rd_search(struct entity* win)
+int cam3rd_search(_obj* win)
 {
 	return 0;
 }
-int cam3rd_modify(struct entity* win)
+int cam3rd_modify(_obj* win)
 {
 	return 0;
 }
-int cam3rd_delete(struct entity* win)
+int cam3rd_delete(_obj* win)
 {
 	return 0;
 }
-int cam3rd_create(struct entity* act, void* flag)
+int cam3rd_create(_obj* act, void* flag)
 {
-	struct privdata* own = act->buf0 = memorycreate(0x1000, 0);
+	struct privdata* own = act->priv_ptr = memorycreate(0x1000, 0);
 	own->cam2tar[0] = 0.0;
 	own->cam2tar[1] = 7.07;
 	own->cam2tar[2] =-7.07;

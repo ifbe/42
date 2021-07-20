@@ -45,7 +45,7 @@ static void toycar_update(int L, int R, int el, int er)
 
 
 
-int toycar_read_byhttp(struct entity* ent,void* foot, struct halfrel* stack,int sp)
+int toycar_read_byhttp(_obj* ent,void* foot, struct halfrel* stack,int sp)
 {
 	u8 buf[1024];
 	int j;
@@ -67,15 +67,15 @@ int toycar_read_byhttp(struct entity* ent,void* foot, struct halfrel* stack,int 
 	give_data_into_peer(ent,stack[sp-1].flag, stack,sp, "text/html",0, buf,ret);
 	return ret;
 }
-int toycar_taking(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
+int toycar_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	say("@toycar_read:%p,%p,sp=%x\n", ent,foot, sp);
 	if(0 == stack)return 0;
 
-	struct entity* caller = stack[sp-2].pchip;
+	_obj* caller = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _http_:
 	case _HTTP_:
 		return toycar_read_byhttp(ent,foot, stack,sp);
@@ -83,7 +83,7 @@ int toycar_taking(struct entity* ent,void* foot, struct halfrel* stack,int sp, v
 
 	return 0;
 }
-int toycar_giving(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
+int toycar_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	say("@toycar_write\n");
 	//printmemory(buf, len);
@@ -126,12 +126,12 @@ void toycar_discon(struct halfrel* self, struct halfrel* peer)
 void toycar_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
-void toycar_delete(struct supply* win)
+void toycar_delete(_obj* win)
 {
 	int j;
 	for(j=0;j<12;j++)gpiostop(table[j]);
 }
-void toycar_create(struct supply* win)
+void toycar_create(_obj* win)
 {
 	int j;
 	for(j=0;j<12;j++)table[j] = gpiostart(name[j], 'o');

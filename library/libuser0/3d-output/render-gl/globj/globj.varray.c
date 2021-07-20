@@ -106,11 +106,11 @@ void coopctx_update_one(struct datapair* pair)
 		}
 	}
 }
-void coopctx_update(struct supply* win)
+void coopctx_update(_obj* win)
 {
 	int j;
 	struct relation* rel;
-	struct supply* ctx;
+	_obj* ctx;
 	struct datapair* coopmod;
 	struct datapair* hostmod;
 
@@ -139,10 +139,10 @@ void coopctx_update(struct supply* win)
 
 
 
-void coopwindow_render(struct supply* win)
+void coopwindow_render(_obj* win)
 {
 }
-void coopwindow_create(struct supply* win)
+void coopwindow_create(_obj* win)
 {
 	int j;
 	u8* buf;

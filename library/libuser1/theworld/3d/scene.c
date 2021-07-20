@@ -3,7 +3,7 @@
 
 
 
-void scene3d_selected(struct entity* wnd, struct fstyle* sty)
+void scene3d_selected(_obj* wnd, struct fstyle* sty)
 {
 	gl41line_prism4(wnd, 0xff00ff, sty->vc, sty->vr, sty->vf, sty->vt);
 }
@@ -14,14 +14,14 @@ void scene3d_selected(struct entity* wnd, struct fstyle* sty)
 //[-6,-5]: wnd,area -> cam,togl
 //[-4,-3]: cam, xxxx -> world,camgeom
 //[-2,-1]: world,0 -> scene,0
-int scene3d_world_camera_window(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int scene3d_world_camera_window(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct fstyle* sty;
 	struct relation* rel = ent->orel0;
 	while(1){
 		if(0 == rel)break;
 		if(_ent_ == rel->dsttype){
-			if((rel == ent->buf0) && stack){
+			if((rel == ent->priv_ptr) && stack){
 				scene3d_selected(stack[sp-6].pchip, rel->psrcfoot);
 			}
 
@@ -36,11 +36,11 @@ int scene3d_world_camera_window(_ent* ent,void* foot, _syn* stack,int sp, void* 
 	}
 	return 0;
 }
-int scene3d_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int scene3d_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return 0;
 
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	//foot defined behavior
@@ -48,7 +48,7 @@ int scene3d_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, 
 	}
 
 	//caller defined behavior
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -58,13 +58,13 @@ int scene3d_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, 
 	scene3d_world_camera_window(ent,foot, stack,sp, arg,key, buf,len);
 	return 0;
 }
-int scene3d_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int scene3d_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@scene3d_giving\n");
 
 	//remember which is raypicked
 	struct relation* rel = arg;
-	ent->buf0 = rel;
+	ent->priv_ptr = rel;
 
 	//tell that thing, a ray coming
 	if(rel){
@@ -90,21 +90,21 @@ int scene3d_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int scene3d_search(struct entity* scene)
+int scene3d_search(_obj* scene)
 {
 	return 0;
 }
-int scene3d_modify(struct entity* scene)
+int scene3d_modify(_obj* scene)
 {
 	return 0;
 }
-int scene3d_delete(struct entity* scene)
+int scene3d_delete(_obj* scene)
 {
 	return 0;
 }
-int scene3d_create(struct entity* scene, void* str)
+int scene3d_create(_obj* scene, void* str)
 {
 	say("@scene3d_create\n");
-	scene->buf0 = 0;
+	scene->priv_ptr = 0;
 	return 0;
 }

@@ -4,7 +4,7 @@
 
 
 
-void drawsolid_triangle_crop(struct entity* win, u32 rgb,
+void drawsolid_triangle_crop(_obj* win, u32 rgb,
 	int x0, int y0, int x1, int y1, int x2, int y2)
 {
 	int l,r,x,y;
@@ -15,10 +15,10 @@ void drawsolid_triangle_crop(struct entity* win, u32 rgb,
 	if(y1 != y2)return;
 	if(y0 == y1)return;
 
-	width = win->width;
-	height = win->height;
-	stride = win->fbwidth>>2;
-	buf = (u32*)(win->rgbabuf);
+	width = win->whdf.width;
+	height = win->whdf.height;
+	stride = win->whdf.fbwidth>>2;
+	buf = (u32*)(win->rgbanode.buf);
 
 	if(y0 < y1){j = y0;k = y1;}
 	if(y0 > y1){j = y1;k = y0;}
@@ -42,7 +42,7 @@ void drawsolid_triangle_crop(struct entity* win, u32 rgb,
 		for(x=m;x<=n;x++)tmp[x] = rgb;
 	}
 }
-void drawsolid_triangle(struct entity* win, u32 rgb,
+void drawsolid_triangle(_obj* win, u32 rgb,
 	int x0, int y0, int x1, int y1, int x2, int y2)
 {
 	int t;
@@ -71,15 +71,15 @@ void drawsolid_triangle(struct entity* win, u32 rgb,
 
 
 
-void drawsolid_rect(struct entity* win, u32 rgb,
+void drawsolid_rect(_obj* win, u32 rgb,
 	int x1, int y1, int x2, int y2)
 {
 	int x,y;
 	int startx,endx,starty,endy;
-	int width = win->width;
-	int height = win->height;
-	int stride = win->fbwidth>>2;
-	u32* buf = (u32*)(win->rgbabuf);
+	int width = win->whdf.width;
+	int height = win->whdf.height;
+	int stride = win->whdf.fbwidth>>2;
+	u32* buf = (u32*)(win->rgbanode.buf);
 
 	if(x1<=x2){startx=x1;endx=x2;}
 	else{startx=x2;endx=x1;}
@@ -100,15 +100,15 @@ void drawsolid_rect(struct entity* win, u32 rgb,
 		}
 	}
 }
-void drawsolid_circle(struct entity* win, u32 rgb,
+void drawsolid_circle(_obj* win, u32 rgb,
 	int cx, int cy, int radius)
 {
 	int x, y, ret;
 	int x1, y1, x2, y2;
-	int width = win->width;
-	int height = win->height;
-	int stride = win->fbwidth>>2;
-	u32* buf = (u32*)(win->rgbabuf);
+	int width = win->whdf.width;
+	int height = win->whdf.height;
+	int stride = win->whdf.fbwidth>>2;
+	u32* buf = (u32*)(win->rgbanode.buf);
 
 	y1=cy-radius;
 	if(y1<0)y1=0;
@@ -137,11 +137,11 @@ void drawsolid_circle(struct entity* win, u32 rgb,
 		}
 	}
 }
-void drawsolid_oval(struct entity* win, u32 rgb,
+void drawsolid_oval(_obj* win, u32 rgb,
 	int cx, int cy, int rx, int ry, int fx, int fy)
 {
 }
-void drawsolid_sector(struct entity* win, u32 rgb,
+void drawsolid_sector(_obj* win, u32 rgb,
 	int cx, int cy, int radius, int start, int end)
 {
 }

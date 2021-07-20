@@ -29,22 +29,22 @@ struct cpu{
 
 
 
-static void arm64_search(struct entity* act, u8* buf)
+static void arm64_search(_obj* act, u8* buf)
 {
 }
-static void arm64_modify(struct entity* act, u8* buf)
+static void arm64_modify(_obj* act, u8* buf)
 {
 }
-static void arm64_delete(struct entity* act, u8* buf)
+static void arm64_delete(_obj* act, u8* buf)
 {
 	//write cpustat to file
 
 	//free 64m
 }
-static void arm64_create(struct entity* act, void* arg, int argc, u8** argv)
+static void arm64_create(_obj* act, void* arg, int argc, u8** argv)
 {
 	//alloc 64m
-	struct cpu* cpu = act->buf0 = memorycreate(0x100000, 0);
+	struct cpu* cpu = act->listptr.buf0 = memorycreate(0x100000, 0);
 	if(0 == cpu)return;
 
 	//default value
@@ -57,13 +57,13 @@ static void arm64_create(struct entity* act, void* arg, int argc, u8** argv)
 
 
 
-static void arm64_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void arm64_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void arm64_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void arm64_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(_clk_ == stack[sp-1].flag){
-		struct cpu* cpu = ent->buf0;
+		struct cpu* cpu = ent->listptr.buf0;
 		if(0 == cpu)return;
 
 		u64 where = cpu->pc & 0xfffffffffffff000;
@@ -90,10 +90,10 @@ static void arm64_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-void arm64_register(struct entity* p)
+void arm64_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('a','r','m','6','4', 0, 0, 0);
+	p->hfmt = hex64('a','r','m','6','4', 0, 0, 0);
 
 	p->oncreate = (void*)arm64_create;
 	p->ondelete = (void*)arm64_delete;

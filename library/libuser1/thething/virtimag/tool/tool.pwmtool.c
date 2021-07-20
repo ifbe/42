@@ -3,7 +3,7 @@
 
 
 
-void draw_pwm(struct entity* win, u32 rgb,
+void draw_pwm(_obj* win, u32 rgb,
 	int x0, int x1, int x2, int x3, int y0, int y1)
 {
 	//heng
@@ -18,8 +18,8 @@ void draw_pwm(struct entity* win, u32 rgb,
 	drawline(win, 0xffffff, x2, y0, x3, y0);
 }
 static void pwmtool_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int j;
 	int x0,x1,x2,x3,y0,y1;
@@ -33,10 +33,10 @@ static void pwmtool_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 	drawsolid_rect(win, 0, cx-ww, cy-hh, cx+ww, cy+hh);
 
@@ -60,8 +60,8 @@ static void pwmtool_draw_pixel(
 	}
 }
 static void pwmtool_draw_gl41(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	float* vc = sty->fs.vc;
 	float* vr = sty->fs.vr;
@@ -69,23 +69,23 @@ static void pwmtool_draw_gl41(
 	float* vu = sty->fs.vt;
 }
 static void pwmtool_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void pwmtool_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void pwmtool_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void pwmtool_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("pwmtool(%x,%x,%x)\n",win,act,sty);
 }
@@ -93,19 +93,19 @@ static void pwmtool_draw_cli(
 
 
 
-static void pwmtool_take_bycam(_ent* ent,void* slot, _syn* stack,int sp)
+static void pwmtool_take_bycam(_obj* ent,void* slot, _syn* stack,int sp)
 {
 }
 
 
 
 
-static void pwmtool_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void pwmtool_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* wnd = stack[sp-2].pchip;
+	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _gl41list_:
 		pwmtool_draw_gl41(ent,slot, wnd,area);
 		break;
@@ -114,7 +114,7 @@ static void pwmtool_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void pwmtool_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void pwmtool_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void pwmtool_discon(struct halfrel* self, struct halfrel* peer)
@@ -127,21 +127,21 @@ static void pwmtool_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void pwmtool_search(struct entity* act)
+static void pwmtool_search(_obj* act)
 {
 }
-static void pwmtool_modify(struct entity* act)
+static void pwmtool_modify(_obj* act)
 {
 }
-static void pwmtool_delete(struct entity* act)
+static void pwmtool_delete(_obj* act)
 {
 	if(0 == act)return;
-	if(act->buf0){
+	if(act->listptr.buf0){
 		//memorydelete(act->buf);
-		act->buf0 = 0;
+		act->listptr.buf0 = 0;
 	}
 }
-static void pwmtool_create(struct entity* act)
+static void pwmtool_create(_obj* act)
 {
 	if(0 == act)return;
 	//act->buf = memorycreate();
@@ -150,10 +150,10 @@ static void pwmtool_create(struct entity* act)
 
 
 
-void pwmtool_register(struct entity* p)
+void pwmtool_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('p', 'w', 'm', 't', 'o', 'o', 'l', 0);
+	p->hfmt = hex64('p', 'w', 'm', 't', 'o', 'o', 'l', 0);
 
 	p->oncreate = (void*)pwmtool_create;
 	p->ondelete = (void*)pwmtool_delete;

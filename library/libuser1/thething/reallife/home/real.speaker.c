@@ -3,10 +3,10 @@
 
 
 
-static void speaker_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void speaker_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void speaker_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void speaker_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void speaker_discon(struct halfrel* self, struct halfrel* peer)
@@ -19,26 +19,26 @@ static void speaker_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void speaker_search(struct entity* act)
+static void speaker_search(_obj* act)
 {
 }
-static void speaker_modify(struct entity* act)
+static void speaker_modify(_obj* act)
 {
 }
-static void speaker_delete(struct entity* act)
+static void speaker_delete(_obj* act)
 {
 }
-static void speaker_create(struct entity* act, void* str)
+static void speaker_create(_obj* act, void* str)
 {
 }
 
 
 
 
-void speaker_register(struct entity* p)
+void speaker_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('s', 'p', 'e', 'a', 'k', 'e', 'r', 0);
+	p->hfmt = hex64('s', 'p', 'e', 'a', 'k', 'e', 'r', 0);
 
 	p->oncreate = (void*)speaker_create;
 	p->ondelete = (void*)speaker_delete;

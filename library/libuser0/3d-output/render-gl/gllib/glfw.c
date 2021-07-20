@@ -43,20 +43,20 @@ static u8 uppercase[] = {
 
 
 
-int window_take(_sup* ogl,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int window_take(_obj* ogl,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	u64 t0,t1,t2,t3;
 	GLFWwindow* fw;
 	//say("@windowread\n");
-t0 = ogl->gltime;
+t0 = ogl->gl41list.gltime;
 
 	//0: context current
-	fw = ogl->glwnd;
+	fw = ogl->gl41list.glwnd;
 	glfwMakeContextCurrent(fw);
 t1 = timeread();
 
 	//1: render everything
-	switch(ogl->fmt){
+	switch(ogl->hfmt){
 		case _gl41none_:nonewindow_take(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _gl41easy_:easywindow_take(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _gl41cmdq_:cmdqwindow_take(ogl,foot, stack,sp, arg,idx, buf,len);break;
@@ -72,27 +72,27 @@ t3 = timeread();
 	//3: title
 	char str[64];
 	snprintf(str, 64, "(%dx%d)(%dx%d)(%lld,%lld,%lld,%lld)",
-		ogl->width, ogl->height, ogl->fbwidth, ogl->fbheight,
+		ogl->whdf.width, ogl->whdf.height, ogl->whdf.fbwidth, ogl->whdf.fbheight,
 		t1-t0, t2-t1, t3-t2, t3-t0
 	);
 	glfwSetWindowTitle(fw, str);
-ogl->gltime = t3;
+ogl->gl41list.gltime = t3;
 
 	//4: poll event
 	u64 save[2];
 	save[0] = (u64)stack;
 	save[1] = sp;
 
-	ogl->glsave = save;
-	if(glfwWindowShouldClose(fw)){eventwrite(0,0,(u64)ogl,ogl->gltime);return 0;}
+	ogl->gl41list.glsave = save;
+	if(glfwWindowShouldClose(fw)){eventwrite(0,0,(u64)ogl,ogl->gl41list.gltime);return 0;}
 	glfwPollEvents();
-	ogl->glsave = 0;
+	ogl->gl41list.glsave = 0;
 
 	return 0;
 }
-void window_give(_sup* ogl,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void window_give(_obj* ogl,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
-	switch(ogl->fmt){
+	switch(ogl->hfmt){
 		case _gl41none_:nonewindow_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _gl41easy_:easywindow_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _gl41cmdq_:cmdqwindow_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
@@ -111,9 +111,9 @@ void windowlinkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void restorestackdeliverevent(struct supply* ogl, struct event* ev)
+static void restorestackdeliverevent(_obj* ogl, struct event* ev)
 {
-	u64* save = ogl->glsave;
+	u64* save = ogl->gl41list.glsave;
 	if(0 == save){
 		eventwrite(ev->why, ev->what, ev->where, 0);
 		return;
@@ -126,7 +126,7 @@ static void restorestackdeliverevent(struct supply* ogl, struct event* ev)
 static void callback_keyboard(GLFWwindow* fw, int key, int scan, int action, int mods)
 {
 	struct event e;
-	struct supply* ogl = glfwGetWindowUserPointer(fw);
+	_obj* ogl = glfwGetWindowUserPointer(fw);
     //printf("key=%x,scan=%x,action=%x,mods=%x\n", key, scan, action, mods);
 
 	if(0 == action)return;
@@ -185,7 +185,7 @@ static void callback_keyboard(GLFWwindow* fw, int key, int scan, int action, int
 }
 static void callback_scroll(GLFWwindow* fw, double x, double y)
 {
-	struct supply* ogl = glfwGetWindowUserPointer(fw);
+	_obj* ogl = glfwGetWindowUserPointer(fw);
 	//printf("%llx: %f,%f\n", (u64)ogl, x, y);
 
 	double xpos, ypos;
@@ -204,7 +204,7 @@ static void callback_scroll(GLFWwindow* fw, double x, double y)
 }
 static void callback_mouse(GLFWwindow* fw, int button, int action, int mods)
 {
-	struct supply* ogl = glfwGetWindowUserPointer(fw);
+	_obj* ogl = glfwGetWindowUserPointer(fw);
 
 	double xpos, ypos;
 	glfwGetCursorPos(fw, &xpos, &ypos);
@@ -222,7 +222,7 @@ static void callback_mouse(GLFWwindow* fw, int button, int action, int mods)
 }
 static void callback_move(GLFWwindow* fw, double xpos, double ypos)
 {
-	struct supply* ogl = glfwGetWindowUserPointer(fw);
+	_obj* ogl = glfwGetWindowUserPointer(fw);
 
 	struct event ev;
 	ev.where = (u64)ogl;
@@ -242,7 +242,7 @@ static void callback_drop(GLFWwindow* fw, int count, const char** paths)
 	char dragdata[0x1000];
 	int j,ret=0;
 	struct event e;
-	struct supply* ogl = glfwGetWindowUserPointer(fw);
+	_obj* ogl = glfwGetWindowUserPointer(fw);
 
 	for(j=0;j<count;j++)
 	{
@@ -257,25 +257,25 @@ static void callback_drop(GLFWwindow* fw, int count, const char** paths)
 }
 static void callback_reshape(GLFWwindow* fw, int w, int h)
 {
-	struct supply* ogl = glfwGetWindowUserPointer(fw);
-	ogl->fbwidth = w;
-	ogl->fbheight = h;
+	_obj* ogl = glfwGetWindowUserPointer(fw);
+	ogl->whdf.fbwidth = w;
+	ogl->whdf.fbheight = h;
 
 	glfwGetWindowSize(fw, &w, &h);
-	ogl->width = w;
-	ogl->height = h;
+	ogl->whdf.width = w;
+	ogl->whdf.height = h;
 }
 
 
 
 
-void windowopen_root(struct supply* w)
+void windowopen_root(_obj* w)
 {
 	int x,y,j;
 
 	//1.glfw
-	x = w->width;
-	y = w->height;
+	x = w->whdf.width;
+	y = w->whdf.height;
 	GLFWwindow* fw = glfwCreateWindow(x, y, "42", NULL, NULL);
 	if(0 == fw)
 	{
@@ -285,11 +285,11 @@ void windowopen_root(struct supply* w)
 
 	//2.setup
 	glfwSetWindowUserPointer(fw, w);
-	w->glwnd = fw;
+	w->gl41list.glwnd = fw;
 
 	glfwGetFramebufferSize(fw, &x, &y);
-	w->fbwidth = x;
-	w->fbheight = y;
+	w->whdf.fbwidth = x;
+	w->whdf.fbheight = y;
 
 	//3.callback
 	glfwSetDropCallback(fw, callback_drop);
@@ -314,15 +314,15 @@ void windowopen_root(struct supply* w)
 	//inittexture(w);
 	//initvertex(w);
 }
-void windowopen_coop(struct supply* w, struct supply* r)
+void windowopen_coop(_obj* w, _obj* r)
 {
 	int x,y,j;
 	GLFWwindow* parent = 0;
-	if(r)parent = r->glwnd;
+	if(r)parent = r->gl41list.glwnd;
 
 	//1.glfw
-	x = w->width;
-	y = w->height;
+	x = w->whdf.width;
+	y = w->whdf.height;
 	GLFWwindow* fw = glfwCreateWindow(x, y, "coop", NULL, parent);
 	if(0 == fw)
 	{
@@ -332,11 +332,11 @@ void windowopen_coop(struct supply* w, struct supply* r)
 
 	//2.setup
 	glfwSetWindowUserPointer(fw, w);
-	w->glwnd = fw;
+	w->gl41list.glwnd = fw;
 
 	glfwGetFramebufferSize(fw, &x, &y);
-	w->fbwidth = x;
-	w->fbheight = y;
+	w->whdf.fbwidth = x;
+	w->whdf.fbheight = y;
 
 	//3.callback
 	glfwSetDropCallback(fw, callback_drop);
@@ -362,40 +362,40 @@ void windowopen_coop(struct supply* w, struct supply* r)
 
 
 
-void windowsearch(struct supply* ogl)
+void windowsearch(_obj* ogl)
 {
 }
-void windowmodify(struct supply* ogl)
+void windowmodify(_obj* ogl)
 {
 }
-void windowdelete(struct supply* ogl)
+void windowdelete(_obj* ogl)
 {
-	switch(ogl->fmt){
-		case _gl41none_:nonewindow_delete(ogl);glfwDestroyWindow(ogl->glwnd);break;
-		case _gl41easy_:easywindow_delete(ogl);glfwDestroyWindow(ogl->glwnd);break;
-		case _gl41cmdq_:cmdqwindow_delete(ogl);glfwDestroyWindow(ogl->glwnd);break;
-		default:        fullwindow_delete(ogl);glfwDestroyWindow(ogl->glwnd);break;
+	switch(ogl->hfmt){
+		case _gl41none_:nonewindow_delete(ogl);glfwDestroyWindow(ogl->gl41list.glwnd);break;
+		case _gl41easy_:easywindow_delete(ogl);glfwDestroyWindow(ogl->gl41list.glwnd);break;
+		case _gl41cmdq_:cmdqwindow_delete(ogl);glfwDestroyWindow(ogl->gl41list.glwnd);break;
+		default:        fullwindow_delete(ogl);glfwDestroyWindow(ogl->gl41list.glwnd);break;
 	}
 }
-void windowcreate(struct supply* ogl, void* arg)
+void windowcreate(_obj* ogl, void* arg)
 {
 	struct relation* rel = 0;
-	struct supply* share = 0;
+	_obj* share = 0;
 
-	switch(ogl->fmt){
+	switch(ogl->hfmt){
 	case _gl41none_:{
-		ogl->width = 1024;
-		ogl->height = 768;
-		ogl->depth = 1024;
+		ogl->whdf.width = 1024;
+		ogl->whdf.height = 768;
+		ogl->whdf.depth = 1024;
 
 		windowopen_root(ogl);
 		nonewindow_create(ogl);
 		break;
 	}
 	case _gl41easy_:{
-		ogl->width = 1024;
-		ogl->height = 768;
-		ogl->depth = 1024;
+		ogl->whdf.width = 1024;
+		ogl->whdf.height = 768;
+		ogl->whdf.depth = 1024;
 
 		windowopen_root(ogl);
 		easywindow_create(ogl);
@@ -405,18 +405,18 @@ void windowcreate(struct supply* ogl, void* arg)
 		rel = ogl->orel0;
 		if(rel)share = (void*)(rel->dstchip);
 
-		ogl->width = 1024;
-		ogl->height = 768;
-		ogl->depth = 1024;
+		ogl->whdf.width = 1024;
+		ogl->whdf.height = 768;
+		ogl->whdf.depth = 1024;
 
 		windowopen_root(ogl);
 		cmdqwindow_create(ogl);
 		break;
 	}
 	default:{
-		ogl->width = 1024;
-		ogl->height = 768;
-		ogl->depth = 1024;
+		ogl->whdf.width = 1024;
+		ogl->whdf.height = 768;
+		ogl->whdf.depth = 1024;
 
 		windowopen_root(ogl);
 		fullwindow_create(ogl);

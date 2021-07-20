@@ -1,10 +1,10 @@
 #include "libuser.h"
-#define longitude fx0
-#define latitude fy0
-#define altitude fz0
-#define CTXBUF buf0
+#define longitude whdf.fx0
+#define latitude whdf.fy0
+#define altitude whdf.fz0
+#define CTXBUF listptr.buf0
 void carveplanet(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
+void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 
 
 
@@ -69,9 +69,9 @@ void satellite_ctxforwnd(struct gl41data* data, char* str)
 	data->src.ibuf_enq = 0;
 }
 static void satellite_draw_gl41(
-	struct entity* act, struct style* part,		//self
-	struct entity* win, struct style* geom,		//world,mygeom
-	struct entity* ctx, struct style* none)		//gldata
+	_obj* act, struct style* part,		//self
+	_obj* win, struct style* geom,		//world,mygeom
+	_obj* ctx, struct style* none)		//gldata
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -116,34 +116,34 @@ static void satellite_draw_gl41(
 
 
 static void satellite_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void satellite_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void satellite_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void satellite_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void satellite_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("satellite(%x,%x,%x)\n",win,act,sty);
 }
 static void satellite_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
@@ -151,23 +151,23 @@ static void satellite_event(
 
 
 
-static void satellite_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void satellite_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	satellite_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void satellite_wnd(_ent* ent,void* foot, _syn* stack,int sp)
+static void satellite_wnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
 }
 
 
 
 
-static void satellite_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void satellite_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -176,10 +176,10 @@ static void satellite_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -190,7 +190,7 @@ static void satellite_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg
 		break;
 	}
 }
-static void satellite_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void satellite_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	float* f = buf;
 	say("@satellite_write: %f,%f,%f,%f\n", f[0],f[1],f[2],f[3]);
@@ -210,17 +210,17 @@ static void satellite_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void satellite_search(struct entity* act)
+static void satellite_search(_obj* act)
 {
 }
-static void satellite_modify(struct entity* act)
+static void satellite_modify(_obj* act)
 {
 }
-static void satellite_delete(struct entity* act)
+static void satellite_delete(_obj* act)
 {
 	if(0 == act)return;
 }
-static void satellite_create(struct entity* act, void* str)
+static void satellite_create(_obj* act, void* str)
 {
 	if(0 == act)return;
 
@@ -238,10 +238,10 @@ static void satellite_create(struct entity* act, void* str)
 
 
 
-void satellite_register(struct entity* p)
+void satellite_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('s','a','t','e','l','l','i', 0);
+	p->hfmt = hex64('s','a','t','e','l','l','i', 0);
 
 	p->oncreate = (void*)satellite_create;
 	p->ondelete = (void*)satellite_delete;

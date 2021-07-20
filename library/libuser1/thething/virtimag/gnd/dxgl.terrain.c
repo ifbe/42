@@ -2,10 +2,10 @@
 #define _int_ hex32('i','n','t', 0)
 #define RGBTEX 0
 #define DEPTEX 1
-#define OWNBUF buf0
+#define OWNBUF listptr.buf0
 int copypath(u8* path, u8* data);
-void dx11data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
-void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
+void dx11data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
+void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 
 
 struct privdata{
@@ -81,7 +81,7 @@ static void terrain_texprep(struct privdata* own, char* rgb, char* dep)
 		}
 	}
 }
-static void terrain_generate(float (*vbuf)[9], u16* ibuf, struct entity* act, struct privdata* own)
+static void terrain_generate(float (*vbuf)[9], u16* ibuf, _obj* act, struct privdata* own)
 {
 	int x,y,j;
 	int cx,cy,px,py;
@@ -90,8 +90,8 @@ static void terrain_generate(float (*vbuf)[9], u16* ibuf, struct entity* act, st
 	u8* rgba = own->depth.data;
 
 	//cx,cy is integer
-	cx = w * act->fx0;
-	cy = h * act->fy0;
+	cx = w * act->whdf.fx0;
+	cy = h * act->whdf.fy0;
 	for(y=0;y<255;y++){
 		for(x=0;x<255;x++){
 			//xyz[-1,1]
@@ -142,11 +142,11 @@ static void terrain_generate(float (*vbuf)[9], u16* ibuf, struct entity* act, st
 		}
 	}
 }/*
-void terrain_locate(vec4 v, struct entity* act)
+void terrain_locate(vec4 v, _obj* act)
 {
 	//geometry
-	int w = act->width;
-	int h = act->height;
+	int w = act->whdf.width;
+	int h = act->whdf.height;
 
 	//center
 	float sx = (w-1) / 2.0;
@@ -195,37 +195,37 @@ edge:
 static void terrain_ask(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	float x,y;
-	struct entity* act = (void*)(self->chip);
-	int w = act->width;
-	int h = act->height;
+	_obj* act = (void*)(self->chip);
+	int w = act->whdf.width;
+	int h = act->whdf.height;
 	float* v = (void*)buf;
 
 	terrain_locate(v, act);
 	say("%f,%f,%f\n", v[0], v[1], v[2]);
 
 	x = v[0] / 1000.0;
-	act->fxn = (int)x;
-	while(act->fxn <= act->fx0-64){
-		act->fx0 -= 64;
-		act->iw0 = 0;
+	act->whdf.fxn = (int)x;
+	while(act->whdf.fxn <= act->whdf.fx0-64){
+		act->whdf.fx0 -= 64;
+		act->whdf.iw0 = 0;
 	}
-	while(act->fxn >= act->fx0+64){
-		act->fx0 += 64;
-		act->iw0 = 0;
+	while(act->whdf.fxn >= act->whdf.fx0+64){
+		act->whdf.fx0 += 64;
+		act->whdf.iw0 = 0;
 	}
 
 	y = v[1] / 1000.0;
-	act->fyn = (int)y;
-	while(act->fyn <= act->fy0-64){
-		act->fy0 -= 64;
-		act->iw0 = 0;
+	act->whdf.fyn = (int)y;
+	while(act->whdf.fyn <= act->whdf.fy0-64){
+		act->whdf.fy0 -= 64;
+		act->whdf.iw0 = 0;
 	}
-	while(act->fyn >= act->fy0+64){
-		act->fy0 += 64;
-		act->iw0 = 0;
+	while(act->whdf.fyn >= act->whdf.fy0+64){
+		act->whdf.fy0 += 64;
+		act->whdf.iw0 = 0;
 	}
 
-	say("%f,%f,%f,%f\n", act->fx0, act->fy0, act->fxn, act->fyn);
+	say("%f,%f,%f,%f\n", act->whdf.fx0, act->whdf.fy0, act->whdf.fxn, act->whdf.fyn);
 }*/
 
 
@@ -276,17 +276,17 @@ static void terrain_dx11prep(struct privdata* own, char* vs, char* ps)
 	src->ibuf_enq = 42;
 }
 static void terrain_dx11draw(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* wrd, struct style* camg,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* wrd, struct style* camg,
+	_obj* ctx, struct style* area)
 {
 	float w = vec3_getlen(geom->fs.vr);
 	float h = vec3_getlen(geom->fs.vf);
 	float x = camg->frus.vc[0]/w/2 + 0.5;
 	float y = camg->frus.vc[1]/h/2 + 0.5;
-	float dx = x - act->fx0;
-	float dy = y - act->fy0;
+	float dx = x - act->whdf.fx0;
+	float dy = y - act->whdf.fy0;
 	if(dx<0)dx = -dx;
 	if(dy<0)dy = -dy;
 	//say("x=%f,y=%f,dx=%f,dy=%f\n",x,y,dx,dy);
@@ -297,8 +297,8 @@ static void terrain_dx11draw(
 	void* vbuf;
 	void* ibuf;
 	if((dx > 1.0/16)|(dy > 1.0/16)){
-		act->fx0 = x;
-		act->fy0 = y;
+		act->whdf.fx0 = x;
+		act->whdf.fy0 = y;
 
 		//x0,y0,z0,dx,dy,dz -> ndc
 		vbuf = own->vtx.vbuf;
@@ -389,17 +389,17 @@ static void terrain_gl41prep(struct privdata* own, char* vs, char* fs)
 	src->ibuf_enq = 42;
 }
 static void terrain_gl41draw(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* wrd, struct style* camg,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* wrd, struct style* camg,
+	_obj* ctx, struct style* area)
 {
 	float w = vec3_getlen(geom->fs.vr);
 	float h = vec3_getlen(geom->fs.vf);
 	float x = camg->frus.vc[0]/w/2 + 0.5;
 	float y = camg->frus.vc[1]/h/2 + 0.5;
-	float dx = x - act->fx0;
-	float dy = y - act->fy0;
+	float dx = x - act->whdf.fx0;
+	float dy = y - act->whdf.fy0;
 	if(dx<0)dx = -dx;
 	if(dy<0)dy = -dy;
 	//say("x=%f,y=%f,dx=%f,dy=%f\n",x,y,dx,dy);
@@ -411,8 +411,8 @@ static void terrain_gl41draw(
 	void* vbuf;
 	void* ibuf;
 	if((dx > 1.0/16)|(dy > 1.0/16)){
-		act->fx0 = x;
-		act->fy0 = y;
+		act->whdf.fx0 = x;
+		act->whdf.fy0 = y;
 
 		//x0,y0,z0,dx,dy,dz -> ndc
 		vbuf = own->vtx.vbuf;
@@ -449,33 +449,33 @@ static void terrain_gl41draw(
 
 
 static void terrain_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void terrain_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void terrain_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void terrain_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void terrain_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
-void terrain_modify_matter(struct entity* act, int* src, int len)
+void terrain_modify_matter(_obj* act, int* src, int len)
 {
 	int j;
 	struct privdata* own = act->OWNBUF;
@@ -489,15 +489,15 @@ void terrain_modify_matter(struct entity* act, int* src, int len)
 
 
 
-static void terrain_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void terrain_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* dup;struct style* camg;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* dup;struct style* camg;
+	_obj* wnd;struct style* area;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	dup = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _dx11list_:terrain_dx11draw(ent,slot, wor,geom, dup,camg, wnd,area);break;
 	case _gl41list_:terrain_gl41draw(ent,slot, wor,geom, dup,camg, wnd,area);break;
 	}
@@ -506,7 +506,7 @@ static void terrain_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void terrain_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void terrain_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -515,10 +515,10 @@ static void terrain_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -528,7 +528,7 @@ static void terrain_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void terrain_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void terrain_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(_int_ == stack[sp-1].flag)terrain_modify_matter(ent, buf,len);
 }
@@ -542,24 +542,24 @@ static void terrain_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void terrain_search(struct entity* act)
+static void terrain_search(_obj* act)
 {
 }
-static void terrain_modify(struct entity* act)
+static void terrain_modify(_obj* act)
 {
 }
-static void terrain_delete(struct entity* act)
+static void terrain_delete(_obj* act)
 {
 	if(0 == act)return;
 }
-static void terrain_create(struct entity* act, void* arg, int argc, u8** argv)
+static void terrain_create(_obj* act, void* arg, int argc, u8** argv)
 {
 	int j,k;
 	if(0 == act)return;
 
-	act->fx0 = -2.0;
-	act->fy0 = -2.0;
-	act->fz0 = -2.0;
+	act->whdf.fx0 = -2.0;
+	act->whdf.fy0 = -2.0;
+	act->whdf.fz0 = -2.0;
 
 	struct privdata* own = act->OWNBUF = memorycreate(0x10000, 0);
 	if(0 == own)return;
@@ -607,10 +607,10 @@ static void terrain_create(struct entity* act, void* arg, int argc, u8** argv)
 
 
 
-void terrain_register(struct entity* p)
+void terrain_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('t', 'e', 'r', 'r', 'a', 'i', 'n', 0);
+	p->hfmt = hex64('t', 'e', 'r', 'r', 'a', 'i', 'n', 0);
 
 	p->oncreate = (void*)terrain_create;
 	p->ondelete = (void*)terrain_delete;

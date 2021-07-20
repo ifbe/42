@@ -1,12 +1,12 @@
 #include "libuser.h"
 void world2clip_projz0z1_transpose(mat4 mat, struct fstyle* frus);
 void world2clip_projznzp_transpose(mat4 mat, struct fstyle* frus);
-void gl41data_addcam(struct entity* wnd, struct gl41data* data);
-void gl41data_addlit(struct entity* wnd, struct gl41data* data);
-void gl41data_insert(struct entity* ctx, int type, struct gl41data* src, int cnt);
+void gl41data_addcam(_obj* wnd, struct gl41data* data);
+void gl41data_addlit(_obj* wnd, struct gl41data* data);
+void gl41data_insert(_obj* ctx, int type, struct gl41data* src, int cnt);
 
 
-#define OWNBUF buf0
+#define OWNBUF listptr.buf0
 struct sunbuf{
 	mat4 wvp;
 	vec4 rgb;
@@ -48,28 +48,28 @@ GLSL_VERSION
 
 
 static void projector_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void projector_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void projector_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void projector_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void projector_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
@@ -126,9 +126,9 @@ static void projector_frustum(struct fstyle* d, struct fstyle* s)
 	//d->vf[3] = 1e20;
 }
 static void projector_lit_update(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	struct sunbuf* sun = act->OWNBUF;
 	if(0 == sun)return;
@@ -177,9 +177,9 @@ static void projector_lit_prepare(struct gl41data* data)
 
 
 static void projector_cam_update(
-	struct entity* act, struct style* part,
-	struct entity* wrd, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* part,
+	_obj* wrd, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	struct sunbuf* sun = act->OWNBUF;
 	if(0 == sun)return;
@@ -211,9 +211,9 @@ static void projector_cam_prepare(struct mysrc* src)
 
 
 static void projector_mesh_update(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	vec3 tt;
 	float* vc = geom->fs.vc;
@@ -303,18 +303,18 @@ static void projector_mesh_prepare(struct mysrc* src)
 
 
 
-static void projector_wrl_cam_wnd(_ent* ent,void* foot, _syn* stack,int sp)
+static void projector_wrl_cam_wnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* dup;struct style* camg;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* dup;struct style* camg;
+	_obj* wnd;struct style* area;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	dup = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 
 	struct sunbuf* sun = ent->OWNBUF;
 	projector_frustum(&geom->frus, &geom->fs);
-	if(_gl41list_ == wnd->fmt)world2clip_projznzp_transpose(sun->wvp, &geom->frus);
+	if(_gl41list_ == wnd->hfmt)world2clip_projznzp_transpose(sun->wvp, &geom->frus);
 	else world2clip_projz0z1_transpose(sun->wvp, &geom->frus);
 
 	projector_cam_update(ent,foot, wor,geom, wnd,area);
@@ -325,7 +325,7 @@ static void projector_wrl_cam_wnd(_ent* ent,void* foot, _syn* stack,int sp)
 
 
 
-static void projector_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void projector_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -334,10 +334,10 @@ static void projector_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -347,7 +347,7 @@ static void projector_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg
 		break;
 	}
 }
-static void projector_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void projector_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void projector_discon(struct halfrel* self, struct halfrel* peer)
@@ -360,10 +360,10 @@ static void projector_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void projector_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static void projector_search(_obj* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 	struct relation* rel;
-	struct entity* world;
+	_obj* world;
 	struct fstyle* obb = 0;
 	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
@@ -379,13 +379,13 @@ static void projector_search(struct entity* act, u32 foot, struct halfrel* self[
 		rel = samedstnextsrc(rel);
 	}
 }
-static void projector_modify(struct entity* act)
+static void projector_modify(_obj* act)
 {
 }
-static void projector_delete(struct entity* act)
+static void projector_delete(_obj* act)
 {
 }
-static void projector_create(struct entity* act, void* str)
+static void projector_create(_obj* act, void* str)
 {
 	struct sunbuf* sun;
 	if(0 == act)return;
@@ -405,10 +405,10 @@ static void projector_create(struct entity* act, void* str)
 
 
 
-void projector_register(struct entity* p)
+void projector_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('p','r','j','t','o', 'r', 0, 0);
+	p->hfmt = hex64('p','r','j','t','o', 'r', 0, 0);
 
 	p->oncreate = (void*)projector_create;
 	p->ondelete = (void*)projector_delete;

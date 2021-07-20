@@ -4,28 +4,28 @@
 
 
 static void ladder_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void ladder_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void ladder_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void ladder_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void ladder_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
@@ -33,9 +33,9 @@ static void ladder_draw_cli(
 
 
 static void ladder_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* scn, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -47,10 +47,10 @@ static void ladder_draw_gl41(
 
 
 
-static void ladder_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void ladder_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -60,7 +60,7 @@ static void ladder_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void ladder_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void ladder_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -69,10 +69,10 @@ static void ladder_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -82,7 +82,7 @@ static void ladder_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 		break;
 	}
 }
-static void ladder_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void ladder_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void ladder_discon(struct halfrel* self, struct halfrel* peer)
@@ -95,26 +95,26 @@ static void ladder_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void ladder_search(struct entity* act)
+static void ladder_search(_obj* act)
 {
 }
-static void ladder_modify(struct entity* act)
+static void ladder_modify(_obj* act)
 {
 }
-static void ladder_delete(struct entity* act)
+static void ladder_delete(_obj* act)
 {
 }
-static void ladder_create(struct entity* act)
+static void ladder_create(_obj* act)
 {
 }
 
 
 
 
-void ladder_register(struct entity* p)
+void ladder_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('l','a','d','d','e','r', 0, 0);
+	p->hfmt = hex64('l','a','d','d','e','r', 0, 0);
 
 	p->oncreate = (void*)ladder_create;
 	p->ondelete = (void*)ladder_delete;

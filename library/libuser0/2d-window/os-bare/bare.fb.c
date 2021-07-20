@@ -26,7 +26,7 @@ static u32 format = 4;
 
 
 
-void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("wnd=%p,stack=%p\n",wnd,stack);
 	wndmgr_take(wnd,foot, stack,sp, arg,key, buf,len);
@@ -40,7 +40,7 @@ void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, vo
 		*obuf = ibuf[j];
 	}
 }
-void window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//printmemory(buf, 0x20);
 	wndmgr_give(wnd,0, stack,sp, 0,0, buf,len);
@@ -57,10 +57,10 @@ void windowstop()
 void windowstart()
 {
 }
-void windowdelete(struct supply* w)
+void windowdelete(_obj* w)
 {
 }
-void windowcreate(struct supply* wnd)
+void windowcreate(_obj* wnd)
 {
 	wnd->fmt = _rgba_;
 	wnd->vfmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');

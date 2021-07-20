@@ -5,7 +5,7 @@
 
 
 
-static struct supply* working;
+static _obj* working;
 static WAVEFORMATEX fmt;
 static int alive = 0;
 //
@@ -55,10 +55,10 @@ void micphonestop()
 void micphonestart()
 {
 }
-void micphonedelete(struct supply* win)
+void micphonedelete(_obj* win)
 {
 }
-void micphonecreate(struct supply* win, void* arg, int argc, u8** argv)
+void micphonecreate(_obj* win, void* arg, int argc, u8** argv)
 {
 	int j,ret,freq;
 	working = win;

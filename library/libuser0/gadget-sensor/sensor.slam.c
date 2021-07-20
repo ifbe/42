@@ -11,11 +11,11 @@ int slam_modify()
 {
 	return 0;
 }
-int slam_delete(struct supply* win)
+int slam_delete(_obj* win)
 {
 	return 0;
 }
-int slam_create(struct supply* win, void* str)
+int slam_create(_obj* win, void* str)
 {
 	return 0;
 }
@@ -23,11 +23,11 @@ int slam_create(struct supply* win, void* str)
 
 
 
-int slam_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+int slam_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 	return 0;
 }
-int slam_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+int slam_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 	return 0;
 }

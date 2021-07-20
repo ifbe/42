@@ -64,13 +64,13 @@ static u8 spacket5[] = {
 
 
 
-int telnetclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int telnetclient_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int telnetclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int telnetclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
-	switch(art->stage1)
+	switch(art->vfmt)
 	{
 		case 1:give_data_into_peer(art,_src_, stack,sp, 0,0, cpacket1,sizeof(cpacket1));break;
 		case 2:give_data_into_peer(art,_src_, stack,sp, 0,0, cpacket2,sizeof(cpacket2));break;
@@ -82,7 +82,7 @@ int telnetclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int 
 			return 0;
 		}
 	}
-	art->stage1 += 1;
+	art->vfmt += 1;
 	return 0;
 }
 int telnetclient_discon(struct halfrel* self, struct halfrel* peer)
@@ -91,34 +91,34 @@ int telnetclient_discon(struct halfrel* self, struct halfrel* peer)
 }
 int telnetclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	struct artery* ele = self->pchip;
+	_obj* ele = self->pchip;
 	give_data_into_peer(ele,_src_, 0,0, 0,0, cpacket0,sizeof(cpacket0));
 
-	ele->stage1 = 1;
+	ele->vfmt = 1;
 	return 0;
 }
-int telnetclient_delete(struct artery* ele)
+int telnetclient_delete(_obj* ele)
 {
 	return 0;
 }
-int telnetclient_create(struct artery* ele, u8* url)
+int telnetclient_create(_obj* ele, u8* url)
 {
-	ele->stage1 = 0;
+	ele->vfmt = 0;
 	return 0;
 }
 
 
 
 
-int telnetserver_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int telnetserver_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int telnetserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int telnetserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	printmemory(buf, len);
 
-	switch(art->stage1)
+	switch(art->vfmt)
 	{
 		case 0:give_data_into_peer(art,_src_, stack,sp, 0,0, spacket0,sizeof(spacket0));break;
 		case 1:give_data_into_peer(art,_src_, stack,sp, 0,0, spacket1,sizeof(spacket1));break;
@@ -127,7 +127,7 @@ int telnetserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int 
 		case 4:give_data_into_peer(art,_src_, stack,sp, 0,0, spacket4,sizeof(spacket4));break;
 		case 5:give_data_into_peer(art,_src_, stack,sp, 0,0, spacket5,sizeof(spacket5));break;
 	}
-	art->stage1 += 1;
+	art->vfmt += 1;
 	return 0;
 }
 int telnetserver_discon(struct halfrel* self, struct halfrel* peer)
@@ -138,11 +138,11 @@ int telnetserver_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int telnetserver_delete(struct artery* ele)
+int telnetserver_delete(_obj* ele)
 {
 	return 0;
 }
-int telnetserver_create(struct artery* ele, u8* url)
+int telnetserver_create(_obj* ele, u8* url)
 {
 	return 0;
 }
@@ -150,22 +150,22 @@ int telnetserver_create(struct artery* ele, u8* url)
 
 
 
-int telnetmaster_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int telnetmaster_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int telnetmaster_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int telnetmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
-	struct sysobj* obj = stack[sp-2].pchip;
+	_obj* obj = stack[sp-2].pchip;
 	if(0 == obj)return 0;
-	obj = obj->tempobj;
-	if(0 == obj)return 0;
+	_obj* child = obj->sockinfo.child;
+	if(0 == child)return 0;
 
-	struct artery* tel = arterycreate(_Telnet_, 0, 0, 0);
+	_obj* tel = arterycreate(_Telnet_, 0, 0, 0);
 	if(0 == tel)return 0;
 
-	relationcreate(tel, 0, _art_, _src_, obj, 0, _sys_, _dst_);
-	stack[sp-2].pchip = obj;
+	relationcreate(tel, 0, _art_, _src_, child, 0, _sys_, _dst_);
+	stack[sp-2].pchip = child;
 	stack[sp-1].pchip = tel;
 	stack[sp-1].flag = _src_;
 	telnetserver_write(tel,0, stack,sp, arg,idx, buf,len);
@@ -179,11 +179,11 @@ int telnetmaster_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int telnetmaster_delete(struct artery* ele)
+int telnetmaster_delete(_obj* ele)
 {
 	return 0;
 }
-int telnetmaster_create(struct artery* ele, u8* url)
+int telnetmaster_create(_obj* ele, u8* url)
 {
 	return 0;
 }

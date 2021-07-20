@@ -12,8 +12,8 @@ void maze_solve(void* buf, int w, int h);
 
 
 static void maze_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	u8* buf;
 	int x,y,w;
@@ -27,13 +27,13 @@ static void maze_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 
-	buf = act->buf0;
+	buf = act->listptr.buf0;
 	for(y=0;y<HEIGHT;y++)
 	{
 		for(x=0;x<WIDTH;x++)
@@ -135,9 +135,9 @@ static void maze_draw_pixel(
 	}
 }
 static void maze_draw_gl41(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int x,y,z,w;
 	vec3 tc, tr, tf, tu, f;
@@ -145,7 +145,7 @@ static void maze_draw_gl41(
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vu = geom->fs.vt;
-	u8* buf = act->buf0;
+	u8* buf = act->listptr.buf0;
 
 	gl41solid_rect(ctx, 0, vc, vr, vf);
 	for(y=0;y<HEIGHT;y++)
@@ -284,25 +284,25 @@ static void maze_draw_gl41(
 	}
 }
 static void maze_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void maze_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void maze_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x,y,width;
 	u8* p;
-	u8* buf = act->buf0;
-	u8* out = win->textbuf;
+	u8* buf = act->listptr.buf0;
+	u8* out = win->tuitext.buf;
 
-	width = win->width;
+	width = win->whdf.width;
 	for(y=0;y<HEIGHT;y++)
 	{
 		for(x=0;x<WIDTH;x++)
@@ -314,11 +314,11 @@ static void maze_draw_tui(
 	}
 }
 static void maze_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x,y;
-	u8* buf = act->buf0;
+	u8* buf = act->listptr.buf0;
 	for(y=0;y<HEIGHT;y++)
 	{
 		for(x=0;x<WIDTH;x++)
@@ -331,18 +331,18 @@ static void maze_draw_cli(
 	say("\n\n\n\n");
 }
 static void maze_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
 	if(_char_ == ev->what)
 	{
 		switch(ev->why)
 		{
-			case 'a':act->ix0 -= 1;break;
-			case 'd':act->ix0 += 1;break;
-			case 's':act->iy0 -= 1;break;
-			case 'w':act->iy0 += 1;break;
+			case 'a':act->whdf.ix0 -= 1;break;
+			case 'd':act->whdf.ix0 += 1;break;
+			case 's':act->whdf.iy0 -= 1;break;
+			case 'w':act->whdf.iy0 += 1;break;
 		}
 	}
 }
@@ -350,10 +350,10 @@ static void maze_event(
 
 
 
-static void maze_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void maze_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -363,7 +363,7 @@ static void maze_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void maze_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void maze_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -372,10 +372,10 @@ static void maze_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int 
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -385,7 +385,7 @@ static void maze_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int 
 		break;
 	}
 }
-static void maze_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void maze_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void maze_discon(struct halfrel* self, struct halfrel* peer)
@@ -398,39 +398,39 @@ static void maze_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void maze_search(struct entity* act)
+static void maze_search(_obj* act)
 {
 }
-static void maze_modify(struct entity* act)
+static void maze_modify(_obj* act)
 {
 }
-static void maze_delete(struct entity* act)
+static void maze_delete(_obj* act)
 {
 	if(0 == act)return;
-	if(act->buf0){
-		memorydelete(act->buf0);
-		act->buf0 = 0;
+	if(act->listptr.buf0){
+		memorydelete(act->listptr.buf0);
+		act->listptr.buf0 = 0;
 	}
 }
-static void maze_create(struct entity* act)
+static void maze_create(_obj* act)
 {
 	if(0 == act)return;
-	act->buf0 = memorycreate(WIDTH*HEIGHT, 0);
+	act->listptr.buf0 = memorycreate(WIDTH*HEIGHT, 0);
 
-	act->ix0 = 31;
-	act->iy0 = -31;
+	act->whdf.ix0 = 31;
+	act->whdf.iy0 = -31;
 
-	maze_generate(act->buf0, WIDTH, HEIGHT);
-	maze_solve(act->buf0, WIDTH, HEIGHT);
+	maze_generate(act->listptr.buf0, WIDTH, HEIGHT);
+	maze_solve(act->listptr.buf0, WIDTH, HEIGHT);
 }
 
 
 
 
-void maze_register(struct entity* p)
+void maze_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex32('m', 'a', 'z', 'e');
+	p->hfmt = hex32('m', 'a', 'z', 'e');
 
 	p->oncreate = (void*)maze_create;
 	p->ondelete = (void*)maze_delete;

@@ -1,12 +1,12 @@
 #include "libuser.h"
-void gl41data_whcam(struct entity* wnd, struct style* area);
+void gl41data_whcam(_obj* wnd, struct style* area);
 
 
 
 
 void corner_gl41_drag_lefttop(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	float x, float y)
 {
 	vec3 tc,tr,tf;
@@ -24,8 +24,8 @@ void corner_gl41_drag_lefttop(
 	gl41solid_circle(win, 0xffffff, tc, tr, tf);
 }
 void corner_gl41_drag_righttop(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	float x, float y)
 {
 	vec3 tc,tr,tf;
@@ -58,8 +58,8 @@ void corner_gl41_drag_righttop(
 	gl41solid_triangle(win, 0xffff00, tc, tr, tf);
 }
 void corner_gl41_drag_leftbot(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	float x, float y)
 {
 	vec3 tc, tr, tf;
@@ -84,8 +84,8 @@ void corner_gl41_drag_leftbot(
 	gl41solid_rect(win, 0x404040, tc, tr, tf);
 }
 void corner_gl41_drag_rightbot(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	float x0, float y0, float xn, float yn)
 {
 	vec3 tc, tr, tf;
@@ -105,15 +105,15 @@ void corner_gl41_drag_rightbot(
 	gl41solid_triangle(win, 0x000000, tc, tr, tf);
 }
 void corner_gl41_drag(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int j;
 	float w,h,c;
 	float x0,y0,xn,yn;
 /*
-	w = win->width;
-	h = win->height;
+	w = win->whdf.width;
+	h = win->whdf.height;
 	if(w<h)c = w / 32;
 	else c = h / 32;
 
@@ -171,16 +171,16 @@ void corner_gl41_drag(
 
 
 void corver_gl41_hover(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	float w,h,c;
 	float x0,y0,xn,yn;
 	vec3 vc, vr, vf;
 	vec3 ta, tb, tc;
 /*
-	w = win->width;
-	h = win->height;
+	w = win->whdf.width;
+	h = win->whdf.height;
 	if(w<h)c = w / 32;
 	else c = h / 32;
 
@@ -282,8 +282,8 @@ void corver_gl41_hover(
 
 
 void corner_gl41_popup(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	struct relation* rel = act->orel0;
 	if(0 == rel)return;
@@ -321,14 +321,14 @@ void corner_gl41_popup(
 
 
 void corner_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x0,y0,xn,yn;
 	int w,h,c,t;
 
-	w = win->width;
-	h = win->height;
+	w = win->whdf.width;
+	h = win->whdf.height;
 	if(w<h)c = w>>6;
 	else c = h>>6;
 /*
@@ -406,12 +406,12 @@ void corner_draw_pixel(
 
 
 static int corner_event_twig(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
 	struct relation* rel;
-	struct entity* ar;
+	_obj* ar;
 	struct style* st;
 	int x,y,j;
 
@@ -422,8 +422,8 @@ static int corner_event_twig(
 	if(0 == st)return 0;
 	if('#' == st->is.uc[3])return 0;
 
-	int w = win->width;
-	int h = win->height;
+	int w = win->whdf.width;
+	int h = win->whdf.height;
 
 	short* t = (void*)ev;
 	if(t[0] > w/8)return 0;
@@ -434,8 +434,8 @@ static int corner_event_twig(
 		if(0 == rel)break;
 		if(_sup_ == rel->dsttype){
 			ar = (void*)(rel->dstchip);
-			//if(_ui3d_ == ar->fmt)goto found;
-			//if(_ui2d_ == ar->fmt)goto found;
+			//if(_ui3d_ == ar->hfmt)goto found;
+			//if(_ui2d_ == ar->hfmt)goto found;
 		}
 		rel = samesrcnextdst(rel);
 	}
@@ -473,8 +473,8 @@ found:
 
 
 static int corner_onoff(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	struct relation* rel;
 	struct style* st;
@@ -494,8 +494,8 @@ static int corner_onoff(
 	return 1;
 }
 static int corner_event_root(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
 	short* t;
@@ -506,8 +506,8 @@ static int corner_event_root(
 	x = t[0];
 	y = t[1];
 
-	w = win->width;
-	h = win->height;
+	w = win->whdf.width;
+	h = win->whdf.height;
 	if(w<h)ret = w>>4;
 	else ret = h>>4;
 
@@ -537,8 +537,8 @@ static int corner_event_root(
 	return 0;
 }
 static int corner_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
 	int j;
@@ -557,8 +557,8 @@ static int corner_event(
 
 
 void corner_wnd(
-	struct entity* ent, struct style* slot,
-	struct entity* wnd, struct style* area,
+	_obj* ent, struct style* slot,
+	_obj* wnd, struct style* area,
 	_syn* stack,int sp)
 {
 	gl41data_before(wnd);
@@ -590,13 +590,13 @@ void corner_wnd(
 
 
 
-static int corner_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int corner_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@corner_read\n");
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		corner_draw_pixel(ent,slot, caller,area);
 		break;
@@ -606,7 +606,7 @@ static int corner_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 	}
 	return 0;
 }
-static int corner_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int corner_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	printmemory(buf,16);
 	return 0;
@@ -623,19 +623,19 @@ static int corner_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static int corner_search(struct entity* win)
+static int corner_search(_obj* win)
 {
 	return 0;
 }
-static int corner_modify(struct entity* win)
+static int corner_modify(_obj* win)
 {
 	return 0;
 }
-static int corner_delete(struct entity* win)
+static int corner_delete(_obj* win)
 {
 	return 0;
 }
-static int corner_create(struct entity* act, u8* str)
+static int corner_create(_obj* act, u8* str)
 {
 	return 0;
 }
@@ -643,10 +643,10 @@ static int corner_create(struct entity* act, u8* str)
 
 
 
-void corner_register(struct entity* p)
+void corner_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('c', 'o', 'r', 'n', 'e', 'r', 0, 0);
+	p->hfmt = hex64('c', 'o', 'r', 'n', 'e', 'r', 0, 0);
 
 	p->oncreate = (void*)corner_create;
 	p->ondelete = (void*)corner_delete;

@@ -54,7 +54,7 @@ static void attr(u8 bg, u8 fg)
 	str[8] = '0' + (fg&7);
 	printf("%s",str);
 }
-void windowdraw(struct supply* wnd)
+void windowdraw(_obj* wnd)
 {
 	int x,y,w,h;
 	u8 ch,bg=0,fg=0;
@@ -110,7 +110,7 @@ void windowdraw(struct supply* wnd)
 
 
 
-void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct winsize ws;
 	ioctl(0, TIOCGWINSZ, &ws);
@@ -123,7 +123,7 @@ void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, vo
 	//update screen
 	windowdraw(wnd);
 }
-void window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 void windowstop()
@@ -142,10 +142,10 @@ void windowlist()
 void windowchange()
 {
 }
-void windowdelete(struct supply* w)
+void windowdelete(_obj* w)
 {
 }
-void windowcreate(struct supply* w)
+void windowcreate(_obj* w)
 {
 	w->fmt = _tui_;
 	w->vfmt = 0;

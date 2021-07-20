@@ -1,12 +1,12 @@
 #include "libuser.h"
 #define _fbo_ hex32('f','b','o',0)
 //
-#define ONOFF iw0
+#define ONOFF whdf.iw0
 //
-#define CAMBUF buf0
-#define LITBUF buf1
-#define CTXBUF buf2
-#define OWNBUF buf3
+#define CAMBUF listptr.buf0
+#define LITBUF listptr.buf1
+#define CTXBUF listptr.buf2
+#define OWNBUF listptr.buf3
 struct sunbuf{
 	mat4 mvp;
 	vec4 rgb;
@@ -17,28 +17,28 @@ struct sunbuf{
 
 
 static void pointlight_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void pointlight_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void pointlight_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void pointlight_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void pointlight_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
@@ -46,9 +46,9 @@ static void pointlight_draw_cli(
 
 
 static void pointlight_light(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	struct sunbuf* sun = act->OWNBUF;
 	if(0 == sun)return;
@@ -66,12 +66,12 @@ static void pointlight_light(
 	data->dst.arg[1].name = "sunrgb";
 	data->dst.arg[1].data = sun->rgb;
 
-	wnd->glfull_light[0] = act->LITBUF;
+	wnd->gl41list.light[0] = act->LITBUF;
 }
 static void pointlight_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -85,16 +85,16 @@ static void pointlight_draw_gl41(
 
 
 
-static void pointlight_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void pointlight_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	if(0 == ent->ONOFF)return;
 
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	if(_gl41list_ == wnd->fmt){
+	if(_gl41list_ == wnd->hfmt){
 		pointlight_light(ent,slot, wor,geom, wnd,area);
 		pointlight_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
@@ -103,7 +103,7 @@ static void pointlight_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void pointlight_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void pointlight_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -112,10 +112,10 @@ static void pointlight_taking(_ent* ent,void* slot, _syn* stack,int sp, void* ar
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -125,7 +125,7 @@ static void pointlight_taking(_ent* ent,void* slot, _syn* stack,int sp, void* ar
 		break;
 	}
 }
-static void pointlight_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void pointlight_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	u8* in = buf;
 	say("@pointlight_write:%x\n",in[0]);
@@ -143,16 +143,16 @@ static void pointlight_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void pointlight_search(struct entity* act)
+static void pointlight_search(_obj* act)
 {
 }
-static void pointlight_modify(struct entity* act)
+static void pointlight_modify(_obj* act)
 {
 }
-static void pointlight_delete(struct entity* act)
+static void pointlight_delete(_obj* act)
 {
 }
-static void pointlight_create(struct entity* act, void* str)
+static void pointlight_create(_obj* act, void* str)
 {
 	struct sunbuf* sun;
 	if(0 == act)return;
@@ -171,10 +171,10 @@ static void pointlight_create(struct entity* act, void* str)
 
 
 
-void pointlight_register(struct entity* p)
+void pointlight_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('p','o','i','n','t','l', 'i', 't');
+	p->hfmt = hex64('p','o','i','n','t','l', 'i', 't');
 
 	p->oncreate = (void*)pointlight_create;
 	p->ondelete = (void*)pointlight_delete;

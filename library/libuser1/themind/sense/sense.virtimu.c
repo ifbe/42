@@ -1,26 +1,26 @@
 #include "libuser.h"
-#define REL_WORLD buf0
-#define REL_DRONE buf1
+#define REL_WORLD listptr.buf0
+#define REL_DRONE listptr.buf1
 void quaternion_rotatefrom(float* o, float* v, float* q);
 
 
 
 
-void virtimu_checkplace(struct entity* ent)
+void virtimu_checkplace(_obj* ent)
 {
 	struct halfrel* tmp[2];
 	int ret = relationsearch(ent, _src_, &tmp[0], &tmp[1]);
 	if(ret <= 0)return;
 
-	struct entity* drone = tmp[1]->pchip;
+	_obj* drone = tmp[1]->pchip;
 	if(0 == drone)return;
 
-	struct entity* world;
+	_obj* world;
 	struct relation* rel = drone->irel0;
 	while(1){
 		if(0 == rel)break;
 		world = rel->psrcchip;
-		if(	(_virtual_ != world->fmt) | (_scene3d_ != world->fmt)){
+		if(	(_virtual_ != world->hfmt) | (_scene3d_ != world->hfmt)){
 			ent->REL_WORLD = rel->src;
 			ent->REL_DRONE = rel->dst;
 			return;
@@ -28,7 +28,7 @@ void virtimu_checkplace(struct entity* ent)
 		rel = samedstnextsrc(rel);
 	}
 }
-void virtimu_senseforce(struct entity* ent)
+void virtimu_senseforce(_obj* ent)
 {
 	struct halfrel* rel = ent->REL_WORLD;
 	if(0 == rel)return;
@@ -60,12 +60,12 @@ void virtimu_senseforce(struct entity* ent)
 
 
 
-int virtimu_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int virtimu_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@virtimu_read:%p,%p\n", ent, foot);
 	return 0;
 }
-int virtimu_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+int virtimu_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	//say("@virtimu_write:%.4s\n",&foot);
 	if(_clk_ == stack[sp=1].flag){
@@ -94,11 +94,11 @@ int virtimu_modify()
 {
 	return 0;
 }
-int virtimu_delete(struct entity* ent)
+int virtimu_delete(_obj* ent)
 {
 	return 0;
 }
-int virtimu_create(struct entity* ent, void* str)
+int virtimu_create(_obj* ent, void* str)
 {
 	say("@virtimu_create\n");
 	ent->REL_WORLD = 0;

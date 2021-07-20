@@ -8,7 +8,7 @@
 
 
 
-void joystick_event(struct supply* win, void* p)
+void joystick_event(_obj* win, void* p)
 {
 	struct event ev;
 	struct halfrel stack[0x80];
@@ -31,7 +31,7 @@ void joystick_event(struct supply* win, void* p)
 		give_data_into_peer(win,_dst_, stack,0, 0,0, &ev,0);
 	}
 }
-void joystickthread(struct supply* win)
+void joystickthread(_obj* win)
 {
 	u8 af,gf;
 	int av[3];
@@ -231,7 +231,7 @@ void joystickthread(struct supply* win)
 
 	close(fd);
 }
-void joycreate(struct supply* win)
+void joycreate(_obj* win)
 {
 	threadcreate(joystickthread, win);
 }

@@ -3,11 +3,11 @@
 
 
 
-int camfrus_taking(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int camfrus_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
-int camfrus_giving(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int camfrus_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -23,19 +23,19 @@ int camfrus_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int camfrus_search(struct entity* win)
+int camfrus_search(_obj* win)
 {
 	return 0;
 }
-int camfrus_modify(struct entity* win)
+int camfrus_modify(_obj* win)
 {
 	return 0;
 }
-int camfrus_delete(struct entity* win)
+int camfrus_delete(_obj* win)
 {
 	return 0;
 }
-int camfrus_create(struct entity* act, void* flag)
+int camfrus_create(_obj* act, void* flag)
 {
 	return 0;
 }

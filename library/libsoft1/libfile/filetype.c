@@ -208,16 +208,16 @@ int filetype_discon(struct halfrel* self, struct halfrel* peer)
 int filetype_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	say("@filetype_linkup\n");
-	struct artery* ele = self->pchip;
+	_obj* ele = self->pchip;
 	if(0 == ele)return 0;
-	void* buf = ele->buf0;
+	void* buf = ele->listptr.buf0;
 	if(0 == buf)return 0;
 
 	int ret;
 	struct item* xxx = peer->pchip;
 	if((_sys_ == xxx->tier)|(_art_ == xxx->tier)){
-		struct sysobj* obj = peer->pchip;
-		ret = readfile(obj, obj->selffd, "", 0, buf, 0x10000);
+		_obj* obj = peer->pchip;
+		ret = file_take(obj,0, "", 0, buf, 0x10000);
 		if(0x10000 != ret)return -1;
 	}
 	else{
@@ -233,16 +233,16 @@ int filetype_linkup(struct halfrel* self, struct halfrel* peer)
 
 	return 0;
 }
-int filetype_delete(struct artery* ele)
+int filetype_delete(_obj* ele)
 {
-	if(ele->buf0){
-		memorydelete(ele->buf0);
-		ele->buf0 = 0;
+	if(ele->listptr.buf0){
+		memorydelete(ele->listptr.buf0);
+		ele->listptr.buf0 = 0;
 	}
 	return 0;
 }
-int filetype_create(struct artery* ele, u8* url)
+int filetype_create(_obj* ele, u8* url)
 {
-	ele->buf0 = memorycreate(0x10000, 0);
+	ele->listptr.buf0 = memorycreate(0x10000, 0);
 	return 0;
 }

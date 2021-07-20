@@ -18,10 +18,10 @@ float y;
 float z;
 float t;
 };
-void* wander_where(struct entity* ent)
+void* wander_where(_obj* ent)
 {
 	struct relation* rel;
-	struct entity* world;
+	_obj* world;
 
 	rel = ent->irel0;
 	while(1){
@@ -74,15 +74,15 @@ void wander_doit(struct privdata* own, struct fstyle* this)
 
 
 
-int wander_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int wander_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int wander_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int wander_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	say("@wander_write:%.4s\n",&foot);
 	if(_clk_ == stack[sp-1].flag){
-		struct privdata* own = ent->buf0;
+		struct privdata* own = ent->priv_ptr;
 		if(0 == own->self)return 0;
 
 		struct fstyle* geom = own->selfgeom;
@@ -106,8 +106,8 @@ int wander_discon(struct halfrel* self, struct halfrel* peer)
 }
 int wander_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	struct entity* ent = self->pchip;
-	struct privdata* own = ent->buf0;
+	_obj* ent = self->pchip;
+	struct privdata* own = ent->priv_ptr;
 	say("@wander_linkup: %.4s\n", &self->flag);
 
     switch(self->flag){
@@ -119,21 +119,21 @@ int wander_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int wander_search(struct entity* win)
+int wander_search(_obj* win)
 {
 	return 0;
 }
-int wander_modify(struct entity* win)
+int wander_modify(_obj* win)
 {
 	return 0;
 }
-int wander_delete(struct entity* win)
+int wander_delete(_obj* win)
 {
 	return 0;
 }
-int wander_create(struct entity* act, void* flag)
+int wander_create(_obj* act, void* flag)
 {
-	struct privdata* own = act->buf0 = memorycreate(0x1000, 0);
+	struct privdata* own = act->priv_ptr = memorycreate(0x1000, 0);
 	own->self = 0;
 	own->selfgeom = 0;
 	return 0;

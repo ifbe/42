@@ -79,7 +79,7 @@ static int fuckyou = 0;
 
 
 
-static void restorestackdeliverevent(struct supply* wnd, struct event* ev)
+static void restorestackdeliverevent(_obj* wnd, struct event* ev)
 {
 	u64* save = wnd->spsave;
 	if(0 == save){
@@ -91,7 +91,7 @@ static void restorestackdeliverevent(struct supply* wnd, struct event* ev)
 	int depth = save[1];
 	rgbanode_write(wnd,0, stack,depth, 0,0, ev,0);
 }
-void windowevent(struct supply* win, XEvent xev)
+void windowevent(_obj* win, XEvent xev)
 {
 	u64 x,y,k;
 	struct event myev;
@@ -230,7 +230,7 @@ void windowevent(struct supply* win, XEvent xev)
 
 
 
-void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//update screen
 	rgbanode_take(wnd,0, stack,sp, arg,key, buf,len);
@@ -257,7 +257,7 @@ void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, vo
 	//clear temp
 	wnd->spsave = 0;
 }
-void window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 /*
 	XEvent xev;
@@ -281,7 +281,7 @@ void windowstop()
 void windowstart()
 {
 }
-void windowdelete(struct supply* win)
+void windowdelete(_obj* win)
 {
 	XDestroyWindow(dsp, win->xlibfd);
 	fuckyou--;
@@ -292,7 +292,7 @@ void windowdelete(struct supply* win)
 		eventwrite(0,0,0,0);
 	}
 }
-void windowcreate(struct supply* win)
+void windowcreate(_obj* win)
 {
 	int j;
 	win->fmt = _rgba_;

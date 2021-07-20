@@ -5,8 +5,8 @@
 
 
 static void balance_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -18,16 +18,16 @@ static void balance_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 }
 static void balance_draw_gl41(
-	struct entity* act, struct style* part,
-	struct entity* scn, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* part,
+	_obj* scn, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int j;
 	vec3 tc,tr,tf,tt;
@@ -44,8 +44,8 @@ static void balance_draw_gl41(
 		tf[j] = vf[j]/4;
 		tt[j] = vt[j]/16;
 	}
-	quaternion_operation(tf, vr, -act->fy0);
-	quaternion_operation(tt, vr, -act->fy0);
+	quaternion_operation(tf, vr, -act->whdf.fy0);
+	quaternion_operation(tt, vr, -act->whdf.fy0);
 	gl41solid_prism4(ctx, 0x808080, tc,tr,tf,tt);
 
 	//left wheel
@@ -67,46 +67,46 @@ static void balance_draw_gl41(
 	gl41solid_cylinder(ctx, 0x404040, tc, tf, tt, tr);
 }
 static void balance_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void balance_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void balance_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void balance_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-void balance_write_euler(struct entity* act, float* f)
+void balance_write_euler(_obj* act, float* f)
 {
-	act->fx0 = f[0];
-	act->fy0 = f[1];
-	act->fz0 = f[2];
+	act->whdf.fx0 = f[0];
+	act->whdf.fy0 = f[1];
+	act->whdf.fz0 = f[2];
 }
-void balance_write_quaternion(struct entity* act, float* q)
+void balance_write_quaternion(_obj* act, float* q)
 {
 }
 
 
 
 
-static void balance_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void balance_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -116,7 +116,7 @@ static void balance_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void balance_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void balance_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -125,10 +125,10 @@ static void balance_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,i
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -138,7 +138,7 @@ static void balance_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void balance_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void balance_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	balance_write_euler(ent, buf);
 }
@@ -152,30 +152,30 @@ static void balance_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void balance_modify(struct entity* act)
+static void balance_modify(_obj* act)
 {
 }
-static void balance_search(struct entity* act)
+static void balance_search(_obj* act)
 {
 }
-static void balance_delete(struct entity* act)
+static void balance_delete(_obj* act)
 {
 	if(0 == act)return;
 	//if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void balance_create(struct entity* act)
+static void balance_create(_obj* act)
 {
 	if(0 == act)return;
-	act->fy0 = PI/4;
+	act->whdf.fy0 = PI/4;
 }
 
 
 
 
-void balance_register(struct entity* p)
+void balance_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('b','a','l','a','n','c','e', 0);
+	p->hfmt = hex64('b','a','l','a','n','c','e', 0);
 
 	p->oncreate = (void*)balance_create;
 	p->ondelete = (void*)balance_delete;

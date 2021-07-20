@@ -1,13 +1,13 @@
 #include "libuser.h"
 #define _corner_ hex64('c', 'o', 'r', 'n', 'e', 'r', 0, 0)
-#define DATBUF buf0
-#define DATLEN data1
+#define DATBUF listptr.buf0
+#define DATLEN listu64.data2
 void new2048(void*);
 void left2048(void*);
 void right2048(void*);
 void up2048(void*);
 void down2048(void*);
-void gl41data_whcam(struct entity* wnd, struct style* area);
+void gl41data_whcam(_obj* wnd, struct style* area);
 
 
 
@@ -34,13 +34,13 @@ static u32 color2048[17] = {
 
 
 
-static void the2048_search(struct entity* act, u8* buf)
+static void the2048_search(_obj* act, u8* buf)
 {
 }
-static void the2048_modify(struct entity* act, u8* buf)
+static void the2048_modify(_obj* act, u8* buf)
 {
 }
-static void the2048_delete(struct entity* act, u8* buf)
+static void the2048_delete(_obj* act, u8* buf)
 {
 	if(0 == act)return;
 	if(act->DATBUF){
@@ -48,7 +48,7 @@ static void the2048_delete(struct entity* act, u8* buf)
 		act->DATBUF = 0;
 	}
 }
-static void the2048_create(struct entity* act, u8* buf)
+static void the2048_create(_obj* act, u8* buf)
 {
 	if(0 == act)return;
 
@@ -62,8 +62,8 @@ static void the2048_create(struct entity* act, u8* buf)
 
 
 static void the2048_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* wnd, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* wnd, struct style* sty)
 {
 	u32 color;
 	int x,y,x0,y0,x1,y1;
@@ -79,10 +79,10 @@ static void the2048_draw_pixel(
 	}
 	else
 	{
-		cx = wnd->width/2;
-		cy = wnd->height/2;
-		ww = wnd->width/2;
-		hh = wnd->height/2;
+		cx = wnd->whdf.width/2;
+		cy = wnd->whdf.height/2;
+		ww = wnd->whdf.width/2;
+		hh = wnd->whdf.height/2;
 	}
 
 	//cubies
@@ -118,9 +118,9 @@ static void the2048_draw_pixel(
 	}
 }/*
 static void the2048_draw_dx11(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -171,9 +171,9 @@ static void the2048_draw_dx11(
 	}
 }*/
 static void the2048_draw_gl41(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -224,14 +224,14 @@ static void the2048_draw_gl41(
 	}
 }
 static void the2048_draw_gl41_nocam(
-	struct entity* act, struct style* part,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* part,
+	_obj* wnd, struct style* area)
 {
 	int j;
 	struct fstyle fs;
 	for(j=0;j<3;j++)fs.vc[j] = fs.vr[j] = fs.vf[j] = fs.vt[j] = 0.0;
-	fs.vr[0] = area->fs.vq[0] * wnd->fbwidth / 2.0;
-	fs.vf[1] = area->fs.vq[1] * wnd->fbheight/ 2.0;
+	fs.vr[0] = area->fs.vq[0] * wnd->whdf.fbwidth / 2.0;
+	fs.vf[1] = area->fs.vq[1] * wnd->whdf.fbheight/ 2.0;
 	fs.vt[2] = 1.0;
 
 	gl41data_before(wnd);
@@ -242,12 +242,12 @@ static void the2048_draw_gl41_nocam(
 	gl41data_after(wnd);
 }
 static void the2048_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x,y;
-	int len = win->jsonlen;
-	u8* buf = win->jsonbuf;
+	int len = win->json.len;
+	u8* buf = win->json.buf;
 	u8 (*tab)[4] = (void*)(act->DATBUF) + (act->DATLEN)*16;
 
 	len += mysnprintf(buf+len, 0x100000-len, "{\"2048\" : ");
@@ -260,11 +260,11 @@ static void the2048_draw_json(
 	}//fory
 	len += mysnprintf(buf+len, 0x100000-len, "}\n");
 
-	win->jsonlen = len;
+	win->json.len = len;
 }
 static void the2048_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x,y;
 	u8 (*tab)[4] = (void*)(act->DATBUF) + (act->DATLEN)*16;
@@ -290,8 +290,8 @@ static void the2048_draw_html(
 	htmlprintf(win, 2, "</div>\n");
 }
 static void the2048_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x,y;
 	u8 (*tab)[4] = (void*)(act->DATBUF) + (act->DATLEN)*16;
@@ -306,8 +306,8 @@ static void the2048_draw_tui(
 	}
 }
 static void the2048_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	u8 (*tab)[4] = (void*)(act->DATBUF) + (act->DATLEN)*16;
 
@@ -341,7 +341,7 @@ static void the2048_draw_cli(
 
 
 
-static void the2048_move(struct entity* act, int op)
+static void the2048_move(_obj* act, int op)
 {
 	int j;
 	u8* p;
@@ -361,7 +361,7 @@ static void the2048_move(struct entity* act, int op)
 
 	new2048(q);
 }
-static void the2048_event(struct entity* act, struct event* ev)
+static void the2048_event(_obj* act, struct event* ev)
 {
 	int k;
 	short* s;
@@ -400,15 +400,15 @@ static void the2048_event(struct entity* act, struct event* ev)
 
 
 
-static void the2048_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key)
+static void the2048_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	if(0 == stack)return;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _dx11list_:
 	case _mt20list_:
 	case _gl41list_:
@@ -417,18 +417,18 @@ static void the2048_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* a
 		break;
 	}
 }
-static void the2048_wrl_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void the2048_wrl_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* mgr;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* mgr;struct style* geom;
+	_obj* wnd;struct style* area;
 	mgr = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-4].pchip;area = stack[sp-4].pfoot;
 
 	int j;
 	struct fstyle fs;
 	for(j=0;j<3;j++)fs.vc[j] = fs.vr[j] = fs.vf[j] = fs.vt[j] = 0.0;
-	fs.vr[0] = area->fs.vq[0] * wnd->fbwidth / 4.0;
-	fs.vf[1] = area->fs.vq[1] * wnd->fbheight/ 4.0;
+	fs.vr[0] = area->fs.vq[0] * wnd->whdf.fbwidth / 4.0;
+	fs.vf[1] = area->fs.vq[1] * wnd->whdf.fbheight/ 4.0;
 	fs.vt[2] = 1.0;
 	the2048_draw_gl41(ent,slot, mgr,(void*)&fs, wnd,area);
 }
@@ -436,13 +436,13 @@ static void the2048_wrl_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void the2048_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void the2048_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@the2048_read\n");
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _tui_:
 		the2048_draw_tui(ent,slot, caller,area);
 		break;
@@ -469,7 +469,7 @@ static void the2048_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void the2048_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void the2048_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@the2048_write\n");
 	switch(stack[sp-1].flag){
@@ -487,10 +487,10 @@ static void the2048_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-void the2048_register(struct entity* p)
+void the2048_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex32('2','0','4','8');
+	p->hfmt = hex32('2','0','4','8');
 
 	p->oncreate = (void*)the2048_create;
 	p->ondelete = (void*)the2048_delete;

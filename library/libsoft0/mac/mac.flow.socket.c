@@ -30,7 +30,22 @@ union addrv4v6{
 	struct sockaddr_in v4;
 	struct sockaddr_in6 v6;
 };
-struct sysobj* obj;
+struct item* obj;
+
+
+
+
+void initsocket(void* addr)
+{
+	struct sigaction sa;
+	sa.sa_handler=SIG_IGN;
+	sigaction(SIGPIPE, &sa, 0);
+
+	obj = addr;
+}
+void freesocket()
+{
+}
 
 
 
@@ -121,11 +136,11 @@ int waitconnectwithselect(int sock)
 
 
 
-int createsocket_bt(char* addr, int port)
+_obj* createsocket_bt(char* addr, int port)
 {
 	return 0;
 }
-int createsocket_raw(char* addr, int port)
+_obj* createsocket_raw(char* addr, int port)
 {
 	int fd,ret;
 	say("macos doesnot support rawsocket!\n");
@@ -138,9 +153,9 @@ int createsocket_raw(char* addr, int port)
 	}
 
 	kqueue_add(fd);
-	return fd;
+	return &obj[fd];
 }
-int createsocket_udpserver(char* addr, int port)
+_obj* createsocket_udpserver(char* addr, int port)
 {
 	int fd,ret,size;
 	int sockfmt,socklen;
@@ -190,11 +205,11 @@ int createsocket_udpserver(char* addr, int port)
 	}
 
 	//done
-	memcpy(obj[fd].self, &sockbuf, socklen);
+	memcpy(obj[fd].sockinfo.self, &sockbuf, socklen);
 	kqueue_add(fd);
-	return fd;
+	return &obj[fd];
 }
-int createsocket_udpclient(char* myaddr, int myport, char* toaddr, int toport)
+_obj* createsocket_udpclient(char* myaddr, int myport, char* toaddr, int toport)
 {
 	int fd,ret;
 	struct sockaddr_in* self;
@@ -221,7 +236,7 @@ int createsocket_udpclient(char* myaddr, int myport, char* toaddr, int toport)
 
 if((0 != myaddr) && (0 != myport)){
 	//self
-	self = (void*)obj[fd].self;
+	self = (void*)obj[fd].sockinfo.self;
 	memset(self, 0, sizeof(struct sockaddr_in));
 	self->sin_family = AF_INET;
 	self->sin_port = htons(myport);
@@ -237,7 +252,7 @@ if((0 != myaddr) && (0 != myport)){
 }
 
 	//peer
-	peer = (void*)obj[fd].peer;
+	peer = (void*)obj[fd].sockinfo.peer;
 	memset(peer, 0, sizeof(struct sockaddr_in));
 	peer->sin_family = AF_INET;
 	peer->sin_port = htons(toport);
@@ -251,16 +266,16 @@ if((0 != myaddr) && (0 != myport)){
 	}
 
 	//get the random port
-	self = (void*)obj[fd].self;
+	self = (void*)obj[fd].sockinfo.self;
 	socklen_t len = sizeof(struct sockaddr_in);
 	getsockname(fd, (void*)self, &len);
 	printf("myaddr=%s:%d\n", inet_ntoa(self->sin_addr), ntohs(self->sin_port));
 
 	//done
 	kqueue_add(fd);
-	return fd;
+	return &obj[fd];
 }
-int createsocket_tcpserver(char* addr, int port)
+_obj* createsocket_tcpserver(char* addr, int port)
 {
 	int fd,ret,size;
 	int sockfmt,socklen;
@@ -321,11 +336,11 @@ int createsocket_tcpserver(char* addr, int port)
 	listen(fd, 5);
 
 	//done
-	memcpy(obj[fd].self, &sockbuf, socklen);
+	memcpy(obj[fd].sockinfo.self, &sockbuf, socklen);
 	kqueue_add(fd);
-	return fd;
+	return &obj[fd];
 }
-int createsocket_tcpclient(char* myaddr, int myport, char* toaddr, int toport)
+_obj* createsocket_tcpclient(char* myaddr, int myport, char* toaddr, int toport)
 {
 	int fd,ret;
 	struct sockaddr_in* self;
@@ -356,7 +371,7 @@ int createsocket_tcpclient(char* myaddr, int myport, char* toaddr, int toport)
 
 if((0 != myaddr) && (0 != myport)){
 	//self
-	self = (void*)obj[fd].self;
+	self = (void*)obj[fd].sockinfo.self;
 	memset(self, 0, sizeof(struct sockaddr_in));
 	self->sin_family = AF_INET;
 	self->sin_port = htons(myport);
@@ -372,7 +387,7 @@ if((0 != myaddr) && (0 != myport)){
 }
 
 	//peer
-	peer = (void*)obj[fd].peer;
+	peer = (void*)obj[fd].sockinfo.peer;
 	memset(peer, 0, sizeof(struct sockaddr_in));
 	peer->sin_family = AF_INET;
 	peer->sin_port = htons(toport);
@@ -395,140 +410,20 @@ if((0 != myaddr) && (0 != myport)){
 	}
 
 	//get the random port
-	self = (void*)obj[fd].self;
+	self = (void*)obj[fd].sockinfo.self;
 	socklen_t len = sizeof(struct sockaddr_in);
 	getsockname(fd, (void*)self, &len);
 	printf("myaddr=%s:%d\n", inet_ntoa(self->sin_addr), ntohs(self->sin_port));
 
 	//done
 	kqueue_add(fd);
-	return fd;
+	return &obj[fd];
 }
 
 
 
 
-int writesocket(int fd, struct sockaddr_in* tmp, void* buf, int len)
-{
-	int cnt,ret;
-	u64 type;
-	if(fd == 0)return 0;
-	if(buf == 0)return 0;
-//say("@writesocket:%x,%llx,%llx,%x\n",fd,tmp,buf,len);
-
-	type = obj[fd].type;
-	if(_UDP_ == type){
-		struct sockaddr_in out;
-		if(0 == tmp)tmp = (void*)obj[fd].peer;
-		else{
-			memset(&out, 0, sizeof(struct sockaddr_in));
-			out.sin_family = AF_INET;
-			out.sin_port = tmp->sin_port;
-			out.sin_addr.s_addr = tmp->sin_addr.s_addr;
-			tmp = &out;
-		}
-
-		ret = sendto(
-			fd, buf, len, 0,
-			(void*)tmp, sizeof(struct sockaddr_in)
-		);
-		return ret;
-	}
-	if(_udp_ == type){
-		ret = 0;
-		while(1){
-			if(len-ret <= 1024){
-				write(fd, buf+ret, len-ret);
-				break;
-			}
-			else{
-				write(fd, buf+ret, 1024);
-				ret += 1024;
-			}
-		}
-		return len;
-	}
-
-	cnt = 0;
-	while(1){
-		ret = write(fd, buf+cnt, len-cnt);
-		if(ret < 0){
-			say("@writesocket: ret=%d,errno=%d\n", ret, errno);
-			if(EAGAIN != errno)return -1;
-
-			usleep(1000);
-			continue;
-		}
-
-		cnt += ret;
-		if(cnt == len)break;
-		say("@writesocket: %x/%x\n", cnt, len);
-	}
-	return ret;
-}
-int readsocket(int fd, void* tmp, void* buf, int len)
-{
-	u64 type;
-	int ret, cnt=0;
-	if(fd == 0)return 0;
-	if(buf == 0)return 0;
-
-	type = obj[fd].type;
-	if(_UDP_ == type)
-	{
-		cnt = sizeof(union addrv4v6);
-		ret = recvfrom(
-			fd, buf, len, 0,
-			tmp, (void*)&cnt
-		);
-		//printf("socklen=%d\n",cnt);
-		//printmemory(tmp, 32);
-		return ret;
-	}
-
-	while(1)
-	{
-		ret = read(fd, buf, len);
-		if(ret > 0)break;
-		if(ret == 0)return -1;		//disconnect
-		if(errno != 11)return -2;	//errno
-		if(cnt >= 100)return 0;
-
-		usleep(1000);
-		cnt++;
-	}
-	return ret;
-}
-
-
-
-
-int searchsocket(int fd)
-{
-	return 0;
-}
-int modifysocket(int fd, int arg, u8* addr, int port)
-{
-	if(_connect_ == arg){
-		u8* p = obj[fd].self;
-		u8* q = addr;
-		say("reuse this for connect: %d.%d.%d.%d:%d -> %d.%d.%d.%d:%d\n",
-			p[4],p[5],p[6],p[7], (p[2]<<8)+p[3],
-			q[0],p[1],q[2],q[3], port
-		);
-	}
-	if(_listen_ == arg){
-		say("reuse this for listen\n");
-	}
-	return 0;
-}
-int deletesocket(int fd)
-{
-	int ret = close(fd);
-	printf("----fd=%d,ret=%d,errno=%d\n", fd, ret, errno);
-	return ret;
-}
-int createsocket(int fmt, char* arg)
+_obj* socket_create(int fmt, char* arg)
 {
 	int j;
 	char tmp[256];
@@ -576,18 +471,134 @@ skip:
 	}
 	return 0;
 }
-
-
-
-
-void freesocket()
+int socket_delete(_obj* oo)
 {
+	int fd = oo->sockinfo.fd;
+	int ret = close(fd);
+	printf("----fd=%d,ret=%d,errno=%d\n", fd, ret, errno);
+	return ret;
 }
-void initsocket(void* addr)
+int socket_search(_obj* oo,int xx)
 {
-	struct sigaction sa;
-	sa.sa_handler=SIG_IGN;
-	sigaction(SIGPIPE, &sa, 0);
+	return 0;
+}
+int socket_modify(_obj* oo,int xx, void* arg,int cmd, u8* addr,int port)
+{
+	if(_connect_ == cmd){
+		u8* p = oo->sockinfo.self;
+		u8* q = addr;
+		say("reuse this for connect: %d.%d.%d.%d:%d -> %d.%d.%d.%d:%d\n",
+			p[4],p[5],p[6],p[7], (p[2]<<8)+p[3],
+			q[0],p[1],q[2],q[3], port
+		);
+	}
+	if(_listen_ == cmd){
+		say("reuse this for listen\n");
+	}
+	return 0;
+}
 
-	obj = addr;
+
+
+
+int socket_link()
+{
+	return 0;
+}
+int socket_gone()
+{
+	return 0;
+}
+int socket_give(_obj* oo,int xx, struct sockaddr_in* tmp, void* buf, int len)
+{
+//say("@writesocket:%x,%llx,%llx,%x\n",fd,tmp,buf,len);
+	if(buf == 0)return 0;
+
+	int fd = oo->sockinfo.fd;
+	if(fd < 0)return 0;
+
+	int ret, cnt=0;
+	u64 type = oo->type;
+	if(_UDP_ == type){
+		struct sockaddr_in out;
+		if(0 == tmp)tmp = (void*)oo->sockinfo.peer;
+		else{
+			memset(&out, 0, sizeof(struct sockaddr_in));
+			out.sin_family = AF_INET;
+			out.sin_port = tmp->sin_port;
+			out.sin_addr.s_addr = tmp->sin_addr.s_addr;
+			tmp = &out;
+		}
+
+		ret = sendto(
+			fd, buf, len, 0,
+			(void*)tmp, sizeof(struct sockaddr_in)
+		);
+		return ret;
+	}
+	if(_udp_ == type){
+		ret = 0;
+		while(1){
+			if(len-ret <= 1024){
+				write(fd, buf+ret, len-ret);
+				break;
+			}
+			else{
+				write(fd, buf+ret, 1024);
+				ret += 1024;
+			}
+		}
+		return len;
+	}
+
+	cnt = 0;
+	while(1){
+		ret = write(fd, buf+cnt, len-cnt);
+		if(ret < 0){
+			say("@writesocket: ret=%d,errno=%d\n", ret, errno);
+			if(EAGAIN != errno)return -1;
+
+			usleep(1000);
+			continue;
+		}
+
+		cnt += ret;
+		if(cnt == len)break;
+		say("@writesocket: %x/%x\n", cnt, len);
+	}
+	return ret;
+}
+int socket_take(_obj* oo,int xx, void* tmp,int cmd, void* buf,int len)
+{
+	if(0 == buf)return 0;
+
+	int fd = oo->sockinfo.fd;
+	if(fd < 0)return 0;
+
+	int ret, cnt=0;
+	u64 type = oo->type;
+	if(_UDP_ == type)
+	{
+		cnt = sizeof(union addrv4v6);
+		ret = recvfrom(
+			fd, buf, len, 0,
+			tmp, (void*)&cnt
+		);
+		//printf("socklen=%d\n",cnt);
+		//printmemory(tmp, 32);
+		return ret;
+	}
+
+	while(1)
+	{
+		ret = read(fd, buf, len);
+		if(ret > 0)break;
+		if(ret == 0)return -1;		//disconnect
+		if(errno != 11)return -2;	//errno
+		if(cnt >= 100)return 0;
+
+		usleep(1000);
+		cnt++;
+	}
+	return ret;
 }

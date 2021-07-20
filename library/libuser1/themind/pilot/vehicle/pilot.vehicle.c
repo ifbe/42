@@ -1,20 +1,20 @@
 #include "libuser.h"
-#define REL_WORLD buf0
-#define REL_DRONE buf1
+#define REL_WORLD listptr.buf0
+#define REL_DRONE listptr.buf1
 //pid
-#define e0 fx0
-#define e1 fy0
-#define e2 fz0
-#define integral fw0
+#define e0 whdf.fx0
+#define e1 whdf.fy0
+#define e2 whdf.fz0
+#define integral whdf.fw0
 //expect
-#define expect_x fxn
+#define expect_x whdf.fxn
 void quaternion2eulerian(float* q, float* eulerian);
 
 
 
 
 #define Ap 10.0
-float carcon_pidloop_angle(struct entity* ent, vec3 front)
+float carcon_pidloop_angle(_obj* ent, vec3 front)
 {
 	vec3 vf;
 	vec3_normalizefrom(vf, front);
@@ -31,7 +31,7 @@ say("x_differ = %f\n", differ);
 #define Kp 10.0
 #define Ki 0.1
 #define Kd 0.1
-float carcon_pidloop_speed(struct entity* ent, struct style* sty, float expect)
+float carcon_pidloop_speed(_obj* ent, struct style* sty, float expect)
 {
 	float* v = sty->actual.angular_v;
 	float actual = v[3];
@@ -51,7 +51,7 @@ say("v_differ = %f\n", ent->e0);
 
 	return Kp*ent->e0 + Ki*ent->integral + Kd*(ent->e0 - ent->e1);
 }
-void carcon_applyforce(struct entity* ent)
+void carcon_applyforce(_obj* ent)
 {
 	struct halfrel* rel = ent->REL_WORLD;
 	if(0 == rel)return;
@@ -109,21 +109,21 @@ void carcon_applyforce(struct entity* ent)
 	sty->where[3][1] = vr[1] +vf[1];
 	sty->where[3][2] = vr[2] +vf[2];
 }
-void carcon_checkplace(struct entity* ent)
+void carcon_checkplace(_obj* ent)
 {
 	struct halfrel* tmp[2];
 	int ret = relationsearch(ent, _dst_, &tmp[0], &tmp[1]);
 	if(ret <= 0)return;
 
-	struct entity* drone = tmp[1]->pchip;
+	_obj* drone = tmp[1]->pchip;
 	if(0 == drone)return;
 
-	struct entity* world;
+	_obj* world;
 	struct relation* rel = drone->irel0;
 	while(1){
 		if(0 == rel)break;
 		world = rel->psrcchip;
-		if(	(_virtual_ != world->fmt) | (_scene3d_ != world->fmt)){
+		if(	(_virtual_ != world->hfmt) | (_scene3d_ != world->hfmt)){
 			ent->REL_WORLD = rel->src;
 			ent->REL_DRONE = rel->dst;
 			return;
@@ -135,12 +135,12 @@ void carcon_checkplace(struct entity* ent)
 
 
 
-int carcon_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int carcon_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@carcon_read:%p,%p\n",ent,foot);
 	return 0;
 }
-int carcon_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+int carcon_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	//say("@carcon_write:%.4s\n",&foot);
 	float angle;
@@ -181,11 +181,11 @@ int carcon_modify()
 {
 	return 0;
 }
-int carcon_delete(struct entity* ent)
+int carcon_delete(_obj* ent)
 {
 	return 0;
 }
-int carcon_create(struct entity* ent, void* str)
+int carcon_create(_obj* ent, void* str)
 {
 	say("@carcon_create\n");
 	ent->REL_WORLD = 0;

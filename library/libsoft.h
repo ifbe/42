@@ -16,10 +16,10 @@ double arcsin(double);
 double arccos(double);
 double arctanyx(double, double);
 //
-int startfile(void*, int);
-int stopfile(int);
-int readfile( void*, int, void*, int, void*, int);
-int writefile(void*, int, void*, int, void*, int);
+_obj* file_create(void*, int);
+int file_delete(_obj*);
+int file_take(_obj*, int, void*, int, void*, int);
+int file_give(_obj*, int, void*, int, void*, int);
 //
 int readfolder( void*, int, void*, int, void*, int);
 int writefolder(void*, int, void*, int, void*, int);

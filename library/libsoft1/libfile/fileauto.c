@@ -1,11 +1,11 @@
 #include "libsoft.h"
 u64 file_check(u8* buf, int len);
-int mbrclient_create(struct artery* ele, void* url, int argc, u8** argv);
-int mbrclient_delete(struct artery* ele, void* url);
+int mbrclient_create(_obj* ele, void* url, int argc, u8** argv);
+int mbrclient_delete(_obj* ele, void* url);
 int mbrclient_linkup(struct halfrel* self, struct halfrel* peer);
 int mbrclient_discon(struct halfrel* self, struct halfrel* peer);
-int gptclient_create(struct artery* ele, void* url, int argc, u8** argv);
-int gptclient_delete(struct artery* ele, void* url);
+int gptclient_create(_obj* ele, void* url, int argc, u8** argv);
+int gptclient_delete(_obj* ele, void* url);
 int gptclient_linkup(struct halfrel* self, struct halfrel* peer);
 int gptclient_discon(struct halfrel* self, struct halfrel* peer);
 
@@ -14,24 +14,22 @@ int gptclient_discon(struct halfrel* self, struct halfrel* peer);
 
 int openreadclose(void* name, int off, void* buf, int len)
 {
-	int ret;
-	int fd = startfile(name, 'r');
-	if(fd < 0)return fd;
+	_obj* obj = file_create(name, 'r');
+	if(0 == obj)return 0;
 
-	ret = readfile(0, fd, "", off, buf, len);
+	int ret = file_take(obj,0, "",off, buf,len);
 
-	stopfile(fd);
+	file_delete(obj);
 	return ret;
 }
 int openwriteclose(void* name, int off, void* buf, int len)
 {
-	int ret;
-	int fd = startfile(name, 'w');
-	if(fd < 0)return fd;
+	_obj* obj = file_create(name, 'w');
+	if(0 == obj)return 0;
 
-	ret = writefile(0, fd, "", off, buf, len);
+	int ret = file_give(obj,0, "",off, buf,len);
 
-	stopfile(fd);
+	file_delete(obj);
 	return ret;
 }
 
@@ -96,7 +94,7 @@ void cleverread(
 		rdi,rsi,rcx
 	);
 */
-	readfile(0, 0, "", rsi, rdi, rcx);
+	//readfile(0, 0, "", rsi, rdi, rcx);
 }
 
 
@@ -124,17 +122,17 @@ void cleverwrite(
 
 
 
-int fileauto_delete(struct artery* ele)
+int fileauto_delete(_obj* ele)
 {
-	if(ele->buf0){
-		memorydelete(ele->buf0);
-		ele->buf0 = 0;
+	if(ele->listptr.buf0){
+		memorydelete(ele->listptr.buf0);
+		ele->listptr.buf0 = 0;
 	}
 	return 0;
 }
-int fileauto_create(struct artery* ele, u8* url)
+int fileauto_create(_obj* ele, u8* url)
 {
-	ele->buf0 = memorycreate(0x10000, 0);
+	ele->listptr.buf0 = memorycreate(0x10000, 0);
 	return 0;
 }
 int fileauto_discon(struct halfrel* self, struct halfrel* peer)
@@ -144,16 +142,16 @@ int fileauto_discon(struct halfrel* self, struct halfrel* peer)
 int fileauto_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	say("@fileauto_linkup\n");
-	struct artery* ele = self->pchip;
+	_obj* ele = self->pchip;
 	if(0 == ele)return 0;
-	void* buf = ele->buf0;
+	void* buf = ele->listptr.buf0;
 	if(0 == buf)return 0;
 
 	int ret;
 	struct item* xxx = peer->pchip;
 	if((_sys_ == xxx->tier)|(_art_ == xxx->tier)){
-		struct sysobj* obj = peer->pchip;
-		ret = readfile(obj, obj->selffd, "", 0, buf, 0x10000);
+		_obj* obj = peer->pchip;
+		ret = file_take(obj,0, "", 0, buf, 0x10000);
 		if(0x10000 != ret)return -1;
 	}
 	else{

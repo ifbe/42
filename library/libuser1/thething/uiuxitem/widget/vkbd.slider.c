@@ -1,34 +1,34 @@
 #include "libuser.h"
-#define LISTBUF buf0
-void dx11data_01cam(struct entity* wnd);
+#define LISTBUF listptr.buf0
+void dx11data_01cam(_obj* wnd);
 //
-void gl41data_before(struct entity* wnd);
-void gl41data_after(struct entity* wnd);
-void gl41data_01cam(struct entity* wnd);
-void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
+void gl41data_before(_obj* wnd);
+void gl41data_after(_obj* wnd);
+void gl41data_01cam(_obj* wnd);
+void gl41data_convert(_obj* wnd, struct style* area, struct event* ev, vec3 v);
 
 
 
 
-static int slider_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static int slider_search(_obj* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 	return 0;
 }
-static int slider_modify(struct entity* act)
+static int slider_modify(_obj* act)
 {
 	return 0;
 }
-static int slider_delete(struct entity* act)
+static int slider_delete(_obj* act)
 {
 	return 0;
 }
-static int slider_create(struct entity* act, u8* str)
+static int slider_create(_obj* act, u8* str)
 {
 	int j;
 	int* list = act->LISTBUF = memorycreate(0x1000, 0);
 	for(j=0;j<12;j++)list[j] = 50;
 
-	act->iw0 = -1;
+	act->whdf.iw0 = -1;
 	return 0;
 }
 
@@ -37,9 +37,9 @@ static int slider_create(struct entity* act, u8* str)
 
 
 void slider_draw_gl41(
-	struct entity* act, struct style* part,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* part,
+	_obj* scn, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	int x,y,j;
 	int c,rgb;
@@ -73,7 +73,7 @@ void slider_draw_gl41(
 
 
 
-static void slider_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
+static void slider_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
 {
 	struct fstyle fs;
 	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.5;
@@ -85,12 +85,12 @@ static void slider_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct sty
 	slider_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
 	gl41data_after(wnd);
 
-	if(_dx11list_ == wnd->fmt)dx11data_nocam(wnd);
+	if(_dx11list_ == wnd->hfmt)dx11data_nocam(wnd);
 	else gl41data_nocam(wnd);
 }
-static void slider_write_bywnd(_ent* ent,void* foot, _syn* stack,int sp, struct event* ev,int len)
+static void slider_write_bywnd(_obj* ent,void* foot, _syn* stack,int sp, struct event* ev,int len)
 {
-	struct entity* wnd;struct style* area;
+	_obj* wnd;struct style* area;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	if('p' == (ev->what&0xff)){
@@ -98,9 +98,9 @@ static void slider_write_bywnd(_ent* ent,void* foot, _syn* stack,int sp, struct 
 		gl41data_convert(wnd, area, ev, xyz);
 
 		int y = 12*(1.0-xyz[1]);
-		if(0x2b70 == ev->what)ent->iw0 = y;
-		if(0x2d70 == ev->what)ent->iw0 = -1;
-		if(ent->iw0 < 0)return;
+		if(0x2b70 == ev->what)ent->whdf.iw0 = y;
+		if(0x2d70 == ev->what)ent->whdf.iw0 = -1;
+		if(ent->whdf.iw0 < 0)return;
 
 		int x = 120*xyz[0]-10;
 		if(x < 0)x = 0;
@@ -117,12 +117,12 @@ static void slider_write_bywnd(_ent* ent,void* foot, _syn* stack,int sp, struct 
 
 
 
-static int slider_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int slider_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* wnd = stack[sp-2].pchip;
+	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _rgba_:
 		break;
 	case _dx11list_:
@@ -134,10 +134,10 @@ static int slider_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int
 	}
 	return 0;
 }
-static int slider_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int slider_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct supply* wnd = stack[sp-2].pchip;
-	switch(wnd->fmt){
+	_obj* wnd = stack[sp-2].pchip;
+	switch(wnd->hfmt){
 	case _gl41list_:{
 		slider_write_bywnd(ent,foot, stack,sp, buf,len);break;
 	}
@@ -156,10 +156,10 @@ static int slider_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-void slider_register(struct entity* p)
+void slider_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('s','l','i','d','e','r', 0, 0);
+	p->hfmt = hex64('s','l','i','d','e','r', 0, 0);
 
 	p->oncreate = (void*)slider_create;
 	p->ondelete = (void*)slider_delete;

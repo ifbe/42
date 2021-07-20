@@ -11,11 +11,11 @@ int radar_modify()
 {
 	return 0;
 }
-int radar_delete(struct supply* win)
+int radar_delete(_obj* win)
 {
 	return 0;
 }
-int radar_create(struct supply* win, void* str)
+int radar_create(_obj* win, void* str)
 {
 	return 0;
 }
@@ -23,10 +23,10 @@ int radar_create(struct supply* win, void* str)
 
 
 
-void radar_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+void radar_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 }
-void radar_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+void radar_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 }
 int radar_discon(struct halfrel* self, struct halfrel* peer)

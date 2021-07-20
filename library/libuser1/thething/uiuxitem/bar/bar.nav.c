@@ -1,10 +1,10 @@
 #include "libuser.h"
-int entityoutput_void(    struct entity* win, struct style* sty);
-int entityoutput_console( struct entity* win, struct style* sty);
-int entityoutput_overview(struct entity* win, struct style* sty);
-int entityoutput_detail(  struct entity* win, struct style* sty);
-int entityoutput_editor(  struct entity* win, struct style* sty);
-int entityoutput_player( struct entity* win, struct style* sty);
+int entityoutput_void(    _obj* win, struct style* sty);
+int entityoutput_console( _obj* win, struct style* sty);
+int entityoutput_overview(_obj* win, struct style* sty);
+int entityoutput_detail(  _obj* win, struct style* sty);
+int entityoutput_editor(  _obj* win, struct style* sty);
+int entityoutput_player( _obj* win, struct style* sty);
 
 
 
@@ -23,19 +23,19 @@ static void* nametab[8] = {
 
 
 
-void navmenu_draw_cli(struct entity* win)
+void navmenu_draw_cli(_obj* win)
 {
 }
-void navmenu_draw_tui(struct entity* win)
+void navmenu_draw_tui(_obj* win)
 {
 }
-void navmenu_draw_html(struct entity* win)
+void navmenu_draw_html(_obj* win)
 {
 }
-void navmenu_draw_json(struct entity* win)
+void navmenu_draw_json(_obj* win)
 {
 }
-void navmenu_draw_gl41(struct entity* win)
+void navmenu_draw_gl41(_obj* win)
 {
 	struct style sty;
 	vec3 vc;
@@ -43,7 +43,7 @@ void navmenu_draw_gl41(struct entity* win)
 	vec3 vf;
 	int j,k,x,y;
 	int rgb,tmp;
-	int w = win->width;
+	int w = win->whdf.width;
 	int s = w*2/3;
 /*
 	j = win->forex;
@@ -139,15 +139,15 @@ void navmenu_draw_gl41(struct entity* win)
 	gl41string2d_center(win, 0xffffff, vc, vr, vf, nametab[tmp], 0);
 */
 }
-void navmenu_draw_pixel(struct entity* win)
+void navmenu_draw_pixel(_obj* win)
 {
 	struct style sty;
 	int va[2];
 	int vb[2];
 	int j,k,x,y;
 	int tmp,rgb;
-	int w = win->width;
-	int h = win->height;
+	int w = win->whdf.width;
+	int h = win->whdf.height;
 	int s = w*2/3;
 /*
 	j = win->forex;
@@ -231,7 +231,7 @@ void navmenu_draw_pixel(struct entity* win)
 
 
 
-int navmenu_event(struct entity* win, struct style* sty, struct event* ev)
+int navmenu_event(_obj* win, struct style* sty, struct event* ev)
 {
 	short* t;
 	int pa[2];
@@ -273,8 +273,8 @@ int navmenu_event(struct entity* win, struct style* sty, struct event* ev)
 			win->forew &= 0xf;
 			return 0;
 		}
-		else if(x*8 < -win->width)x = 0x4d;
-		else if(x*8 > win->width)x = 0x4b;
+		else if(x*8 < -win->whdf.width)x = 0x4d;
+		else if(x*8 > win->whdf.width)x = 0x4b;
 		else return 0;
 	}
 	else if(_kbd_ == ret)

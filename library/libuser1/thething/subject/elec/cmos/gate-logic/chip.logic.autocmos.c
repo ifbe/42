@@ -1,17 +1,17 @@
 #include "libuser.h"
-void gl41data_before(struct entity* wnd);
-void gl41data_after(struct entity* wnd);
-void gl41data_01cam(struct entity* wnd);
-void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
-void gl41line_pmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
-void gl41line_nmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
+void gl41data_before(_obj* wnd);
+void gl41data_after(_obj* wnd);
+void gl41data_01cam(_obj* wnd);
+void gl41data_convert(_obj* wnd, struct style* area, struct event* ev, vec3 v);
+void gl41line_pmos(_obj* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
+void gl41line_nmos(_obj* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
 
 
 
 
 static void autocmos_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -23,30 +23,30 @@ static void autocmos_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 }
 static void autocmos_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void autocmos_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void autocmos_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void autocmos_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
@@ -54,9 +54,9 @@ static void autocmos_draw_cli(
 
 
 static void autocmos_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int w,h;
 	int x,y,j;
@@ -82,8 +82,8 @@ static void autocmos_draw_gl41(
 	gl41line(ctx, 0x0000ff, tc, tr);
 
 	//nmos
-	w = act->ix0;
-	h = act->iy0;
+	w = act->whdf.ix0;
+	h = act->whdf.iy0;
 	for(j=0;j<3;j++){
 		tr[j] = vr[j]/w;
 		tf[j] = vf[j]/h/2;
@@ -98,8 +98,8 @@ static void autocmos_draw_gl41(
 	}
 
 	//pmos
-	w = act->ixn;
-	h = act->iyn;
+	w = act->whdf.ixn;
+	h = act->whdf.iyn;
 	for(j=0;j<3;j++){
 		tr[j] = vr[j]/w;
 		tf[j] = vf[j]/h/2;
@@ -117,21 +117,21 @@ static void autocmos_draw_gl41(
 
 
 
-static void autocmos_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void autocmos_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	autocmos_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void autocmos_wrl_wnd(_ent* ent,void* foot, _syn* stack,int sp)
+static void autocmos_wrl_wnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
 }
-static void autocmos_wnd(_ent* ent,void* foot, _syn* stack,int sp)
+static void autocmos_wnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
-	struct entity* wnd;struct style* area;
+	_obj* wnd;struct style* area;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	struct fstyle fs;
@@ -149,7 +149,7 @@ static void autocmos_wnd(_ent* ent,void* foot, _syn* stack,int sp)
 
 
 
-static void autocmos_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void autocmos_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -158,10 +158,10 @@ static void autocmos_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -171,7 +171,7 @@ static void autocmos_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,
 		break;
 	}
 }
-static void autocmos_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void autocmos_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@autocmos_write:%x\n",buf[0]);
 }
@@ -185,30 +185,30 @@ static void autocmos_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void autocmos_search(struct entity* act, u8* buf)
+static void autocmos_search(_obj* act, u8* buf)
 {
 }
-static void autocmos_modify(struct entity* act, u8* buf)
+static void autocmos_modify(_obj* act, u8* buf)
 {
 }
-static void autocmos_delete(struct entity* act, u8* buf)
+static void autocmos_delete(_obj* act, u8* buf)
 {
 }
-static void autocmos_create(struct entity* act, u8* buf)
+static void autocmos_create(_obj* act, u8* buf)
 {
-	act->ix0 = 3;
-	act->iy0 = 4;
-	act->ixn = 4;
-	act->iyn = 3;
+	act->whdf.ix0 = 3;
+	act->whdf.iy0 = 4;
+	act->whdf.ixn = 4;
+	act->whdf.iyn = 3;
 }
 
 
 
 
-void autocmos_register(struct entity* p)
+void autocmos_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('a','u','t','o','c','m','o','s');
+	p->hfmt = hex64('a','u','t','o','c','m','o','s');
 
 	p->oncreate = (void*)autocmos_create;
 	p->ondelete = (void*)autocmos_delete;

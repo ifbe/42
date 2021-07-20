@@ -38,7 +38,7 @@ static u64 whichblock(u64 groupnum)
 	sector+=groupnum/(0x200/0x20);
 
 	//肯定在这个扇区里面
-	readfile(0, 0, "", sector*0x200, blockrecord, 0x200);
+	//file_take(0, 0, "", sector*0x200, blockrecord, 0x200);
 
 	//每0x20描述一个组，一个扇区有16个组的信息
 	u8* addr=blockrecord+8+(groupnum*0x20)%0x200;
@@ -85,7 +85,7 @@ static u8* checkcacheforinode(u64 wanted)
 		//read inode table
 		//say("inode:%x@%x\n",this,where);
 		//注意inodepergroup奇葩时这里出问题
-		readfile(0, 0, "", where*0x200, rdi, count*inodesize*0x200);
+		//file_take(0, 0, "", where*0x200, rdi, count*inodesize*0x200);
 
 		//读满0x400个inode就走人
 		rdi+=count*inodesize;		//注意inodepergroup奇葩时这里出问题
@@ -182,7 +182,7 @@ static int explaininode(u64 inode,u64 wantwhere)
 			temp=block0+(*(u32*)rsi)*blocksize;
 			say("sector:%x\n",temp);
 
-			readfile(0, temp*0x200, rdi, blocksize*0x200);
+			//file_take(0, temp*0x200, rdi, blocksize*0x200);
 			rdi+=0x200*blocksize;
 		}
 
@@ -331,7 +331,7 @@ static int ext_start(u64 sector)
 	block0 = sector;
 
 	//读分区前8扇区，检查magic值
-	ret = readfile(0, 0, "", block0*0x200, pbr, 0x1000);
+	//ret = file_take(0, 0, "", block0*0x200, pbr, 0x1000);
 	ret = check_ext(pbr);
 	if(ret == 0)return -1;
 
@@ -374,13 +374,13 @@ void ext_delete()
 
 
 int extclient_write(
-	struct artery* ele, void* sty,
-	struct sysobj* obj, void* pin,
+	_obj* ele, void* sty,
+	_obj* obj, void* pin,
 	u8* buf, int len)
 {
 	return 0;
 }
-int extclient_create(struct artery* ele, u8* url)
+int extclient_create(_obj* ele, u8* url)
 {
 	return 0;
 }

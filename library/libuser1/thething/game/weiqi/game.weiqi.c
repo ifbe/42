@@ -42,12 +42,12 @@ int weiqi_import(char* file, u8* buf)
 
 
 static void weiqi_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	u32 c;
 	int x, y, cx, cy, ww, hh;
-	struct perweiqi* per = act->buf0;
+	struct perweiqi* per = act->listptr.buf0;
 
 	if(sty)
 	{
@@ -58,14 +58,14 @@ static void weiqi_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 
 	//rgb? bgr?
-	if( ((win->fmt)&0xffffff) == 0x626772)c = 0x256f8d;
+	if( ((win->hfmt)&0xffffff) == 0x626772)c = 0x256f8d;
 	else c = 0x8d6f25;
 
 	drawsolid_rect(win, c, cx-ww, cy-hh, cx+ww, cy+hh);
@@ -114,8 +114,8 @@ static void weiqi_draw_pixel(
 
 
 static void weiqi_draw_gl41_nocam(
-	struct entity* act, struct style* part,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* part,
+	_obj* wnd, struct style* area)
 {
 	struct fstyle fs;
 	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
@@ -129,9 +129,9 @@ static void weiqi_draw_gl41_nocam(
 	gl41data_after(wnd);
 }
 static void weiqi_draw_gl41(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int x,y;
 	int j,k,rgb;
@@ -174,7 +174,7 @@ static void weiqi_draw_gl41(
 		}
 	}
 
-	u8* data = act->buf0;
+	u8* data = act->listptr.buf0;
 	k = 0;
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] + vt[j]/2;
@@ -202,16 +202,16 @@ static void weiqi_draw_gl41(
 	}
 }
 static void weiqi_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void weiqi_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x,y;
-	struct perweiqi* per = win->buf0;
+	struct perweiqi* per = win->listptr.buf0;
 
 	//<head>
 	htmlprintf(win, 1,
@@ -234,14 +234,14 @@ static void weiqi_draw_html(
 	htmlprintf(win, 2, "</div>\n");
 }
 static void weiqi_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x,y,j,k,ret,color;
-	int width = win->width;
-	int height = win->height;
-	struct perweiqi* per = win->buf0;
-	u8* p = win->buf0;
+	int width = win->whdf.width;
+	int height = win->whdf.height;
+	struct perweiqi* per = win->listptr.buf0;
+	u8* p = win->listptr.buf0;
 
 	for(y=0;y<19;y++)
 	{
@@ -266,8 +266,8 @@ static void weiqi_draw_tui(
 	}
 }
 static void weiqi_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
@@ -372,15 +372,15 @@ void weiqi_intersect(float* out, vec3 ray[], struct fstyle* sty)
 
 
 
-static void weiqi_taking_bycam(_ent* ent,void* slot, _syn* stack,int sp)
+static void weiqi_taking_bycam(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	if(0 == stack)return;
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _dx11list_:
 	case _mt20list_:
 	case _gl41list_:
@@ -389,13 +389,13 @@ static void weiqi_taking_bycam(_ent* ent,void* slot, _syn* stack,int sp)
 		break;
 	}
 }
-static void weiqi_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void weiqi_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _gl41list_:
 		weiqi_draw_gl41_nocam(ent,slot, caller,area);
 		break;
@@ -404,9 +404,9 @@ static void weiqi_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 		break;
 	}
 }
-static void weiqi_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void weiqi_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* caller;struct style* geom;
+	_obj* caller;struct style* geom;
 	caller = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 
 	switch(caller->type){
@@ -419,7 +419,7 @@ static void weiqi_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int
 */
 		float out[3];
 		weiqi_intersect(out, ray, &geom->fs);
-		weiqi_putone(ent->buf0, out);
+		weiqi_putone(ent->listptr.buf0, out);
 		break;
 	}
 	}
@@ -434,26 +434,26 @@ static void weiqi_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void weiqi_search(struct entity* act)
+static void weiqi_search(_obj* act)
 {
 }
-static void weiqi_modify(struct entity* act)
+static void weiqi_modify(_obj* act)
 {
 }
-static void weiqi_delete(struct entity* act)
+static void weiqi_delete(_obj* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf0);
+	if(_copy_ == act->type)memorydelete(act->listptr.buf0);
 }
-static void weiqi_create(struct entity* act, void* str)
+static void weiqi_create(_obj* act, void* str)
 {
 	if(0 == act)return;
 
 	u8* buf = memorycreate(sizeof(struct perweiqi), 0);
-	act->buf0 = buf;
+	act->listptr.buf0 = buf;
 	if(0 == buf)return;
 
-	struct perweiqi* per = act->buf0;
+	struct perweiqi* per = act->listptr.buf0;
 	per->px = per->py = 0;
 	per->turn = 0;
 
@@ -469,10 +469,10 @@ static void weiqi_create(struct entity* act, void* str)
 
 
 
-void weiqi_register(struct entity* p)
+void weiqi_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('w', 'e', 'i', 'q','i', 0, 0, 0);
+	p->hfmt = hex64('w', 'e', 'i', 'q','i', 0, 0, 0);
 
 	p->oncreate = (void*)weiqi_create;
 	p->ondelete = (void*)weiqi_delete;

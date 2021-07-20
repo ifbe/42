@@ -38,8 +38,8 @@ int sudoku_import(char* file, u8* buf)
 
 
 static void sudoku_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x,y;
 	int t1, t2, t3, t4;
@@ -53,13 +53,13 @@ static void sudoku_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 
-	u8* data = act->buf0;
+	u8* data = act->listptr.buf0;
 	for(y=0;y<9;y++)
 	{
 		for(x=0;x<9;x++)
@@ -83,9 +83,9 @@ static void sudoku_draw_pixel(
 	}
 }
 static void sudoku_draw_gl41(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	u32 rgb;
 	int x,y;
@@ -95,12 +95,12 @@ static void sudoku_draw_gl41(
 	float* vf = geom->fs.vf;
 	float* vu = geom->fs.vt;
 
-	u8* data = act->buf0;
+	u8* data = act->listptr.buf0;
 	for(y=0;y<9;y++)
 	{
 		for(x=0;x<9;x++)
 		{
-			if((act->ix0 == x)&&(act->iy0 == y))rgb = 0xff0000;
+			if((act->whdf.ix0 == x)&&(act->whdf.iy0 == y))rgb = 0xff0000;
 			else if((x>2)&&(x<6)&&(y>2)&&(y<6))rgb = 0xcccccc;
 			else if((x<3)&&(y<3))rgb = 0x444444;
 			else if((x<3)&&(y>5))rgb = 0x444444;
@@ -141,16 +141,16 @@ static void sudoku_draw_gl41(
 	}
 }
 static void sudoku_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void sudoku_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x,y;
-	u8* data = act->buf0;
+	u8* data = act->listptr.buf0;
 
 	//<head>
 	htmlprintf(win, 1,
@@ -173,14 +173,14 @@ static void sudoku_draw_html(
 	htmlprintf(win, 2, "</div>\n");
 }
 static void sudoku_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x,y,j,k,ret,color;
-	int width = win->width;
-	char* p = win->textbuf;
+	int width = win->whdf.width;
+	char* p = win->tuitext.buf;
 
-	u8* data = act->buf0;
+	u8* data = act->listptr.buf0;
 	for(y=0;y<9;y++)
 	{
 		for(x=0;x<9;x++)
@@ -192,7 +192,7 @@ static void sudoku_draw_tui(
 			ret <<= 2;
 
 			//color
-			if( (act->ix0 == x)&&(act->ix0 == y) )color = 1;
+			if( (act->whdf.ix0 == x)&&(act->whdf.ix0 == y) )color = 1;
 			else if( ((x>2)&&(x<6)) && ((y<3)|(y>5)) )color = 2;
 			else if( ((y>2)&&(y<6)) && ((x<3)|(x>5)) )color = 2;
 			else color = 4;
@@ -204,11 +204,11 @@ static void sudoku_draw_tui(
 	}
 }
 static void sudoku_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x,y;
-	u8* data = act->buf0;
+	u8* data = act->listptr.buf0;
 
 	for(y=0;y<9;y++)
 	{
@@ -225,8 +225,8 @@ static void sudoku_draw_cli(
 
 
 static void sudoku_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
 	u64 what = ev->what;
@@ -235,25 +235,25 @@ static void sudoku_event(
 	{
 		if(key == 0x48)	//up
 		{
-			if(act->iy0 < 1)return;
-			act->iy0--;
+			if(act->whdf.iy0 < 1)return;
+			act->whdf.iy0--;
 		}
 		else if(key == 0x4b)	//left
 		{
-			if(act->ix0 < 1)return;
-			act->ix0--;
+			if(act->whdf.ix0 < 1)return;
+			act->whdf.ix0--;
 		}
 		else if(key == 0x4d)	//right
 		{
-			if(act->ix0 < 0)return;
-			if(act->ix0 >= 8)return;
-			act->ix0++;
+			if(act->whdf.ix0 < 0)return;
+			if(act->whdf.ix0 >= 8)return;
+			act->whdf.ix0++;
 		}
 		else if(key == 0x50)	//down
 		{
-			if(act->iy0 < 0)return;
-			if(act->iy0 >= 8)return;
-			act->iy0++;
+			if(act->whdf.iy0 < 0)return;
+			if(act->whdf.iy0 >= 8)return;
+			act->whdf.iy0++;
 		}
 	}
 }
@@ -261,10 +261,10 @@ static void sudoku_event(
 
 
 
-static void sudoku_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void sudoku_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -274,7 +274,7 @@ static void sudoku_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void sudoku_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void sudoku_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -283,10 +283,10 @@ static void sudoku_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -296,7 +296,7 @@ static void sudoku_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 		break;
 	}
 }
-static void sudoku_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void sudoku_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void sudoku_discon(struct halfrel* self, struct halfrel* peer)
@@ -309,24 +309,24 @@ static void sudoku_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void sudoku_search(struct entity* act, u8* buf)
+static void sudoku_search(_obj* act, u8* buf)
 {
 }
-static void sudoku_modify(struct entity* act, u8* buf)
+static void sudoku_modify(_obj* act, u8* buf)
 {
 }
-static void sudoku_delete(struct entity* act, u8* buf)
+static void sudoku_delete(_obj* act, u8* buf)
 {
 	if(0 == act)return;
 }
-static void sudoku_create(struct entity* act, void* str)
+static void sudoku_create(_obj* act, void* str)
 {
 	int ret;
 	void* buf;
 	if(0 == act)return;
 
 	//malloc
-	buf = act->buf0 = memorycreate(81, 0);
+	buf = act->listptr.buf0 = memorycreate(81, 0);
 	if(0 == buf)return;
 
 	//read
@@ -338,17 +338,17 @@ static void sudoku_create(struct entity* act, void* str)
 	sudoku_solve(buf);
 	for(ret=0;ret<81;ret+=9)printmemory(buf+ret, 9);
 
-	act->ix0 = 0;
-	act->iy0 = 0;
+	act->whdf.ix0 = 0;
+	act->whdf.iy0 = 0;
 }
 
 
 
 
-void sudoku_register(struct entity* p)
+void sudoku_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('s', 'u', 'd', 'o', 'k', 'u', 0, 0);
+	p->hfmt = hex64('s', 'u', 'd', 'o', 'k', 'u', 0, 0);
 
 	p->oncreate = (void*)sudoku_create;
 	p->ondelete = (void*)sudoku_delete;

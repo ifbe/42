@@ -2,15 +2,15 @@
 #define _tar_ hex32('t','a','r', 0)
 int worldxyzfromareauv(float* v, struct fstyle* sty);
 int obb_ray(struct fstyle* sty, vec3 ray[], vec3 out[]);
-int gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
+int gl41data_convert(_obj* wnd, struct style* area, struct event* ev, vec3 v);
 
 
 
 
-static int clickray_convert(struct entity* cam, struct style* xxx, float* xyz, vec3 ray[])
+static int clickray_convert(_obj* cam, struct style* xxx, float* xyz, vec3 ray[])
 {
 	struct relation* rel;
-	struct entity* world;
+	_obj* world;
 	struct style* geom;
 
 	rel = cam->irel0;
@@ -31,9 +31,9 @@ found:
 	//say("%f,%f,%f\n", xyz[0],xyz[1],xyz[2]);
 
 	//put it into cam.rayslot
-	cam->fx0 = xyz[0];
-	cam->fy0 = xyz[1];
-	cam->fz0 = xyz[2];
+	cam->whdf.fx0 = xyz[0];
+	cam->whdf.fy0 = xyz[1];
+	cam->whdf.fz0 = xyz[2];
 
 xyz2ray:
 	ray[0][0] = geom->fs.vc[0];
@@ -44,7 +44,7 @@ xyz2ray:
 	ray[1][2] = xyz[2] - ray[0][2];
 	return 1;
 }
-static int clickray_intersect(struct entity* handler,void* foot,
+static int clickray_intersect(_obj* handler,void* foot,
 	struct halfrel* stack,int sp, vec3 ray[], vec3 out[])
 {
 	int ret;
@@ -53,7 +53,7 @@ static int clickray_intersect(struct entity* handler,void* foot,
 	if(ret <= 0)return 0;
 //say("(%f,%f,%f)->(%f,%f,%f)\n", ray[0][0],ray[0][1],ray[0][2], ray[1][0],ray[1][1],ray[1][2]);
 
-	struct entity* scene = totar[1]->pchip;
+	_obj* scene = totar[1]->pchip;
 	if(0 == scene)return 0;
 
 	struct relation* rel = scene->orel0;
@@ -81,44 +81,44 @@ static int clickray_intersect(struct entity* handler,void* foot,
 
 
 
-int clickray_search(struct entity* act, int flag, struct halfrel* self[], struct halfrel* peer[])
+int clickray_search(_obj* act, int flag, struct halfrel* self[], struct halfrel* peer[])
 {
 	return 0;
 }
-int clickray_modify(struct entity* act)
+int clickray_modify(_obj* act)
 {
 	return 0;
 }
-int clickray_delete(struct entity* act)
+int clickray_delete(_obj* act)
 {
 	return 0;
 }
-int clickray_create(struct entity* act, void* flag)
+int clickray_create(_obj* act, void* flag)
 {
-	act->ix0 = 0;
-	act->iy0 = 0;
-	act->iz0 = 0;
-	act->iw0 = 0;
+	act->whdf.ix0 = 0;
+	act->whdf.iy0 = 0;
+	act->whdf.iz0 = 0;
+	act->whdf.iw0 = 0;
 	return 0;
 }
 
 
 
 
-int clickray_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int clickray_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int clickray_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int clickray_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 //[-4,-3]: wnd,area -> cam,togl
 //[-2,-1]: cam,evto -> this,bycam
-	struct entity* cam = stack[sp-2].pchip;
+	_obj* cam = stack[sp-2].pchip;
 	struct style* xxxx = stack[sp-2].pfoot;
-	struct entity* wnd = stack[sp-4].pchip;
+	_obj* wnd = stack[sp-4].pchip;
 	struct style* area = stack[sp-4].pfoot;
-say("%.8s->%.8s->%.8s\n",&wnd->fmt, &cam->fmt, &ent->fmt);
-/*	switch(wnd->fmt){
+say("%.8s->%.8s->%.8s\n",&wnd->hfmt, &cam->hfmt, &ent->hfmt);
+/*	switch(wnd->hfmt){
 	case _gl41list_:
 	case _dx11list_:
 	case _mt20list_:
@@ -126,14 +126,14 @@ say("%.8s->%.8s->%.8s\n",&wnd->fmt, &cam->fmt, &ent->fmt);
 */
 	struct event* ev = buf;
 	if(0x2d70 == ev->what){		//mouse up
-		ent->iw0 = 0;
+		ent->whdf.iw0 = 0;
 		return 0;
 	}
 	if(0x2b70 == ev->what){		//mouse down
-		ent->iw0 = 1;
+		ent->whdf.iw0 = 1;
 	}
 	if('p' == (ev->what&0xff)){
-		if(0 == ent->iw0)return 0;
+		if(0 == ent->whdf.iw0)return 0;
 
 		int ret;
 		vec3 xyz;

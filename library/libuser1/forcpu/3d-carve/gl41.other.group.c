@@ -5,7 +5,7 @@
 
 
 
-void carvedrone_node(struct entity* ctx, u32 rgb,
+void carvedrone_node(_obj* ctx, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
 	float j;
@@ -96,7 +96,7 @@ void carvedrone_node(struct entity* ctx, u32 rgb,
 	t1[2] = (v0[2]-v2[2])/2;
 	gl41solid_rect(ctx, 0x204060, t0, t1, t2);
 }
-void carvedrone(struct entity* ctx, u32 rgb,
+void carvedrone(_obj* ctx, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
 	int x,y;
@@ -157,7 +157,7 @@ void carvedrone(struct entity* ctx, u32 rgb,
 
 
 
-void gl41solid_propeller(struct entity* ctx, u32 rgb,
+void gl41solid_propeller(_obj* ctx, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vt, int dir, int dt)
 {
 	float a;
@@ -192,7 +192,7 @@ void gl41solid_propeller(struct entity* ctx, u32 rgb,
 	tf[2] = ff[2]/8 - dir*vt[2]/8;
 	gl41solid_circle(ctx, rgb, tc, rr, tf);
 }
-void gl41opaque_propeller(struct entity* ctx, u32 rgb,
+void gl41opaque_propeller(_obj* ctx, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vt, int dir, int dt)
 {
 	float a;
@@ -231,7 +231,7 @@ void gl41opaque_propeller(struct entity* ctx, u32 rgb,
 
 
 
-void carvesnowman(struct entity* ctx, u32 rgb, vec3 vc)
+void carvesnowman(_obj* ctx, u32 rgb, vec3 vc)
 {
 	vec3 tc;
 	vec3 tr;
@@ -664,7 +664,7 @@ void carveskybox(float vbuf[][6], u16* ibuf,
 
 
 
-void gl41solid_bodypart(struct entity* ctx, u32 rgb, vec3 t0, vec3 t1)
+void gl41solid_bodypart(_obj* ctx, u32 rgb, vec3 t0, vec3 t1)
 {
 	float n;
 	vec3 tc, tr, tf, tu;
@@ -709,7 +709,7 @@ void gl41solid_bodypart(struct entity* ctx, u32 rgb, vec3 t0, vec3 t1)
 
 
 
-void carvearrorkey(struct entity* ctx, u32 rgb,
+void carvearrorkey(_obj* ctx, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf,
 	u8* buf, int t)
 {

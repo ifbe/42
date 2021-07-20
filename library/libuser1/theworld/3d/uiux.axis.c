@@ -4,7 +4,7 @@
 
 
 
-static void axis3d_perobj(struct entity* wnd, float* vc, float* vr, float* vf, float* vt)
+static void axis3d_perobj(_obj* wnd, float* vc, float* vr, float* vf, float* vt)
 {
 	int j;
 	vec3 tr,tf,tt;
@@ -35,9 +35,9 @@ static void axis3d_perobj(struct entity* wnd, float* vc, float* vr, float* vf, f
 	gl41line(wnd, 0x0000ff, vc, tt);
 	gl41float(wnd, 0xff0000, vc, nt, nr, lt);
 }
-void axis3d_draw_gl41(struct entity* scene, struct entity* wnd)
+void axis3d_draw_gl41(_obj* scene, _obj* wnd)
 {
-	//say("@axis3d_read: %.8s\n", &scene->fmt);
+	//say("@axis3d_read: %.8s\n", &scene->hfmt);
 
 	vec3 tc,tr,tf,tt;
 	tc[0] = tc[1] = tc[2] = 0.0;
@@ -57,16 +57,16 @@ void axis3d_draw_gl41(struct entity* scene, struct entity* wnd)
 		rel = samesrcnextdst(rel);
 	}
 }
-int axis3d_read_bycam(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key)
+int axis3d_read_bycam(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key)
 {
 	struct halfrel* aa[2];
 	int ret = relationsearch(ent, _tar_, &aa[0], &aa[1]);
 	if(ret <= 0)return 0;
 
-	struct entity* tar = aa[1]->pchip;
+	_obj* tar = aa[1]->pchip;
 	if(0 == tar)return 0;
 
-	struct entity* wnd = stack[sp-6].pchip;
+	_obj* wnd = stack[sp-6].pchip;
 	if(0 == wnd)return 0;
 
 	axis3d_draw_gl41(tar, wnd);
@@ -76,11 +76,11 @@ int axis3d_read_bycam(struct entity* ent,void* foot, struct halfrel* stack,int s
 
 
 
-int axis3d_taking(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int axis3d_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return 0;
 
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	//foot defined behavior
@@ -88,7 +88,7 @@ int axis3d_taking(struct entity* ent,void* foot, struct halfrel* stack,int sp, v
 	}
 
 	//caller defined behavior
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -97,7 +97,7 @@ int axis3d_taking(struct entity* ent,void* foot, struct halfrel* stack,int sp, v
 
 	return axis3d_read_bycam(ent,foot, stack,sp, arg,key);
 }
-int axis3d_giving(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int axis3d_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -114,19 +114,19 @@ int axis3d_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int axis3d_search(struct entity* scene)
+int axis3d_search(_obj* scene)
 {
 	return 0;
 }
-int axis3d_modify(struct entity* scene)
+int axis3d_modify(_obj* scene)
 {
 	return 0;
 }
-int axis3d_delete(struct entity* scene)
+int axis3d_delete(_obj* scene)
 {
 	return 0;
 }
-int axis3d_create(struct entity* scene, void* str)
+int axis3d_create(_obj* scene, void* str)
 {
 	say("@axis3d_create\n");
 	return 0;

@@ -1,8 +1,4 @@
 #include "libuser.h"
-#define nbuf buf0
-#define wbuf buf1
-#define vbuf buf2
-#define ibuf buf3
 void forcedirected_2d(void*, int, void*, int, void*, int);
 void forcedirected_3d(void*, int, void*, int, void*, int);
 
@@ -20,16 +16,26 @@ struct pair
 	u16 parent;
 	u16 child;
 };
+struct perobj{
+	struct node* nbuf;
+	struct pair* wbuf;
+	void* vbuf;
+	void* ibuf;
+	int nlen;
+	int wlen;
+	int vlen;
+	int ilen;
+};
 
 
 
 
 static void graph_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {/*
-	struct entity* aa;
-	struct entity* bb;
+	_obj* aa;
+	_obj* bb;
 	void* p;
 	int i,j,k;
 	int cx = sty->vc[0];
@@ -64,7 +70,7 @@ static void graph_draw_pixel(
 			if(orig[i].type == _sup_)
 			{
 				aa = orig[i].addr;
-				p = &(aa->fmt);
+				p = &(aa->hfmt);
 			}
 			else if(orig[i].type == _ent_)
 			{
@@ -81,27 +87,28 @@ static void graph_draw_pixel(
 	}*/
 }
 static void graph_draw_gl41(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	float n;
 	u8 buf[0x1000];
 	vec3 tc, tr, tf, tu;
 	int rgb;
 	int i,j,k;
-	struct entity* tmp;
+	_obj* tmp;
 	void* str;
-	struct node* node = act->nbuf;
-	struct pair* wire = act->wbuf;
-	float* vbuf = act->vbuf;
-	float* ibuf = act->ibuf;
+	struct perobj* perobj = (void*)act->priv_256b;
+	struct node* node = perobj->nbuf;
+	struct pair* wire = perobj->wbuf;
+	float* vbuf = perobj->vbuf;
+	float* ibuf = perobj->ibuf;
 	//gl41line_prism4(win, 0x00ff00, sty->vc, sty->vr, sty->vf, sty->vu);
 
 	if(vbuf)
 	{
 		for(j=0;j<100;j++)
 		{
-			forcedirected_3d(buf, act->vlen, act->vbuf, act->vlen, act->wbuf, act->wlen);
+			forcedirected_3d(buf, perobj->vlen, vbuf, perobj->vlen, wire, perobj->wlen);
 			vbuf[0] = sty->fs.vc[0];
 			vbuf[1] = sty->fs.vc[1];
 			vbuf[2] = sty->fs.vc[2];
@@ -116,7 +123,7 @@ static void graph_draw_gl41(
 	}
 
 
-	for(i=0;i<act->wlen;i++)
+	for(i=0;i<perobj->wlen;i++)
 	{
 		j = wire[i].parent;
 		k = wire[i].child;
@@ -147,50 +154,51 @@ static void graph_draw_gl41(
 	tf[2] *= n;
 
 	//billboard
-	for(j=0;j<act->vlen;j++)
+	for(j=0;j<perobj->vlen;j++)
 	{
 		tmp = node[j].addr;
 		switch(tmp->tier)
 		{
 			case _sys_:rgb = 0x0000ff;str = (void*)&tmp->type;break;
 			case _art_:rgb = 0xff0000;str = (void*)&tmp->type;break;
-			case _sup_:rgb = 0xffff00;str = (void*)&tmp->fmt;break;
-			case _ent_:rgb = 0x00ffff;str = (void*)&tmp->fmt;break;
+			case _sup_:rgb = 0xffff00;str = (void*)&tmp->hfmt;break;
+			case _ent_:rgb = 0x00ffff;str = (void*)&tmp->hfmt;break;
 			default:rgb = 0xff00ff;str = (void*)"????????";
 		}
 		gl41string_center(win, rgb, &vbuf[j*3], tr, tf, str, 8);
 	}
 }
 static void graph_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void graph_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void graph_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void graph_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-int graph_addnode(struct entity* act, u64 type, void* addr)
+int graph_addnode(_obj* act, u64 type, void* addr)
 {
 	int j;
-	struct node* node = act->nbuf;
+	struct perobj* perobj = (void*)act->priv_256b;
+	struct node* node = perobj->nbuf;
 
-	for(j=0;j<act->nlen;j++)
+	for(j=0;j<perobj->nlen;j++)
 	{
 		if(	(node[j].type == type) &&
 			(node[j].addr == addr) )
@@ -199,19 +207,20 @@ int graph_addnode(struct entity* act, u64 type, void* addr)
 		}
 	}
 
-	j = act->nlen;
-	act->nlen += 1;
+	j = perobj->nlen;
+	perobj->nlen += 1;
 
 	node[j].type = type;
 	node[j].addr = addr;
 	return j;
 }
-int graph_addpair(struct entity* act, int parent, int child)
+int graph_addpair(_obj* act, int parent, int child)
 {
 	int j;
-	struct pair* wire = act->wbuf;
+	struct perobj* perobj = (void*)act->priv_256b;
+	struct pair* wire = perobj->wbuf;
 
-	for(j=0;j<act->wlen;j++)
+	for(j=0;j<perobj->wlen;j++)
 	{
 		if(	(wire[j].parent == parent) &&
 			(wire[j].child == child) )
@@ -225,14 +234,14 @@ int graph_addpair(struct entity* act, int parent, int child)
 		}
 	}
 
-	j = act->wlen;
-	act->wlen += 1;
+	j = perobj->wlen;
+	perobj->wlen += 1;
 
 	wire[j].parent = parent;
 	wire[j].child = child;
 	return j;
 }
-static void graph_traverse(struct entity* act, struct entity* this)
+static void graph_traverse(_obj* act, _obj* this)
 {/*
 	int j,k,ret;
 	int nlen0, nlenx;
@@ -271,13 +280,13 @@ static void graph_traverse(struct entity* act, struct entity* this)
 	}
 }
 static void graph_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
 	int j;
-	float* vbuf = act->vbuf;
-	float* wbuf = act->wbuf;
+	struct perobj* perobj = (void*)act->priv_256b;
+	float* vbuf = perobj->vbuf;
 
 	if(_char_ == ev->what)
 	{
@@ -287,16 +296,16 @@ static void graph_event(
 			graph_traverse(act, act);
 
 			//generate vbuf, ibuf;
-			act->vlen = act->nlen;
-			act->ilen = act->wlen;
-			for(j=0;j<act->vlen;j++)
+			perobj->vlen = perobj->nlen;
+			perobj->ilen = perobj->wlen;
+			for(j=0;j<perobj->vlen;j++)
 			{
 				vbuf[j*3 + 0] = sty->fs.vc[0] + (getrandom() & 0xffff) / 16.0;
 				vbuf[j*3 + 1] = sty->fs.vc[1] + (getrandom() & 0xffff) / 16.0;
 				vbuf[j*3 + 2] = sty->fs.vc[2] + (getrandom() & 0xffff) / 16.0;
 				say("%f,%f,%f\n", vbuf[j*3 + 0], vbuf[j*3 + 1], vbuf[j*3 + 2]);
 			}
-say("%d,%d,%d,%d\n",act->nlen, act->wlen, act->vlen, act->ilen);
+say("%d,%d,%d,%d\n",perobj->nlen, perobj->wlen, perobj->vlen, perobj->ilen);
 		}
 	}
 }
@@ -304,10 +313,10 @@ say("%d,%d,%d,%d\n",act->nlen, act->wlen, act->vlen, act->ilen);
 
 
 
-static void graph_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void graph_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void graph_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void graph_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void graph_discon(struct halfrel* self, struct halfrel* peer)
@@ -316,82 +325,86 @@ static void graph_discon(struct halfrel* self, struct halfrel* peer)
 static void graph_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	int j;
-	struct entity* act = (void*)(self->chip);
+	_obj* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
+	_obj* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	float* vbuf = act->vbuf;
-	float* wbuf = act->wbuf;
+
+	struct perobj* perobj = (void*)act->priv_256b;
+	float* vbuf = perobj->vbuf;
 
 	//generate node, wire
 	graph_traverse(act, act);
 
 	//generate vbuf, ibuf;
-	act->vlen = act->nlen;
-	act->ilen = act->wlen;
-	for(j=0;j<act->vlen;j++)
+	perobj->vlen = perobj->nlen;
+	perobj->ilen = perobj->wlen;
+	for(j=0;j<perobj->vlen;j++)
 	{
 		vbuf[j*3 + 0] = sty->fs.vc[0] + (getrandom() & 0xffff) / 16.0;
 		vbuf[j*3 + 1] = sty->fs.vc[1] + (getrandom() & 0xffff) / 16.0;
 		vbuf[j*3 + 2] = sty->fs.vc[2] + (getrandom() & 0xffff) / 16.0;
 		say("%f,%f,%f\n", vbuf[j*3 + 0], vbuf[j*3 + 1], vbuf[j*3 + 2]);
 	}
-	say("%d,%d,%d,%d\n", act->nlen, act->wlen, act->vlen, act->ilen);
+	say("%d,%d,%d,%d\n", perobj->nlen, perobj->wlen, perobj->vlen, perobj->ilen);
 }
 
 
 
 
-static void graph_search(struct entity* act)
+static void graph_search(_obj* act)
 {
 }
-static void graph_modify(struct entity* act)
+static void graph_modify(_obj* act)
 {
 }
-static void graph_delete(struct entity* act)
+static void graph_delete(_obj* act)
 {
 	if(0 == act)return;
+	struct perobj* perobj = (void*)act->priv_256b;
 
 	//geom
-	if(act->ibuf){
-		memorydelete(act->ibuf);
-		act->ibuf = 0;
+	if(perobj->ibuf){
+		memorydelete(perobj->ibuf);
+		perobj->ibuf = 0;
 	}
-	if(act->vbuf){
-		memorydelete(act->vbuf);
-		act->vbuf = 0;
+	if(perobj->vbuf){
+		memorydelete(perobj->vbuf);
+		perobj->vbuf = 0;
 	}
 
 	//node
-	if(act->ibuf){
-		memorydelete(act->ibuf);
-		act->ibuf = 0;
+	if(perobj->ibuf){
+		memorydelete(perobj->ibuf);
+		perobj->ibuf = 0;
 	}
-	if(act->nbuf){
-		memorydelete(act->nbuf);
-		act->nbuf = 0;
+	if(perobj->nbuf){
+		memorydelete(perobj->nbuf);
+		perobj->nbuf = 0;
 	}
 }
-static void graph_create(struct entity* act, void* str)
+static void graph_create(_obj* act, void* str)
 {
 	if(0 == act)return;
 
+	struct perobj* perobj = (void*)act->priv_256b;
+
 	//node
-	act->nbuf = memorycreate(0x1000, 0);
-	act->wbuf = memorycreate(0x1000, 0);
+	perobj->nbuf = memorycreate(0x1000, 0);
+	perobj->wbuf = memorycreate(0x1000, 0);
 
 	//geom
-	act->vbuf = memorycreate(0x1000, 0);
-	act->ibuf = memorycreate(0x1000, 0);
+	perobj->vbuf = memorycreate(0x1000, 0);
+	perobj->ibuf = memorycreate(0x1000, 0);
 }
 
 
 
 
-void graph_register(struct entity* p)
+void graph_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('g', 'r', 'a', 'p', 'h', 0, 0, 0);
+	p->hfmt = hex64('g', 'r', 'a', 'p', 'h', 0, 0, 0);
 
 	p->oncreate = (void*)graph_create;
 	p->ondelete = (void*)graph_delete;

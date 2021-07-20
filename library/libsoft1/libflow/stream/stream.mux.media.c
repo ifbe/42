@@ -1,7 +1,7 @@
 #include "libsoft.h"
-#define SENDLOCK data0
-#define RECVSTAT data1
-#define RECVBYTE data2
+#define SENDLOCK listu64.data0
+#define RECVSTAT listu64.data1
+#define RECVBYTE listu64.data2
 #define _a0by_ hex32('a','0','b','y')
 #define _a0to_ hex32('a','0','t','o')
 #define _v0by_ hex32('v','0','b','y')
@@ -12,11 +12,11 @@ int hexstr2data(void*,void*);
 
 
 
-int mediamux_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int mediamux_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int mediamux_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int mediamux_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	int ret;
 	u8 tmp[32];
@@ -99,11 +99,11 @@ int mediamux_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int mediamux_delete(struct artery* ele, u8* url)
+int mediamux_delete(_obj* ele, u8* url)
 {
 	return 0;
 }
-int mediamux_create(struct artery* ele, u8* url)
+int mediamux_create(_obj* ele, u8* url)
 {
 	say("@mediamux_create\n");
 	ele->SENDLOCK = 0;

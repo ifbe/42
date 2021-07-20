@@ -37,11 +37,11 @@ int speakerchoose()
 {
 	return 0;
 }
-int speakerdelete(struct supply* win)
+int speakerdelete(_obj* win)
 {
 	return 0;
 }
-int speakercreate(struct supply* win)
+int speakercreate(_obj* win)
 {
 	return 0;
 }

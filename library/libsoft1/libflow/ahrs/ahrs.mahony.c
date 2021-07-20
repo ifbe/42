@@ -222,7 +222,7 @@ void mahonyupdate9(
 
 
 
-int mahony_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int mahony_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	say("@mahony_read\n");
 
@@ -230,7 +230,7 @@ int mahony_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
 	take_data_from_peer(art,_src_, stack,sp, 0,0, f,10);
 	return 0;
 }
-int mahony_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int mahony_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	say("@mahony_write\n");
 
@@ -258,10 +258,10 @@ int mahony_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-void mahony_search(struct artery* ele)
+void mahony_search(_obj* ele)
 {
 }
-void mahony_modify(struct artery* ele, int foot, float* f, int cmd, float* buf, int len)
+void mahony_modify(_obj* ele, int foot, float* f, int cmd, float* buf, int len)
 {
 	mahonyupdate9(f[0],f[1],f[2], f[3],f[4],f[5], f[6],f[7],f[8]);
 
@@ -270,11 +270,11 @@ void mahony_modify(struct artery* ele, int foot, float* f, int cmd, float* buf, 
 	buf[2] = q[2];
 	buf[3] = q[3];
 }
-int mahony_delete(struct artery* ele)
+int mahony_delete(_obj* ele)
 {
 	return 0;
 }
-int mahony_create(struct artery* ele, u8* url)
+int mahony_create(_obj* ele, u8* url)
 {
 	say("@mahony_create\n");
 

@@ -15,11 +15,11 @@ int reliableclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int reliableclient_delete(struct artery* art)
+int reliableclient_delete(_obj* art)
 {
 	return 0;
 }
-int reliableclient_create(struct artery* art, u8* url)
+int reliableclient_create(_obj* art, u8* url)
 {
 	return 0;
 }
@@ -43,11 +43,11 @@ int reliableserver_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int reliableserver_delete(struct artery* art)
+int reliableserver_delete(_obj* art)
 {
 	return 0;
 }
-int reliableserver_create(struct artery* art, u8* url)
+int reliableserver_create(_obj* art, u8* url)
 {
 	return 0;
 }
@@ -71,11 +71,11 @@ int reliablemaster_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int reliablemaster_delete(struct artery* art)
+int reliablemaster_delete(_obj* art)
 {
 	return 0;
 }
-int reliablemaster_create(struct artery* art, u8* url)
+int reliablemaster_create(_obj* art, u8* url)
 {
 	return 0;
 }

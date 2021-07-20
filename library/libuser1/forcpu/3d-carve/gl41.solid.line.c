@@ -94,10 +94,10 @@ GLSL_VERSION
 
 
 
-static int line3d_fill(struct entity* win, struct mysrc* src)
+static int line3d_fill(_obj* win, struct mysrc* src)
 {
 	if(0 == src->vs){
-		switch(win->fmt){
+		switch(win->hfmt){
 		case _gl41list_:
 			src->vs = gl41solidline_vert;
 			src->fs = gl41solidline_frag;
@@ -142,14 +142,14 @@ static int line3d_fill(struct entity* win, struct mysrc* src)
 
 	return 0;
 }
-int line3d_vars(struct entity* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
+int line3d_vars(_obj* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
 	if(0 == win)return -1;
-	if(0 == win->glfull_solid)return -2;
+	if(0 == win->gl41list.solid)return -2;
 
-	struct gl41data* p = win->glfull_solid[line3d];
+	struct gl41data* p = win->gl41list.solid[line3d];
 	if(0 == p){
-		p = win->glfull_solid[line3d] = memorycreate(0x1000, 0);
+		p = win->gl41list.solid[line3d] = memorycreate(0x1000, 0);
 		if(0 == p)return -3;
 	}
 
@@ -173,7 +173,7 @@ int line3d_vars(struct entity* win, int unused, float** vbuf, u16** ibuf, int vc
 
 
 
-void gl41line(struct entity* win, u32 rgb,
+void gl41line(_obj* win, u32 rgb,
 	vec3 va, vec3 vb)
 {
 	float* vbuf;
@@ -192,7 +192,7 @@ void gl41line(struct entity* win, u32 rgb,
 	}
 	carvelineindex(vbuf,vlen, ibuf,0, va,vb);
 }
-void gl41line_shorter(struct entity* win, u32 rgb,
+void gl41line_shorter(_obj* win, u32 rgb,
 	vec3 va, vec3 vb)
 {
 	vec3 t, ta, tb;
@@ -247,7 +247,7 @@ void carveline_arrow(float* vbuf, int vlen, u16* ibuf, int ilen,
 	ibuf[4] = vlen+1;
 	ibuf[5] = vlen+3;
 }
-void gl41line_arrow(struct entity* win, u32 rgb,
+void gl41line_arrow(_obj* win, u32 rgb,
 	vec3 va, vec3 vb, vec3 vn)
 {
 	float* vbuf;
@@ -270,7 +270,7 @@ void gl41line_arrow(struct entity* win, u32 rgb,
 
 
 
-void gl41line_bezier(struct entity* win, u32 rgb,
+void gl41line_bezier(_obj* win, u32 rgb,
 	vec3 va, vec3 vb, vec3 vt)
 {
 	float* vbuf;
@@ -311,7 +311,7 @@ void carveline_spring(float* vbuf, int vlen, u16* ibuf, int ilen,
 		ibuf[2*k + 1] = vlen + k+1;
 	}
 }
-void gl41line_spring(struct entity* win, u32 rgb,
+void gl41line_spring(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vt)
 {
 	float* vbuf;
@@ -360,7 +360,7 @@ void carveline_yshape(float* vbuf, int vlen, u16* ibuf, int ilen,
 	ibuf[4] = vlen+2;
 	ibuf[5] = vlen+3;
 }
-void gl41line_yshape(struct entity* win, u32 rgb,
+void gl41line_yshape(_obj* win, u32 rgb,
 	vec3 v0, vec3 v1, vec3 v2)
 {
 	float* vbuf;
@@ -383,7 +383,7 @@ void gl41line_yshape(struct entity* win, u32 rgb,
 
 
 
-void gl41line_triangle(struct entity* win, u32 rgb,
+void gl41line_triangle(_obj* win, u32 rgb,
 	vec3 v0, vec3 v1, vec3 v2)
 {
 	float* vbuf;
@@ -406,7 +406,7 @@ void gl41line_triangle(struct entity* win, u32 rgb,
 
 
 
-void gl41line_rect(struct entity* win, u32 rgb,
+void gl41line_rect(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf)
 {
 	float* vbuf;
@@ -465,7 +465,7 @@ void carveline_rectround(float* vbuf, int vlen, u16* ibuf, int ilen,
 	ibuf[14] = vlen+7;
 	ibuf[15] = vlen+0;
 }
-void gl41line_rectround(struct entity* win, u32 rgb,
+void gl41line_rectround(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf)
 {
 	float* vbuf;
@@ -563,7 +563,7 @@ void carveline_rectselect(float* vbuf, int vlen, u16* ibuf, int ilen,
 	ibuf[14] = vlen+ 9;
 	ibuf[15] = vlen+11;
 }
-void gl41line_rectselect(struct entity* win, u32 rgb,
+void gl41line_rectselect(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf)
 {
 	float* vbuf;
@@ -642,7 +642,7 @@ void carveline_hexagon(float* vbuf, int vlen, u16* ibuf, int ilen,
 	ibuf[10] = vlen+5;
 	ibuf[11] = vlen+0;
 }
-void gl41line_hexagon(struct entity* win, u32 rgb,
+void gl41line_hexagon(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
 	float* vbuf;
@@ -666,7 +666,7 @@ void gl41line_hexagon(struct entity* win, u32 rgb,
 
 
 #define lineacc (acc*2)
-void gl41line_circle(struct entity* win, u32 rgb,
+void gl41line_circle(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf)
 {
 	float* vbuf;
@@ -748,7 +748,7 @@ void carveline_cone(float* vbuf, int vlen, u16* ibuf, int ilen,
 	vbuf[a+4] = vc[1]+vu[1];
 	vbuf[a+5] = vc[2]+vu[2];
 }
-void gl41line_cone(struct entity* win, u32 rgb,
+void gl41line_cone(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
 	float* vbuf;
@@ -840,7 +840,7 @@ void carveline_prism4(float* vbuf, int vlen, u16* ibuf, int ilen,
 	ibuf[22] = vlen+7;
 	ibuf[23] = vlen+6;
 }
-void gl41line_prism4(struct entity* win, u32 rgb,
+void gl41line_prism4(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	float* vbuf;
@@ -910,7 +910,7 @@ void carveline_cylinder(float* vbuf, int vlen, u16* ibuf, int ilen,
 		ibuf[a+5] = vlen + 1 + j*2;
 	}
 }
-void gl41line_cylinder(struct entity* win, u32 rgb,
+void gl41line_cylinder(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
 	float* vbuf;
@@ -962,7 +962,7 @@ void carveline_gear(float* vbuf, int vlen, u16* ibuf, int ilen,
 		ibuf[j*2 + 1] = vlen + (j+1)%(teethcount*4);
 	}
 }
-void gl41line_gear(struct entity* win, u32 rgb,
+void gl41line_gear(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, int teethcount)
 {
 	float* vbuf;
@@ -981,7 +981,7 @@ void gl41line_gear(struct entity* win, u32 rgb,
 	}
 	carveline_gear(vbuf,vlen, ibuf,0, vc,vr,vf, teethcount);
 }
-void gl41line_rotategear(struct entity* win, u32 rgb,
+void gl41line_rotategear(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, int teethcount, float a)
 {
 	int j;
@@ -1171,7 +1171,7 @@ void carveline_dodecahedron(float* vbuf, int vlen, u16* ibuf, int ilen,
 	ibuf[58] = vlen+7;
 	ibuf[59] = vlen+19;
 }
-void gl41line_dodecahedron(struct entity* win, u32 rgb,
+void gl41line_dodecahedron(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	float* vbuf;
@@ -1317,7 +1317,7 @@ void carveline_icosahedron(float* vbuf, int vlen, u16* ibuf, int ilen,
 	ibuf[58] = vlen+4;
 	ibuf[59] = vlen+6;
 }
-void gl41line_icosahedron(struct entity* win, u32 rgb,
+void gl41line_icosahedron(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	float* vbuf;
@@ -1412,7 +1412,7 @@ void carveline_sphere(float* vbuf, int vlen, u16* ibuf, int ilen,
 		ibuf[a + 4*j + 3] = vlen+accx*(accy-1)+j;
 	}
 }
-void gl41line_sphere(struct entity* win, u32 rgb,
+void gl41line_sphere(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	float* vbuf;

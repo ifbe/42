@@ -5,8 +5,8 @@ static u8 data[7][7];
 
 
 static void pegged_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x, y, cx, cy, ww, hh;
 	if(sty)
@@ -18,10 +18,10 @@ static void pegged_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 
 	for(y=0;y<7;y++)
@@ -47,9 +47,9 @@ static void pegged_draw_pixel(
 	}
 }
 static void pegged_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* wrl, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* wrl, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	int x,y;
 	vec3 tc, tr, tf, tu, f;
@@ -93,13 +93,13 @@ static void pegged_draw_gl41(
 	}
 }
 static void pegged_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void pegged_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x,y;
 
@@ -124,23 +124,23 @@ static void pegged_draw_html(
 	htmlprintf(win, 2, "</div>\n");
 }
 static void pegged_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void pegged_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-static void pegged_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void pegged_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -150,7 +150,7 @@ static void pegged_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void pegged_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void pegged_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -159,10 +159,10 @@ static void pegged_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -172,7 +172,7 @@ static void pegged_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 		break;
 	}
 }
-static void pegged_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void pegged_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void pegged_discon(struct halfrel* self, struct halfrel* peer)
@@ -185,23 +185,23 @@ static void pegged_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void pegged_search(struct entity* act)
+static void pegged_search(_obj* act)
 {
 }
-static void pegged_modify(struct entity* act)
+static void pegged_modify(_obj* act)
 {
 }
-static void pegged_delete(struct entity* act)
+static void pegged_delete(_obj* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf0);
+	if(_copy_ == act->type)memorydelete(act->listptr.buf0);
 }
-static void pegged_create(struct entity* act)
+static void pegged_create(_obj* act)
 {
 	int x,y;
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf0 = data;
-	if(_copy_ == act->type)act->buf0 = memorycreate(49, 0);
+	if(_orig_ == act->type)act->listptr.buf0 = data;
+	if(_copy_ == act->type)act->listptr.buf0 = memorycreate(49, 0);
 
 	for(y=0;y<7;y++)
 	{
@@ -217,10 +217,10 @@ static void pegged_create(struct entity* act)
 
 
 
-void pegged_register(struct entity* p)
+void pegged_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('p', 'e', 'g', 'g', 'e', 'd', 0, 0);
+	p->hfmt = hex64('p', 'e', 'g', 'g', 'e', 'd', 0, 0);
 
 	p->oncreate = (void*)pegged_create;
 	p->ondelete = (void*)pegged_delete;

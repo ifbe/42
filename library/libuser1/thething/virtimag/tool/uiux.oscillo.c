@@ -2,10 +2,10 @@
 #define _mic_ hex32('m','i','c',0)
 #define _pcm_ hex32('p','c','m',0)
 #define SLICE 16
-#define DATBUF buf0
-#define DATLEN data1
-#define TABBUF buf2
-#define TABLEN data3
+#define DATBUF listptr.buf0
+#define TABBUF listptr.buf1
+#define DATLEN listu64.data2
+#define TABLEN listu64.data3
 //libsoft1
 void fft(float* real, float* imag, int k);
 void ifft(float* real, float* imag, int k);
@@ -24,8 +24,8 @@ static int cur = 0;
 static int haha;
 static int that;
 static void oscillo_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	float t,cc,ss;
 	int x,y;
@@ -44,10 +44,10 @@ static void oscillo_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 
 	if(0x30 == haha)
@@ -91,8 +91,8 @@ static void oscillo_draw_pixel(
 }
 */
 static void oscillo_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct supply* wnd, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* wnd, struct style* sty)
 {
 	int cx,cy,ww,hh;
 	int x,t,m;
@@ -119,9 +119,9 @@ static void oscillo_draw_pixel(
 	}
 }/*
 static void oscillo_dx11draw(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int x,t;
 	float tmp,val;
@@ -158,9 +158,9 @@ static void oscillo_dx11draw(
 	}
 }*/
 static void oscillo_gl41draw(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int x,t;
 	float tmp,val;
@@ -197,23 +197,23 @@ static void oscillo_gl41draw(
 	}
 }
 static void oscillo_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void oscillo_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void oscillo_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void oscillo_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("oscillo(%x,%x,%x)\n",win,act,sty);
 }
@@ -221,7 +221,7 @@ static void oscillo_draw_cli(
 
 
 
-void oscillo_data(struct entity* act, int type, void* buf, int len)
+void oscillo_data(_obj* act, int type, void* buf, int len)
 {
 	int idx;
 	void** tab;
@@ -233,7 +233,7 @@ void oscillo_data(struct entity* act, int type, void* buf, int len)
 	tab = act->TABBUF;
 	tab[idx] = buf;
 }
-void oscillo_pcm(struct entity* ent, struct supply* sup)
+void oscillo_pcm(_obj* ent, _obj* sup)
 {
 	struct pcmdata* pcm;
 	if(0 == ent->DATBUF)return;
@@ -244,21 +244,21 @@ void oscillo_pcm(struct entity* ent, struct supply* sup)
 	pcm->rate = 44100;
 	pcm->count = 65536;
 
-	sup->pcmeasy_data = pcm;
+	sup->pcmeasy.data = pcm;
 }
 
 
 
 
-static void oscillo_read_bycam(_ent* ent,void* slot, _syn* stack,int sp)
+static void oscillo_read_bycam(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	if(0 == stack)return;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _dx11list_:
 	case _mt20list_:
 	case _gl41list_:
@@ -267,20 +267,20 @@ static void oscillo_read_bycam(_ent* ent,void* slot, _syn* stack,int sp)
 		break;
 	}
 }
-static void oscillo_read_bywnd(_ent* ent,struct style* slot, _sup* wnd,struct style* area)
+static void oscillo_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
 {
 }
 
 
 
 
-static void oscillo_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void oscillo_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct supply* wnd = stack[sp-2].pchip;
+	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
-//say("fmt=%.8s\n", &sup->fmt);
+//say("fmt=%.8s\n", &sup->hfmt);
 
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _pcm_:
 		oscillo_pcm(ent, wnd);
 		break;
@@ -295,7 +295,7 @@ static void oscillo_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void oscillo_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void oscillo_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(_pcm_ == stack[sp-1].flag){
 		oscillo_data(ent, 0, buf, len);
@@ -313,16 +313,16 @@ static void oscillo_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void oscillo_search(struct entity* act)
+static void oscillo_search(_obj* act)
 {
 }
-static void oscillo_modify(struct entity* act)
+static void oscillo_modify(_obj* act)
 {
 }
-static void oscillo_delete(struct entity* act)
+static void oscillo_delete(_obj* act)
 {
 }
-static void oscillo_create(struct entity* act, u8* arg)
+static void oscillo_create(_obj* act, u8* arg)
 {
 	int j;
 	void* buf;
@@ -343,10 +343,10 @@ static void oscillo_create(struct entity* act, u8* arg)
 
 
 
-void oscillo_register(struct entity* p)
+void oscillo_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('o', 's', 'c', 'i', 'l', 'l', 'o', 0);
+	p->hfmt = hex64('o', 's', 'c', 'i', 'l', 'l', 'o', 0);
 
 	p->oncreate = (void*)oscillo_create;
 	p->ondelete = (void*)oscillo_delete;

@@ -1,6 +1,6 @@
 #include "libuser.h"
-#define TIME data0
-#define FLAG data1
+#define TIME listu64.data0
+#define FLAG listu64.data1
 
 
 
@@ -24,11 +24,11 @@ int graveasy_effect(struct style* geom, float dt)
 	geom->fs.vc[2] = final->displace_x[2];
 	return 0;
 }
-int graveasy_working(struct entity* ent)
+int graveasy_working(_obj* ent)
 {
 	u64 now;
 	float dt;
-	struct entity* world;
+	_obj* world;
 	struct relation* rel;
 	struct style* geom;
 
@@ -36,7 +36,7 @@ int graveasy_working(struct entity* ent)
 	if(0 == rel)return 0;
 
 	world = rel->pdstchip;
-	if((_virtual_ != world->fmt)&&(_scene3d_ != world->fmt))return 0;
+	if((_virtual_ != world->hfmt)&&(_scene3d_ != world->hfmt))return 0;
 
 	now = timeread();
 	say("%llx\n", now);
@@ -61,12 +61,12 @@ int graveasy_working(struct entity* ent)
 
 
 
-int graveasy_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int graveasy_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@graveasy_read:%p,%p\n",ent,foot);
 	return 0;
 }
-int graveasy_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int graveasy_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@graveasy_give:%p,%p\n",ent,foot);
 	if(_clk_ == stack[sp-1].flag)graveasy_working(ent);
@@ -92,11 +92,11 @@ int graveasy_modify()
 {
 	return 0;
 }
-int graveasy_delete(struct entity* ent)
+int graveasy_delete(_obj* ent)
 {
 	return 0;
 }
-int graveasy_create(struct entity* ent, void* str)
+int graveasy_create(_obj* ent, void* str)
 {
 	say("@graveasy_create\n");
 	ent->FLAG = 0;

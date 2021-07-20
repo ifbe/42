@@ -96,11 +96,11 @@
 extern "C" {
 #endif
 //----------------------------------1d------------------------------------
-void gentui_rect(  struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1);
-void gentui_utf8(  struct entity* ctx, u32 rgb, int cx, int cy, u8* buf, int len);
-void gentui_str(   struct entity* ctx, u32 rgb, int cx, int cy, u8* str, int len);
-void gentui_text(  struct entity* ctx, u32 rgb, int cx, int cy, u8* str, int len);
-void gentui_decstr(struct entity* ctx, u32 rgb, int cx, int cy, int data);
+void gentui_rect(  _obj* ctx, u32 rgb, int x0, int y0, int x1, int y1);
+void gentui_utf8(  _obj* ctx, u32 rgb, int cx, int cy, u8* buf, int len);
+void gentui_str(   _obj* ctx, u32 rgb, int cx, int cy, u8* str, int len);
+void gentui_text(  _obj* ctx, u32 rgb, int cx, int cy, u8* str, int len);
+void gentui_decstr(_obj* ctx, u32 rgb, int cx, int cy, int data);
 
 
 
@@ -218,7 +218,7 @@ void* memorycreate(int, int);
 void* eventread();
 void* eventwrite(u64,u64,u64,u64);
 //
-int htmlprintf(struct entity*, int, char*, ...);
+int htmlprintf(_obj*, int, char*, ...);
 int mysnprintf(void*, int, void*, ...);
 int myvsnprintf(void*, int, void*, __builtin_va_list);
 //

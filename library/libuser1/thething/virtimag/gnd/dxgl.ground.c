@@ -2,10 +2,10 @@
 //#include "unistd.h"
 //#include "fcntl.h"
 #define PIECE 16
-#define OWNBUF buf0
+#define OWNBUF listptr.buf0
 int copypath(u8* path, u8* data);
-void dx11data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
-void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
+void dx11data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
+void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 
 
 struct privdata{
@@ -104,9 +104,9 @@ static void ground_dx11prep(struct dx11data* data, char* tex0, char* tex1, char*
 	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
 }
 static void ground_dx11draw(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -182,9 +182,9 @@ static void ground_gl41prep(struct gl41data* data, char* tex0, char* tex1, char*
 	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
 }
 static void ground_gl41draw(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -217,8 +217,8 @@ static void ground_gl41draw(
 
 
 static void ground_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -230,45 +230,45 @@ static void ground_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 }
 static void ground_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void ground_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void ground_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void ground_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-static void ground_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void ground_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	if(0 == stack)return;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _dx11list_:ground_dx11draw(ent,slot, wor,geom, wnd,area);break;
 	case _gl41list_:ground_gl41draw(ent,slot, wor,geom, wnd,area);break;
 	}
@@ -277,7 +277,7 @@ static void ground_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void ground_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void ground_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -286,10 +286,10 @@ static void ground_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,in
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -299,7 +299,7 @@ static void ground_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,in
 		break;
 	}
 }
-static void ground_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void ground_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void ground_discon(struct halfrel* self, struct halfrel* peer)
@@ -312,16 +312,16 @@ static void ground_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void ground_search(struct entity* act)
+static void ground_search(_obj* act)
 {
 }
-static void ground_modify(struct entity* act)
+static void ground_modify(_obj* act)
 {
 }
-static void ground_delete(struct entity* act)
+static void ground_delete(_obj* act)
 {
 }
-static void ground_create(struct entity* act, void* str, int argc, u8** argv)
+static void ground_create(_obj* act, void* str, int argc, u8** argv)
 {
 	int j;
 	if(0 == act)return;
@@ -383,10 +383,10 @@ static void ground_create(struct entity* act, void* str, int argc, u8** argv)
 
 
 
-void ground_register(struct entity* p)
+void ground_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('g', 'r', 'o', 'u', 'n', 'd', 0, 0);
+	p->hfmt = hex64('g', 'r', 'o', 'u', 'n', 'd', 0, 0);
 
 	p->oncreate = (void*)ground_create;
 	p->ondelete = (void*)ground_delete;

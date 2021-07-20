@@ -3,12 +3,12 @@
 
 
 
-int baby_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int baby_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@baby_read: crying\n");
 	return 0;
 }
-int baby_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int baby_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@baby_write: crying\n");
 	return 0;
@@ -27,22 +27,22 @@ int baby_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int baby_search(struct entity* act)
+int baby_search(_obj* act)
 {
 	say("@baby_search: crying\n");
 	return 0;
 }
-int baby_modify(struct entity* act)
+int baby_modify(_obj* act)
 {
 	say("@baby_modity: crying\n");
 	return 0;
 }
-int baby_delete(struct entity* act)
+int baby_delete(_obj* act)
 {
 	say("@baby_delete: crying\n");
 	return 0;
 }
-int baby_create(struct entity* act)
+int baby_create(_obj* act)
 {
 	say("@baby_create: crying\n");
 	return 0;

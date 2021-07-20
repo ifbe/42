@@ -1,30 +1,30 @@
 #include "libuser.h"
-void gl41data_before(struct entity* wnd);
-void gl41data_after(struct entity* wnd);
-void gl41data_01cam(struct entity* wnd);
-void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
+void gl41data_before(_obj* wnd);
+void gl41data_after(_obj* wnd);
+void gl41data_01cam(_obj* wnd);
+void gl41data_convert(_obj* wnd, struct style* area, struct event* ev, vec3 v);
 void draw8bit_rect(
-	struct entity* win, u32 rgb,
+	_obj* win, u32 rgb,
 	int x0, int y0, int x1, int y1);
 
 
 
 
-static struct origin* ori = 0;
-static struct worker* wrk = 0;
-static struct device* dev = 0;
-static struct driver* dri = 0;
-static struct sysobj* obj = 0;
-static struct artery* ele = 0;
-static struct supply* supply = 0;
-static struct entity* entity = 0;
+static _obj* ori = 0;
+static _obj* wrk = 0;
+static _obj* dev = 0;
+static _obj* dri = 0;
+static _obj* obj = 0;
+static _obj* ele = 0;
+static _obj* supply = 0;
+static _obj* entity = 0;
 
 
 
 
 void overview_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	struct relation* rel;
 	u32 c,cursor;
@@ -40,12 +40,12 @@ void overview_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
-	cursor = (act->ix0) + (act->iy0)*16;
+	cursor = (act->whdf.ix0) + (act->whdf.iy0)*16;
 /*
 	drawline(win, 0x0000ff, 0, h*1/4, w-1, h*1/4);
 	drawline(win, 0x00ff00, 0, h*2/4, w-1, h*2/4);
@@ -67,7 +67,7 @@ void overview_draw_pixel(
 		x1 = (cx-1)+(x-7)*ww/8;
 		y1 = (cy-1)+(y-15)*hh/16;
 		drawopaque_rect(win, c, x0, y0, x1, y1);
-		drawstring_fit(win, 0xffffff, x0, y0, x1, y1, (u8*)&entity[j].fmt, 8);
+		drawstring_fit(win, 0xffffff, x0, y0, x1, y1, (u8*)&entity[j].hfmt, 8);
 	}
 
 	//supply
@@ -86,7 +86,7 @@ void overview_draw_pixel(
 		x1 = (cx-1)+(x-7)*ww/8;
 		y1 = (cy-1)+(y-7)*hh/16;
 		drawopaque_rect(win, c, x0, y0, x1, y1);
-		drawstring_fit(win, 0xffffff, x0, y0, x1, y1, (u8*)&supply[j].fmt, 8);
+		drawstring_fit(win, 0xffffff, x0, y0, x1, y1, (u8*)&supply[j].hfmt, 8);
 	}
 
 	//artery
@@ -128,7 +128,7 @@ void overview_draw_pixel(
 	//entity.irel
 	for(j=0;j<128;j++)
 	{
-		if(0 == entity[j].fmt)continue;
+		if(0 == entity[j].hfmt)continue;
 
 		rel = entity[j].irel0;
 		while(1)
@@ -137,7 +137,7 @@ void overview_draw_pixel(
 			if(_sys_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
-				k = k / sizeof(struct sysobj);
+				k = k / sizeof(_obj);
 				k %= 128;
 				drawline_arrow(win, 0xc0ffc0,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)+17)*hh/32,
@@ -147,7 +147,7 @@ void overview_draw_pixel(
 			else if(_art_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
-				k = k / sizeof(struct artery);
+				k = k / sizeof(_obj);
 				drawline_arrow(win, 0xc0ffc0,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)+ 1)*hh/32,
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-31)*hh/32
@@ -156,7 +156,7 @@ void overview_draw_pixel(
 			else if(_sup_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)supply;
-				k = k / sizeof(struct supply);
+				k = k / sizeof(_obj);
 				drawline_arrow(win, 0xc0ffc0,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)-15)*hh/32,
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-31)*hh/32
@@ -165,7 +165,7 @@ void overview_draw_pixel(
 			else if(_ent_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)entity;
-				k = k / sizeof(struct entity);
+				k = k / sizeof(_obj);
 				drawline_arrow(win, 0xffffff,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)-31)*hh/32,
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-31)*hh/32
@@ -187,7 +187,7 @@ void overview_draw_pixel(
 			if(_sys_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
-				k = k / sizeof(struct sysobj);
+				k = k / sizeof(_obj);
 				k %= 128;
 				drawline_arrow(win, 0xc0ffc0,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)+17)*hh/32,
@@ -197,7 +197,7 @@ void overview_draw_pixel(
 			else if(_art_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
-				k = k / sizeof(struct artery);
+				k = k / sizeof(_obj);
 				drawline_arrow(win, 0xc0ffc0,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)+ 1)*hh/32,
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-15)*hh/32
@@ -206,7 +206,7 @@ void overview_draw_pixel(
 			else if(_sup_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)supply;
-				k = k / sizeof(struct supply);
+				k = k / sizeof(_obj);
 				drawline_arrow(win, 0xffffff,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)-15)*hh/32,
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-15)*hh/32
@@ -215,7 +215,7 @@ void overview_draw_pixel(
 			else if(_ent_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)entity;
-				k = k / sizeof(struct entity);
+				k = k / sizeof(_obj);
 				drawline_arrow(win, 0xffc0ff,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)-31)*hh/32,
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-15)*hh/32
@@ -238,7 +238,7 @@ void overview_draw_pixel(
 			if(_sys_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
-				k = k / sizeof(struct sysobj);
+				k = k / sizeof(_obj);
 				k %= 128;
 				drawline_arrow(win, 0xc0ffc0,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)+17)*hh/32,
@@ -248,7 +248,7 @@ void overview_draw_pixel(
 			else if(_art_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
-				k = k / sizeof(struct artery);
+				k = k / sizeof(_obj);
 				drawline_arrow(win, 0xc0ffc0,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)+ 1)*hh/32,
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+ 1)*hh/32
@@ -257,7 +257,7 @@ void overview_draw_pixel(
 			else if(_sup_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)supply;
-				k = k / sizeof(struct supply);
+				k = k / sizeof(_obj);
 				drawline_arrow(win, 0xffffff,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)-15)*hh/32,
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+ 1)*hh/32
@@ -266,7 +266,7 @@ void overview_draw_pixel(
 			else if(_ent_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)entity;
-				k = k / sizeof(struct entity);
+				k = k / sizeof(_obj);
 				drawline_arrow(win, 0xffc0ff,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)-31)*hh/32,
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+ 1)*hh/32
@@ -288,7 +288,7 @@ void overview_draw_pixel(
 			if(_sys_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
-				k = k / sizeof(struct sysobj);
+				k = k / sizeof(_obj);
 				k %= 128;
 				drawline_arrow(win, 0xc0ffc0,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)+17)*hh/32,
@@ -298,7 +298,7 @@ void overview_draw_pixel(
 			else if(_art_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
-				k = k / sizeof(struct artery);
+				k = k / sizeof(_obj);
 				drawline_arrow(win, 0xc0ffc0,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)+ 1)*hh/32,
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+17)*hh/32
@@ -307,7 +307,7 @@ void overview_draw_pixel(
 			else if(_sup_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)supply;
-				k = k / sizeof(struct supply);
+				k = k / sizeof(_obj);
 				drawline_arrow(win, 0xffffff,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)-15)*hh/32,
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+17)*hh/32
@@ -316,7 +316,7 @@ void overview_draw_pixel(
 			else if(_ent_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)entity;
-				k = k / sizeof(struct entity);
+				k = k / sizeof(_obj);
 				drawline_arrow(win, 0xffc0ff,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)-31)*hh/32,
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+17)*hh/32
@@ -327,9 +327,9 @@ void overview_draw_pixel(
 	}
 }
 void overview_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	u32 bg,fg,cursor;
 	float r,f,t;
@@ -364,7 +364,7 @@ void overview_draw_gl41(
 	vr = geom->fshape.vr;
 	vf = geom->fshape.vf;
 	vt = geom->fshape.vt;
-	cursor = (act->ix0) + (act->iy0)*16;
+	cursor = (act->whdf.ix0) + (act->whdf.iy0)*16;
 
 /*
 	tc[0] = -1.0;
@@ -392,7 +392,7 @@ void overview_draw_gl41(
 	//entity
 	for(j=0;j<128;j++)
 	{
-		k = entity[j].fmt;
+		k = entity[j].hfmt;
 		if(0 == k)break;
 
 		if(j == cursor)
@@ -423,7 +423,7 @@ void overview_draw_gl41(
 		tc[0] += vt[0]*0.01;
 		tc[1] += vt[1]*0.01;
 		tc[2] += vt[2]*0.01;
-		gl41string_center(ctx, fg, tc, tr, tf, (u8*)&entity[j].fmt, 8);
+		gl41string_center(ctx, fg, tc, tr, tf, (u8*)&entity[j].hfmt, 8);
 	}
 
 	//supply
@@ -459,7 +459,7 @@ void overview_draw_gl41(
 		tc[0] += vt[0]*0.01;
 		tc[1] += vt[1]*0.01;
 		tc[2] += vt[2]*0.01;
-		gl41string_center(ctx, fg, tc, tr, tf, (u8*)&supply[j].fmt, 8);
+		gl41string_center(ctx, fg, tc, tr, tf, (u8*)&supply[j].hfmt, 8);
 	}
 
 	//artery
@@ -535,7 +535,7 @@ void overview_draw_gl41(
 	//entity.irel
 	for(j=0;j<128;j++)
 	{
-		if(0 == entity[j].fmt)continue;
+		if(0 == entity[j].hfmt)continue;
 
 		rel = entity[j].irel0;
 		while(1)
@@ -544,7 +544,7 @@ void overview_draw_gl41(
 			if(_sys_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
-				k = k / sizeof(struct sysobj);
+				k = k / sizeof(_obj);
 				k %= 128;
 
 				r = ((k%16)*4-30)/32.0;
@@ -563,7 +563,7 @@ void overview_draw_gl41(
 			else if(_art_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
-				k = k / sizeof(struct artery);
+				k = k / sizeof(_obj);
 
 				r = ((k%16)*4-30)/32.0;
 				f = (-1-(k/16)*2)/32.0;
@@ -581,7 +581,7 @@ void overview_draw_gl41(
 			else if(_sup_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)supply;
-				k = k / sizeof(struct supply);
+				k = k / sizeof(_obj);
 
 				r = ((k%16)*4-30)/32.0;
 				f = (15-(k/16)*2)/32.0;
@@ -599,7 +599,7 @@ void overview_draw_gl41(
 			else if(_ent_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)entity;
-				k = k / sizeof(struct entity);
+				k = k / sizeof(_obj);
 
 				r = ((k%16)*4-30)/32.0;
 				f = (31-(k/16)*2)/32.0;
@@ -630,7 +630,7 @@ void overview_draw_gl41(
 			if(_sys_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
-				k = k / sizeof(struct sysobj);
+				k = k / sizeof(_obj);
 				k %= 128;
 
 				r = ((k%16)*4-30)/32.0;
@@ -649,7 +649,7 @@ void overview_draw_gl41(
 			else if(_art_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
-				k = k / sizeof(struct artery);
+				k = k / sizeof(_obj);
 
 				r = ((k%16)*4-30)/32.0;
 				f = (-1-(k/16)*2)/32.0;
@@ -667,7 +667,7 @@ void overview_draw_gl41(
 			else if(_sup_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)supply;
-				k = k / sizeof(struct supply);
+				k = k / sizeof(_obj);
 
 				r = ((k%16)*4-30)/32.0;
 				f = (15-(k/16)*2)/32.0;
@@ -685,7 +685,7 @@ void overview_draw_gl41(
 			else if(_ent_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)entity;
-				k = k / sizeof(struct entity);
+				k = k / sizeof(_obj);
 
 				r = ((k%16)*4-30)/32.0;
 				f = (31-(k/16)*2)/32.0;
@@ -717,7 +717,7 @@ void overview_draw_gl41(
 			if(_sys_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
-				k = k / sizeof(struct sysobj);
+				k = k / sizeof(_obj);
 				k %= 128;
 
 				r = ((k%16)*4-30)/32.0;
@@ -736,7 +736,7 @@ void overview_draw_gl41(
 			else if(_art_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
-				k = k / sizeof(struct artery);
+				k = k / sizeof(_obj);
 
 				r = ((k%16)*4-30)/32.0;
 				f = (-1-(k/16)*2)/32.0;
@@ -754,7 +754,7 @@ void overview_draw_gl41(
 			else if(_sup_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)supply;
-				k = k / sizeof(struct supply);
+				k = k / sizeof(_obj);
 
 				r = ((k%16)*4-30)/32.0;
 				f = (15-(k/16)*2)/32.0;
@@ -772,7 +772,7 @@ void overview_draw_gl41(
 			else if(_ent_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)entity;
-				k = k / sizeof(struct entity);
+				k = k / sizeof(_obj);
 
 				r = ((k%16)*4-30)/32.0;
 				f = (31-(k/16)*2)/32.0;
@@ -804,7 +804,7 @@ void overview_draw_gl41(
 			if(_sys_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
-				k = k / sizeof(struct sysobj);
+				k = k / sizeof(_obj);
 				k %= 128;
 
 				r = ((k%16)*4-30)/32.0;
@@ -823,7 +823,7 @@ void overview_draw_gl41(
 			else if(_art_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
-				k = k / sizeof(struct artery);
+				k = k / sizeof(_obj);
 
 				r = ((k%16)*4-30)/32.0;
 				f = (-1-(k/16)*2)/32.0;
@@ -841,7 +841,7 @@ void overview_draw_gl41(
 			else if(_sup_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)supply;
-				k = k / sizeof(struct supply);
+				k = k / sizeof(_obj);
 
 				r = vr[0]*((k%16)*4-30)/32.0;
 				f = vf[1]*(15-(k/16)*2)/32.0;
@@ -859,7 +859,7 @@ void overview_draw_gl41(
 			else if(_ent_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)entity;
-				k = k / sizeof(struct entity);
+				k = k / sizeof(_obj);
 
 				r = ((k%16)*4-30)/32.0;
 				f = (31-(k/16)*2)/32.0;
@@ -880,8 +880,8 @@ void overview_draw_gl41(
 	}
 }
 void overview_draw_8bit(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {/*
 	int x,y;
 	int j,c;
@@ -901,17 +901,17 @@ void overview_draw_8bit(
 */
 }
 void overview_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 void overview_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int j,k,x,y;
-	int ww = ((win->width)/2)&0xfffc;
-	int hh = (win->height)/2;
+	int ww = ((win->whdf.width)/2)&0xfffc;
+	int hh = (win->whdf.height)/2;
 
 	gentui_rect(win, 4, ww/2, hh/2, ww*3/2, hh*3/2);
 /*
@@ -933,25 +933,25 @@ void overview_draw_tui(
 */
 }
 void overview_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-void overview_drag(struct entity* win, int x0, int y0, int x1, int y1)
+void overview_drag(_obj* win, int x0, int y0, int x1, int y1)
 {
 	int j;
-	struct sysobj* obj_s;
-	struct sysobj* obj_d;
-	struct artery* ele_s;
-	struct artery* ele_d;
-	struct supply* win_s;
-	struct supply* win_d;
-	struct entity* act_s;
-	struct entity* act_d;
+	_obj* obj_s;
+	_obj* obj_d;
+	_obj* ele_s;
+	_obj* ele_d;
+	_obj* win_s;
+	_obj* win_d;
+	_obj* act_s;
+	_obj* act_d;
 	say("(%d,%d)->(%d,%d)\n", x0, y0, x1, y1);
 
 	if(y0 < 8)
@@ -972,8 +972,8 @@ void overview_drag(struct entity* win, int x0, int y0, int x1, int y1)
 					act_s, 0, _ent_, 0
 				);
 			}
-			else if(0 == act_s->type)entitycreate(act_d->fmt, 0, 0, 0);
-			else if(0 == act_d->type)entitycreate(act_s->fmt, 0, 0, 0);
+			else if(0 == act_s->type)entitycreate(act_d->hfmt, 0, 0, 0);
+			else if(0 == act_d->type)entitycreate(act_s->hfmt, 0, 0, 0);
 		}
 		else if(y1 < 16)
 		{
@@ -1083,15 +1083,15 @@ void overview_drag(struct entity* win, int x0, int y0, int x1, int y1)
 	}
 }
 static int overview_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
 	short* t;
 	int j, k;
 	int x, y, id;
-	int width = win->width;
-	int height = win->height;
+	int width = win->whdf.width;
+	int height = win->whdf.height;
 
 	j = (ev->what)&0xff;
 	k = ((ev->what)>>8)&0xff;
@@ -1113,8 +1113,8 @@ static int overview_event(
 			x = 4 + 4 * (x - (sty->fs.vc[0])) / (sty->fs.vr[0]);
 			y = 16 + 16 * (y - (sty->fs.vc[1])) / (sty->fs.vf[1]);
 		}
-		act->ix0 = x;
-		act->iy0 = y;
+		act->whdf.ix0 = x;
+		act->whdf.iy0 = y;
 /*
 		if('-' == k)
 		{
@@ -1198,11 +1198,11 @@ static int overview_event(
 
 
 
-static void overview_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+static void overview_read_bycam(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	if(stack && ('v'==key)){
 		slot = stack[sp-1].pfoot;
 		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
@@ -1210,7 +1210,7 @@ static void overview_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* 
 		overview_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void overview_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
+static void overview_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
 {
 	struct fstyle fs;
 	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
@@ -1223,16 +1223,16 @@ static void overview_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct s
 
 	gl41data_01cam(wnd);
 }
-static void overview_write_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area, struct event* ev)
+static void overview_write_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area, struct event* ev)
 {
 	if('p' == (ev->what&0xff)){
 		vec3 xyz;
 		gl41data_convert(wnd, area, ev, xyz);
 		//say("%f,%f\n",xyz[0],xyz[1]);
 
-		ent->ix0 = (int)(16*xyz[0]);
-		ent->iy0 = (int)(32*(1.0-xyz[1]));
-		say("%d,%d\n",ent->ix0,ent->iy0);
+		ent->whdf.ix0 = (int)(16*xyz[0]);
+		ent->whdf.iy0 = (int)(32*(1.0-xyz[1]));
+		say("%d,%d\n",ent->whdf.ix0,ent->whdf.iy0);
 
 		if(0x2d70 == ev->what){
 		}
@@ -1242,12 +1242,12 @@ static void overview_write_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct 
 
 
 
-static int overview_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int overview_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* caller = stack[sp-2].pchip;
+	_obj* caller = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _gl41list_:
 		overview_read_bywnd(ent,slot, caller,area);
 		break;
@@ -1257,14 +1257,14 @@ static int overview_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 	}
 	return 0;
 }
-static int overview_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int overview_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//struct entity* ent = stack[sp-1].pchip;
+	//_obj* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
-	struct entity* wnd = stack[sp-2].pchip;
+	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _gl41list_:
 		overview_write_bywnd(ent,slot, wnd,area, buf);
 		break;
@@ -1282,16 +1282,16 @@ static void overview_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-void overview_search(struct entity* act)
+void overview_search(_obj* act)
 {
 }
-void overview_modify(struct entity* act)
+void overview_modify(_obj* act)
 {
 }
-void overview_delete(struct entity* act)
+void overview_delete(_obj* act)
 {
 }
-void overview_create(struct entity* act, void* str)
+void overview_create(_obj* act, void* str)
 {
     say("@overview_create\n");
 }
@@ -1299,10 +1299,10 @@ void overview_create(struct entity* act, void* str)
 
 
 
-void overview_register(struct entity* p)
+void overview_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('o', 'v', 'e', 'r', 'v', 'i', 'e', 'w');
+	p->hfmt = hex64('o', 'v', 'e', 'r', 'v', 'i', 'e', 'w');
 
 	p->oncreate = (void*)overview_create;
 	p->ondelete = (void*)overview_delete;

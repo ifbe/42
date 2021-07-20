@@ -3,11 +3,11 @@
 
 
 
-int gcodeclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int gcodeclient_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int gcodeclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int gcodeclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	switch(stack[sp-1].flag){
 		case _src_:{
@@ -22,11 +22,11 @@ int gcodeclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int i
 	}
 	return 0;
 }
-int gcodeclient_delete(struct artery* ele)
+int gcodeclient_delete(_obj* ele)
 {
 	return 0;
 }
-int gcodeclient_create(struct artery* ele, u8* url)
+int gcodeclient_create(_obj* ele, u8* url)
 {
 	return 0;
 }
@@ -43,11 +43,11 @@ int gcodeserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 {
 	return 0;
 }
-int gcodeserver_delete(struct artery* ele)
+int gcodeserver_delete(_obj* ele)
 {
 	return 0;
 }
-int gcodeserver_create(struct artery* ele, u8* url)
+int gcodeserver_create(_obj* ele, u8* url)
 {
 	return 0;
 }

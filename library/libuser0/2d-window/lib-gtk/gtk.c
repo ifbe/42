@@ -57,10 +57,10 @@ void windowchange()
 void windowlist()
 {
 }
-void windowcreate(struct supply* w)
+void windowcreate(_obj* w)
 {
 }
-void windowdelete(struct supply* w)
+void windowdelete(_obj* w)
 {
 }
 

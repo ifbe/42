@@ -11,10 +11,10 @@
 #define aaaa 739.989
 #define a__b 783.991
 #define bbbb 830.609
-void gl41data_before(struct entity* wnd);
-void gl41data_after(struct entity* wnd);
-void gl41data_01cam(struct entity* wnd);
-void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
+void gl41data_before(_obj* wnd);
+void gl41data_after(_obj* wnd);
+void gl41data_01cam(_obj* wnd);
+void gl41data_convert(_obj* wnd, struct style* area, struct event* ev, vec3 v);
 
 
 
@@ -32,7 +32,7 @@ static void piano_gen(short* pcm, float f)
 		pcm[j] *= 1.0 - j/16384.0;
 	}
 }
-static void piano_char(struct entity* act, u8* ch)
+static void piano_char(_obj* act, u8* ch)
 {
 	float f;
 	switch(ch[0]){
@@ -58,10 +58,10 @@ static void piano_char(struct entity* act, u8* ch)
 		default: f = 0.00;break;
 	}
 
-	piano_gen(act->buf0, f);
-	give_data_into_peer(act,_spk_, 0,0, 0,0, act->buf0,16384*2);
+	piano_gen(act->listptr.buf0, f);
+	give_data_into_peer(act,_spk_, 0,0, 0,0, act->listptr.buf0,16384*2);
 }
-static void piano_event(struct entity* act, struct event* ev)
+static void piano_event(_obj* act, struct event* ev)
 {
 	int j,k;
 	float f;
@@ -71,7 +71,7 @@ static void piano_event(struct entity* act, struct event* ev)
 /*
 	if(0x2d70 == ev->what){
 		j = (ev->why)&0xffff;
-		j = j*70/(win->width);
+		j = j*70/(win->whdf.width);
 		say("j=%d\n",j);
 
 		k = j%7;
@@ -106,9 +106,9 @@ static void piano_event(struct entity* act, struct event* ev)
 	}//if(mouseup)
 */
 }
-static void piano_write_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void piano_write_bywnd(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* wnd;struct style* area;
+	_obj* wnd;struct style* area;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	struct event* ev = buf;
@@ -125,8 +125,8 @@ static void piano_write_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* ar
 
 /*
 static void piano_draw_vbo2d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x;
 	vec3 tc,tr,tf,tu;
@@ -221,9 +221,9 @@ static void piano_draw_vbo2d(
 	carve2d_string(win, 0xffffff, tc, tr, tf, (u8*)"7040", 4);
 }*/
 static void piano_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* scn, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	int x,j;
 	vec3 tc,tr,tf,tu;
@@ -271,8 +271,8 @@ static void piano_draw_gl41(
 
 
 static void piano_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -284,10 +284,10 @@ static void piano_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 
 	int j;
@@ -310,23 +310,23 @@ static void piano_draw_pixel(
 	}
 }
 static void piano_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void piano_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void piano_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void piano_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("piano(%x,%x,%x)\n",win,act,sty);
 }
@@ -334,19 +334,19 @@ static void piano_draw_cli(
 
 
 
-static void piano_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void piano_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	piano_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void piano_wnd(_ent* ent,void* foot, _syn* stack,int sp)
+static void piano_wnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
 //wnd.area -> cam.gl41, cam.slot -> world.geom
-	struct entity* wnd;struct style* area;
+	_obj* wnd;struct style* area;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	struct fstyle fs;
@@ -364,7 +364,7 @@ static void piano_wnd(_ent* ent,void* foot, _syn* stack,int sp)
 
 
 
-static void piano_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void piano_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -373,10 +373,10 @@ static void piano_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -387,15 +387,15 @@ static void piano_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int
 		break;
 	}
 }
-static void piano_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void piano_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(_std_ == stack[sp-1].flag){
 		piano_char(ent, buf);
 		return;
 	}
 
-	struct supply* sup = stack[sp-2].pchip;
-	switch(sup->fmt){
+	_obj* sup = stack[sp-2].pchip;
+	switch(sup->hfmt){
 		case _gl41list_:piano_write_bywnd(ent,foot, stack,sp, arg,key, buf,len);break;
 	}
 }
@@ -409,35 +409,35 @@ static void piano_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void piano_search(struct entity* act)
+static void piano_search(_obj* act)
 {
 }
-static void piano_modify(struct entity* act)
+static void piano_modify(_obj* act)
 {
 }
-static void piano_delete(struct entity* act)
+static void piano_delete(_obj* act)
 {
 	if(0 == act)return;
-	if(act->buf0){
-		memorydelete(act->buf0);
-		act->buf0 = 0;
+	if(act->listptr.buf0){
+		memorydelete(act->listptr.buf0);
+		act->listptr.buf0 = 0;
 	}
 }
-static void piano_create(struct entity* act)
+static void piano_create(_obj* act)
 {
 	if(0 == act)return;
 
-	act->buf0 = memorycreate(0x100000, 0);
-	if(0 == act->buf0)return;
+	act->listptr.buf0 = memorycreate(0x100000, 0);
+	if(0 == act->listptr.buf0)return;
 }
 
 
 
 
-void piano_register(struct entity* p)
+void piano_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('p', 'i', 'a', 'n', 'o', 0, 0, 0);
+	p->hfmt = hex64('p', 'i', 'a', 'n', 'o', 0, 0, 0);
 
 	p->oncreate = (void*)piano_create;
 	p->ondelete = (void*)piano_delete;

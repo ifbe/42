@@ -1,7 +1,7 @@
 #include "libuser.h"
 #define _in_ hex32('i','n', 0, 0)
-#define MATBUF buf0
-#define CAMBUF buf1
+#define MATBUF listptr.buf0
+#define CAMBUF listptr.buf1
 void quaternion4axisandangle(float* q, float* a, float angle);
 void world2clip_projz0z1_transpose(mat4 mat, struct fstyle* frus);
 void world2clip_projznzp_transpose(mat4 mat, struct fstyle* frus);
@@ -10,9 +10,9 @@ void world2clip_projznzp_transpose(mat4 mat, struct fstyle* frus);
 
 
 static int vrbox_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* scn, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -46,7 +46,7 @@ static int vrbox_draw_gl41(
 	gl41opaque_sphere(wnd,0x8000ff00, north,tr,tf,tt);
 	return 0;
 }
-static int vrbox_event(struct entity* act, struct fstyle* pin, struct event* ev, int len)
+static int vrbox_event(_obj* act, struct fstyle* pin, struct event* ev, int len)
 {
 	struct halfrel* self;
 	struct halfrel* peer;
@@ -59,11 +59,11 @@ static int vrbox_event(struct entity* act, struct fstyle* pin, struct event* ev,
 	switch(ev->what){
 	case 0x4070:
 	case touch_move:
-		if(0 == act->fwn)return 1;
+		if(0 == act->whdf.fwn)return 1;
 		t = (void*)ev;
 
-        float dr = (t[0] - act->fxn)/10;
-        float db = (t[1] - act->fyn)/10;
+        float dr = (t[0] - act->whdf.fxn)/10;
+        float db = (t[1] - act->whdf.fyn)/10;
 
 		quaternion_operation(obb->vr, obb->vt, dr/100.0);
 		quaternion_operation(obb->vf, obb->vt, dr/100.0);
@@ -85,31 +85,31 @@ static int vrbox_event(struct entity* act, struct fstyle* pin, struct event* ev,
 		vec3_setlen(obb->vt, obb->vt[3]);
 		vec3_setlen(obb->vf, obb->vf[3]);*/
 
-		act->fxn = t[0];
-		act->fyn = t[1];
+		act->whdf.fxn = t[0];
+		act->whdf.fyn = t[1];
 		return 1;
 	case 0x2b70:
 	case touch_onto:
 		t = (void*)ev;
-		act->fxn = t[0];
-		act->fyn = t[1];
-		act->fwn = 1;
+		act->whdf.fxn = t[0];
+		act->whdf.fyn = t[1];
+		act->whdf.fwn = 1;
 		return 1;
 	case 0x2d70:
 	case touch_away:
-		act->fwn = 0;
+		act->whdf.fwn = 0;
 		return 1;
 	}
 
 	printmemory(ev, 16);
 	return 0;
 }
-static int vrbox_sensor(struct entity* act, struct fstyle* pin, float* f, int len)
+static int vrbox_sensor(_obj* act, struct fstyle* pin, float* f, int len)
 {
 	say("g(%f,%f,%f),a(%f,%f,%f),m(%f,%f,%f)\n",f[0],f[1],f[2],f[3],f[4],f[5],f[6],f[7],f[8]);
 	return 1;
 }
-static int vrbox_quaternion(struct entity* act, struct fstyle* pin, float* q, int len)
+static int vrbox_quaternion(_obj* act, struct fstyle* pin, float* q, int len)
 {
 	//say("q(%f,%f,%f,%f)\n",q[0],q[1],q[2],q[3]);
 
@@ -144,12 +144,12 @@ static int vrbox_quaternion(struct entity* act, struct fstyle* pin, float* q, in
 
 
 void vrbox_ratio(
-	struct entity* wrd, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* wrd, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	struct fstyle* rect = &area->fshape;
-	float dx = rect->vq[0] * wnd->fbwidth;
-	float dy = rect->vq[1] * wnd->fbheight;
+	float dx = rect->vq[0] * wnd->whdf.fbwidth;
+	float dy = rect->vq[1] * wnd->whdf.fbheight;
 
 	struct fstyle* shape = &geom->fshape;
 	float lr = vec3_getlen(shape->vr);
@@ -245,8 +245,8 @@ void vrbox_frustum(struct fstyle* frus, struct fstyle* plane)
 		frus->vc[0], frus->vc[1], frus->vc[2]);*/
 }
 static void vrbox_matrix(
-	struct entity* act, struct style* part,
-	struct entity* wrd, struct style* geom)
+	_obj* act, struct style* part,
+	_obj* wrd, struct style* geom)
 {
 	struct fstyle* frus = &geom->frus;
 
@@ -255,9 +255,9 @@ static void vrbox_matrix(
 	//printmat4(mat);
 }
 static void vrbox_camera(
-	struct entity* act, struct style* part,
-	struct entity* wrd, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* part,
+	_obj* wrd, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	struct fstyle* frus = &geom->frus;
 	struct gl41data* data = act->CAMBUF;
@@ -267,20 +267,20 @@ static void vrbox_camera(
 	data->dst.arg[1].fmt = 'v';
 	data->dst.arg[1].name = "camxyz";
 	data->dst.arg[1].data = frus->vc;
-	wnd->glfull_camera[0] = act->CAMBUF;
+	wnd->gl41list.camera[0] = act->CAMBUF;
 }
 
 
 
 
-static int vrbox_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vrbox_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _tui_:
 	case _rgba_:
 		return 0;
@@ -289,7 +289,7 @@ static int vrbox_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* arg,
 	}
 	return 0;
 }
-static int vrbox_read_bywnd(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vrbox_read_bywnd(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 //find world from camera
 	struct halfrel* tmp[2];
@@ -303,12 +303,12 @@ static int vrbox_read_bywnd(_ent* ent,void* slot, _syn* stack,int sp, void* arg,
 
 //[-2,-1]: wnd,area -> cam,togl
 //[+0,+1]: cam,towr -> wor,geom
-	struct entity* wnd;struct style* area;
-	struct entity* wor;struct style* geom;
+	_obj* wnd;struct style* area;
+	_obj* wor;struct style* geom;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 	wor = stack[sp+1].pchip;geom = stack[sp+1].pfoot;
 
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	default:
 		//clear all
 		gl41data_before(wnd);
@@ -329,16 +329,16 @@ static int vrbox_read_bywnd(_ent* ent,void* slot, _syn* stack,int sp, void* arg,
 
 
 
-static void vrbox_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static void vrbox_search(_obj* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 }
-static void vrbox_modify(struct entity* act)
+static void vrbox_modify(_obj* act)
 {
 }
-static void vrbox_delete(struct entity* act)
+static void vrbox_delete(_obj* act)
 {
 }
-static void vrbox_create(struct entity* act, void* str)
+static void vrbox_create(_obj* act, void* str)
 {
 	act->MATBUF = memorycreate(64*2, 0);
 	act->CAMBUF = memorycreate(0x1000, 0);
@@ -347,11 +347,11 @@ static void vrbox_create(struct entity* act, void* str)
 
 
 
-static int vrbox_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
+static int vrbox_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
 	if(0 == stack)return 0;
 
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	//foot defined behavior
@@ -359,7 +359,7 @@ static int vrbox_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int 
 	}
 
 	//caller defined behavior
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -369,7 +369,7 @@ static int vrbox_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int 
 	}
 	return 0;
 }
-static int vrbox_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
+static int vrbox_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
 #define _sens_ hex32('s','e','n','s')
 #define _quat_ hex32('q','u','a','t')
@@ -395,10 +395,10 @@ static void vrbox_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-void vrbox_register(struct entity* p)
+void vrbox_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('v', 'r', 'b', 'o', 'x', 0, 0, 0);
+	p->hfmt = hex64('v', 'r', 'b', 'o', 'x', 0, 0, 0);
 
 	p->oncreate = (void*)vrbox_create;
 	p->ondelete = (void*)vrbox_delete;

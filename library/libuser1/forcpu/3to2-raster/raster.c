@@ -80,19 +80,19 @@ static void raster_sort(float** bot,float** mid,float** top, float* va,float* vb
 	}
 }
 void rastersolid_triangle(
-	struct entity* wnd, struct fstyle* rect,
+	_obj* wnd, struct fstyle* rect,
 	void* vs, void* fs,
 	float* vbuf, int vfmt, int vw, int vh,
 	mat4 mat, void* per)
 {
-	int stride = wnd->fbwidth>>2;
-	u32* color = wnd->colorbuf;
-	float* depth = wnd->depthbuf;
+	int stride = wnd->whdf.fbwidth>>2;
+	u32* color = wnd->rgbanode.buf;
+	float* depth = wnd->rgbanode.depthbuf;
 
-	int px = wnd->width * rect->vc[0];
-	int py = wnd->height* rect->vc[1];
-	int qx = wnd->width * rect->vq[0] + px;
-	int qy = wnd->height* rect->vq[1] + py;
+	int px = wnd->whdf.width * rect->vc[0];
+	int py = wnd->whdf.height* rect->vc[1];
+	int qx = wnd->whdf.width * rect->vq[0] + px;
+	int qy = wnd->whdf.height* rect->vq[1] + py;
 	int cx = (px+qx)/2;
 	int cy = (py+qy)/2;
 	int dx = (qx-px)/2;

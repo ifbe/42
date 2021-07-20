@@ -53,7 +53,7 @@ struct pictureobject
 };
 static struct pictureobject obj[60];
 //
-static struct supply* working;
+static _obj* working;
 static int enq = 0;
 
 
@@ -224,7 +224,7 @@ HRESULT enumpin(IBaseFilter * pFilter, PIN_DIRECTION dirrequired, int iNum, IPin
 
 
 
-HRESULT configgraph(struct supply* win, IAMStreamConfig* devcfg)
+HRESULT configgraph(_obj* win, IAMStreamConfig* devcfg)
 {
 	int iCount = 0;
 	int iSize = 0;
@@ -276,7 +276,7 @@ HRESULT configgraph(struct supply* win, IAMStreamConfig* devcfg)
 	printf("\n");
 	return S_OK;
 }
-void shutupdie(struct supply* win)
+void shutupdie(_obj* win)
 {
 	if(g_pMC != 0)
 	{
@@ -285,7 +285,7 @@ void shutupdie(struct supply* win)
 	}
 	CoUninitialize();
 }
-void letsgo(struct supply* win)
+void letsgo(_obj* win)
 {
 	//builder
 	HRESULT hr;
@@ -444,11 +444,11 @@ int videolinkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-void videodelete(struct supply* win)
+void videodelete(_obj* win)
 {
 	//shutupdie(win);
 }
-void videocreate(struct supply* win, void* arg, int argc, u8** argv)
+void videocreate(_obj* win, void* arg, int argc, u8** argv)
 {
 	int j;
 	win->STRIDE = 640;

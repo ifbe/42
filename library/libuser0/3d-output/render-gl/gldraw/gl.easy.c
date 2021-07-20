@@ -132,10 +132,10 @@ void easywindow_drawthis(struct gl41data* pair)
 
 
 
-void easywindow_take(_sup* win,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void easywindow_take(_obj* win,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
-	float w = win->fbwidth;
-	float h = win->fbheight;
+	float w = win->whdf.fbwidth;
+	float h = win->whdf.fbheight;
 
 	//
 	glViewport(0, 0, w, h);
@@ -146,17 +146,17 @@ void easywindow_take(_sup* win,void* foot, _syn* stack,int sp, void* arg,int idx
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	if(win->orel0)take_data_from_peer(win,_ctx_, stack,sp, 0,0, 0,0);
-	if(win->gleasy_solid)easywindow_drawthis(win->gleasy_solid);
+	if(win->gl41easy.solid)easywindow_drawthis(win->gl41easy.solid);
 	else easywindow_example();
 }
-void easywindow_give(_sup* win,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void easywindow_give(_obj* win,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	say("@easywindow_event\n");
 }
-void easywindow_delete(struct supply* win)
+void easywindow_delete(_obj* win)
 {
 }
-void easywindow_create(struct supply* win)
+void easywindow_create(_obj* win)
 {
-	win->fmt = _gl41easy_;
+	win->hfmt = _gl41easy_;
 }

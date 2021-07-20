@@ -1,12 +1,12 @@
 #include "libsoft.h"
 int decstr2u32(void* src, void* dst);
-#define CURNUM data0
-#define MAXNUM data1
+#define CURNUM listu64.data0
+#define MAXNUM listu64.data1
 
 
 
 
-int goslow_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int goslow_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	say("@goslow_read\n");
 
@@ -14,7 +14,7 @@ int goslow_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
 	take_data_from_peer(art,_src_, stack,sp, 0,0, f,10);
 	return 0;
 }
-int goslow_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int goslow_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	int cur,max;
 	if(0 == art)return 0;
@@ -44,7 +44,7 @@ int goslow_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int goslow_create(struct artery* ele, u8* url)
+int goslow_create(_obj* ele, u8* url)
 {
 	ele->CURNUM = 0;
 	ele->MAXNUM = 8;	//default

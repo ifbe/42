@@ -18,7 +18,7 @@ void* pollenv();
 
 static struct android_app* theapp = 0;
 static int status = 0;
-static struct supply* thewin = 0;
+static _obj* thewin = 0;
 static ANativeWindow* native;
 
 
@@ -156,7 +156,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 
 
 
-void windowread_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void windowread_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	ANativeWindow_Buffer buffer;
 	struct android_poll_source* source;
@@ -186,7 +186,7 @@ void windowread_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp
 	//events
 	pollenv();
 }
-void window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 void windowstop()
@@ -195,10 +195,10 @@ void windowstop()
 void windowstart()
 {
 }
-void windowdelete(struct supply* win)
+void windowdelete(_obj* win)
 {
 }
-void windowcreate(struct supply* win)
+void windowcreate(_obj* win)
 {
 	thewin = win;
 	win->fmt = hex64('r','g','b','a','8','8','8','8');

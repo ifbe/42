@@ -42,7 +42,7 @@ static EGLSurface surface = EGL_NO_SURFACE;
 static int width = 0;
 static int height = 0;
 //
-static struct supply* thewnd = 0;
+static _obj* thewnd = 0;
 static int candraw = 0;
 //
 struct artery* fusion = 0;
@@ -56,7 +56,7 @@ vec3 sensor[3] = {
 
 
 
-int window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int cmd, void* buf,int len)
+int window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
 	if(wnd != thewnd)return 0;
 	if(candraw){
@@ -66,9 +66,9 @@ int window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, voi
 	checkevent();
 	return 0;
 }
-int window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int cmd, void* buf,int len)
+int window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	default:fullwindow_give(wnd,foot, stack,sp, arg,cmd, buf,len);
 	}
 	return 0;
@@ -79,17 +79,17 @@ void windowstop()
 void windowstart()
 {
 }
-void windowdelete(struct supply* wnd)
+void windowdelete(_obj* wnd)
 {
 }
-void windowcreate(struct supply* wnd, void* arg)
+void windowcreate(_obj* wnd, void* arg)
 {
 	say("@windowcreate\n");
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	default:{
 		thewnd = wnd;
-		wnd->fbwidth = wnd->width = width;
-		wnd->fbheight= wnd->height= height;
+		wnd->whdf.fbwidth = wnd->whdf.width = width;
+		wnd->whdf.fbheight= wnd->whdf.height= height;
 		say("w=%d,h=%d\n", width, height);
 
 		fullwindow_create(wnd);
@@ -183,25 +183,25 @@ void closewindow(struct android_app* theapp)
 	surface = EGL_NO_SURFACE;
 
 	int j;
-	struct supply* wnd = thewnd;
+	_obj* wnd = thewnd;
 	if(0 == wnd)return;
 
-	struct gl41data** cam = wnd->glfull_camera;
+	struct gl41data** cam = wnd->gl41list.camera;
 	for(j=0;j<64;j++){
 		if(cam[j])bzero(&cam[j]->dst, sizeof(struct gldst));
 	}
 
-	struct gl41data** lit = wnd->glfull_light;
+	struct gl41data** lit = wnd->gl41list.light;
 	for(j=0;j<64;j++){
 		if(lit[j])bzero(&lit[j]->dst, sizeof(struct gldst));
 	}
 
-	struct gl41data** solid = wnd->glfull_solid;
+	struct gl41data** solid = wnd->gl41list.solid;
 	for(j=0;j<64;j++){
 		if(solid[j])bzero(&solid[j]->dst, sizeof(struct gldst));
 	}
 
-	struct gl41data** opaque = wnd->glfull_opaque;
+	struct gl41data** opaque = wnd->gl41list.opaque;
 	for(j=0;j<64;j++){
 		if(opaque[j])bzero(&opaque[j]->dst, sizeof(struct gldst));
 	}

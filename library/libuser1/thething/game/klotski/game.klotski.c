@@ -21,8 +21,8 @@ static u32 color[10] =
 
 
 static void klotski_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x, y, cx, cy, ww, hh;
 	if(sty)
@@ -34,10 +34,10 @@ static void klotski_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 
 	for(y=0;y<5;y++)
@@ -56,9 +56,9 @@ static void klotski_draw_pixel(
 	}
 }
 static void klotski_draw_gl41(
-	struct entity* act, struct style* part,
-	struct entity* wrl, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* part,
+	_obj* wrl, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -67,13 +67,13 @@ static void klotski_draw_gl41(
 	gl41solid_rect(wnd, 0xffffff, vc, vr, vf);
 }
 static void klotski_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void klotski_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x,y;
 
@@ -98,23 +98,23 @@ static void klotski_draw_html(
 	htmlprintf(win, 2, "</div>\n");
 }
 static void klotski_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void klotski_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-static void klotski_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void klotski_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -124,7 +124,7 @@ static void klotski_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void klotski_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void klotski_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -133,10 +133,10 @@ static void klotski_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,i
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -146,7 +146,7 @@ static void klotski_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void klotski_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void klotski_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void klotski_discon(struct halfrel* self, struct halfrel* peer)
@@ -159,25 +159,25 @@ static void klotski_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void klotski_search(struct entity* act)
+static void klotski_search(_obj* act)
 {
 }
-static void klotski_modify(struct entity* act)
+static void klotski_modify(_obj* act)
 {
 }
-static void klotski_delete(struct entity* act)
+static void klotski_delete(_obj* act)
 {
 	if(0 == act)return;
-	if(act->buf0){
-		memorydelete(act->buf0);
-		act->buf0 = 0;
+	if(act->listptr.buf0){
+		memorydelete(act->listptr.buf0);
+		act->listptr.buf0 = 0;
 	}
 }
-static void klotski_create(struct entity* act)
+static void klotski_create(_obj* act)
 {
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf0 = data;
-	if(_copy_ == act->type)act->buf0 = memorycreate(20, 0);
+	if(_orig_ == act->type)act->listptr.buf0 = data;
+	if(_copy_ == act->type)act->listptr.buf0 = memorycreate(20, 0);
 
 	data[0][1] = data[0][2] = data[1][1] = data[1][2] = caocao;
 	data[0][0] = data[1][0] = machao;
@@ -195,10 +195,10 @@ static void klotski_create(struct entity* act)
 
 
 
-void klotski_register(struct entity* p)
+void klotski_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('k', 'l', 'o', 't', 's', 'k', 'i', 0);
+	p->hfmt = hex64('k', 'l', 'o', 't', 's', 'k', 'i', 0);
 
 	p->oncreate = (void*)klotski_create;
 	p->ondelete = (void*)klotski_delete;

@@ -5,9 +5,9 @@
 
 /*
 static void schematic_dx11draw(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -16,9 +16,9 @@ static void schematic_dx11draw(
 	dx11opaque_rect(ctx, 0x20ffff00, vc, vr, vf);
 }*/
 static void schematic_gl41draw(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -47,15 +47,15 @@ static void schematic_gl41draw(
 
 
 
-static void schematic_world_camera_window(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key)
+static void schematic_world_camera_window(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	if(0 == stack)return;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _dx11list_:
 	case _mt20list_:
 	case _gl41list_:
@@ -64,12 +64,12 @@ static void schematic_world_camera_window(_ent* ent,void* slot, _syn* stack,int 
 		break;
 	}
 }
-int schematic_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int schematic_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -80,7 +80,7 @@ int schematic_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key
 	}
 	return 0;
 }
-int schematic_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int schematic_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -97,19 +97,19 @@ int schematic_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int schematic_search(struct entity* scene)
+int schematic_search(_obj* scene)
 {
 	return 0;
 }
-int schematic_modify(struct entity* scene)
+int schematic_modify(_obj* scene)
 {
 	return 0;
 }
-int schematic_delete(struct entity* scene)
+int schematic_delete(_obj* scene)
 {
 	return 0;
 }
-int schematic_create(struct entity* scene, void* arg, int argc, u8** argv)
+int schematic_create(_obj* scene, void* arg, int argc, u8** argv)
 {
 	return 0;
 }

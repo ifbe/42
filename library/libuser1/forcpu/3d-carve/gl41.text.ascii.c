@@ -131,13 +131,13 @@ static int aidfont_load()
 	}
 	return 0;
 }
-static int aidfont_fill(struct entity* win, struct gl41data* data, int id)
+static int aidfont_fill(_obj* win, struct gl41data* data, int id)
 {
 	struct mysrc* src = &data->src;
 	struct gldst* dst = &data->dst;
 
 	if(0 == src->vs){
-		switch(win->fmt){
+		switch(win->hfmt){
 		case _gl41list_:
 			src->vs = gl41ascii_vert;
 			src->fs = gl41ascii_frag;
@@ -190,14 +190,14 @@ static int aidfont_fill(struct entity* win, struct gl41data* data, int id)
 
 	return 0;
 }
-int ascii3d_vars(struct entity* win, int id, float** vbuf, u16** ibuf, int vcnt, int icnt)
+int ascii3d_vars(_obj* win, int id, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
 	if(0 == win)return -1;
-	if(0 == win->glfull_opaque)return -2;
+	if(0 == win->gl41list.opaque)return -2;
 
-	struct gl41data* p = win->glfull_opaque[font3d0 + id];
+	struct gl41data* p = win->gl41list.opaque[font3d0 + id];
 	if(0 == p){
-		p = win->glfull_opaque[font3d0 + id] = memorycreate(0x1000, 0);
+		p = win->gl41list.opaque[font3d0 + id] = memorycreate(0x1000, 0);
 		if(0 == p)return -3;
 	}
 
@@ -224,7 +224,7 @@ int ascii3d_vars(struct entity* win, int id, float** vbuf, u16** ibuf, int vcnt,
 
 
 
-void gl41ascii_test(struct entity* win, u32 rgb,
+void gl41ascii_test(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -279,7 +279,7 @@ void gl41ascii_test(struct entity* win, u32 rgb,
 	ibuf[4] = vlen+2;
 	ibuf[5] = vlen+3;
 }
-void gl41ascii(struct entity* win, u32 rgb,
+void gl41ascii(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8 dat)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -334,7 +334,7 @@ void gl41ascii(struct entity* win, u32 rgb,
 	ibuf[4] = vlen+2;
 	ibuf[5] = vlen+3;
 }
-void gl41ascii_center(struct entity* win, u32 rgb,
+void gl41ascii_center(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8 dat)
 {
 	int j;
@@ -350,7 +350,7 @@ void gl41ascii_center(struct entity* win, u32 rgb,
 
 
 
-void gl41unicode(struct entity* win, u32 rgb,
+void gl41unicode(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u32 unicode)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -407,7 +407,7 @@ void gl41unicode(struct entity* win, u32 rgb,
 	ibuf[4] = vlen+2;
 	ibuf[5] = vlen+3;
 }
-void gl41unicode_center(struct entity* win, u32 rgb,
+void gl41unicode_center(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u32 unicode)
 {
 	vec3 tc;
@@ -420,14 +420,14 @@ void gl41unicode_center(struct entity* win, u32 rgb,
 
 
 
-void gl41utf8(struct entity* win, u32 rgb,
+void gl41utf8(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8* buf, int len)
 {
 	u32 unicode;
 	utf2unicode(buf, &unicode);
 	gl41unicode(win, rgb, vc, vr, vf, unicode);
 }
-void gl41utf8_center(struct entity* win, u32 rgb,
+void gl41utf8_center(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8* buf, int len)
 {
 	vec3 tc;
@@ -440,7 +440,7 @@ void gl41utf8_center(struct entity* win, u32 rgb,
 
 
 
-void gl41string(struct entity* win, u32 rgb,
+void gl41string(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8* buf, int len)
 {
 	int j,k;
@@ -484,7 +484,7 @@ void gl41string(struct entity* win, u32 rgb,
 		}
 	}
 }
-void gl41string_center(struct entity* win, u32 rgb,
+void gl41string_center(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8* buf, int len)
 {
 	float dx;
@@ -522,7 +522,7 @@ void gl41string_center(struct entity* win, u32 rgb,
 
 
 
-void gl41decimal(struct entity* win, u32 rgb,
+void gl41decimal(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u32 val)
 {
 	int len;
@@ -530,7 +530,7 @@ void gl41decimal(struct entity* win, u32 rgb,
 	len = data2decstr(val, str);
 	gl41string(win, rgb, vc, vr, vf, str, len);
 }
-void gl41hexadecimal(struct entity* win, u32 rgb,
+void gl41hexadecimal(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u32 val)
 {
 	int j,len;
@@ -550,7 +550,7 @@ void gl41hexadecimal(struct entity* win, u32 rgb,
 	}
 	gl41string(win, rgb, vc, vr, vf, str+8-len, len);
 }
-void gl41hex8_center(struct entity* win, u32 rgb,
+void gl41hex8_center(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u32 val)
 {
 	int j;
@@ -566,14 +566,14 @@ void gl41hex8_center(struct entity* win, u32 rgb,
 
 
 
-void gl41float(struct entity* win, u32 rgb,
+void gl41float(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, float data)
 {
 	u8 mystr[100];
 	float2decstr(data, mystr);
 	gl41string(win, rgb, vc, vr, vf, mystr, 0);
 }
-void gl41double(struct entity* win, u32 rgb,
+void gl41double(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, double data)
 {
 	u8 mystr[100];
@@ -584,7 +584,7 @@ void gl41double(struct entity* win, u32 rgb,
 
 
 
-void gl41text(struct entity* win, u32 rgb,
+void gl41text(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf,
 	u8* buf, int len)
 {
@@ -616,7 +616,7 @@ void gl41text(struct entity* win, u32 rgb,
 		if('\n' > buf[j])break;
 	}
 }
-void gl41text_reverse(struct entity* win, u32 rgb,
+void gl41text_reverse(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf,
 	u8* buf, int len)
 {

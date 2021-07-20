@@ -2,12 +2,12 @@
 #define _in_ hex16('i','n')
 #define sin34 0.5591929034707469
 #define cos34 0.8290375725550416
-void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
+void gl41data_convert(_obj* wnd, struct style* area, struct event* ev, vec3 v);
 
 
 
 
-static void* camrts_find(struct entity* ent)
+static void* camrts_find(_obj* ent)
 {
 	int ret;
 	struct halfrel* out[4];
@@ -15,7 +15,7 @@ static void* camrts_find(struct entity* ent)
 	ret = relationsearch(ent, _evto_, &out[0], &out[1]);
 	if(ret <= 0)return 0;
 
-	struct entity* cam = out[1]->pchip;
+	_obj* cam = out[1]->pchip;
 	if(0 == cam)return 0;
 
 	ret = relationsearch(cam, _in_, &out[0], &out[1]);
@@ -42,11 +42,11 @@ static void camrts_fixgeom(struct fstyle* geom)
 
 
 
-int camrts_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int camrts_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int camrts_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int camrts_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	struct fstyle* geom = camrts_find(ent);
 	if(0 == geom)return 0;
@@ -93,19 +93,19 @@ int camrts_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int camrts_search(struct entity* win)
+int camrts_search(_obj* win)
 {
 	return 0;
 }
-int camrts_modify(struct entity* win)
+int camrts_modify(_obj* win)
 {
 	return 0;
 }
-int camrts_delete(struct entity* win)
+int camrts_delete(_obj* win)
 {
 	return 0;
 }
-int camrts_create(struct entity* act, void* flag)
+int camrts_create(_obj* act, void* flag)
 {
 	return 0;
 }

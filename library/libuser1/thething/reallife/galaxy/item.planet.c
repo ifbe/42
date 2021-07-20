@@ -26,8 +26,8 @@ static struct plannet data[9] = {
 
 
 static void planet_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	u32 c;
 	int x,y,l,r,j;
@@ -42,16 +42,16 @@ static void planet_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 
 	for(j=0;j<9;j++)
 	{
 		c = data[j].color;
-		if('r' == (win->fmt&0xff))c = ((c>>16)&0xff) + (c&0xff00) + ((c&0xff)<<16);
+		if('r' == (win->hfmt&0xff))c = ((c>>16)&0xff) + (c&0xff00) + ((c&0xff)<<16);
 
 		l = ww*data[j].distance/data[8].distance;
 		r = ww*data[j].diameter/data[8].distance;
@@ -64,9 +64,9 @@ static void planet_draw_pixel(
 	}
 }
 static void planet_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* wrl, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* wrl, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	int j;
 	float l, r;
@@ -111,33 +111,33 @@ static void planet_draw_gl41(
 	}
 }
 static void planet_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void planet_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void planet_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void planet_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-static void planet_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void planet_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -147,7 +147,7 @@ static void planet_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void planet_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void planet_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -156,10 +156,10 @@ static void planet_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -169,7 +169,7 @@ static void planet_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 		break;
 	}
 }
-static void planet_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void planet_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void planet_discon(struct halfrel* self, struct halfrel* peer)
@@ -182,28 +182,28 @@ static void planet_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void planet_modify(struct entity* act)
+static void planet_modify(_obj* act)
 {
 }
-static void planet_search(struct entity* act)
+static void planet_search(_obj* act)
 {
 }
-static void planet_delete(struct entity* act)
-{
-	if(0 == act)return;
-}
-static void planet_create(struct entity* act)
+static void planet_delete(_obj* act)
 {
 	if(0 == act)return;
 }
+static void planet_create(_obj* act)
+{
+	if(0 == act)return;
+}
 
 
 
 
-void planet_register(struct entity* p)
+void planet_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('p', 'l', 'a', 'n', 'e', 't', 0, 0);
+	p->hfmt = hex64('p', 'l', 'a', 'n', 'e', 't', 0, 0);
 
 	p->oncreate = (void*)planet_create;
 	p->ondelete = (void*)planet_delete;

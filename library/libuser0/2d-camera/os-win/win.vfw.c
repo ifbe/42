@@ -1,8 +1,8 @@
 
-void video_take(struct supply* win, void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void video_take(_obj* win, void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 }
-void video_give(struct supply* win, void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void video_give(_obj* win, void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 }
 void videolist()
@@ -17,10 +17,10 @@ void videostop()
 void videostart()
 {
 }
-void videodelete(struct supply* win)
+void videodelete(_obj* win)
 {
 }
-void videocreate(struct supply* win)
+void videocreate(_obj* win)
 {
 }
 

@@ -3,11 +3,11 @@
 
 
 
-static void theear_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void theear_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@theear_read\n");
 }
-static void theear_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void theear_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void theear_discon(struct halfrel* self, struct halfrel* peer)
@@ -20,26 +20,26 @@ static void theear_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void theear_search(struct entity* act)
+static void theear_search(_obj* act)
 {
 }
-static void theear_modify(struct entity* act)
+static void theear_modify(_obj* act)
 {
 }
-static void theear_delete(struct entity* act)
+static void theear_delete(_obj* act)
 {
 }
-static void theear_create(struct entity* act, void* str)
+static void theear_create(_obj* act, void* str)
 {
 }
 
 
 
 
-void theear_register(struct entity* p)
+void theear_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('t', 'h', 'e', 'e', 'a', 'r', 0, 0);
+	p->hfmt = hex64('t', 'h', 'e', 'e', 'a', 'r', 0, 0);
 
 	p->oncreate = (void*)theear_create;
 	p->ondelete = (void*)theear_delete;

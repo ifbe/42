@@ -5,8 +5,8 @@
 
 
 static void clock_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int j,rad;
 	int cx, cy, ww, hh;
@@ -19,10 +19,10 @@ static void clock_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 	u64 date = dateread();
 	u8* p = (u8*)&date;
@@ -48,9 +48,9 @@ static void clock_draw_pixel(
 	drawdec8(win, 0xffffff, cx-8+32, cy, p[0]);
 }
 static void clock_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	u8 j;
 	float a,c,s;
@@ -108,23 +108,23 @@ static void clock_draw_gl41(
 	}
 }
 static void clock_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void clock_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void clock_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void clock_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	u64 date = dateread();
 	u8* p = (u8*)&date;
@@ -136,15 +136,15 @@ static void clock_draw_cli(
 
 
 
-static void clock_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key)
+static void clock_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	if(0 == stack)return;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _dx11list_:
 	case _mt20list_:
 	case _gl41list_:
@@ -153,12 +153,12 @@ static void clock_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* arg
 		break;
 	}
 }
-static void clock_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void clock_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* wnd;struct style* area;
+	_obj* wnd;struct style* area;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _rgba_:
 		clock_draw_pixel(ent,foot, wnd,area);
 		break;
@@ -167,7 +167,7 @@ static void clock_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int
 		break;
 	}
 }
-static void clock_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void clock_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void clock_discon(struct halfrel* self, struct halfrel* peer)
@@ -180,18 +180,18 @@ static void clock_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void clock_search(struct entity* act)
+static void clock_search(_obj* act)
 {
 }
-static void clock_modify(struct entity* act)
+static void clock_modify(_obj* act)
 {
 }
-static void clock_delete(struct entity* act)
+static void clock_delete(_obj* act)
 {
 	if(0 == act)return;
 	//if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void clock_create(struct entity* act)
+static void clock_create(_obj* act)
 {
 	if(0 == act)return;
 	//if(_orig_ == act->type)act->buf = buffer;
@@ -201,10 +201,10 @@ static void clock_create(struct entity* act)
 
 
 
-void clock_register(struct entity* p)
+void clock_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('c', 'l', 'o', 'c', 'k', 0, 0, 0);
+	p->hfmt = hex64('c', 'l', 'o', 'c', 'k', 0, 0, 0);
 
 	p->oncreate = (void*)clock_create;
 	p->ondelete = (void*)clock_delete;

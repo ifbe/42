@@ -34,14 +34,14 @@ int tcptrav_memory(u64* list, u64 self)
 
 
 
-int tcptravclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int tcptravclient_read(_obj* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int tcptravclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int tcptravclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	if(0==stack|sp < 2)return 0;
-	struct sysobj* sys = stack[sp-2].pchip;
+	_obj* sys = stack[sp-2].pchip;
 	say("@tcptravclient_write:%.4s\n", &foot);
 
 	switch(stack[sp-1].flag){
@@ -56,7 +56,7 @@ int tcptravclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg,int 
 		///say("@ccc\n");
 		printmemory(buf, len < 16 ? len : 16);
 
-		if(_c_friend_ != art->stage1)return 0;
+		if(_c_friend_ != art->vfmt)return 0;
 		give_data_into_peer(art,_dst_, stack,sp, 0,0, buf,len);
 		return 0;
 	case _sss_:
@@ -64,19 +64,19 @@ int tcptravclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg,int 
 		printmemory(buf, len < 16 ? len : 16);
 		return 0;
 	case _dst_:
-		if(_c_friend_ != art->stage1)return 0;
+		if(_c_friend_ != art->vfmt)return 0;
 		give_data_into_peer(art,_ccc_, stack,sp, 0,0, buf,len);
 		return 0;
 	case _src_:
 		printmemory(buf, len < 16 ? len : 16);
 
-		u8* t = sys->self;
+		u8* t = sys->sockinfo.self;
 		say("myaddr=%d.%d.%d.%d:%d\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
 
 		u8* p = buf+0;
 		say("public=%d.%d.%d.%d:%d\n", p[4],p[5],p[6],p[7], (p[2]<<8)+p[3]);
 
-		if(_c_friend_ == art->stage1)return 0;
+		if(_c_friend_ == art->vfmt)return 0;
 		if(len < 16){
 			sleep_us(1000000);
 			give_data_into_peer(art,_src_, stack,sp, 0,0, "?\n", 2);
@@ -116,7 +116,7 @@ int tcptravclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg,int 
 			relationcreate(art, 0, _art_, _sss_, sss, 0, _sys_, _dst_);
 		}
 
-		art->stage1 = _c_friend_;
+		art->vfmt = _c_friend_;
 /*
 		//debug
 		char* tmp[32];
@@ -140,27 +140,25 @@ int tcptravclient_linkup(struct halfrel* self, struct halfrel* peer)
 	}
 	return 0;
 }
-int tcptravclient_delete(struct artery* art)
+int tcptravclient_delete(_obj* art)
 {
 	return 0;
 }
-int tcptravclient_create(struct artery* art, u8* url)
+int tcptravclient_create(_obj* art, u8* url)
 {
-	art->data0 = 0;
-	art->data1 = 0;
-
-	art->stage1 = 0;
+	art->listptr.buf0 = 0;
+	art->vfmt = 0;
 	return 0;
 }
 
 
 
 
-int tcptravserver_read(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int tcptravserver_read(_obj* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int tcptravserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int tcptravserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
@@ -172,11 +170,11 @@ int tcptravserver_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int tcptravserver_delete(struct artery* art)
+int tcptravserver_delete(_obj* art)
 {
 	return 0;
 }
-int tcptravserver_create(struct artery* art, u8* url)
+int tcptravserver_create(_obj* art, u8* url)
 {
 	return 0;
 }
@@ -184,21 +182,21 @@ int tcptravserver_create(struct artery* art, u8* url)
 
 
 
-int tcptravmaster_read(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int tcptravmaster_read(_obj* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int tcptravmaster_write(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int tcptravmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	if(0==stack|sp < 2)return 0;
-	struct sysobj* sys = stack[sp-2].pchip;
+	_obj* sys = stack[sp-2].pchip;
 
 	if(_TCP_ == sys->type){
-		u8* t = sys->peer;
+		u8* t = sys->sockinfo.peer;
 		say("from %d.%d.%d.%d:%d->\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
 		printmemory(buf, len);
 
-		u64* list = &art->data0;
+		u64* list = art->listptr.buf0;
 		tcptrav_memory(list, *(u64*)t);
 
 		int j;
@@ -219,14 +217,14 @@ int tcptravmaster_discon(struct halfrel* self, struct halfrel* peer)
 	say("@tcptravmaster_discon: %.4s\n", &self->flag);
 	return 0;
 }
-int tcptravmaster_delete(struct artery* art)
+int tcptravmaster_delete(_obj* art)
 {
 	return 0;
 }
-int tcptravmaster_create(struct artery* art, u8* url)
+int tcptravmaster_create(_obj* art, u8* url)
 {
 	int j;
-	u64* list = &art->data0;
+	u64* list = art->listptr.buf0;
 	for(j=0;j<4;j++)list[j] = 0;
 	return 0;
 }

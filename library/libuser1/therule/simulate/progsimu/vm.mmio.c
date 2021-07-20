@@ -4,11 +4,11 @@
 
 
 
-int mmiospace_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
+int mmiospace_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
 {
 	return take_data_from_peer(ent,_ram_, stack,sp, arg,key, buf,len);
 }
-int mmiospace_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
+int mmiospace_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
 {
 	return 0;
 }
@@ -25,19 +25,19 @@ int mmiospace_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int mmiospace_search(struct entity* world)
+int mmiospace_search(_obj* world)
 {
 	return 0;
 }
-int mmiospace_modify(struct entity* world)
+int mmiospace_modify(_obj* world)
 {
 	return 0;
 }
-int mmiospace_delete(struct entity* world)
+int mmiospace_delete(_obj* world)
 {
 	return 0;
 }
-int mmiospace_create(struct entity* world, void* str)
+int mmiospace_create(_obj* world, void* str)
 {
 	return 0;
 }

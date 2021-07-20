@@ -136,10 +136,10 @@ void explainleafnode()
 static void hfs_explain(u64 number)
 {
 	say("%llx@%llx\n",number,catalogsector+nodesize*number);
-	readfile(0, 0,
+/*	file_take(0, 0,
 		"", (catalogsector+nodesize*number)*0x200,
 		datahome, nodesize*0x200
-	);  //0x1000
+	);*/
 	printmemory(datahome,0x1000);
 
 	//1.解释节点头
@@ -179,10 +179,10 @@ u64 searchbtreeforcnid(u64 nodenum,u64 wantcnid)
 	say("enter node:%llx\n",nodenum);
 
 	//把指定节点读到内存,顺便看看这节点是啥类型
-	readfile(0, 0,
+/*	file_take(0, 0,
 		"", (catalogsector+nodenum*nodesize)*0x200,
 		datahome, nodesize*0x200
-	);
+	);*/
 	u8 type=*(u8*)(datahome+8);
 
 	//节点内每一个record找一遍，找本节点内第一个的偏移
@@ -205,10 +205,10 @@ u64 searchbtreeforcnid(u64 nodenum,u64 wantcnid)
 
 			//临时读下一个到datahome+0x8000那里(节点最大不超过0x8000吧)
 			//读这个临时节点的第一个记录看看，能确定下来目前的最后一个record就是想要的
-			readfile(0, 0,
+/*			file_take(0, 0,
 				"", (catalogsector+temptempnodenum*nodesize)*0x200,
 				datahome+0x8000, nodesize*0x200
-			);
+			);*/
 			u64 temptempkey=BSWAP_32(*(u32*)(datahome+0x8000+0x10));
 
 			//
@@ -311,10 +311,10 @@ static void explaindirectory(u64 nodenum,u64 wantcnid)
 			if(nodenum==0)break;
 			say("next node:%x\n",nodenum);
 
-			readfile(0, 0,
+/*			file_take(0, 0,
 				"", (catalogsector+nodenum*nodesize)*0x200,
 				datahome, nodesize*0x200
-			);
+			);*/
 			totalrecords=BSWAP_16(*(u16*)(datahome+0xa));
 			temp=0;
 			continue;
@@ -395,11 +395,11 @@ void explainfile(u64 fathercnid,u64 wantcnid,u64 nodenum,u64 wantwhere)
 
 
 	//然后是后面的记录
-	readfile(0, 0,
+/*	file_take(0, 0,
 		"", (catalogsector+nodenum*nodesize)*0x200,
 		catabuf, nodesize*0x200
 	);
-
+*/
 	//
 	int temp=nodesize*0x200;
 	while(1)
@@ -482,10 +482,10 @@ static int hfs_choose(u64 id)
 	if(id==2)
 	{
 		//根肯定在最开始的地方，相当于稍微优化一下
-		readfile(0, 0,
+/*		file_take(0, 0,
 			"", (catalogsector+firstleafnode*nodesize)*0x200,
 			datahome, nodesize*0x200
-		);
+		);*/
 		foundnode=firstleafnode;
 	}
 	else
@@ -568,7 +568,7 @@ int explainhfshead()
 
 
 //----------------第二次读，把分区头读进catabuf--------------
-	readfile(0, 0, "", catalogsector*0x200, catabuf, 0x1000);
+	//file_take(0, 0, "", catalogsector*0x200, catabuf, 0x1000);
 	//printmemory(catabuf,0x200);
 
 	//nodesize
@@ -622,11 +622,11 @@ int check_hfs(u8* addr)
 
 
 
-int hfsclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int hfsclient_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int hfsclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int hfsclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
@@ -638,9 +638,9 @@ int hfsclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	if(_src_ != self->flag)return 0;
 
-	struct artery* art = self->pchip;
-
-	int ret = readfile(art, _src_, "", 0, pbr, 0x1000);
+	_obj* art = self->pchip;
+/*
+	int ret = file_take(art, _src_, "", 0, pbr, 0x1000);
 	if(ret < 0x1000)return -1;
 
 	ret = check_hfs(pbr);
@@ -651,14 +651,14 @@ int hfsclient_linkup(struct halfrel* self, struct halfrel* peer)
 	if(ret < 0)return ret;
 
 	//进入根目录
-	hfs_choose(2);
+	hfs_choose(2);*/
 	return 0;
 }
-int hfsclient_delete(struct artery* art)
+int hfsclient_delete(_obj* art)
 {
 	return 0;
 }
-int hfsclient_create(struct artery* art)
+int hfsclient_create(_obj* art)
 {
 	fshome = memorycreate(0x100000, 0);
 		pbr = fshome+0x10000;

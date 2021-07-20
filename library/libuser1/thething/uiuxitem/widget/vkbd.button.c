@@ -1,24 +1,24 @@
 #include "libuser.h"
-#define STRBUF buf0
-void dx11data_01cam(struct entity* wnd);
+#define STRBUF buflen.buf
+void dx11data_01cam(_obj* wnd);
 //
-void gl41data_before(struct entity* wnd);
-void gl41data_after(struct entity* wnd);
-void gl41data_01cam(struct entity* wnd);
-void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
+void gl41data_before(_obj* wnd);
+void gl41data_after(_obj* wnd);
+void gl41data_01cam(_obj* wnd);
+void gl41data_convert(_obj* wnd, struct style* area, struct event* ev, vec3 v);
 
 
 
 
 void button_draw_pixel(
-	struct entity* act, struct style* part,
-	struct supply* ctx, struct style* area)
+	_obj* act, struct style* part,
+	_obj* ctx, struct style* area)
 {
 	int x,y;
 	int time;
-	int w = ctx->width;
-	int h = ctx->height;
-	u32* pix = ctx->rgbabuf;
+	int w = ctx->whdf.width;
+	int h = ctx->whdf.height;
+	u32* pix = ctx->rgbanode.buf;
 
 	time = 511*(timeread()%1000000)/1000000;
 	if(time > 255)time = 511-time;
@@ -33,9 +33,9 @@ void button_draw_pixel(
 
 
 void button_draw_gl41(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int j;
 	vec3 tc;
@@ -47,11 +47,11 @@ void button_draw_gl41(
 	gl41opaque_rect(ctx, 0x40ffd010, tc, vr, vf);
 	gl41string_center(ctx, 0xff0000, vc, vr ,vf, act->STRBUF, 0);
 }
-static void button_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+static void button_read_bycam(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	if(0 == stack)return;
 
 	slot = stack[sp-1].pfoot;
@@ -59,7 +59,7 @@ static void button_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* ar
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	button_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void button_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
+static void button_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
 {
 	struct fstyle fs;
 	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.5;
@@ -71,19 +71,19 @@ static void button_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct sty
 	button_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
 	gl41data_after(wnd);
 
-	if(_dx11list_ == wnd->fmt)dx11data_nocam(wnd);
+	if(_dx11list_ == wnd->hfmt)dx11data_nocam(wnd);
 	else gl41data_nocam(wnd);
 }
 
 
 
 
-static void button_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void button_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct supply* wnd = stack[sp-2].pchip;
+	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _rgba_:
 		button_draw_pixel(ent,foot, (void*)wnd,area);
 		break;
@@ -97,7 +97,7 @@ static void button_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 		button_read_bycam(ent,foot, stack,sp, arg,key);
 	}
 }
-static void button_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void button_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct event* ev = buf;
 	if(0x2b70 == ev->what)give_data_into_peer(ent,_evto_, stack,sp, 0,0, "1",1);
@@ -112,26 +112,22 @@ static void button_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void button_search(struct entity* act)
+static void button_search(_obj* act)
 {
 }
-static void button_modify(struct entity* act)
+static void button_modify(_obj* act)
 {
 }
-static void button_delete(struct entity* act)
+static void button_delete(_obj* act)
 {
 }
-static void button_create(struct entity* act, u8* arg, int argc, u8** argv)
+static void button_create(_obj* act, u8* arg, int argc, u8** argv)
 {
-	int j;
-	u8* dst;
-	if(0 == arg){
-		act->STRBUF = "button";
-		return;
-	}
+	if(0 == arg)arg = (void*)"button";
 
-	dst = act->STRBUF = memorycreate(0x1000, 0);
-	for(j=0;j<0x1000;j++){
+	int j;
+	u8* dst = act->priv_256b;
+	for(j=0;j<0x100;j++){
 		if(arg[j] < 0x20)break;
 		dst[j] = arg[j];
 	}
@@ -141,10 +137,10 @@ static void button_create(struct entity* act, u8* arg, int argc, u8** argv)
 
 
 
-void button_register(struct entity* p)
+void button_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('b', 'u', 't', 't', 'o', 'n', 0, 0);
+	p->hfmt = hex64('b', 'u', 't', 't', 'o', 'n', 0, 0);
 
 	p->oncreate = (void*)button_create;
 	p->ondelete = (void*)button_delete;

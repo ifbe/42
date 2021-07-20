@@ -1,12 +1,12 @@
 #include "libuser.h"
 void world2clip_orthz0z1_transpose(mat4 mat, struct fstyle* frus);
 void world2clip_orthznzp_transpose(mat4 mat, struct fstyle* frus);
-void gl41data_addcam(struct entity* wnd, struct gl41data* data);
-void gl41data_addlit(struct entity* wnd, struct gl41data* data);
-void gl41data_insert(struct entity* ctx, int type, struct gl41data* src, int cnt);
+void gl41data_addcam(_obj* wnd, struct gl41data* data);
+void gl41data_addlit(_obj* wnd, struct gl41data* data);
+void gl41data_insert(_obj* ctx, int type, struct gl41data* src, int cnt);
 
 
-#define OWNBUF buf0
+#define OWNBUF listptr.buf0
 struct sunbuf{
 	mat4 wvp;
 	vec4 rgb;
@@ -44,28 +44,28 @@ GLSL_VERSION
 
 
 static void dirlight_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void dirlight_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void dirlight_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void dirlight_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void dirlight_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
@@ -126,9 +126,9 @@ static void dirlight_frustum(struct fstyle* d, struct fstyle* s)
 	d->vn[3] = 1.0;
 }
 static void dirlight_lit_update(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	struct sunbuf* sun = act->OWNBUF;
 	if(0 == sun)return;
@@ -167,9 +167,9 @@ static void dirlight_lit_prep(struct gl41data* data)
 
 
 static void dirlight_cam_update(
-	struct entity* act, struct style* slot,
-	struct entity* wrd, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* wrd, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	struct sunbuf* sun = act->OWNBUF;
 	if(0 == sun)return;
@@ -199,9 +199,9 @@ static void dirlight_cam_prep(struct mysrc* src)
 
 
 static void dirlight_mesh_update(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int x,y,j;
 	vec3 ta, tb;
@@ -305,20 +305,20 @@ static void dirlight_mesh_prep(struct mysrc* src)
 
 
 
-static void dirlight_wrl_cam_wnd(_ent* ent,void* foot, _syn* stack,int sp)
+static void dirlight_wrl_cam_wnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
 	if(0 == stack)return;
 
-	struct entity* wor;struct style* geom;
-	struct entity* dup;struct style* camg;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* dup;struct style* camg;
+	_obj* wnd;struct style* area;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	dup = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 
 	struct sunbuf* sun = ent->OWNBUF;
 	dirlight_frustum(&geom->frus, &geom->fs);
-	if(_gl41list_ == wnd->fmt)world2clip_orthznzp_transpose(sun->wvp, &geom->frus);
+	if(_gl41list_ == wnd->hfmt)world2clip_orthznzp_transpose(sun->wvp, &geom->frus);
 	else world2clip_orthz0z1_transpose(sun->wvp, &geom->frus);
 
 	dirlight_cam_update(ent,foot, wor,geom, wnd,area);
@@ -329,7 +329,7 @@ static void dirlight_wrl_cam_wnd(_ent* ent,void* foot, _syn* stack,int sp)
 
 
 
-static void dirlight_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void dirlight_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -338,10 +338,10 @@ static void dirlight_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -351,7 +351,7 @@ static void dirlight_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,
 		break;
 	}
 }
-static void dirlight_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void dirlight_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void dirlight_discon(struct halfrel* self, struct halfrel* peer)
@@ -364,10 +364,10 @@ static void dirlight_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void dirlight_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static void dirlight_search(_obj* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 	struct relation* rel;
-	struct entity* world;
+	_obj* world;
 	struct fstyle* obb = 0;
 	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
@@ -383,13 +383,13 @@ static void dirlight_search(struct entity* act, u32 foot, struct halfrel* self[]
 		rel = samedstnextsrc(rel);
 	}
 }
-static void dirlight_modify(struct entity* act)
+static void dirlight_modify(_obj* act)
 {
 }
-static void dirlight_delete(struct entity* act)
+static void dirlight_delete(_obj* act)
 {
 }
-static void dirlight_create(struct entity* act, void* str)
+static void dirlight_create(_obj* act, void* str)
 {
 	if(0 == act)return;
 
@@ -409,10 +409,10 @@ static void dirlight_create(struct entity* act, void* str)
 
 
 
-void dirlight_register(struct entity* p)
+void dirlight_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('d','i','r','l', 'i', 't', 0, 0);
+	p->hfmt = hex64('d','i','r','l', 'i', 't', 0, 0);
 
 	p->oncreate = (void*)dirlight_create;
 	p->ondelete = (void*)dirlight_delete;

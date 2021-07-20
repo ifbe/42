@@ -525,11 +525,11 @@ int secureshell_clientwrite_encryptdata(u8* buf, int len, u8* dst, int cnt)
 
 
 
-int sshclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int sshclient_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int sshclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int sshclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	int ret;
 	u8 tmp[0x1000];
@@ -537,28 +537,28 @@ int sshclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx
 	say("@sshclient_write\n");
 	printmemory(buf, len);
 
-	if(0 == art->stage1)
+	if(0 == art->vfmt)
 	{
 		secureshell_clientread_handshake(buf, len, tmp, 0x1000);
 
 		ret = secureshell_clientwrite_handshake0x14(buf, len, tmp, 0x1000);
 		if(ret)give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
 	}
-	else if(1 == art->stage1)
+	else if(1 == art->vfmt)
 	{
 		ret = secureshell_clientread_handshake0x14(buf, len, tmp, 0x1000);
 
 		ret = secureshell_clientwrite_handshake0x22(buf, len, tmp, 0x1000);
 		if(ret)give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
 	}
-	else if(2 == art->stage1)
+	else if(2 == art->vfmt)
 	{
 		ret = secureshell_clientread_handshake0x1f(buf, len, tmp, 0x1000);
 
 		ret = secureshell_clientwrite_handshake0x20(buf, len, tmp, 0x1000);
 		if(ret)give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
 	}
-	else if(3 == art->stage1)
+	else if(3 == art->vfmt)
 	{
 		ret = secureshell_clientread_handshake0x21(buf, len, tmp, 0x1000);
 
@@ -572,7 +572,7 @@ int sshclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx
 	}
 	else printmemory(buf, len);
 
-	art->stage1 += 1;
+	art->vfmt += 1;
 	return 0;
 }
 int sshclient_discon(struct halfrel* self, struct halfrel* peer)
@@ -589,13 +589,13 @@ int sshclient_linkup(struct halfrel* self, struct halfrel* peer)
 	ret = give_data_into_peer(self->pchip,_src_, 0,0, 0,0, buf,ret);
 	return 0;
 }
-int sshclient_delete(struct artery* ele)
+int sshclient_delete(_obj* ele)
 {
 	return 0;
 }
-int sshclient_create(struct artery* ele, u8* url)
+int sshclient_create(_obj* ele, u8* url)
 {
-	ele->stage1 = 0;
+	ele->vfmt = 0;
 	return 0;
 }
 
@@ -772,11 +772,11 @@ int secureshell_serverwrite_encryptpacket(u8* buf, int len, u8* dst, int cnt)
 
 
 
-int sshserver_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int sshserver_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int sshserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int sshserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	int ret;
 	u8 tmp[0x1000];
@@ -784,7 +784,7 @@ int sshserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx
 	say("@sshserver_write\n");
 	printmemory(buf, len);
 
-	if(0 == art->stage1)
+	if(0 == art->vfmt)
 	{
 		ret = secureshell_serverread_handshake0x14(buf, len, tmp, 0x100);
 
@@ -792,7 +792,7 @@ int sshserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx
 		ret = secureshell_serverwrite_handshake0x14(buf, len, tmp, 0x1000);
 		if(ret)give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
 	}
-	else if(1 == art->stage1)
+	else if(1 == art->vfmt)
 	{
 		ret = secureshell_serverread_handshake0x22(buf, len, tmp, 0x100);
 
@@ -800,7 +800,7 @@ int sshserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx
 		ret = secureshell_serverwrite_handshake0x1f(buf, len, tmp, 0x1000);
 		if(ret)give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
 	}
-	else if(2 == art->stage1)
+	else if(2 == art->vfmt)
 	{
 		ret = secureshell_serverread_handshake0x20(buf, len, tmp, 0x100);
 
@@ -812,7 +812,7 @@ int sshserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx
 	}
 	else printmemory(buf, len);
 
-	art->stage1 += 1;
+	art->vfmt += 1;
 	return 0;
 }
 int sshserver_discon(struct halfrel* self, struct halfrel* peer)
@@ -823,13 +823,13 @@ int sshserver_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int sshserver_delete(struct artery* ele)
+int sshserver_delete(_obj* ele)
 {
 	return 0;
 }
-int sshserver_create(struct artery* ele, u8* url)
+int sshserver_create(_obj* ele, u8* url)
 {
-	ele->stage1 = 0;
+	ele->vfmt = 0;
 	return 0;
 }
 
@@ -848,11 +848,11 @@ int secureshell_serverwrite_handshake(u8* buf, int len, u8* dst, int cnt)
 {
 	return 0;
 }
-int sshmaster_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int sshmaster_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int sshmaster_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int sshmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	int ret;
 	u8 tmp[0x100];
@@ -872,13 +872,13 @@ int sshmaster_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx
 	give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
 
 	//link temp to Ssh
-	struct sysobj* obj = stack[sp-2].pchip;
+	_obj* obj = stack[sp-2].pchip;
 	if(0 == obj)return 0;
-	obj = obj->tempobj;
-	if(0 == obj)return 0;
+	_obj* child = obj->sockinfo.child;
+	if(0 == child)return 0;
 
 	art = arterycreate(_Ssh_, 0, 0, 0);
-	relationcreate(art, 0, _art_, _src_, obj, 0, _sys_, _dst_);
+	relationcreate(art, 0, _art_, _src_, child, 0, _sys_, _dst_);
 	return 0;
 }
 int sshmaster_discon(struct halfrel* self, struct halfrel* peer)
@@ -889,11 +889,11 @@ int sshmaster_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int sshmaster_delete(struct artery* ele)
+int sshmaster_delete(_obj* ele)
 {
 	return 0;
 }
-int sshmaster_create(struct artery* ele, u8* url)
+int sshmaster_create(_obj* ele, u8* url)
 {
 	return 0;
 }

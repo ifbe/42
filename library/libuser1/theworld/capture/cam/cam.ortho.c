@@ -1,7 +1,7 @@
 #include "libuser.h"
-#define MATBUF buf0
-#define CAMBUF buf1
-#define EVTYPE iw0
+#define MATBUF listptr.buf0
+#define CAMBUF listptr.buf1
+#define EVTYPE whdf.iw0
 #define EVSEND 666666
 void world2clip_orthz0z1_transpose(mat4 mat, struct fstyle* frus);
 void world2clip_orthznzp_transpose(mat4 mat, struct fstyle* frus);
@@ -9,10 +9,10 @@ void world2clip_orthznzp_transpose(mat4 mat, struct fstyle* frus);
 
 
 
-static void orthcam_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static void orthcam_search(_obj* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 	struct relation* rel;
-	struct entity* world;
+	_obj* world;
 	struct fstyle* obb = 0;
 	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
@@ -28,13 +28,13 @@ static void orthcam_search(struct entity* act, u32 foot, struct halfrel* self[],
 		rel = samedstnextsrc(rel);
 	}
 }
-static void orthcam_modify(struct entity* act)
+static void orthcam_modify(_obj* act)
 {
 }
-static void orthcam_delete(struct entity* act)
+static void orthcam_delete(_obj* act)
 {
 }
-static void orthcam_create(struct entity* act, void* arg)
+static void orthcam_create(_obj* act, void* arg)
 {
     say("@orthcam_create\n");
 	act->MATBUF = memorycreate(64, 0);
@@ -45,9 +45,9 @@ static void orthcam_create(struct entity* act, void* arg)
 
 
 static void orthcam_camera(
-	struct entity* act, struct style* slot,
-	struct entity* wrd, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* wrd, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	struct fstyle* frus = &geom->frus;
 	struct gl41data* data = act->CAMBUF;
@@ -57,12 +57,12 @@ static void orthcam_camera(
 	data->dst.arg[1].fmt = 'v';
 	data->dst.arg[1].name = "camxyz";
 	data->dst.arg[1].data = frus->vc;
-	wnd->glfull_camera[0] = act->CAMBUF;
+	wnd->gl41list.camera[0] = act->CAMBUF;
 }
 static int orthcam_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* scn, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* scn, struct style* geom,
+	_obj* ctx, struct style* area)
 {/*
 	vec3 tc,tf;
 	float* vc = sty->vc;
@@ -91,8 +91,8 @@ static int orthcam_draw_gl41(
 	return 0;
 }
 static int orthcam_event(
-	struct entity* act, struct style* pin,
-	struct entity* wld, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* wld, struct style* sty,
 	struct event* ev, int len)
 {
 	//say("orthcam_event@%llx:%x,%x\n", act, ev->why, ev->what);
@@ -111,13 +111,13 @@ static int orthcam_event(
 
 
 static void orthcam_ratio(
-	struct entity* wrd, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* wrd, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	struct fstyle* rect = &area->fshape;
 	struct fstyle* frus = &geom->frus;
-	float dx = rect->vq[0] * wnd->fbwidth;
-	float dy = rect->vq[1] * wnd->fbheight;
+	float dx = rect->vq[0] * wnd->whdf.fbwidth;
+	float dy = rect->vq[1] * wnd->whdf.fbheight;
 	frus->vb[3] = frus->vl[3] * dy / dx;
 	frus->vt[3] = frus->vr[3] * dy / dx;
 }
@@ -174,8 +174,8 @@ void orthocam_shape2frustum(struct fstyle* s, struct fstyle* d)
 	//d->vn[3] = -n;
 }
 static void orthcam_matrix(
-	struct entity* act, struct style* slot,
-	struct entity* wrd, struct style* geom)
+	_obj* act, struct style* slot,
+	_obj* wrd, struct style* geom)
 {
 	struct fstyle* frus = &geom->frus;
 	void* mat = act->MATBUF;
@@ -186,14 +186,14 @@ static void orthcam_matrix(
 
 
 
-static int orthcam_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int orthcam_read_bycam(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 //[-6,-5]: wnd,area -> cam,togl
 //[-4,-3]: cam,gl41 -> wor,geom		//the camera taking photo
 //[-2,-1]: wor,geom -> ent,gl41		//the entity being taken
 	struct style* slot;
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	if(stack&&('v' == key)){
 		slot = stack[sp-1].pfoot;
 		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
@@ -202,7 +202,7 @@ static int orthcam_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* ar
 	}
 	return 0;
 }
-static int orthcam_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int orthcam_read_bywnd(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 //find world from camera
 	struct halfrel* tmp[2];
@@ -217,8 +217,8 @@ static int orthcam_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* ar
 //[-2,-1]: wnd,area -> cam,togl
 //[+0,+1]: cam,towr -> wor,geom
 	struct style* slot;
-	struct entity* wnd;struct style* area;
-	struct entity* wor;struct style* geom;
+	_obj* wnd;struct style* area;
+	_obj* wor;struct style* geom;
 	slot = stack[sp-1].pfoot;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 	wor = stack[sp+1].pchip;geom = stack[sp+1].pfoot;
@@ -241,7 +241,7 @@ static int orthcam_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* ar
 	}
 	return 0;
 }
-static int orthcam_write_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int orthcam_write_bycam(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -249,14 +249,14 @@ static int orthcam_write_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* a
 
 
 
-static int orthcam_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int orthcam_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return 0;
 
-	struct entity* caller = stack[sp-2].pchip;
+	_obj* caller = stack[sp-2].pchip;
 	if(0 == caller)return 0;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _gl41list_:
 		return orthcam_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);
 	default:
@@ -264,7 +264,7 @@ static int orthcam_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 	}
 	return 0;
 }
-static int orthcam_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int orthcam_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(EVSEND == ent->EVTYPE)give_data_into_peer(ent,_evto_, stack,sp, arg,key, buf,len);
 	return 0;
@@ -276,7 +276,7 @@ static void orthcam_linkup(struct halfrel* self, struct halfrel* peer)
 {
     say("@orthcam_linkup\n");
 	if(_evto_ == self->flag){
-		struct entity* cam = self->pchip;
+		_obj* cam = self->pchip;
 		cam->EVTYPE = EVSEND;
 	}
 }
@@ -284,10 +284,10 @@ static void orthcam_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-void orthcam_register(struct entity* p)
+void orthcam_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('o', 'r', 't', 'h', 'c', 'a', 'm', 0);
+	p->hfmt = hex64('o', 'r', 't', 'h', 'c', 'a', 'm', 0);
 
 	p->oncreate = (void*)orthcam_create;
 	p->ondelete = (void*)orthcam_delete;

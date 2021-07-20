@@ -19,13 +19,13 @@ static struct device* dev;
 
 
 
-int uart_read(int fd, int off, void* buf, int len)
+int uart_take(int fd, int off, void* buf, int len)
 {
 	int ret;
 	ret = read(fd, buf, len);
 	return ret;
 }
-int uart_write(int fd, int off, void* buf, int len)
+int uart_give(int fd, int off, void* buf, int len)
 {
 	int ret;
 	//printf("@uart_write:%.*s\n", len, buf);

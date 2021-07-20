@@ -3,11 +3,11 @@
 
 
 
-int vt100_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int vt100_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int vt100_write(_art* art,void* foot, _syn* stack,int sp, u8* arg, int idx, void* buf, int len)
+int vt100_write(_obj* art,void* foot, _syn* stack,int sp, u8* arg, int idx, void* buf, int len)
 {
 	int j;
 	//say("@vt100_write: %4s\n", &self->flag);
@@ -30,11 +30,11 @@ int vt100_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int vt100_delete(struct artery* ele)
+int vt100_delete(_obj* ele)
 {
 	return 0;
 }
-int vt100_create(struct artery* ele, u8* url)
+int vt100_create(_obj* ele, u8* url)
 {
 	say("@vt100_create\n");
 	return 1;

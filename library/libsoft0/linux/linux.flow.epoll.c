@@ -18,8 +18,7 @@
 #include "libsoft.h"
 #define MAXSIZE 4096
 #define BUFFER_SIZE 0x100000
-int uart_read(int, int, void*, int);
-int readsocket(int, void*, void*, int);
+int socket_take(int, void*, void*, int);
 
 
 
@@ -29,8 +28,8 @@ union addrv4v6{
 	struct sockaddr_in v4;
 	struct sockaddr_in6 v6;
 };
-static struct sysobj* obj;
-static void* buf;
+static _obj* obj;
+static void* tmpbuf;
 static int alive = 0;
 static int epollfd = 0;
 
@@ -78,9 +77,9 @@ static void* epollthread(void* p)
 	struct halfrel stack[0x80];
 
 	int fd, cc;
-	struct sysobj* here;
-	struct sysobj* child;
-	struct sysobj* parent;
+	_obj* here;
+	_obj* child;
+	_obj* parent;
 
 	while(alive)
 	{
@@ -91,7 +90,7 @@ static void* epollthread(void* p)
 		for(j=0; j<ret; j++)
 		{
 			here = ev[j].data.ptr;
-			fd = here->selffd;
+			fd = here->sockinfo.fd;
 			//printmemory(&ev[j], sizeof(struct epoll_event));
 			//say("fd=%x, here=%llx\n", fd, here);
 			//printf("fd=%x, here=%llx\n", fd, here);
@@ -107,25 +106,25 @@ static void* epollthread(void* p)
 				switch(here->type){
 				case _ptmx_:
 				case _uart_:{
-					cnt = read(fd, buf, BUFFER_SIZE);
+					cnt = read(fd, tmpbuf, BUFFER_SIZE);
 					if(0 == cnt){
 						say("error@%.4s:len=%x\n", &here->type, cnt);
 						systemdelete(here);
 						break;
 					}
-					give_data_into_peer(here,_dst_, stack,0, 0,0, buf,cnt);
+					give_data_into_peer(here,_dst_, stack,0, 0,0, tmpbuf,cnt);
 					break;
 				}//easy
 
 				case _udp_:
 				case _UDP_:
 				case _tcp_:{
-					cnt = readsocket(fd, here->peer, buf, BUFFER_SIZE);
+					cnt = socket_take(fd, here->sockinfo.peer, tmpbuf, BUFFER_SIZE);
 					if(cnt >= 0)
 					{
 						//say("@epollthread: %.4s\n", &obj[cc].type);
-						if((0==here->irel0)&&(0==here->orel0))printmemory(buf, cnt);
-						else give_data_into_peer(here,_dst_, stack,0, here->peer,0, buf,cnt);
+						if((0==here->irel0)&&(0==here->orel0))printmemory(tmpbuf, cnt);
+						else give_data_into_peer(here,_dst_, stack,0, here->sockinfo.peer,0, tmpbuf,cnt);
 					}
 					if(cnt <= 0)
 					{
@@ -139,25 +138,23 @@ static void* epollthread(void* p)
 				}//tcp
 
 				case _Tcp_:{
-					cnt = readsocket(fd, here->peer, buf, BUFFER_SIZE);
+					cnt = socket_take(fd, here->sockinfo.peer, tmpbuf, BUFFER_SIZE);
 					if(cnt >= 0)
 					{
-						//printmemory(buf, cnt);
+						//printmemory(tmpbuf, cnt);
 						if( (0 == here->irel0) && (0 == here->orel0) )
 						{
-							parent = here->tempobj;
-							memcpy(parent->peer, here->peer, 8);
-
-							//tell parent, its me
-							parent->tempfd = fd;
-							parent->tempobj = here;
+							parent = here->sockinfo.parent;
+							memcpy(parent->sockinfo.peer, here->sockinfo.peer, 8);
+							//parent->sockinfo.parent = 0;
+							parent->sockinfo.child = here;
 
 							//parent send
 							here = parent;
 						}
 
 						//say("@kqueuethread: %.4s\n", &obj[cc].type);
-						give_data_into_peer(here,_dst_, stack,0, 0,0, buf,cnt);
+						give_data_into_peer(here,_dst_, stack,0, 0,0, tmpbuf,cnt);
 					}
 					if(cnt <= 0)
 					{
@@ -174,7 +171,7 @@ static void* epollthread(void* p)
 					while(1)
 					{
 						socklen_t len = sizeof(union addrv4v6);
-						cc = accept(fd, (struct sockaddr*)(here->peer), &len);
+						cc = accept(fd, (struct sockaddr*)(here->sockinfo.peer), &len);
 						printf("cc=%x,errno=%d\n",cc,errno);
 						if(cc <= 0)break;
 
@@ -183,16 +180,17 @@ static void* epollthread(void* p)
 							close(cc);
 						}
 						else{
-							child = &obj[cc];
-							child->type = _Tcp_;
-							child->name = 0;
-							child->selffd = cc;
-							child->selfobj = child;
-							child->tempfd = fd;
-							child->tempobj = here;
 							//printf("fd=%x,cc=%x,here=%llx,child=%llx\n",fd,cc,here,child);
 
-							memcpy(child->peer, here->peer, 32);
+							child = &obj[cc];
+							child->type = _Tcp_;
+							memcpy(child->sockinfo.peer, here->sockinfo.peer, 32);
+							child->sockinfo.parent = here;
+							child->sockinfo.child = 0;
+							child->sockinfo.fd = cc;
+
+							//here->sockinfo.parent = 0;
+							here->sockinfo.child = child;
 							epoll_add(cc);
 						}
 						continue;
@@ -228,7 +226,7 @@ void freewatcher()
 void initwatcher(void* addr)
 {
 	obj = addr;
-	buf = addr + 0x100000;
+	tmpbuf = addr + 0x100000;
 
 	epollfd = epoll_create(MAXSIZE);
 	if(epollfd <= 0)printf("error@epoll_create: %d,%d\n", epollfd, errno);

@@ -4,28 +4,28 @@
 
 
 static void elevator_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void elevator_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void elevator_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void elevator_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void elevator_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
@@ -33,9 +33,9 @@ static void elevator_draw_cli(
 
 
 static void elevator_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* scn, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -47,10 +47,10 @@ static void elevator_draw_gl41(
 
 
 
-static void elevator_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void elevator_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -60,7 +60,7 @@ static void elevator_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void elevator_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void elevator_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -69,10 +69,10 @@ static void elevator_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -82,7 +82,7 @@ static void elevator_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,
 		break;
 	}
 }
-static void elevator_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void elevator_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void elevator_discon(struct halfrel* self, struct halfrel* peer)
@@ -95,26 +95,26 @@ static void elevator_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void elevator_search(struct entity* act)
+static void elevator_search(_obj* act)
 {
 }
-static void elevator_modify(struct entity* act)
+static void elevator_modify(_obj* act)
 {
 }
-static void elevator_delete(struct entity* act)
+static void elevator_delete(_obj* act)
 {
 }
-static void elevator_create(struct entity* act)
+static void elevator_create(_obj* act)
 {
 }
 
 
 
 
-void elevator_register(struct entity* p)
+void elevator_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('e','l','e','v','a','t','o','r');
+	p->hfmt = hex64('e','l','e','v','a','t','o','r');
 
 	p->oncreate = (void*)elevator_create;
 	p->ondelete = (void*)elevator_delete;

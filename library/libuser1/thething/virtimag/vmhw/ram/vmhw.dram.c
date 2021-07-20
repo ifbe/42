@@ -4,23 +4,23 @@ int copypath(u8* path, u8* data);
 
 
 
-static void vmddr_search(struct entity* act, u8* buf)
+static void vmddr_search(_obj* act, u8* buf)
 {
 }
-static void vmddr_modify(struct entity* act, u8* buf)
+static void vmddr_modify(_obj* act, u8* buf)
 {
 }
-static void vmddr_delete(struct entity* act, u8* buf)
+static void vmddr_delete(_obj* act, u8* buf)
 {
 	//write mem to file
 
 	//free 64m
 }
-static void vmddr_create(struct entity* act, void* arg, int argc, u8** argv)
+static void vmddr_create(_obj* act, void* arg, int argc, u8** argv)
 {
 	//alloc 64m
-	act->buf0 = memorycreate(0x100000*64, 0);
-	if(0 == act->buf0)return;
+	act->listptr.buf0 = memorycreate(0x100000*64, 0);
+	if(0 == act->listptr.buf0)return;
 
 	//read mem from file
 	int j,k;
@@ -33,11 +33,11 @@ static void vmddr_create(struct entity* act, void* arg, int argc, u8** argv)
 			k = hexstr2u32(p+2, &off);
 			say("off=%x\n", off);
 
-			q = act->buf0 + 0x100000*63;
+			q = act->listptr.buf0 + 0x100000*63;
 			copypath(q, p+3+k);
 			say("url=%s\n", q);
 
-			p = act->buf0 + off;
+			p = act->listptr.buf0 + off;
 			openreadclose(q, 0, p, 0x100000);
 			printmemory(p, 0x200);
 		}
@@ -47,10 +47,10 @@ static void vmddr_create(struct entity* act, void* arg, int argc, u8** argv)
 
 
 
-static int vmddr_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static int vmddr_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	if(_mmio_ == stack[sp-1].flag){
-		u8* ram = ent->buf0;
+		u8* ram = ent->listptr.buf0;
 		if(0 == ram)return 0;
 
 		int j;
@@ -59,7 +59,7 @@ static int vmddr_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int 
 	}
 	return 0;
 }
-static int vmddr_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vmddr_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -75,10 +75,10 @@ static int vmddr_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-void vmddr_register(struct entity* p)
+void vmddr_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex32('d','d','r', 0);
+	p->hfmt = hex32('d','d','r', 0);
 
 	p->oncreate = (void*)vmddr_create;
 	p->ondelete = (void*)vmddr_delete;

@@ -458,7 +458,7 @@ void Render_one(struct dx11data* cam, struct dx11data* lit, struct dx11data* one
 		}
 	}//drawarray
 }
-void Render_all(struct dx11data** cam, struct dx11data** lit, struct dx11data** solid, struct dx11data** opaque, struct supply* wnd, struct fstyle* area)
+void Render_all(struct dx11data** cam, struct dx11data** lit, struct dx11data** solid, struct dx11data** opaque, _obj* wnd, struct fstyle* area)
 {
 	//viewport
 	float x0 = area->vc[0] * wnd->fbwidth;
@@ -513,7 +513,7 @@ void FreeTEXcd()
 	g_renderTargetView->Release();
 	g_dx11context->Flush();
 }
-BOOL InitTEXcd(struct supply* wnd)
+BOOL InitTEXcd(_obj* wnd)
 {
 	// e.创建渲染目标视图
 	ID3D11Texture2D *backBuffer(NULL);
@@ -576,7 +576,7 @@ void FreeD3D11()
 	g_dx11context->Release();
 	g_dx11device->Release();
 }
-BOOL InitD3D11(struct supply* wnd)
+BOOL InitD3D11(_obj* wnd)
 {
 	// a.创建设备和上下文
 	D3D_FEATURE_LEVEL myFeatureLevel;
@@ -693,7 +693,7 @@ BOOL InitD3D11(struct supply* wnd)
 
 
 
-static void restorestackdeliverevent(struct supply* wnd, struct event* ev)
+static void restorestackdeliverevent(_obj* wnd, struct event* ev)
 {
 	u64* save = (u64*)wnd->spsave;
 	if(0 == save){
@@ -715,13 +715,13 @@ static void restorestackdeliverevent(struct supply* wnd, struct event* ev)
 	stack[sp+1].pfoot = rel->pdstfoot;
 	//stack[sp+1].type = rel->dsttype;
 	stack[sp+1].flag = rel->dstflag;
-	entity_give((struct entity*)rel->pdstchip, rel->pdstfoot, stack,sp+2, 0,0, ev, 0);
+	entity_give((_obj*)rel->pdstchip, rel->pdstfoot, stack,sp+2, 0,0, ev, 0);
 }
 LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	struct event ev;
 	u64 addr = GetWindowLongPtr(hwnd, GWLP_USERDATA);
-	struct supply* win = (struct supply*)addr;
+	_obj* win = (_obj*)addr;
 
 	switch(msg){
 		case WM_MOUSEWHEEL:
@@ -910,7 +910,7 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 void FreeWin32()
 {
 }
-BOOL InitWin32(struct supply* wnd)
+BOOL InitWin32(_obj* wnd)
 {
 	RECT tmp;
 	tmp.left = 0;
@@ -949,7 +949,7 @@ BOOL InitWin32(struct supply* wnd)
 
 
 extern "C" {
-int fullwindow_taking(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int fullwindow_taking(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//take
 	struct relation* rel = (struct relation*)wnd->orel0;
@@ -967,7 +967,7 @@ int fullwindow_taking(struct supply* wnd,void* foot, struct halfrel* stack,int s
 			stack[sp+1].pfoot = rel->pdstfoot;
 			//stack[sp+1].type = rel->dsttype;
 			stack[sp+1].flag = rel->dstflag;
-			entity_take((struct entity*)rel->pdstchip, rel->pdstfoot, stack,sp+2, 0,'v', 0, 0);
+			entity_take((_obj*)rel->pdstchip, rel->pdstfoot, stack,sp+2, 0,'v', 0, 0);
 		}
 
 		//give
@@ -981,7 +981,7 @@ int fullwindow_taking(struct supply* wnd,void* foot, struct halfrel* stack,int s
 	}
 	return 0;
 }
-int fullwindow_giving(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int fullwindow_giving(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -989,7 +989,7 @@ int fullwindow_giving(struct supply* wnd,void* foot, struct halfrel* stack,int s
 
 
 
-int window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//target
 	g_dx11context->OMSetRenderTargets(1, &g_renderTargetView, g_depthStencilView);
@@ -1023,7 +1023,7 @@ int window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, voi
 	wnd->spsave = 0;
 	return 0;
 }
-int window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -1039,15 +1039,15 @@ int windowlinkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int windowsearch(struct supply* wnd)
+int windowsearch(_obj* wnd)
 {
 	return 0;
 }
-int windowmodify(struct supply* wnd)
+int windowmodify(_obj* wnd)
 {
 	return 0;
 }
-int windowdelete(struct supply* wnd)
+int windowdelete(_obj* wnd)
 {
 	dx11easy_delete();
 	FreeTEXcd();
@@ -1055,7 +1055,7 @@ int windowdelete(struct supply* wnd)
 	FreeWin32();
 	return 0;
 }
-int windowcreate(struct supply* wnd)
+int windowcreate(_obj* wnd)
 {
 	//wnd->tier
 	//wnd->type

@@ -16,19 +16,80 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-
-#define u64 unsigned long long
-#define u32 unsigned int
-#define u16 unsigned short
-#define u8 unsigned char
-void say(char* fmt,...);
+#include "libsoft.h"
 
 
 
 
-int readfile(void* obj, int fd, void* arg, int off, char* buf, int len)
+struct item* obj;
+void initfilemgr(void* addr)
+{
+	obj = addr;
+}
+void freefilemgr()
+{
+}
+void filemanager_registersupplier()
+{
+}
+
+
+
+
+_obj* file_create(void* path, int flag)
+{
+	//say("@startfile:%s,%x\n", path, flag);
+	int fd;
+	char* pp = path;
+	if(0 == pp){fd = -0xfff;goto fail;}
+	if(0 == pp[0]){fd = -0xffe;goto fail;}
+
+	if('w' == flag){
+		fd = open(pp, O_RDWR | O_CREAT, S_IRWXU | S_IRWXG | S_IRWXO);
+	}
+	else{
+		fd = open(pp, O_RDONLY);
+	}
+	if(fd < 0)goto fail;
+
+	obj[fd].fileinfo.fd = fd;
+	return &obj[fd];
+
+fail:
+	printf("@open:fd=%d,err=%d,path=%s\n", fd, errno, pp);
+	return 0;
+}
+int file_delete(_obj* oo)
+{
+	int fd = oo->fileinfo.fd;
+	return close(fd);
+}
+int file_search(void* buf, int len)
+{
+	say("@filesearch\n");
+	return 0;
+}
+int file_modify(void* buf, int len)
+{
+	return 0;
+}
+
+
+
+
+int file_link()
+{
+	return 0;
+}
+int file_gone()
+{
+	return 0;
+}
+int file_take(_obj* oo, int xx, void* arg, int off, void* buf, int len)
 {
 	int ret;
+	int fd = oo->fileinfo.fd;
+	say("fd=%d\n");
 
 	if(arg){
 		ret = lseek(fd, off, SEEK_SET);
@@ -47,9 +108,10 @@ int readfile(void* obj, int fd, void* arg, int off, char* buf, int len)
 
 	return ret;
 }
-int writefile(void* obj, int fd, void* arg, int off, char* buf, int len)
+int file_give(_obj* oo, int xx, void* arg, int off, void* buf, int len)
 {
 	int ret;
+	int fd = oo->fileinfo.fd;
 
 	if(arg){
 		ret = lseek(fd, off, SEEK_SET);
@@ -67,59 +129,4 @@ int writefile(void* obj, int fd, void* arg, int off, char* buf, int len)
 	}
 
 	return ret;
-}
-int stopfile(int fd)
-{
-	return close(fd);
-}
-int startfile(char* path, int flag)
-{
-	int ret;
-	//say("@startfile:%s,%x\n", path, flag);
-	if(0 == path){ret = -0xfff;goto fail;}
-	if(0 == path[0]){ret = -0xffe;goto fail;}
-
-	if('w' == flag){
-		ret = open(path, O_RDWR | O_CREAT, S_IRWXU | S_IRWXG | S_IRWXO);
-	}
-	else{
-		ret = open(path, O_RDONLY);
-	}
-	if(ret > 0)return ret;
-
-fail:
-	printf("%d,%d@open:%s\n", ret, errno, path);
-	return ret;
-}
-
-
-
-
-int filesearch(void* buf, int len)
-{
-	say("@filesearch\n");
-	return 0;
-}
-int filemodify(void* buf, int len)
-{
-	return 0;
-}
-void deletefile()
-{
-}
-void createfile()
-{
-}
-
-
-
-
-void filemanager_registersupplier()
-{
-}
-void initfilemgr()
-{
-}
-void freefilemgr()
-{
 }

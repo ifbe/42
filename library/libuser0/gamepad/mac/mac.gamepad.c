@@ -3,10 +3,10 @@
 
 
 
-void joythread(struct supply* win)
+void joythread(_obj* win)
 {
 }
-void joycreate(struct supply* win)
+void joycreate(_obj* win)
 {
 	//threadcreate(joystickthread, win);
 	//threadcreate(joythread, win);

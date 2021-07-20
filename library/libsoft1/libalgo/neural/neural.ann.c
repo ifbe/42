@@ -1,17 +1,17 @@
 #include "libsoft.h"
+#define WEIGHT listptr.buf0
+#define RESULT listptr.buf1
 
 
 
 
-int ann_read(struct artery* art,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* image, int label)
+int ann_read(_obj* art,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* image, int label)
 {
-	int x,y;
-	float* weight;
-	float* result;
 	//say("@ann_read\n");
 
-	weight = art->buf0;
-	result = art->buf1;
+	int x,y;
+	float* weight = art->WEIGHT;
+	float* result = art->RESULT;
 
 	for(y=0;y<10;y++){
 		result[y] = 0;
@@ -24,7 +24,7 @@ int ann_read(struct artery* art,void* foot, struct halfrel* stack,int sp, void* 
 
 	return 0;
 }
-int ann_write(struct artery* art,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* image, int label)
+int ann_write(_obj* art,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* image, int label)
 {
 	int x,y;
 	float* weight;
@@ -32,8 +32,8 @@ int ann_write(struct artery* art,void* foot, struct halfrel* stack,int sp, void*
 	float delta[10];
 	//say("@ann_read\n");
 
-	weight = art->buf0;
-	result = art->buf1;
+	weight = art->WEIGHT;
+	result = art->RESULT;
 
 	for(y=0;y<10;y++){
 		result[y] = 0;
@@ -66,28 +66,28 @@ int ann_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int ann_search(struct artery* ele)
+int ann_search(_obj* ele)
 {
 	return 0;
 }
-int ann_modify(struct artery* ele)
+int ann_modify(_obj* ele)
 {
 	return 0;
 }
-int ann_delete(struct artery* ele)
+int ann_delete(_obj* ele)
 {
 	return 0;
 }
-int ann_create(struct artery* ele, u8* url)
+int ann_create(_obj* ele, u8* url)
 {
 	int j;
 	float* weight;
 	float* result;
 	say("@ann_create\n");
 
-	weight = ele->buf0 = memorycreate(4*28*28*10, 0);
+	weight = ele->WEIGHT = memorycreate(4*28*28*10, 0);
 	for(j=0;j<28*28*10;j++)weight[j] = (getrandom()&0xfff)/1024.0;
 
-	result = ele->buf1 = memorycreate(4*10, 0);
+	result = ele->RESULT = memorycreate(4*10, 0);
 	return 1;
 }

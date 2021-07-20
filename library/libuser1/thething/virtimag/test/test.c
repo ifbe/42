@@ -82,7 +82,7 @@ void test_prepgl(struct gl41data* data)
 	data->src.vbuf_enq = 1;
 	data->src.ibuf_enq = 1;
 }
-void test_tickgl(struct entity* ent,void* slot, struct entity* wnd,void* area)
+void test_tickgl(_obj* ent,void* slot, _obj* wnd,void* area)
 {
 	float a = 2*PI*(timeread()%5000000)/5000000.0;
 	float c = getcos(a);
@@ -116,7 +116,7 @@ void test_tickgl(struct entity* ent,void* slot, struct entity* wnd,void* area)
 	world2clip_projznzp(cammvp, &sty);
 	mat4_transpose(cammvp);
 
-	wnd->gleasy_solid = ent->buf0;
+	wnd->gl41easy.solid = ent->listptr.buf0;
 }
 
 
@@ -134,19 +134,19 @@ void test_preppcm(struct pcmdata* pcm)
 	buf = pcm->buf;
 	for(j=0;j<44100;j++)buf[j] = (short)(4096.0*getsin(j*tau/100));
 }
-void test_tickpcm(struct entity* ent,void* slot, struct entity* sup,void* geom)
+void test_tickpcm(_obj* ent,void* slot, _obj* sup,void* geom)
 {
-	sup->pcmeasy_data = ent->buf1;
+	sup->pcmeasy.data = ent->listptr.buf1;
 }
 
 
 
 
 
-static void test_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void test_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -155,7 +155,7 @@ static void test_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-void test_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+void test_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -164,10 +164,10 @@ void test_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, vo
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _pcm_:
 		test_tickpcm(ent,slot, caller,area);
 	case _rgba_:
@@ -181,7 +181,7 @@ void test_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, vo
 		break;
 	}
 }
-int test_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int test_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -197,25 +197,25 @@ int test_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int test_search(struct entity* act)
+int test_search(_obj* act)
 {
 	return 0;
 }
-int test_modify(struct entity* act)
+int test_modify(_obj* act)
 {
 	return 0;
 }
-int test_delete(struct entity* act)
+int test_delete(_obj* act)
 {
 	return 0;
 }
-int test_create(struct entity* act)
+int test_create(_obj* act)
 {
-	act->buf0 = memorycreate(0x1000, 0);
-	test_prepgl(act->buf0);
+	act->listptr.buf0 = memorycreate(0x1000, 0);
+	test_prepgl(act->listptr.buf0);
 
-	act->buf1 = memorycreate(0x20000, 0);
-	test_preppcm(act->buf1);
+	act->listptr.buf1 = memorycreate(0x20000, 0);
+	test_preppcm(act->listptr.buf1);
 
 	return 0;
 }

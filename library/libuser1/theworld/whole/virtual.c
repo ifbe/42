@@ -1,13 +1,13 @@
 #include "libuser.h"
-void gl41data_before(struct entity* wnd);
-void gl41data_after(struct entity* wnd);
-void gl41data_01cam(struct entity* wnd);
-void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
+void gl41data_before(_obj* wnd);
+void gl41data_after(_obj* wnd);
+void gl41data_01cam(_obj* wnd);
+void gl41data_convert(_obj* wnd, struct style* area, struct event* ev, vec3 v);
 
 
 
 
-int virtual_traverse(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+int virtual_traverse(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct relation* rel = ent->orel0;
 	while(1){
@@ -28,10 +28,10 @@ int virtual_traverse(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key
 
 
 
-int virtual_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int virtual_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@virtual_read\n");
-	struct entity* wnd = stack[sp-2].pchip;
+	_obj* wnd = stack[sp-2].pchip;
 	if(0 == wnd)return 0;
 
 	switch(wnd->type){
@@ -48,7 +48,7 @@ int virtual_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, 
 	}//switch
 	return 0;
 }
-int virtual_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int virtual_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@virtual_write\n");
 	give_data_into_peer(ent,_evto_, stack,sp, arg,key, buf,len);
@@ -68,19 +68,19 @@ int virtual_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int virtual_search(struct entity* world)
+int virtual_search(_obj* world)
 {
 	return 0;
 }
-int virtual_modify(struct entity* world)
+int virtual_modify(_obj* world)
 {
 	return 0;
 }
-int virtual_delete(struct entity* world)
+int virtual_delete(_obj* world)
 {
 	return 0;
 }
-int virtual_create(struct entity* world, void* str)
+int virtual_create(_obj* world, void* str)
 {
 	say("@virtual_create\n");
 	return 0;

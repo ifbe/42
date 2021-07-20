@@ -50,7 +50,7 @@ NSString* source =
 
 
 
-struct supply* thewnd = 0;
+_obj* thewnd = 0;
 static void CreateApplicationMenus(void)
 {
 	id appName = [[NSProcessInfo processInfo] processName];
@@ -599,7 +599,7 @@ NSLog(@"mouseDragged");
 
 
 
-int fullwindow_taking(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int fullwindow_taking(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	MyView* view = thewnd->mtkview;
 	[view drawprep];
@@ -620,7 +620,7 @@ int fullwindow_taking(struct supply* wnd,void* foot, struct halfrel* stack,int s
 			stack[sp+1].pfoot = rel->pdstfoot;
 			//stack[sp+1].type = rel->dsttype;
 			stack[sp+1].flag = rel->dstflag;
-			entity_take((struct entity*)rel->pdstchip, rel->pdstfoot, stack,sp+2, 0,'v', 0, 0);
+			entity_take((_obj*)rel->pdstchip, rel->pdstfoot, stack,sp+2, 0,'v', 0, 0);
 		}
 
 		[view draweach:area];
@@ -632,7 +632,7 @@ int fullwindow_taking(struct supply* wnd,void* foot, struct halfrel* stack,int s
 	[view drawdone];
 	return 0;
 }
-int fullwindow_giving(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int fullwindow_giving(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -640,7 +640,7 @@ int fullwindow_giving(struct supply* wnd,void* foot, struct halfrel* stack,int s
 
 
 
-void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	fullwindow_taking(wnd,foot, stack,sp, arg,key, buf,len);
 
@@ -674,7 +674,7 @@ void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, vo
 		[NSApp sendEvent:event];
 	}
 }
-void window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 void windowlist()
@@ -689,10 +689,10 @@ void windowstart()
 void windowstop()
 {
 }
-void windowdelete(struct supply* w)
+void windowdelete(_obj* w)
 {
 }
-void windowcreate(struct supply* wnd)
+void windowcreate(_obj* wnd)
 {
 	//wnd->tier
 	//wnd->type

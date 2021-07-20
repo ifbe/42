@@ -1,6 +1,6 @@
 #include "libuser.h"
-#define GL41BUF buf0
-void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
+#define GL41BUF listptr.buf0
+void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 
 
 
@@ -83,8 +83,8 @@ int manderbrot_check(double x, double y)
 	return j;
 }
 static void fractal_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	u32 c;
 	int x,y;
@@ -98,13 +98,13 @@ static void fractal_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 
-	u32* buf = win->rgbabuf;
+	u32* buf = win->rgbanode.buf;
 	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
 /*
 	for(y=1-hh;y<hh;y++)
@@ -120,9 +120,9 @@ static void fractal_draw_pixel(
 	}*/
 }
 static void fractal_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -180,23 +180,23 @@ static void fractal_draw_gl41(
 	gl41data_insert(wnd, 's', src, 1);
 }
 static void fractal_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void fractal_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void fractal_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void fractal_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("fractal(%x,%x,%x)\n",win,act,sty);
 }
@@ -205,8 +205,8 @@ static void fractal_draw_cli(
 
 
 static void fractal_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
 	//say("%llx,%llx\n",ev->why, ev->what);
@@ -239,10 +239,10 @@ static void fractal_event(
 
 
 
-static void fractal_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void fractal_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -252,7 +252,7 @@ static void fractal_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void fractal_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void fractal_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -261,10 +261,10 @@ static void fractal_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -274,7 +274,7 @@ static void fractal_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void fractal_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void fractal_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void fractal_discon(struct halfrel* self, struct halfrel* peer)
@@ -287,17 +287,17 @@ static void fractal_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void fractal_search(struct entity* act)
+static void fractal_search(_obj* act)
 {
 }
-static void fractal_modify(struct entity* act)
+static void fractal_modify(_obj* act)
 {
 }
-static void fractal_delete(struct entity* act)
+static void fractal_delete(_obj* act)
 {
 	if(0 == act)return;
 }
-static void fractal_create(struct entity* act)
+static void fractal_create(_obj* act)
 {
 	struct mysrc* src;
 	if(0 == act)return;
@@ -325,10 +325,10 @@ static void fractal_create(struct entity* act)
 
 
 
-void fractal_register(struct entity* p)
+void fractal_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('f', 'r', 'a', 'c', 't', 'a', 'l', 0);
+	p->hfmt = hex64('f', 'r', 'a', 'c', 't', 'a', 'l', 0);
 
 	p->oncreate = (void*)fractal_create;
 	p->ondelete = (void*)fractal_delete;

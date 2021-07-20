@@ -1,8 +1,8 @@
 #include "libuser.h"
-void gl41data_before(struct entity* wnd);
-void gl41data_after(struct entity* wnd);
-void gl41data_01cam(struct entity* wnd);
-void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
+void gl41data_before(_obj* wnd);
+void gl41data_after(_obj* wnd);
+void gl41data_01cam(_obj* wnd);
+void gl41data_convert(_obj* wnd, struct style* area, struct event* ev, vec3 v);
 //
 void drawarrorkey2d(void*, u32, int x0, int y0, int x1, int y1, u8*, int);
 void carvearrorkey(void*, u32, vec3 vc, vec3 vr, vec3 vf, u8*, int);
@@ -10,10 +10,10 @@ void carvearrorkey(void*, u32, vec3 vc, vec3 vr, vec3 vf, u8*, int);
 
 
 
-static int vjoy_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static int vjoy_search(_obj* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 	struct relation* rel;
-	struct entity* world;
+	_obj* world;
 
 	rel = act->irel0;
 	while(1){
@@ -28,15 +28,15 @@ static int vjoy_search(struct entity* act, u32 foot, struct halfrel* self[], str
 	}
 	return 0;
 }
-static int vjoy_modify(struct entity* win)
+static int vjoy_modify(_obj* win)
 {
 	return 0;
 }
-static int vjoy_delete(struct entity* win)
+static int vjoy_delete(_obj* win)
 {
 	return 0;
 }
-static int vjoy_create(struct entity* win, u8* str)
+static int vjoy_create(_obj* win, u8* str)
 {
 	return 0;
 }
@@ -44,13 +44,13 @@ static int vjoy_create(struct entity* win, u8* str)
 
 
 
-void vjoy_draw_pixel(struct entity* win, struct style* sty)
+void vjoy_draw_pixel(_obj* win, struct style* sty)
 {
 	u8 ch[8];
 	int c,l,rgb;
 	int x,y,m,n;
-	int w = win->width;
-	int h = win->height;
+	int w = win->whdf.width;
+	int h = win->whdf.height;
 	//if(win->vjoyw < 0)return;
 
 	//drawsolid_rect(win, 0x202020, 0, h*3/4, w, h);
@@ -76,9 +76,9 @@ void vjoy_draw_pixel(struct entity* win, struct style* sty)
 	drawarrorkey2d(win, 0xff00ff, w-h*3/16, h*13/16, w, h, ch, -1);
 }
 void vjoy_draw_gl41(
-	struct entity* act, struct style* part,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* part,
+	_obj* scn, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	u8 ch[8];
 	int x,y,j;
@@ -87,8 +87,8 @@ void vjoy_draw_gl41(
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vt = geom->fs.vt;
-	int w = wnd->fbwidth * area->fs.vq[0];
-	int h = wnd->fbheight * area->fs.vq[1];
+	int w = wnd->whdf.fbwidth * area->fs.vq[0];
+	int h = wnd->whdf.fbheight * area->fs.vq[1];
 
 	ch[0] = 'l';
 	ch[1] = 'r';
@@ -120,13 +120,13 @@ void vjoy_draw_gl41(
 	}
 	carvearrorkey(wnd, 0xff00ff, tc, tr, tf, ch, 1);
 }
-void vjoy_draw_html(struct entity* win, struct style* sty)
+void vjoy_draw_html(_obj* win, struct style* sty)
 {
 }
-void vjoy_draw_tui(struct entity* win, struct style* sty)
+void vjoy_draw_tui(_obj* win, struct style* sty)
 {
 }
-void vjoy_draw_cli(struct entity* win, struct style* sty)
+void vjoy_draw_cli(_obj* win, struct style* sty)
 {
 }
 
@@ -176,7 +176,7 @@ int vjoy_event(struct event* ev, int x, int y, int z)
 
 
 
-static void vjoy_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
+static void vjoy_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
 {
 	struct fstyle fs;
 	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.5;
@@ -189,14 +189,14 @@ static void vjoy_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style
 	gl41data_nocam(wnd);
 	gl41data_after(wnd);
 }
-static void vjoy_write_bywnd(_ent* ent,void* foot, _syn* stack,int sp, struct event* ev,int len)
+static void vjoy_write_bywnd(_obj* ent,void* foot, _syn* stack,int sp, struct event* ev,int len)
 {
-	struct entity* wnd;struct style* area;
+	_obj* wnd;struct style* area;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	if('p' == (ev->what&0xff)){
 		int ww,hh,x0,y0,dx,dy;
-		ww = wnd->width;hh = wnd->height;
+		ww = wnd->whdf.width;hh = wnd->whdf.height;
 		x0 = ww * area->fs.vc[0];y0 = hh * area->fs.vc[1];
 		dx = ww * area->fs.vq[0];dy = hh * area->fs.vq[1];
 
@@ -228,21 +228,21 @@ static void vjoy_write_bywnd(_ent* ent,void* foot, _syn* stack,int sp, struct ev
 
 
 
-static int vjoy_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vjoy_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* wnd = stack[sp-2].pchip;
+	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _gl41list_:
 		vjoy_read_bywnd(ent,foot, wnd,area);break;
 	}
 	return 0;
 }
-static int vjoy_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vjoy_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct supply* wnd = stack[sp-2].pchip;
-	switch(wnd->fmt){
+	_obj* wnd = stack[sp-2].pchip;
+	switch(wnd->hfmt){
 	case _gl41list_:
 		vjoy_write_bywnd(ent,foot, stack,sp, buf,len);break;
 	}
@@ -260,10 +260,10 @@ static int vjoy_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-void vjoy_register(struct entity* p)
+void vjoy_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex32('v', 'j', 'o', 'y');
+	p->hfmt = hex32('v', 'j', 'o', 'y');
 
 	p->oncreate = (void*)vjoy_create;
 	p->ondelete = (void*)vjoy_delete;

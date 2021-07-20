@@ -127,7 +127,7 @@ void fatdate2mydate(int val0, int val1, u8* date)
 	date[5] = tmp % 100;
 	date[6] = tmp / 100;
 }
-static void parsefolder(struct artery* art, u8* rsi)
+static void parsefolder(_obj* art, u8* rsi)
 {
 	int j;
 	struct folder* dir;
@@ -217,18 +217,18 @@ static void parsefolder(struct artery* art, u8* rsi)
 
 
 
-static u16 fat16_nextclus(struct artery* art, u16 clus)
+static u16 fat16_nextclus(_obj* art, u16 clus)
 {
-	struct perfs* per = art->buf0;
+	struct perfs* per = art->listptr.buf0;
 	u16* cache = (void*)per->fatbuffer;
 	return cache[clus];
 }
-static int fat16_read(struct artery* art, int ign, u32 clus,int offs, u8* buf,int len)
+static int fat16_read(_obj* art, int ign, u32 clus,int offs, u8* buf,int len)
 {
 	u32 tmp;
 	int ret, cnt;
 	int byteperclus;
-	struct perfs* per = art->buf0;
+	struct perfs* per = art->listptr.buf0;
 
 	cnt = 0;
 	byteperclus = per->byte_per_sec * per->sec_per_clus;
@@ -260,10 +260,10 @@ retcnt:
 
 
 
-static u32 fat32_nextclus(struct artery* art, u32 clus)
+static u32 fat32_nextclus(_obj* art, u32 clus)
 {
 	u64 byte;
-	struct perfs* per = art->buf0;
+	struct perfs* per = art->listptr.buf0;
 	u32* cache = (void*)per->fatbuffer;
 	u32 remain = clus % per->cache_count;
 
@@ -277,11 +277,11 @@ static u32 fat32_nextclus(struct artery* art, u32 clus)
 	return cache[remain];
 }
 //clus=first clus of file, offs=offset byte of file
-static int fat32_read(struct artery* art, int ign, u64 clus,int offs, u8* buf,int len)
+static int fat32_read(_obj* art, int ign, u64 clus,int offs, u8* buf,int len)
 {
 	u64 tmp;
 	int ret, cnt = 0;
-	struct perfs* per = art->buf0;
+	struct perfs* per = art->listptr.buf0;
 	int byteperclus = per->byte_per_sec * per->sec_per_clus;
 
 	while(1){
@@ -331,9 +331,9 @@ retcnt:
 
 
 
-int fat_buildcache(struct artery* art)
+int fat_buildcache(_obj* art)
 {
-	struct perfs* per = art->buf0;
+	struct perfs* per = art->listptr.buf0;
 	per->cache_first = 0;
 	per->cache_count = 0x10000;
 	return take_data_from_peer(art,_src_, 0,0, "",per->sec_of_fat0 * per->byte_per_sec, per->fatbuffer,0x40000);
@@ -379,14 +379,14 @@ u32 fat_searchfolder(u8* ptr, char* name)
 	}
 	return 0;
 }
-int fat_cd(struct artery* art, char* name)
+int fat_cd(_obj* art, char* name)
 {
 	int ret;
 	u32 clus;
 	struct perfs* per;
 	u8* dirhome;
 
-	per = art->buf0;
+	per = art->listptr.buf0;
 	if(0 == per)return 0;
 
 	dirhome = per->dirhome;
@@ -414,12 +414,12 @@ int fat_cd(struct artery* art, char* name)
 
 	return 0;
 }
-u32 fat_name2clus(struct artery* art, char* name)
+u32 fat_name2clus(_obj* art, char* name)
 {
 	u32 ret = 0;
 	int j,k=0,depth=0;
 
-	struct perfs* per = art->buf0;
+	struct perfs* per = art->listptr.buf0;
 	if(0 == per)return 0;
 
 	for(j=0;j<256;j++){
@@ -466,11 +466,11 @@ int fat_check(u8* addr)
 
 	return 32;
 }
-int fat_parse(struct artery* art, u8* addr)
+int fat_parse(_obj* art, u8* addr)
 {
 	u8* p;
 	struct BPB_FAT* fat = (void*)addr;
-	struct perfs* per = art->buf0;
+	struct perfs* per = art->listptr.buf0;
 
 	p = fat->byte_per_sec;
 	per->byte_per_sec = p[0] + (p[1]<<8);
@@ -519,41 +519,16 @@ int fat_parse(struct artery* art, u8* addr)
 
 
 
-int fatclient_ontake(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
-{
-	say("@fatclient_ontake\n");
-	if(0 == foot){
-		fat_cd(art, 0);
-		return 0;
-	}
-
-	u32 clus = fat_name2clus(art,foot);
-	say("name=%s,fat=%x\n",foot, clus);
-	if(0 == clus){
-		say("wrong file\n");
-		return 0;
-	}
-
-	return fat32_read(art,0, clus,0, buf,len);
-}
-int fatclient_ongive(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
-{
-	return 0;
-}
-int fatclient_discon(struct halfrel* self, struct halfrel* peer)
-{
-	return 0;
-}
 int fatclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	say("@fatclient_linkup\n");
 	int ret;
 	if(_src_ != self->flag)return 0;
 
-	struct artery* art = self->pchip;
+	_obj* art = self->pchip;
 	if(0 == art)return 0;
 
-	struct perfs* per = art->buf0;
+	struct perfs* per = art->listptr.buf0;
 	if(0 == per)return 0;
 
 	ret = take_data_from_peer(art,_src_, 0,0, "",0, per->pbrbuffer,0x200);
@@ -577,18 +552,47 @@ int fatclient_linkup(struct halfrel* self, struct halfrel* peer)
 
 	return 0;
 }
-int fatclient_delete(struct artery* art)
+int fatclient_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int fatclient_create(struct artery* art)
+int fatclient_ontake(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+{
+	say("@fatclient_ontake\n");
+	if(0 == foot){
+		fat_cd(art, 0);
+		return 0;
+	}
+
+	u32 clus = fat_name2clus(art,foot);
+	say("name=%s,fat=%x\n",foot, clus);
+	if(0 == clus){
+		say("wrong file\n");
+		return 0;
+	}
+
+	return fat32_read(art,0, clus,0, buf,len);
+}
+int fatclient_ongive(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+{
+	return 0;
+}
+
+
+
+
+int fatclient_create(_obj* art)
 {
 	say("@fatclient_create\n");
 
 	struct perfs* per = memorycreate(0x200000, 0);
-	art->buf0 = per;
+	art->listptr.buf0 = per;
 
 	art->ongiving = (void*)fatclient_ongive;
 	art->ontaking = (void*)fatclient_ontake;
+	return 0;
+}
+int fatclient_delete(_obj* art)
+{
 	return 0;
 }

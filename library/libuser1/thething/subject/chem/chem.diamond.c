@@ -3,16 +3,16 @@
 
 
 
-static void diamond_search(struct entity* act, u8* buf)
+static void diamond_search(_obj* act, u8* buf)
 {
 }
-static void diamond_modify(struct entity* act, u8* buf)
+static void diamond_modify(_obj* act, u8* buf)
 {
 }
-static void diamond_delete(struct entity* act, u8* buf)
+static void diamond_delete(_obj* act, u8* buf)
 {
 }
-static void diamond_create(struct entity* act, u8* buf)
+static void diamond_create(_obj* act, u8* buf)
 {
 }
 
@@ -20,9 +20,9 @@ static void diamond_create(struct entity* act, u8* buf)
 
 
 static void diamond_draw_gl41(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int j;
 	vec3 tc,tr,tf,tt;
@@ -40,38 +40,38 @@ static void diamond_draw_gl41(
 	gl41solid_sphere(ctx, 0x808080, vc, tr, tf, tt);
 }
 static void diamond_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* wnd, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* wnd, struct style* sty)
 {
 }
 static void diamond_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void diamond_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void diamond_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void diamond_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-static void diamond_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void diamond_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -81,7 +81,7 @@ static void diamond_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void diamond_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void diamond_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -90,10 +90,10 @@ static void diamond_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,i
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -103,7 +103,7 @@ static void diamond_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void diamond_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void diamond_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void diamond_discon(struct halfrel* self, struct halfrel* peer)
@@ -116,10 +116,10 @@ static void diamond_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-void diamond_register(struct entity* p)
+void diamond_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('d','i','a','m','o','n','d', 0);
+	p->hfmt = hex64('d','i','a','m','o','n','d', 0);
 
 	p->oncreate = (void*)diamond_create;
 	p->ondelete = (void*)diamond_delete;

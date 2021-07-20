@@ -4,11 +4,11 @@ void saveppmfromimg(char* name, int offs, u8* buf, int len, int width, int heigh
 
 
 
-int img2pbr_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int img2pbr_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int img2pbr_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int img2pbr_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
     return 0;
 }
@@ -24,7 +24,7 @@ int img2pbr_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int img2pbr_create(struct artery* ele, u8* url)
+int img2pbr_create(_obj* ele, u8* url)
 {
 	say("@img2pbr_create\n");
 	//testing: merge albedo,normal,amocc into ppm

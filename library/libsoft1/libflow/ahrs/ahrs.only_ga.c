@@ -74,7 +74,7 @@ void imuupdate(
 
 
 
-int easyag_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int easyag_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	float f[10];
 	say("@easyag_read\n");
@@ -82,7 +82,7 @@ int easyag_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
 	take_data_from_peer(art,_src_, stack,sp, 0,0, f,10);
 	return 0;
 }
-int easyag_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int easyag_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	say("@easyag_write: foot=%.4s, len=0x%x\n", &foot, len);
 	if((6 != len) && (9 != len)){
@@ -113,10 +113,10 @@ int easyag_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-void easyag_search(struct artery* ele)
+void easyag_search(_obj* ele)
 {
 }
-void easyag_modify(struct artery* ele, int foot, float* f, int cmd, float* buf, int len)
+void easyag_modify(_obj* ele, int foot, float* f, int cmd, float* buf, int len)
 {
 	imuupdate(f[0],f[1],f[2], f[3],f[4],f[5]);
 
@@ -125,10 +125,10 @@ void easyag_modify(struct artery* ele, int foot, float* f, int cmd, float* buf, 
 	buf[2] = q[2];
 	buf[3] = q[3];
 }
-void easyag_delete(struct artery* ele)
+void easyag_delete(_obj* ele)
 {
 }
-void easyag_create(struct artery* ele, u8* url)
+void easyag_create(_obj* ele, u8* url)
 {
 	qw = 1.0;
 	qx = qy = qz = 0;

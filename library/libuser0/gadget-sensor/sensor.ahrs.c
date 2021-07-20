@@ -8,12 +8,12 @@
 
 
 
-void ahrs_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+void ahrs_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 	//writeback: east north sky?
 	say("@ahrs_read\n");
 }
-void ahrs_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+void ahrs_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 /*
 	receive gpsdata(already filtered):
@@ -40,7 +40,7 @@ int ahrs_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void* ahrs_thread(struct supply* win)
+static void* ahrs_thread(_obj* win)
 {
 	vec4 tmp;
 	struct halfrel stack[0x80];
@@ -54,11 +54,11 @@ static void* ahrs_thread(struct supply* win)
 
 
 
-int ahrs_delete(struct supply* win)
+int ahrs_delete(_obj* win)
 {
 	return 0;
 }
-int ahrs_create(struct supply* win, void* str)
+int ahrs_create(_obj* win, void* str)
 {
 	say("@ahrs_create\n");
 	threadcreate(ahrs_thread, win);

@@ -3,11 +3,11 @@
 
 
 
-int camfree_taking(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int camfree_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
-int camfree_giving(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int camfree_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -23,19 +23,19 @@ int camfree_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int camfree_search(struct entity* win)
+int camfree_search(_obj* win)
 {
 	return 0;
 }
-int camfree_modify(struct entity* win)
+int camfree_modify(_obj* win)
 {
 	return 0;
 }
-int camfree_delete(struct entity* win)
+int camfree_delete(_obj* win)
 {
 	return 0;
 }
-int camfree_create(struct entity* act, void* flag)
+int camfree_create(_obj* act, void* flag)
 {
 	return 0;
 }

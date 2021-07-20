@@ -2,7 +2,7 @@
 #include <AVFoundation/AVFoundation.h>
 
 
-struct supply* thewin = 0;
+_obj* thewin = 0;
 
 
 @interface MyDelegate : NSObject
@@ -138,11 +138,11 @@ int videochoose()
 {
 	return 0;
 }
-int video_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int video_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int video_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int video_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
@@ -154,11 +154,11 @@ int videostart()
 {
 	return 0;
 }
-int videodelete(struct supply* win)
+int videodelete(_obj* win)
 {
 	return 0;
 }
-int videocreate(struct supply* win)
+int videocreate(_obj* win)
 {
 	say("videocreate\n");
 

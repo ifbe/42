@@ -28,7 +28,7 @@ static const pa_sample_spec ss =
 
 
 
-void* micphonelistener(struct supply* win)
+void* micphonelistener(_obj* win)
 {
 	int ret,err;
 	pa_usec_t latency;
@@ -79,12 +79,12 @@ void micphonestop()
 void micphonestart()
 {
 }
-void micphonedelete(struct supply* win)
+void micphonedelete(_obj* win)
 {
 	alive = 0;
 	if(s_in)pa_simple_free(s_in);
 }
-void micphonecreate(struct supply* win)
+void micphonecreate(_obj* win)
 {
 	int error;
 

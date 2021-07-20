@@ -4,8 +4,8 @@
 
 
 void camman_debug(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {/*
 	vec3 tc,tr,tf;
 	tr[0] = 1.0 / 64;
@@ -60,14 +60,14 @@ void camman_debug(
 
 
 void camman_listcamera(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int y, rgb;
 	vec3 tc, tr, tf;
 	struct relation* rel;
-	struct entity* twig;
-	struct entity* leaf;
+	_obj* twig;
+	_obj* leaf;
 
 	rel = win->orel0;
 	while(1)
@@ -76,7 +76,7 @@ void camman_listcamera(
 		if(_sup_ == rel->dsttype)
 		{
 			twig = (void*)(rel->dstchip);
-			//if(_cam3d_ == twig->fmt)goto found;
+			//if(_cam3d_ == twig->hfmt)goto found;
 		}
 		rel = samesrcnextdst(rel);
 	}
@@ -102,12 +102,12 @@ found:
 			tc[1] = (15 - 2*y) / 32.0;
 			tc[2] = 0.0;
 
-			if(y == act->iy0)rgb = 0xff00ff;
+			if(y == act->whdf.iy0)rgb = 0xff00ff;
 			else rgb = 0xffffff;
 			y += 1;
 
 			leaf = (void*)(rel->dstchip);
-			gl41string(win, rgb, tc, tr, tf, (void*)&leaf->fmt, 8);
+			gl41string(win, rgb, tc, tr, tf, (void*)&leaf->hfmt, 8);
 		}
 
 		rel = samesrcnextdst(rel);
@@ -118,14 +118,14 @@ found:
 
 
 void camman_listlight(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int y, rgb;
 	vec3 tc, tr, tf;
 	struct relation* rel;
-	struct entity* twig;
-	struct entity* leaf;
+	_obj* twig;
+	_obj* leaf;
 
 	rel = win->orel0;
 	while(1)
@@ -134,7 +134,7 @@ void camman_listlight(
 		if(_sup_ == rel->dsttype)
 		{
 			twig = (void*)(rel->dstchip);
-			//if(_lit3d_ == twig->fmt)goto found;
+			//if(_lit3d_ == twig->hfmt)goto found;
 		}
 		rel = samesrcnextdst(rel);
 	}
@@ -160,12 +160,12 @@ found:
 			tc[1] = (-1 - 2*y) / 32.0;
 			tc[2] = 0.0;
 
-			if(y == act->iy0)rgb = 0xff00ff;
+			if(y == act->whdf.iy0)rgb = 0xff00ff;
 			else rgb = 0xffffff;
 			y += 1;
 
 			leaf = (void*)(rel->dstchip);
-			gl41string(win, rgb, tc, tr, tf, (void*)&leaf->fmt, 8);
+			gl41string(win, rgb, tc, tr, tf, (void*)&leaf->hfmt, 8);
 		}
 
 		rel = samesrcnextdst(rel);
@@ -176,8 +176,8 @@ found:
 
 
 static int camman_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	vec3 tc,tr,tf;
 
@@ -210,22 +210,22 @@ static int camman_draw(
 	return 0;
 }
 static int camman_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
 	int x,y,z,w;
 	short* t = (void*)ev;
 
 	if(0x2b70 == ev->what){
-		x = t[0] * 8 / (win->width);
-		y = t[1] * 32 / (win->height);
+		x = t[0] * 8 / (win->whdf.width);
+		y = t[1] * 32 / (win->whdf.height);
 		say("x=%d,y=%d\n",x,y);
 
 		if((y >= 8) && (y <= 23)){
 			if(x <= 0)return 1;
 			if(x >= 7){
-				act->iy0 = y-8;
+				act->whdf.iy0 = y-8;
 				return 1;
 			}
 		}
@@ -237,11 +237,11 @@ static int camman_event(
 
 
 
-static int camman_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int camman_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
-static int camman_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int camman_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -257,26 +257,26 @@ static int camman_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void camman_search(struct entity* act)
+static void camman_search(_obj* act)
 {
 }
-static void camman_modify(struct entity* act)
+static void camman_modify(_obj* act)
 {
 }
-static void camman_delete(struct entity* act)
+static void camman_delete(_obj* act)
 {
 }
-static void camman_create(struct entity* act)
+static void camman_create(_obj* act)
 {
 }
 
 
 
 
-void camman_register(struct entity* p)
+void camman_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('c', 'a', 'm', 'm', 'a', 'n', 0, 0);
+	p->hfmt = hex64('c', 'a', 'm', 'm', 'a', 'n', 0, 0);
 
 	p->oncreate = (void*)camman_create;
 	p->ondelete = (void*)camman_delete;

@@ -24,11 +24,11 @@ int fuckgfwclient_linkup(struct halfrel* self, struct halfrel* peer)
 	say("@fuckgfwclient_linkup: %.4s\n", &self->flag);
 	return 0;
 }
-int fuckgfwclient_delete(struct artery* ele)
+int fuckgfwclient_delete(_obj* ele)
 {
 	return 0;
 }
-int fuckgfwclient_create(struct artery* ele, u8* url)
+int fuckgfwclient_create(_obj* ele, u8* url)
 {
 	say("@fuckgfwclient_create\n");
 	return 0;
@@ -43,7 +43,7 @@ int fuckgfwserver_read(struct halfrel* self, struct halfrel* peer, void* arg, in
 }
 int fuckgfwserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct artery* ele = self->pchip;
+	_obj* ele = self->pchip;
 	if(_src_ == self->flag){
 /*
 		//type, id = decrypt(buf, len)
@@ -75,14 +75,14 @@ int fuckgfwserver_linkup(struct halfrel* self, struct halfrel* peer)
 	say("@fuckgfwserver_linkup: %.4s\n", &self->flag);
 	return 0;
 }
-int fuckgfwserver_delete(struct artery* ele)
+int fuckgfwserver_delete(_obj* ele)
 {
 	return 0;
 }
-int fuckgfwserver_create(struct artery* ele, u8* url)
+int fuckgfwserver_create(_obj* ele, u8* url)
 {
 	say("@fuckgfwserver_create\n");
-	ele->stage1 = 0;
+	ele->listu64.data0 = 0;
 	return 0;
 }
 
@@ -95,16 +95,16 @@ int fuckgfwmaster_read(struct halfrel* self, struct halfrel* peer, void* arg, in
 }
 int fuckgfwmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
-	struct sysobj* TCP;		//parent
-	struct sysobj* Tcp;		//child
+	_obj* TCP;		//parent
+	_obj* Tcp;		//child
 
-	struct artery* FUCKGFW;	//master
-	struct artery* Fuckgfw;	//server
+	_obj* FUCKGFW;	//master
+	_obj* Fuckgfw;	//server
 
 	//parent, child
 	TCP = (void*)(peer->chip);
 	if(0 == TCP)return 0;
-	Tcp = TCP->tempobj;
+	Tcp = TCP->sockinfo.child;
 	if(0 == Tcp)return 0;
 
 	//master, servant
@@ -126,11 +126,11 @@ int fuckgfwmaster_linkup(struct halfrel* self, struct halfrel* peer)
 	say("@fuckgfwmaster_linkup\n");
 	return 0;
 }
-int fuckgfwmaster_delete(struct artery* ele)
+int fuckgfwmaster_delete(_obj* ele)
 {
 	return 0;
 }
-int fuckgfwmaster_create(struct artery* ele, u8* url)
+int fuckgfwmaster_create(_obj* ele, u8* url)
 {
 	say("@fuckgfwmaster\n");
 	return 0;

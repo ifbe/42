@@ -73,10 +73,10 @@ GLSL_VERSION
 
 
 
-static int opaque3d_fill(struct entity* win, struct mysrc* src)
+static int opaque3d_fill(_obj* win, struct mysrc* src)
 {
 	if(0 == src->vs){
-		switch(win->fmt){
+		switch(win->hfmt){
 		case _gl41list_:
 			src->vs = gl41opaquetrigon_vert;
 			src->fs = gl41opaquetrigon_frag;
@@ -119,14 +119,14 @@ static int opaque3d_fill(struct entity* win, struct mysrc* src)
 
 	return 0;
 }
-int opaque3d_vars(struct entity* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
+int opaque3d_vars(_obj* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
 	if(0 == win)return -1;
-	if(0 == win->glfull_opaque)return -2;
+	if(0 == win->gl41list.opaque)return -2;
 
-	struct gl41data* p = win->glfull_opaque[opaquetrigon3d];
+	struct gl41data* p = win->gl41list.opaque[opaquetrigon3d];
 	if(0 == p){
-		p = win->glfull_opaque[opaquetrigon3d] = memorycreate(0x1000, 0);
+		p = win->gl41list.opaque[opaquetrigon3d] = memorycreate(0x1000, 0);
 		if(0 == p)return -3;
 	}
 
@@ -150,7 +150,7 @@ int opaque3d_vars(struct entity* win, int unused, float** vbuf, u16** ibuf, int 
 
 
 
-void gl41opaque_triangle(struct entity* win, u32 rgba,
+void gl41opaque_triangle(_obj* win, u32 rgba,
 	vec3 v0, vec3 v1, vec3 v2)
 {
 	float* vbuf;
@@ -176,7 +176,7 @@ void gl41opaque_triangle(struct entity* win, u32 rgba,
 
 
 
-void gl41opaque_rect(struct entity* win, u32 rgba,
+void gl41opaque_rect(_obj* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf)
 {
 	float* vbuf;
@@ -202,7 +202,7 @@ void gl41opaque_rect(struct entity* win, u32 rgba,
 
 
 
-void gl41opaque_circle(struct entity* win, u32 rgba,
+void gl41opaque_circle(_obj* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf)
 {
 	float* vbuf;
@@ -247,7 +247,7 @@ void gl41opaque_pyramid6()
 void gl41opaque_prism3()
 {
 }
-void gl41opaque_prism4(struct entity* win, u32 rgba,
+void gl41opaque_prism4(_obj* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	float* vbuf;
@@ -279,7 +279,7 @@ void gl41opaque_prism6()
 
 
 
-void gl41opaque_cone(struct entity* win, u32 rgba,
+void gl41opaque_cone(_obj* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vt)
 {
 	float* vbuf;
@@ -301,7 +301,7 @@ void gl41opaque_cone(struct entity* win, u32 rgba,
 	}
 	carvetrigonindex_cone_v4n4x4(vbuf,vlen, ibuf,0, vc,vr,vt);
 }
-void gl41opaque_cask(struct entity* win, u32 rgba,
+void gl41opaque_cask(_obj* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	float* vbuf;
@@ -323,7 +323,7 @@ void gl41opaque_cask(struct entity* win, u32 rgba,
 	}
 	carvetrigonindex_cask_v4n4x4(vbuf,vlen, ibuf,0, vc,vr,vf,vu);
 }
-void gl41opaque_cylinder(struct entity* win, u32 rgb,
+void gl41opaque_cylinder(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	vec3 tc;
@@ -343,7 +343,7 @@ void gl41opaque_cylinder(struct entity* win, u32 rgb,
 	tf[2] = -vf[2];
 	gl41opaque_circle(win, rgb, tc, vr, tf);
 }
-void gl41opaque_sphere(struct entity* win, u32 rgba,
+void gl41opaque_sphere(_obj* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	float* vbuf;
@@ -365,7 +365,7 @@ void gl41opaque_sphere(struct entity* win, u32 rgba,
 	}
 	carvetrigonindex_sphere_v4n4x4(vbuf,vlen, ibuf,0, vc,vr,vf,vu);
 }
-void gl41opaque_tokamak(struct entity* win, u32 rgba,
+void gl41opaque_tokamak(_obj* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	float* vbuf;
@@ -397,7 +397,7 @@ void gl41opaque_tetrahedron()
 void gl41opaque_octahedron()
 {
 }
-void gl41opaque_dodecahedron(struct entity* win, u32 rgba,
+void gl41opaque_dodecahedron(_obj* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	float* vbuf;
@@ -419,7 +419,7 @@ void gl41opaque_dodecahedron(struct entity* win, u32 rgba,
 	}
 	carvetrigonindex_dodecahedron_v4n4x4(vbuf,vlen, ibuf,0, vc,vr,vf,vu);
 }
-void gl41opaque_icosahedron(struct entity* win, u32 rgba,
+void gl41opaque_icosahedron(_obj* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	float* vbuf;

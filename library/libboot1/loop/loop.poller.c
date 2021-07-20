@@ -6,8 +6,8 @@ int role_fromfile(void* path, int len);
 
 
 static int alive = 1;
-static struct supply* supply = 0;
-static struct entity* entity = 0;
+static _obj* supply = 0;
+static _obj* entity = 0;
 
 
 
@@ -16,7 +16,7 @@ int supplyevent(struct halfrel* stack, struct event* e)
 {
 	int j;
 	struct event ev;
-	struct supply* win;
+	_obj* win;
 
 	ev.why = e->why;
 	ev.what = e->what;
@@ -50,7 +50,7 @@ int supplyevent(struct halfrel* stack, struct event* e)
 	win = (void*)(ev.where);
 	if(0 == win)return 0;
 
-	switch(win->fmt)
+	switch(win->hfmt)
 	{
 		case _gl41none_:
 		case _gl41easy_:
@@ -66,7 +66,7 @@ int supplyevent(struct halfrel* stack, struct event* e)
 int supplyread_all(struct halfrel* stack)
 {
 	int j;
-	struct supply* win;
+	_obj* win;
 
 	for(j=31;j>=0;j--)
 	{

@@ -1,14 +1,14 @@
 #include "libuser.h"
-#define STRBUF buf0
-#define DATBUF buf1
+#define STRBUF listptr.buf0
+#define DATBUF listptr.buf1
 void printhtmlbody(u8* buf, int len);
 
 
 
 
 static void browser_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x0,y0,x1,y1;
 	int cx, cy, ww, hh;
@@ -23,10 +23,10 @@ static void browser_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 	drawsolid_rect(win, 0xffffff, cx-ww, cy-hh, cx+ww, cy+hh);
 
@@ -47,9 +47,9 @@ static void browser_draw_pixel(
 	drawtext(win, 0x000000, x0, y0, x1, y1, dat->buf, dat->len);
 }
 static void browser_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	vec3 tc,tr,tf,tu;
 	struct str* str = act->STRBUF;
@@ -81,23 +81,23 @@ static void browser_draw_gl41(
 	gl41string(win, 0x000000, tc, tr, tf, str->buf, str->len);
 }
 static void browser_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void browser_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void browser_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void browser_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("browser(%x,%x,%x)\n",win,act,sty);
 }
@@ -106,8 +106,8 @@ static void browser_draw_cli(
 
 
 static void browser_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev)
 {
 	int len;
@@ -161,14 +161,12 @@ static void browser_event(
 	}
 }
 static void browser_data(
-	struct entity* act, struct style* pin,
+	_obj* act, struct style* pin,
 	u8* buf, int len)
 {
 	int j,cnt;
 	u8* tmp;
-	struct str* dat;
-
-	dat = act->buf0;
+	struct str* dat = act->DATBUF;
 	cnt = dat->len;
 	tmp = dat->buf;
 
@@ -181,10 +179,10 @@ static void browser_data(
 
 
 
-static void browser_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void browser_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	browser_draw_gl41(ent,slot, wor,geom, wnd,area);
@@ -193,7 +191,7 @@ static void browser_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void browser_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void browser_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -202,10 +200,10 @@ static void browser_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -215,7 +213,7 @@ static void browser_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void browser_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void browser_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void browser_discon(struct halfrel* self, struct halfrel* peer)
@@ -228,13 +226,13 @@ static void browser_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void browser_search(struct entity* act)
+static void browser_search(_obj* act)
 {
 }
-static void browser_modify(struct entity* act)
+static void browser_modify(_obj* act)
 {
 }
-static void browser_delete(struct entity* act)
+static void browser_delete(_obj* act)
 {
 	if(0 == act)return;
 	if(act->STRBUF){
@@ -246,7 +244,7 @@ static void browser_delete(struct entity* act)
 		act->DATBUF = 0;
 	}
 }
-static void browser_create(struct entity* act)
+static void browser_create(_obj* act)
 {
 	int j;
 	u8* buf;
@@ -262,10 +260,10 @@ static void browser_create(struct entity* act)
 
 
 
-void browser_register(struct entity* p)
+void browser_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('b', 'r', 'o', 'w', 's', 'e', 'r', 0);
+	p->hfmt = hex64('b', 'r', 'o', 'w', 's', 'e', 'r', 0);
 
 	p->oncreate = (void*)browser_create;
 	p->ondelete = (void*)browser_delete;

@@ -13,15 +13,15 @@ struct c2s2{
 
 
 
-int rtmpclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int rtmpclient_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int rtmpclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int rtmpclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
-	switch(art->stage1){
+	switch(art->vfmt){
 	}
-	art->stage1 += 1;
+	art->vfmt += 1;
 	return 0;
 }
 int rtmpclient_discon(struct halfrel* self, struct halfrel* peer)
@@ -32,11 +32,11 @@ int rtmpclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int rtmpclient_delete(struct artery* ele)
+int rtmpclient_delete(_obj* ele)
 {
 	return 0;
 }
-int rtmpclient_create(struct artery* ele, u8* url)
+int rtmpclient_create(_obj* ele, u8* url)
 {
 	return 0;
 }
@@ -44,15 +44,15 @@ int rtmpclient_create(struct artery* ele, u8* url)
 
 
 
-int rtmpserver_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int rtmpserver_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int rtmpserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int rtmpserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	printmemory(buf, len);
 
-	switch(art->stage1){
+	switch(art->vfmt){
 	}
 	return 0;
 }
@@ -64,11 +64,11 @@ int rtmpserver_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int rtmpserver_delete(struct artery* ele)
+int rtmpserver_delete(_obj* ele)
 {
 	return 0;
 }
-int rtmpserver_create(struct artery* ele, u8* url)
+int rtmpserver_create(_obj* ele, u8* url)
 {
 	return 0;
 }
@@ -76,21 +76,21 @@ int rtmpserver_create(struct artery* ele, u8* url)
 
 
 
-int rtmpmaster_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int rtmpmaster_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int rtmpmaster_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int rtmpmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
-	struct sysobj* obj = stack[sp-2].pchip;
+	_obj* obj = stack[sp-2].pchip;
 	if(0 == obj)return 0;
-	obj = obj->tempobj;
-	if(0 == obj)return 0;
+	_obj* child = obj->sockinfo.child;
+	if(0 == child)return 0;
 
-	struct artery* tel = arterycreate(_Rtmp_, 0, 0, 0);
+	_obj* tel = arterycreate(_Rtmp_, 0, 0, 0);
 	if(0 == tel)return 0;
 
-	relationcreate(tel, 0, _art_, _src_, obj, 0, _sys_, _dst_);
+	relationcreate(tel, 0, _art_, _src_, child, 0, _sys_, _dst_);
 	return 0;
 }
 int rtmpmaster_discon(struct halfrel* self, struct halfrel* peer)
@@ -101,11 +101,11 @@ int rtmpmaster_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int rtmpmaster_delete(struct artery* ele)
+int rtmpmaster_delete(_obj* ele)
 {
 	return 0;
 }
-int rtmpmaster_create(struct artery* ele, u8* url)
+int rtmpmaster_create(_obj* ele, u8* url)
 {
 	return 0;
 }

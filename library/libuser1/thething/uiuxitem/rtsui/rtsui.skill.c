@@ -4,9 +4,9 @@
 
 
 static void skill_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	vec4 tc,tr,tf;
 	float* vc = geom->fshape.vc;
@@ -28,46 +28,46 @@ static void skill_draw_gl41(
 	}
 }
 static void skill_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void skill_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void skill_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void skill_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void skill_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-static void skill_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key)
+static void skill_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	skill_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void skill_read_byuiux(_ent* ent,void* slot, _syn* stack,int sp)
+static void skill_read_byuiux(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* uuu;struct style* area;
-	struct entity* wnd;struct style* rect;
+	_obj* uuu;struct style* area;
+	_obj* wnd;struct style* rect;
 	uuu = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 	wnd = stack[sp-4].pchip;rect = stack[sp-4].pfoot;
 
@@ -86,20 +86,20 @@ static void skill_read_byuiux(_ent* ent,void* slot, _syn* stack,int sp)
 
 	skill_draw_gl41(ent, 0, 0,(void*)&fs, wnd,rect);
 }
-static void skill_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
+static void skill_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
 {
 }
 
 
 
 
-static void skill_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void skill_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* wnd = stack[sp-2].pchip;
+	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
-//say("fmt=%.8s\n", &sup->fmt);
+//say("fmt=%.8s\n", &sup->hfmt);
 
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _gl41list_:
 		skill_read_bywnd(ent,slot, wnd,area);
 		break;
@@ -111,7 +111,7 @@ static void skill_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 		break;
 	}
 }
-static void skill_giving(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void skill_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void skill_discon(struct halfrel* self, struct halfrel* peer)
@@ -124,26 +124,26 @@ static void skill_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void skill_search(struct entity* act)
+static void skill_search(_obj* act)
 {
 }
-static void skill_modify(struct entity* act)
+static void skill_modify(_obj* act)
 {
 }
-static void skill_delete(struct entity* act)
+static void skill_delete(_obj* act)
 {
 }
-static void skill_create(struct entity* act, u8* arg)
+static void skill_create(_obj* act, u8* arg)
 {
 }
 
 
 
 
-void skill_register(struct entity* p)
+void skill_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('s', 'k', 'i', 'l', 'l', 0, 0, 0);
+	p->hfmt = hex64('s', 'k', 'i', 'l', 'l', 0, 0, 0);
 
 	p->oncreate = (void*)skill_create;
 	p->ondelete = (void*)skill_delete;

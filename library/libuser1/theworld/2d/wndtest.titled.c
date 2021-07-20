@@ -26,7 +26,7 @@ int wndmgr_mouseat_border(int x,int y, int x0,int y0, int xn,int yn)
 
 	return 0;
 }
-void* wndmgr_find_maxw(struct supply* wnd)
+void* wndmgr_find_maxw(_obj* wnd)
 {
 	float max = -1.0;
 	struct style* sty = 0;
@@ -52,7 +52,7 @@ void* wndmgr_find_maxw(struct supply* wnd)
 	}
 	return the;
 }
-void* wndmgr_find_hit(struct supply* wnd, int x, int y)
+void* wndmgr_find_hit(_obj* wnd, int x, int y)
 {
 	struct style* sty = 0;
 	struct relation* rel = wnd->oreln;
@@ -79,7 +79,7 @@ void* wndmgr_find_hit(struct supply* wnd, int x, int y)
 	}
 	return rel;
 }
-void* wndmgr_find_close(struct supply* wnd, int x, int y)
+void* wndmgr_find_close(_obj* wnd, int x, int y)
 {
 	struct style* sty = 0;
 	struct relation* rel = wnd->oreln;
@@ -110,11 +110,11 @@ void* wndmgr_find_close(struct supply* wnd, int x, int y)
 
 
 
-int wndmgr_rgba_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int wndmgr_rgba_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//pixel_clearcolor(wnd);
-	int x = wnd->ix0;
-	int y = wnd->iy0;
+	int x = wnd->whdf.ix0;
+	int y = wnd->whdf.iy0;
 
 	struct relation* the = wndmgr_find_maxw(wnd);
 	struct relation* rel = wnd->orel0;
@@ -163,16 +163,16 @@ int wndmgr_rgba_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key
 			}
 
 			//title.name
-			struct entity* ent = rel->pdstchip;
-			drawstring_fit((void*)wnd, 0xffffff, tx0,ty0, txn,tyn, (void*)&ent->fmt, 8);
+			_obj* ent = rel->pdstchip;
+			drawstring_fit((void*)wnd, 0xffffff, tx0,ty0, txn,tyn, (void*)&ent->hfmt, 8);
 		}
 next:
 		rel = samesrcnextdst(rel);
 	}
 
 	//float
-	int qx = wnd->width-64;
-	int qy = wnd->height-64;
+	int qx = wnd->whdf.width-64;
+	int qy = wnd->whdf.height-64;
 	u32 c = timeread();
 	drawsolid_rect((void*)wnd, c, qx-32, qy-32, qx+32, qy+32);
 	drawsolid_circle((void*)wnd, ~c, qx, qy, 32);
@@ -182,7 +182,7 @@ next:
 	drawline((void*)wnd, 0xffff00, x, y-16, x, y+16);
 	return 0;
 }
-int wndmgr_rgba_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int wndmgr_rgba_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@rgbanode_write:%p,%x\n", wnd,foot);
 	//printmemory(buf,16);
@@ -193,16 +193,16 @@ int wndmgr_rgba_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key
 	struct event* ev = buf;
 	if('p' == (ev->what&0xff)){
 		short* pp = (short*)ev;
-		wnd->ix0 += pp[0];
-		if(wnd->ix0 < 0)wnd->ix0 = 0;
-		if(wnd->ix0 >= wnd->width)wnd->ix0 = wnd->width-1;
+		wnd->whdf.ix0 += pp[0];
+		if(wnd->whdf.ix0 < 0)wnd->whdf.ix0 = 0;
+		if(wnd->whdf.ix0 >= wnd->whdf.width)wnd->whdf.ix0 = wnd->whdf.width-1;
 
-		wnd->iy0 += pp[1];
-		if(wnd->iy0 < 0)wnd->iy0 = 0;
-		if(wnd->iy0 >= wnd->height)wnd->iy0 = wnd->height-1;
+		wnd->whdf.iy0 += pp[1];
+		if(wnd->whdf.iy0 < 0)wnd->whdf.iy0 = 0;
+		if(wnd->whdf.iy0 >= wnd->whdf.height)wnd->whdf.iy0 = wnd->whdf.height-1;
 	}
 	if(0x2b70 == ev->what){
-		hit = wndmgr_find_close(wnd, wnd->ix0, wnd->iy0);
+		hit = wndmgr_find_close(wnd, wnd->whdf.ix0, wnd->whdf.iy0);
 		//say("the=%p,hit=%p\n",the,hit);
 		if(hit){
 			struct style* tmp = (void*)(hit->srcfoot);
@@ -218,7 +218,7 @@ int wndmgr_rgba_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key
 		return 0;
 	}
 	if(0x4070 == ev->what){
-		hit = wndmgr_find_hit(wnd, wnd->ix0, wnd->iy0);
+		hit = wndmgr_find_hit(wnd, wnd->whdf.ix0, wnd->whdf.iy0);
 		//say("the=%p,hit=%p\n",the,hit);
 		if(hit && the && (hit != the)){
 			struct style* hitsty = (void*)(hit->srcfoot);
@@ -239,15 +239,15 @@ int wndmgr_rgba_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key
 		entity_give(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, arg,key, buf,len);
 	}
 
-	int x = wnd->ix0;
-	int y = wnd->iy0;
+	int x = wnd->whdf.ix0;
+	int y = wnd->whdf.iy0;
 	drawline((void*)wnd, 0xffff00, x-16, y, x+16, y);
 	drawline((void*)wnd, 0xffff00, x, y-16, x, y+16);
 	return 0;
 }
 
 
-int wndmgr_gl41cmdq_take(_sup* mgr,void* foot, _ent* wnd,void* sty)
+int wndmgr_gl41cmdq_take(_obj* mgr,void* foot, _obj* wnd,void* sty)
 {
 	say("wndmgr_gl41cmdq_take\n");
 	gl41cmdq_clear(wnd);
@@ -255,12 +255,12 @@ int wndmgr_gl41cmdq_take(_sup* mgr,void* foot, _ent* wnd,void* sty)
 }
 
 
-int wndmgr_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int wndmgr_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		wndmgr_rgba_take(wnd,foot, stack,sp, arg,key, buf,len);
 		break;
@@ -272,7 +272,7 @@ int wndmgr_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, voi
 	}
 	return 0;
 }
-int wndmgr_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int wndmgr_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return wndmgr_rgba_give(wnd,foot, stack,sp, arg,key, buf,len);
 }
@@ -281,9 +281,9 @@ int wndmgr_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, voi
 
 
 
-void wndmgr_delete(struct entity* act, u8* buf)
+void wndmgr_delete(_obj* act, u8* buf)
 {
 }
-void wndmgr_create(struct entity* act, u8* buf)
+void wndmgr_create(_obj* act, u8* buf)
 {
 }

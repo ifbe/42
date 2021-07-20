@@ -2,21 +2,21 @@
 #define _mic_ hex32('m','i','c',0)
 #define _pcm_ hex32('p','c','m',0)
 #define slice 16
-#define TABBUF buf0
-#define TABLEN data1
+#define TABBUF listptr.buf0
+#define TABLEN listu64.data2
 
 
 
 
 static void spectrum_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void spectrum_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int x,y;
 	int r,g,b;
@@ -59,23 +59,23 @@ static void spectrum_draw_gl41(
 	}
 }
 static void spectrum_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void spectrum_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void spectrum_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void spectrum_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("spectrum(%x,%x,%x)\n",win,act,sty);
 }
@@ -83,7 +83,7 @@ static void spectrum_draw_cli(
 
 
 
-void spectrum_data(struct entity* act, void* type, void* buf, int len)
+void spectrum_data(_obj* act, void* type, void* buf, int len)
 {
 	int j,idx;
 	void** tab;
@@ -101,23 +101,23 @@ void spectrum_data(struct entity* act, void* type, void* buf, int len)
 
 
 
-static void spectrum_take_bycam(_ent* ent,void* slot, _syn* stack,int sp)
+static void spectrum_take_bycam(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	if(0 == stack)return;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	spectrum_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void spectrum_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spectrum_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* wnd = stack[sp-2].pchip;
+	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 	if(0 == stack)return;
 
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _gl41list_:
 		break;
 	default:
@@ -125,7 +125,7 @@ static void spectrum_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,
 		break;
 	}
 }
-static void spectrum_giving(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spectrum_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	switch(stack[sp-1].flag){
 	case _pcm_:
@@ -144,16 +144,16 @@ static void spectrum_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void spectrum_search(struct entity* act)
+static void spectrum_search(_obj* act)
 {
 }
-static void spectrum_modify(struct entity* act)
+static void spectrum_modify(_obj* act)
 {
 }
-static void spectrum_delete(struct entity* act)
+static void spectrum_delete(_obj* act)
 {
 }
-static void spectrum_create(struct entity* act)
+static void spectrum_create(_obj* act)
 {
 	act->TABBUF = memorycreate(0x1000, 0);
 	act->TABLEN = 0;
@@ -162,10 +162,10 @@ static void spectrum_create(struct entity* act)
 
 
 
-void spectrum_register(struct entity* p)
+void spectrum_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('s', 'p', 'e', 'c', 't', 'r', 'u', 'm');
+	p->hfmt = hex64('s', 'p', 'e', 'c', 't', 'r', 'u', 'm');
 
 	p->oncreate = (void*)spectrum_create;
 	p->ondelete = (void*)spectrum_delete;

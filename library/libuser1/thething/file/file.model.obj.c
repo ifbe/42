@@ -1,7 +1,7 @@
 #include "libuser.h"
-#define OWNBUF buf0
+#define OWNBUF listptr.buf0
 int copypath(u8* path, u8* data);
-void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
+void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 //
 void loadtexfromcolor(struct texture* tex, u32 rgb, int w, int h);
 void parsevertfromobj(struct mysrc* ctx, struct fstyle* sty, u8* buf, int len);
@@ -129,10 +129,10 @@ static void obj3d_ctxforgl41(struct gl41data* data, char* albedo, char* matter, 
 	//src->vtx[0].fill = 2;
 }
 static void obj3d_draw_gl41(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* wrd, struct style* camg,
-	struct entity* ctx, struct style* none)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* wrd, struct style* camg,
+	_obj* ctx, struct style* none)
 {
 	struct privdata* own = act->OWNBUF;
 	if(0 == own)return;
@@ -146,8 +146,8 @@ static void obj3d_draw_gl41(
 
 
 static void obj3d_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	float* p;
 	float f;
@@ -163,18 +163,18 @@ static void obj3d_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 /*
 	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
 	if(0 == (act->buf))return;
 	if(0 == (act->len))return;
 
-	if((act->width) > (act->height))f = 2.0*ww/(act->width);
-	else f = 2.0*hh/(act->height);
+	if((act->whdf.width) > (act->whdf.height))f = 2.0*ww/(act->whdf.width);
+	else f = 2.0*hh/(act->whdf.height);
 
 	ret = *(u32*)((act->buf)+80);
 	ret = ret % ((0x800000-0x84)/50);
@@ -196,10 +196,10 @@ static void obj3d_draw_pixel(
 */
 }
 static void obj3d_draw_raster(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* wrd, struct style* camg,
-	struct entity* wnd, struct style* area,
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* wrd, struct style* camg,
+	_obj* wnd, struct style* area,
 	mat4 clip_from_world)
 {
 	struct privdata* own = act->OWNBUF;
@@ -216,10 +216,10 @@ static void obj3d_draw_raster(
 		m, own);
 }
 static void obj3d_draw_raytrace(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* wrd, struct style* camg,
-	struct entity* wnd, struct style* area,
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* wrd, struct style* camg,
+	_obj* wnd, struct style* area,
 	mat4 clip_from_world)
 {
 }
@@ -228,23 +228,23 @@ static void obj3d_draw_raytrace(
 
 
 static void obj3d_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void obj3d_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void obj3d_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void obj3d_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("obj3d(%x,%x,%x)\n",win,act,sty);
 }
@@ -253,8 +253,8 @@ static void obj3d_draw_cli(
 
 
 static void obj3d_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
 	int j,ret;
@@ -271,17 +271,17 @@ static void obj3d_event(
 
 
 
-static void obj3d_world_camera_window(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key)
+static void obj3d_world_camera_window(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key)
 {
-	struct entity* scn;struct style* geom;
-	struct entity* wrd;struct style* camg;
-	struct entity* wnd;struct style* area;
+	_obj* scn;struct style* geom;
+	_obj* wrd;struct style* camg;
+	_obj* wnd;struct style* area;
 
 	scn = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wrd = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 
-	if(_rgba_ == wnd->fmt){
+	if(_rgba_ == wnd->hfmt){
 		if(0==key)obj3d_draw_raster(ent,slot, scn,geom, wrd,camg, wnd,area, arg);
 		else obj3d_draw_raytrace(ent,slot, scn,geom, wrd,camg, wnd,area, arg);
 		return;
@@ -289,11 +289,11 @@ static void obj3d_world_camera_window(_ent* ent,void* slot, _syn* stack,int sp, 
 
 	obj3d_draw_gl41(ent,slot, scn,geom, wrd,camg, wnd,area);
 }
-static void obj3d_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void obj3d_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	//foot defined behavior
@@ -301,7 +301,7 @@ static void obj3d_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 	}
 
 	//caller defined behavior
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -310,7 +310,7 @@ static void obj3d_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 		obj3d_world_camera_window(ent,slot, stack,sp, arg,key);
 	}
 }
-static void obj3d_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void obj3d_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void obj3d_discon(struct halfrel* self, struct halfrel* peer)
@@ -318,9 +318,9 @@ static void obj3d_discon(struct halfrel* self, struct halfrel* peer)
 }
 static void obj3d_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	struct entity* act = self->pchip;
+	_obj* act = self->pchip;
 	if(0 == act)return;
-	struct privdata* own = act->buf0;
+	struct privdata* own = act->OWNBUF;
 	if(0 == own)return;
 
 	struct style* pin = self->pfoot;
@@ -341,17 +341,17 @@ static void obj3d_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void obj3d_search(struct entity* act)
+static void obj3d_search(_obj* act)
 {
 }
-static void obj3d_modify(struct entity* act)
+static void obj3d_modify(_obj* act)
 {
 }
-static void obj3d_delete(struct entity* act)
+static void obj3d_delete(_obj* act)
 {
 	if(0 == act)return;
 }
-static void obj3d_create(struct entity* act, void* arg, int argc, u8** argv)
+static void obj3d_create(_obj* act, void* arg, int argc, u8** argv)
 {
 	int j;
 	if(0 == act)return;
@@ -409,10 +409,10 @@ static void obj3d_create(struct entity* act, void* arg, int argc, u8** argv)
 
 
 
-void obj3d_register(struct entity* p)
+void obj3d_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('o', 'b', 'j', '3', 'd', 0, 0, 0);
+	p->hfmt = hex64('o', 'b', 'j', '3', 'd', 0, 0, 0);
 
 	p->oncreate = (void*)obj3d_create;
 	p->ondelete = (void*)obj3d_delete;

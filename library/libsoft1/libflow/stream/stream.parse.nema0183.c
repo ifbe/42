@@ -135,7 +135,7 @@ int nema0183client_write(struct halfrel* self, struct halfrel* peer, void* arg, 
 {
 	int j,k;
 	struct str* str;
-	struct artery* ele;
+	_obj* ele;
 	//say("%.*s", len, buf);
 	//printmemory(buf, len);
 
@@ -143,7 +143,7 @@ int nema0183client_write(struct halfrel* self, struct halfrel* peer, void* arg, 
 	if(0 == ele)return 0;
 
 	//tail
-	str = ele->buf0;
+	str = ele->priv_ptr;
 	if(0 != str->len)
 	{
 		k = str->len;
@@ -187,17 +187,13 @@ freshframe:
 	}
 	return 0;
 }
-int nema0183client_delete(struct artery* ele)
+int nema0183client_delete(_obj* ele)
 {
 	return 0;
 }
-int nema0183client_create(struct artery* ele, u8* url)
+int nema0183client_create(_obj* ele, u8* url)
 {
-	struct str* tmp;
-
-	ele->buf0 = tmp = memorycreate(0x1000, 0);
-	tmp->len = 0;
-
+	struct str* tmp = ele->priv_ptr = memorycreate(0x1000, 0);
 	return 0;
 }
 
@@ -212,11 +208,11 @@ int nema0183server_write(struct halfrel* self, struct halfrel* peer, void* arg, 
 {
 	return 0;
 }
-int nema0183server_delete(struct artery* ele, u8* url)
+int nema0183server_delete(_obj* ele, u8* url)
 {
 	return 0;
 }
-int nema0183server_create(struct artery* ele, u8* url)
+int nema0183server_create(_obj* ele, u8* url)
 {
 	return 0;
 }

@@ -1,15 +1,15 @@
 #include "libuser.h"
-#define nbuf buf0
-#define wbuf buf1
-#define vbuf buf2
-#define ibuf buf3
+#define NBUF listptr.buf0
+#define WBUF listptr.buf1
+#define VBUF listptr.buf2
+#define IBUF listptr.buf3
 
 
 
 
 static void dancemat_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -21,10 +21,10 @@ static void dancemat_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 
 	drawline(win, 0x6a4b23, cx-ww, cy+hh, cx+ww, cy+hh);
@@ -36,9 +36,9 @@ static void dancemat_draw_pixel(
 	drawsolid_rect(win, 0x008000, cx-ww/4, cy-hh, cx+ww/4, cy-hh*3/4);
 }
 static void dancemat_draw_gl41(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* none)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* none)
 {
 	int x,y;
 	int j,cnt;
@@ -56,7 +56,7 @@ static void dancemat_draw_gl41(
 
 #define sixplus3sqrt2 10.242640687119286
 	cnt = 0;
-	vbuf = act->vbuf;
+	vbuf = act->VBUF;
 	for(y=0;y<6;y++){
 		for(x=0;x<6;x++){
 			cc[0] = vc[0] + (x*4-10)*vr[0]/12 + (y*4-10)*vf[0]/12;
@@ -94,46 +94,46 @@ static void dancemat_draw_gl41(
 	tu[0] = vu[0]/96;
 	tu[1] = vu[1]/96;
 	tu[2] = vu[2]/96;
-	nbuf = act->nbuf;
+	nbuf = act->NBUF;
 	for(x=0;x<cnt;x++){
 		vbuf[x*3+0] += nbuf[x] * vu[0]/32768.0;
 		vbuf[x*3+1] += nbuf[x] * vu[1]/32768.0;
 		vbuf[x*3+2] += nbuf[x] * vu[2]/32768.0;
-		gl41solid_sphere(ctx, act->ix0, &vbuf[x*3], tr, tf, tu);
+		gl41solid_sphere(ctx, act->whdf.ix0, &vbuf[x*3], tr, tf, tu);
 	}
 
-	ibuf = act->ibuf;
+	ibuf = act->IBUF;
 	for(j=0;j<200+48;j++){
 		x = ibuf[j*2+0];
 		y = ibuf[j*2+1];
-		gl41line(ctx, act->iy0, &vbuf[x*3], &vbuf[y*3]);
+		gl41line(ctx, act->whdf.iy0, &vbuf[x*3], &vbuf[y*3]);
 	}
 }
 static void dancemat_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void dancemat_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void dancemat_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void dancemat_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-static void dancemat_write_data(struct entity* ent, struct entity* src, u8* buf, int len)
+static void dancemat_write_data(_obj* ent, _obj* src, u8* buf, int len)
 {
 	int j,k;
 	int cnt;
@@ -146,7 +146,7 @@ static void dancemat_write_data(struct entity* ent, struct entity* src, u8* buf,
 	len -= 12;
 	//say("(len=%d)", len);
 
-	nbuf = ent->nbuf;
+	nbuf = ent->NBUF;
 	if(0 == nbuf)return;
 
 	j = k = cnt = 0;
@@ -178,10 +178,10 @@ static void dancemat_write_data(struct entity* ent, struct entity* src, u8* buf,
 
 
 
-static void dancemat_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void dancemat_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -191,7 +191,7 @@ static void dancemat_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void dancemat_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void dancemat_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -200,10 +200,10 @@ static void dancemat_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -213,9 +213,9 @@ static void dancemat_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,
 		break;
 	}
 }
-static void dancemat_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void dancemat_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* src = stack[sp-2].pchip;
+	_obj* src = stack[sp-2].pchip;
 	switch(src->tier){
 		case _sys_:
 		case _art_:dancemat_write_data(ent, src, buf, len);break;
@@ -231,18 +231,18 @@ static void dancemat_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void dancemat_search(struct entity* act)
+static void dancemat_search(_obj* act)
 {
 }
-static void dancemat_modify(struct entity* act)
+static void dancemat_modify(_obj* act)
 {
 }
-static void dancemat_delete(struct entity* act)
+static void dancemat_delete(_obj* act)
 {
 	if(0 == act)return;
 	//if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void dancemat_create(struct entity* act, u8* arg, int argc, u8** argv)
+static void dancemat_create(_obj* act, u8* arg, int argc, u8** argv)
 {
 	u64 tmp;
 	int x,y,j,k;
@@ -250,32 +250,32 @@ static void dancemat_create(struct entity* act, u8* arg, int argc, u8** argv)
 	short* ibuf;
 	if(0 == act)return;
 
-	act->ix0 = 0x808080;
-	act->iy0 = 0xff0000;
+	act->whdf.ix0 = 0x808080;
+	act->whdf.iy0 = 0xff0000;
 	for(j=0;j<argc;j++){
 		if(0 == ncmp(argv[j], "ballcolor:", 10)){
 			k = 10;
 			while(0x20 == argv[j][k])k++;
 			hexstr2data(argv[j]+k, &tmp);
-			act->ix0 = tmp;
+			act->whdf.ix0 = tmp;
 		}
 		if(0 == ncmp(argv[j], "linecolor:", 10)){
 			k = 10;
 			while(0x20 == argv[j][k])k++;
 			hexstr2data(argv[j]+k, &tmp);
-			act->iy0 = tmp;
+			act->whdf.iy0 = tmp;
 		}
 	}
 
-	act->vbuf = memorycreate(0x1000, 0);
+	act->VBUF = memorycreate(0x1000, 0);
 
-	nbuf = act->nbuf = memorycreate(0x1000, 0);
+	nbuf = act->NBUF = memorycreate(0x1000, 0);
 	for(j=0;j<288;j++){
 		nbuf[j] = (getrandom() & 0xfff);
 		//say("%d\n", nbuf[j]);
 	}
 
-	ibuf = act->ibuf = memorycreate(0x1000, 0);
+	ibuf = act->IBUF = memorycreate(0x1000, 0);
 	j = 0;
 	for(y=0;y<120;y+=24){
 		for(x=1;x<18;x+=4){
@@ -336,10 +336,10 @@ static void dancemat_create(struct entity* act, u8* arg, int argc, u8** argv)
 
 
 
-void dancemat_register(struct entity* p)
+void dancemat_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('d','a','n','c','e','m','a','t');
+	p->hfmt = hex64('d','a','n','c','e','m','a','t');
 
 	p->oncreate = (void*)dancemat_create;
 	p->ondelete = (void*)dancemat_delete;

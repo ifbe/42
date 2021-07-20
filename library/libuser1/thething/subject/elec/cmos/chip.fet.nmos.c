@@ -1,46 +1,46 @@
 #include "libuser.h"
 #define BLAST vfmt
-#define DSTAMP data0
-#define Dcount ix0
-#define Dvalue ixn
-#define SSTAMP data1
-#define Scount iy0
-#define Svalue iyn
-#define BSTAMP data2
-#define Bcount iz0
-#define Bvalue izn
-#define GSTAMP data3
-#define Gcount iw0
-#define Gvalue iwn
-void gl41line_pmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
-void gl41line_nmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
+#define DSTAMP listu64.data0
+#define Dcount whdf.ix0
+#define Dvalue whdf.ixn
+#define SSTAMP listu64.data1
+#define Scount whdf.iy0
+#define Svalue whdf.iyn
+#define BSTAMP listu64.data2
+#define Bcount whdf.iz0
+#define Bvalue whdf.izn
+#define GSTAMP listu64.data3
+#define Gcount whdf.iw0
+#define Gvalue whdf.iwn
+void gl41line_pmos(_obj* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
+void gl41line_nmos(_obj* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
 
 
 
 
 static void nmos_draw_pixel(
-	struct entity* ent, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* ent, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void nmos_draw_json(
-	struct entity* ent, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* ent, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void nmos_draw_html(
-	struct entity* ent, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* ent, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void nmos_draw_tui(
-	struct entity* ent, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* ent, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void nmos_draw_cli(
-	struct entity* ent, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* ent, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
@@ -54,9 +54,9 @@ static u32 nmos_color(int val)
 	return 0xffffff;
 }
 static void nmos_draw_gl41(
-	struct entity* ent, struct style* slot,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* ent, struct style* slot,
+	_obj* scn, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	int j;
 	vec3 tc,tr,tf;
@@ -132,7 +132,7 @@ static void nmos_draw_gl41(
 
 
 
-static void nmos_read_D(struct entity* mos,int key, struct halfrel* stack,int sp, u8* buf,int len)
+static void nmos_read_D(_obj* mos,int key, struct halfrel* stack,int sp, u8* buf,int len)
 {
 	if(mos->Gvalue <= 0)return;
 
@@ -147,7 +147,7 @@ static void nmos_read_D(struct entity* mos,int key, struct halfrel* stack,int sp
 		if(mos->Dvalue < 0)buf[0] = 'n';
 	}
 }
-static void nmos_write_D(struct entity* mos,int key, struct halfrel* stack,int sp, u8* buf,int len)
+static void nmos_write_D(_obj* mos,int key, struct halfrel* stack,int sp, u8* buf,int len)
 {
 	//clear status
 	if(('p' != buf[0])&&('n' != buf[0])){
@@ -169,10 +169,10 @@ static void nmos_write_D(struct entity* mos,int key, struct halfrel* stack,int s
 	mos->DSTAMP = key;
 	mos->Dvalue = D;
 }
-static void nmos_read_S(struct entity* mos,int key, struct halfrel* stack,int sp, u8* buf,int len)
+static void nmos_read_S(_obj* mos,int key, struct halfrel* stack,int sp, u8* buf,int len)
 {
 }
-static void nmos_write_S(struct entity* mos,int key, struct halfrel* stack,int sp, u8* buf,int len)
+static void nmos_write_S(_obj* mos,int key, struct halfrel* stack,int sp, u8* buf,int len)
 {
 	//clear status
 	if(('p' != buf[0])&&('n' != buf[0])){
@@ -194,10 +194,10 @@ static void nmos_write_S(struct entity* mos,int key, struct halfrel* stack,int s
 	mos->SSTAMP = key;
 	mos->Svalue = S;
 }
-static void nmos_read_G(struct entity* mos,int key, struct halfrel* stack,int sp, u8* buf,int len)
+static void nmos_read_G(_obj* mos,int key, struct halfrel* stack,int sp, u8* buf,int len)
 {
 }
-static void nmos_write_G(struct entity* mos,int key, struct halfrel* stack,int sp, u8* buf,int len)
+static void nmos_write_G(_obj* mos,int key, struct halfrel* stack,int sp, u8* buf,int len)
 {
 	//clear status
 	if(('p' != buf[0])&&('n' != buf[0])){
@@ -233,21 +233,21 @@ static void nmos_write_G(struct entity* mos,int key, struct halfrel* stack,int s
 
 
 
-static void nmos_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void nmos_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	nmos_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void nmos_wrl_wnd(_ent* ent,void* foot, _syn* stack,int sp)
+static void nmos_wrl_wnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
 }
-static void nmos_wnd(_ent* ent,void* foot, _syn* stack,int sp)
+static void nmos_wnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
-	struct entity* wnd;struct style* area;
+	_obj* wnd;struct style* area;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	struct fstyle fs;
@@ -265,7 +265,7 @@ static void nmos_wnd(_ent* ent,void* foot, _syn* stack,int sp)
 
 
 
-static void nmos_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void nmos_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -278,10 +278,10 @@ static void nmos_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int 
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -291,7 +291,7 @@ static void nmos_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int 
 		break;
 	}
 }
-static void nmos_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static void nmos_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	say("nmos_write: %llx, %.4s=%x\n", ent, &foot, buf[0]);
 	switch(stack[sp-1].flag){
@@ -303,7 +303,7 @@ static void nmos_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int 
 }
 static void nmos_discon(struct halfrel* self, struct halfrel* peer)
 {
-	struct entity* ent = self->pchip;
+	_obj* ent = self->pchip;
 	switch(self->flag){
 		case 'D':ent->Dcount -= 1;return;
 		case 'S':ent->Scount -= 1;return;
@@ -313,7 +313,7 @@ static void nmos_discon(struct halfrel* self, struct halfrel* peer)
 }
 static void nmos_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	struct entity* ent = self->pchip;
+	_obj* ent = self->pchip;
 	switch(self->flag){
 		case 'D':ent->Dcount += 1;return;
 		case 'S':ent->Scount += 1;return;
@@ -325,16 +325,16 @@ static void nmos_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void nmos_search(struct entity* ent, u8* buf)
+static void nmos_search(_obj* ent, u8* buf)
 {
 }
-static void nmos_modify(struct entity* ent, u8* buf)
+static void nmos_modify(_obj* ent, u8* buf)
 {
 }
-static void nmos_delete(struct entity* ent, u8* buf)
+static void nmos_delete(_obj* ent, u8* buf)
 {
 }
-static void nmos_create(struct entity* ent, void* arg, int argc, u8** argv)
+static void nmos_create(_obj* ent, void* arg, int argc, u8** argv)
 {
 	ent->Dcount = ent->Scount = ent->Bcount = ent->Gcount = 0;
 	ent->Gvalue = (getrandom()&0x2) -1;
@@ -347,10 +347,10 @@ static void nmos_create(struct entity* ent, void* arg, int argc, u8** argv)
 
 
 
-void nmos_register(struct entity* p)
+void nmos_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex32('n','m','o','s');
+	p->hfmt = hex32('n','m','o','s');
 
 	p->oncreate = (void*)nmos_create;
 	p->ondelete = (void*)nmos_delete;

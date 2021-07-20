@@ -1,15 +1,15 @@
 #include "libuser.h"
 #define _gear_ hex32('g','e','a','r')
-#define STAMP data0
+#define STAMP listu64.data0
 int ray_plane(void* ray, void* plane, void* out);
 
 
 
 
-static void spurgear_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static void spurgear_search(_obj* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 	struct relation* rel;
-	struct entity* world;
+	_obj* world;
 	struct fstyle* obb = 0;
 	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
@@ -25,17 +25,17 @@ static void spurgear_search(struct entity* act, u32 foot, struct halfrel* self[]
 		rel = samedstnextsrc(rel);
 	}
 }
-static void spurgear_modify(struct entity* act, u8* buf)
+static void spurgear_modify(_obj* act, u8* buf)
 {
 }
-static void spurgear_delete(struct entity* act, u8* buf)
+static void spurgear_delete(_obj* act, u8* buf)
 {
 }
-static void spurgear_create(struct entity* act, void* arg, int argc, u8** argv)
+static void spurgear_create(_obj* act, void* arg, int argc, u8** argv)
 {
-    act->fx0 = 0.0;
-    act->fy0 = 0.0;
-    act->fz0 = 0.0;
+    act->whdf.fx0 = 0.0;
+    act->whdf.fy0 = 0.0;
+    act->whdf.fz0 = 0.0;
 	act->STAMP = 0;
 }
 
@@ -43,46 +43,46 @@ static void spurgear_create(struct entity* act, void* arg, int argc, u8** argv)
 
 
 static void spurgear_draw_gl41(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vt = geom->fs.vt;
-	gl41solid_rotategear(ctx, 0x444444, vc, vr, vf, vt, 32, act->fz0);
+	gl41solid_rotategear(ctx, 0x444444, vc, vr, vf, vt, 32, act->whdf.fz0);
 }
 static void spurgear_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* wnd, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* wnd, struct style* sty)
 {
 }
 static void spurgear_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void spurgear_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void spurgear_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void spurgear_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-static int spurgear_recur(_syn* stack,int sp, struct entity* gear)
+static int spurgear_recur(_syn* stack,int sp, _obj* gear)
 {
 	int j;
 	for(j=0;j<sp;j+=2){
@@ -90,10 +90,10 @@ static int spurgear_recur(_syn* stack,int sp, struct entity* gear)
 	}
 	return 0;
 }
-static void spurgear_spread(_syn* stack, int sp, struct entity* gear)
+static void spurgear_spread(_syn* stack, int sp, _obj* gear)
 {
 	struct relation* rel;
-	struct entity* next;
+	_obj* next;
 
 	rel = gear->irel0;
 	while(1){
@@ -109,7 +109,7 @@ say("@14\n");
 		stack[sp+0].pchip = gear;
 		stack[sp+1].pchip = next;
 		stack[sp+1].flag = _gear_;
-		entity_give(next,0, stack,sp+2, 0,0, &gear->fz0,1);
+		entity_give(next,0, stack,sp+2, 0,0, &gear->whdf.fz0,1);
 next1:
 		rel = samedstnextsrc(rel);
 	}
@@ -128,7 +128,7 @@ say("@24\n");
 		stack[sp+0].pchip = gear;
 		stack[sp+1].pchip = next;
 		stack[sp+1].flag = _gear_;
-		entity_give(next,0, stack,sp+2, 0,0, &gear->fz0,1);
+		entity_give(next,0, stack,sp+2, 0,0, &gear->whdf.fz0,1);
 next2:
 		rel = samesrcnextdst(rel);
 	}
@@ -137,12 +137,12 @@ next2:
 
 
 
-static void spurgear_write_val(struct entity* gear, float* val)
+static void spurgear_write_val(_obj* gear, float* val)
 {
 	//wrong
-	gear->fz0 = PI/32 - val[0];
+	gear->whdf.fz0 = PI/32 - val[0];
 }
-static void spurgear_write_ray(struct entity* gear,void* foot, struct fstyle* geom, float* ray)
+static void spurgear_write_ray(_obj* gear,void* foot, struct fstyle* geom, float* ray)
 {
 	say("%f,%f,%f -> %f,%f,%f\n",ray[0],ray[1],ray[2], ray[3],ray[4],ray[5]);
 
@@ -167,16 +167,16 @@ static void spurgear_write_ray(struct entity* gear,void* foot, struct fstyle* ge
 	uv[1] = vec3_dot(tf, geom->vf) / vec3_getlen(tf) / vec3_getlen(geom->vf);
 	say("%f,%f\n", uv[0], uv[1]);
 
-	gear->fz0 = arctanyx(uv[1], uv[0]);
+	gear->whdf.fz0 = arctanyx(uv[1], uv[0]);
 }
 
 
 
 
-static void spurgear_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void spurgear_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -186,7 +186,7 @@ static void spurgear_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void spurgear_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spurgear_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -195,10 +195,10 @@ static void spurgear_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -208,7 +208,7 @@ static void spurgear_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,
 		break;
 	}
 }
-static void spurgear_giving(_ent* gear,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spurgear_giving(_obj* gear,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 
 	if(_gear_ == stack[sp-1].flag){
@@ -233,10 +233,10 @@ static void spurgear_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-void spurgear_register(struct entity* p)
+void spurgear_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('s','p','u','r','g','e','a','r');
+	p->hfmt = hex64('s','p','u','r','g','e','a','r');
 
 	p->oncreate = (void*)spurgear_create;
 	p->ondelete = (void*)spurgear_delete;

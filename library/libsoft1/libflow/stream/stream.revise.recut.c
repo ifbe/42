@@ -1,7 +1,4 @@
 #include "libsoft.h"
-#define MAX data1
-#define ENQ data2
-#define DEQ data3
 #define _src_ hex32('s','r','c',0)
 #define _dst_ hex32('d','s','t',0)
 int decstr2u64(u8* src, u64* dst);
@@ -9,19 +6,30 @@ int decstr2u64(u8* src, u64* dst);
 
 
 
-int recut_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+struct perobj{
+	u8* buf;
+	u64 max;
+	int enq;
+	int deq;
+};
+
+
+
+
+int recut_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int recut_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int recut_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	if(0 == art)return 0;
 
 	int j,k;
-	int deq = art->DEQ;
-	int enq = art->ENQ;
-	int max = art->MAX;
-	u8* cache = art->buf0;
+	struct perobj* perobj = (void*)art->priv_256b;
+	u8* cache = perobj->buf;
+	int max = perobj->max;
+	int deq = perobj->deq;
+	int enq = perobj->enq;
 
 	while(1){
 		if(len <= 0)break;
@@ -45,9 +53,9 @@ int recut_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8
 		enq = deq;
 	}
 
-	art->MAX = max;
-	art->ENQ = enq;
-	art->DEQ = deq;
+	perobj->max = max;
+	perobj->enq = enq;
+	perobj->deq = deq;
 	return 0;
 }
 int recut_discon(struct halfrel* self, struct halfrel* peer)
@@ -62,15 +70,17 @@ int recut_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int recut_create(struct artery* ele, void* arg, int argc, u8** argv)
+int recut_create(_obj* ele, void* arg, int argc, u8** argv)
 {
 	say("@recut_create\n");
-	ele->buf0 = memorycreate(0x100000, 0);
 
-	ele->MAX = 640*480*2;
-	if(arg)decstr2u64(arg, &ele->MAX);
+	struct perobj* perobj = (void*)ele->priv_256b;
+	perobj->buf = memorycreate(0x100000, 0);
 
-	ele->ENQ = 0;
-	ele->DEQ = 0;
+	perobj->max = 640*480*2;
+	if(arg)decstr2u64(arg, &perobj->max);
+
+	perobj->enq = 0;
+	perobj->deq = 0;
 	return 1;
 }

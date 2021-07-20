@@ -3,7 +3,7 @@
 
 
 
-void joycreate(struct supply* win)
+void joycreate(_obj* win)
 {
 }
 void initjoy()

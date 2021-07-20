@@ -1,6 +1,6 @@
 #include "libuser.h"
-#define A_PEERFOOT ixn
-#define B_PEERFOOT iyn
+#define A_PEERFOOT whdf.ixn
+#define B_PEERFOOT whdf.iyn
 struct wireindex{
 	int off;
 	int cnt;
@@ -14,28 +14,28 @@ struct wireindex{
 
 
 static void resistor_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void resistor_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void resistor_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void resistor_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void resistor_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
@@ -43,9 +43,9 @@ static void resistor_draw_cli(
 
 
 static void resistor_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* scn, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	int j;
 	vec3 tc,tr,tf,tt;
@@ -62,12 +62,12 @@ static void resistor_draw_gl41(
 		tr[j] = vr[j]/2;
 		tf[j] = vf[j]/2;
 	}
-	gl41float(wnd, 0xffffff, tc,tr,tf, act->fx0);
+	gl41float(wnd, 0xffffff, tc,tr,tf, act->whdf.fx0);
 }
-static void resistor_read_bycam(_ent* ent,void* slot, _syn* stack,int sp)
+static void resistor_read_bycam(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -77,7 +77,7 @@ static void resistor_read_bycam(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void resistor_read_a(struct entity* ent, int key, struct wireindex* sts, int thisone)
+static void resistor_read_a(_obj* ent, int key, struct wireindex* sts, int thisone)
 {
 	if('R' != key)return;
 
@@ -89,11 +89,11 @@ static void resistor_read_a(struct entity* ent, int key, struct wireindex* sts, 
 	float vthis = sts[thisone].volt;
 	say("@a: %d,%f, %d,%f\n",thisone,vthis, theother,vthat);
 
-	float delta = (2*vthis - 2*vthat) / (ent->fx0);
+	float delta = (2*vthis - 2*vthat) / (ent->whdf.fx0);
 	say("resistor_read_a: %f,%f\n", sts[thisone].grad, delta);
 	sts[thisone].grad += delta;
 }
-static void resistor_read_b(struct entity* ent, int key, struct wireindex* sts, int thisone)
+static void resistor_read_b(_obj* ent, int key, struct wireindex* sts, int thisone)
 {
 	if('R' != key)return;
 
@@ -105,7 +105,7 @@ static void resistor_read_b(struct entity* ent, int key, struct wireindex* sts, 
 	float vthis = sts[thisone].volt;
 	say("@b: %d,%f, %d,%f\n",thisone,vthis, theother,vthat);
 
-	float delta = (2*vthis - 2*vthat) / (ent->fx0);
+	float delta = (2*vthis - 2*vthat) / (ent->whdf.fx0);
 	say("resistor_read_b: %f,%f\n", sts[thisone].grad, delta);
 	sts[thisone].grad += delta;
 }
@@ -113,7 +113,7 @@ static void resistor_read_b(struct entity* ent, int key, struct wireindex* sts, 
 
 
 
-static void resistor_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void resistor_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -128,10 +128,10 @@ static void resistor_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -140,7 +140,7 @@ static void resistor_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,
 		resistor_read_bycam(ent,foot, stack,sp);break;
 	}
 }
-static void resistor_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void resistor_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct wireindex* sts = buf;
 	say("@resistor_write: %.4s\n", &foot);
@@ -151,7 +151,7 @@ static void resistor_discon(struct halfrel* self, struct halfrel* peer)
 }
 static void resistor_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	struct entity* ent = self->pchip;
+	_obj* ent = self->pchip;
 	switch(self->flag){
 		case 'a':ent->A_PEERFOOT = peer->flag;break;
 		case 'b':ent->B_PEERFOOT = peer->flag;break;
@@ -161,29 +161,29 @@ static void resistor_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void resistor_search(struct entity* act, u8* buf)
+static void resistor_search(_obj* act, u8* buf)
 {
 }
-static void resistor_modify(struct entity* act, u8* buf)
+static void resistor_modify(_obj* act, u8* buf)
 {
 }
-static void resistor_delete(struct entity* act, u8* buf)
+static void resistor_delete(_obj* act, u8* buf)
 {
 }
-static void resistor_create(struct entity* act, void* arg, int argc, u8** argv)
+static void resistor_create(_obj* act, void* arg, int argc, u8** argv)
 {
 	if(0 == arg)return;
-	decstr2float(arg, &act->fx0);
-	say("R=%f\n",act->fx0);
+	decstr2float(arg, &act->whdf.fx0);
+	say("R=%f\n",act->whdf.fx0);
 }
 
 
 
 
-void resistor_register(struct entity* p)
+void resistor_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('r','e','s','i','s','t','o','r');
+	p->hfmt = hex64('r','e','s','i','s','t','o','r');
 
 	p->oncreate = (void*)resistor_create;
 	p->ondelete = (void*)resistor_delete;

@@ -9,8 +9,8 @@ static u8 buffer[8][8];
 
 
 static void chess_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	u32 color;
 	int x, y, cx, cy, ww, hh;
@@ -23,10 +23,10 @@ static void chess_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 
 	for(y=0;y<8;y++)
@@ -50,9 +50,9 @@ static void chess_draw_pixel(
 	}
 }
 static void chess_draw_gl41(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	u32 rgb;
 	int x,y;
@@ -89,13 +89,13 @@ static void chess_draw_gl41(
 	}
 }
 static void chess_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void chess_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x,y,color;
 
@@ -123,13 +123,13 @@ static void chess_draw_html(
 	htmlprintf(win, 2, "</div>\n");
 }
 static void chess_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void chess_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	u8 ch;
 	int x,y;
@@ -150,10 +150,10 @@ static void chess_draw_cli(
 
 
 
-static void chess_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void chess_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -163,7 +163,7 @@ static void chess_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void chess_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void chess_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -172,10 +172,10 @@ static void chess_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -185,7 +185,7 @@ static void chess_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int
 		break;
 	}
 }
-static void chess_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void chess_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@chess:%x,%x\n", ev->why, ev->what);
 }
@@ -199,23 +199,23 @@ static void chess_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void chess_search(struct entity* act)
+static void chess_search(_obj* act)
 {
 }
-static void chess_modify(struct entity* act)
+static void chess_modify(_obj* act)
 {
 }
-static void chess_delete(struct entity* act)
+static void chess_delete(_obj* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf0);
+	if(_copy_ == act->type)memorydelete(act->listptr.buf0);
 }
-static void chess_create(struct entity* act)
+static void chess_create(_obj* act)
 {
 	int j,k;
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf0 = buffer;
-	if(_copy_ == act->type)act->buf0 = memorycreate(64, 0);
+	if(_orig_ == act->type)act->listptr.buf0 = buffer;
+	if(_copy_ == act->type)act->listptr.buf0 = memorycreate(64, 0);
 
 	for(k=0;k<8;k++)
 	{
@@ -256,10 +256,10 @@ static void chess_create(struct entity* act)
 
 
 
-void chess_register(struct entity* p)
+void chess_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('c', 'h', 'e', 's', 's', 0, 0, 0);
+	p->hfmt = hex64('c', 'h', 'e', 's', 's', 0, 0, 0);
 
 	p->oncreate = (void*)chess_create;
 	p->ondelete = (void*)chess_delete;

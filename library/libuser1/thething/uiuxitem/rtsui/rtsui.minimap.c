@@ -4,9 +4,9 @@
 
 
 static void minimap_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	float* vc = geom->fshape.vc;
 	float* vr = geom->fshape.vr;
@@ -15,46 +15,46 @@ static void minimap_draw_gl41(
 	gl41solid_rect(ctx,0xff00ff, vc,vr,vf);
 }
 static void minimap_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void minimap_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void minimap_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void minimap_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void minimap_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-static void minimap_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key)
+static void minimap_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	minimap_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void minimap_read_byuiux(_ent* ent,void* slot, _syn* stack,int sp)
+static void minimap_read_byuiux(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* uuu;struct style* area;
-	struct entity* wnd;struct style* rect;
+	_obj* uuu;struct style* area;
+	_obj* wnd;struct style* rect;
 	uuu = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 	wnd = stack[sp-4].pchip;rect = stack[sp-4].pfoot;
 
@@ -73,20 +73,20 @@ static void minimap_read_byuiux(_ent* ent,void* slot, _syn* stack,int sp)
 
 	minimap_draw_gl41(ent,slot, 0,(void*)&fs, wnd,rect);
 }
-static void minimap_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
+static void minimap_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
 {
 }
 
 
 
 
-static void minimap_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void minimap_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* wnd = stack[sp-2].pchip;
+	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
-//say("fmt=%.8s\n", &sup->fmt);
+//say("fmt=%.8s\n", &sup->hfmt);
 
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _gl41list_:
 		minimap_read_bywnd(ent,slot, wnd,area);
 		break;
@@ -98,7 +98,7 @@ static void minimap_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void minimap_giving(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void minimap_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void minimap_discon(struct halfrel* self, struct halfrel* peer)
@@ -111,26 +111,26 @@ static void minimap_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void minimap_search(struct entity* act)
+static void minimap_search(_obj* act)
 {
 }
-static void minimap_modify(struct entity* act)
+static void minimap_modify(_obj* act)
 {
 }
-static void minimap_delete(struct entity* act)
+static void minimap_delete(_obj* act)
 {
 }
-static void minimap_create(struct entity* act, u8* arg)
+static void minimap_create(_obj* act, u8* arg)
 {
 }
 
 
 
 
-void minimap_register(struct entity* p)
+void minimap_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('m', 'i', 'n', 'i', 'm', 'a', 'p', 0);
+	p->hfmt = hex64('m', 'i', 'n', 'i', 'm', 'a', 'p', 0);
 
 	p->oncreate = (void*)minimap_create;
 	p->ondelete = (void*)minimap_delete;

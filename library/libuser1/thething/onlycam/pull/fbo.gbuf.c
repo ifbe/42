@@ -1,10 +1,10 @@
 #include "libuser.h"
 #define _fbog_ hex32('f','b','o','g')
-#define CTXBUF buf0
-void gl41data_before(struct entity* wnd);
-void gl41data_after(struct entity* wnd);
-void gl41data_01cam(struct entity* wnd);
-void gl41data_insert(struct entity* ctx, int type, void* src, int cnt);
+#define CTXBUF listptr.buf0
+void gl41data_before(_obj* wnd);
+void gl41data_after(_obj* wnd);
+void gl41data_01cam(_obj* wnd);
+void gl41data_insert(_obj* ctx, int type, void* src, int cnt);
 //
 int copypath(u8* path, u8* data);
 
@@ -32,7 +32,7 @@ void gbuffer_ctxforwnd(struct mysrc* src, char* vs, char* fs)
 	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
 	src->vbuf_enq = 42;
 }
-static void gbuffer_readfrom_gbuffer(struct entity* ent, struct gl41data* data)
+static void gbuffer_readfrom_gbuffer(_obj* ent, struct gl41data* data)
 {
 	struct relation* rel = ent->orel0;
 	while(1){
@@ -41,7 +41,7 @@ static void gbuffer_readfrom_gbuffer(struct entity* ent, struct gl41data* data)
 		rel = samesrcnextdst(rel);
 	}
 
-	struct supply* fbo = rel->pdstchip;
+	_obj* fbo = rel->pdstchip;
 
 	data->dst.texname[0] = "tex0";
 	data->dst.texname[1] = "tex1";
@@ -49,31 +49,31 @@ static void gbuffer_readfrom_gbuffer(struct entity* ent, struct gl41data* data)
 	data->dst.texname[3] = "tex3";
 	data->dst.texname[4] = "tex4";
 
-	data->src.tex[0].glfd = fbo->tex[0];
+	data->src.tex[0].glfd = fbo->gl41list.tex[0];
 	data->src.tex[0].fmt = '!';
 	data->src.tex_enq[0] += 1;
 
-	data->src.tex[1].glfd = fbo->tex[1];
+	data->src.tex[1].glfd = fbo->gl41list.tex[1];
 	data->src.tex[1].fmt = '!';
 	data->src.tex_enq[1] += 1;
 
-	data->src.tex[2].glfd = fbo->tex[2];
+	data->src.tex[2].glfd = fbo->gl41list.tex[2];
 	data->src.tex[2].fmt = '!';
 	data->src.tex_enq[2] += 1;
 
-	data->src.tex[3].glfd = fbo->tex[3];
+	data->src.tex[3].glfd = fbo->gl41list.tex[3];
 	data->src.tex[3].fmt = '!';
 	data->src.tex_enq[3] += 1;
 
-	data->src.tex[4].glfd = fbo->dep;
+	data->src.tex[4].glfd = fbo->gl41list.dep;
 	data->src.tex[4].fmt = '!';
 	data->src.tex_enq[4] += 1;
 	//say("%d,%d,%d,%d\n", data->src.tex[0].glfd, data->src.tex[1].glfd, data->src.tex[2].glfd, data->src.tex[3].glfd);
 }
 static void gbuffer_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* scn, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* scn, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -89,8 +89,8 @@ static void gbuffer_draw_gl41(
 
 	float x,y;
 	float x0,y0,xn,yn;
-	x = ctx->width * (area->fs.vq[0] - area->fs.vc[0]);
-	y = ctx->height* (area->fs.vq[1] - area->fs.vc[1]);
+	x = ctx->whdf.width * (area->fs.vq[0] - area->fs.vc[0]);
+	y = ctx->whdf.height* (area->fs.vq[1] - area->fs.vc[1]);
 	if(x > y){
 		x0 = 0.0;
 		xn = 1.0;
@@ -153,10 +153,10 @@ static void gbuffer_draw_gl41(
 
 
 
-static int gbuffer_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static int gbuffer_search(_obj* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 	struct relation* rel;
-	struct entity* world;
+	_obj* world;
 
 	rel = act->irel0;
 	while(1){
@@ -171,14 +171,14 @@ static int gbuffer_search(struct entity* act, u32 foot, struct halfrel* self[], 
 	}
 	return 0;
 }
-static void gbuffer_modify(struct entity* act)
+static void gbuffer_modify(_obj* act)
 {
 }
-static void gbuffer_delete(struct entity* act)
+static void gbuffer_delete(_obj* act)
 {
 	if(0 == act)return;
 }
-static void gbuffer_create(struct entity* act, void* arg, int argc, u8** argv)
+static void gbuffer_create(_obj* act, void* arg, int argc, u8** argv)
 {
 	int j;
 	u8 vspath[128];
@@ -210,28 +210,28 @@ static void gbuffer_create(struct entity* act, void* arg, int argc, u8** argv)
 
 
 static void gbuffer_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void gbuffer_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void gbuffer_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void gbuffer_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void gbuffer_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("gbuffer(%x,%x,%x)\n",win,act,sty);
 }
@@ -239,19 +239,19 @@ static void gbuffer_draw_cli(
 
 
 
-static void gbuffer_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void gbuffer_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	take_data_from_peer(ent,_fbog_, stack,sp, 0,0, 0,0);
 	gbuffer_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void gbuffer_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void gbuffer_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wnd;struct style* area;
+	_obj* wnd;struct style* area;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	struct fstyle fs;
@@ -268,7 +268,7 @@ static void gbuffer_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void gbuffer_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gbuffer_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -277,10 +277,10 @@ static void gbuffer_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -291,7 +291,7 @@ static void gbuffer_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void gbuffer_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gbuffer_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@gbuffer_write\n");
 	if(_wnd_ == stack[sp-1].flag){
@@ -308,10 +308,10 @@ static void gbuffer_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-void gbuffer_register(struct entity* p)
+void gbuffer_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('g','b','u','f','f','e','r', 0);
+	p->hfmt = hex64('g','b','u','f','f','e','r', 0);
 
 	p->oncreate = (void*)gbuffer_create;
 	p->ondelete = (void*)gbuffer_delete;

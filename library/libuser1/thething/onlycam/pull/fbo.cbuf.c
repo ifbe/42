@@ -1,9 +1,9 @@
 #include "libuser.h"
-#define CTXBUF buf0
-void gl41data_before(struct entity* wnd);
-void gl41data_after(struct entity* wnd);
-void gl41data_01cam(struct entity* wnd);
-void gl41data_insert(struct entity* ctx, int type, void* data, int cnt);
+#define CTXBUF listptr.buf0
+void gl41data_before(_obj* wnd);
+void gl41data_after(_obj* wnd);
+void gl41data_01cam(_obj* wnd);
+void gl41data_insert(_obj* ctx, int type, void* data, int cnt);
 
 
 
@@ -54,7 +54,7 @@ void cbuffer_ctxforwnd(struct mysrc* src)
 	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
 	src->vbuf_enq = 42;
 }
-static void cbuffer_readfrom_cbuffer(struct entity* ent, struct gl41data* data)
+static void cbuffer_readfrom_cbuffer(_obj* ent, struct gl41data* data)
 {
 	struct relation* rel = ent->orel0;
 	while(1){
@@ -63,17 +63,17 @@ static void cbuffer_readfrom_cbuffer(struct entity* ent, struct gl41data* data)
 		rel = samesrcnextdst(rel);
 	}
 
-	struct supply* sup = rel->pdstchip;
-	data->src.tex[0].glfd = sup->tex0;
+	_obj* sup = rel->pdstchip;
+	data->src.tex[0].glfd = sup->gl41list.tex[0];
 	data->src.tex[0].fmt = '!';
 
 	data->dst.texname[0] = "tex0";
 	data->src.tex_enq[0] += 1;
 }
 static void cbuffer_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* scn, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* scn, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -89,8 +89,8 @@ static void cbuffer_draw_gl41(
 
 	float x,y;
 	float x0,y0,xn,yn;
-	x = ctx->width * (area->fs.vq[0] - area->fs.vc[0]);
-	y = ctx->height* (area->fs.vq[1] - area->fs.vc[1]);
+	x = ctx->whdf.width * (area->fs.vq[0] - area->fs.vc[0]);
+	y = ctx->whdf.height* (area->fs.vq[1] - area->fs.vc[1]);
 	if(x > y){
 		x0 = 0.0;
 		xn = 1.0;
@@ -153,17 +153,17 @@ static void cbuffer_draw_gl41(
 
 
 
-static void cbuffer_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static void cbuffer_search(_obj* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 }
-static void cbuffer_modify(struct entity* act)
+static void cbuffer_modify(_obj* act)
 {
 }
-static void cbuffer_delete(struct entity* act)
+static void cbuffer_delete(_obj* act)
 {
 	if(0 == act)return;
 }
-static void cbuffer_create(struct entity* act, void* arg, int argc, u8** argv)
+static void cbuffer_create(_obj* act, void* arg, int argc, u8** argv)
 {
 	act->CTXBUF = memorycreate(0x1000, 0);
 	cbuffer_ctxforwnd(act->CTXBUF);
@@ -174,28 +174,28 @@ static void cbuffer_create(struct entity* act, void* arg, int argc, u8** argv)
 
 
 static void cbuffer_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void cbuffer_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void cbuffer_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void cbuffer_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void cbuffer_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("cbuffer(%x,%x,%x)\n",win,act,sty);
 }
@@ -203,19 +203,19 @@ static void cbuffer_draw_cli(
 
 
 
-static void cbuffer_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void cbuffer_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	take_data_from_peer(ent,_fbo_, stack,sp, 0,0, 0,0);
 	cbuffer_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void cbuffer_wnd(_ent* ent,void* foot, _syn* stack,int sp)
+static void cbuffer_wnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
-	struct entity* wnd;struct style* area;
+	_obj* wnd;struct style* area;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	struct fstyle fs;
@@ -232,7 +232,7 @@ static void cbuffer_wnd(_ent* ent,void* foot, _syn* stack,int sp)
 
 
 
-static void cbuffer_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void cbuffer_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -241,10 +241,10 @@ static void cbuffer_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,i
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -255,7 +255,7 @@ static void cbuffer_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void cbuffer_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void cbuffer_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@cbuffer_write\n");
 	if(_wnd_ == stack[sp-1].flag){
@@ -272,10 +272,10 @@ static void cbuffer_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-void cbuffer_register(struct entity* p)
+void cbuffer_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('c','b','u','f','f','e','r', 0);
+	p->hfmt = hex64('c','b','u','f','f','e','r', 0);
 
 	p->oncreate = (void*)cbuffer_create;
 	p->ondelete = (void*)cbuffer_delete;

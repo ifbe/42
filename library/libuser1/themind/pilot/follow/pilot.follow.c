@@ -11,10 +11,10 @@ void* thatgeom;
 void* self;
 void* selfgeom;
 };
-void* follow_where(struct entity* ent)
+void* follow_where(_obj* ent)
 {
 	struct relation* rel;
-	struct entity* world;
+	_obj* world;
 
 	rel = ent->irel0;
 	while(1){
@@ -60,15 +60,15 @@ void follow_doit(struct fstyle* this, struct fstyle* that)
 
 
 
-int follow_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int follow_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int follow_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int follow_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	say("@follow_write:%.4s\n",&foot);
 	if(_clk_ == stack[sp-1].flag){
-		struct privdata* own = ent->buf0;
+		struct privdata* own = ent->priv_ptr;
 		if(0 == own->that)return 0;
 		if(0 == own->self)return 0;
 
@@ -91,8 +91,8 @@ int follow_discon(struct halfrel* self, struct halfrel* peer)
 }
 int follow_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	struct entity* ent = self->pchip;
-	struct privdata* own = ent->buf0;
+	_obj* ent = self->pchip;
+	struct privdata* own = ent->priv_ptr;
 	say("@follow_linkup: %.4s\n", &self->flag);
 
     switch(self->flag){
@@ -105,21 +105,21 @@ int follow_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int follow_search(struct entity* win)
+int follow_search(_obj* win)
 {
 	return 0;
 }
-int follow_modify(struct entity* win)
+int follow_modify(_obj* win)
 {
 	return 0;
 }
-int follow_delete(struct entity* win)
+int follow_delete(_obj* win)
 {
 	return 0;
 }
-int follow_create(struct entity* act, void* flag)
+int follow_create(_obj* act, void* flag)
 {
-	struct privdata* own = act->buf0 = memorycreate(0x1000, 0);
+	struct privdata* own = act->priv_ptr = memorycreate(0x1000, 0);
 	own->self = 0;
 	own->selfgeom = 0;
 	own->that = 0;

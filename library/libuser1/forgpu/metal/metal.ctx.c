@@ -7,9 +7,9 @@ struct unidata{
 
 
 
-void mt20data_nocam(struct entity* wnd)
+void mt20data_nocam(_obj* wnd)
 {
-	void* trick = wnd->mtfull_camera;
+	void* trick = wnd->mt20list.camera;
 	struct mt20data* data = trick + 0x400;
 	struct unidata* uni = trick + 0x800;
 	data->src.uni[0].buf = uni;
@@ -27,11 +27,11 @@ void mt20data_nocam(struct entity* wnd)
 	m[2][2] = 1.0;
 	m[3][3] = 1.0;
 
-	wnd->mtfull_camera[0] = data;
+	wnd->mt20list.camera[0] = data;
 }
-void mt20data_01cam(struct entity* wnd)
+void mt20data_01cam(_obj* wnd)
 {
-	void* trick = wnd->mtfull_camera;
+	void* trick = wnd->mt20list.camera;
 	struct mt20data* data = trick + 0x400;
 	struct unidata* uni = trick + 0x800;
 	data->src.uni[0].buf = uni;
@@ -49,11 +49,11 @@ void mt20data_01cam(struct entity* wnd)
 	m[2][2] =-1.0;
 	m[3][3] = 1.0;
 
-	wnd->mtfull_camera[0] = data;
+	wnd->mt20list.camera[0] = data;
 }
-void mt20data_whcam(struct entity* wnd, struct fstyle* area)
+void mt20data_whcam(_obj* wnd, struct fstyle* area)
 {
-	void* trick = wnd->mtfull_camera;
+	void* trick = wnd->mt20list.camera;
 	struct mt20data* data = trick + 0x400;
 	struct unidata* uni = trick + 0x800;
 	data->src.uni[0].buf = uni;
@@ -66,65 +66,65 @@ void mt20data_whcam(struct entity* wnd, struct fstyle* area)
 		for(x=0;x<4;x++)m[y][x] = 0.0;
 		v[y] = 0.0;
 	}
-	m[0][0] = 2.0 / (area->vq[0] * wnd->fbwidth);
-	m[1][1] = 2.0 / (area->vq[1] * wnd->fbheight);
+	m[0][0] = 2.0 / (area->vq[0] * wnd->whdf.fbwidth);
+	m[1][1] = 2.0 / (area->vq[1] * wnd->whdf.fbheight);
 	m[2][2] =-1.0;
 	m[3][3] = 1.0;
 	//say("%f,%f\n", m[0][0], m[1][1]);
 
-	wnd->mtfull_camera[0] = data;
+	wnd->mt20list.camera[0] = data;
 }
 
 
 
 
-void mt20data_nolit(struct entity* wnd)
+void mt20data_nolit(_obj* wnd)
 {
 }
-void mt20data_mylit(struct entity* wnd)
+void mt20data_mylit(_obj* wnd)
 {
 }
 
 
 
 
-void mt20data_before(struct entity* ctx)
+void mt20data_before(_obj* ctx)
 {
 	int j;
 	struct mt20data* p;
 
 	//camera: default
-	ctx->mtfull_camera[0] = 0;
+	ctx->mt20list.camera[0] = 0;
 
 	//light: default
-	//ctx->mtfull_light[0] = 0;
+	//ctx->mt20list.light[0] = 0;
 	mt20data_nolit(ctx);
 
 	//solid: clear myown, forget other
 	for(j=0;j<solidaid_max;j++){
-		p = ctx->mtfull_solid[j];
+		p = ctx->mt20list.solid[j];
 		if(0 == p)continue;
 
 		p->src.vtx[0].vbuf_h = 0;
 		p->src.vtx[0].ibuf_h = 0;
 	}
 	for(;j<64;j++){
-		ctx->mtfull_solid[j] = 0;
+		ctx->mt20list.solid[j] = 0;
 	}
 
 	//opaque: clear myown, forget other
 	for(j=0;j<opaqueaid_max;j++){
-		p = ctx->mtfull_opaque[j];
+		p = ctx->mt20list.opaque[j];
 		if(0 == p)continue;
 
 		p->src.vtx[0].vbuf_h = 0;
 		p->src.vtx[0].ibuf_h = 0;
 	}
 	for(;j<64;j++){
-		ctx->mtfull_opaque[j] = 0;
+		ctx->mt20list.opaque[j] = 0;
 	}
 }
-void mt20data_after(struct entity* ctx)
+void mt20data_after(_obj* ctx)
 {
 	int j;
 	struct mt20data* p;
@@ -132,7 +132,7 @@ void mt20data_after(struct entity* ctx)
 	//solid: enqueue
 	for(j=0;j<solidaid_max;j++)
 	{
-		p = ctx->mtfull_solid[j];
+		p = ctx->mt20list.solid[j];
 		if(0 == p)continue;
 
 		p->src.vbuf_enq += 1;
@@ -142,30 +142,30 @@ void mt20data_after(struct entity* ctx)
 	//opaque: enqueue
 	for(j=0;j<opaqueaid_max;j++)
 	{
-		p = ctx->mtfull_opaque[j];
+		p = ctx->mt20list.opaque[j];
 		if(0 == p)continue;
 
 		p->src.vbuf_enq += 1;
 		p->src.ibuf_enq += 1;
 	}
 }
-void mt20data_insert(struct entity* ctx, int type, struct mt20data* src, int cnt)
+void mt20data_insert(_obj* ctx, int type, struct mt20data* src, int cnt)
 {
 	int j;
 	//say("@mt20data_insert:%llx,%x,%llx,%x\n", ctx,type,src,cnt);
 
 	if('s' == type){
 		for(j=solidaid_max;j<64;j++){
-			if(0 == ctx->mtfull_solid[j]){
-				ctx->mtfull_solid[j] = src;
+			if(0 == ctx->mt20list.solid[j]){
+				ctx->mt20list.solid[j] = src;
 				break;
 			}
 		}
 	}
 	if('o' == type){
 		for(j=opaqueaid_max;j<64;j++){
-			if(0 == ctx->mtfull_opaque[j]){
-				ctx->mtfull_opaque[j] = src;
+			if(0 == ctx->mt20list.opaque[j]){
+				ctx->mt20list.opaque[j] = src;
 				break;
 			}
 		}
@@ -178,7 +178,7 @@ void mt20data_insert(struct entity* ctx, int type, struct mt20data* src, int cnt
 //be the world, get all data
 //[-4,-3]: ogl,area -> cam,togl
 //[-2,-1]: cam,towr -> wor,geom
-int mt20data_taking(_ent* world,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int mt20data_taking(_obj* world,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct relation* rel = world->orel0;
 	while(1){
@@ -198,7 +198,7 @@ int mt20data_taking(_ent* world,void* foot, _syn* stack,int sp, void* arg,int ke
 	}
 	return 0;
 }
-int mt20data_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int mt20data_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -214,23 +214,23 @@ int mt20data_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int mt20data_search(struct entity* win)
+int mt20data_search(_obj* win)
 {
 	return 0;
 }
-int mt20data_modify(struct entity* win)
+int mt20data_modify(_obj* win)
 {
 	return 0;
 }
-int mt20data_delete(struct entity* win)
+int mt20data_delete(_obj* win)
 {
 	return 0;
 }
-int mt20data_create(struct entity* act, void* flag)
+int mt20data_create(_obj* act, void* flag)
 {
-	act->mtfull_camera = memorycreate(0x10000, 0);
-	act->mtfull_light  = memorycreate(0x10000, 0);
-	act->mtfull_solid  = memorycreate(0x10000, 0);
-	act->mtfull_opaque = memorycreate(0x10000, 0);
+	act->mt20list.camera = memorycreate(0x10000, 0);
+	act->mt20list.light  = memorycreate(0x10000, 0);
+	act->mt20list.solid  = memorycreate(0x10000, 0);
+	act->mt20list.opaque = memorycreate(0x10000, 0);
 	return 0;
 }

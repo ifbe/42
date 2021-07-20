@@ -4,43 +4,43 @@
 
 
 static void isrc_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void isrc_draw_gl41(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void isrc_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void isrc_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void isrc_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void isrc_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-static void isrc_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void isrc_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void isrc_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void isrc_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void isrc_discon(struct halfrel* self, struct halfrel* peer)
@@ -54,26 +54,26 @@ static void isrc_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void isrc_search(struct entity* act, u8* buf)
+static void isrc_search(_obj* act, u8* buf)
 {
 }
-static void isrc_modify(struct entity* act, u8* buf)
+static void isrc_modify(_obj* act, u8* buf)
 {
 }
-static void isrc_delete(struct entity* act, u8* buf)
+static void isrc_delete(_obj* act, u8* buf)
 {
 }
-static void isrc_create(struct entity* act, u8* buf)
+static void isrc_create(_obj* act, u8* buf)
 {
 }
 
 
 
 
-void isrc_register(struct entity* p)
+void isrc_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex32('i','s','r','c');
+	p->hfmt = hex32('i','s','r','c');
 
 	p->oncreate = (void*)isrc_create;
 	p->ondelete = (void*)isrc_delete;

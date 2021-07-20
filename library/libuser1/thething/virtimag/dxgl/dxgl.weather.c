@@ -47,9 +47,9 @@ static void weather_ctxforwnd(struct mysrc* src)
 
 
 static void weather_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* wrl, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* wrl, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 	int x,y,z;
 	vec3 tc;
@@ -73,28 +73,28 @@ static void weather_draw_gl41(
 	}
 }
 static void weather_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void weather_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void weather_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void weather_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void weather_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("weather(%x,%x,%x)\n",win,act,sty);
 }
@@ -102,26 +102,26 @@ static void weather_draw_cli(
 
 
 
-static void weather_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void weather_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	weather_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void weather_wrl_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void weather_wrl_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 }
-static void weather_wnd(_ent* ent,void* slot, _ent* wnd,void* area)
+static void weather_wnd(_obj* ent,void* slot, _obj* wnd,void* area)
 {
 }
 
 
 
 
-static void weather_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void weather_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -130,10 +130,10 @@ static void weather_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -144,7 +144,7 @@ static void weather_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void weather_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void weather_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void weather_discon(struct halfrel* self, struct halfrel* peer)
@@ -157,31 +157,31 @@ static void weather_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void weather_search(struct entity* act)
+static void weather_search(_obj* act)
 {
 }
-static void weather_modify(struct entity* act)
+static void weather_modify(_obj* act)
 {
 }
-static void weather_delete(struct entity* act)
-{
-	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf0);
-}
-static void weather_create(struct entity* act)
+static void weather_delete(_obj* act)
 {
 	if(0 == act)return;
-	act->buf0 = memorycreate(0x1000, 0);
-	weather_ctxforwnd(act->buf0);
+	if(_copy_ == act->type)memorydelete(act->listptr.buf0);
+}
+static void weather_create(_obj* act)
+{
+	if(0 == act)return;
+	act->listptr.buf0 = memorycreate(0x1000, 0);
+	weather_ctxforwnd(act->listptr.buf0);
 }
 
 
 
 
-void weather_register(struct entity* p)
+void weather_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('w', 'e', 'a', 't', 'h', 'e', 'r', 0);
+	p->hfmt = hex64('w', 'e', 'a', 't', 'h', 'e', 'r', 0);
 
 	p->oncreate = (void*)weather_create;
 	p->ondelete = (void*)weather_delete;

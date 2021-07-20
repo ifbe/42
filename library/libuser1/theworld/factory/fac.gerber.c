@@ -1,7 +1,7 @@
 #include "libuser.h"
-#define GERBUF buf0
-#define DSTBUF buf1
-#define CNTBUF data2
+#define GERBUF listptr.buf0
+#define DSTBUF listptr.buf1
+#define CNTBUF listu64.data2
 
 
 
@@ -152,17 +152,17 @@ int rs274x_parse(float* vbuf, int vlen, u8* str, int len)
 
 
 
-static void gerber_search(struct entity* act)
+static void gerber_search(_obj* act)
 {
 }
-static void gerber_modify(struct entity* act)
+static void gerber_modify(_obj* act)
 {
 }
-static void gerber_delete(struct entity* act)
+static void gerber_delete(_obj* act)
 {
 	if(0 == act)return;
 }
-static void gerber_create(struct entity* act, void* arg)
+static void gerber_create(_obj* act, void* arg)
 {
 	int cnt;
 	u8* buf;
@@ -188,9 +188,9 @@ static void gerber_create(struct entity* act, void* arg)
 
 
 static void gerber_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int j,rgb;
 	vec3 tc,tr,tf;
@@ -225,10 +225,10 @@ static void gerber_draw_gl41(
 
 
 
-static void gerber_world_camera_window(_ent* ent,void* slot, _syn* stack,int sp)
+static void gerber_world_camera_window(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* scn;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* scn;struct style* geom;
+	_obj* wnd;struct style* area;
 
 	scn = stack[sp-2].pchip;geom = stack[sp-2].pfoot;;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -238,11 +238,11 @@ static void gerber_world_camera_window(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void gerber_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gerber_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	//foot defined behavior
@@ -250,7 +250,7 @@ static void gerber_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,in
 	}
 
 	//caller defined behavior
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 	        break;
 	case _gl41list_:
@@ -259,7 +259,7 @@ static void gerber_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,in
 		gerber_world_camera_window(ent,slot, stack,sp);
 	}
 }
-static void gerber_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gerber_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void gerber_discon(struct halfrel* self, struct halfrel* peer)
@@ -272,10 +272,10 @@ static void gerber_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-void gerber_register(struct entity* p)
+void gerber_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('g', 'e', 'r', 'b', 'e','r', 0, 0);
+	p->hfmt = hex64('g', 'e', 'r', 'b', 'e','r', 0, 0);
 
 	p->oncreate = (void*)gerber_create;
 	p->ondelete = (void*)gerber_delete;

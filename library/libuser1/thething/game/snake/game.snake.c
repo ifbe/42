@@ -22,8 +22,8 @@ static struct snake buf[WIDTH*HEIGHT];
 
 
 void snake_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int j;
 	int t1, t2, t3, t4;
@@ -37,10 +37,10 @@ void snake_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 	drawsolid_rect(win, 0x222222, cx-ww, cy-hh, cx+ww, cy+hh);
 
@@ -67,19 +67,19 @@ void snake_draw_pixel(
 	drawsolid_rect(win, 0x00ff00, t1+1, t2+1, t3-1, t4-1);
 }
 void snake_draw_gl41(
-	struct entity* act, struct style* part,
-	struct entity* wrl, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* part,
+	_obj* wrl, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 }
 void snake_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 void snake_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int x,y;
 /*
@@ -105,19 +105,19 @@ void snake_draw_html(
 */
 }
 void snake_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int j,t;
-	int width = win->width;
-	char* p = win->textbuf;
+	int width = win->whdf.width;
+	char* p = win->tuitext.buf;
 
 	t = buf[0].x + buf[0].y*width;
 	p[t<<2] = '@';
 }
 void snake_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("snake(%x,%x,%x)\n",win,act,sty);
 }
@@ -126,8 +126,8 @@ void snake_draw_cli(
 
 
 void snake_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
 	u64 type = ev->what;
@@ -152,10 +152,10 @@ void snake_event(
 
 
 
-static void snake_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void snake_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -165,7 +165,7 @@ static void snake_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void snake_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void snake_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -174,10 +174,10 @@ static void snake_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -187,7 +187,7 @@ static void snake_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int
 		break;
 	}
 }
-static void snake_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void snake_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void snake_discon(struct halfrel* self, struct halfrel* peer)
@@ -200,25 +200,25 @@ static void snake_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void snake_search(struct entity* act)
+static void snake_search(_obj* act)
 {
 }
-static void snake_modify(struct entity* act)
+static void snake_modify(_obj* act)
 {
 }
-static void snake_delete(struct entity* act)
+static void snake_delete(_obj* act)
 {
 	if(0 == act)return;
-	if(act->buf0){
-		memorydelete(act->buf0);
-		act->buf0 = 0;
+	if(act->listptr.buf0){
+		memorydelete(act->listptr.buf0);
+		act->listptr.buf0 = 0;
 	}
 }
-static void snake_create(struct entity* act)
+static void snake_create(_obj* act)
 {
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf0 = buf;
-	if(_copy_ == act->type)act->buf0 = memorycreate(WIDTH*HEIGHT*4, 0);
+	if(_orig_ == act->type)act->listptr.buf0 = buf;
+	if(_copy_ == act->type)act->listptr.buf0 = memorycreate(WIDTH*HEIGHT*4, 0);
 
 	snake_generate(buf, WIDTH, HEIGHT);
 }
@@ -226,10 +226,10 @@ static void snake_create(struct entity* act)
 
 
 
-void snake_register(struct entity* p)
+void snake_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('s', 'n', 'a', 'k', 'e', 0, 0, 0);
+	p->hfmt = hex64('s', 'n', 'a', 'k', 'e', 0, 0, 0);
 
 	p->oncreate = (void*)snake_create;
 	p->ondelete = (void*)snake_delete;

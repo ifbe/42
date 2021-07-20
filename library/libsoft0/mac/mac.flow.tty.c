@@ -16,34 +16,17 @@ static struct sysobj* obj;
 
 
 
-int uart_read(int fd, int off, void* buf, int len)
+void inituart(void* addr)
 {
-	int ret;
-	ret = read(fd, buf, len);
-	return ret;
+	obj = addr;
 }
-int uart_write(int fd, int off, void* buf, int len)
+void freeuart()
 {
-	int ret;
-	ret = write(fd, buf, len);
-	if(ret != len){
-		printf("err@write:%d,%d\n", ret, errno);
-	}
-	return ret;
 }
-int uart_list(char* buf, int len)
-{
-	return 0;
-}
-int uart_choose()
-{
-	return 0;
-}
-int uart_delete(int fd)
-{
-	close(fd);
-	return 0;
-}
+
+
+
+
 int uart_create(char* path, int speed)
 {
 	struct termios options;
@@ -111,14 +94,35 @@ int uart_create(char* path, int speed)
 
 	return fd;
 }
-
-
-
-
-void freeuart()
+int uart_delete(int fd)
 {
+	close(fd);
+	return 0;
 }
-void inituart(void* addr)
+int uart_search(char* buf, int len)
 {
-	obj = addr;
+	return 0;
+}
+int uart_modify()
+{
+	return 0;
+}
+
+
+
+
+int uart_take(_obj* oo,int xx, void* arg,int off, void* buf,int len)
+{
+	int fd = oo->fileinfo.fd;
+	int ret = read(fd, buf, len);
+	return ret;
+}
+int uart_give(_obj* oo,int xx, void* arg,int off, void* buf,int len)
+{
+	int fd = oo->fileinfo.fd;
+	int ret = write(fd, buf, len);
+	if(ret != len){
+		printf("err@write:%d,%d\n", ret, errno);
+	}
+	return ret;
 }

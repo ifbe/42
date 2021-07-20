@@ -1,8 +1,8 @@
 #include "libuser.h"
-#define A_PEERFOOT iw0
-#define B_PEERFOOT iwn
-#define KVAL fdata0
-#define LVAL fdata1
+#define A_PEERFOOT whdf.iw0
+#define B_PEERFOOT whdf.iwn
+#define KVAL listf32.f0
+#define LVAL listf32.f1
 struct joint{
 	float x;
 	float y;
@@ -19,35 +19,35 @@ struct joint{
 
 
 static void spring_draw_pixel(
-	struct entity* ent, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* ent, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void spring_draw_json(
-	struct entity* ent, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* ent, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void spring_draw_html(
-	struct entity* ent, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* ent, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void spring_draw_tui(
-	struct entity* ent, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* ent, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void spring_draw_cli(
-	struct entity* ent, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* ent, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-void spring_read_force(struct entity* ent, struct entity* sup, struct joint* jo, int len)
+void spring_read_force(_obj* ent, _obj* sup, struct joint* jo, int len)
 {
 	int a = ent->A_PEERFOOT - 'a';
 	int b = ent->B_PEERFOOT - 'a';
@@ -89,7 +89,7 @@ void spring_read_force(struct entity* ent, struct entity* sup, struct joint* jo,
 
 
 
-static void spring_read_a(struct entity* ent, int key, struct joint* jo, int thisone)
+static void spring_read_a(_obj* ent, int key, struct joint* jo, int thisone)
 {
 	if('R' != key)return;
 
@@ -119,7 +119,7 @@ static void spring_read_a(struct entity* ent, int key, struct joint* jo, int thi
 	jo[thisone].grady += dy/10000;
 	jo[thisone].gradz += dz/10000;
 }
-static void spring_read_b(struct entity* ent, int key, struct joint* jo, int thisone)
+static void spring_read_b(_obj* ent, int key, struct joint* jo, int thisone)
 {
 	if('R' != key)return;
 
@@ -151,7 +151,7 @@ static void spring_read_b(struct entity* ent, int key, struct joint* jo, int thi
 
 
 
-static void spring_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spring_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@spring_read: %.4s\n", &self->flag);
 	switch(stack[sp-1].flag){
@@ -160,7 +160,7 @@ static void spring_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 	case 'f':spring_read_force(ent,stack[sp-8].pchip, buf,len);break;
 	}
 }
-static void spring_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spring_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void spring_discon(struct halfrel* self, struct halfrel* peer)
@@ -169,7 +169,7 @@ static void spring_discon(struct halfrel* self, struct halfrel* peer)
 static void spring_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	//say("@spring_linkup: %.4s,%.4s\n", &self->flag, &peer->flag);
-	struct entity* ent = self->pchip;
+	_obj* ent = self->pchip;
 	switch(self->flag){
 		case 'a':ent->A_PEERFOOT = peer->flag;break;
 		case 'b':ent->B_PEERFOOT = peer->flag;break;
@@ -179,17 +179,17 @@ static void spring_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void spring_search(struct entity* ent)
+static void spring_search(_obj* ent)
 {
 }
-static void spring_modify(struct entity* ent)
+static void spring_modify(_obj* ent)
 {
 }
-static void spring_delete(struct entity* ent)
+static void spring_delete(_obj* ent)
 {
 	if(0 == ent)return;
 }
-static void spring_create(struct entity* ent, void* arg, int argc, u8** argv)
+static void spring_create(_obj* ent, void* arg, int argc, u8** argv)
 {
 	if(0 == ent)return;
 	int j;
@@ -207,10 +207,10 @@ static void spring_create(struct entity* ent, void* arg, int argc, u8** argv)
 
 
 
-void spring_register(struct entity* p)
+void spring_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('s', 'p', 'r', 'i', 'n','g', 0, 0);
+	p->hfmt = hex64('s', 'p', 'r', 'i', 'n','g', 0, 0);
 
 	p->oncreate = (void*)spring_create;
 	p->ondelete = (void*)spring_delete;

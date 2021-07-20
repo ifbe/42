@@ -1,7 +1,5 @@
 #include "libsoft.h"
-#define PERBUF buf0
-#define TO data2
-#define BY data3
+#define MAXCNT 16
 //
 #define _sent_ hex32('s','e','n','t')
 #define _done_ hex32('d','o','n','e')
@@ -25,10 +23,15 @@ struct peruser{
 	u32 hash_cur;		//until now
 	u8 head[0xe0];
 };
+struct perobj{
+	u64 sender;
+	u64 recver;
+	struct peruser* peruser;
+};
 int party_login(struct peruser* per, u32 name)
 {
 	int j;
-	for(j=0;j<16;j++){
+	for(j=0;j<MAXCNT;j++){
 		if(0 == per[j].sta_name)goto found;
 		if(name == per[j].sta_name)return -2;
 	}
@@ -50,7 +53,7 @@ found:
 int party_logout(struct peruser* per, u32 name)
 {
 	int j;
-	for(j=0;j<16;j++){
+	for(j=0;j<MAXCNT;j++){
 		if(name == per[j].sta_name)goto found;
 	}
 	return -1;
@@ -108,8 +111,8 @@ static int party_parse(u8* buf, int len, u64* to, u64* by, u32* cnt, u32* sum)
 
 int partyclient_write_sent(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf, int len)
 {
-	struct artery* art = self->pchip;
-	art->stage1 = _done_;
+	_obj* art = self->pchip;
+	art->vfmt = _done_;
 
 	//success or error
 	if(0 == ncmp(buf, "HTTP", 4)){
@@ -123,13 +126,13 @@ int partyclient_write_sent(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf, i
 int partyclient_write_done(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf,int len)
 {
 	//printmemory(buf, len);
-	struct artery* art = self->pchip;
+	_obj* art = self->pchip;
 	if(0 == art)return 0;
-	struct peruser* per = art->PERBUF;
-	if(0 == per)return 0;
+	struct perobj* perobj = (void*)art->priv_256b;
+	if(0 == perobj)return 0;
 
 while(1){
-	if(0 == per->sts){		//no packet yet
+	if(0 == perobj->peruser->sts){		//no packet yet
 		u64 to = 0;
 		u64 by = 0;
 		u32 cnt = 0;
@@ -152,33 +155,33 @@ while(1){
 		if(len < ret+cnt){		//head ok, body not
 			give_data_into_peer(art,_dst_, stack,sp, 0,0, buf+ret,len-ret);
 			give_data_into_peer(art,_std_, stack,sp, 0,0, buf+ret,len-ret);
-			per->dst_name = to;
-			per->sts = _data_;
-			per->len = cnt-(len-ret);
+			perobj->peruser->dst_name = to;
+			perobj->peruser->sts = _data_;
+			perobj->peruser->len = cnt-(len-ret);
 			return 0;
 		}
 	}
 	//else if(_head_ == per->sts){	//head still not complete
 	//}
-	else if(_data_ == per->sts){		//data still not complete
-		if(len == per->len){
+	else if(_data_ == perobj->peruser->sts){		//data still not complete
+		if(len == perobj->peruser->len){
 			give_data_into_peer(art,_dst_, stack,sp, 0,0, buf,len);
 			give_data_into_peer(art,_std_, stack,sp, 0,0, buf,len);
-			per->sts = 0;
+			perobj->peruser->sts = 0;
 			return 0;
 		}
-		if(len < per->len){
+		if(len < perobj->peruser->len){
 			give_data_into_peer(art,_dst_, stack,sp, 0,0, buf,len);
 			give_data_into_peer(art,_std_, stack,sp, 0,0, buf,len);
-			per->len -= len;
+			perobj->peruser->len -= len;
 			return 0;
 		}
-		if(len > per->len){
-			give_data_into_peer(art,_dst_, stack,sp, 0,0, buf,per->len);
-			give_data_into_peer(art,_std_, stack,sp, 0,0, buf,per->len);
-			per->sts = 0;
-			buf += per->len;
-			len -= per->len;
+		if(len > perobj->peruser->len){
+			give_data_into_peer(art,_dst_, stack,sp, 0,0, buf,perobj->peruser->len);
+			give_data_into_peer(art,_std_, stack,sp, 0,0, buf,perobj->peruser->len);
+			perobj->peruser->sts = 0;
+			buf += perobj->peruser->len;
+			len -= perobj->peruser->len;
 			continue;
 		}
 	}
@@ -194,7 +197,7 @@ while(1){
 	u32 cnt = 0;
 	int ret = party_parse(buf,len, &to, &by, &cnt);
 	say("to=%x,by=%x,cnt=%x,ret=%x,len=%x\n",to,by,cnt,ret,len);
-	if(to != art->BY)ret = 0;
+	if(to != art->SENDER)ret = 0;
 
 	give_data_into_peer(art,_std_, 0,0, buf+ret,len-ret);
 	give_data_into_peer(art,_dst_, 0,0, buf+ret,len-ret);
@@ -208,8 +211,9 @@ int partyclient_write_bydst(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf,i
 		return 0;
 	}
 
-	struct artery* art = self->pchip;
-	int ret = mysnprintf(tmp, 64, "to %.4s,by %.4s,cnt %x,sum %x:", &art->TO, &art->BY, len, party_sum(buf,len));
+	_obj* art = self->pchip;
+	struct perobj* perobj = (void*)art->priv_256b;
+	int ret = mysnprintf(tmp, 64, "to %.4s,by %.4s,cnt %x,sum %x:", &perobj->recver, &perobj->sender, len, party_sum(buf,len));
 	give_data_into_peer(art, _src_, stack,sp, 0,0, tmp,ret);
 	give_data_into_peer(art, _src_, stack,sp, 0,0, buf,len);
 	return 0;
@@ -222,8 +226,9 @@ int partyclient_write_bystd(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf,i
 		return 0;
 	}
 
-	struct artery* art = self->pchip;
-	int ret = mysnprintf(tmp, 64, "to %.4s,by %.4s,cnt 1,sum %x:", &art->TO, &art->BY,buf[0]);
+	_obj* art = self->pchip;
+	struct perobj* perobj = (void*)art->priv_256b;
+	int ret = mysnprintf(tmp, 64, "to %.4s,by %.4s,cnt 1,sum %x:", &perobj->recver, &perobj->sender, buf[0]);
 	tmp[ret] = buf[0];
 	give_data_into_peer(art, _src_, stack,sp, 0,0, tmp,ret+1);
 	return 0;
@@ -232,7 +237,7 @@ int partyclient_write_bystd(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf,i
 
 
 
-int partyclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int partyclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	//say("@partyclient_write: %.4s\n", &self->flag);
 	//printmemory(buf,len);
@@ -245,11 +250,11 @@ int partyclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int i
 	case _std_:partyclient_write_bystd(self,peer, stack,sp, buf,len);break;
 	case _dst_:partyclient_write_bydst(self,peer, stack,sp, buf,len);break;
 	case _src_:{
-		if(_done_ == art->stage1){
+		if(_done_ == art->vfmt){
 			partyclient_write_done(self,peer, stack,sp, buf,len);
 			break;
 		}
-		if(_sent_ == art->stage1){
+		if(_sent_ == art->vfmt){
 			partyclient_write_sent(self,peer, stack,sp, buf,len);
 			break;
 		}
@@ -259,7 +264,7 @@ int partyclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int i
 	}
 	return 0;
 }
-int partyclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int partyclient_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
@@ -269,29 +274,30 @@ int partyclient_discon(struct halfrel* self, struct halfrel* peer)
 }
 int partyclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	struct artery* art = self->pchip;
-	struct sysobj* obj = peer->pchip;
-	if( (_sys_ == obj->tier) && (_tcp_ == obj->type) ){
+	_obj* sock = peer->pchip;
+	if( (_sys_ == sock->tier) && (_tcp_ == sock->type) ){
 		int ret;
 		u8 tmp[64];
+		_obj* art = self->pchip;
+		struct perobj* perobj = (void*)art->priv_256b;
 		ret = mysnprintf(tmp,64,
 "dear party:\n"
 "I volunteer to join\n"
 "myid %.4s\n"
 "your %.4s\n",
-&art->BY,
-&art->TO
+&perobj->sender,
+&perobj->recver
 		);
 		give_data_into_peer(art,_src_, 0,0, 0,0, tmp,ret);
-		art->stage1 = _sent_;
+		art->vfmt = _sent_;
 	}
 	return 0;
 }
-int partyclient_delete(struct artery* ele)
+int partyclient_delete(_obj* ele)
 {
 	return 0;
 }
-int partyclient_create(struct artery* ele, void* arg, int argc, u8** argv)
+int partyclient_create(_obj* ele, void* arg, int argc, u8** argv)
 {
 	int j;
 	u64 to = 0;
@@ -302,31 +308,32 @@ int partyclient_create(struct artery* ele, void* arg, int argc, u8** argv)
 	}
 	say("to=%llx,by=%llx\n", to, by);
 
-	ele->TO = to;
-	ele->BY = by;
+	struct perobj* perobj = (void*)ele->priv_256b;
+	perobj->recver = to;
+	perobj->sender = by;
+	perobj->peruser = memorycreate(0x1000, 0);
 
-	ele->PERBUF = memorycreate(0x1000, 0);
-	ele->stage1 = 0;
+	ele->vfmt = 0;
 	return 0;
 }
 
 
 
 
-int partyserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int partyserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	say("@partyserver_write\n");
 	return 0;
 }
-int partyserver_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int partyserver_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int partyserver_delete(struct artery* ele)
+int partyserver_delete(_obj* ele)
 {
 	return 0;
 }
-int partyserver_create(struct artery* ele, u8* url)
+int partyserver_create(_obj* ele, u8* url)
 {
 	return 0;
 }
@@ -339,7 +346,7 @@ int partymaster_write_other(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf, 
 	say("@partymaster_write_other: foot=%.4s,len=%x\n", &self->flag, len);
 	printmemory(buf, 0x20);
 
-	struct artery* art = self->pchip;
+	_obj* art = self->pchip;
 	if(0 == art)return 0;
 	struct peruser* per = self->pfoot;
 	if(0 == per)return 0;
@@ -452,14 +459,12 @@ int partymaster_write_first(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf, 
 	int j,k,ret;
 	u64 name;
 	u8 tmp[256];
-	struct artery* art = self->pchip;
-	struct sysobj* sys = peer->pchip;
-
-	struct peruser* per = art->PERBUF;
-	if(0 == per)return 0;
-
-	//if TCP error: return
-	if(0 == sys->tempobj)return 0;
+	struct perobj* perobj;
+	struct peruser* peruser;
+	_obj* art = self->pchip;
+	_obj* sys = peer->pchip;
+	_obj* xxx = sys->sockinfo.child;
+	if(0 == xxx)return 0;
 
 	//if not party: report state, close
 	if(0 != ncmp(buf, "dear party:\n", 12))goto fail;
@@ -478,12 +483,16 @@ int partymaster_write_first(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf, 
 	return 0;
 
 found:
+	perobj = (void*)art->priv_256b;
+	peruser = perobj->peruser;
+	if(0 == peruser)return 0;
+
 	//check valid name
-	ret = party_login(per, name);
+	ret = party_login(peruser, name);
 	if(ret < 0)goto fail;
 
 	//if not connected: connect
-	relationcreate(art, &per[ret], _art_, name, sys->tempobj, 0, _sys_, _dst_);
+	relationcreate(art, &peruser[ret], _art_, name, xxx, 0, _sys_, _dst_);
 
 	//send status messge
 	ret = mysnprintf(tmp, 128,
@@ -501,26 +510,26 @@ fail:
 "party client:\n"
 	);
 	for(j=0;j<16;j++){
-		if(per[j].sta_name)ret += mysnprintf(
+		if(peruser[j].sta_name)ret += mysnprintf(
 			tmp+ret, 250-ret,
-			"%d: %.4s\n", j, &per[j].sta_name
+			"%d: %.4s\n", j, &peruser[j].sta_name
 		);
 	}
 	give_data_into_peer(art,self->flag, stack,sp, 0,0, tmp,ret);
-	systemdelete(sys->tempobj);
+	systemdelete(xxx);
 	return 0;
 }
 
 
 
 
-int partymaster_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int partymaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	//say("@partymaster_write\n");
 	if(0==stack|sp<2)return 0;
 	struct halfrel* self = &stack[sp-1];
 	struct halfrel* peer = &stack[sp-2];
-	struct sysobj* sys = peer->pchip;
+	_obj* sys = peer->pchip;
 
 	//printmemory(buf, len);
 	//say("valid message:%.*s", len, buf);
@@ -535,16 +544,17 @@ int partymaster_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int i
 	}
 	return 0;
 }
-int partymaster_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int partymaster_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
 int partymaster_discon(struct halfrel* self, struct halfrel* peer)
 {
 	say("@partymaster_discon\n");
-	struct artery* art = self->pchip;
-	struct peruser* per = art->PERBUF;
-	party_logout(per, self->flag);
+	_obj* art = self->pchip;
+	struct perobj* perobj = (void*)art->priv_256b;
+	struct peruser* peruser = perobj->peruser;
+	party_logout(peruser, self->flag);
 	return 0;
 }
 int partymaster_linkup(struct halfrel* self, struct halfrel* peer)
@@ -552,12 +562,13 @@ int partymaster_linkup(struct halfrel* self, struct halfrel* peer)
 	say("@partymaster_linkup\n");
 	return 0;
 }
-int partymaster_delete(struct artery* ele)
+int partymaster_delete(_obj* ele)
 {
 	return 0;
 }
-int partymaster_create(struct artery* ele, u8* url)
+int partymaster_create(_obj* ele, u8* url)
 {
-	ele->PERBUF = memorycreate(0x100000, 0);
+	struct perobj* perobj = (void*)ele->priv_256b;
+	perobj->peruser = memorycreate(0x100000, 0);
 	return 0;
 }

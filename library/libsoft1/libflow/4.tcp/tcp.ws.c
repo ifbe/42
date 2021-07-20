@@ -87,11 +87,11 @@ int websocket_clientwrite(u8* buf, int len, u8* dst, int max)
 
 
 
-int wsclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int wsclient_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int wsclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int wsclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	int ret;
 	u8 tmp[0x1000];
@@ -106,7 +106,7 @@ int wsclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 		give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
 		break;
 	case _src_:
-		if(0 == art->stage1)
+		if(0 == art->vfmt)
 		{
 		/*	say("ws.serverhello={\n"
 				"%.*s"
@@ -116,7 +116,7 @@ int wsclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 			//parse serverhello
 			//websocket_clientread_handshake();
 
-			art->stage1 = 1;
+			art->vfmt = 1;
 		}
 		else{
 			ret = websocket_clientread(buf, len, 0, 0);
@@ -144,15 +144,15 @@ int wsclient_linkup(struct halfrel* self, struct halfrel* peer)
 	}
 	return 0;
 }
-int wsclient_delete(struct artery* ele)
+int wsclient_delete(_obj* ele)
 {
 	//unlink
 	//delete
 	return 0;
 }
-int wsclient_create(struct artery* ele, u8* url)
+int wsclient_create(_obj* ele, u8* url)
 {
-	ele->stage1 = 0;
+	ele->vfmt = 0;
 	return 1;
 }
 
@@ -361,11 +361,11 @@ int websocket_serverwrite_head(u8* buf, int len, u8* dst, int max)
 
 
 
-int wsserver_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int wsserver_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int wsserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int wsserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	int ret;
 	u8 tmp[0x1000];
@@ -381,8 +381,8 @@ int wsserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 		give_data_into_peer(art,_src_, stack,sp, 0,0, buf,len);
 		break;
 	case _src_:
-		if(0 == art->stage1){
-			art->stage1 = 1;
+		if(0 == art->vfmt){
+			art->vfmt = 1;
 		/*	say("ws.clienthello={\n"
 				"%.*s"
 				"}=ws.clienthello\n",
@@ -395,7 +395,7 @@ int wsserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 			//on clienthello do something
 			//blen = mysnprintf(tmp, 0x1000, "Who dare summon me ?!");
 
-			art->stage1 = 1;
+			art->vfmt = 1;
 		}
 		else{
 			ret = websocket_serverread_head(buf, len, tmp, 0x1000);
@@ -415,36 +415,36 @@ int wsserver_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int wsserver_delete(struct artery* ele)
+int wsserver_delete(_obj* ele)
 {
 	return 0;
 }
-int wsserver_create(struct artery* ele, u8* url)
+int wsserver_create(_obj* ele, u8* url)
 {
-	ele->stage1 = 0;
+	ele->vfmt = 0;
 	return 0;
 }
 
 
 
 
-int wsmaster_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int wsmaster_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int wsmaster_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int wsmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	say("@wsserver_write: %llx, %.4s, %d\n", art, &foot, len);
     printmemory(buf, len<16?len:16);
 
 	//socket: parent,child
-	struct sysobj* obj = stack[sp-2].pchip;
+	_obj* obj = stack[sp-2].pchip;
 	if(0 == obj)return 0;
-	struct sysobj* Tcp = obj->tempobj;
+	_obj* Tcp = obj->sockinfo.child;
 	if(0 == Tcp)return 0;
 
 	//server
-	struct artery* Ws = arterycreate(_Ws_, 0, 0, 0);
+	_obj* Ws = arterycreate(_Ws_, 0, 0, 0);
 	if(0 == Ws)return 0;
 
 	//socket -> server
@@ -455,16 +455,16 @@ int wsmaster_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 	wsserver_write(Ws,0, stack,sp, 0,0, buf,len);
 
 	//server -> ???
-	switch(art->name){
+	switch(art->hfmt){
 	case _echo_:{
-		struct artery* echo = arterycreate(_echo_, 0, 0, 0);
+		_obj* echo = arterycreate(_echo_, 0, 0, 0);
 		if(0 == echo)break;
 		relationcreate(Ws, 0, _art_, _dst_, echo, 0, _art_, _src_);
 		//relationstart(&rel->srcchip, &rel->dstchip);
 		break;
 	}//echo
 	case _ptmx_:{
-		struct sysobj* ptmx = systemcreate(_ptmx_, "/dev/ptmx", 0, 0);
+		_obj* ptmx = systemcreate(_ptmx_, "/dev/ptmx", 0, 0);
 		if(0 == ptmx)break;
 		relationcreate(Ws, 0, _art_, _dst_, ptmx, 0, _sys_, _dst_);
 		//relationstart(&rel->srcchip, &rel->dstchip);
@@ -484,23 +484,23 @@ int wsmaster_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int wsmaster_delete(struct artery* ele)
+int wsmaster_delete(_obj* ele)
 {
 	return 0;
 }
-int wsmaster_create(struct artery* ele, u8* url)
+int wsmaster_create(_obj* ele, u8* url)
 {
 	if(0 == url)goto none;
 	if(0 == ncmp(url, "echo", 4)){
-		ele->name = _echo_;
+		ele->hfmt = _echo_;
 		return 0;
 	}
 	if(0 == ncmp(url, "ptmx", 4)){
-		ele->name = _ptmx_;
+		ele->hfmt = _ptmx_;
 		return 0;
 	}
 
 none:
-	ele->name = 0;
+	ele->hfmt = 0;
 	return 0;
 }

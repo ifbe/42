@@ -31,7 +31,7 @@ static int alive = 1;
 
 
 
-void* visionlistener(struct supply* win)
+void* visionlistener(_obj* win)
 {
 	struct halfrel stack[0x80];
 
@@ -214,12 +214,12 @@ int videostart()
 {
 	return 0;
 }
-int videodelete(struct supply* win)
+int videodelete(_obj* win)
 {
 	alive = 0;
 	return 0;
 }
-int videocreate(struct supply* win, void* arg, int argc, u8** argv)
+int videocreate(_obj* win, void* arg, int argc, u8** argv)
 {
 	int j;
 	for(j=0;j<24;j++)info[j].addr = 0;

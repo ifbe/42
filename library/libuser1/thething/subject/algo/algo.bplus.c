@@ -51,7 +51,7 @@ static struct bplusleaf node[16];
 
 
 
-static void printnode(struct entity* win, struct bplushead* this, int x, int y,
+static void printnode(_obj* win, struct bplushead* this, int x, int y,
 	int cx, int cy, int ww, int hh)
 {
 	int j,k,len;
@@ -108,8 +108,8 @@ static void printnode(struct entity* win, struct bplushead* this, int x, int y,
 	}
 }
 static void bplus_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	struct bplusleaf* node;
 	struct bplushead* right;
@@ -119,7 +119,7 @@ static void bplus_draw_pixel(
 	int hh = sty->fs.vf[1];
 	drawsolid_rect(win, 0x222222, cx-ww, cy-hh, cx+ww, cy+hh);
 
-	node = act->buf0;
+	node = act->listptr.buf0;
 	if(node == 0)return;
 	right = bplus_getparent(node, node);
 	if(right == 0)return;
@@ -128,28 +128,28 @@ static void bplus_draw_pixel(
 	printnode(win, right, cx, 1, cx, cy, ww, hh);
 }
 static void bplus_draw_gl41(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void bplus_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void bplus_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void bplus_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void bplus_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("tree(%x,%x,%x)\n",win,act,sty);
 }
@@ -158,8 +158,8 @@ static void bplus_draw_cli(
 
 
 static void bplus_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
 	u64 type = ev->what;
@@ -176,10 +176,10 @@ static void bplus_event(
 
 
 
-static void bplus_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void bplus_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void bplus_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void bplus_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void bplus_discon(struct halfrel* self, struct halfrel* peer)
@@ -192,31 +192,31 @@ static void bplus_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void bplus_search(struct entity* act)
+static void bplus_search(_obj* act)
 {
 }
-static void bplus_modify(struct entity* act)
+static void bplus_modify(_obj* act)
 {
 }
-static void bplus_delete(struct entity* act)
-{
-	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf0);
-}
-static void bplus_create(struct entity* act)
+static void bplus_delete(_obj* act)
 {
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf0 = node;
-	if(_copy_ == act->type)act->buf0 = memorycreate(0x80*16, 0);
+	if(_copy_ == act->type)memorydelete(act->listptr.buf0);
+}
+static void bplus_create(_obj* act)
+{
+	if(0 == act)return;
+	if(_orig_ == act->type)act->listptr.buf0 = node;
+	if(_copy_ == act->type)act->listptr.buf0 = memorycreate(0x80*16, 0);
 }
 
 
 
 
-void bplus_register(struct entity* p)
+void bplus_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('b', 'p', 'l', 'u', 's', 0, 0, 0);
+	p->hfmt = hex64('b', 'p', 'l', 'u', 's', 0, 0, 0);
 
 	p->oncreate = (void*)bplus_create;
 	p->ondelete = (void*)bplus_delete;

@@ -3,11 +3,11 @@
 
 
 
-static void theeye_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void theeye_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@theeye_read\n");
 }
-static void theeye_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void theeye_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void theeye_discon(struct halfrel* self, struct halfrel* peer)
@@ -20,26 +20,26 @@ static void theeye_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void theeye_search(struct entity* act)
+static void theeye_search(_obj* act)
 {
 }
-static void theeye_modify(struct entity* act)
+static void theeye_modify(_obj* act)
 {
 }
-static void theeye_delete(struct entity* act)
+static void theeye_delete(_obj* act)
 {
 }
-static void theeye_create(struct entity* act, void* str)
+static void theeye_create(_obj* act, void* str)
 {
 }
 
 
 
 
-void theeye_register(struct entity* p)
+void theeye_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('t', 'h', 'e', 'e', 'y', 'e', 0, 0);
+	p->hfmt = hex64('t', 'h', 'e', 'e', 'y', 'e', 0, 0);
 
 	p->oncreate = (void*)theeye_create;
 	p->ondelete = (void*)theeye_delete;

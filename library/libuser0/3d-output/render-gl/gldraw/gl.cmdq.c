@@ -20,13 +20,13 @@
 
 
 #define _clr_ hex32('c','l','r',0)
-void cmdqwindow_execute(_sup* wnd)
+void cmdqwindow_execute(_obj* wnd)
 {
 	int j;
-	float w = wnd->fbwidth;
-	float h = wnd->fbheight;
-	u64* data = wnd->gl41cmdq_data;
-	u64* code = wnd->gl41cmdq_code;
+	float w = wnd->whdf.fbwidth;
+	float h = wnd->whdf.fbheight;
+	u64* data = wnd->gl41cmdq.data;
+	u64* code = wnd->gl41cmdq.code;
 	for(j=0;j<1;j++){
 		say("code[0] = %.4s\n", &code[0]);
 		switch(code[0]){
@@ -54,7 +54,7 @@ void cmdqwindow_execute(_sup* wnd)
 
 
 
-void cmdqwindow_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
+void cmdqwindow_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
 	struct relation* rel = wnd->orel0;
 	while(1){
@@ -67,17 +67,17 @@ void cmdqwindow_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd
 
 	cmdqwindow_execute(wnd);
 }
-void cmdqwindow_give(_sup* win,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void cmdqwindow_give(_obj* win,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 }
-void cmdqwindow_delete(struct supply* ogl)
+void cmdqwindow_delete(_obj* ogl)
 {
 }
-void cmdqwindow_create(struct supply* ogl)
+void cmdqwindow_create(_obj* ogl)
 {
-	ogl->fmt = _gl41cmdq_;
-	ogl->vfmt= _gl41cmdq_;
+	ogl->hfmt = _gl41cmdq_;
+	ogl->vfmt = _gl41cmdq_;
 
-	ogl->gl41cmdq_data = memorycreate(0x100000, 0);
-	ogl->gl41cmdq_code = memorycreate(0x100000, 0);
+	ogl->gl41cmdq.data = memorycreate(0x100000, 0);
+	ogl->gl41cmdq.code = memorycreate(0x100000, 0);
 }

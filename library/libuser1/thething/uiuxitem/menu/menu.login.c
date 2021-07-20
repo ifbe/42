@@ -5,14 +5,14 @@
 
 
 static void login_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void login_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	int j;
 	vec3 tc,tr,tf;
@@ -54,33 +54,33 @@ static void login_draw_gl41(
 	gl41string_center(ctx, 0xffffff, tc, tr, tf, (void*)"password", 8);
 }
 static void login_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void login_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void login_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void login_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
 
 
 
-static void login_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void login_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	login_draw_gl41(ent,slot, wor,geom, wnd,area);
@@ -89,12 +89,12 @@ static void login_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void login_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void login_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* wnd = stack[sp-2].pchip;
+	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _gl41list_:
 		break;
 	default:
@@ -102,7 +102,7 @@ static void login_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 		break;
 	}
 }
-static void login_giving(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void login_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void login_discon(struct halfrel* self, struct halfrel* peer)
@@ -115,18 +115,18 @@ static void login_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void login_search(struct entity* act)
+static void login_search(_obj* act)
 {
 }
-static void login_modify(struct entity* act)
+static void login_modify(_obj* act)
 {
 }
-static void login_delete(struct entity* act)
+static void login_delete(_obj* act)
 {
 	if(0 == act)return;
 	//if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void login_create(struct entity* act)
+static void login_create(_obj* act)
 {
 	if(0 == act)return;
 	//if(_orig_ == act->type)act->buf = buffer;
@@ -136,10 +136,10 @@ static void login_create(struct entity* act)
 
 
 
-void login_register(struct entity* p)
+void login_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('l', 'o', 'g', 'i', 'n', 0, 0, 0);
+	p->hfmt = hex64('l', 'o', 'g', 'i', 'n', 0, 0, 0);
 
 	p->oncreate = (void*)login_create;
 	p->ondelete = (void*)login_delete;

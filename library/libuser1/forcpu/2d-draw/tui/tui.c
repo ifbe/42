@@ -3,12 +3,12 @@
 
 
 
-void gentui_rect(struct entity* win, u32 rgb, int x0, int y0, int x1, int y1)
+void gentui_rect(_obj* win, u32 rgb, int x0, int y0, int x1, int y1)
 {
 	int x,y;
-	int width = win->width;
-	int height = win->height;
-	u8* buf = (u8*)(win->textbuf);
+	int width = win->whdf.width;
+	int height = win->whdf.height;
+	u8* buf = (u8*)(win->tuitext.buf);
 
 	for(y=y0;y<=y1;y++)
 	{
@@ -18,12 +18,12 @@ void gentui_rect(struct entity* win, u32 rgb, int x0, int y0, int x1, int y1)
 		}
 	}
 }
-void gentui_utf8(struct entity* win, u32 rgb, int x, int y, u8* utf, int len)
+void gentui_utf8(_obj* win, u32 rgb, int x, int y, u8* utf, int len)
 {
 	int j;
-	int width = win->width;
-	int height = win->height;
-	u8* buf = (u8*)(win->textbuf);
+	int width = win->whdf.width;
+	int height = win->whdf.height;
+	u8* buf = (u8*)(win->tuitext.buf);
 	if(utf == 0)return;
 	if(len == 0)while(utf[len] != 0)len++;
 
@@ -31,17 +31,17 @@ void gentui_utf8(struct entity* win, u32 rgb, int x, int y, u8* utf, int len)
 	for(j=0;j<len;j++)buf[4*(y*width+x) + j] = utf[j];
 	for(;j<6;j++)buf[4*(y*width+x) + j] = 0;
 }
-void gentui_str(struct entity* win, u32 rgb, int x, int y, u8* str, int len)
+void gentui_str(_obj* win, u32 rgb, int x, int y, u8* str, int len)
 {
 	int j;
-	int width = win->width;
-	int height = win->height;
-	u8* buf = (u8*)(win->textbuf);
+	int width = win->whdf.width;
+	int height = win->whdf.height;
+	u8* buf = (u8*)(win->tuitext.buf);
 	if(str == 0)return;
 	if(len == 0)while(str[len] != 0)len++;
 	for(j=0;j<len;j++)buf[4*(y*width+x+j)] = str[j];
 }
-void gentui_text(struct entity* win, u32 rgb, int x, int y, u8* buf, int len)
+void gentui_text(_obj* win, u32 rgb, int x, int y, u8* buf, int len)
 {
 	int j, k;
 	int cc, dy;
@@ -65,7 +65,7 @@ void gentui_text(struct entity* win, u32 rgb, int x, int y, u8* buf, int len)
 		dy++;
 	}
 }
-void gentui_decstr(struct entity* win, u32 rgb, int x, int y, int data)
+void gentui_decstr(_obj* win, u32 rgb, int x, int y, int data)
 {
 	u8 str[16];
 	int len = data2decstr(data, str);
@@ -75,14 +75,14 @@ void gentui_decstr(struct entity* win, u32 rgb, int x, int y, int data)
 
 
 
-int tuinode_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int tuinode_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//gentui_rect(wnd, 4, 0, 0, 80, 25);
 	//gentui_str(wnd, 1, 0, 0, (void*)"fuck", 4);
 	int x,y;
-	int www = wnd->width;
-	int hhh = wnd->height;
-	u8* tmp = wnd->textbuf;
+	int www = wnd->whdf.width;
+	int hhh = wnd->whdf.height;
+	u8* tmp = wnd->tuitext.buf;
 	for(y=0;y<hhh;y++){
 		for(x=0;x<www;x++){
 			tmp[(www*y + x)*4 + 0] = ' ';
@@ -108,7 +108,7 @@ int tuinode_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, vo
 	}
 	return 0;
 }
-int tuinode_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int tuinode_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }

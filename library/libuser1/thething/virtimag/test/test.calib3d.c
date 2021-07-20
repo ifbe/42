@@ -4,7 +4,17 @@
 #define vbuf buf2
 #define ibuf buf3
 #define _data_ hex32('d','a','t','a')
-struct mag_minmax{
+struct perobj{
+	void* nbuf;
+	void* wbuf;
+	void* vbuf;
+	void* ibuf;
+
+	int nlen;
+	int wlen;
+	int vlen;
+	int ilen;
+
 	float xmin;
 	float xmax;
 	float ymin;
@@ -35,8 +45,8 @@ GLSL_VERSION
 
 
 static void calib3d_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -48,36 +58,36 @@ static void calib3d_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = win->whdf.width/2;
+		cy = win->whdf.height/2;
+		ww = win->whdf.width/2;
+		hh = win->whdf.height/2;
 	}
 }
 static void calib3d_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* wrl, struct style* geom,
-	struct entity* wnd, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* wrl, struct style* geom,
+	_obj* wnd, struct style* area)
 {
 }
 static void calib3d_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void calib3d_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void calib3d_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void calib3d_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 
@@ -85,14 +95,14 @@ static void calib3d_draw_cli(
 
 
 static void calib3d_data(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
 	float* buf, int len)
 {
 	int j;
-	int t = act->vlen;
-	float* f = act->vbuf;
-	struct mag_minmax* priv = act->buf0;
+	struct perobj* perobj = (void*)act->priv_256b;
+	int t = perobj->vlen;
+	float* f = perobj->vbuf;
 	//say("@calib3d_data:%d\n", len);
 
 	for(j=0;j<len;j+=3){
@@ -100,24 +110,24 @@ static void calib3d_data(
 		f[3*t + j+1] = buf[j+1];
 		f[3*t + j+2] = buf[j+2];
 	}
-	act->vlen = (act->vlen + len/3) % 0x10000;
+	perobj->vlen = (perobj->vlen + len/3) % 0x10000;
 
-	if(buf[0] < priv->xmin)priv->xmin = buf[0];
-	if(buf[0] > priv->xmax)priv->xmax = buf[0];
-	if(buf[1] < priv->ymin)priv->ymin = buf[1];
-	if(buf[1] > priv->ymax)priv->ymax = buf[1];
-	if(buf[2] < priv->zmin)priv->zmin = buf[2];
-	if(buf[2] > priv->zmax)priv->zmax = buf[2];
-	say("%f,%f,%f,%f,%f,%f\n",priv->xmin,priv->xmax,priv->ymin,priv->ymax,priv->zmin,priv->zmax);
+	if(buf[0] < perobj->xmin)perobj->xmin = buf[0];
+	if(buf[0] > perobj->xmax)perobj->xmax = buf[0];
+	if(buf[1] < perobj->ymin)perobj->ymin = buf[1];
+	if(buf[1] > perobj->ymax)perobj->ymax = buf[1];
+	if(buf[2] < perobj->zmin)perobj->zmin = buf[2];
+	if(buf[2] > perobj->zmax)perobj->zmax = buf[2];
+	say("%f,%f,%f,%f,%f,%f\n",perobj->xmin,perobj->xmax,perobj->ymin,perobj->ymax,perobj->zmin,perobj->zmax);
 }
 
 
 
 
-static void calib3d_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+static void calib3d_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -127,7 +137,7 @@ static void calib3d_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void calib3d_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void calib3d_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -136,10 +146,10 @@ static void calib3d_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 	}
 
 	//caller defined behavior
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -149,7 +159,7 @@ static void calib3d_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void calib3d_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void calib3d_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void calib3d_discon(struct halfrel* self, struct halfrel* peer)
@@ -160,9 +170,9 @@ static void calib3d_linkup(struct halfrel* self, struct halfrel* peer)
 	struct datapair* pair;
 	struct mysrc* src;
 	struct gldst* dst;
-	struct entity* act = (void*)(self->chip);
+	_obj* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
+	_obj* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	if(_data_ == self->flag)return;
 /*
@@ -203,65 +213,68 @@ static void calib3d_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void calib3d_search(struct entity* act)
+static void calib3d_search(_obj* act)
 {
 }
-static void calib3d_modify(struct entity* act)
+static void calib3d_modify(_obj* act)
 {
 }
-static void calib3d_delete(struct entity* act)
+static void calib3d_delete(_obj* act)
 {
 	if(0 == act)return;
-	if(act->ibuf){
-		memorydelete(act->ibuf);
-		act->ibuf = 0;
+
+	struct perobj* perobj = (void*)act->priv_256b;
+	if(perobj->ibuf){
+		memorydelete(perobj->ibuf);
+		perobj->ibuf = 0;
 	}
-	if(act->vbuf){
-		memorydelete(act->vbuf);
-		act->vbuf = 0;
+	if(perobj->vbuf){
+		memorydelete(perobj->vbuf);
+		perobj->vbuf = 0;
 	}
 }
-static void calib3d_create(struct entity* act, void* str)
+static void calib3d_create(_obj* act, void* str)
 {
 	int j;
 	u16* uu;
 	float* ff;
 	struct mag_minmax* priv;
 	if(0 == act)return;
-	if(act->vbuf)return;
-	if(act->ibuf)return;
 
-	act->vlen = 0;
+	struct perobj* perobj = (void*)act->priv_256b;
+	if(perobj->vbuf)return;
+	if(perobj->ibuf)return;
 
-	ff = act->vbuf = memorycreate(4*3*0x10000, 0);
+	perobj->vlen = 0;
+
+	ff = perobj->vbuf = memorycreate(4*3*0x10000, 0);
 	for(j=0;j<0x10000;j++){
 		ff[j*3 + 0] = 0.0;
 		ff[j*3 + 1] = 0.0;
 		ff[j*3 + 2] = j;
 	}
 
-	uu = act->ibuf = memorycreate(2*2*0x10000, 0);
+	uu = perobj->ibuf = memorycreate(2*2*0x10000, 0);
 	for(j=0;j<0xffff;j++){
 		uu[j*2 + 0] = j;
 		uu[j*2 + 1] = j+1;
 	}
 
-	priv = act->buf0 = memorycreate(sizeof(struct mag_minmax), 0);
-	priv->xmin = 99999.0;
-	priv->xmax = -99999.0;
-	priv->ymin = 99999.0;
-	priv->ymax = -99999.0;
-	priv->zmin = 99999.0;
-	priv->zmax = -99999.0;
+	perobj->xmin = 99999.0;
+	perobj->xmax = -99999.0;
+	perobj->ymin = 99999.0;
+	perobj->ymax = -99999.0;
+	perobj->zmin = 99999.0;
+	perobj->zmax = -99999.0;
 }
 
 
 
 
-void calib3d_register(struct entity* p)
+void calib3d_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('c', 'a', 'l', 'i', 'b', '3', 'd', 0);
+	p->hfmt = hex64('c', 'a', 'l', 'i', 'b', '3', 'd', 0);
 
 	p->oncreate = (void*)calib3d_create;
 	p->ondelete = (void*)calib3d_delete;

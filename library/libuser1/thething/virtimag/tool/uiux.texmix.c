@@ -1,9 +1,9 @@
 #include "libuser.h"
-#define CTXBUF buf0
-void gl41data_before(struct entity* wnd);
-void gl41data_after(struct entity* wnd);
-void gl41data_01cam(struct entity* wnd);
-void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
+#define CTXBUF listptr.buf0
+void gl41data_before(_obj* wnd);
+void gl41data_after(_obj* wnd);
+void gl41data_01cam(_obj* wnd);
+void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 
 
 
@@ -71,9 +71,9 @@ void texmix_ctxforwnd(struct gl41data* data)
 	data->src.vbuf_enq = 42;
 }
 static void texmix_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* scn, struct style* geom,
-	struct entity* ctx, struct style* area)
+	_obj* act, struct style* slot,
+	_obj* scn, struct style* geom,
+	_obj* ctx, struct style* area)
 {
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -135,10 +135,10 @@ static void texmix_draw_gl41(
 
 
 
-static int texmix_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static int texmix_search(_obj* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 	struct relation* rel;
-	struct entity* world;
+	_obj* world;
 
 	rel = act->irel0;
 	while(1){
@@ -153,14 +153,14 @@ static int texmix_search(struct entity* act, u32 foot, struct halfrel* self[], s
 	}
 	return 0;
 }
-static void texmix_modify(struct entity* act)
+static void texmix_modify(_obj* act)
 {
 }
-static void texmix_delete(struct entity* act)
+static void texmix_delete(_obj* act)
 {
 	if(0 == act)return;
 }
-static void texmix_create(struct entity* act, void* str)
+static void texmix_create(_obj* act, void* str)
 {
 	if(0 == act)return;
 
@@ -173,28 +173,28 @@ static void texmix_create(struct entity* act, void* str)
 
 
 static void texmix_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void texmix_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void texmix_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void texmix_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 }
 static void texmix_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
 {
 	say("texmix(%x,%x,%x)\n",win,act,sty);
 }
@@ -202,10 +202,10 @@ static void texmix_draw_cli(
 
 
 
-static void texmix_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key)
+static void texmix_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key)
 {
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
 	if(0 == stack)return;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
@@ -213,7 +213,7 @@ static void texmix_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* ar
 	texmix_draw_gl41(ent,slot, wor,geom, wnd,area);
 //say("@freecam_read_byeye.end\n");
 }
-static void texmix_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
+static void texmix_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
 {
 	struct fstyle fs;
 	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
@@ -228,13 +228,13 @@ static void texmix_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct sty
 
 
 
-static int texmix_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int texmix_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* wnd = stack[sp-2].pchip;
+	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 	if(0 == stack)return 0;
 
-	switch(wnd->fmt){
+	switch(wnd->hfmt){
 	case _gl41list_:
 		texmix_read_bywnd(ent,slot, wnd,area);
 		break;
@@ -244,7 +244,7 @@ static int texmix_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 	}
 	return 0;
 }
-static void texmix_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void texmix_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void texmix_discon(struct halfrel* self, struct halfrel* peer)
@@ -257,10 +257,10 @@ static void texmix_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-void texmix_register(struct entity* p)
+void texmix_register(_obj* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('t', 'e', 'x', 'm', 'i', 'x', 0, 0);
+	p->hfmt = hex64('t', 'e', 'x', 'm', 'i', 'x', 0, 0);
 
 	p->oncreate = (void*)texmix_create;
 	p->ondelete = (void*)texmix_delete;

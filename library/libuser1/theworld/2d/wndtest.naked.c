@@ -3,7 +3,7 @@
 
 
 
-int rgbanode_draw(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int rgbanode_draw(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//pixel_clearcolor(wnd);
 
@@ -26,12 +26,12 @@ next:
 
 	return 0;
 }
-int rgbanode_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int rgbanode_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return 0;
 	rgbanode_draw(wnd,foot, stack,sp, arg,key, buf,len);
 /*
-	struct entity* caller;struct style* area;
+	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	//slot type known: do work based on slot type
@@ -39,7 +39,7 @@ int rgbanode_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, v
 	//}
 
 	//slot type unknown: do work based on caller fmt
-	switch(caller->fmt){
+	switch(caller->hfmt){
 	case _gl41list_:
 		break;
 	default:
@@ -48,7 +48,7 @@ int rgbanode_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, v
 */
 	return 0;
 }
-int rgbanode_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int rgbanode_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@rgbanode_write:%p,%x\n", wnd,foot);
 	//printmemory(buf,16);
@@ -85,11 +85,11 @@ int rgbanode_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, v
 	}
 	return 0;
 }
-int rgbanode_discon(struct supply* win, struct style* sty)
+int rgbanode_discon(_obj* win, struct style* sty)
 {
 	return 0;
 }
-int rgbanode_linkup(struct supply* twig, void* tf, struct supply* root, void* rf)
+int rgbanode_linkup(_obj* twig, void* tf, _obj* root, void* rf)
 {
 	return 0;
 }
@@ -98,15 +98,15 @@ int rgbanode_linkup(struct supply* twig, void* tf, struct supply* root, void* rf
 
 
 
-int rgbanode_search(struct supply* win)
+int rgbanode_search(_obj* win)
 {
 	return 0;
 }
-int rgbanode_modify(struct supply* win)
+int rgbanode_modify(_obj* win)
 {
 	return 0;
 }
-int rgbanode_delete(struct supply* win)
+int rgbanode_delete(_obj* win)
 {
 	return 0;
 }

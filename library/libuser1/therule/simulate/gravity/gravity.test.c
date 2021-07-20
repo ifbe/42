@@ -1,7 +1,7 @@
 #include "libuser.h"
-#define TIME data0
-#define FLAG data1
-#define TEST data2
+#define TIME listu64.data0
+#define FLAG listu64.data1
+#define TEST listu64.data2
 void inertia_tensor_of_block(mat3 Ival, mat3 Iinv, float M, float lx, float ly, float lz);
 void mat3_transposefrom(void* o, void* i);
 void mat3_multiplyfrom(void* o, void* l, void* r);
@@ -226,11 +226,11 @@ int gravtest_effect(struct style* geom, float dt)
 	geom->fs.vc[2] = final->displace_x[2];
 	return 0;
 }
-int gravtest_foreach(struct entity* ent)
+int gravtest_foreach(_obj* ent)
 {
 	u64 now;
 	float dt;
-	struct entity* world;
+	_obj* world;
 	struct relation* rel;
 	struct style* geom;
 
@@ -238,7 +238,7 @@ int gravtest_foreach(struct entity* ent)
 	if(0 == rel)return 0;
 
 	world = rel->pdstchip;
-	if((_virtual_ != world->fmt)&&(_scene3d_ != world->fmt))return 0;
+	if((_virtual_ != world->hfmt)&&(_scene3d_ != world->hfmt))return 0;
 
 	now = timeread();
 	//say("%llx\n", now);
@@ -271,12 +271,12 @@ int gravtest_foreach(struct entity* ent)
 
 
 
-int gravtest_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int gravtest_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@gravtest_read:%.4s\n",&foot);
 	return 0;
 }
-int gravtest_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+int gravtest_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	say("@gravtest_write:%.4s\n",&foot);
 	if(_clk_ == stack[sp-1].flag)gravtest_foreach(ent);
@@ -309,11 +309,11 @@ int gravtest_modify()
 {
 	return 0;
 }
-int gravtest_delete(struct entity* ent)
+int gravtest_delete(_obj* ent)
 {
 	return 0;
 }
-int gravtest_create(struct entity* ent, void* str)
+int gravtest_create(_obj* ent, void* str)
 {
 	say("@gravtest_create\n");
 	ent->FLAG = 0;

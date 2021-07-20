@@ -3,15 +3,15 @@
 
 
 
-int rotate_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int rotate_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int rotate_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int rotate_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	int x,y;
 	u8 yy,uu,vv;
-	u8* dst = art->buf0;
+	u8* dst = art->priv_ptr;
 	u8* src = buf;
 	u8* d8;
 	u8* s8;
@@ -41,13 +41,13 @@ int rotate_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int rotate_delete(struct artery* ele)
+int rotate_delete(_obj* ele)
 {
 	return 0;
 }
-int rotate_create(struct artery* ele, u8* url)
+int rotate_create(_obj* ele, u8* url)
 {
 	say("@rotate_create\n");
-	ele->buf0 = memorycreate(0x100000, 0);
+	ele->priv_ptr = memorycreate(0x100000, 0);
 	return 1;
 }

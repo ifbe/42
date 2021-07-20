@@ -21,10 +21,10 @@ void videolist()
 void videochoose()
 {
 }
-void videodelete(struct supply* win)
+void videodelete(_obj* win)
 {
 }
-void videocreate(struct supply* win)
+void videocreate(_obj* win)
 {
 }
 

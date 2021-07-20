@@ -6,7 +6,7 @@ int rgbanode_give(void*,void*, void*,int, void*,int, void*,int);
 
 
 
-struct supply* thewnd = 0;
+_obj* thewnd = 0;
 static void CreateApplicationMenus(void)
 {
 	id appName = [[NSProcessInfo processInfo] processName];
@@ -213,7 +213,7 @@ MyView* myview;
 
 
 
-void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	rgbanode_take(wnd,foot, stack,sp, arg,key, buf,len);
 
@@ -249,7 +249,7 @@ void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, vo
 		[NSApp sendEvent:event];
 	}
 }
-void window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 void windowlist()
@@ -264,10 +264,10 @@ void windowstart()
 void windowstop()
 {
 }
-void windowdelete(struct supply* w)
+void windowdelete(_obj* w)
 {
 }
-void windowcreate(struct supply* wnd)
+void windowcreate(_obj* wnd)
 {
 	//value
 	wnd->fmt = _rgba_;
