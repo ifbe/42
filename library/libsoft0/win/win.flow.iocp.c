@@ -11,31 +11,27 @@
 
 
 
-struct per_io_data
+struct perio
 {
-	OVERLAPPED overlap;
-	WSABUF bufing;
-	int count;
+	OVERLAPPED overlap;		//start with struct overlap
+	WSABUF bufing;		//follow by own data
+	SOCKET childsock;
+};
+struct perfd{
+	struct perio perio[2];
 	SOCKET sock;
 };
 static HANDLE iocpfd;
+static _obj* g_obj = 0;
 //
-static struct sysobj* obj = 0;
-static struct sysobj* getobjbysock(SOCKET sock)
+static _obj* getobjbysock(SOCKET sock)
 {
-	return &obj[sock/4];
+	return &g_obj[sock/4];
 }
-static struct sysobj* getobjbid(int idx)
+static SOCKET getsockbyobj(_obj* oo)
 {
-	return &obj[idx];
-}
-static int getidbysock(SOCKET sock)
-{
-	return sock/4;
-}
-static SOCKET getsockbyid(int idx)
-{
-	return idx*4;
+	struct perfd* perfd = (void*)(oo->priv_256b);
+	return perfd->sock;
 }
 
 
@@ -43,7 +39,7 @@ static SOCKET getsockbyid(int idx)
 
 void iocp_add(SOCKET sock, int type)
 {
-	struct sysobj* tmp = getobjbysock(sock);
+	_obj* tmp = getobjbysock(sock);
 	CreateIoCompletionPort(
 		(void*)sock,
 		iocpfd,
@@ -52,16 +48,17 @@ void iocp_add(SOCKET sock, int type)
 	);
 	if(_TCP_ == type)return;
 
-	struct per_io_data* perio = (void*)(tmp->data);
+	struct perfd* perfd = (void*)(tmp->priv_256b);
+	struct perio* perio = &perfd->perio[0];
 	perio->bufing.buf = malloc(0x100000);
 	perio->bufing.len = 0x100000;
 }
 void iocp_del(SOCKET sock, int type)
 {
-	struct sysobj* tmp = getobjbysock(sock);
-	struct per_io_data* perio = (void*)(tmp->data);
-	if(perio->bufing.buf)
-	{
+	_obj* tmp = getobjbysock(sock);
+	struct perfd* perfd = (void*)(tmp->priv_256b);
+	struct perio* perio = &perfd->perio[0];
+	if(perio->bufing.buf){
 		free(perio->bufing.buf);
 		perio->bufing.buf = 0;
 	}
@@ -72,8 +69,9 @@ void iocp_mod(SOCKET sock, int type)
 	DWORD tran = 0;
 	DWORD flag = 0;
 
-	struct sysobj* perfd = getobjbysock(sock);
-	struct per_io_data* perio = (void*)(perfd->data);
+	_obj* oo = getobjbysock(sock);
+	struct perfd* perfd = (void*)(oo->priv_256b);
+	struct perio* perio = &perfd->perio[0];
 
 	switch(type){
 	case _UDP_:
@@ -82,7 +80,7 @@ void iocp_mod(SOCKET sock, int type)
 		ret = WSARecvFrom(sock,
 			&(perio->bufing), 1,
 			&tran, &flag,
-			(void*)(perfd->peer), &ret,
+			(void*)(oo->sockinfo.peer), &ret,
 			(void*)perio, NULL
 		);
 		break;
@@ -102,13 +100,15 @@ DWORD WINAPI iocpthread(LPVOID pM)
 	int ret;
 	DWORD tran;
 	struct halfrel stack[0x80];
-	struct sysobj* perfd = NULL;
-	struct per_io_data* perio = NULL;
 
 	SOCKET fd;
 	SOCKET cc;
-	struct sysobj* parent;
-	struct sysobj* child;
+	_obj* parent;
+	_obj* child;
+
+	_obj* oo = NULL;
+	struct perfd* perfd = NULL;		//in struct _obj
+	struct perio* perio = NULL;		//in struct perfd
 
 	ret = GetCurrentThreadId();
 	//say("threadid = %x\n", ret);
@@ -119,27 +119,28 @@ DWORD WINAPI iocpthread(LPVOID pM)
 		ret = GetQueuedCompletionStatus(
 			iocpfd,
 			&tran,
-			(void*)&perfd,
+			(void*)&oo,
 			(void*)&perio,
 			INFINITE
 		);
 		if(0 == ret)continue;
 
-		fd = getsockbyid(perfd->selffd);
-		if(_TCP_ == perfd->type)
+		perfd = (void*)(oo->priv_256b);
+		fd = perfd->sock;
+		if(_TCP_ == oo->type)
 		{
-			cc = perio->sock;
+			cc = perio->childsock;
 			child = getobjbysock(cc);
 			printf("parent=%x, child=%x\n", fd, cc);
 
 			child->type = _Tcp_;
-			child->name = 0;
-			child->irel0 = child->ireln = 0;
-			child->orel0 = child->oreln = 0;
-			child->selffd = getidbysock(cc);
-			child->selfobj = child;
-			child->tempfd = getidbysock(fd);
-			child->tempobj = perfd;
+			memcpy(child->sockinfo.peer, oo->sockinfo.peer, 32);
+			child->sockinfo.parent = oo;
+			child->sockinfo.child = 0;
+			child->sockinfo.fd = cc;
+
+			//oo->sockinfo.parent = 0;
+			oo->sockinfo.child = child;
 
 			//peername
 			iocp_add(cc, _Tcp_);
@@ -149,36 +150,34 @@ DWORD WINAPI iocpthread(LPVOID pM)
 		if(0 == tran)
 		{
 			iocp_del(fd, 0);
-			systemdelete(perfd);
+			systemdelete(oo);
 			continue;
 		}
 
-		switch(perfd->type){
+		switch(oo->type){
 		case _Tcp_:{
-			if(	(0 == perfd->irel0) && (0 == perfd->orel0) ){
-				parent = perfd->tempobj;
-				memcpy(parent->peer, perfd->peer, 8);
-
-				//tell parent, its me
-				parent->tempfd = perfd->selffd;
-				parent->tempobj = perfd;
+			if(	(0 == oo->irel0) && (0 == oo->orel0) ){
+				parent = oo->sockinfo.parent;
+				memcpy(parent->sockinfo.peer, oo->sockinfo.peer, 8);
+				//parent->sockinfo.parent = 0;
+				parent->sockinfo.child = oo;
 
 				//parent send
-				perfd = parent;
+				oo = parent;
 			}
 
-			give_data_into_peer(perfd,_dst_, stack,0, 0,0, perio->bufing.buf,tran);
-			iocp_mod(fd, perfd->type);
+			give_data_into_peer(oo,_dst_, stack,0, 0,0, perio->bufing.buf,tran);
+			iocp_mod(fd, oo->type);
 			break;
 		}//Tcp
 		case _UDP_:{
-			give_data_into_peer(perfd,_dst_, stack,0, perfd->peer,0, perio->bufing.buf,tran);
-			iocp_mod(fd, perfd->type);
+			give_data_into_peer(oo,_dst_, stack,0, oo->sockinfo.peer,0, perio->bufing.buf,tran);
+			iocp_mod(fd, oo->type);
 			break;
 		}
 		default:{
-			give_data_into_peer(perfd,_dst_, stack,0, 0,0, perio->bufing.buf,tran);
-			iocp_mod(fd, perfd->type);
+			give_data_into_peer(oo,_dst_, stack,0, 0,0, perio->bufing.buf,tran);
+			iocp_mod(fd, oo->type);
 			break;
 		}//default
 		}//switch
@@ -194,7 +193,7 @@ void freewatcher()
 }
 void initwatcher(void* addr)
 {
-	obj = addr;
+	g_obj = addr;
 
 	//iocp
 	iocpfd = CreateIoCompletionPort(

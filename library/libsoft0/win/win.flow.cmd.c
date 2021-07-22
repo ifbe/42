@@ -3,47 +3,42 @@
 
 
 
-void systemshell_process(char* p)
+void initshell()
 {
 }
-int readshell(int fd, char* buf, int off, int len)
+void freeshell()
 {
-	return 0;
 }
-int writeshell(int fd, char* buf, int off, int len)
-{
-	return 0;
-}
-int listshell(char* p)
-{
-	return 0;
-}
-int chooseshell(char* p)
+
+
+
+
+_obj* shell_create(char* p)
 {
 	return 0;
 }
-int stopshell(int fd)
+int shell_delete(_obj* fd)
 {
 	say("!!!this func is wrong!!!\n");
 	return 0;
 }
-int startshell(char* p)
+int shell_search(char* p)
 {
 	return 0;
 }
-void deleteshell()
+int shell_modify(char* p)
 {
-}
-void createshell(void* addr)
-{
+	return 0;
 }
 
 
 
 
-void freeshell()
+int shell_take(int fd, char* buf, int off, int len)
 {
+	return 0;
 }
-void initshell()
+int shell_give(int fd, char* buf, int off, int len)
 {
+	return 0;
 }

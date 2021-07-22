@@ -2,20 +2,36 @@
 #include <stdlib.h>
 #include <windows.h>
 #include <tlhelp32.h>
-#define u64 unsigned long long
-#define u32 unsigned int
-#define u16 unsigned short
-#define u8 unsigned char
+#include "libsoft.h"
 int utf2unicode(void* src, void* dst);
-void say(char* fmt,...);
+
+
+
+
+void initfilemgr()
+{
+}
+void freefilemgr()
+{
+}
+void filemanager_registersupplier()
+{
+}
+_obj* getobjfromhandle(HANDLE h)
+{
+	return 0;
+}
+HANDLE gethandlefromobj(_obj* o)
+{
+	return 0;
+}
+
+
+
 
 static char name[0x20]={
 	'\\','\\','.','\\',
 	'P','h','y','s','i','c','a','l','D','r','i','v','e','0','\0','\0'};
-
-
-
-
 static u64 getsize(HANDLE hand,char* path,char* dest)
 {
 	//say("%llx\n",*(u64*)path);
@@ -53,10 +69,6 @@ static u64 getsize(HANDLE hand,char* path,char* dest)
 		GetFileSizeEx( hand , (PLARGE_INTEGER)dest );
 	}
 }
-
-
-
-
 void listfile(char* dest)
 {
 	//
@@ -106,50 +118,17 @@ void listfile(char* dest)
 		}
 	}//10个记录
 }
-void choosefile(char* buf)
-{
-}
-int readfile(void* obj, HANDLE file, void* arg, int off, void* mem, int len)
-{
-	LARGE_INTEGER li;
-	DWORD val;
-	int ret;
 
-	if(arg){
-		li.QuadPart = off;
-		SetFilePointer (file, li.LowPart, &li.HighPart, FILE_BEGIN);
-	}//from head
 
-	ret = ReadFile(file, mem, len, &val, 0);
-	if(ret == 0)say("ret=%d,val=%d,error=%d\n", ret, val, GetLastError());
-	return val;
-}
-int writefile(void* obj, HANDLE file, void* arg, int off, void* mem, int len)
-{
-	LARGE_INTEGER li;
-	DWORD val;
-	int ret;
 
-	if(arg){
-		li.QuadPart = off;
-		SetFilePointer(file, li.LowPart, &li.HighPart, FILE_BEGIN);
-	}//from head
 
-	ret = WriteFile(file, mem, len, &val, NULL);
-	if(ret == 0)say("ret=%d,val=%d,error=%d\n", ret, val, GetLastError());
-	return val;
-}
-void stopfile(HANDLE fd)
+_obj* file_create(void* orig, int flag)
 {
-	CloseHandle(fd);
-}
-HANDLE startfile(u8* path, int flag)
-{
-	int j,k;
-	HANDLE fd;
+	u8* path = orig;
 	if(path == 0)return 0;
 	if(path[0] == 0)return 0;
 
+	int j,k;
 	k = 0;
 	for(j=0;j<0x1000;j++)
 	{
@@ -163,6 +142,7 @@ HANDLE startfile(u8* path, int flag)
 	if('w' == flag)flag = OPEN_ALWAYS;
 	else flag = OPEN_EXISTING;
 
+	HANDLE fd;
 	if(k < 0x80)
 	{
 		fd	= CreateFileA(
@@ -217,37 +197,55 @@ HANDLE startfile(u8* path, int flag)
 		say("error:%d@createfile:%s\n", GetLastError(), path);
 		return 0;
 	}
-	return fd;
+	return getobjfromhandle(fd);
 }
-
-
-
-
-int filesearch(void* buf, int len)
+int file_delete(_obj* oo)
+{
+	HANDLE fd = gethandlefromobj(oo);
+	return CloseHandle(fd);
+}
+int file_search(void* buf, int len)
 {
 	say("@filesearch\n");
 	return 0;
 }
-int filemodify(void* buf, int len)
+int file_modify(void* buf, int len)
 {
 	return 0;
 }
-void deletefile()
-{
-}
-void createfile()
-{
-}
 
 
 
 
-void filemanager_registersupplier()
+int file_take(_obj* oo, int xx, void* arg, int off, void* mem, int len)
 {
+	LARGE_INTEGER li;
+	DWORD val;
+	int ret;
+
+	HANDLE file = gethandlefromobj(oo);
+	if(arg){
+		li.QuadPart = off;
+		SetFilePointer (file, li.LowPart, &li.HighPart, FILE_BEGIN);
+	}//from head
+
+	ret = ReadFile(file, mem, len, &val, 0);
+	if(ret == 0)say("ret=%d,val=%d,error=%d\n", ret, val, GetLastError());
+	return val;
 }
-void initfilemgr()
+int file_give(_obj* oo, int xx, void* arg, int off, void* mem, int len)
 {
-}
-void freefilemgr()
-{
+	LARGE_INTEGER li;
+	DWORD val;
+	int ret;
+
+	HANDLE file = gethandlefromobj(oo);
+	if(arg){
+		li.QuadPart = off;
+		SetFilePointer(file, li.LowPart, &li.HighPart, FILE_BEGIN);
+	}//from head
+
+	ret = WriteFile(file, mem, len, &val, NULL);
+	if(ret == 0)say("ret=%d,val=%d,error=%d\n", ret, val, GetLastError());
+	return val;
 }

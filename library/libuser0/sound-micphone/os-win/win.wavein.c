@@ -42,10 +42,10 @@ static void CALLBACK icb(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1,
 
 
 
-void micphone_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+void micphone_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 }
-void micphone_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+void micphone_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 }
 void micphonestop()

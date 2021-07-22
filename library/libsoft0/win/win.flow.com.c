@@ -9,7 +9,7 @@ void sleep_us(int);
 
 
 //
-static struct sysobj* obj = 0;
+static _obj* g_obj = 0;
 static HANDLE hcom = 0;
 //
 static int curid = 0;
@@ -18,7 +18,7 @@ static int alive = 0;
 
 
 
-DWORD WINAPI uart_thread(struct sysobj* oo)
+DWORD WINAPI uart_thread(_obj* oo)
 {
 	int ret;
 	int enq;
@@ -55,11 +55,11 @@ static int uart_designate()
 
 
 
-int uart_read(int fd, int off, void* buf, int len)
+int uart_take(int fd, int off, void* buf, int len)
 {
 	return 0;
 }
-int uart_write(int fd, int off, void* buf, int len)
+int uart_give(int fd, int off, void* buf, int len)
 {
 	u32 cnt=0;
 	int ret;
@@ -179,7 +179,7 @@ int uart_create(char* p, int speed)
 	//
 	alive = 1;
 	ret = uart_designate();
-	threadcreate(uart_thread, &obj[ret]);
+	threadcreate(uart_thread, &g_obj[ret]);
 
 	//success
 	return ret;
@@ -193,5 +193,5 @@ int freeuart()
 }
 int inituart(void* addr)
 {
-	obj = addr;
+	g_obj = addr;
 }

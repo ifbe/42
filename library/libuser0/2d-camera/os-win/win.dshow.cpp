@@ -5,9 +5,9 @@
 #include "libuser.h"
 #define _yuyv_ hex32('y','u','y','v')
 #define _mjpg_ hex32('m','j','p','g')
-#define STRIDE ix0
-#define HEIGHT iy0
-#define FORMAT iw0
+#define STRIDE whdf.ix0
+#define HEIGHT whdf.iy0
+#define FORMAT whdf.iw0
 
 #pragma comment(lib, "ole32")
 #pragma comment(lib, "strmiids")
@@ -424,7 +424,7 @@ fail:
 extern "C" {
 
 
-int video_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int video_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	u64 addr = obj[(enq+59)%60].addr;
 	printf("addr=%llx\n",addr);
@@ -432,7 +432,7 @@ int video_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void
 	*(u64*)buf = addr;
 	return 0;
 }
-int video_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int video_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }
