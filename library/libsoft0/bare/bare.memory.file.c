@@ -99,7 +99,7 @@ int filemanager_registersupplier(void* node, void* foot)
 
 
 
-int readfile(void* obj, int fd, void* arg, int off, u8* buf, int len)
+int file_take(void* obj, int fd, void* arg, int off, u8* buf, int len)
 {
 	_obj* p;
 	//void* q;
@@ -111,15 +111,7 @@ int readfile(void* obj, int fd, void* arg, int off, u8* buf, int len)
 	//q = fsysfoot[0];
 	return p->ontaking((void*)p,obj, 0,0, 0,0, buf,len);
 }
-int writefile(void* obj, int fd, void* arg, int off, u8* buf, int len)
-{
-	return 0;
-}
-int stopfile()
-{
-	return 0;
-}
-int startfile(char* path)
+int file_give(void* obj, int fd, void* arg, int off, u8* buf, int len)
 {
 	return 0;
 }
@@ -127,7 +119,15 @@ int startfile(char* path)
 
 
 
-int filesearch(void* buf, int len)
+int file_create(char* path)
+{
+	return 0;
+}
+int file_delete()
+{
+	return 0;
+}
+int file_search(void* buf, int len)
 {
 	int j,ret;
 	u8 tmp[512];
@@ -179,15 +179,7 @@ int filesearch(void* buf, int len)
 	}
 	return 0;
 }
-int filemodify(void* buf, int len)
-{
-	return 0;
-}
-int deletefile()
-{
-	return 0;
-}
-int createfile()
+int file_modify(void* buf, int len)
 {
 	return 0;
 }

@@ -1,27 +1,29 @@
-void readshell()
+void shell_take()
 {
 }
-void writeshell()
+void shell_give()
 {
 }
-void listshell()
+
+
+
+
+void shell_create()
 {
 }
-void chooseshell()
+void shell_delete()
 {
 }
-void stopshell()
+void shell_search()
 {
 }
-void startshell()
+void shell_modify()
 {
 }
-void deleteshell()
-{
-}
-void createshell()
-{
-}
+
+
+
+
 void freeshell()
 {
 }

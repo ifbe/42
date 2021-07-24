@@ -257,6 +257,11 @@ int wndmgr_gl41cmdq_take(_obj* mgr,void* foot, _obj* wnd,void* sty)
 
 int wndmgr_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	if(_rgba_ == wnd->hfmt){
+		wndmgr_rgba_take(wnd,foot, stack,sp, arg,key, buf,len);
+		return 0;
+	}
+
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 

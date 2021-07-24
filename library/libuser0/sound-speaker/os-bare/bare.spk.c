@@ -3,11 +3,11 @@
 
 
 
-int speaker_take(_sup* spk,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int speaker_take(_obj* spk,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int speaker_give(_sup* spk,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int speaker_give(_obj* spk,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }

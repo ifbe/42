@@ -3,10 +3,10 @@
 
 
 
-void video_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void video_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 }
-void video_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void video_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 }
 void videolist()

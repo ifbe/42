@@ -435,7 +435,7 @@ int sd_readblock(struct persdhci* per, unsigned int lba, unsigned char *buf, int
 
 static int sdhci_ontake(struct item* dev, void* foot, void* stack, int sp, void* arg, int idx, void* buf, int len)
 {
-	struct persdhci* per = (void*)dev->priv_data;
+	struct persdhci* per = (void*)dev->priv_256b;
 	return sd_readblock(per, idx>>9, buf, len>>9);
 }
 static int sdhci_ongive(struct item* dev, void* foot, void* stack, int sp, void* arg, int idx, void* buf, int len)
@@ -456,7 +456,7 @@ int initsdhci(struct item* dev)
 	say("@initsdhci\n");
 
 	//get addr
-	struct persdhci* per = (void*)dev->priv_data;
+	struct persdhci* per = (void*)dev->priv_256b;
 	void* sdhci = mmiobase();
 
 	if(4 == raspi_version())sdhci += SDHCI_OFFS_NEW;

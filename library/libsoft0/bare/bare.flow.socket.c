@@ -16,22 +16,20 @@ u32 resolvehostname(char* addr)
 
 
 
-void writesocket(int fd, void* tmp, void* buf, int len)
+void socket_take(int fd, void* tmp, void* buf, int len)
 {
 }
-void readsocket(int fd, void* tmp, void* buf, int len)
+void socket_give(int fd, void* tmp, void* buf, int len)
 {
 }
-void stopsocket()
+
+
+
+
+void socket_delete()
 {
 }
-void startsocket(char* addr, int port, int type)
-{
-}
-void deletesocket(int fd)
-{
-}
-void createsocket()
+void socket_create(char* addr, int port, int type)
 {
 }
 

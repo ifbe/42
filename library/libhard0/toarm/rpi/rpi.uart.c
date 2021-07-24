@@ -24,11 +24,11 @@
 #define TDR    0x8c	//Test Data reg
 
 
-int uart_read()
+int uart_take()
 {
 	return 0;
 }
-int uart_write()
+int uart_give()
 {
 	return 0;
 }

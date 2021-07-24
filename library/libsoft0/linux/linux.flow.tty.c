@@ -28,7 +28,7 @@ int uart_take(int fd, int off, void* buf, int len)
 int uart_give(int fd, int off, void* buf, int len)
 {
 	int ret;
-	//printf("@uart_write:%.*s\n", len, buf);
+	//printf("@uart_give:%.*s\n", len, buf);
 
 	ret = write(fd, buf, len);
 	if(ret != len){

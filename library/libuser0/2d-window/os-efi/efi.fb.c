@@ -41,7 +41,7 @@ void window_update(_obj* wnd,void* test, int x0,int y0, int xn,int yn)
 	}
 
 	int x,y;
-	u32* ibuf = wnd->rgbabuf;
+	u32* ibuf = wnd->rgbanode.buf;
 	u32* obuf = lfb;
 	for(y=y0;y<yn;y++){
 		obuf = lfb + y*fbw + x0*bpp;
@@ -68,8 +68,8 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(foot){
-		int w = wnd->width;
-		int h = wnd->height + (key<<4);
+		int w = wnd->whdf.width;
+		int h = wnd->whdf.height + (key<<4);
 		drawsolid_rect((void*)wnd,0, 0,h, w,h+16);
 		drawstring((void*)wnd,0xff00ff, 0,h, buf,len);
 		window_update(wnd,0, 0,h, w,h+16);
@@ -79,8 +79,8 @@ void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 		wndmgr_give(wnd,0, stack,sp, 0,0, buf,len);
 
 		//only update mouse area
-		int x = wnd->ix0;
-		int y = wnd->iy0;
+		int x = wnd->whdf.ix0;
+		int y = wnd->whdf.iy0;
 		//say("x=%d,y=%d\n",x,y);
 		window_update(wnd,0, x-16,y-16, x+16,y+16);
 	}
@@ -110,16 +110,16 @@ void windowcreate(_obj* wnd)
 	say("lfb=%p,fmt=%.8s, w=%d,h=%d, fbw=0x%x,fbh=0x%x\n", lfb,&fmt, w,h, fbw,fbh);
 
 	//wnd data
-	wnd->fmt = _rgba_;
+	wnd->hfmt = _rgba_;
 	wnd->vfmt = fmt;
 
-	wnd->width = w;
-	wnd->height = h;
+	wnd->whdf.width = w;
+	wnd->whdf.height = h;
 
-	wnd->fbwidth = w*4;
+	wnd->whdf.fbwidth = w*4;
 	//wnd->fbheight = 0;
 
-	wnd->rgbabuf = (void*)0x4000000;
+	wnd->rgbanode.buf = (void*)0x4000000;
 	stdout_setwindow(wnd);
 }
 

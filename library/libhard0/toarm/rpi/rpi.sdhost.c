@@ -88,7 +88,7 @@ int initsdhost(struct item* dev)
 	say("@initsdhost\n");
 
 	//get addr
-	struct persdhost* per = (void*)dev->priv_data;
+	struct persdhost* per = (void*)dev->priv_256b;
 	void* sdhost = mmiobase() + SDHOST_OFFS;
 	per->sdhost = sdhost;
 	printmmio(sdhost, 0x40);

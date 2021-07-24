@@ -179,9 +179,9 @@ u64 processcreate(void* file, void* args)
 */
 
 	//test1: read file to pa
-	int ret = readfile(file,0, 0,0, (void*)pa,0x200000);
+	int ret = file_take(file,0, 0,0, (void*)pa,0x200000);
 	if(ret <= 0){
-		say("@processcreate: readfile notfound\n");
+		say("@processcreate: file notfound\n");
 		return 0;
 	}
 

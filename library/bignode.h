@@ -388,7 +388,6 @@ struct item
 	union{
 		int   priv_fd;
 		void* priv_ptr;
-		u8    priv_data[0x100];
 		u8    priv_256b[0x100];
 
 		struct listu32 listu32;

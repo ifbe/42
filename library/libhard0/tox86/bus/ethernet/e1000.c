@@ -117,7 +117,7 @@ struct RecvDesc
 };
 static int e1000_read(struct item* e1000,void* foot, void* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
-	struct perdev* per = (void*)(e1000->priv_data);
+	struct perdev* per = (void*)(e1000->priv_256b);
 	if(0 == per->mmioaddr)return -1;
 
 	//changed = tail+1
@@ -162,7 +162,7 @@ struct TransDesc
 };
 static int e1000_write(struct item* e1000,void* foot, void* stack,int sp, void* arg,int cmd, u8* buf, int len)
 {
-	struct perdev* per = (void*)(e1000->priv_data);
+	struct perdev* per = (void*)(e1000->priv_256b);
 	if(0 == per->mmioaddr)return -1;
 
 	//txdesc
@@ -247,7 +247,7 @@ static u32 eepromread(u8* mmio, u32 addr)
 }
 void e1000_mmioinit(struct item* dev, u8* mmio)
 {
-	struct perdev* per = (void*)(dev->priv_data);
+	struct perdev* per = (void*)(dev->priv_256b);
 	per->mmioaddr = mmio;
 	say("e1000@mmio:%llx{\n", mmio);
 

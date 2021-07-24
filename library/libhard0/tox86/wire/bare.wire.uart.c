@@ -7,11 +7,11 @@ void say(char*,...);
 
 
 
-int uart_read(int fd, char* buf, int off, int len)
+int uart_take(int fd, char* buf, int off, int len)
 {
 	return 0;
 }
-int uart_write(int fd, char* buf, int off, int len)
+int uart_give(int fd, char* buf, int off, int len)
 {
 	return 0;
 }

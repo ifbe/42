@@ -535,7 +535,7 @@ static int ahci_satacmd(volatile struct HBA_PORT* port, struct SATA_ident* rdi)
 }
 static int ahci_readdata(struct item* ahci,void* foot,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
 {
-	struct perahci* my = (void*)(ahci->priv_data);
+	struct perahci* my = (void*)(ahci->priv_256b);
 	struct HBA_MEM* abar = my->abar;
 	struct HBA_PORT* port = foot;
 	//ahci_print("@ahci_ontake: node=%p,abar=%p,port=%p, off=%x,len=%x\n", my,abar,port, off,len);
@@ -577,7 +577,7 @@ static int ahci_ongive(struct item* ahci,void* foot,struct halfrel* stack,int sp
 
 int ahci_contractor(struct item* dev, int who, u8* buf, int len)
 {
-	struct perahci* my = (void*)(dev->priv_data);
+	struct perahci* my = (void*)(dev->priv_256b);
 	struct HBA_MEM* abar = my->abar;
 	struct HBA_PORT* port = &abar->ports[who];
 	int ret = ahci_identify(port, (void*)buf);
@@ -595,7 +595,7 @@ int ahci_contractor(struct item* dev, int who, u8* buf, int len)
 int ahci_list(struct item* dev, int total, u8* buf, int len)
 {
 	int j,cnt=0;
-	struct perahci* my = (void*)(dev->priv_data);
+	struct perahci* my = (void*)(dev->priv_256b);
 	struct HBA_MEM* abar = my->abar;
 	struct HBA_PORT* port;
 	for(j=0;j<total;j++){
@@ -771,7 +771,7 @@ void ahci_mmioinit(struct item* dev, struct HBA_MEM* abar)
 	}
 
 	//list
-	struct perahci* my = (void*)(dev->priv_data);
+	struct perahci* my = (void*)(dev->priv_256b);
 	my->abar = abar;
 	my->port = &abar->ports[0];
 	my->cmdlist = ptr+commandlist;
