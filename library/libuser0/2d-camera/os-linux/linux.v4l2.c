@@ -9,31 +9,45 @@
 #include <sys/mman.h>
 #include <linux/videodev2.h>
 #include "libuser.h"
-#define STRIDE ix0
-#define HEIGHT iy0
-#define FORMAT iw0
+#define STRIDE whdf.fourth
+#define HEIGHT whdf.height
+#define FORMAT vfmt
+#define BUFCNT 24
 
 
 
 
 //
-struct buffer{
+struct datainfo{
+	struct v4l2_buffer v4l2buf;
+	int len;
 	union{
 		u64 addr;
 		void* buf;
 	};
-	u64 len;
 };
-static struct buffer info[24];
-static int cur = 0;
-static int alive = 1;
+struct percam{
+	u64 thread;
+	int alive;
+
+	int deq;
+	struct datainfo datainfo[BUFCNT];
+};
+//static struct buffer info[24];
+//static int cur = 0;
+//static int alive = 1;
 
 
 
 
-void* visionlistener(_obj* win)
+void* cameraworker(_obj* cam)
 {
 	struct halfrel stack[0x80];
+	struct percam* pcam = cam->priv_ptr;
+	if(0 == pcam){
+		say("@cameraworker:0=pcam\n");
+		return 0;
+	}
 
 	//v4l2_open
 	int j;
@@ -60,8 +74,8 @@ void* visionlistener(_obj* win)
 
 	//v4l2_fmtdesc
 	struct v4l2_fmtdesc desc;
-	desc.type=V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	desc.index=0;
+	desc.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+	desc.index = 0;
 	printf("v4l2_fmtdesc:\n");
 	while(-1 != ioctl(fd, VIDIOC_ENUM_FMT, &desc))
 	{
@@ -77,9 +91,9 @@ void* visionlistener(_obj* win)
 	struct v4l2_format fmt;
 	fmt.type		= V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	fmt.fmt.pix.field       = V4L2_FIELD_INTERLACED;
-	fmt.fmt.pix.width       = win->STRIDE;
-	fmt.fmt.pix.height      = win->HEIGHT;
-	fmt.fmt.pix.pixelformat = win->FORMAT;
+	fmt.fmt.pix.width       = cam->STRIDE;
+	fmt.fmt.pix.height      = cam->HEIGHT;
+	fmt.fmt.pix.pixelformat = cam->FORMAT;
 	if(-1 == ioctl(fd,VIDIOC_S_FMT,&fmt))
 	{
 		printf("VIDIOC_S_FMT error\n");
@@ -88,7 +102,7 @@ void* visionlistener(_obj* win)
 
 	//v4l2_requestbuffers
 	struct v4l2_requestbuffers req;
-	req.count       = 24;
+	req.count       = BUFCNT;
 	req.type	= V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	req.memory      = V4L2_MEMORY_MMAP;     //V4L2_MEMORY_USERPTR;
 	if(-1 == ioctl(fd,VIDIOC_REQBUFS,&req))
@@ -98,34 +112,37 @@ void* visionlistener(_obj* win)
 	}
 
 	//prepare
-	struct v4l2_buffer buf;
-	for(j=0;j<24;j++)
+	struct datainfo* myinfo;
+	struct v4l2_buffer* v4l2buf;
+	for(j=0;j<BUFCNT;j++)
 	{
-		buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-		buf.memory = V4L2_MEMORY_MMAP;
-		buf.index = j;
-		if(-1 == ioctl(fd,VIDIOC_QUERYBUF,&buf))
+		myinfo = &pcam->datainfo[j];
+		v4l2buf = &myinfo->v4l2buf;
+
+		v4l2buf->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+		v4l2buf->memory = V4L2_MEMORY_MMAP;
+		v4l2buf->index = j;
+		if(-1 == ioctl(fd, VIDIOC_QUERYBUF, v4l2buf))
 		{
 			printf("VIDIOC_QUERYBUF\n");
 			return 0;
 		}
 
-		info[j].len = buf.length;
-		info[j].buf = mmap(
+		myinfo->buf = mmap(
 			NULL,
-			buf.length,
+			v4l2buf->length,
 			PROT_READ|PROT_WRITE,
 			MAP_SHARED,
 			fd,
-			buf.m.offset
+			v4l2buf->m.offset
 		);
 
-		if(MAP_FAILED == info[j].buf)
+		if(MAP_FAILED == pcam->datainfo[j].buf)
 		{
 			printf("fail@mmap\n");
 			return 0;
 		}
-		if(-1 == ioctl(fd,VIDIOC_QBUF,&buf))
+		if(-1 == ioctl(fd, VIDIOC_QBUF, v4l2buf))
 		{
 			printf("VIDEOC_QBUF\n");
 			return 0;
@@ -147,8 +164,8 @@ void* visionlistener(_obj* win)
 	ev.data.fd=fd;
 	ev.events = EPOLLIN | EPOLLET;
 	epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &ev);
-	cur = 0;
-	while(alive)
+	pcam->deq = 0;
+	while(pcam->alive)
 	{
 		//!!!!!!!!!!!!!!must take out ontime!!!!!!!!!!!!!!
 		j = epoll_wait(epfd, &ev, 1, -1);
@@ -159,18 +176,21 @@ void* visionlistener(_obj* win)
 		}
 
 		//deq
-		buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-		buf.memory = V4L2_MEMORY_MMAP;
-		if(-1 == ioctl(fd, VIDIOC_DQBUF, &buf)){
+		myinfo = &pcam->datainfo[pcam->deq];
+		v4l2buf = &myinfo->v4l2buf;
+
+		v4l2buf->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+		v4l2buf->memory = V4L2_MEMORY_MMAP;
+		if(-1 == ioctl(fd, VIDIOC_DQBUF, v4l2buf)){
 			say("error@DQBUF\n");
 		}
 
 		//send
-		give_data_into_peer(win,_dst_, stack,0, 0,0, info[cur].buf,buf.bytesused);//info[cur].len);
-		cur = (cur+1)%24;
+		give_data_into_peer(cam,_dst_, stack,0, 0,0, myinfo->buf, v4l2buf->bytesused);
+		pcam->deq = (pcam->deq+1)%BUFCNT;
 
 		//enq
-		if(-1 == ioctl(fd, VIDIOC_QBUF, &buf)){
+		if(-1 == ioctl(fd, VIDIOC_QBUF, v4l2buf)){
 			say("error@DQBUF\n");
 		}
 	}
@@ -181,9 +201,11 @@ void* visionlistener(_obj* win)
 	{
 		printf("error@OFF\n");
 	}
-	for(j=0;j<24;j++)
+	for(j=0;j<BUFCNT;j++)
 	{
-		munmap(info[j].buf, info[j].len);
+		myinfo = &pcam->datainfo[j];
+		v4l2buf = &myinfo->v4l2buf;
+		munmap(myinfo->buf, v4l2buf->length);
 	}
 
 	//v4l2_release
@@ -194,15 +216,18 @@ void* visionlistener(_obj* win)
 
 
 
-int video_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int video_take(_obj* cam,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
-	u64 addr = info[(cur+23)%24].addr;
+	struct percam* pcam = cam->priv_ptr;
+	if(0 == pcam)return 0;
+
+	u64 addr = pcam->datainfo[(pcam->deq+BUFCNT-1)%BUFCNT].addr;
 	say("addr=%llx\n",addr);
 
 	*(u64*)buf = addr;
 	return 0;
 }
-int video_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int video_give(_obj* cam,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
@@ -214,19 +239,28 @@ int videostart()
 {
 	return 0;
 }
-int videodelete(_obj* win)
+int videodelete(_obj* cam)
 {
-	alive = 0;
+	struct percam* pcam = cam->priv_ptr;
+	if(0 == pcam)return 0;
+
+	//set signal
+	pcam->alive = 0;
+
+	//wait signal
+	//while(-1 != pcam->alive)
+
+	//free data
+	memorydelete(cam->priv_ptr);
+	cam->priv_ptr = 0;
 	return 0;
 }
-int videocreate(_obj* win, void* arg, int argc, u8** argv)
+int videocreate(_obj* cam, void* arg, int argc, u8** argv)
 {
-	int j;
-	for(j=0;j<24;j++)info[j].addr = 0;
-
-	win->STRIDE = 640;
-	win->HEIGHT = 480;
-	win->FORMAT = 
+	//default value
+	int stride = 640;
+	int height = 480;
+	int format = 
 	//	V4L2_PIX_FMT_JPEG;
 	//	V4L2_PIX_FMT_MJPEG;
 	//	V4L2_PIX_FMT_RGB24;
@@ -237,29 +271,44 @@ int videocreate(_obj* win, void* arg, int argc, u8** argv)
 	//	V4L2_PIX_FMT_YUV420;
 		V4L2_PIX_FMT_YUYV;
 
+	//parse value
+	int j;
 	for(j=1;j<argc;j++){
-	arg = argv[j];
-	if(0 == arg)break;
-	//say("%d->%.16s\n",j,arg;
-	if(0 == ncmp(arg, "format:", 7)){
-		arg = argv[j]+7;
-		//say("format=%.5s\n",arg);
-		if(0)return 0;
-		else if(0 == ncmp(arg, "mjpeg", 5))win->FORMAT = V4L2_PIX_FMT_MJPEG;
-		else if(0 == ncmp(arg, "h264", 4))win->FORMAT = V4L2_PIX_FMT_H264;
-	}
-	if(0 == ncmp(arg, "width:", 6)){
-		arg = argv[j]+6;
-		decstr2u32(arg, &win->STRIDE);
-	}
-	if(0 == ncmp(arg, "height:", 7)){
-		arg = argv[j]+7;
-		decstr2u32(arg, &win->HEIGHT);
-	}
+		arg = argv[j];
+		if(0 == arg)break;
+		//say("%d->%.16s\n",j,arg;
+		if(0 == ncmp(arg, "format:", 7)){
+			arg = argv[j]+7;
+			//say("format=%.5s\n",arg);
+			if(0)return 0;
+			else if(0 == ncmp(arg, "mjpeg", 5))format = V4L2_PIX_FMT_MJPEG;
+			else if(0 == ncmp(arg, "h264", 4))format = V4L2_PIX_FMT_H264;
+		}
+		if(0 == ncmp(arg, "width:", 6)){
+			arg = argv[j]+6;
+			decstr2u32(arg, &stride);
+		}
+		if(0 == ncmp(arg, "height:", 7)){
+			arg = argv[j]+7;
+			decstr2u32(arg, &height);
+		}
 	}//for
 
-	alive = 1;
-	threadcreate(visionlistener, win);
+	//remember value
+	cam->STRIDE = stride;
+	cam->HEIGHT = height;
+	cam->FORMAT = format;
+
+	//percam data
+	struct percam* pcam = cam->priv_ptr = memorycreate(0x1000, 4);
+	if(0 == pcam){
+		say("oom@alloc pcam\n");
+		return -1;
+	}
+
+	//percam thread
+	pcam->alive = 1;
+	pcam->thread = threadcreate(cameraworker, cam);
 	return 0;
 }
 

@@ -3,29 +3,29 @@
 
 
 
-void window_take(_obj* win)
+void window_take(_obj* wnd)
 {
 }
-void window_give()
+void window_give(_obj* wnd)
 {
 }
 
 
 
 
-void windowdelete(_obj* w)
+void windowdelete(_obj* wnd)
 {
 }
-void windowcreate(_obj* w)
+void windowcreate(_obj* wnd)
 {
-	w->fmt = _cli_;
-	w->vfmt = 0;
+	wnd->hfmt = _cli_;
+	wnd->vfmt = 0;
 
-	w->width = 80;
-	w->height = 25;
+	wnd->whdf.width = 80;
+	wnd->whdf.height = 25;
 
-	w->fbwidth = 80;
-	//w->fbheight = 0;
+	wnd->whdf.fbwidth = 80;
+	//wnd->whdf.fbheight = 0;
 }
 
 
