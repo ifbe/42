@@ -59,8 +59,9 @@ exe:
 	libsoft0/*.o libsoft1/*.o \
 	libuser0/*.o libuser1/*.o \
 	-lGLEW -lglfw -framework OpenGL \
-	-framework AVFoundation -framework Foundation -framework CoreVideo -framework CoreMedia \
-	-framework AudioToolbox -lm
+	-framework AVFoundation -framework CoreVideo -framework CoreMedia \
+	-framework AudioToolbox \
+	-framework Foundation -lm
 clean:
 	rm -f */*.o
 	rm -f *.exe *.out *.o *.a *.dylib

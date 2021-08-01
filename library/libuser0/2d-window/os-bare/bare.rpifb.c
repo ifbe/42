@@ -43,7 +43,7 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 	wndmgr_take(wnd,foot, stack,sp, arg,key, buf,len);
 
 	int j;
-	u32* ibuf = wnd->rgbabuf;
+	u32* ibuf = wnd->rgbanode.buf;
 	u32* obuf = (u32*)lfb;
 	for(j=0;j<width*height;j++)
 	{
@@ -73,16 +73,16 @@ void windowdelete(_obj* w)
 }
 void windowcreate(_obj* wnd)
 {
-	wnd->fmt = _rgba_;
+	wnd->hfmt = _rgba_;
 	wnd->vfmt = hex64('r', 'g', 'b', 'a', '8', '8', '8', '8');
 
-	wnd->width = width;
-	wnd->height = height;
+	wnd->whdf.width = width;
+	wnd->whdf.height = height;
 
-	wnd->fbwidth = pitch;
-	//wnd->fbheight = 0;
+	wnd->whdf.fbwidth = pitch;
+	//wnd->whdf.fbheight = 0;
 
-	wnd->rgbabuf = (void*)0x4000000;
+	wnd->rgbanode.buf = (void*)0x4000000;
 }
 
 

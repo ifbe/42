@@ -1,25 +1,43 @@
 library?=../../library
-CF="-c -O2 -fno-stack-protector -I.."
+project?=$(shell pwd)
+CC=clang
+CF="-c -O2 -fno-stack-protector -Wno-address-of-packed-member -I.."
 all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	make -s exe
 	make -s lib
 	cp a.out ../..
+.PHONY:libboot0
 libboot0:
-	make -s -C $(library)/libboot0 CC="clang" CF=$(CF) none
+	mkdir -p $@
+	make -s -C $(library)/$@ DIR=$(project)/$@ CC="clang" CF=$(CF) none
+.PHONY:libboot1
 libboot1:
-	make -s -C $(library)/libboot1 CC="clang" CF=$(CF)
+	mkdir -p $@
+	make -s -C $(library)/$@ DIR=$(project)/$@ CC="clang" CF=$(CF)
+.PHONY:libhard0
 libhard0:
-	make -s -C $(library)/libhard0 CC="clang" CF=$(CF) macx64
+	mkdir -p $@
+	make -s -C $(library)/$@ DIR=$(project)/$@ CC="clang" CF=$(CF) macx64
+.PHONY:libhard1
 libhard1:
-	make -s -C $(library)/libhard1 CC="clang" CF=$(CF)
+	mkdir -p $@
+	make -s -C $(library)/$@ DIR=$(project)/$@ CC="clang" CF=$(CF)
+.PHONY:libsoft0
 libsoft0:
-	make -s -C $(library)/libsoft0 CC="clang" CF=$(CF) mac
+	mkdir -p $@
+	make -s -C $(library)/$@ DIR=$(project)/$@ CC="clang" CF=$(CF) mac
+.PHONY:libsoft1
 libsoft1:
-	make -s -C $(library)/libsoft1 CC="clang" CF=$(CF)
+	mkdir -p $@
+	make -s -C $(library)/$@ DIR=$(project)/$@ CC="clang" CF=$(CF)
+.PHONY:libuser0
 libuser0:
-	make -s -C $(library)/libuser0 CC="clang" CF=$(CF) macsdl
+	mkdir -p $@
+	make -s -C $(library)/$@ DIR=$(project)/$@ CC="clang" CF=$(CF) macsdl
+.PHONY:libuser1
 libuser1:
-	make -s -C $(library)/libuser1 CC="clang" CF=$(CF)
+	mkdir -p $@
+	make -s -C $(library)/$@ DIR=$(project)/$@ CC="clang" CF=$(CF)
 lib:
 	rm -f libboot0/entry.o
 	ar crs 42.a \
@@ -33,14 +51,18 @@ dylib:
 	libhard0/*.o libhard1/*.o \
 	libsoft0/*.o libsoft1/*.o \
 	libuser0/*.o libuser1/*.o \
-	-lSDL2 -framework AudioToolbox -lm -lc
+	-framework AVFoundation -framework Foundation -framework CoreVideo -framework CoreMedia \
+	-framework AudioToolbox \
+	-lSDL2 -lm -lc
 exe:
-	gcc \
+	clang \
 	libboot0/*.o libboot1/*.o \
 	libhard0/*.o libhard1/*.o \
 	libsoft0/*.o libsoft1/*.o \
 	libuser0/*.o libuser1/*.o \
-	-lSDL2 -framework AudioToolbox -lm
+	-framework AVFoundation -framework Foundation -framework CoreVideo -framework CoreMedia \
+	-framework AudioToolbox \
+	-lSDL2 -lm -lc
 clean:
 	rm -f *.exe *.out *.o *.a *.dylib
 	make -C $(library) clean

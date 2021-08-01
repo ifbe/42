@@ -244,6 +244,30 @@ struct rgbanode{
 	void* buf;
 	void* depthbuf;
 };
+struct rgbasdl{
+	void* buf;
+	void* depthbuf;
+
+	void* sdlwnd;
+	void* sdlren;
+	void* sdltex;
+};
+struct rgbaxlib{
+	void* buf;
+	void* depthbuf;
+
+	u64   xlibfd;
+	void* xlibgc;
+	void* ximage;
+};
+struct rgbawinapi{
+	void* buf;
+	void* depthbuf;
+
+	void*   hwnd;
+	void*    hdc;
+	void*  binfo;
+};
 //directx11
 struct dx11easy{
 	struct dx11data* camera;
@@ -406,6 +430,9 @@ struct item
 		struct jsontext json;
 
 		struct rgbanode rgbanode;
+		struct rgbasdl rgbasdl;
+		struct rgbawinapi rgbawinapi;
+		struct rgbaxlib rgbaxlib;
 
 		struct gl41easy gl41easy;
 		struct gl41list gl41list;

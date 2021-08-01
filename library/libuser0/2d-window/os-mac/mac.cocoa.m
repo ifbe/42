@@ -35,7 +35,7 @@ static void stackevent()
 	ev.what = _char_;
 	ev.where = (u64)thewnd;
 
-	rgbanode_write(thewnd,0, stack,2, 0,0, &ev,0);
+	rgbanode_give(thewnd,0, stack,2, 0,0, &ev,0);
 }
 
 
@@ -166,9 +166,9 @@ NSLog(@"drawRect");
 	//[super drawRect:rect];
 
 	//Fill pixel buffer with color data
-	int width = thewnd->width;
-	int height= thewnd->height;
-	UInt8* data = thewnd->rgbabuf;
+	int width = thewnd->whdf.width;
+	int height= thewnd->whdf.height;
+	UInt8* data = thewnd->rgbanode.buf;
 
 	// Create a CGImage with the pixel data
 	NSInteger dataLength = width * height * 4;
@@ -270,16 +270,16 @@ void windowdelete(_obj* w)
 void windowcreate(_obj* wnd)
 {
 	//value
-	wnd->fmt = _rgba_;
+	wnd->hfmt = _rgba_;
 	wnd->vfmt = hex64('r','g','b','a','8','8','8','8');
 
-	wnd->width = 1024;
-	wnd->height = 768;
+	wnd->whdf.width = 1024;
+	wnd->whdf.height = 768;
 
-	wnd->fbwidth = 1024*4;
-	//wnd->fbheight = 0;
+	wnd->whdf.fbwidth = 1024*4;
+	//wnd->whdf.fbheight = 0;
 
-	wnd->rgbabuf = malloc(2048*2048*4);
+	wnd->rgbanode.buf = malloc(2048*2048*4);
 	thewnd = wnd;
 
 

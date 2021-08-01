@@ -37,11 +37,14 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 	//read context
 	rgbanode_take(wnd,0, stack,sp, 0,0, 0,0);
 
+	//per sdlwnd
+	struct rgbasdl* per = &wnd->rgbasdl;
+
 	//update screen
-	SDL_UpdateTexture(wnd->sdltex, NULL, wnd->rgbabuf, (wnd->width)*4);
-	SDL_RenderClear(wnd->sdlren);
-	SDL_RenderCopy(wnd->sdlren, wnd->sdltex, NULL, NULL);
-	SDL_RenderPresent(wnd->sdlren);
+	SDL_UpdateTexture(per->sdltex, NULL, per->buf, (wnd->whdf.width)*4);
+	SDL_RenderClear(per->sdlren);
+	SDL_RenderCopy(per->sdlren, per->sdltex, NULL, NULL);
+	SDL_RenderPresent(per->sdlren);
 
 	//cleanup events
 	msg.where = (u64)wnd;
@@ -60,18 +63,18 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 			if(SDL_WINDOWEVENT_RESIZED == ev.window.event)
 			{
 				//say("%d,%d\n", ev.window.data1, ev.window.data2);
-				wnd->width = ev.window.data1;
-				wnd->height = ev.window.data2;
+				wnd->whdf.width = ev.window.data1;
+				wnd->whdf.height = ev.window.data2;
 
-				wnd->fbwidth = wnd->width*4;
-				//wnd->fbheight = 0;
+				wnd->whdf.fbwidth = wnd->whdf.width*4;
+				//wnd->whdf.fbheight = 0;
 
-				SDL_DestroyTexture(wnd->sdltex);
-				wnd->sdltex = SDL_CreateTexture(
-					wnd->sdlren,
+				SDL_DestroyTexture(per->sdltex);
+				per->sdltex = SDL_CreateTexture(
+					per->sdlren,
 					SDL_PIXELFORMAT_ABGR8888,
 					SDL_TEXTUREACCESS_STREAMING,
-					wnd->width, wnd->height
+					wnd->whdf.width, wnd->whdf.height
 				);
 			}
 		}
@@ -92,7 +95,7 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 				else continue;
 
 				msg.what = _kbd_;
-				rgbanode_write(wnd,0, stack,sp, 0,0, &msg,0);
+				rgbanode_give(wnd,0, stack,sp, 0,0, &msg,0);
 			}
 			else
 			{
@@ -104,7 +107,7 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 					}
 				}
 				msg.what = _char_;
-				rgbanode_write(wnd,0, stack,sp, 0,0, &msg,0);
+				rgbanode_give(wnd,0, stack,sp, 0,0, &msg,0);
 			}
 		}
 		else if(SDL_MOUSEWHEEL == ev.type)
@@ -116,7 +119,7 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 			t[3] = (ev.wheel.y > 0) ? 'f' : 'b';
 
 			msg.what = 0x4070;
-			rgbanode_write(wnd,0, stack,sp, 0,0, &msg,0);
+			rgbanode_give(wnd,0, stack,sp, 0,0, &msg,0);
 		}
 		else if(SDL_MOUSEBUTTONDOWN == ev.type)
 		{
@@ -127,7 +130,7 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 				int y = ev.button.y;
 				msg.why = x+(y<<16)+((u64)'l'<<48);
 				msg.what = 0x2b70;
-				rgbanode_write(wnd,0, stack,sp, 0,0, &msg,0);
+				rgbanode_give(wnd,0, stack,sp, 0,0, &msg,0);
 			}
 		}
 		else if(SDL_MOUSEBUTTONUP == ev.type)
@@ -139,7 +142,7 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 				int y = ev.button.y;
 				msg.why = x+(y<<16)+((u64)'l'<<48);
 				msg.what = 0x2d70;
-				rgbanode_write(wnd,0, stack,sp, 0,0, &msg,0);
+				rgbanode_give(wnd,0, stack,sp, 0,0, &msg,0);
 			}
 		}
 		else if(SDL_MOUSEMOTION == ev.type)
@@ -149,7 +152,7 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 			int y = ev.button.y;
 			msg.why = x+(y<<16)+((u64)'l'<<48);
 			msg.what = 0x4070;
-			rgbanode_write(wnd,0, stack,sp, 0,0, &msg,0);
+			rgbanode_give(wnd,0, stack,sp, 0,0, &msg,0);
 		}
 	}
 }
@@ -159,38 +162,39 @@ void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 	//ev.type = SDL_USEREVENT;  
 	//SDL_PushEvent(&ev);
 }
-void windowlist()
-{
-}
-void windowchoose()
-{
-}
-void windowstop()
-{
-}
-void windowstart()
-{
-}
+
+
+
+
 void windowdelete(_obj* wnd)
 {
-	SDL_DestroyTexture(wnd->sdltex);
-	SDL_DestroyRenderer(wnd->sdlren);
-	SDL_DestroyWindow(wnd->sdlwnd); 
+	//per sdlwnd
+	struct rgbasdl* per = &wnd->rgbasdl;
+
+	SDL_DestroyTexture(per->sdltex);
+	SDL_DestroyRenderer(per->sdlren);
+	SDL_DestroyWindow(per->sdlwnd);
 	SDL_Quit(); 
 }
 void windowcreate(_obj* wnd)
 {
 	//data
-	wnd->fmt = _rgba_;
+	wnd->hfmt = _rgba_;
 	wnd->vfmt = hex64('r','g','b','a','8','8','8','8');
 
-	wnd->width= 1024;
-	wnd->height = 768;
+	wnd->whdf.width= 1024;
+	wnd->whdf.height = 768;
 
-	wnd->fbwidth = 1024*4;
-	//wnd->fbheight = 768;
+	wnd->whdf.fbwidth = 1024*4;
+	//wnd->whdf.fbheight = 768;
 
-	wnd->rgbabuf = malloc(2048*2048*4);
+
+
+
+	//per sdlwnd
+	struct rgbasdl* per = &wnd->rgbasdl;
+
+	per->buf = malloc(2048*2048*4);
 
 
 
@@ -198,19 +202,19 @@ void windowcreate(_obj* wnd)
 	//sdl2
 	SDL_Init(SDL_INIT_EVERYTHING);
 
-	wnd->sdlwnd = SDL_CreateWindow(
+	per->sdlwnd = SDL_CreateWindow(
 		"i am groot!",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
-		wnd->width, wnd->height,
+		wnd->whdf.width, wnd->whdf.height,
 		SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
 	);
-	wnd->sdlren = SDL_CreateRenderer(wnd->sdlwnd, -1, 0);
-	wnd->sdltex = SDL_CreateTexture(
-		wnd->sdlren,
+	per->sdlren = SDL_CreateRenderer(per->sdlwnd, -1, 0);
+	per->sdltex = SDL_CreateTexture(
+		per->sdlren,
 		SDL_PIXELFORMAT_ABGR8888,
 		SDL_TEXTUREACCESS_STREAMING,
-		wnd->width, wnd->height
+		wnd->whdf.width, wnd->whdf.height
 	);
 }
 
