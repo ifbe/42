@@ -1,7 +1,6 @@
 #include "libuser.h"
+#define COUNT 8
 #define _corner_ hex64('c', 'o', 'r', 'n', 'e', 'r', 0, 0)
-#define DATBUF listptr.buf0
-#define DATLEN listu64.data2
 void new2048(void*);
 void left2048(void*);
 void right2048(void*);
@@ -30,6 +29,10 @@ static u32 color2048[17] = {
 0xffff80, 0xffff00, 0xffffb0, 0x233333,
 0x783d72, 0xd73762
 };
+struct per2048{
+	u8 data[0x80];
+	u8 curr;
+};
 
 
 
@@ -42,20 +45,15 @@ static void the2048_modify(_obj* act, u8* buf)
 }
 static void the2048_delete(_obj* act, u8* buf)
 {
-	if(0 == act)return;
-	if(act->DATBUF){
-		memorydelete(act->DATBUF);
-		act->DATBUF = 0;
-	}
 }
 static void the2048_create(_obj* act, u8* buf)
 {
 	if(0 == act)return;
 
-	act->DATBUF = memorycreate(0x1000, 0);
-	act->DATLEN = 0;
+	struct per2048* per = (void*)act->priv_256b;
+	per->curr = 0;
 
-	new2048(act->DATBUF);
+	new2048(per->data);
 }
 
 
@@ -68,7 +66,9 @@ static void the2048_draw_pixel(
 	u32 color;
 	int x,y,x0,y0,x1,y1;
 	int cx, cy, ww, hh;
-	u8 (*tab)[4] = (void*)(act->DATBUF) + (act->DATLEN)*16;
+
+	struct per2048* per = (void*)act->priv_256b;
+	u8 (*tab)[4] = (void*)(per->data) + (per->curr)*16;
 
 	if(sty)
 	{
@@ -131,7 +131,7 @@ static void the2048_draw_dx11(
 	u32 rgb;
 	int x,y;
 	vec3 tc, tr, tf, tu, f;
-	u8 (*tab)[4] = (void*)(act->DATBUF) + (act->DATLEN)*16;
+	u8 (*tab)[4] = (void*)(per->data) + (per->curr)*16;
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<4;x++)
@@ -184,7 +184,10 @@ static void the2048_draw_gl41(
 	u32 rgb;
 	int x,y;
 	vec3 tc, tr, tf, tu, f;
-	u8 (*tab)[4] = (void*)(act->DATBUF) + (act->DATLEN)*16;
+
+	struct per2048* per = (void*)act->priv_256b;
+	u8 (*tab)[4] = (void*)(per->data) + (per->curr)*16;
+
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<4;x++)
@@ -245,10 +248,12 @@ static void the2048_draw_json(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
+	struct per2048* per = (void*)act->priv_256b;
+	u8 (*tab)[4] = (void*)(per->data) + (per->curr)*16;
+
 	int x,y;
 	int len = win->json.len;
 	u8* buf = win->json.buf;
-	u8 (*tab)[4] = (void*)(act->DATBUF) + (act->DATLEN)*16;
 
 	len += mysnprintf(buf+len, 0x100000-len, "{\"2048\" : ");
 	for(y=0;y<4;y++)
@@ -267,7 +272,8 @@ static void the2048_draw_html(
 	_obj* win, struct style* sty)
 {
 	int x,y;
-	u8 (*tab)[4] = (void*)(act->DATBUF) + (act->DATLEN)*16;
+	struct per2048* per = (void*)act->priv_256b;
+	u8 (*tab)[4] = (void*)(per->data) + (per->curr)*16;
 
 	//<head>
 	htmlprintf(win, 1,
@@ -294,7 +300,8 @@ static void the2048_draw_tui(
 	_obj* win, struct style* sty)
 {
 	int x,y;
-	u8 (*tab)[4] = (void*)(act->DATBUF) + (act->DATLEN)*16;
+	struct per2048* per = (void*)act->priv_256b;
+	u8 (*tab)[4] = (void*)(per->data) + (per->curr)*16;
 
 	for(y=0;y<4;y++)
 	{
@@ -309,7 +316,8 @@ static void the2048_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	u8 (*tab)[4] = (void*)(act->DATBUF) + (act->DATLEN)*16;
+	struct per2048* per = (void*)act->priv_256b;
+	u8 (*tab)[4] = (void*)(per->data) + (per->curr)*16;
 
 	say("2048(%x,%x,%x,%x)\n", win, act, sty, pin);
 	say("%d	%d	%d	%d\n",
@@ -346,10 +354,11 @@ static void the2048_move(_obj* act, int op)
 	int j;
 	u8* p;
 	u8* q;
+	struct per2048* per = (void*)act->priv_256b;
 
-	p = (void*)(act->DATBUF) + 16*(act->DATLEN);
-	(act->DATLEN) = ((act->DATLEN)+1)%4;
-	q = (void*)(act->DATBUF) + 16*(act->DATLEN);
+	p = (void*)(per->data) + 16*(per->curr);
+	(per->curr) = ((per->curr)+1)%COUNT;
+	q = (void*)(per->data) + 16*(per->curr);
 	for(j=0;j<16;j++)q[j] = p[j];
 
 	switch(op){
@@ -368,10 +377,11 @@ static void the2048_event(_obj* act, struct event* ev)
 	//say("%llx,%llx,%llx\n", act, pin, ev);
 	say("%16llx,%16llx,%16llx,%16llx\n",ev->when, ev->where, ev->what, ev->why);
 
+	struct per2048* per = (void*)act->priv_256b;
 	if(_char_ == ev->what)
 	{
 		switch(ev->why){
-		case 0x8:act->DATLEN = ((act->DATLEN)+15)%16;break;
+		case 0x8:per->curr = ((per->curr)+(COUNT-1))%COUNT;break;
 		case 'a':
 		case 'd':
 		case 's':

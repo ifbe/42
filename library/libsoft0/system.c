@@ -96,6 +96,18 @@ void system_exit()
 
 	say("[8,a):system exited\n");
 }
+void* system_alloc()
+{
+	void* addr = 0;
+	if(1){		//windows uses this function
+		addr = &obj[objlen];
+		objlen += 1;
+	}
+	return addr;
+}
+void system_recycle()
+{
+}
 
 
 

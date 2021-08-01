@@ -541,7 +541,7 @@ int role_fromfile(u8* str, int len)
 
 	len = openreadclose(str, 0, buf, 0x2000);
 	if(len <= 0)return 0;
-	//say("%s", buf);
+	say("%s", buf);
 
 	role_test1(buf, len);
 	return 1;

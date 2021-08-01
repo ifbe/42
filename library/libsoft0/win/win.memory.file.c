@@ -4,6 +4,7 @@
 #include <tlhelp32.h>
 #include "libsoft.h"
 int utf2unicode(void* src, void* dst);
+void* system_alloc();
 
 
 
@@ -17,13 +18,13 @@ void freefilemgr()
 void filemanager_registersupplier()
 {
 }
-_obj* getobjfromhandle(HANDLE h)
+_obj* getobjfromhandle(HANDLE hh)
 {
 	return 0;
 }
-HANDLE gethandlefromobj(_obj* o)
+HANDLE gethandlefromobj(_obj* oo)
 {
-	return 0;
+	return (HANDLE)oo->fileinfo.fd;
 }
 
 
@@ -197,7 +198,10 @@ _obj* file_create(void* orig, int flag)
 		say("error:%d@createfile:%s\n", GetLastError(), path);
 		return 0;
 	}
-	return getobjfromhandle(fd);
+
+	_obj* oo = system_alloc();
+	oo->fileinfo.fd = (u64)fd;
+	return oo;
 }
 int file_delete(_obj* oo)
 {

@@ -267,6 +267,11 @@ struct rgbawinapi{
 	void*   hwnd;
 	void*    hdc;
 	void*  binfo;
+
+	void* finger;
+
+	void* save_stack;
+	int save_sp;
 };
 //directx11
 struct dx11easy{

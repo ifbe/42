@@ -1,6 +1,6 @@
-project?=$(shell pwd)
-library?=../../library
 datafile?=../../datafile
+library?=../../library
+project?=$(shell pwd)
 CC=gcc
 CF="-c -O2 -I.."
 CXX=g++

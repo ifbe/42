@@ -35,12 +35,15 @@ int window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,in
 	MSG msg;
 	BITMAPINFO info;
 
+	struct rgbawinapi* per = &wnd->rgbawinapi;
+
 	//read context
-	rgbanode_read(wnd,foot, stack,sp, arg,key, buf,len);
+	rgbanode_take(wnd,foot, stack,sp, arg,key, buf,len);
 
 	//update screen
-	int w = wnd->width;
-	int h = wnd->height;
+	int w = wnd->whdf.width;
+	int h = wnd->whdf.height;
+
 	info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 	info.bmiHeader.biPlanes = 1;
 	info.bmiHeader.biBitCount = 32;
@@ -57,25 +60,24 @@ int window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,in
 	info.bmiHeader.biHeight = -h;
 	info.bmiHeader.biSizeImage = w*h*4;
 	SetDIBitsToDevice(
-		wnd->hdc,
+		per->hdc,
 		0, 0,w, h,		//dst: x,y,w,h
 		0, 0,0, h,		//src: x,y,0,h
-		wnd->rgbabuf, &info, DIB_RGB_COLORS
+		per->buf, &info, DIB_RGB_COLORS
 	);
 
-	//cleanup events
-	u64 save[2];
-	save[0] = (u64)stack;
-	save[1] = sp;
-	wnd->spsave = save;
+	//remember stack
+	per->save_stack = stack;
+	per->save_sp = sp;
 
+	//cleanup events
 	while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
 
-	wnd->spsave = 0;
+	per->save_stack = 0;
 	return 0;
 }
 int window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
@@ -116,8 +118,11 @@ int windowdelete(_obj* wnd)
 		hex16('w','-'),
 		(LPARAM)wnd
 	);*/
-	HWND hwnd = wnd->hwnd;
-	HDC dc = wnd->hdc;
+
+	struct rgbawinapi* per = &wnd->rgbawinapi;
+
+	HWND hwnd = per->hwnd;
+	HDC dc = per->hdc;
 
 	ReleaseDC(hwnd, dc);
 
@@ -133,25 +138,28 @@ int windowcreate(_obj* wnd)
 {
 	if(0 == wnd)return 0;
 
-	wnd->fmt = _rgba_;
+	wnd->hfmt = _rgba_;
 	wnd->vfmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
 
-	wnd->width = 1024;
-	wnd->height = 768;
+	wnd->whdf.width = 1024;
+	wnd->whdf.height = 768;
 
-	wnd->fbwidth = 1024*4;
-	//wnd->fbheight = 0;
+	wnd->whdf.fbwidth = 1024*4;
+	//wnd->whdf.fbheight = 0;
 
-	wnd->hwnd = 0;
-	wnd->hdc = 0;
+
+
+
+	struct rgbawinapi* per = &wnd->rgbawinapi;
+
+	//rgba buffer
+	per->buf = malloc(2048*2048*4);
 
 	//per window data
 	int j;
-	int* finger = wnd->perwnd = malloc(0x1000);
+	int* finger = per->finger = malloc(0x1000);
 	for(j=0;j<10;j++)finger[j] = -1;
 
-	//rgba buffer
-	wnd->rgbabuf = malloc(2048*2048*4);
 
 
 
@@ -159,9 +167,9 @@ int windowcreate(_obj* wnd)
 	//创建窗口
 	RECT tmp;
 	tmp.left = 0;
-	tmp.right = wnd->width;
+	tmp.right = wnd->whdf.width;
 	tmp.top = 0;
-	tmp.bottom = wnd->height;
+	tmp.bottom = wnd->whdf.height;
 	AdjustWindowRect(&tmp, WS_OVERLAPPEDWINDOW, FALSE);
 
 	HWND hwnd = CreateWindow(
@@ -211,8 +219,8 @@ int windowcreate(_obj* wnd)
 	hProc(0x0049, 1);
 
 	//完成
-	wnd->hwnd = hwnd;
-	wnd->hdc = dc;
+	per->hwnd = hwnd;
+	per->hdc = dc;
 	SetWindowLongPtr(hwnd, GWLP_USERDATA, (u64)wnd);
 	alivecount++;
 
@@ -227,7 +235,8 @@ int windowcreate(_obj* wnd)
 static int whichfinger(_obj* wnd, int old, int new)
 {
 	int k;
-	int* tab = wnd->perwnd;
+	struct rgbawinapi* per = &wnd->rgbawinapi;
+	int* tab = per->finger;
 	for(k=0;k<10;k++)
 	{
 		if(old == tab[k])goto found;
@@ -240,15 +249,14 @@ found:
 }
 static void restorestackdeliverevent(_obj* wnd, struct event* ev)
 {
-	u64* save = wnd->spsave;
-	if(0 == save){
+	struct rgbawinapi* per = &wnd->rgbawinapi;
+
+	if(0 == per->save_stack){
 		eventwrite(ev->why, ev->what, ev->where, 0);
 		return;
 	}
 
-	struct halfrel* stack = (void*)save[0];
-	int depth = save[1];
-	rgbanode_write(wnd,0, stack,depth, 0,0, ev,0);
+	rgbanode_give(wnd,0, per->save_stack,per->save_sp, 0,0, ev,0);
 }
 LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
@@ -578,10 +586,10 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			if(win != 0)
 			{
-				win->width = w;
-				win->height = h;
+				win->whdf.width = w;
+				win->whdf.height = h;
 
-				win->fbwidth = w*4;
+				win->whdf.fbwidth = w*4;
 			}
 
 			//eventwrite(0x657a6973, 0x4077, addr, 0);
