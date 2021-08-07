@@ -4,18 +4,20 @@
 
 
 
-static void micphonecallback(void* ptr, AudioQueueRef inaq, AudioQueueBufferRef inctx, const AudioTimeStamp *inStartTime, UInt32 inNumberPacketDescriptions, const AudioStreamPacketDescription *inPacketDescs)
+static void micphonecallback(void* ptr, AudioQueueRef aqref, AudioQueueBufferRef aqbufref, const AudioTimeStamp* inStartTime, UInt32 inNumberPacketDescriptions, const AudioStreamPacketDescription* inPacketDescs)
 {
-	say("@micphonecallback: ptr=%llx, aqref=%llx, aqctx=%llx, time=%llx, num=%x, desc=%llx\n",
-	ptr, inaq, inctx, inStartTime, inNumberPacketDescriptions, inPacketDescs);
+	_obj* spk = ptr;
+	void* buf = aqbufref->mAudioData;
+	int len = aqbufref->mAudioDataByteSize;
+	say("@aqin.callback: spk=%p, aqref=%p,aqbufref=%p, len=%x,buf=%p, time=%lld\n",
+	spk, aqref, aqbufref, len,buf, inStartTime->mHostTime);
 
+	//deliver
 	struct halfrel stack[0x80];
-	void* buf = inctx->mAudioData;
-	int len = inctx->mAudioDataByteSize;
-	say("%llx,%x,%x\n", buf, len, inNumberPacketDescriptions);
-	give_data_into_peer(ptr,_dst_, stack,0, 0,0, buf,len);
+	give_data_into_peer(spk,_dst_, stack,0, 0,0, buf,len);
 
-	AudioQueueEnqueueBuffer(inaq, inctx, 0, NULL);
+	//reuse
+	AudioQueueEnqueueBuffer(aqref, aqbufref, 0, NULL);
 }
 
 
@@ -37,11 +39,11 @@ int micphonestart()
 {
 	return 0;
 }
-int micphonedelete(_obj* win)
+int micphonedelete(_obj* spk)
 {
 	return 0;
 }
-int micphonecreate(_obj* win)
+int micphonecreate(_obj* spk)
 {
 	AudioStreamBasicDescription fmt = {0};
 	fmt.mSampleRate = 44100;
@@ -52,35 +54,31 @@ int micphonecreate(_obj* win)
 	fmt.mBytesPerPacket = fmt.mBytesPerFrame = 2; // x2 for stereo
 	fmt.mBitsPerChannel = 16;
 
-	AudioQueueRef aq;
-	OSStatus status = AudioQueueNewInput(&fmt, micphonecallback, win, 0, 0, 0, &aq);
+	AudioQueueRef aqref;
+	OSStatus status = AudioQueueNewInput(&fmt, (void*)micphonecallback, spk, 0, 0, 0, &aqref);
 	if(status == kAudioFormatUnsupportedDataFormatError){
 		puts("oops!");
 		return 0;
 	}
-	else{
-		printf("NewInput status: %d\n", status);
-		win->pcmeasy.aqref = aq;
-	}
+	printf("NewInput status: %d\n", status);
+	spk->appleaq.aqref = aqref;
 
 	int j;
-	AudioQueueBufferRef* buf_ref = win->pcmeasy.aqctx = malloc(0x1000);
+	AudioQueueBufferRef* aqbufref = (void*)spk->appleaq.aqbufref;
 	for(j=0;j<16;j++){
-		status = AudioQueueAllocateBuffer(aq, 2*1024, &buf_ref[j]);
+		status = AudioQueueAllocateBuffer(aqref, 2*1024, &aqbufref[j]);
 		printf("[%d]Allocate status: %d\n", j, status);
 
-		status = AudioQueueEnqueueBuffer(aq, buf_ref[j], 0, NULL);
+		status = AudioQueueEnqueueBuffer(aqref, aqbufref[j], 0, NULL);
 		printf("[%d]Enqueue status: %d\n", j, status);
 	}
 
-	win->pcmeasy.aqref = aq;
-	status = AudioQueueSetParameter(aq, kAudioQueueParam_Volume, 1.0);
+	status = AudioQueueSetParameter(aqref, kAudioQueueParam_Volume, 1.0);
 	printf ("Volume status: %d\n", status);
 
-	status = AudioQueueStart(aq, NULL);
+	status = AudioQueueStart(aqref, NULL);
 	printf ("Start status: %d\n", status);
 
-	win->pcmeasy.aqctx = buf_ref;
 	return 0;
 }
 

@@ -146,7 +146,7 @@ struct eight_four{
 
 
 //--------------------------------private--------------------------------
-//common
+//normal
 struct listu32{
 	u32 data0;
 	u32 data1;
@@ -213,17 +213,20 @@ struct pcmeasy{
 	struct pcmdata* wall;
 	struct pcmdata* data;
 	struct pcmdata* what;
-
-	void*  aqref;
-	void*  aqctx;
-	int    aqenq;
-	int    aqdeq;
 };
 struct pcmlist{
 	struct pcmdata** mic;
 	struct pcmdata** wall;
 	struct pcmdata** data;
 	struct pcmdata** what;
+};
+struct appleaudioqueue{
+	void* aqbufref[16];	//+0x80
+	void* zero10ms;
+
+	void*  aqref;
+	int    aqenq;
+	int    aqdeq;
 };
 //text
 struct tuitext{
@@ -429,6 +432,7 @@ struct item
 		struct str buflen;
 
 		struct pcmeasy pcmeasy;
+		struct appleaudioqueue appleaq;
 
 		struct tuitext tuitext;
 		struct htmltext html;

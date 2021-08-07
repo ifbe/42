@@ -2,16 +2,20 @@
 #define _mic_ hex32('m','i','c',0)
 #define _pcm_ hex32('p','c','m',0)
 #define SLICE 16
-#define DATBUF listptr.buf0
-#define TABBUF listptr.buf1
-#define DATLEN listu64.data2
-#define TABLEN listu64.data3
 //libsoft1
 void fft(float* real, float* imag, int k);
 void ifft(float* real, float* imag, int k);
 
 
 
+
+struct peroscillo{
+	int tablen;
+	void* tabbuf[SLICE];
+
+	int datlen;
+	void* datbuf;
+};
 /*
 struct perframe
 {
@@ -94,22 +98,19 @@ static void oscillo_draw_pixel(
 	_obj* act, struct style* pin,
 	_obj* wnd, struct style* sty)
 {
-	int cx,cy,ww,hh;
-	int x,t,m;
-	void** tab;
-	short* buf;
 	if(0 == sty)return;
 
+	int cx,cy,ww,hh;
 	cx = sty->fs.vc[0];
 	cy = sty->fs.vc[1];
 	ww = sty->fs.vr[0];
 	hh = sty->fs.vf[1];
 
-	tab = act->TABBUF;
-	if(0 == tab)return;
-
+	struct peroscillo* per = (void*)act->priv_256b;
+	int x,t,m;
+	short* buf;
 	for(t=0;t<SLICE;t++){
-		buf = tab[t];
+		buf = per->tabbuf[t];
 		if(0 == buf)break;
 
 		for(x=0;x<1024;x++){
@@ -162,23 +163,21 @@ static void oscillo_gl41draw(
 	_obj* win, struct style* geom,
 	_obj* ctx, struct style* area)
 {
-	int x,t;
-	float tmp,val;
-	vec3 ta,tb;
-	void** tab;
-	short* buf;
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vu = geom->fs.vt;
 	gl41line_rect(ctx, 0xffff00, vc, vr, vf);
 
-	tab = act->TABBUF;
-	if(0 == tab)return;
+	struct peroscillo* per = (void*)act->priv_256b;
 	//printmemory(tab, 8*4);
 
+	int x,t;
+	float tmp,val;
+	vec3 ta,tb;
+	short* buf;
 	for(t=0;t<SLICE;t++){
-		buf = tab[t];
+		buf = per->tabbuf[t];
 		if(0 == buf)break;
 
 		for(x=0;x<1024;x++){
@@ -217,34 +216,32 @@ static void oscillo_draw_cli(
 {
 	say("oscillo(%x,%x,%x)\n",win,act,sty);
 }
-
-
-
-
-void oscillo_data(_obj* act, int type, void* buf, int len)
+void oscillo_getpcm(_obj* ent, _obj* sup)
 {
-	int idx;
-	void** tab;
-	say("@oscillo_write.pcm: %d\n", len);
+	struct peroscillo* per = (void*)ent->priv_256b;
+	if(0 == per->datbuf)return;
 
-	idx = (act->TABLEN+1) % SLICE;
-	act->TABLEN = idx;
-
-	tab = act->TABBUF;
-	tab[idx] = buf;
-}
-void oscillo_pcm(_obj* ent, _obj* sup)
-{
 	struct pcmdata* pcm;
-	if(0 == ent->DATBUF)return;
-//say("@oscillo_pcm\n");
-	pcm = ent->DATBUF + 44 - 0x10;
+//say("@oscillo_getpcm\n");
+	pcm = per->datbuf + 44 - 0x10;
 	pcm->fmt = hex32('s','1','6',0);
 	pcm->chan = 1;
 	pcm->rate = 44100;
 	pcm->count = 65536;
 
 	sup->pcmeasy.data = pcm;
+}
+
+
+
+
+void oscillo_data(_obj* act, int type, void* buf, int len)
+{
+	say("@oscillo_write.pcm: %d\n", len);
+
+	struct peroscillo* per = (void*)act->priv_256b;
+	per->tabbuf[per->tablen] = buf;
+	per->tablen = (per->tablen+1) % SLICE;
 }
 
 
@@ -282,7 +279,7 @@ static void oscillo_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 
 	switch(wnd->hfmt){
 	case _pcm_:
-		oscillo_pcm(ent, wnd);
+		oscillo_getpcm(ent, wnd);
 		break;
 	case _rgba_:
 		oscillo_draw_pixel(ent,slot, wnd,area);
@@ -325,18 +322,16 @@ static void oscillo_delete(_obj* act)
 static void oscillo_create(_obj* act, u8* arg)
 {
 	int j;
-	void* buf;
-	void** tab;
+	struct peroscillo* per = (void*)act->priv_256b;
+	per->tablen = 0;
+	per->datlen = 0;
 
-	act->TABLEN = 0;
-	tab = act->TABBUF = memorycreate(0x1000, 0);
+	if(arg){	//wav file
+		per->datbuf = memorycreate(0x100000, 0);
+		openreadclose(arg, 0, per->datbuf, 0x100000);
 
-	if(arg){
-		buf = act->DATBUF = memorycreate(0x100000, 0);
-		openreadclose(arg, 0, buf, 0x100000);
-
-		for(j=0;j<SLICE;j++)tab[j] = buf+44 + j*1024;
-		act->TABLEN = SLICE;
+		for(j=0;j<SLICE;j++)per->tabbuf[j] = per->datbuf+44 + j*1024;
+		per->tablen = SLICE;
 	}
 }
 

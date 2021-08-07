@@ -1,15 +1,13 @@
 #include "libuser.h"
 #include "AudioToolbox/AudioToolbox.h"
+#define BUFCNT 4
+#define SAMPLE_1s 44100
+#define SAMPLE_10ms 441
 
-/*
-typedef struct {
-	int count;
-}PhaseBlah;
-static PhaseBlah phase = {0};
-static float freq[12] = {440, 466, 494, 523, 554, 587, 622, 659, 698.5, 740, 784, 830.6};
-*/
 
-static void speakercallback(void* ptr, AudioQueueRef aq, AudioQueueBufferRef buf_ref)
+
+
+static void speakercallback(void* ptr, AudioQueueRef aqref, AudioQueueBufferRef aqbufref)
 {
 /*
 	OSStatus status;
@@ -27,83 +25,104 @@ static void speakercallback(void* ptr, AudioQueueRef aq, AudioQueueBufferRef buf
 	status = AudioQueueEnqueueBuffer(aq, buf_ref, 0, NULL);
 	printf ("Enqueue status: %d\n", status);
 */
-	_obj* sup = ptr;
-	say("@audioqueue.callback: %llx, %d, %d\n", sup, sup->pcmeasy.aqenq, sup->pcmeasy.aqdeq);
+	_obj* spk = ptr;
+	spk->appleaq.aqdeq = (spk->appleaq.aqdeq+1)%BUFCNT;
+
+	say("@aqout.callback: spk=%p,enq=%d,deq=%d, aqref=%p,aqbufref=%p\n",
+		spk, spk->appleaq.aqenq, spk->appleaq.aqdeq, aqref, aqbufref);
+
+	if(spk->appleaq.aqenq == spk->appleaq.aqdeq){
+		say("aqout hungry\n");
+		AudioQueueEnqueueBuffer(aqref, (void*)spk->appleaq.zero10ms, 0, NULL);
+		spk->appleaq.aqenq = (spk->appleaq.aqenq+1)%BUFCNT;
+	}
 }
 
 
 
 
 int speaker_take(_obj* spk,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
-{
+{/*
 	if(spk->orel0)take_data_from_peer(spk,_ctx_, stack,sp, 0,0, 0,0);
 
-	struct pcmdata* pcm = spk->pcmeasy.data;
+	struct pcmdata* pcm = spk->appleaq.data;
 	if(0 == pcm)return 0;
 	say("fmt=%x,chan=%d,rate=%d,count=%d,buf=%llx\n", pcm->fmt, pcm->chan, pcm->rate, pcm->count, pcm->buf);
 
-	AudioQueueRef aqref = spk->pcmeasy.aqref;
-	AudioQueueBuffer** aqctx = spk->pcmeasy.aqctx;
+	AudioQueueRef aqref = spk->appleaq.aqref;
+	AudioQueueBufferRef* aqbufref = (void*)spk->appleaq.aqbufref;
 
 	int j,cnt;
 	short* src = pcm->buf;
-	short* dst = aqctx[0]->mAudioData;
+	short* dst = aqbufref[0]->mAudioData;
 	cnt = pcm->count;
 	if(cnt > 44100)cnt = 44100;
 	for(j=0;j<cnt;j++)dst[j] = src[j];
-	aqctx[0]->mAudioDataByteSize = cnt*2;
+	aqbufref[0]->mAudioDataByteSize = cnt*2;
 
-	printf("buf: %p, data: %p, len: %d\n", aqctx[0], aqctx[0]->mAudioData, aqctx[0]->mAudioDataByteSize);
-	AudioQueueEnqueueBuffer(aqref, aqctx[0], 0, NULL);
+	printf("buf: %p, data: %p, len: %d\n", aqbufref[0], aqbufref[0]->mAudioData, aqbufref[0]->mAudioDataByteSize);
+	AudioQueueEnqueueBuffer(aqref, aqbufref[0], 0, NULL);
 
-	usleep(1000*1000);
+	usleep(1000*1000);*/
 	return 0;
 }
 int speaker_give(_obj* spk,void* foot, _syn* stack,int sp, void* arg, int idx, short* buf, int len)
 {
 	int j;
-	say("@speakerwrite: len=%x\n", len);
+	//say("@speakerwrite: len=%x\n", len);
 
-	AudioQueueRef aqref = spk->pcmeasy.aqref;
-	AudioQueueBuffer** aqctx = spk->pcmeasy.aqctx;
-	int enq = spk->pcmeasy.aqenq;
+	int enq = spk->appleaq.aqenq;
+	int deq = spk->appleaq.aqdeq;
+	AudioQueueRef aqref = spk->appleaq.aqref;
+	AudioQueueBufferRef aqbufref = spk->appleaq.aqbufref[enq];
 
-	short* dst = aqctx[enq]->mAudioData;
+	short* dst = aqbufref->mAudioData;
 	for(j=0;j<len/2;j++)dst[j] = buf[j];
-	aqctx[enq]->mAudioDataByteSize = len;
+	aqbufref->mAudioDataByteSize = len;
 
-	j = AudioQueueEnqueueBuffer(aqref, aqctx[enq], 0, NULL);
-	//say("j=%d\n", j);
+	j = AudioQueueEnqueueBuffer(aqref, aqbufref, 0, NULL);
+	say("@AudioQueueEnqueueBuffer: spk=%p,enq=%d,deq=%d, aqref=%p,aqbufref=%p,ret=%d\n",
+		spk,enq,deq, aqref,aqbufref, j);
 
-	spk->pcmeasy.aqenq = (enq+1)%2;
-	return 0;
-}
-int speakerstop()
-{
-	return 0;
-}
-int speakerstart()
-{
+	spk->appleaq.aqenq = (enq+1)%BUFCNT;
 	return 0;
 }
 
 
 
 
-int speakerlist()
+int spaker_makerecvpool(_obj* spk, AudioQueueRef aqref)
+{
+	int j;
+	OSStatus status;
+	AudioQueueBufferRef* aqbufref = (void*)spk->appleaq.aqbufref;
+	for(j=0;j<BUFCNT;j++){
+		status = AudioQueueAllocateBuffer(aqref, 2*44100, &aqbufref[j]);
+		printf ("[%d]status=%d,buffer=%p\n", j, status, aqbufref[j]);
+	}
+	return 0;
+}
+int spaker_makezero10ms(_obj* spk, AudioQueueRef aqref)
+{
+	OSStatus status = AudioQueueAllocateBuffer(aqref, SAMPLE_10ms*2, (void*)&spk->appleaq.zero10ms);
+
+	AudioQueueBufferRef zero10ms = spk->appleaq.zero10ms;
+	say("[x]status=%d,buffer=%p\n", status, zero10ms);
+
+	int j;
+	short* dst = zero10ms->mAudioData;
+	for(j=0;j<SAMPLE_10ms;j++)dst[j] = 0;
+	zero10ms->mAudioDataByteSize = SAMPLE_10ms*2;
+
+	return 0;
+}
+int speakerdelete(_obj* spk)
 {
 	return 0;
 }
-int speakerchoose()
+int speakercreate(_obj* spk)
 {
-	return 0;
-}
-int speakerdelete(_obj* win)
-{
-	return 0;
-}
-int speakercreate(_obj* win)
-{
+	//0.aqref
 	AudioStreamBasicDescription fmt = {0};
 	fmt.mSampleRate = 44100;
 	fmt.mFormatID = kAudioFormatLinearPCM;
@@ -113,35 +132,32 @@ int speakercreate(_obj* win)
 	fmt.mBytesPerPacket = fmt.mBytesPerFrame = 2; // x2 for stereo
 	fmt.mBitsPerChannel = 16;
 
-	//0.aqref
-	AudioQueueRef aq;
-	OSStatus status = AudioQueueNewOutput(&fmt, speakercallback, win, 0, 0, 0, &aq);
+	AudioQueueRef aqref;
+	OSStatus status = AudioQueueNewOutput(&fmt, speakercallback, spk, 0, 0, 0, &aqref);
 	if(status == kAudioFormatUnsupportedDataFormatError){
 		puts("oops!");
 		return 0;
 	}
-	else{
-		printf("NewOutput status: %d\n", status);
-		win->pcmeasy.aqref = aq;
-	}
+	printf("NewOutput status: %d\n", status);
+	spk->appleaq.aqref = aqref;
 
-	//1.aqctx
-	int j;
-	AudioQueueBufferRef* buf_ref = win->pcmeasy.aqctx = malloc(0x1000);
-	for(j=0;j<2;j++){
-		status = AudioQueueAllocateBuffer(win->pcmeasy.aqref, 2*44100, &buf_ref[j]);
-		printf ("[%d]Allocate status: %d\n", j, status);
-	}
 
-	status = AudioQueueSetParameter(win->pcmeasy.aqref, kAudioQueueParam_Volume, 0.5);
+	//1.aqbufref
+	spaker_makerecvpool(spk, aqref);
+	spaker_makezero10ms(spk, aqref);
+
+
+	//2.start
+	status = AudioQueueSetParameter(aqref, kAudioQueueParam_Volume, 1.0);
 	printf ("Volume status: %d\n", status);
 
-	status = AudioQueueStart(win->pcmeasy.aqref, NULL);
+	status = AudioQueueStart(aqref, NULL);
 	printf ("Start status: %d\n", status);
 
-	//2.aqidx
-	win->pcmeasy.aqenq = 0;
-	win->pcmeasy.aqdeq = 0;
+
+	//3.enq,deq
+	spk->appleaq.aqenq = 0;
+	spk->appleaq.aqdeq = 0;
 	return 0;
 }
 
