@@ -150,7 +150,7 @@ static int kernel_drawloop(struct item* wrk)
 
 
 
-
+#define STALL_SEC 3
 static int kernel_failloop(struct item* wrk)
 {
 	int j;
@@ -160,7 +160,7 @@ static int kernel_failloop(struct item* wrk)
 	struct halfrel stack[0x80];
 	stack[0].pchip = wrk;
 	stack[1].pchip = wnd;
-	say("failloop: waiting for drawloop&pollloop\n");
+	say("failloop: waiting 3s for drawloop&pollloop\n");
 
 	struct event* ev;
 	u64 curr;
@@ -176,13 +176,13 @@ static int kernel_failloop(struct item* wrk)
 
 		//drawloop fail, i have to draw
 		if(0 == heartbeat_draw){
-			if(curr <= 10)say("drawloop fail after %d sec\n", curr);
+			if(curr <= STALL_SEC)say("drawloop fail after %d sec\n", curr);
 			supply_take(wnd,0, stack,2, 0,0, 0,0);
 		}
 
 		//pollloop fail, i have to poll
 		if(0 == heartbeat_poll){
-			if(curr <= 10)say("pollloop fail after %d sec\n", curr);
+			if(curr <= STALL_SEC)say("pollloop fail after %d sec\n", curr);
 
 			//poll all
 			for(j=0;j<10;j++){
@@ -211,11 +211,11 @@ static int kernel_idleloop(struct item* wrk)
 
 	while(1){
 		time = timeread();
-		if(time > heartbeat_draw + 1000*1000*10){
-			say("drawloop: stall >10s\n");
+		if(time > heartbeat_draw + 1000*1000*STALL_SEC){
+			say("drawloop: stall >%ds\n",STALL_SEC);
 		}
-		if(time > heartbeat_poll + 1000*1000*10){
-			say("pollloop: stall >10s\n");
+		if(time > heartbeat_poll + 1000*1000*STALL_SEC){
+			say("pollloop: stall >%ds\n",STALL_SEC);
 		}
 		haltwaitforint();
 	}
@@ -239,6 +239,7 @@ int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 	//kernel_ttyctx(tty);
 	kernel_wndctx(wnd);
 
+	//start work
 	if(1){
 		//kernel thread
 		threadcreate(kernel_drawloop, wrk);
@@ -246,14 +247,14 @@ int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 
 		//check if thread ok, wait at most 10s
 		sleep_us(100*1000);
-		kernel_failloop(wrk);
 	}
 	else{
 		//processcreate("/init");
 	}
 
-	//everything ok
-	return kernel_idleloop(wrk);
+	//check fail
+	if((0 == heartbeat_draw)|(0 == heartbeat_poll))kernel_failloop(wrk);
+	else kernel_idleloop(wrk);
 }
 
 

@@ -93,12 +93,6 @@ void freewindow()
 }
 void initwindow()
 {
-	//must do: add these to config.txt
-	//hdmi_mode:1=16
-	//hdmi_group:1=1
-	//hdmi_mode:0=16
-	//hdmi_group:0=1
-
 	maildata[0] = 35*4;
 	maildata[1] = MBOX_REQUEST;
 

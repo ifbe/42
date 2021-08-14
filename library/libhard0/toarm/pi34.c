@@ -68,7 +68,7 @@ void inithardware()
 	initsdhost(p);
 
 	if(4 == raspi_version()){
-		brcmpcie_init();
-		brcmxhci_init();
+		//brcmpcie_init();
+		//brcmxhci_init();
 	}
 }

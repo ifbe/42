@@ -89,8 +89,6 @@ void freeserial()
 }
 void initserial()
 {
-	//must do 1: echo "enable_uart=1" >> /your_rpi4/boot/config.txt
-	//must do 1: echo "core_freq=250" >> /your_rpi4/boot/config.txt
 	register unsigned int r;
 	mmio = mmiobase();
 
