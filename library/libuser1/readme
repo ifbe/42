@@ -1,17 +1,8 @@
-themind:
-	soul of thing: code for esc/bms/inverter/generator, idea of human
-therule:
-	soul of world: course of nature, law of human
-thething:
-	body of thing: flower/grass, drone/vehicle, dog/cat, ...
-theworld:
-	body of world: whole(root), scene(fork)
-
-forcpu:
-	yuv, pcm, ...
-forfile:
-	html, json, ...
-forgpu:
-	dx, gl, vk, ...
-forspu:
-	al, sl, ...
+datathing:
+	entity
+dataworld:
+	entity manager
+codething:
+	input system, gravity system, biology system...
+codeworld:
+	to combine different systems: gravity&electric&magnet

@@ -255,6 +255,8 @@ int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 	//check fail
 	if((0 == heartbeat_draw)|(0 == heartbeat_poll))kernel_failloop(wrk);
 	else kernel_idleloop(wrk);
+
+	return 0;
 }
 
 
