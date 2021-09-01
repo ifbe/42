@@ -77,6 +77,7 @@ libalgo/tree/tree.bplus.c \
 libchem/chem.equation.c \
 libfile/certificate/cert.pem.c \
 libfile/certificate/cert.x509.c \
+libfile/codec/video/codec.h264.c \
 libfile/compress/comp.7z.c \
 libfile/compress/comp.cpio.c \
 libfile/compress/comp.gz.c \

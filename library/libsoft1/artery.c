@@ -124,6 +124,13 @@ int extclient_discon(struct halfrel* self, struct halfrel* peer);
 int extclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
 int extclient_read( _obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
 //
+int h264_create(_obj* ele, void* url, int argc, u8** argv);
+int h264_delete(_obj* ele, void* url);
+int h264_linkup(struct halfrel* self, struct halfrel* peer);
+int h264_discon(struct halfrel* self, struct halfrel* peer);
+int h264_take(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+int h264_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+//
 int control_create(_obj* ele, void* url, int argc, u8** argv);
 int control_delete(_obj* ele, void* url);
 int control_linkup(struct halfrel* self, struct halfrel* peer);
@@ -881,6 +888,17 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 
 		e->type = _ext_;
 		extclient_create(e, url, argc, argv);
+		return e;
+	}
+
+	//codec
+	if(_h264_ == type)
+	{
+		e = artery_alloc();
+		if(0 == e)return 0;
+
+		e->type = _h264_;
+		h264_create(e, url, argc, argv);
 		return e;
 	}
 
@@ -1742,6 +1760,8 @@ int arterylinkup(struct halfrel* self, struct halfrel* peer)
 	case _fat_:return fatclient_linkup(self, peer);break;
 	case _hfs_:return hfsclient_linkup(self, peer);break;
 
+	case _h264_:return h264_linkup(self, peer);break;
+
 	case _dns_:return dnsclient_linkup(self, peer);break;
 	case _DNS_:return dnsserver_linkup(self, peer);break;
 	case _ntp_:return ntpclient_linkup(self, peer);break;
@@ -1820,6 +1840,8 @@ int arterydiscon(struct halfrel* self, struct halfrel* peer)
 	case _fat_:return fatclient_discon(self, peer);break;
 	case _hfs_:return hfsclient_discon(self, peer);break;
 
+	case _h264_:return h264_discon(self, peer);break;
+
 	case _dns_:return dnsclient_discon(self, peer);break;
 	case _DNS_:return dnsserver_discon(self, peer);break;
 	case _ntp_:return ntpclient_discon(self, peer);break;
@@ -1897,6 +1919,8 @@ int artery_take(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
 	//case _file_:file_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _pump_:pump_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _stor_:stor_read(art,foot, stack,sp, arg,idx, buf,len);break;
+
+	case _h264_:h264_take(art,foot, stack,sp, arg,idx, buf,len);break;
 
 	case _easymux_:easymux_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _mediamux_:mediamux_read(art,foot, stack,sp, arg,idx, buf,len);break;
@@ -2013,6 +2037,8 @@ int artery_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
 	//case _file_:return file_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _pump_:return pump_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _stor_:return stor_write(art,foot, stack,sp, arg,idx, buf,len);break;
+
+	case _h264_:return h264_give(art,foot, stack,sp, arg,idx, buf,len);break;
 
 	case _easymux_:return easymux_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _mediamux_:return mediamux_write(art,foot, stack,sp, arg,idx, buf,len);break;
