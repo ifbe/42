@@ -1,0 +1,21 @@
+<artery>
+h264{
+fmt:h264
+}
+</artery>
+
+
+<supply>
+usbcam{
+fmt:cam
+format:h264
+width:1920
+height:1080
+speed:60
+}
+</supply>
+
+
+<relation>
+(usbcam, 0, dst) -> (h264, 0, src)
+</relation>
