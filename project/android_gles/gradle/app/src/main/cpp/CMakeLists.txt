@@ -44,18 +44,19 @@ ${LIB42}/libboot1/data/bignode.c
 ${LIB42}/libboot1/data/relation.c
 ${LIB42}/libboot1/data/linklist.c
 ${LIB42}/libboot1/data/rbtree.c
+${LIB42}/libboot1/inout/in.ev.c
+${LIB42}/libboot1/inout/in.str.c
+${LIB42}/libboot1/inout/out.str.c
+${LIB42}/libboot1/inout/out.trace.c
 ${LIB42}/libboot1/loop/loop.exiter.c
 ${LIB42}/libboot1/loop/loop.poller.c
 ${LIB42}/libboot1/loop/loop.pulser.c
 ${LIB42}/libboot1/loop/loop.waiter.c
-${LIB42}/libboot1/std/stdev.c
-${LIB42}/libboot1/std/stdin.c
-${LIB42}/libboot1/std/stdout.c
-${LIB42}/libboot1/work/work.compile.c
-${LIB42}/libboot1/work/work.kernel.c
-${LIB42}/libboot1/work/work.myml.c
-${LIB42}/libboot1/work/work.mython.c
-${LIB42}/libboot1/work/work.guiapp.c
+${LIB42}/libboot1/setup/setup.compiler.c
+${LIB42}/libboot1/setup/setup.kernel.c
+${LIB42}/libboot1/setup/setup.myml.c
+${LIB42}/libboot1/setup/setup.mython.c
+${LIB42}/libboot1/setup/setup.guiapp.c
 ${LIB42}/libboot1/bootup.c
 )
 if(ANDROID_ABI STREQUAL armeabi-v7a)
@@ -219,6 +220,7 @@ ${LIB42}/libsoft1/libalgo/tree/tree.bplus.c
 ${LIB42}/libsoft1/libchem/chem.equation.c
 ${LIB42}/libsoft1/libfile/certificate/cert.pem.c
 ${LIB42}/libsoft1/libfile/certificate/cert.x509.c
+${LIB42}/libsoft1/libfile/codec/video/codec.h264.c
 ${LIB42}/libsoft1/libfile/compress/comp.7z.c
 ${LIB42}/libsoft1/libfile/compress/comp.cpio.c
 ${LIB42}/libsoft1/libfile/compress/comp.gz.c

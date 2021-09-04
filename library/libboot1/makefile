@@ -6,18 +6,19 @@ data/bignode.c \
 data/relation.c \
 data/linklist.c \
 data/rbtree.c \
+inout/in.ev.c \
+inout/in.str.c \
+inout/out.str.c \
+inout/out.trace.c \
 loop/loop.exiter.c \
 loop/loop.poller.c \
 loop/loop.pulser.c \
 loop/loop.waiter.c \
-std/stdev.c \
-std/stdin.c \
-std/stdout.c \
-work/work.compile.c \
-work/work.kernel.c \
-work/work.myml.c \
-work/work.mython.c \
-work/work.guiapp.c \
+setup/setup.compiler.c \
+setup/setup.kernel.c \
+setup/setup.myml.c \
+setup/setup.mython.c \
+setup/setup.guiapp.c \
 bootup.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 
