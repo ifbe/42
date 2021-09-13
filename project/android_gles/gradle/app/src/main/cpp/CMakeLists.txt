@@ -60,57 +60,57 @@ ${LIB42}/libboot1/setup/setup.guiapp.c
 ${LIB42}/libboot1/bootup.c
 )
 if(ANDROID_ABI STREQUAL armeabi-v7a)
-	set(libhard0
-	${LIB42}/libhard0/toarm/cpu32/arm.fp.c
-	${LIB42}/libhard0/device.c
-	${LIB42}/libhard0/inlinux/linux.wire.bt.c
-	${LIB42}/libhard0/inlinux/linux.wire.gpio.c
-	${LIB42}/libhard0/inlinux/linux.wire.i2c.c
-	${LIB42}/libhard0/inlinux/linux.wire.pci.c
-	${LIB42}/libhard0/inlinux/linux.wire.spi.c
-	${LIB42}/libhard0/inlinux/linux.wire.usb.c
-	${LIB42}/libhard0/inlinux/linux.wire.wifi.c
-	${LIB42}/libhard0/inlinux/hardware.c
-	)
+set(libhard0
+${LIB42}/libhard0/toarm/cpu32/arm.fp.c
+${LIB42}/libhard0/device.c
+${LIB42}/libhard0/inlinux/linux.wire.bt.c
+${LIB42}/libhard0/inlinux/linux.wire.gpio.c
+${LIB42}/libhard0/inlinux/linux.wire.i2c.c
+${LIB42}/libhard0/inlinux/linux.wire.pci.c
+${LIB42}/libhard0/inlinux/linux.wire.spi.c
+${LIB42}/libhard0/inlinux/linux.wire.usb.c
+${LIB42}/libhard0/inlinux/linux.wire.wifi.c
+${LIB42}/libhard0/inlinux/hardware.c
+)
 elseif(ANDROID_ABI STREQUAL arm64-v8a)
-	set(libhard0
-	${LIB42}/libhard0/toarm/cpu32/arm.fp.c	#todo: cpu64/arm64.fp.c
-	${LIB42}/libhard0/device.c
-	${LIB42}/libhard0/inlinux/linux.wire.bt.c
-	${LIB42}/libhard0/inlinux/linux.wire.gpio.c
-	${LIB42}/libhard0/inlinux/linux.wire.i2c.c
-	${LIB42}/libhard0/inlinux/linux.wire.pci.c
-	${LIB42}/libhard0/inlinux/linux.wire.spi.c
-	${LIB42}/libhard0/inlinux/linux.wire.usb.c
-	${LIB42}/libhard0/inlinux/linux.wire.wifi.c
-	${LIB42}/libhard0/inlinux/hardware.c
-	)
+set(libhard0
+${LIB42}/libhard0/toarm/cpu32/arm.fp.c	#todo: cpu64/arm64.fp.c
+${LIB42}/libhard0/device.c
+${LIB42}/libhard0/inlinux/linux.wire.bt.c
+${LIB42}/libhard0/inlinux/linux.wire.gpio.c
+${LIB42}/libhard0/inlinux/linux.wire.i2c.c
+${LIB42}/libhard0/inlinux/linux.wire.pci.c
+${LIB42}/libhard0/inlinux/linux.wire.spi.c
+${LIB42}/libhard0/inlinux/linux.wire.usb.c
+${LIB42}/libhard0/inlinux/linux.wire.wifi.c
+${LIB42}/libhard0/inlinux/hardware.c
+)
 elseif(ANDROID_ABI STREQUAL x86)
-	set(libhard0
-	${LIB42}/libhard0/tox86/cpu32/x86.fp.c
-	${LIB42}/libhard0/device.c
-	${LIB42}/libhard0/inlinux/linux.wire.bt.c
-	${LIB42}/libhard0/inlinux/linux.wire.gpio.c
-	${LIB42}/libhard0/inlinux/linux.wire.i2c.c
-	${LIB42}/libhard0/inlinux/linux.wire.pci.c
-	${LIB42}/libhard0/inlinux/linux.wire.spi.c
-	${LIB42}/libhard0/inlinux/linux.wire.usb.c
-	${LIB42}/libhard0/inlinux/linux.wire.wifi.c
-	${LIB42}/libhard0/inlinux/hardware.c
-	)
+set(libhard0
+${LIB42}/libhard0/tox86/cpu32/x86.fp.c
+${LIB42}/libhard0/device.c
+${LIB42}/libhard0/inlinux/linux.wire.bt.c
+${LIB42}/libhard0/inlinux/linux.wire.gpio.c
+${LIB42}/libhard0/inlinux/linux.wire.i2c.c
+${LIB42}/libhard0/inlinux/linux.wire.pci.c
+${LIB42}/libhard0/inlinux/linux.wire.spi.c
+${LIB42}/libhard0/inlinux/linux.wire.usb.c
+${LIB42}/libhard0/inlinux/linux.wire.wifi.c
+${LIB42}/libhard0/inlinux/hardware.c
+)
 elseif(ANDROID_ABI STREQUAL x86_64)
-	set(libhard0
-	${LIB42}/libhard0/tox86/cpu64/x64.fp.c
-	${LIB42}/libhard0/device.c
-	${LIB42}/libhard0/inlinux/linux.wire.bt.c
-	${LIB42}/libhard0/inlinux/linux.wire.gpio.c
-	${LIB42}/libhard0/inlinux/linux.wire.i2c.c
-	${LIB42}/libhard0/inlinux/linux.wire.pci.c
-	${LIB42}/libhard0/inlinux/linux.wire.spi.c
-	${LIB42}/libhard0/inlinux/linux.wire.usb.c
-	${LIB42}/libhard0/inlinux/linux.wire.wifi.c
-	${LIB42}/libhard0/inlinux/hardware.c
-	)
+set(libhard0
+${LIB42}/libhard0/tox86/cpu64/x64.fp.c
+${LIB42}/libhard0/device.c
+${LIB42}/libhard0/inlinux/linux.wire.bt.c
+${LIB42}/libhard0/inlinux/linux.wire.gpio.c
+${LIB42}/libhard0/inlinux/linux.wire.i2c.c
+${LIB42}/libhard0/inlinux/linux.wire.pci.c
+${LIB42}/libhard0/inlinux/linux.wire.spi.c
+${LIB42}/libhard0/inlinux/linux.wire.usb.c
+${LIB42}/libhard0/inlinux/linux.wire.wifi.c
+${LIB42}/libhard0/inlinux/hardware.c
+)
 endif()
 set(libhard1
 ${LIB42}/libhard1/devmap/acpi/devmap.acpi.c

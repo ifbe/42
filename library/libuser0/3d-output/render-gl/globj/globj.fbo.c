@@ -88,18 +88,70 @@ int gl41fboc_create(struct gl41data* tar)
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)say("err@fboc!!!\n");
 	return 0;
 }//c
+int gl41fbog_create(struct gl41data* tar)
+{
+	int w = tar->src.tex[0].w;
+	int h = tar->src.tex[0].h;
+	int fmt = tar->src.tex[0].fmt;
+
+	//fbo
+	glGenFramebuffers(1, &tar->dst.fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, tar->dst.fbo);
+
+	//depth buffer
+	glGenTextures(1, &tar->dst.rbo);
+	glBindTexture(GL_TEXTURE_2D, tar->dst.rbo);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, w, h, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+#ifdef __ANDROID__
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, tar->dst.rbo, 0);
+#else
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, tar->dst.rbo, 0);
+#endif
+
+	int j;
+	GLenum gbuffer[4];
+	for(j=0;j<4;j++){
+		//geometry buffer
+		glGenTextures(1, &tar->dst.tex[j]);
+		glBindTexture(GL_TEXTURE_2D, tar->dst.tex[j]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+#ifdef __ANDROID__
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+j, GL_TEXTURE_2D, tar->dst.tex[j], 0);
+#else
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+j, tar->dst.tex[j], 0);
+#endif
+
+		gbuffer[j] = GL_COLOR_ATTACHMENT0+j;
+	}
+	glDrawBuffers(4, gbuffer);
+
+	//check
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)say("err@fbog!!!\n");
+	return 0;
+}//g
 int gl41fbo_create(struct gl41data* tar)
 {
 	switch(tar->src.type){
 	case 'c':return gl41fboc_create(tar);
 	case 'd':return gl41fbod_create(tar);
+	case 'g':return gl41fbog_create(tar);
 	}
 	return 0;
 }
 
 
 
-
+/*
 int fbocreate_d(_obj* tar, int arg)
 {
 	//depth buffer
@@ -208,13 +260,13 @@ int fbocreate_g(_obj* tar, int arg)
 #else
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, tar->gl41list.dep, 0);
 #endif
-/*
+
 	//render buffer: without this, depth wrong
-	glGenRenderbuffers(1, &tar->gl41list.rbo);
-	glBindRenderbuffer(GL_RENDERBUFFER, tar->gl41list.rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1024, 1024);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, tar->gl41list.rbo);
-*/
+//	glGenRenderbuffers(1, &tar->gl41list.rbo);
+//	glBindRenderbuffer(GL_RENDERBUFFER, tar->gl41list.rbo);
+//	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1024, 1024);
+//	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, tar->gl41list.rbo);
+
 	for(j=0;j<4;j++){
 		//geometry buffer
 		glGenTextures(1, &tar->gl41list.tex[j]);
@@ -263,3 +315,4 @@ int fbodelete(_obj* tar)
 	if(tar->gl41list.fbo)glDeleteFramebuffers(1, &tar->gl41list.fbo);
 	return 0;
 }
+*/

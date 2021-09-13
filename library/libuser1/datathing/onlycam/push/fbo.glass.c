@@ -196,7 +196,7 @@ static void glass_forfbo_update(
 	data->dst.arg[1].fmt = 'v';
 	data->dst.arg[1].name = "camxyz";
 	data->dst.arg[1].data = frus->vc;
-	fbo->gl41list.camera[0] = data;
+	fbo->gl41list.world[0].camera[0] = data;
 }
 static void glass_forfbo_prepare(struct gl41data* data)
 {
@@ -277,7 +277,7 @@ void glass_forwnd_update(_obj* act, struct style* slot, _obj* fbo, struct style*
 	if(0 == data)return;
 
 	data->dst.texname[0] = "tex0";
-	data->src.tex[0].glfd = fbo->gl41list.tex[0];
+	//data->src.tex[0].glfd = fbo->gl41list.tex[0];
 	data->src.tex[0].fmt = '!';
 	data->src.tex_enq[0] += 1;
 }

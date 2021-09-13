@@ -267,7 +267,7 @@ static void vrbox_camera(
 	data->dst.arg[1].fmt = 'v';
 	data->dst.arg[1].name = "camxyz";
 	data->dst.arg[1].data = frus->vc;
-	wnd->gl41list.camera[0] = act->CAMBUF;
+	wnd->gl41list.world[0].camera[0] = act->CAMBUF;
 }
 
 

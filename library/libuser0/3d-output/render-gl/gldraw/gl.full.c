@@ -339,11 +339,10 @@ int fullwindow_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd,
 			entity_take(rel->pdstchip,rel->pdstfoot, stack,sp+2, arg,cmd, 0,0);
 
 			//upload
-			fullwindow_upload(wnd->gl41list.camera, wnd->gl41list.light, wnd->gl41list.solid, wnd->gl41list.opaque);
+			fullwindow_upload(wnd->gl41list.world[0].camera, wnd->gl41list.world[0].light, wnd->gl41list.world[0].solid, wnd->gl41list.world[0].opaque);
 
 			//render
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			fullwindow_render(wnd->gl41list.camera, wnd->gl41list.light, wnd->gl41list.solid, wnd->gl41list.opaque, wnd, area);
+			fullwindow_render(wnd->gl41list.world[0].camera, wnd->gl41list.world[0].light, wnd->gl41list.world[0].solid, wnd->gl41list.world[0].opaque, wnd, area);
 		}
 
 		rel = samesrcnextdst(rel);
@@ -403,8 +402,8 @@ void fullwindow_create(_obj* ogl)
 	ogl->hfmt = _gl41list_;
 	ogl->vfmt= _gl41list_;
 
-	ogl->gl41list.camera = memorycreate(0x10000, 0);
-	ogl->gl41list.light  = memorycreate(0x10000, 0);
-	ogl->gl41list.solid  = memorycreate(0x10000, 0);
-	ogl->gl41list.opaque = memorycreate(0x10000, 0);
+	ogl->gl41list.world[0].camera = memorycreate(0x10000, 0);
+	ogl->gl41list.world[0].light  = memorycreate(0x10000, 0);
+	ogl->gl41list.world[0].solid  = memorycreate(0x10000, 0);
+	ogl->gl41list.world[0].opaque = memorycreate(0x10000, 0);
 }

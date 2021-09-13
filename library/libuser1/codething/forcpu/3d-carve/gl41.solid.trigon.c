@@ -271,11 +271,11 @@ static int trigon3d_fill(_obj* win, struct mysrc* src)
 int trigon3d_vars(_obj* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
 	if(0 == win)return -1;
-	if(0 == win->gl41list.solid)return -2;
+	if(0 == win->gl41list.world[0].solid)return -2;
 
-	struct gl41data* p = win->gl41list.solid[trigon3d];
+	struct gl41data* p = win->gl41list.world[0].solid[trigon3d];
 	if(0 == p){
-		p = win->gl41list.solid[trigon3d] = memorycreate(0x1000, 0);
+		p = win->gl41list.world[0].solid[trigon3d] = memorycreate(0x1000, 0);
 		if(0 == p)return -3;
 	}
 

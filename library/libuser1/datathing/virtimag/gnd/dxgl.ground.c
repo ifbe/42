@@ -17,6 +17,10 @@ struct privdata{
 	u8 normal[128];
 	u8 matter[128];
 
+	struct texture tex_albedo;
+	struct texture tex_normal;
+	struct texture tex_matter;
+
 	struct dx11data dx11;
 	struct gl41data gl41;
 };
@@ -75,9 +79,14 @@ void ground_singlepiece(float (*vbuf)[6], float* vc,float* vr,float* vf)
 	vbuf[5][4] = 0.0;
 	vbuf[5][5] = 0.0;
 }
+static void ground_self_prep(struct privdata* per, char* albedo, char* normal, char* matter)
+{
+}
 
 
-static void ground_dx11prep(struct dx11data* data, char* tex0, char* tex1, char* tex2, char* vs, char* ps)
+
+
+static void ground_dx11_prep(struct dx11data* data, char* tex0, char* tex1, char* tex2, char* vs, char* ps)
 {
 	//shader
 	data->src.vs = memorycreate(0x10000, 0);
@@ -103,7 +112,7 @@ static void ground_dx11prep(struct dx11data* data, char* tex0, char* tex1, char*
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
 	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
 }
-static void ground_dx11draw(
+static void ground_dx11_draw(
 	_obj* act, struct style* part,
 	_obj* win, struct style* geom,
 	_obj* wnd, struct style* area)
@@ -137,7 +146,7 @@ static void ground_dx11draw(
 
 
 
-static void ground_gl41prep(struct gl41data* data, char* tex0, char* tex1, char* tex2, char* vs, char* fs)
+static void ground_gl41_prep(struct gl41data* data, char* tex0, char* tex1, char* tex2, char* vs, char* fs)
 {
 	say("%s\n%s\n%s\n%s\n%s\n",tex0,tex1,tex2,vs,fs);
 
@@ -181,7 +190,7 @@ static void ground_gl41prep(struct gl41data* data, char* tex0, char* tex1, char*
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
 	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
 }
-static void ground_gl41draw(
+static void ground_gl41_draw(
 	_obj* act, struct style* part,
 	_obj* win, struct style* geom,
 	_obj* wnd, struct style* area)
@@ -269,8 +278,8 @@ static void ground_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	switch(wnd->hfmt){
-	case _dx11list_:ground_dx11draw(ent,slot, wor,geom, wnd,area);break;
-	case _gl41list_:ground_gl41draw(ent,slot, wor,geom, wnd,area);break;
+	case _dx11list_:ground_dx11_draw(ent,slot, wor,geom, wnd,area);break;
+	case _gl41list_:ground_gl41_draw(ent,slot, wor,geom, wnd,area);break;
 	}
 }
 
@@ -367,17 +376,19 @@ static void ground_create(_obj* act, void* str, int argc, u8** argv)
 			matter = (void*)own->matter;
 		}
 	}
+
 	if(0 == albedo)albedo = "datafile/jpg/wall.jpg";
 	if(0 == normal)normal = "datafile/jpg/wallnormal.jpg";
 	if(0 == matter)matter = "datafile/jpg/wallmatter.jpg";
+	ground_self_prep(own, albedo, normal, matter);
 
 	if(0 == dxvs)dxvs = "datafile/shader/ground/dxvs.hlsl";
 	if(0 == dxps)dxps = "datafile/shader/ground/dxps.hlsl";
-	ground_dx11prep(&own->dx11, albedo, normal, matter, dxvs, dxps);
+	ground_dx11_prep(&own->dx11, albedo, normal, matter, dxvs, dxps);
 
 	if(0 == glvs)glvs = "datafile/shader/ground/fv.glsl";
 	if(0 == glfs)glfs = "datafile/shader/ground/ff.glsl";
-	ground_gl41prep(&own->gl41, albedo, normal, matter, glvs, glfs);
+	ground_gl41_prep(&own->gl41, albedo, normal, matter, glvs, glfs);
 }
 
 

@@ -49,7 +49,7 @@ static void imagelight_lightupdate(
 	_obj* act, struct style* slot,
 	_obj* wnd, struct style* area)
 {
-	wnd->gl41list.light[0] = act->LITBUF;
+	wnd->gl41list.world[0].light[0] = act->LITBUF;
 }
 
 

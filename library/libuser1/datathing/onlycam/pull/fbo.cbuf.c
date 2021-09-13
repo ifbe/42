@@ -62,13 +62,13 @@ static void cbuffer_readfrom_cbuffer(_obj* ent, struct gl41data* data)
 		if(_fbo_ == rel->srcflag)break;
 		rel = samesrcnextdst(rel);
 	}
-
+/*
 	_obj* sup = rel->pdstchip;
 	data->src.tex[0].glfd = sup->gl41list.tex[0];
 	data->src.tex[0].fmt = '!';
 
 	data->dst.texname[0] = "tex0";
-	data->src.tex_enq[0] += 1;
+	data->src.tex_enq[0] += 1;*/
 }
 static void cbuffer_draw_gl41(
 	_obj* act, struct style* slot,

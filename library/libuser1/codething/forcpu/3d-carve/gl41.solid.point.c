@@ -93,11 +93,11 @@ static int point3d_fill(_obj* win, struct mysrc* src)
 int point3d_vars(_obj* win, int unused, float** vbuf, int vcnt)
 {
 	if(0 == win)return -1;
-	if(0 == win->gl41list.solid)return -2;
+	if(0 == win->gl41list.world[0].solid)return -2;
 
-	struct gl41data* p = win->gl41list.solid[point3d];
+	struct gl41data* p = win->gl41list.world[0].solid[point3d];
 	if(0 == p){
-		p = win->gl41list.solid[point3d] = memorycreate(0x1000, 0);
+		p = win->gl41list.world[0].solid[point3d] = memorycreate(0x1000, 0);
 		if(0 == p)return -3;
 	}
 

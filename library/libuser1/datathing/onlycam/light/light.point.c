@@ -66,7 +66,7 @@ static void pointlight_light(
 	data->dst.arg[1].name = "sunrgb";
 	data->dst.arg[1].data = sun->rgb;
 
-	wnd->gl41list.light[0] = act->LITBUF;
+	wnd->gl41list.world[0].light[0] = act->LITBUF;
 }
 static void pointlight_draw_gl41(
 	_obj* act, struct style* slot,

@@ -301,20 +301,17 @@ struct gl41easy{
 	struct gl41data*  opaque;
 };
 struct gl41list{
-	struct gl41data** camera;
-	struct gl41data** light;
-	struct gl41data** solid;
-	struct gl41data** opaque;
+	struct world{
+		struct gl41data** camera;
+		struct gl41data** light;
+		struct gl41data** solid;
+		struct gl41data** opaque;
+	}world[2];
 
 	void* glwnd;
 	u64   gltime;
 	void* glevto;
 	void* glsave;
-
-	u32 fbo;
-	u32 rbo;
-	u32 dep;
-	u32 tex[0];
 };
 struct gl41cmdq{
 	u64* data;

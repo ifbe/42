@@ -7,6 +7,40 @@ void gl41data_convert(_obj* wnd, struct style* area, struct event* ev, vec3 v);
 
 
 
+typedef struct perdata{
+	void* buffer;
+	void* belong;
+}datalist;
+struct perworld{
+	//common
+	datalist* light;
+	datalist* sound;
+	datalist* smell;
+	datalist* heat;
+
+	//3d
+	datalist* vertex;
+	datalist* texture;
+
+	//for gl41
+	datalist* glthing;
+
+	//for vulkan
+	datalist* vkthing;
+
+	//for dx11
+	datalist* dx11thing;
+
+	//for dx12u
+	datalist* dx12thing;
+
+	//for metal
+	datalist* metal;
+};
+
+
+
+
 int virtual_traverse(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct relation* rel = ent->orel0;

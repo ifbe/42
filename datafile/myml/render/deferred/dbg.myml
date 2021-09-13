@@ -21,17 +21,10 @@ matter:/Users/ifbe/Downloads/floor/matter.png
 world{
 fmt:virtual
 }
-mixer{
-fmt:gbuffer
-fs:datafile/shader/deferred/test.glsl
-}
 </entity>
 
 
 <supply>
-gbuffer{
-fmt:gl41fbog
-}
 opengl{
 fmt:wnd
 title:"42"
@@ -81,10 +74,6 @@ gbufrect{
 c:0.0, 0.0
 q:1.0, 1.0
 }
-aaaarect{
-c:0.0, 0.0
-q:1.0, 1.0
-}
 </style>
 
 
@@ -94,12 +83,5 @@ q:1.0, 1.0
 (world, itemgeom, 0) -> (item, itempart, 0)
 (world, aaaageom, 0) -> (cam0, aaaapart, 0)
 
-#gbuffer depends on cam0
-(gbuffer, gbufrect, cam) -> (cam0, 0, 0)
-
-#mixer depends on gbuffer
-(mixer, 0, fbog) -> (gbuffer, 0, 0)
-
-#glwnd depends on mixer
-(opengl, aaaarect, 0) -> (mixer, 0, wnd)
+(opengl, gbufrect, cam) -> (cam0, 0, 0)
 </relation>

@@ -22,7 +22,7 @@ void gl41data_convert(_obj* wnd, struct style* area, struct event* ev, vec3 v)
 void gl41data_nocam(_obj* wnd)
 {//left,bot: (-1,-1), right,top: (+1,+1)
 	int x,y;
-	void* trick = wnd->gl41list.camera;
+	void* trick = wnd->gl41list.world[0].camera;
 	struct gl41data* data = trick + 0x400;
 	float (*m)[4] = trick + 0x800;
 	float* v = trick + 0xc00;
@@ -43,12 +43,12 @@ void gl41data_nocam(_obj* wnd)
 	data->dst.arg[1].fmt = 'v';
 	data->dst.arg[1].name = "camxyz";
 	data->dst.arg[1].data = v;
-	wnd->gl41list.camera[0] = data;
+	wnd->gl41list.world[0].camera[0] = data;
 }
 void gl41data_01cam(_obj* wnd)
 {//left,bot: (0,0), right,top: (1,1)
 	int x,y;
-	void* trick = wnd->gl41list.camera;
+	void* trick = wnd->gl41list.world[0].camera;
 	struct gl41data* data = trick + 0x400;
 	float (*m)[4] = trick + 0x800;
 	float* v = trick + 0xc00;
@@ -70,12 +70,12 @@ void gl41data_01cam(_obj* wnd)
 	data->dst.arg[1].fmt = 'v';
 	data->dst.arg[1].name = "camxyz";
 	data->dst.arg[1].data = v;
-	wnd->gl41list.camera[0] = data;
+	wnd->gl41list.world[0].camera[0] = data;
 }
 void gl41data_whcam(_obj* wnd, struct fstyle* area)
 {//left,bot: (-w,-h), right,top: (w,h)
 	int x,y;
-	void* trick = wnd->gl41list.camera;
+	void* trick = wnd->gl41list.world[0].camera;
 	struct gl41data* data = trick + 0x400;
 	float (*m)[4] = trick + 0x800;
 	float* v = trick + 0xc00;
@@ -96,14 +96,14 @@ void gl41data_whcam(_obj* wnd, struct fstyle* area)
 	data->dst.arg[1].fmt = 'v';
 	data->dst.arg[1].name = "camxyz";
 	data->dst.arg[1].data = v;
-	wnd->gl41list.camera[0] = data;
+	wnd->gl41list.world[0].camera[0] = data;
 }
 void gl41data_addcam(_obj* wnd, struct gl41data* data)
 {
 	int j;
 	for(j=1;j<8;j++){
-		if(0 == wnd->gl41list.camera[j]){
-			wnd->gl41list.camera[j] = data;
+		if(0 == wnd->gl41list.world[0].camera[j]){
+			wnd->gl41list.world[0].camera[j] = data;
 			break;
 		}
 	}
@@ -114,20 +114,20 @@ void gl41data_addcam(_obj* wnd, struct gl41data* data)
 
 void gl41data_nolit(_obj* wnd)
 {
-	void* trick = wnd->gl41list.light;
+	void* trick = wnd->gl41list.world[0].light;
 	struct gl41data* data = trick + 0x400;
 
 	data->dst.routine_name = "passtype";
 	data->dst.routine_detail = "pbrcolor";
 
-	wnd->gl41list.light[0] = (void*)data;
+	wnd->gl41list.world[0].light[0] = (void*)data;
 }
 void gl41data_mylit(_obj* wnd)
 {
 }
 void gl41data_addlit(_obj* wnd, struct gl41data* data)
 {
-	wnd->gl41list.light[0] = data;
+	wnd->gl41list.world[0].light[0] = data;
 }
 
 
@@ -140,16 +140,16 @@ void gl41data_insert(_obj* ctx, int type, struct gl41data* src, int cnt)
 
 	if('s' == type){
 		for(j=solidaid_max;j<64;j++){
-			if(0 == ctx->gl41list.solid[j]){
-				ctx->gl41list.solid[j] = src;
+			if(0 == ctx->gl41list.world[0].solid[j]){
+				ctx->gl41list.world[0].solid[j] = src;
 				break;
 			}
 		}
 	}
 	if('o' == type){
 		for(j=opaqueaid_max;j<64;j++){
-			if(0 == ctx->gl41list.opaque[j]){
-				ctx->gl41list.opaque[j] = src;
+			if(0 == ctx->gl41list.world[0].opaque[j]){
+				ctx->gl41list.world[0].opaque[j] = src;
 				break;
 			}
 		}
@@ -166,37 +166,37 @@ void gl41data_before(_obj* ctx)
 
 	//camera: default
 	for(j=0;j<16;j++){
-		ctx->gl41list.camera[j] = 0;
+		ctx->gl41list.world[0].camera[j] = 0;
 	}
 
 	//light: default
 	for(j=0;j<16;j++){
-		ctx->gl41list.light[j] = 0;
+		ctx->gl41list.world[0].light[j] = 0;
 	}
 	gl41data_nolit(ctx);
 
 	//solid: clear myown, forget other
 	for(j=0;j<solidaid_max;j++){
-		p = ctx->gl41list.solid[j];
+		p = ctx->gl41list.world[0].solid[j];
 		if(0 == p)continue;
 
 		p->src.vtx[0].vbuf_h = 0;
 		p->src.vtx[0].ibuf_h = 0;
 	}
 	for(;j<64;j++){
-		ctx->gl41list.solid[j] = 0;
+		ctx->gl41list.world[0].solid[j] = 0;
 	}
 
 	//opaque: clear myown, forget other
 	for(j=0;j<opaqueaid_max;j++){
-		p = ctx->gl41list.opaque[j];
+		p = ctx->gl41list.world[0].opaque[j];
 		if(0 == p)continue;
 
 		p->src.vtx[0].vbuf_h = 0;
 		p->src.vtx[0].ibuf_h = 0;
 	}
 	for(;j<64;j++){
-		ctx->gl41list.opaque[j] = 0;
+		ctx->gl41list.world[0].opaque[j] = 0;
 	}
 }
 void gl41data_after(_obj* ctx)
@@ -207,7 +207,7 @@ void gl41data_after(_obj* ctx)
 	//solid: enqueue
 	for(j=0;j<solidaid_max;j++)
 	{
-		p = ctx->gl41list.solid[j];
+		p = ctx->gl41list.world[0].solid[j];
 		if(0 == p)continue;
 
 		p->src.vbuf_enq += 1;
@@ -217,7 +217,7 @@ void gl41data_after(_obj* ctx)
 	//opaque: enqueue
 	for(j=0;j<opaqueaid_max;j++)
 	{
-		p = ctx->gl41list.opaque[j];
+		p = ctx->gl41list.world[0].opaque[j];
 		if(0 == p)continue;
 
 		p->src.vbuf_enq += 1;
@@ -280,9 +280,9 @@ int gl41data_delete(_obj* win)
 }
 int gl41data_create(_obj* act, void* flag)
 {
-	act->gl41list.camera = memorycreate(0x10000, 0);
-	act->gl41list.light  = memorycreate(0x10000, 0);
-	act->gl41list.solid  = memorycreate(0x10000, 0);
-	act->gl41list.opaque = memorycreate(0x10000, 0);
+	act->gl41list.world[0].camera = memorycreate(0x10000, 0);
+	act->gl41list.world[0].light  = memorycreate(0x10000, 0);
+	act->gl41list.world[0].solid  = memorycreate(0x10000, 0);
+	act->gl41list.world[0].opaque = memorycreate(0x10000, 0);
 	return 0;
 }

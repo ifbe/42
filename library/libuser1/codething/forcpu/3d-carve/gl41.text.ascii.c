@@ -193,11 +193,11 @@ static int aidfont_fill(_obj* win, struct gl41data* data, int id)
 int ascii3d_vars(_obj* win, int id, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
 	if(0 == win)return -1;
-	if(0 == win->gl41list.opaque)return -2;
+	if(0 == win->gl41list.world[0].opaque)return -2;
 
-	struct gl41data* p = win->gl41list.opaque[font3d0 + id];
+	struct gl41data* p = win->gl41list.world[0].opaque[font3d0 + id];
 	if(0 == p){
-		p = win->gl41list.opaque[font3d0 + id] = memorycreate(0x1000, 0);
+		p = win->gl41list.world[0].opaque[font3d0 + id] = memorycreate(0x1000, 0);
 		if(0 == p)return -3;
 	}
 

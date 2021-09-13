@@ -48,7 +48,7 @@ static void gbuffer_readfrom_gbuffer(_obj* ent, struct gl41data* data)
 	data->dst.texname[2] = "tex2";
 	data->dst.texname[3] = "tex3";
 	data->dst.texname[4] = "tex4";
-
+/*
 	data->src.tex[0].glfd = fbo->gl41list.tex[0];
 	data->src.tex[0].fmt = '!';
 	data->src.tex_enq[0] += 1;
@@ -69,6 +69,7 @@ static void gbuffer_readfrom_gbuffer(_obj* ent, struct gl41data* data)
 	data->src.tex[4].fmt = '!';
 	data->src.tex_enq[4] += 1;
 	//say("%d,%d,%d,%d\n", data->src.tex[0].glfd, data->src.tex[1].glfd, data->src.tex[2].glfd, data->src.tex[3].glfd);
+*/
 }
 static void gbuffer_draw_gl41(
 	_obj* act, struct style* slot,

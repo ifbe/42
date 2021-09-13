@@ -392,7 +392,7 @@ static void freecam_gl41cam(
 	data->dst.arg[2].fmt = 'v';
 	data->dst.arg[2].name = "camxyz";
 	data->dst.arg[2].data = frus->vc;
-	wnd->gl41list.camera[0] = data;
+	wnd->gl41list.world[0].camera[0] = data;
 }
 static void freecam_dx11cam(
 	_obj* act, struct style* part,
@@ -539,7 +539,12 @@ static int freecam_read_bywnd(_obj* ent,void* slot, _syn* stack,int sp, void* ar
 		//enq++
 		gl41data_after(wnd);
 		break;
-
+/*
+	case deferred_rendering:
+		//stage1: read albedo,normal,matter, render to tex0,1,2,3
+		//stage2: use tex0,1,2,3, render to window
+		break;
+*/
 	case _mt20list_:
 		mt20data_before(wnd);
 		//camera
