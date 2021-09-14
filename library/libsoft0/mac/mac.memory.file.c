@@ -52,6 +52,7 @@ _obj* file_create(void* path, int flag)
 	}
 	if(fd < 0)goto fail;
 
+	//say("file_create:obj=%p,fd=%d\n",&obj[fd], fd);
 	obj[fd].fileinfo.fd = fd;
 	return &obj[fd];
 
@@ -89,7 +90,7 @@ int file_take(_obj* oo, int xx, void* arg, int off, void* buf, int len)
 {
 	int ret;
 	int fd = oo->fileinfo.fd;
-	say("fd=%d\n");
+	//say("obj=%p,fd=%d\n", oo, fd);
 
 	if(arg){
 		ret = lseek(fd, off, SEEK_SET);

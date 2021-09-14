@@ -84,13 +84,16 @@ void update_onedraw(struct gldst* dst, struct mysrc* src)
 	}
 //say("@update done\n");
 }
-void fullwindow_upload(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque)
+void fullwindow_upload(struct gl41world* world)
 {
-	int j;
-	//say("fullwindow_upload:%llx,%llx,%llx,%llx\n",cam,lit,solid,opaque);
+	struct gl41data** cam = world->camera;
+	struct gl41data** lit = world->light;
+	struct gl41data** solid = world->solid;
+	struct gl41data** opaque = world->opaque;
 
 	//camera
-	for(j=1;j<16;j++){
+	int j;
+	for(j=0;j<16;j++){
 		if(0 == cam[j])break;
 		if(cam[j]->dst.target_deq != cam[j]->src.target_enq){
 			gl41fbo_create(cam[j]);
@@ -291,17 +294,46 @@ void render_target(struct gl41data** cam, struct gl41data** lit, struct gl41data
 	glDisable(GL_BLEND);
 	glDepthMask(GL_TRUE);
 }
-void fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque, _obj* wnd, struct fstyle* area)
+void fullwindow_render(struct gl41world* world, _obj* wnd, struct fstyle* area)
 {
+	struct gl41data** cam = world->camera;
+	struct gl41data** lit = world->light;
+	struct gl41data** solid = world->solid;
+	struct gl41data** opaque = world->opaque;
+
 	int j;
 	for(j=8;j>0;j--){
 		if(0 == cam[j])continue;
+		say("%d\n",j);
 		glBindFramebuffer(GL_FRAMEBUFFER, cam[j]->dst.fbo);
 		render_target(&cam[j],lit, solid,opaque, wnd,0);
 		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	render_target(cam,lit, solid,opaque, wnd,area);
+
+	if(cam[0] && cam[0]->dst.fbo){
+		glBindFramebuffer(GL_FRAMEBUFFER, cam[0]->dst.fbo);
+		render_target(cam,lit, solid,opaque, wnd,area);
+		say("gbuf:d=%d,c0=%d,c1=%d,c2=%d,c3=%d\n",cam[0]->dst.rbo, cam[0]->dst.tex[0], cam[0]->dst.tex[1], cam[0]->dst.tex[2], cam[0]->dst.tex[3]);
+	}
+	else{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		render_target(cam,lit, solid,opaque, wnd,area);
+	}
+}
+
+
+
+
+void fullwindow_dealwith(struct gl41list* perogl, _obj* wnd, struct fstyle* area)
+{
+	int j;
+	for(j=0;j<1;j++){
+		//upload
+		fullwindow_upload(&wnd->gl41list.world[j]);
+
+		//render
+		fullwindow_render(&wnd->gl41list.world[j], wnd, area);
+	}
 }
 
 
@@ -338,11 +370,7 @@ int fullwindow_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd,
 			stack[sp+1].flag = rel->dstflag;
 			entity_take(rel->pdstchip,rel->pdstfoot, stack,sp+2, arg,cmd, 0,0);
 
-			//upload
-			fullwindow_upload(wnd->gl41list.world[0].camera, wnd->gl41list.world[0].light, wnd->gl41list.world[0].solid, wnd->gl41list.world[0].opaque);
-
-			//render
-			fullwindow_render(wnd->gl41list.world[0].camera, wnd->gl41list.world[0].light, wnd->gl41list.world[0].solid, wnd->gl41list.world[0].opaque, wnd, area);
+			fullwindow_dealwith(&wnd->gl41list, wnd, area);
 		}
 
 		rel = samesrcnextdst(rel);
@@ -402,8 +430,9 @@ void fullwindow_create(_obj* ogl)
 	ogl->hfmt = _gl41list_;
 	ogl->vfmt= _gl41list_;
 
-	ogl->gl41list.world[0].camera = memorycreate(0x10000, 0);
-	ogl->gl41list.world[0].light  = memorycreate(0x10000, 0);
-	ogl->gl41list.world[0].solid  = memorycreate(0x10000, 0);
-	ogl->gl41list.world[0].opaque = memorycreate(0x10000, 0);
+	struct gl41world* world = ogl->gl41list.world;
+	world[0].camera = memorycreate(0x10000, 0);
+	world[0].light  = memorycreate(0x10000, 0);
+	world[0].solid  = memorycreate(0x10000, 0);
+	world[0].opaque = memorycreate(0x10000, 0);
 }

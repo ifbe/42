@@ -374,7 +374,11 @@ static void freecam_frustum2matrix(
 	frustum2viewandclip_transpose(frus, own->world2view, own->world2clip);
 	//printmat4(own->world2clip);
 }
-static void freecam_gl41cam(
+
+
+
+
+static void freecam_gl41_cam(
 	_obj* act, struct style* part,
 	_obj* wrd, struct style* geom,
 	_obj* wnd, struct style* area)
@@ -394,7 +398,68 @@ static void freecam_gl41cam(
 	data->dst.arg[2].data = frus->vc;
 	wnd->gl41list.world[0].camera[0] = data;
 }
-static void freecam_dx11cam(
+static int freecam_gl41_mesh(
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* none)
+{
+	//frustum
+	gl41frustum(ctx, &geom->frus);
+
+	//ray from eye to far
+	gl41line(ctx, 0, geom->frus.vc, &act->whdf.fx0);
+	return 0;
+}
+
+
+
+
+static void freecam_gl41gbuf_cam(
+	_obj* act, struct style* part,
+	_obj* wrd, struct style* geom,
+	_obj* wnd, struct style* area)
+{
+	struct fstyle* frus = &geom->frus;
+	struct privdata* own = act->OWNBUF;
+
+	struct gl41data* data = &own->gl41;
+	data->dst.arg[0].fmt = 'm';
+	data->dst.arg[0].name = "cammvp";
+	data->dst.arg[0].data = own->world2clip;
+	data->dst.arg[1].fmt = 'm';
+	data->dst.arg[1].name = "cammv_";
+	data->dst.arg[1].data = own->world2view;
+	data->dst.arg[2].fmt = 'v';
+	data->dst.arg[2].name = "camxyz";
+	data->dst.arg[2].data = frus->vc;
+
+	data->src.tex[0].w = 1024;
+	data->src.tex[0].h = 1024;
+	data->src.tex[0].fmt = 0;
+	data->src.tex[0].glfd = 0;
+
+	data->src.type = 'g';
+	data->src.target_enq = 42;
+
+	wnd->gl41list.world[0].camera[0] = data;
+}
+static void freecam_gl41gbuf_mesh0(
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* none)
+{
+}
+static void freecam_gl41gbuf_mesh1(
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* none)
+{
+}
+
+
+
+
+static void freecam_dx11_cam(
 	_obj* act, struct style* part,
 	_obj* wrd, struct style* geom,
 	_obj* wnd, struct style* area)
@@ -415,7 +480,11 @@ static void freecam_dx11cam(
 
 	wnd->dx11list.camera[0] = data;
 }
-static void freecam_mt20cam(
+
+
+
+
+static void freecam_mt20_cam(
 	_obj* act, struct style* part,
 	_obj* wrd, struct style* geom,
 	_obj* wnd, struct style* area)
@@ -440,18 +509,6 @@ static void freecam_mt20cam(
 
 
 
-static int freecam_draw_gl41(
-	_obj* act, struct style* part,
-	_obj* win, struct style* geom,
-	_obj* ctx, struct style* none)
-{
-	//frustum
-	gl41frustum(ctx, &geom->frus);
-
-	//ray from eye to far
-	gl41line(ctx, 0, geom->frus.vc, &act->whdf.fx0);
-	return 0;
-}
 static int freecam_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 //[-6,-5]: wnd,area -> cam,togl
@@ -467,7 +524,7 @@ static int freecam_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, void* ar
 	case _rgba_:
 		return 0;
 	case _gl41list_:
-		 freecam_draw_gl41(ent,slot, wor,geom, wnd,area);
+		 freecam_gl41_mesh(ent,slot, wor,geom, wnd,area);
 	}
 	return 0;
 }
@@ -519,7 +576,7 @@ static int freecam_read_bywnd(_obj* ent,void* slot, _syn* stack,int sp, void* ar
 		freecam_ratio(wor, geom, wnd, area);
 		freecam_shape2frustum(&geom->fshape, &geom->frustum);
 		freecam_frustum2matrix(ent,slot, wor,geom);
-		freecam_dx11cam(ent,slot, wor,geom, wnd,area);
+		freecam_dx11_cam(ent,slot, wor,geom, wnd,area);
 		//render data
 		dx11data_taking(wor,0, stack,sp+2, 0,'v', buf,len);
 		//enq++
@@ -533,7 +590,7 @@ static int freecam_read_bywnd(_obj* ent,void* slot, _syn* stack,int sp, void* ar
 		freecam_ratio(wor, geom, wnd, area);
 		freecam_shape2frustum(&geom->fshape, &geom->frustum);
 		freecam_frustum2matrix(ent,slot, wor,geom);
-		freecam_gl41cam(ent,slot, wor,geom, wnd,area);
+		freecam_gl41_cam(ent,slot, wor,geom, wnd,area);
 		//render data
 		gl41data_taking(wor,0, stack,sp+2, 0,'v', buf,len);
 		//enq++
@@ -551,7 +608,7 @@ static int freecam_read_bywnd(_obj* ent,void* slot, _syn* stack,int sp, void* ar
 		freecam_ratio(wor, geom, wnd, area);
 		freecam_shape2frustum(&geom->fshape, &geom->frustum);
 		freecam_frustum2matrix(ent,slot, wor,geom);
-		freecam_mt20cam(ent,slot, wor,geom, wnd,area);
+		freecam_mt20_cam(ent,slot, wor,geom, wnd,area);
 		//data
 		mt20data_taking(wor,0, stack,sp+2, 0,'v', buf,len);
 		//enq++

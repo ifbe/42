@@ -141,6 +141,7 @@ int gl41fbog_create(struct gl41data* tar)
 }//g
 int gl41fbo_create(struct gl41data* tar)
 {
+	//say("type=%c\n",tar->src.type);
 	switch(tar->src.type){
 	case 'c':return gl41fboc_create(tar);
 	case 'd':return gl41fbod_create(tar);
