@@ -15,7 +15,7 @@ void easywindow_delete(void*);
 void easywindow_take(void*,void*, void*,int, void*,int, void*,int);
 void easywindow_give(void*,void*, void*,int, void*,int, void*,int);
 //
-void fullwindow_create(void*);
+void fullwindow_create(void*,void*,int,char**);
 void fullwindow_delete(void*);
 void fullwindow_take(void*,void*, void*,int, void*,int, void*,int);
 void fullwindow_give(void*,void*, void*,int, void*,int, void*,int);
@@ -377,7 +377,7 @@ void windowdelete(_obj* ogl)
 		default:        fullwindow_delete(ogl);glfwDestroyWindow(ogl->gl41list.glwnd);break;
 	}
 }
-void windowcreate(_obj* ogl, void* arg)
+void windowcreate(_obj* ogl, void* arg, int argc, char** argv)
 {
 	struct relation* rel = 0;
 	_obj* share = 0;
@@ -419,7 +419,7 @@ void windowcreate(_obj* ogl, void* arg)
 		ogl->whdf.depth = 1024;
 
 		windowopen_root(ogl);
-		fullwindow_create(ogl);
+		fullwindow_create(ogl, arg, argc, argv);
 		break;
 	}
 	}

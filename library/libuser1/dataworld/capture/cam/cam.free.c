@@ -31,8 +31,12 @@ struct privdata{
 	mat4 world2view;	//world to view
 	mat4 world2clip;	//world to view to clip
 	struct unidata uni;
+
 	struct dx11data dx11;
-	struct gl41data gl41;
+
+	struct gl41data gl41cam;
+	struct gl41data gl41gbuf;
+
 	struct mt20data mt20;
 };
 
@@ -60,44 +64,6 @@ void printmat4(float* f)
 	printvec4(&f[4]);
 	printvec4(&f[8]);
 	printvec4(&f[12]);
-}
-
-
-
-
-static void freecam_search(_obj* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
-{
-}
-static void freecam_modify(_obj* act)
-{
-}
-static void freecam_delete(_obj* act)
-{
-}
-static void freecam_create(_obj* act, void* arg, int argc, u8** argv)
-{
-	int j;
-    say("@freecam_create\n");
-
-	//script
-	act->EVTOTYPE = 0;
-	act->DRAWTYPE = getrandom()&1;
-	for(j=0;j<argc;j++){
-		if(0 == ncmp(argv[j], "render:", 7)){
-			if('0' == argv[j][7])act->DRAWTYPE = 0;
-			if('1' == argv[j][7])act->DRAWTYPE = 1;
-		}
-		if(0 == ncmp(argv[j], "script:", 7)){
-			if('f' == argv[j][7])act->EVTOTYPE = 'f';
-		}
-	}
-
-	act->whdf.fx0 = 0.0;
-	act->whdf.fy0 = 0.0;
-	act->whdf.fz0 = 0.0;
-
-	//matrix
-	act->OWNBUF = memorycreate(0x1000, 0);
 }
 
 
@@ -386,7 +352,7 @@ static void freecam_gl41_cam(
 	struct fstyle* frus = &geom->frus;
 	struct privdata* own = act->OWNBUF;
 
-	struct gl41data* data = &own->gl41;
+	struct gl41data* data = &own->gl41cam;
 	data->dst.arg[0].fmt = 'm';
 	data->dst.arg[0].name = "cammvp";
 	data->dst.arg[0].data = own->world2clip;
@@ -422,7 +388,7 @@ static void freecam_gl41gbuf_cam(
 	struct fstyle* frus = &geom->frus;
 	struct privdata* own = act->OWNBUF;
 
-	struct gl41data* data = &own->gl41;
+	struct gl41data* data = &own->gl41cam;
 	data->dst.arg[0].fmt = 'm';
 	data->dst.arg[0].name = "cammvp";
 	data->dst.arg[0].data = own->world2clip;
@@ -433,8 +399,8 @@ static void freecam_gl41gbuf_cam(
 	data->dst.arg[2].name = "camxyz";
 	data->dst.arg[2].data = frus->vc;
 
-	data->src.tex[0].w = 1024;
-	data->src.tex[0].h = 1024;
+	data->src.tex[0].w = wnd->whdf.width;
+	data->src.tex[0].h = wnd->whdf.height;
 	data->src.tex[0].fmt = 0;
 	data->src.tex[0].glfd = 0;
 
@@ -443,17 +409,116 @@ static void freecam_gl41gbuf_cam(
 
 	wnd->gl41list.world[0].camera[0] = data;
 }
-static void freecam_gl41gbuf_mesh0(
-	_obj* act, struct style* part,
-	_obj* win, struct style* geom,
-	_obj* ctx, struct style* none)
+static void freecam_gl41gbuf_prep(_obj* act, void* vs, void* fs)
 {
+	struct privdata* own = act->OWNBUF;
+	struct gl41data* data = &own->gl41gbuf;
+
+	//shader
+	data->src.vs = memorycreate(0x1000, 0);
+	openreadclose(vs, 0, data->src.vs, 0x1000);
+	data->src.fs = memorycreate(0x1000, 0);
+	openreadclose(fs, 0, data->src.fs, 0x1000);
+	data->src.shader_enq = 42;
+
+	//vertex
+	struct vertex* vtx = data->src.vtx;
+	vtx->geometry = 3;
+	vtx->opaque = 0;
+
+	vtx->vbuf_fmt = vbuffmt_33;
+	vtx->vbuf_w = 6*4;
+	vtx->vbuf_h = 6;
+	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
+	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+
+	//texture
+	data->dst.texname[0] = "tex0";
+	data->dst.texname[1] = "tex1";
+	data->dst.texname[2] = "tex2";
+	data->dst.texname[3] = "tex3";
+	data->dst.texname[4] = "tex4";
+
+	data->src.vbuf_enq = 42;
 }
-static void freecam_gl41gbuf_mesh1(
-	_obj* act, struct style* part,
-	_obj* win, struct style* geom,
-	_obj* ctx, struct style* none)
+static void freecam_gl41gbuf_mesh(
+	_obj* act, struct style* slot,
+	_obj* ogl, struct style* none)
 {
+	struct privdata* own = act->OWNBUF;
+	struct gl41data* fbo = &own->gl41cam;
+	struct gl41data* data = &own->gl41gbuf;
+
+	//vertex
+	float (*vbuf)[6] = data->src.vtx[0].vbuf;
+	if(0 == vbuf)return;
+
+	vbuf[0][0] = -1.0;
+	vbuf[0][1] = -1.0;
+	vbuf[0][2] = 0.0;
+	vbuf[0][3] = 0.0;
+	vbuf[0][4] = 0.0;
+	vbuf[0][5] = 0.0;
+
+	vbuf[1][0] = 1.0;
+	vbuf[1][1] = 1.0;
+	vbuf[1][2] = 0.0;
+	vbuf[1][3] = 1.0;
+	vbuf[1][4] = 1.0;
+	vbuf[1][5] = 0.0;
+
+	vbuf[2][0] = -1.0;
+	vbuf[2][1] = 1.0;
+	vbuf[2][2] = 0.0;
+	vbuf[2][3] = 0.0;
+	vbuf[2][4] = 1.0;
+	vbuf[2][5] = 0.0;
+
+	vbuf[3][0] = 1.0;
+	vbuf[3][1] = 1.0;
+	vbuf[3][2] = 0.0;
+	vbuf[3][3] = 1.0;
+	vbuf[3][4] = 1.0;
+	vbuf[3][5] = 0.0;
+
+	vbuf[4][0] = -1.0;
+	vbuf[4][1] = -1.0;
+	vbuf[4][2] = 0.0;
+	vbuf[4][3] = 0.0;
+	vbuf[4][4] = 0.0;
+	vbuf[4][5] = 0.0;
+
+	vbuf[5][0] = 1.0;
+	vbuf[5][1] = -1.0;
+	vbuf[5][2] = 0.0;
+	vbuf[5][3] = 1.0;
+	vbuf[5][4] = 0.0;
+	vbuf[5][5] = 0.0;
+
+	data->src.vbuf_enq += 1;
+
+	//texture
+	data->src.tex[0].glfd = fbo->dst.tex[0];
+	data->src.tex[0].fmt = '!';
+	data->src.tex_enq[0] += 1;
+
+	data->src.tex[1].glfd = fbo->dst.tex[1];
+	data->src.tex[1].fmt = '!';
+	data->src.tex_enq[1] += 1;
+
+	data->src.tex[2].glfd = fbo->dst.tex[2];
+	data->src.tex[2].fmt = '!';
+	data->src.tex_enq[2] += 1;
+
+	data->src.tex[3].glfd = fbo->dst.tex[3];
+	data->src.tex[3].fmt = '!';
+	data->src.tex_enq[3] += 1;
+
+	data->src.tex[4].glfd = fbo->dst.rbo;
+	data->src.tex[4].fmt = '!';
+	data->src.tex_enq[4] += 1;
+
+	ogl->gl41list.world[1].solid[0] = data;
 }
 
 
@@ -586,15 +651,22 @@ static int freecam_read_bywnd(_obj* ent,void* slot, _syn* stack,int sp, void* ar
 	case _gl41list_:
 		//clear all
 		gl41data_before(wnd);
-		//camera matrix
-		freecam_ratio(wor, geom, wnd, area);
-		freecam_shape2frustum(&geom->fshape, &geom->frustum);
-		freecam_frustum2matrix(ent,slot, wor,geom);
-		freecam_gl41_cam(ent,slot, wor,geom, wnd,area);
 		//render data
 		gl41data_taking(wor,0, stack,sp+2, 0,'v', buf,len);
 		//enq++
 		gl41data_after(wnd);
+
+		//camera matrix
+		freecam_ratio(wor, geom, wnd, area);
+		freecam_shape2frustum(&geom->fshape, &geom->frustum);
+		freecam_frustum2matrix(ent,slot, wor,geom);
+		if(_gbuf_ == wnd->vfmt){
+			freecam_gl41gbuf_cam(ent,slot, wor,geom, wnd,area);
+			freecam_gl41gbuf_mesh(ent,slot, wnd,area);
+		}
+		else{
+			freecam_gl41_cam(ent,slot, wor,geom, wnd,area);
+		}
 		break;
 /*
 	case deferred_rendering:
@@ -703,6 +775,55 @@ static void freecam_linkup(struct halfrel* self, struct halfrel* peer)
 		own->peer = peer;
 		return;
 	}
+}
+
+
+
+
+static void freecam_search(_obj* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+{
+}
+static void freecam_modify(_obj* act)
+{
+}
+static void freecam_delete(_obj* act)
+{
+}
+static void freecam_create(_obj* act, void* arg, int argc, u8** argv)
+{
+	int j;
+    say("@freecam_create\n");
+
+	//script
+	u8* glvs = 0;
+	u8* glfs = 0;
+	act->EVTOTYPE = 0;
+	act->DRAWTYPE = getrandom()&1;
+	for(j=0;j<argc;j++){
+		if(0 == ncmp(argv[j], "render:", 7)){
+			if('0' == argv[j][7])act->DRAWTYPE = 0;
+			if('1' == argv[j][7])act->DRAWTYPE = 1;
+		}
+		if(0 == ncmp(argv[j], "script:", 7)){
+			if('f' == argv[j][7])act->EVTOTYPE = 'f';
+		}
+		if(0 == ncmp(argv[j], "glvs:", 5)){
+			glvs = argv[j] + 5;
+		}
+		if(0 == ncmp(argv[j], "glfs:", 5)){
+			glfs = argv[j] + 5;
+		}
+	}
+
+	act->whdf.fx0 = 0.0;
+	act->whdf.fy0 = 0.0;
+	act->whdf.fz0 = 0.0;
+
+	//matrix
+	act->OWNBUF = memorycreate(0x1000, 0);
+
+	if(glvs&&glfs)say("vs=%.32s,fs=%.32s\n",glvs,glfs);
+	freecam_gl41gbuf_prep(act, "datafile/shader/deferred/vert.glsl", "datafile/shader/deferred/debug.glsl");
 }
 
 

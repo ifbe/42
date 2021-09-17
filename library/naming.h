@@ -331,6 +331,7 @@
 #define _vk12fbog_ hex64('v','k','1','2','f','b','o','g')
 //tier=_sup_, type=_ctx_, rfmt:
 #define _vbo_ hex32('v','b','o',0)
+#define _gbuf_ hex32('g','b','u','f')
 #define _rgba_ hex32('r','g','b','a')
 #define _cli_ hex32('c','l','i',0)
 #define _tui_ hex32('t','u','i',0)

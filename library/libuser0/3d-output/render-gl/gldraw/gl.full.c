@@ -262,7 +262,7 @@ void render_target(struct gl41data** cam, struct gl41data** lit, struct gl41data
 		glViewport(x0, y0, ww, hh);
 		glScissor(x0, y0, ww, hh);
 		glClearColor(0.1, 0.1, 0.1, 1.0);
-		glClear(GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
 	glEnable(GL_SCISSOR_TEST);
@@ -304,7 +304,7 @@ void fullwindow_render(struct gl41world* world, _obj* wnd, struct fstyle* area)
 	int j;
 	for(j=8;j>0;j--){
 		if(0 == cam[j])continue;
-		say("%d\n",j);
+		//say("%d\n",j);
 		glBindFramebuffer(GL_FRAMEBUFFER, cam[j]->dst.fbo);
 		render_target(&cam[j],lit, solid,opaque, wnd,0);
 		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -313,7 +313,7 @@ void fullwindow_render(struct gl41world* world, _obj* wnd, struct fstyle* area)
 	if(cam[0] && cam[0]->dst.fbo){
 		glBindFramebuffer(GL_FRAMEBUFFER, cam[0]->dst.fbo);
 		render_target(cam,lit, solid,opaque, wnd,area);
-		say("gbuf:d=%d,c0=%d,c1=%d,c2=%d,c3=%d\n",cam[0]->dst.rbo, cam[0]->dst.tex[0], cam[0]->dst.tex[1], cam[0]->dst.tex[2], cam[0]->dst.tex[3]);
+		//say("gbuf:fbo=%d,d=%d,c0=%d,c1=%d,c2=%d,c3=%d\n",cam[0]->dst.fbo,cam[0]->dst.rbo, cam[0]->dst.tex[0], cam[0]->dst.tex[1], cam[0]->dst.tex[2], cam[0]->dst.tex[3]);
 	}
 	else{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -333,6 +333,13 @@ void fullwindow_dealwith(struct gl41list* perogl, _obj* wnd, struct fstyle* area
 
 		//render
 		fullwindow_render(&wnd->gl41list.world[j], wnd, area);
+	}
+
+	if(_gbuf_ == wnd->vfmt){
+
+		fullwindow_upload(&wnd->gl41list.world[1]);
+
+		fullwindow_render(&wnd->gl41list.world[1], wnd, area);
 	}
 }
 
@@ -425,14 +432,28 @@ found:
 void fullwindow_delete(_obj* ogl)
 {
 }
-void fullwindow_create(_obj* ogl)
+void fullwindow_create(_obj* ogl, void* arg, int argc, char** argv)
 {
+	int j;
+	say("argc=%d,argv=%p\n",argc,argv);
+	for(j=0;j<argc;j++){
+		say("arg%d:%.4s\n", j, argv[j]);
+		if(0 == ncmp(argv[j], "vfmt:gbuf", 9))ogl->vfmt = _gbuf_;
+	}
+
 	ogl->hfmt = _gl41list_;
-	ogl->vfmt= _gl41list_;
+	//ogl->vfmt= _gbuf_;
 
 	struct gl41world* world = ogl->gl41list.world;
 	world[0].camera = memorycreate(0x10000, 0);
 	world[0].light  = memorycreate(0x10000, 0);
 	world[0].solid  = memorycreate(0x10000, 0);
 	world[0].opaque = memorycreate(0x10000, 0);
+
+	if(_gbuf_ == ogl->vfmt){
+		world[1].camera = memorycreate(0x10000, 0);
+		world[1].light  = memorycreate(0x10000, 0);
+		world[1].solid  = memorycreate(0x10000, 0);
+		world[1].opaque = memorycreate(0x10000, 0);
+	}
 }

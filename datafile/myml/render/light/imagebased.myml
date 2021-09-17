@@ -20,9 +20,6 @@ fmt:slider
 
 
 <supply>
-thefbo{
-fmt:gl41fbod
-}
 opengl{
 fmt:wnd
 title:"42"

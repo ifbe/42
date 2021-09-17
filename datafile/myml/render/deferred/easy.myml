@@ -1,6 +1,8 @@
 <entity>
 cam0{
 fmt:freecam
+glvs:datafile/shader/deferred/vert.glsl
+glfs:datafile/shader/deferred/phong.glsl
 }
 item{
 fmt:obj3d
@@ -22,6 +24,7 @@ fmt:virtual
 <supply>
 opengl{
 fmt:wnd
+vfmt:gbuf
 title:"42"
 width:1024
 height:1024
