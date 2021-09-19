@@ -116,6 +116,7 @@ int gl41fbog_create(struct gl41data* tar)
 	int j;
 	GLenum gbuffer[4];
 	for(j=0;j<4;j++){
+		//say("w=%d,h=%d\n",w,h);
 		//geometry buffer
 		glGenTextures(1, &tar->dst.tex[j]);
 		glBindTexture(GL_TEXTURE_2D, tar->dst.tex[j]);

@@ -2,7 +2,7 @@
 cam0{
 fmt:freecam
 glvs:datafile/shader/deferred/vert.glsl
-glfs:datafile/shader/deferred/debug.glsl
+glfs:datafile/shader/deferred/normal.glsl
 }
 item{
 fmt:obj3d

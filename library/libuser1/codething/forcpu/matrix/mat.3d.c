@@ -74,17 +74,21 @@ void world2clip_projz0z1(mat4 mat, struct fstyle* sty)
 	view2clip_projz0z1(mat, sty);
 	mat4_multiply(mat, t);
 }
+void world2clip_projz0z1_transpose(mat4 mat, struct fstyle* sty)
+{
+	world2clip_projz0z1(mat, sty);
+	mat4_transpose(mat);
+}
+
+
+
+
 void clip2world_projz0z1(mat4 mat, struct fstyle* frus)
 {
 	mat4 q;
 	clip2view_projz0z1(q, frus);
 	view2world_lh2rh(mat, frus);
 	mat4_multiply(mat, q);
-}
-void world2clip_projz0z1_transpose(mat4 mat, struct fstyle* sty)
-{
-	world2clip_projz0z1(mat, sty);
-	mat4_transpose(mat);
 }
 void clip2world_projz0z1_transpose(mat4 mat, struct fstyle* frus)
 {
@@ -103,17 +107,21 @@ void world2clip_projznzp(mat4 mat, struct fstyle* frus)
 	view2clip_projznzp(mat, frus);
 	mat4_multiply(mat, t);
 }
+void world2clip_projznzp_transpose(mat4 mat, struct fstyle* frus)
+{
+	world2clip_projznzp(mat, frus);
+	mat4_transpose(mat);
+}
+
+
+
+
 void clip2world_projznzp(mat4 mat, struct fstyle* frus)
 {
 	mat4 q;
 	clip2view_projznzp(q, frus);
 	view2world_lh2rh(mat, frus);
 	mat4_multiply(mat, q);
-}
-void world2clip_projznzp_transpose(mat4 mat, struct fstyle* frus)
-{
-	world2clip_projznzp(mat, frus);
-	mat4_transpose(mat);
 }
 void clip2world_projznzp_transpose(mat4 mat, struct fstyle* frus)
 {
@@ -155,7 +163,16 @@ void testmats(struct fstyle* frus)
 	mat4_multiply(n,m);
 	printmat4(n);
 }*/
-void worldxyzfromareauv(vec3 vec, struct fstyle* frus)
+void worldxyz2areauv(vec3 vec, struct fstyle* frus)
+{
+	mat4 m;
+	world2clip_projznzp(m, frus);
+}
+
+
+
+
+void areauv2worldxyz(vec3 vec, struct fstyle* frus)
 {
 	vec4 t;
 	t[0] = vec[0]*2.0 - 1.0;

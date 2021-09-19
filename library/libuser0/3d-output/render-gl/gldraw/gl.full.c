@@ -243,27 +243,33 @@ void render_material(struct gl41data* cam, struct gl41data* lit, struct gl41data
 		else glDrawArrays(GL_TRIANGLES, 0, vtx->vbuf_h);
 	}
 }
-void render_target(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque, _obj* wnd, struct fstyle* area)
+void render_target(struct gl41data* cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque, _obj* wnd, struct fstyle* area)
 {
 	//say("fullwindow_render:%llx,%llx,%llx,%llx,%llx,%llx\n",cam,lit,solid,opaque,wnd,area);
 	int j;
 	int x0,y0,ww,hh;
-	if(0 == area){
-		glViewport(0, 0, 1024, 1024);
-		glScissor(0, 0, 1024, 1024);
-		glClearColor(0.1, 0.1, 0.1, 1.0);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	if(cam && cam->dst.fbo){
+		x0 = 0;
+		y0 = 0;
+		ww = cam->src.tex[0].w;
+		hh = cam->src.tex[0].h;
+	}
+	else if(0 == area){
+		x0 = 0;
+		y0 = 0;
+		ww = 1024;
+		hh = 1024;
 	}
 	else{
 		x0 = area->vc[0] * wnd->whdf.fbwidth;
 		y0 = area->vc[1] * wnd->whdf.fbheight;
 		ww = area->vq[0] * wnd->whdf.fbwidth;
 		hh = area->vq[1] * wnd->whdf.fbheight;
-		glViewport(x0, y0, ww, hh);
-		glScissor(x0, y0, ww, hh);
-		glClearColor(0.1, 0.1, 0.1, 1.0);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
+	glViewport(x0, y0, ww, hh);
+	glScissor(x0, y0, ww, hh);
+	glClearColor(0.1, 0.1, 0.1, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glEnable(GL_SCISSOR_TEST);
 	glEnable(GL_DEPTH_TEST);
@@ -277,7 +283,7 @@ void render_target(struct gl41data** cam, struct gl41data** lit, struct gl41data
 	for(j=0;j<64;j++){
 		if(0 == solid[j])continue;
 		if(0 == solid[j]->src.vtx[0].vbuf)continue;
-		render_material(cam[0], lit[0], solid[j]);
+		render_material(cam, lit[0], solid[j]);
 	}
 
 	//opaque
@@ -288,7 +294,7 @@ void render_target(struct gl41data** cam, struct gl41data** lit, struct gl41data
 	for(j=0;j<64;j++){
 		if(0 == opaque[j])continue;
 		if(0 == opaque[j]->src.vtx[0].vbuf)continue;
-		render_material(cam[0], lit[0], opaque[j]);
+		render_material(cam, lit[0], opaque[j]);
 	}
 
 	glDisable(GL_BLEND);
@@ -306,18 +312,18 @@ void fullwindow_render(struct gl41world* world, _obj* wnd, struct fstyle* area)
 		if(0 == cam[j])continue;
 		//say("%d\n",j);
 		glBindFramebuffer(GL_FRAMEBUFFER, cam[j]->dst.fbo);
-		render_target(&cam[j],lit, solid,opaque, wnd,0);
+		render_target(cam[j],lit, solid,opaque, wnd,0);
 		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 	if(cam[0] && cam[0]->dst.fbo){
 		glBindFramebuffer(GL_FRAMEBUFFER, cam[0]->dst.fbo);
-		render_target(cam,lit, solid,opaque, wnd,area);
+		render_target(cam[0],lit, solid,opaque, wnd,area);
 		//say("gbuf:fbo=%d,d=%d,c0=%d,c1=%d,c2=%d,c3=%d\n",cam[0]->dst.fbo,cam[0]->dst.rbo, cam[0]->dst.tex[0], cam[0]->dst.tex[1], cam[0]->dst.tex[2], cam[0]->dst.tex[3]);
 	}
 	else{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		render_target(cam,lit, solid,opaque, wnd,area);
+		render_target(cam[0],lit, solid,opaque, wnd,area);
 	}
 }
 

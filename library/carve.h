@@ -180,6 +180,7 @@ struct gldst
 	//framebuffer
 	u32 fbo;
 	u32 rbo;
+	u32 clear;
 
 	//shader
 	u32 shader;
