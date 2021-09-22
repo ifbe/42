@@ -4,7 +4,7 @@ int copypath(u8* path, u8* data);
 void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 //
 void loadtexfromcolor(struct texture* tex, u32 rgb, int w, int h);
-void parsevertfromobj(struct mysrc* ctx, struct fstyle* sty, u8* buf, int len);
+void parsevertfromobj(struct vertex* ctx, struct fstyle* sty, u8* buf, int len, u8* tmp, int max);
 //
 void world2local(mat4 mat, struct fstyle* src, struct fstyle* dst);
 void world2local_transpose(mat4 mat, struct fstyle* src, struct fstyle* dst);
@@ -330,11 +330,11 @@ static void obj3d_linkup(struct halfrel* self, struct halfrel* peer)
 
 	//vertex
 	struct mysrc* src = &own->gl41.src;
-	src->vtx[0].vbuf_len = 0x100000;
+	src->vtx[0].vbuf_len = 0x200000;
 	src->vtx[0].vbuf = memorycreate(src->vtx[0].vbuf_len, 0);
 	src->vtx[0].vbuf_fmt = vbuffmt_3333;
 	src->vtx[0].vbuf_w = 4*12;
-	parsevertfromobj(src, &pin->fs, own->objbuf, own->objlen);
+	parsevertfromobj(&src->vtx[0], &pin->fs, own->objbuf, own->objlen, own->objbuf+0x100000, 0x100000);
 	src->vbuf_enq = 42;
 }
 
@@ -403,7 +403,7 @@ static void obj3d_create(_obj* act, void* arg, int argc, u8** argv)
 
 	if(0 == arg)arg = "datafile/obj/cube.obj";
 	own->objbuf = memorycreate(0x200000, 0);
-	own->objlen = openreadclose(arg, 0, own->objbuf, 0x100000);
+	own->objlen = openreadclose(arg, 0, own->objbuf, 0x200000);
 }
 
 

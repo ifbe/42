@@ -54,9 +54,12 @@ void main(){
 		vec3 F = F0 + (1.0 - F0) * pow(1.0 - HdotE, 5.0);
 
 		vec3 kS = F;
+		vec3 specular = (D * G * F) / (4.0 * NdotE * NdotL + 0.0001);
+
 		vec3 kD = (vec3(1.0) - kS) * (1.0 - metal);
-		vec3 specular = (D * G * F) / max(4.0 * NdotE * NdotL, 0.001);
-		ocolor += (kD * albedo / PI + specular) * radiance * NdotL;
+		vec3 diffuse = kD * albedo / PI;
+
+		ocolor += (diffuse + specular) * radiance * NdotL;
 	}
 
 	ocolor = ocolor / (ocolor + vec3(1.0));

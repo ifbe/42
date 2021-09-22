@@ -48,7 +48,7 @@ void computetangent(float* p, int c)
 		x = tmp * (v1to3 * x1to2 - v1to2 * x1to3);
 		y = tmp * (v1to3 * y1to2 - v1to2 * y1to3);
 		z = tmp * (v1to3 * z1to2 - v1to2 * z1to3);
-say("%d:%f,%f,%f\n",j,x,y,z);
+//say("%d:%f,%f,%f\n",j,x,y,z);
 		p[j*36 +  9] = x;
 		p[j*36 + 10] = y;
 		p[j*36 + 11] = z;
@@ -70,14 +70,14 @@ void parsevec3fromobj(float* dst, int cnt, u8* buf, int len)
 {
 	int j,k = 0;
 	float* v = &dst[cnt*3];
-	say("parsevec3fromobj: %p,%d, %.*s\n", dst,cnt, len,buf);
+	//say("parsevec3fromobj: %p,%d, %.*s\n", dst,cnt, len,buf);
 
 	for(j=0;j<3;j++){
 		if(k >= len)break;
 		if(0xa >= buf[k])break;
 		k += 1+decstr2float(buf+k, &v[j]);
 	}
-	say("%d: %f,%f,%f\n", j, v[0], v[1], v[2]);
+	//say("%d: %f,%f,%f\n", j, v[0], v[1], v[2]);
 }
 void parsefacefromobj(
 	float* dst, int cnt, u8* buf, int len,
@@ -89,7 +89,7 @@ void parsefacefromobj(
 	float* vtx;
 	float* tex;
 	float* nor;
-	say("parsefacefromobj: %.*s\n",len,buf);
+	//say("parsefacefromobj: %.*s\n",len,buf);
 
 	//format>>	1/2/3 4/5/6 7/8/9	<<format
 	k = 0;
@@ -99,7 +99,7 @@ void parsefacefromobj(
 		k += 1+decstr2u16(buf+k, &f[j]);
 		f[j] -= 1;
 	}
-	say("parsed value: %d,%d,%d %d,%d,%d %d,%d,%d\n", f[0],f[1],f[2], f[3],f[4],f[5], f[6],f[7],f[8]);
+	//say("parsed value: %d,%d,%d %d,%d,%d %d,%d,%d\n", f[0],f[1],f[2], f[3],f[4],f[5], f[6],f[7],f[8]);
 
 	//3 triangles
 	for(j=0;j<3;j++){
@@ -124,12 +124,12 @@ void parsefacefromobj(
 		p[8] = nor[2];
 	}
 
-	p = &dst[cnt*12*3];
+/*	p = &dst[cnt*12*3];
 	say("@a: %f,%f,%f %f,%f,%f %f,%f,%f\n", j, p[ 0],p[ 1],p[ 2], p[ 3],p[ 4],p[ 5], p[ 6],p[ 7],p[ 8]);
 	say("@b: %f,%f,%f %f,%f,%f %f,%f,%f\n", j, p[12],p[13],p[14], p[15],p[16],p[17], p[18],p[19],p[20]);
-	say("@c: %f,%f,%f %f,%f,%f %f,%f,%f\n", j, p[24],p[25],p[26], p[27],p[28],p[29], p[30],p[31],p[32]);
+	say("@c: %f,%f,%f %f,%f,%f %f,%f,%f\n", j, p[24],p[25],p[26], p[27],p[28],p[29], p[30],p[31],p[32]);*/
 }
-void parsevertfromobj(struct mysrc* ctx, struct fstyle* sty, u8* buf, int len)
+void parsevertfromobj(struct vertex* vtx, struct fstyle* sty, u8* buf, int len, u8* tmp, int max)
 {
 	float* vl = sty->vl;	//left
 	float* vr = sty->vr;	//right
@@ -163,22 +163,25 @@ void parsevertfromobj(struct mysrc* ctx, struct fstyle* sty, u8* buf, int len)
 	vu[2] = -100000.0;
 
 
-	int j,k,cnt = 0;		//how many trigon
+	int j,k,line;
 	int cv = 0;
 	int ct = 0;
 	int cn = 0;
 	int cp = 0;
-	float* fv = (void*)(buf+0x100000);
-	float* ft = (void*)(buf+0x140000);
-	float* fn = (void*)(buf+0x180000);
-	float* fp = (void*)(buf+0x1c0000);
-	float* dst = ctx->vtx[0].vbuf;
+	int cnt = 0;
+	float* fv = (void*)(tmp+0x00000);
+	float* ft = (void*)(tmp+0x40000);
+	float* fn = (void*)(tmp+0x80000);
+	float* fp = (void*)(tmp+0xc0000);
+	float* dst = vtx->vbuf;
 
 	k = 0;
+	line = 1;
 	for(j=0;j<len;j++){
 		//say("%x\n",buf[j]);
-		if((buf[j] <= 0xa)&&(j-k>1)) {
-			say("[%x,%x]%.*s\n", k,j, j-k,buf+k);
+		if(buf[j] < 0xa)break;
+		if((buf[j] == 0xa) | (j+1 == len)) {
+			//say("%d:[%x,%x]%.*s\n", line, k,j, j-k,buf+k);
 			if('v' == buf[k]){
 				if(' ' == buf[k+1]){		//vertex
 					parsevec3fromobj(fv, cv, buf+k+2, j-k-2);
@@ -211,13 +214,13 @@ void parsevertfromobj(struct mysrc* ctx, struct fstyle* sty, u8* buf, int len)
 				);
 				cnt += 1;
 			}
-			k = j+1;
 
-			//say("buf[%x] = %x\n", j, buf[j]);
-			if(buf[j] < 0xa)break;
+			k = j+1;
+			if(j+1 != len)line++;
 		}
 	}
-say("j=%d,len=%d,cnt=%d\n",j,len,cnt);
+say("in:j=%d,len=%d,line=%d\n", j,len,line);
+say("out:cv=%d#%x, ct=%d#%x, cn=%d#%x, cp=%d#%x, face=%d#%x\n", cv,cv*4*3, ct,ct*4*3, cn,cn*4*3, cp,cp*4*3, cnt,cnt*4*36);
 
 	//calculate tangent
 	computetangent(dst, cnt);
@@ -231,17 +234,15 @@ say("j=%d,len=%d,cnt=%d\n",j,len,cnt);
 	vr[0] -= vc[0];
 	vf[1] -= vc[1];
 	vu[2] -= vc[2];
-	say(
-		"l=%f, r=%f, n=%f, f=%f, b=%f, u=%f\n",
+	say("l=%f, r=%f, n=%f, f=%f, b=%f, u=%f\n",
 		vl[0], vr[0], vn[1], vf[1], vb[2], vu[2]
 	);
-	say(
-		"w=%f, h=%f, d=%f, x=%f, y=%f, z=%f\n",
+	say("w=%f, h=%f, d=%f, x=%f, y=%f, z=%f\n",
 		vq[0], vq[1], vq[2], vc[0], vc[1], vc[2]
 	);
 
 	//ctx->vbuf_w = 4*9;	//vx,vy,vz,nx,ny,nz,tx,ty,tz
-	ctx->vtx[0].vbuf_h = cnt*3;	//3point = 1triangle
+	vtx->vbuf_h = cnt*3;	//3point = 1triangle
 }
 
 

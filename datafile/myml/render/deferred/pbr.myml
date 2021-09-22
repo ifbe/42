@@ -9,9 +9,12 @@ fmt:obj3d
 url:datafile/obj/cube.obj
 glvs:datafile/shader/obj/glgv.glsl
 glfs:datafile/shader/obj/glgf.glsl
-albedo:/Users/ifbe/Downloads/pbr/floor/albedo.png
-normal:/Users/ifbe/Downloads/pbr/floor/normal.png
-matter:/Users/ifbe/Downloads/pbr/floor/matter.png
+#albedo:datafile/jpg/wall.jpg
+#normal:datafile/jpg/wallnormal.jpg
+#matter:datafile/jpg/wallmatter.jpg
+albedo:/Users/ifbe/Downloads/pbr/rustiron/albedo.png
+normal:/Users/ifbe/Downloads/pbr/rustiron/normal.png
+matter:/Users/ifbe/Downloads/pbr/rustiron/matter.png
 }
 grnd{
 fmt:ground

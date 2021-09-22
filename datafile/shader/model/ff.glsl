@@ -68,9 +68,12 @@ subroutine (passtype) vec3 pbrcolor(){
 		mediump float G = getG(NdotL, rough)*getG(NdotE, rough);
 
 		mediump vec3 kS = F;
+		mediump vec3 specular = (D * G * F) / (4.0 * NdotE * NdotL + 0.0001);
+
 		mediump vec3 kD = (vec3(1.0) - kS) * (1.0 - metal);
-		mediump vec3 specular = (D * G * F) / max(4.0 * NdotE * NdotL, 0.001);
-		ocolor += (kD * albedo / PI + specular) * radiance * NdotL;
+		mediump vec3 diffuse = kD * albedo / PI;
+
+		ocolor += (diffuse + specular) * radiance * NdotL;
 	}
 
 	ocolor = ocolor / (ocolor + vec3(1.0));

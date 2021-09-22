@@ -9,11 +9,16 @@ fmt:obj3d
 url:datafile/obj/cube.obj
 glvs:datafile/shader/obj/glgv.glsl
 glfs:datafile/shader/obj/glgf.glsl
+albedo:datafile/jpg/brickwall.jpg
+normal:datafile/jpg/brickwall_normal.jpg
 }
 grnd{
 fmt:ground
 glvs:datafile/shader/ground/gv.glsl
 glfs:datafile/shader/ground/gf.glsl
+albedo:/Users/ifbe/Downloads/pbr/shoreline/albedo.png
+normal:/Users/ifbe/Downloads/pbr/shoreline/normal.png
+matter:/Users/ifbe/Downloads/pbr/shoreline/matter.png
 }
 world{
 fmt:virtual

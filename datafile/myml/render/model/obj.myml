@@ -1,10 +1,11 @@
 <entity>
 rabbit{
 fmt:obj3d
+glvs:datafile/shader/obj/forward-vertex-yflip.glsl
 url:datafile/obj/viking_room.obj
-#albedo:datafile/obj/viking_room.png
-albedo:datafile/jpg/brickwall.jpg
-normal:datafile/jpg/brickwall_normal.jpg
+albedo:datafile/obj/viking_room.png
+normal:datafile/obj/blue.jpg
+matter:datafile/obj/green.jpg
 }
 freecam{
 fmt:freecam

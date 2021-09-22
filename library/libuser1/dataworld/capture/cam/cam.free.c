@@ -348,8 +348,8 @@ static void freecam_frus2wvp(
 	struct privdata* own = act->OWNBUF;
 	frustum2viewandclip_transpose(frus, own->world2view, own->world2clip);
 
-	say("wvp:\n");
-	printmat4(own->world2clip);
+	//say("wvp:\n");
+	//printmat4(own->world2clip);
 }
 static void freecam_frus2pvw(
 	_obj* act, struct style* part,
@@ -359,8 +359,8 @@ static void freecam_frus2pvw(
 	struct privdata* own = act->OWNBUF;
 	clip2world_projz0z1_transpose(own->clip2world, frus);
 
-	say("pvw:\n");
-	printmat4(own->clip2world);
+	//say("pvw:\n");
+	//printmat4(own->clip2world);
 }
 
 
