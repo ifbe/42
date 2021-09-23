@@ -19,17 +19,25 @@ int rastersolid_triangle(void*,void*, void*,void*, float*,int,int,int, mat4,void
 
 
 struct privdata{
-	u8 vs[128];
-	u8 fs[128];
+	//path
+	u8 path_vs[128];
+	u8 path_fs[128];
+	u8 path_albedo[128];
+	u8 path_matter[128];
+	u8 path_normal[128];
 
-	u8 albedo[128];
-	u8 matter[128];
-	u8 normal[128];
-
+	//cpu data
 	int objlen;
 	u8* objbuf;
+	struct vertex vtx;
 
 	mat4 objmat;
+	mat4 nrmmat;
+	struct texture albedo;
+	struct texture normal;
+	struct texture matter;
+
+	//ogl data
 	struct gl41data gl41;
 };
 static void obj3d_position(vec4 olist[], vec3 ilist[], mat4 m)
@@ -83,8 +91,17 @@ static u32 obj3d_fragment(vec4 out[], vec4 in[], struct privdata* own)
 }
 
 
-static void obj3d_ctxforgl41(struct gl41data* data, char* albedo, char* matter, char* normal, char* vs, char* fs)
+
+
+static void obj3d_cpuctx_prep(struct privdata* own, char* albedo, char* matter, char* normal, void* arg)
 {
+	if(0 == arg)arg = "datafile/obj/cube.obj";
+	own->objbuf = memorycreate(0x200000, 0);
+	own->objlen = openreadclose(arg, 0, own->objbuf, 0x200000);
+}
+static void obj3d_gl41_prep(struct privdata* own, char* albedo, char* matter, char* normal, char* vs, char* fs)
+{
+	struct gl41data* data = &own->gl41;
 	struct mysrc* src = &data->src;
 	struct gldst* dst = &data->dst;
 //say("%s\n%s\n%s\n%s\n%s\n",albedo,matter,normal,vs,fs);
@@ -99,6 +116,7 @@ static void obj3d_ctxforgl41(struct gl41data* data, char* albedo, char* matter, 
 	//argument
 	dst->arg[0].fmt = 'm';
 	dst->arg[0].name = "objmat";
+	dst->arg[0].data = own->objmat;
 
 	//albedo
 	dst->texname[0] = "albedomap";
@@ -368,42 +386,48 @@ static void obj3d_create(_obj* act, void* arg, int argc, u8** argv)
 	char* normal = 0;
 	for(j=0;j<argc;j++){
 		//say("%d:%.8s\n", j, argv[j]);
-		if(0 == ncmp(argv[j], "glvs:", 5)){
-			copypath(own->vs, argv[j]+5);
-			glvs = (void*)own->vs;
-		}
-		if(0 == ncmp(argv[j], "glfs:", 5)){
-			copypath(own->fs, argv[j]+5);
-			glfs = (void*)own->fs;
-		}
+
+		//cpu
 		if(0 == ncmp(argv[j], "albedo:", 7)){
-			copypath(own->albedo, argv[j]+7);
-			albedo = (void*)own->albedo;
+			copypath(own->path_albedo, argv[j]+7);
+			albedo = (void*)own->path_albedo;
+			continue;
 		}
 		if(0 == ncmp(argv[j], "matter:", 7)){
-			copypath(own->matter, argv[j]+7);
-			matter = (void*)own->matter;
+			copypath(own->path_matter, argv[j]+7);
+			matter = (void*)own->path_matter;
+			continue;
 		}
 		if(0 == ncmp(argv[j], "normal:", 7)){
-			copypath(own->normal, argv[j]+7);
-			normal = (void*)own->normal;
+			copypath(own->path_normal, argv[j]+7);
+			normal = (void*)own->path_normal;
+			continue;
+		}
+
+		//ogl
+		if(0 == ncmp(argv[j], "glvs:", 5)){
+			copypath(own->path_vs, argv[j]+5);
+			glvs = (void*)own->path_vs;
+			continue;
+		}
+		if(0 == ncmp(argv[j], "glfs:", 5)){
+			copypath(own->path_fs, argv[j]+5);
+			glfs = (void*)own->path_fs;
+			continue;
 		}
 	}
-	//if(0 == dxvs)dxvs = "datafile/shader/obj/dxfv.glsl";
-	//if(0 == dxfs)dxfs = "datafile/shader/obj/dxff.glsl";
-	if(0 == glvs)glvs = "datafile/shader/obj/glfv.glsl";
-	if(0 == glfs)glfs = "datafile/shader/obj/glff.glsl";
+
 	if(0 == albedo)albedo = "datafile/jpg/wall.jpg";
 	//if(0 == matter)matter = "datafile/jpg/wallnormal.jpg";
 	//if(0 == normal)normal = "datafile/jpg/wallnormal.jpg";
+	obj3d_cpuctx_prep(own, albedo, normal, matter, arg);
 
-	//obj3d_ctxforgl41(&own->gl41.src, albedo, normal, dxvs, dxfs);
-	obj3d_ctxforgl41(&own->gl41, albedo, matter, normal, glvs, glfs);
-	own->gl41.dst.arg[0].data = own->objmat;
+	if(0 == glvs)glvs = "datafile/shader/obj/glfv.glsl";
+	if(0 == glfs)glfs = "datafile/shader/obj/glff.glsl";
+	obj3d_gl41_prep(own, albedo, matter, normal, glvs, glfs);
 
-	if(0 == arg)arg = "datafile/obj/cube.obj";
-	own->objbuf = memorycreate(0x200000, 0);
-	own->objlen = openreadclose(arg, 0, own->objbuf, 0x200000);
+	//if(0 == dxvs)dxvs = "datafile/shader/obj/dxfv.glsl";
+	//if(0 == dxfs)dxfs = "datafile/shader/obj/dxff.glsl";
 }
 
 

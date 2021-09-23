@@ -10,9 +10,9 @@ out mediump vec3 tangen;
 uniform mat4 objmat;
 uniform mat4 cammvp;
 void main(){
-	objxyz = vtx;
 	texcoo = tex;
-	normal = nrm;
-	tangen = tgt;
+	normal = vec3(objmat * vec4(nrm, 0.0));
+	tangen = vec3(objmat * vec4(tgt, 0.0));
+	objxyz = vec3(objmat * vec4(vtx, 1.0));
 	gl_Position = cammvp * objmat * vec4(vtx, 1.0);
 }

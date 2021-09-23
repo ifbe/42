@@ -41,7 +41,7 @@ subroutine (passtype) vec3 pbrcolor(){
 	mediump vec3 E = normalize(camxyz - objxyz);
 	mediump vec3 F0 = mix(vec3(0.04), albedo, metal);
 
-	mediump vec3 litrgb = vec3(1.0, 1.0, 1.0);
+	mediump vec3 litrgb = vec3(3.0, 3.0, 3.0);
 	mediump vec3 litdir[4];
 	litdir[0] = vec3(-1.0, 0.0, 1.0);
 	litdir[1] = vec3( 1.0, 0.0, 1.0);

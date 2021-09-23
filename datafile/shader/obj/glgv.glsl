@@ -13,9 +13,8 @@ uniform vec3 camxyz;
 
 
 void main(){
-	vec4 obj = objmat * vec4(vert, 1.0);
 	texuvw = texc;
-	normal = norm;
-	tangen = tang;
-	gl_Position = cammvp * obj;
+	normal = vec3(objmat * vec4(norm, 0.0));
+	tangen = vec3(objmat * vec4(tang, 0.0));
+	gl_Position = cammvp * objmat * vec4(vert, 1.0);
 }
