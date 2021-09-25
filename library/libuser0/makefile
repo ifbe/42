@@ -237,6 +237,12 @@ macglfw_c = \
 gamepad/glfw/glfw.gamepad.c
 macglfw_o = $(patsubst %.c, %.o, $(macglfw_c))
 
+macvulkan_c = \
+3d-output/render-vulkan/wnd/glfwvk.c \
+3d-output/render-vulkan/vk12/vk12.c \
+gamepad/glfw/glfw.gamepad.c
+macvulkan_o = $(patsubst %.c, %.o, $(macvulkan_c))
+
 .PHONY:maccli
 maccli:$(else_o) $(macos_o) $(macos_m_o) $(maccli_o)
 
@@ -261,6 +267,9 @@ macglut:$(else_o) $(macos_o) $(macos_m_o) $(macglut_o)
 
 .PHONY:macglfw
 macglfw:$(else_o) $(macos_o) $(macos_m_o) $(macglfw_o) $(ogl_o)
+
+.PHONY:macvulkan
+macvulkan:$(else_o) $(macos_o) $(macos_m_o) $(macvulkan_o)
 #########################################################
 
 

@@ -13,6 +13,7 @@
 *.swo
 *.swp
 *.ttf
+*.spv
 
 *.ko
 *.order
