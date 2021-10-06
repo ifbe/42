@@ -240,6 +240,7 @@ macglfw_o = $(patsubst %.c, %.o, $(macglfw_c))
 macvulkan_c = \
 3d-output/render-vulkan/wnd/glfwvk.c \
 3d-output/render-vulkan/vk12/vk12.c \
+3d-output/render-vulkan/ctx/easy.c \
 gamepad/glfw/glfw.gamepad.c
 macvulkan_o = $(patsubst %.c, %.o, $(macvulkan_c))
 

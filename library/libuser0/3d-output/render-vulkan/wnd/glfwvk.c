@@ -6,7 +6,7 @@
 #include "libuser.h"
 void* vulkan_init(int cnt, const char** ext);
 void vulkan_exit();
-void vulkan_device_create(void*);
+void vulkan_device_create(int, void*);
 void vulkan_device_delete();
 void vulkan_myctx_create();
 void vulkan_myctx_delete();
@@ -154,7 +154,7 @@ void windowcreate(_obj* ogl, void* arg, int argc, char** argv)
 	per->surface = glfw_surface_create(per->window, instance);
 
 	//vulkan: device and swapchain
-	vulkan_device_create(per->surface);
+	vulkan_device_create(0, per->surface);
 
 	//vulkan: things
 	vulkan_myctx_create();
