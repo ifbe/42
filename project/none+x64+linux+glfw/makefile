@@ -1,7 +1,7 @@
 project?=$(shell pwd)
 library?=../../library
 CC=gcc
-CF="-c -O2 -fno-stack-protector -Wno-address-of-packed-member -I.."
+CF="-c -O2 -fPIC -fno-stack-protector -Wno-address-of-packed-member -I.."
 all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	+make -s exe
 	+make -s lib
@@ -63,4 +63,5 @@ exe:
 	-lpthread -lX11 -ldl -lm
 clean:
 	rm -f *.o *.a *.so
+	rm -f */*.o
 	make -C $(library) clean

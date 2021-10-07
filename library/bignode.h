@@ -305,7 +305,7 @@ struct gl41world{
 	struct gl41data** light;
 	struct gl41data** solid;
 	struct gl41data** opaque;
-}world[2];
+};
 struct gl41list{
 	struct gl41world world[2];
 

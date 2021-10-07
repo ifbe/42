@@ -1,7 +1,8 @@
+SDK=/opt/vulkansdk/1.2.189.0/x86_64
 project?=$(shell pwd)
 library?=../../library
 CC=gcc
-CF="-c -O2 -fPIC -fno-stack-protector -Wno-address-of-packed-member -I.."
+CF="-c -O2 -fPIC -fno-stack-protector -Wno-address-of-packed-member -I.. -I${SDK}/include"
 all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	+make -s exe
 	+make -s lib
@@ -34,7 +35,7 @@ libsoft1:
 .PHONY:libuser0
 libuser0:
 	mkdir -p $@
-	+make -s -C $(library)/$@ DIR=$(project)/$@ CF=$(CF) linuxcli
+	+make -s -C $(library)/$@ DIR=$(project)/$@ CF=$(CF) linuxvulkan
 .PHONY:libuser1
 libuser1:
 	mkdir -p $@
@@ -58,8 +59,9 @@ exe:
 	libhard0/*.o libhard1/*.o \
 	libsoft0/*.o libsoft1/*.o \
 	libuser0/*.o libuser1/*.o \
-	-lpulse -lpulse-simple -lpthread -lm
-	#-lasound -lpthread
+	-L${SDK}/lib -lglfw3 -lvulkan \
+	-lpulse -lpulse-simple \
+	-lpthread -lX11 -ldl -lm
 clean:
 	rm -f *.o *.a *.so
 	rm -f */*.o

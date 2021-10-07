@@ -33,7 +33,7 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 	rgbanode_take(wnd,0, stack,sp, arg,key, buf,len);
 
 	//update screen
-	canvas = (void*)(wnd->rgbabuf);
+	canvas = (void*)(wnd->rgbanode.buf);
 	if(16 == bpp)
 	{
 		for(x=0;x<xmax*ymax;x++)
@@ -123,16 +123,16 @@ void windowcreate(_obj* sup, void* arg)
 
 
 	//
-	sup->fmt = _rgba_;
+	sup->hfmt = _rgba_;
 	sup->vfmt = hex64('b','g','r','a','8','8','8','8');
 
-	sup->width  = xmax;
-	sup->height = ymax;
+	sup->whdf.width  = xmax;
+	sup->whdf.height = ymax;
 
-	sup->fbwidth = fboneline;
+	sup->whdf.fbwidth = fboneline;
 	//sup->fbheight = 0;
 
-	sup->rgbabuf = malloc(2048*1024*4);
+	sup->rgbanode.buf = malloc(2048*1024*4);
 	//for(j=0;j<16;j++)w->input[j].id = 0xffff;
 }
 

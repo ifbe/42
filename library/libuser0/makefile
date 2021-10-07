@@ -145,6 +145,13 @@ linuxglfw_c = \
 gamepad/glfw/glfw.gamepad.c
 linuxglfw_o = $(patsubst %.c, %.o, $(linuxglfw_c))
 
+linuxvulkan_c = \
+3d-output/render-vulkan/wnd/glfwvk.c \
+3d-output/render-vulkan/vk12/vk12.c \
+3d-output/render-vulkan/ctx/easy.c \
+gamepad/glfw/glfw.gamepad.c
+linuxvulkan_o = $(patsubst %.c, %.o, $(linuxvulkan_c))
+
 linuxsdl_c = \
 gamepad/sdl/sdl.gamepad.c
 linuxsdl_o = $(patsubst %.c, %.o, $(linuxsdl_c))
@@ -173,6 +180,9 @@ linuxglut:$(else_o) $(linux_o) $(linuxglut_o)
 
 .PHONY:linuxglfw
 linuxglfw:$(else_o) $(linux_o) $(linuxglfw_o) $(ogl_o)
+
+.PHONY:linuxvulkan
+linuxvulkan:$(else_o) $(linux_o) $(linuxvulkan_o)
 
 .PHONY:linuxsdl
 linuxsdl:$(else_o) $(linux_o) $(linuxsdl_o)
