@@ -320,6 +320,13 @@ winglfw_c = \
 gamepad/glfw/glfw.gamepad.c
 winglfw_o = $(patsubst %.c, %.o, $(winglfw_c))
 
+winvulkan_c = \
+3d-output/render-vulkan/wnd/glfwvk.c \
+3d-output/render-vulkan/vk12/vk12.c \
+3d-output/render-vulkan/ctx/easy.c \
+gamepad/glfw/glfw.gamepad.c
+winvulkan_o = $(patsubst %.c, %.o, $(winvulkan_c))
+
 winsdl_c = \
 2d-window/lib-sdl/sdl2.c \
 gamepad/sdl/sdl.gamepad.c
@@ -342,6 +349,9 @@ winglut:$(else_o) $(win_o) $(win_cpp_o) $(winglut_o)
 
 .PHONY:winglfw
 winglfw:$(else_o) $(win_o) $(win_cpp_o) $(winglfw_o) $(ogl_o)
+
+.PHONY:winvulkan
+winvulkan:$(else_o) $(win_o) $(win_cpp_o) $(winvulkan_o)
 
 .PHONY:winsdl
 winsdl:$(else_o) $(win_o) $(win_cpp_o) $(winsdl_o)
