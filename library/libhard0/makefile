@@ -38,7 +38,7 @@ inlinux/hardware.c
 linuxarm_o = $(patsubst %.c, %.o, $(linuxarm_c))
 
 linuxpi32_c = \
-toarm/lib/rpi.wiringpi.c \
+libgpio/rpi.wiringpi.c \
 inlinux/linux.wire.bt.c \
 inlinux/linux.wire.i2c.c \
 inlinux/linux.wire.pci.c \
@@ -82,7 +82,8 @@ toarm/rpi/rpi.i2c.c \
 toarm/rpi/rpi.spi.c \
 toarm/rpi/rpi.uart.c \
 toarm/rpi/rpi.pcie.c \
-toarm/rpi/rpi.xhci.c \
+toarm/rpi/rpi.usb.innerxhci.c \
+toarm/rpi/rpi.usb.dwc2.c \
 toarm/pi34.c
 barepi64_o = $(patsubst %.c, %.o, $(barepi64_c))
 

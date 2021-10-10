@@ -5,6 +5,8 @@ void* mmiobase();
 
 
 
+//must add: otg_mode=1
+//must del: dtoverlay=dwc2
 void brcmxhci_init()
 {
     say("@brcmxhci_init\n");

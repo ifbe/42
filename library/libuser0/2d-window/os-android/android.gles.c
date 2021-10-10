@@ -27,7 +27,7 @@ void initshader(void*);
 void inittexture(void*);
 void initvertex(void*);
 //
-void fullwindow_create(void*);
+void fullwindow_create(_obj* ogl, void* arg, int argc, char** argv);
 void fullwindow_delete(void*);
 void fullwindow_take(void*,void*, void*,int, void*,int, void*,int);
 void fullwindow_give(void*,void*, void*,int, void*,int, void*,int);
@@ -92,7 +92,7 @@ void windowcreate(_obj* wnd, void* arg)
 		wnd->whdf.fbheight= wnd->whdf.height= height;
 		say("w=%d,h=%d\n", width, height);
 
-		fullwindow_create(wnd);
+		fullwindow_create(wnd, 0, 0, 0);
 		break;
 	}//default
 	}//switch
@@ -186,22 +186,25 @@ void closewindow(struct android_app* theapp)
 	_obj* wnd = thewnd;
 	if(0 == wnd)return;
 
-	struct gl41data** cam = wnd->gl41list.camera;
+	struct gl41world* world = wnd->gl41list.world;
+	//if(0 == world)return;
+
+	struct gl41data** cam = world->camera;
 	for(j=0;j<64;j++){
 		if(cam[j])bzero(&cam[j]->dst, sizeof(struct gldst));
 	}
 
-	struct gl41data** lit = wnd->gl41list.light;
+	struct gl41data** lit = world->light;
 	for(j=0;j<64;j++){
 		if(lit[j])bzero(&lit[j]->dst, sizeof(struct gldst));
 	}
 
-	struct gl41data** solid = wnd->gl41list.solid;
+	struct gl41data** solid = world->solid;
 	for(j=0;j<64;j++){
 		if(solid[j])bzero(&solid[j]->dst, sizeof(struct gldst));
 	}
 
-	struct gl41data** opaque = wnd->gl41list.opaque;
+	struct gl41data** opaque = world->opaque;
 	for(j=0;j<64;j++){
 		if(opaque[j])bzero(&opaque[j]->dst, sizeof(struct gldst));
 	}
