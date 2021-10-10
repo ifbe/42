@@ -17,8 +17,6 @@ void filemanager_registersupplier(void*,void*);
 
 
 
-#define SDHCI_OFFS_OLD 0x00300000
-#define SDHCI_OFFS_NEW 0x00340000		//pi4
 #define COREFREQ (250*1000*1000)
 //
 #define SD_CLOCK_400K    400000
@@ -450,20 +448,18 @@ int freesdhci()
 {
 	return 0;
 }
-int initsdhci(struct item* dev)
+int initsdhci(struct item* dev, int offs)
 {
 	long r,cnt,ccs=0;
-	say("@initsdhci\n");
+	say("@initsdhci@%x\n", offs);
 
-	//get addr
-	struct persdhci* per = (void*)dev->priv_256b;
-	void* sdhci = mmiobase();
-
-	if(4 == raspi_version())sdhci += SDHCI_OFFS_NEW;
-	else sdhci += SDHCI_OFFS_OLD;
-
-	per->sdhci = sdhci;
+	//which
+	void* sdhci = mmiobase() + offs;
 	printmmio(sdhci, 0x40);
+
+	//save addr in node
+	struct persdhci* per = (void*)dev->priv_256b;
+	per->sdhci = sdhci;
 
 
 	//prep gpio

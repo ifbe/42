@@ -76,7 +76,6 @@ toarm/rpi/rpi.watchdog.c \
 toarm/rpi/rpi.systmr.c \
 toarm/rpi/rpi.sdhci.c \
 toarm/rpi/rpi.sdhost.c \
-toarm/rpi/rpi.sdhci.emmc2.c \
 toarm/rpi/rpi.gpio.c \
 toarm/rpi/rpi.i2c.c \
 toarm/rpi/rpi.spi.c \
