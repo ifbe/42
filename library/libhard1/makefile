@@ -2,10 +2,10 @@ CC:=gcc
 CF:="-c -O2 -fPIC -I.."
 DIR:=$(shell pwd)
 SRC= \
-devmap/acpi/devmap.acpi.c \
-devmap/dts/devmap.dts.c \
-memmap/memmap.bios.c \
-memmap/memmap.uefi.c \
+map/acpi/devmap.acpi.c \
+map/dts/devmap.dts.c \
+map/bios/memmap.bios.c \
+map/uefi/memmap.uefi.c \
 sensor/baro/baro.ms5611.c \
 sensor/gyro/gyro.l3gd20.c \
 sensor/pack/g_a_b.icm20789.c \

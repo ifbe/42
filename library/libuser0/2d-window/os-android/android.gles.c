@@ -169,8 +169,10 @@ void openwindow(struct android_app* theapp)
 }
 void closewindow(struct android_app* theapp)
 {
+	//0. set flag
 	candraw = 0;
 
+	//1. gpu clear
 	if (EGL_NO_DISPLAY != display)
 	{
 		eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
@@ -182,6 +184,7 @@ void closewindow(struct android_app* theapp)
 	context = EGL_NO_CONTEXT;
 	surface = EGL_NO_SURFACE;
 
+	//2. tell everyone who connected
 	int j;
 	_obj* wnd = thewnd;
 	if(0 == wnd)return;
