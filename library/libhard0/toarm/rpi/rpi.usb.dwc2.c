@@ -10,7 +10,7 @@ void* mmiobase();
 void brcmdwc2_init()
 {
     say("@brcmdwc2_init\n");
-    printmmio(mmiobase()+DWC2BASE, 0x40);
+    printmmio(mmiobase()+DWC2BASE, 0x100);
 }
 void brcmdwc2_exit()
 {

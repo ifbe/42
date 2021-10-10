@@ -8,12 +8,15 @@ void initcpu_bsp();
 void initcpu_ap();
 //
 void initsystmr(void*);
-//
+//sdhost unused, sdhci wifi, sdhci2 sdcard
 void initsdhci(void*);
 void initsdhost(void*);
-//
-void brcmpcie_init();
+//typec: dwc2 or intern_xhci
 void brcmxhci_init();
+void brcmdwc2_init();
+//pcie: bridge and extern_xhci
+void brcmpcie_init();
+void rpiextxhci_init();
 
 
 
@@ -68,7 +71,10 @@ void inithardware()
 	initsdhost(p);
 
 	if(4 == raspi_version()){
+		brcmxhci_init();
+		brcmdwc2_init();
+
 		//brcmpcie_init();
-		//brcmxhci_init();
+		//rpiextxhci_init();
 	}
 }

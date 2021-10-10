@@ -10,7 +10,7 @@ void* mmiobase();
 void brcmxhci_init()
 {
     say("@brcmxhci_init\n");
-    printmmio(mmiobase()+BRCM_XHCI, 0x40);
+    printmmio(mmiobase()+BRCM_XHCI, 0x100);
 }
 void brcmxhci_exit()
 {
