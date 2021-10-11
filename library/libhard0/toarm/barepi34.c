@@ -97,7 +97,7 @@ typec-2=
 		brcmdwc2_init();
 
 		//pcie: a lot of things
-		//brcmpcie_init();
+		brcmpcie_init();
 		//rpiextxhci_init();
 		break;
 

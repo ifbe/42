@@ -5,7 +5,7 @@ CF:=-c -O2 -fPIC -I..
 
 
 
-#---------------------arm32-------------------------
+#---------------------else-------------------------
 anyelse_c = \
 anyusb/ehci/ehci-driver.c \
 anyusb/xhci/xhci-driver.c
@@ -83,7 +83,8 @@ toarm/rpi/rpi.uart.c \
 toarm/rpi/rpi.pcie.c \
 toarm/rpi/rpi.usb.innerxhci.c \
 toarm/rpi/rpi.usb.dwc2.c \
-toarm/pi34.c
+anyusb/xhci/xhci-driver.c \
+toarm/barepi34.c
 barepi64_o = $(patsubst %.c, %.o, $(barepi64_c))
 
 linuxarm64_c = \
@@ -199,7 +200,7 @@ tox86/wire/bare.wire.i2c.c \
 tox86/wire/bare.wire.spi.c \
 tox86/wire/bare.wire.uart.c \
 tox86/wire/bare.wire.wifi.c \
-tox86/oldhw.c
+tox86/barepc.c
 barex64_o = $(patsubst %.c, %.o, $(barex64_c))
 
 efix64_c = \
