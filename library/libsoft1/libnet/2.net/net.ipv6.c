@@ -6,7 +6,7 @@
 
 
 
-struct ipv4
+struct ipv6
 {
 	u8 dstmac[6];
 	u8 srcmac[6];
