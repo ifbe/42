@@ -1,0 +1,26 @@
+----------------example for desktop app----------------
+x8664 windows:
+	cd none+x64+win+glfw
+	make -j8
+x8664 linux:
+	cd none+x64+win+linux
+	make -j8
+
+----------------example for mobile app----------------
+android gles:
+	cd android_gles/gradle
+	./gradlew assembleDebug
+	./gradlew installDebug
+
+----------------example for baremetal os----------------
+x8664 baremetal:
+	cd efios+x64+bare+fb
+	make -j8
+
+rpi4 baremetal:
+	cd pifw+pi64+bare+fb
+	make -j8
+
+libc for app on baremetal x8664:
+	cd libc42+x8664+os42+fb
+	make -j8

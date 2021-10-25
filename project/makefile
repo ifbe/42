@@ -1,3 +1,5 @@
+howto:
+	cat readme
 clean:
 	rm -f */*.o */*.a
 	rm -f */*.exe */*.out
