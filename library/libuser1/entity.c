@@ -111,6 +111,18 @@ int gravtest_giving(void*,void*, void*,int, void*,int, void*,int);
 int gravtest_taking(void*,void*, void*,int, void*,int, void*,int);
 
 //scene
+int virtual_create(void*, void*, int, u8**);
+int virtual_delete(void*, void*);
+int virtual_linkup(void*, void*);
+int virtual_discon(void*, void*);
+int virtual_giving(void*,void*, void*,int, void*,int, void*,int);
+int virtual_taking(void*,void*, void*,int, void*,int, void*,int);
+int scene3d_create(void*, void*, int, u8**);
+int scene3d_delete(void*, void*);
+int scene3d_linkup(void*, void*);
+int scene3d_discon(void*, void*);
+int scene3d_giving(void*,void*, void*,int, void*,int, void*,int);
+int scene3d_taking(void*,void*, void*,int, void*,int, void*,int);
 int axis3d_create(void*, void*, int, u8**);
 int axis3d_delete(void*, void*);
 int axis3d_linkup(void*, void*);
@@ -135,32 +147,14 @@ int border3d_linkup(void*, void*);
 int border3d_discon(void*, void*);
 int border3d_giving(void*,void*, void*,int, void*,int, void*,int);
 int border3d_taking(void*,void*, void*,int, void*,int, void*,int);
-int scene3d_create(void*, void*, int, u8**);
-int scene3d_delete(void*, void*);
-int scene3d_linkup(void*, void*);
-int scene3d_discon(void*, void*);
-int scene3d_giving(void*,void*, void*,int, void*,int, void*,int);
-int scene3d_taking(void*,void*, void*,int, void*,int, void*,int);
+
+//
 int wndmgr_create(void*, void*, int, u8**);
 int wndmgr_delete(void*, void*);
 int wndmgr_linkup(void*, void*);
 int wndmgr_discon(void*, void*);
 int wndmgr_give(void*,void*, void*,int, void*,int, void*,int);
 int wndmgr_take(void*,void*, void*,int, void*,int, void*,int);
-
-//
-int reality_create(void*, void*, int, u8**);
-int reality_delete(void*);
-int reality_linkup(void*, void*);
-int reality_discon(void*, void*);
-int reality_giving(void*,void*, void*,int, void*,int, void*,int);
-int reality_taking(void*,void*, void*,int, void*,int, void*,int);
-int virtual_create(void*, void*, int, u8**);
-int virtual_delete(void*, void*);
-int virtual_linkup(void*, void*);
-int virtual_discon(void*, void*);
-int virtual_giving(void*,void*, void*,int, void*,int, void*,int);
-int virtual_taking(void*,void*, void*,int, void*,int, void*,int);
 int htmlroot_create(void*, void*, int, u8**);
 int htmlroot_delete(void*);
 int htmlroot_linkup(void*, void*);
@@ -173,6 +167,8 @@ int xamlroot_linkup(void*, void*);
 int xamlroot_discon(void*, void*);
 int xamlroot_giving(void*,void*, void*,int, void*,int, void*,int);
 int xamlroot_taking(void*,void*, void*,int, void*,int, void*,int);
+
+//
 int mmiospace_create(void*, void*, int, u8**);
 int mmiospace_delete(void*);
 int mmiospace_linkup(void*, void*);
@@ -399,15 +395,13 @@ int entity_take(_obj* act,void* foot, _syn* stack,int sp, void* arg,int key, voi
 	case _carcon_:return carcon_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _flycon_:return flycon_taking(act,foot, stack,sp, arg,key, buf,len);
 
+	case _virtual_:return virtual_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _scene3d_:return scene3d_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _axis3d_:return axis3d_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _guide3d_:return guide3d_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _border2d_:return border2d_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _border3d_:return border3d_taking(act,foot, stack,sp, arg,key, buf,len);
-	case _scene3d_:return scene3d_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _wndmgr_:return wndmgr_take(act,foot, stack,sp, arg,key, buf,len);
-
-	case _reality_:return reality_taking(act,foot, stack,sp, arg,key, buf,len);
-	case _virtual_:return virtual_taking(act,foot, stack,sp, arg,key, buf,len);
 
 	case _htmlroot_:return htmlroot_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _xamlroot_:return xamlroot_taking(act,foot, stack,sp, arg,key, buf,len);
@@ -455,15 +449,13 @@ int entity_give(_obj* act,void* foot, _syn* stack,int sp, void* arg,int key, voi
 	case _carcon_:return carcon_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _flycon_:return flycon_giving(act,foot, stack,sp, arg,key, buf,len);
 
+	case _virtual_:return virtual_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _scene3d_:return scene3d_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _axis3d_:return axis3d_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _guide3d_:return guide3d_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _border2d_:return border2d_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _border3d_:return border3d_giving(act,foot, stack,sp, arg,key, buf,len);
-	case _scene3d_:return scene3d_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _wndmgr_:return wndmgr_give(act,foot, stack,sp, arg,key, buf,len);
-
-	case _reality_:return reality_giving(act,foot, stack,sp, arg,key, buf,len);
-	case _virtual_:return virtual_giving(act,foot, stack,sp, arg,key, buf,len);
 
 	case _htmlroot_:return htmlroot_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _xamlroot_:return xamlroot_giving(act,foot, stack,sp, arg,key, buf,len);
@@ -517,14 +509,12 @@ int entitydiscon(struct halfrel* self, struct halfrel* peer)
 	case _carcon_:return carcon_discon(self, peer);
 	case _flycon_:return flycon_discon(self, peer);
 
+	case _virtual_:return virtual_discon(self, peer);
+	case _scene3d_:return scene3d_discon(self, peer);
 	case _axis3d_:return axis3d_discon(self, peer);
 	case _guide3d_:return guide3d_discon(self, peer);
 	case _border2d_:return border2d_discon(self, peer);
 	case _border3d_:return border3d_discon(self, peer);
-	case _scene3d_:return scene3d_discon(self, peer);
-
-	case _reality_:return reality_discon(self, peer);
-	case _virtual_:return virtual_discon(self, peer);
 
 	case _htmlroot_:return htmlroot_discon(self, peer);
 	case _xamlroot_:return xamlroot_discon(self, peer);
@@ -578,14 +568,12 @@ int entitylinkup(struct halfrel* self, struct halfrel* peer)
 	case _carcon_:return carcon_linkup(self, peer);
 	case _flycon_:return flycon_linkup(self, peer);
 
+	case _virtual_:return virtual_linkup(self, peer);
+	case _scene3d_:return scene3d_linkup(self, peer);
 	case _axis3d_:return axis3d_linkup(self, peer);
 	case _guide3d_:return guide3d_linkup(self, peer);
 	case _border2d_:return border2d_linkup(self, peer);
 	case _border3d_:return border3d_linkup(self, peer);
-	case _scene3d_:return scene3d_linkup(self, peer);
-
-	case _reality_:return reality_linkup(self, peer);
-	case _virtual_:return virtual_linkup(self, peer);
 
 	case _htmlroot_:return htmlroot_linkup(self, peer);
 	case _xamlroot_:return xamlroot_linkup(self, peer);
@@ -628,18 +616,54 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 
 	switch(type){
 //----------------world----------------
-	case _reality_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _reality_;
-		reality_create(act, buf, argc, argv);
-		return act;
-	}
 	case _virtual_:
 	{
 		act = entity_alloc();
 		act->hfmt = act->type = _virtual_;
 		virtual_create(act, buf, argc, argv);
+		return act;
+	}
+	case _axis3d_:
+	{
+		act = entity_alloc();
+		act->hfmt = act->type = _axis3d_;
+		axis3d_create(act, buf, argc, argv);
+		return act;
+	}
+	case _guide3d_:
+	{
+		act = entity_alloc();
+		act->hfmt = act->type = _guide3d_;
+		guide3d_create(act, buf, argc, argv);
+		return act;
+	}
+	case _border3d_:
+	{
+		act = entity_alloc();
+		act->hfmt = act->type = _border3d_;
+		border3d_create(act, buf, argc, argv);
+		return act;
+	}
+	case _scene3d_:
+	{
+		act = entity_alloc();
+		act->hfmt = act->type = _scene3d_;
+		scene3d_create(act, buf, argc, argv);
+		return act;
+	}
+
+	case _wndmgr_:
+	{
+		act = entity_alloc();
+		act->hfmt = act->type = _wndmgr_;
+		wndmgr_create(act, buf, argc, argv);
+		return act;
+	}
+	case _border2d_:
+	{
+		act = entity_alloc();
+		act->hfmt = act->type = _border2d_;
+		border2d_create(act, buf, argc, argv);
 		return act;
 	}
 	case _htmlroot_:
@@ -656,6 +680,7 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		xamlroot_create(act, buf, argc, argv);
 		return act;
 	}
+
 	case _mmio_:
 	{
 		act = entity_alloc();
@@ -698,49 +723,6 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		act = entity_alloc();
 		act->hfmt = act->type = _digital_;
 		digital_create(act, buf, argc, argv);
-		return act;
-	}
-
-	case _axis3d_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _axis3d_;
-		axis3d_create(act, buf, argc, argv);
-		return act;
-	}
-	case _guide3d_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _guide3d_;
-		guide3d_create(act, buf, argc, argv);
-		return act;
-	}
-	case _border2d_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _border2d_;
-		border2d_create(act, buf, argc, argv);
-		return act;
-	}
-	case _border3d_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _border3d_;
-		border3d_create(act, buf, argc, argv);
-		return act;
-	}
-	case _scene3d_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _scene3d_;
-		scene3d_create(act, buf, argc, argv);
-		return act;
-	}
-	case _wndmgr_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _wndmgr_;
-		wndmgr_create(act, buf, argc, argv);
 		return act;
 	}
 

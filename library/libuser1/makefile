@@ -363,6 +363,7 @@ datathing/thing.c \
 dataworld/2d/wndtest.naked.c \
 dataworld/2d/wndtest.titled.c \
 dataworld/2d/wndtest.corner.c \
+dataworld/3d/virtual.c \
 dataworld/3d/scene.c \
 dataworld/3d/uiux.axis.c \
 dataworld/3d/uiux.guide.c \
@@ -381,8 +382,6 @@ dataworld/neural/nn.cnn.c \
 dataworld/neural/nn.rnn.c \
 dataworld/uispace/ui.html.c \
 dataworld/uispace/ui.xaml.c \
-dataworld/whole/reality.c \
-dataworld/whole/virtual.c \
 dataworld/world.c \
 entity.c
 OBJ = $(patsubst %.c,%.o,$(SRC))

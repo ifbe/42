@@ -15,9 +15,6 @@ fmt:screen
 theeye{
 fmt:theeye
 }
-reality{
-fmt:reality
-}
 </entity>
 
 
