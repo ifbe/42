@@ -3,8 +3,39 @@
 
 
 
+void rggb_to_rgba(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth)
+{
+	if(0 == srcbuf)return;
+	if(0 == dstbuf)return;
+	//printmemory(srcbuf, 0x10);
+
+	int x,y;
+	u8* dst;
+	u8* src;
+	for(y=0;y<srch;y++)
+	{
+		dst = dstbuf + (y*dstw*4);
+		src = srcbuf + (y&0xfffe)*srcw;
+		for(x=0;x<srcw;x+=2)
+		{
+			dst[4*x + 0] = src[x + 0];
+			dst[4*x + 1] = src[x + 1];
+			dst[4*x + 2] = src[x + 1 + srcw];
+
+			dst[4*x + 4] = src[x + 0];
+			dst[4*x + 5] = src[x + 1];
+			dst[4*x + 6] = src[x + 1 + srcw];
+		}
+	}
+}
+
+
+
+
 //yuv444
-void yuv2rgba(
+void yuv_to_rgba(
 	u8* src, int s1, int w0, int h0, int x0, int y0, int x1, int y1,
 	u8* dst, int s2, int w1, int h1, int x2, int y2, int x3, int y3)
 {
@@ -14,7 +45,7 @@ void yuv2rgba(
 
 
 //yuv422
-void yuyv2rgba(
+void yuyv_to_rgba(
 	u8* src, int s1, int w0, int h0, int x0, int y0, int x1, int y1,
 	u8* dst, int s2, int w1, int h1, int x2, int y2, int x3, int y3)
 {
@@ -58,8 +89,66 @@ void yuyv2rgba(
 
 
 
+void yuyv_to_yuvx(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth)
+{
+	if(0 == srcbuf)return;
+	if(0 == dstbuf)return;
+	//printmemory(srcbuf, 0x10);
+
+	int x,y;
+	u8* dst;
+	u8* src;
+	for(y=0;y<srch;y++)
+	{
+		dst = dstbuf + (y*dstw*4);
+		src = srcbuf + (y*srcw*2);
+		for(x=0;x<srcw;x+=2)		//if(macos)yuyv, else uyvy
+		{
+			dst[4*x + 0] = src[2*x + 0];
+			dst[4*x + 1] = src[2*x + 1];
+			dst[4*x + 2] = src[2*x + 3];
+
+			dst[4*x + 4] = src[2*x + 2];
+			dst[4*x + 5] = src[2*x + 1];
+			dst[4*x + 6] = src[2*x + 3];
+		}
+	}
+}
+void uyvy_to_yuvx(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth)
+{
+	if(0 == srcbuf)return;
+	if(0 == dstbuf)return;
+	//printmemory(srcbuf, 0x10);
+
+	int x,y;
+	u8* dst;
+	u8* src;
+	for(y=0;y<srch;y++)
+	{
+		dst = dstbuf + (y*dstw*4);
+		src = srcbuf + (y*srcw*2);
+		for(x=0;x<srcw;x+=2)		//if(macos)yuyv, else uyvy
+		{
+			dst[4*x + 0] = src[2*x + 1];
+			dst[4*x + 1] = src[2*x + 0];
+			dst[4*x + 2] = src[2*x + 2];
+
+			dst[4*x + 4] = src[2*x + 3];
+			dst[4*x + 5] = src[2*x + 0];
+			dst[4*x + 6] = src[2*x + 2];
+		}
+	}
+}
+
+
+
+
 //yuv411
-void yyuyyv2rgba(
+void yyuyyv_to_rgba(
 	u8* src, int s1, int w0, int h0, int x0, int y0, int x1, int y1,
 	u8* dst, int s2, int w1, int h1, int x2, int y2, int x3, int y3)
 {
@@ -69,7 +158,7 @@ void yyuyyv2rgba(
 
 
 //yuv420
-void yx2rgba(
+void yx_to_rgba(
 	u8* src, int s1, int w0, int h0, int x0, int y0, int x1, int y1,
 	u8* dst, int s2, int w1, int h1, int x2, int y2, int x3, int y3)
 {

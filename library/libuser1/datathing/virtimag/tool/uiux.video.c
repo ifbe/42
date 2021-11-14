@@ -2,10 +2,18 @@
 #define OWNBUF listptr.buf0
 #define _cam_ hex32('c','a','m',0)
 #define _yuv_ hex32('y','u','v',0)
-void yuyv2rgba(
+void yuyv_to_rgba(
 	u8* src, int s1, int w0, int h0, int x0, int y0, int x1, int y1,
-	u8* dst, int s2, int w1, int h1, int x2, int y2, int x3, int y3
-);
+	u8* dst, int s2, int w1, int h1, int x2, int y2, int x3, int y3);
+void yuyv_to_yuvx(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth);
+void uyvy_to_yuvx(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth);
+void rggb_to_rgba(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth);
 void dx11data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 
@@ -13,71 +21,25 @@ void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 
 
 struct own{
-	void* yuyv;
-	void* y8u8v8a8;
-	int width;
-	int height;
+	void* inbuf;
+	int infmt;
+	int inw;
+	int inh;
+
+	void* outbuf;
+	int outfmt;
+	int outw;
+	int outh;
 
 	struct dx11data dx11;
 	struct gl41data gl41;
 };
 void video_prep(struct own* my)
 {
-	my->y8u8v8a8 = memorycreate(1024*1024*4, 0);
-}
-void yuvyuv4yuyv(
-	u8* dstbuf, int dstlen,
-	u8* srcbuf, int srclen)
-{
-	if(0 == srcbuf)return;
-	if(0 == dstbuf)return;
-	printmemory(srcbuf, 0x10);
-
-	int x,y;
-	u8* dst;
-	u8* src;
-	for(y=0;y<480;y++)
-	{
-		dst = dstbuf + (y*640*4);
-		src = srcbuf + (y*640*2);
-		for(x=0;x<640;x+=2)		//if(macos)yuyv, else uyvy
-		{
-			dst[4*x + 0] = src[2*x + 0];
-			dst[4*x + 1] = src[2*x + 1];
-			dst[4*x + 2] = src[2*x + 3];
-
-			dst[4*x + 4] = src[2*x + 2];
-			dst[4*x + 5] = src[2*x + 1];
-			dst[4*x + 6] = src[2*x + 3];
-		}
-	}
-}
-void yuvyuv4uyvy(
-	u8* dstbuf, int dstlen,
-	u8* srcbuf, int srclen)
-{
-	if(0 == srcbuf)return;
-	if(0 == dstbuf)return;
-	printmemory(srcbuf, 0x10);
-
-	int x,y;
-	u8* dst;
-	u8* src;
-	for(y=0;y<480;y++)
-	{
-		dst = dstbuf + (y*640*4);
-		src = srcbuf + (y*640*2);
-		for(x=0;x<640;x+=2)		//if(macos)yuyv, else uyvy
-		{
-			dst[4*x + 0] = src[2*x + 1];
-			dst[4*x + 1] = src[2*x + 0];
-			dst[4*x + 2] = src[2*x + 2];
-
-			dst[4*x + 4] = src[2*x + 3];
-			dst[4*x + 5] = src[2*x + 0];
-			dst[4*x + 6] = src[2*x + 2];
-		}
-	}
+	my->outbuf = memorycreate(1024*1024*4, 0);
+	my->outfmt = hex32('r','g','b','a');
+	my->outw = 1024;
+	my->outh = 1024;
 }
 
 
@@ -129,8 +91,8 @@ static void video_dx11prep(struct own* my)
 	src->shader_enq = 42;
 
 	//texture
-	src->tex[0].data = my->y8u8v8a8;
-	src->tex[0].fmt = hex32('r','g','b','a');
+	src->tex[0].data = my->outbuf;
+	src->tex[0].fmt = my->outfmt;
 
 	//vertex
 	struct vertex* vtx = &src->vtx[0];
@@ -202,7 +164,7 @@ void video_dx11draw(
 	vbuf[5][4] = 1.0;
 	vbuf[5][5] = 0.0;
 
-	//yuvyuv4yuyv(data->tex[0].data, 1024*1024*4, srcbuf, 640*480*2);
+	//yuyv_to_yuvx(data->tex[0].data, 1024*1024*4, srcbuf, 640*480*2);
 	data->tex[0].w = 640;
 	data->tex[0].h = 480;
 	data->tex_enq[0] += 1;
@@ -231,6 +193,18 @@ GLSL_VERSION
 "in mediump vec2 uv;\n"
 "out mediump vec4 FragColor;\n"
 "void main(){\n"
+	"mediump vec3 yuv = texture(tex0, vec2(uv.x, 1.0-uv.y)).rgb;\n"
+	"mediump float r = yuv.r;\n"
+	"mediump float g = yuv.g;\n"
+	"mediump float b = yuv.b;\n"
+	"FragColor = vec4(r, g, b, 1.0);\n"
+"}\n";
+char* video_glsl_yuvx =
+GLSL_VERSION
+"uniform sampler2D tex0;\n"
+"in mediump vec2 uv;\n"
+"out mediump vec4 FragColor;\n"
+"void main(){\n"
 	"mediump vec3 yuv = texture(tex0, uv).rgb;\n"
 	"mediump float y = yuv.r;\n"
 	"mediump float u = yuv.g - 0.5;\n"
@@ -250,8 +224,8 @@ static void video_gl41prep(struct own* my)
 	data->src.shader_enq = 42;
 
 	//texture
-	data->src.tex[0].data = my->y8u8v8a8;
-	data->src.tex[0].fmt = hex32('r','g','b','a');
+	data->src.tex[0].data = my->outbuf;
+	data->src.tex[0].fmt = my->outfmt;
 
 	//vertex
 	struct vertex* vtx = &data->src.vtx[0];
@@ -326,7 +300,7 @@ void video_gl41draw(
 	vbuf[5][4] = 1.0;
 	vbuf[5][5] = 0.0;
 
-	//yuvyuv4yuyv(data->tex[0].data, 1024*1024*4, srcbuf, 640*480*2);
+	//yuvx4yuyv(data->tex[0].data, 1024*1024*4, srcbuf, 640*480*2);
 	data->tex[0].w = 640;
 	data->tex[0].h = 480;
 	data->tex_enq[0] += 1;
@@ -368,8 +342,8 @@ void video_draw_pixel(
 	dst = (u8*)(win->rgbanode.buf);
 	if(0 == dst)return;
 
-	yuyv2rgba(
-		  own->yuyv, 0, 640, 480,     0,     0,     0,     0,
+	yuyv_to_rgba(
+		  own->inbuf, 0, 640, 480,     0,     0,     0,     0,
 		  dst, 0,   w,   h, cx-ww, cy-hh, cx+ww, cy+hh
 	);
 }
@@ -442,12 +416,19 @@ static void video_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 
 	if(_yuv_ == stack[sp-1].flag){
 		//say("@video_write.yuv: %llx,%x,%llx,%x\n", arg, key, buf, len);
-		own->yuyv = buf;
-		if(0 == own->y8u8v8a8)return;
+		own->inbuf = buf;
+		if(0 == own->outbuf)return;
 
 		switch(key){
-		case _uyvy_:yuvyuv4uyvy(own->y8u8v8a8, 1024*1024*4, buf, 640*480*2);break;
-		default:yuvyuv4yuyv(own->y8u8v8a8, 1024*1024*4, buf, 640*480*2);break;
+		case _rggb_:
+			rggb_to_rgba(buf, 640*480, 640, 480,    own->outbuf, 1024*1024*4, 640, 480);
+			break;
+		case _uyvy_:
+			uyvy_to_yuvx(buf, 640*480*2, 640, 480,    own->outbuf, 1024*1024*4, 640, 480);
+			break;
+		default:
+			yuyv_to_yuvx(buf, 640*480*2, 640, 480,    own->outbuf, 1024*1024*4, 640, 480);
+			break;
 		}
 	}
 }

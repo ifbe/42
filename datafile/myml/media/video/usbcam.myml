@@ -1,29 +1,5 @@
-<system>
-client{
-fmt:udp
-url:192.168.0.217:9999
-}
-</system>
-
-
-<artery>
-dbghex{
-fmt:dbghex
-}
-</artery>
-
-
 <supply>
 usbcam{
 fmt:cam
 }
 </supply>
-
-
-<relation>
-#sendto network
-(usbcam, 0, dst) -> (client, 0, src)
-
-#sendto stdout
-(usbcam, 0, dst) -> (dbghex, 0, src)
-</relation>

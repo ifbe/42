@@ -18,7 +18,7 @@
 
 
 //
-struct datainfo{
+struct perbuf{
 	struct v4l2_buffer v4l2buf;
 	int len;
 	union{
@@ -31,7 +31,7 @@ struct percam{
 	int alive;
 
 	int deq;
-	struct datainfo datainfo[BUFCNT];
+	struct perbuf datainfo[BUFCNT];
 };
 //static struct buffer info[24];
 //static int cur = 0;
@@ -73,18 +73,58 @@ void* cameraworker(_obj* cam)
 	printf("	capabilities: %08X\n", cap.capabilities);
 
 	//v4l2_fmtdesc
+	int enumx,enumy;
 	struct v4l2_fmtdesc desc;
+	struct v4l2_frmsizeenum frmsize;
+	struct v4l2_frmivalenum frmival;
+
 	desc.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	desc.index = 0;
-	printf("v4l2_fmtdesc:\n");
-	while(-1 != ioctl(fd, VIDIOC_ENUM_FMT, &desc))
+	say("v4l2_fmtdesc:\n");
+	while(ioctl(fd, VIDIOC_ENUM_FMT, &desc) >= 0)
 	{
-		printf("	%s\n", desc.description);
+		say("	4cc=%.4s,str=%s\n", &desc.pixelformat, desc.description);
+
+		frmsize.pixel_format = desc.pixelformat;
+		frmsize.index = 0;
+		while (ioctl(fd, VIDIOC_ENUM_FRAMESIZES, &frmsize) >= 0) {
+			if (frmsize.type == V4L2_FRMSIZE_TYPE_DISCRETE) {
+				enumx = frmsize.discrete.width;
+				enumy = frmsize.discrete.height;
+			} else if (frmsize.type == V4L2_FRMSIZE_TYPE_STEPWISE) {
+				enumx = frmsize.stepwise.max_width;
+				enumy = frmsize.stepwise.max_height;
+			}
+			say("		w=%d,h=%d\n", enumx,enumy);
+
+			frmival.index = 0;
+			frmival.pixel_format = desc.pixelformat;
+			frmival.width = enumx;
+			frmival.height = enumy;
+			while(ioctl(fd, VIDIOC_ENUM_FRAMEINTERVALS, &frmival) >= 0){
+				say("			fps=%d/%d\n",
+					frmival.discrete.numerator,
+					frmival.discrete.denominator
+				);
+				frmival.index++;
+			}
+			if(0 == frmival.index){
+				say("			VIDIOC_ENUM_FRAMEINTERVALS:errno=%d\n",errno);
+				//return 0;
+			}
+
+			frmsize.index++;
+		}
+		if(0 == frmsize.index){
+			say("		VIDIOC_ENUM_FRAMESIZES:errno=%d\n",errno);
+			return 0;
+		}
+
 		desc.index++;
 	}
-	if (desc.index == 0)
-	{
-		perror("VIDIOC_ENUM_FMT");
+	if(0 == desc.index){
+		say("	VIDIOC_ENUM_FMT:errno=%d\n",errno);
+		return 0;
 	}
 
 	//v4l2_format
@@ -93,8 +133,8 @@ void* cameraworker(_obj* cam)
 	fmt.fmt.pix.field       = V4L2_FIELD_INTERLACED;
 	fmt.fmt.pix.width       = cam->STRIDE;
 	fmt.fmt.pix.height      = cam->HEIGHT;
-	fmt.fmt.pix.pixelformat = cam->FORMAT;
-	if(-1 == ioctl(fd,VIDIOC_S_FMT,&fmt))
+	fmt.fmt.pix.pixelformat = desc.pixelformat;	//cam->FORMAT;
+	if(-1 == ioctl(fd, VIDIOC_S_FMT, &fmt))
 	{
 		printf("VIDIOC_S_FMT error\n");
 		return 0;
@@ -112,7 +152,7 @@ void* cameraworker(_obj* cam)
 	}
 
 	//prepare
-	struct datainfo* myinfo;
+	struct perbuf* myinfo;
 	struct v4l2_buffer* v4l2buf;
 	for(j=0;j<BUFCNT;j++)
 	{

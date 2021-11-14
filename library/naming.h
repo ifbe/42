@@ -356,6 +356,8 @@
 #define _joy_ hex32('j','o','y',0)
 #define _kbd_ hex32('k','b','d',0)
 //
+#define _bggr_ hex32('b','g','g','r')
+#define _rggb_ hex32('r','g','g','b')
 #define _yuyv_ hex32('y','u','y','v')
 #define _uyvy_ hex32('u','y','v','y')
 #define _mjpg_ hex32('m','j','p','g')
