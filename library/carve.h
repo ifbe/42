@@ -92,6 +92,7 @@ struct per3d{
 
 struct mysrc
 {
+	void* owner;
 	u32 type;
 
 	//shader
@@ -132,6 +133,7 @@ struct my3ddata
 struct dxdst
 {
 	//framebuffer
+	void* owner;
 	void* fbo;
 
 	//shader
@@ -177,6 +179,9 @@ struct dx11data
 
 struct gldst
 {
+	//owner of this data
+	void* owner;
+
 	//framebuffer
 	u32 fbo;
 	u32 rbo;
@@ -227,6 +232,7 @@ struct gl41data
 
 struct vk12dst
 {
+	void* owner;
 };
 struct vk12data
 {
@@ -244,6 +250,8 @@ struct vk12data
 
 struct mtdst
 {
+	void* owner;
+
 	//framebuffer
 	void* fbo;
 	void* pipeline;

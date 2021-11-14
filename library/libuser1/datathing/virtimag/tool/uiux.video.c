@@ -187,7 +187,7 @@ GLSL_VERSION
 	"uv = texuvw;\n"
 	"gl_Position = cammvp * vec4(vertex, 1.0);\n"
 "}\n";
-char* video_glsl_fs =
+char* video_glsl_rgba =
 GLSL_VERSION
 "uniform sampler2D tex0;\n"
 "in mediump vec2 uv;\n"
@@ -220,7 +220,7 @@ static void video_gl41prep(struct own* my)
 
 	//shader
 	data->src.vs = video_glsl_vs;
-	data->src.fs = video_glsl_fs;
+	data->src.fs = video_glsl_yuvx;
 	data->src.shader_enq = 42;
 
 	//texture

@@ -197,6 +197,7 @@ libflow/html/stream.help.vt100.c \
 libflow/image/image.img2pbr.c \
 libflow/image/image.rotate.c \
 libflow/image/image.scale.c \
+libflow/image/image.picfmt.c \
 libflow/stream/stream.conv.qu2eu.c \
 libflow/stream/stream.conv.str2vec.c \
 libflow/stream/stream.mux.easy.c \
