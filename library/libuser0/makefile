@@ -35,7 +35,7 @@ ogl_o = $(patsubst %.c, %.o, $(ogl_c))
 
 ############################bare#########################
 bare_c = \
-1d-cmdline/bare/bare.stdio.c \
+cmdline/bare/bare.stdio.c \
 2d-camera/os-bare/bare.cam.c \
 gamepad/bare/bare.joy.c \
 systray/bare/bare.tray.c \
@@ -102,7 +102,7 @@ linux_c = \
 systray/linux/linux.tray.c \
 sound-micphone/os-linux/linux.pulsein.c \
 sound-speaker/os-linux/linux.pulseout.c \
-1d-cmdline/linux/linux.stdio.c \
+cmdline/linux/linux.stdio.c \
 2d-camera/os-linux/linux.v4l2.c
 linux_o = $(patsubst %.c, %.o, $(linux_c))
 
@@ -192,7 +192,7 @@ linuxsdl:$(else_o) $(linux_o) $(linuxsdl_o)
 
 #############################mac##########################
 macos_c = \
-1d-cmdline/mac/mac.stdio.c \
+cmdline/mac/mac.stdio.c \
 systray/mac/mac.tray.c \
 sound-micphone/os-mac/mac.aqin.c \
 sound-speaker/os-mac/mac.aqout.c
@@ -286,7 +286,7 @@ macvulkan:$(else_o) $(macos_o) $(macos_m_o) $(macvulkan_o)
 
 ###########################windows#######################
 win_c = \
-1d-cmdline/win/win.stdio.c \
+cmdline/win/win.stdio.c \
 systray/win/win.tray.c \
 sound-micphone/os-win/win.wavein.c \
 sound-speaker/os-win/win.waveout.c

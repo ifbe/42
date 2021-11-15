@@ -130,6 +130,17 @@ for(int y=0,y<uvHeight;y++)
 
 
 
+int videodevice_enumfmt(AVCaptureDevice* dev)
+{
+	for(AVCaptureDeviceFormat* fmt in dev.formats){
+        NSLog(@"%@", fmt);
+    }
+	return 0;
+}
+
+
+
+
 int videolist()
 {
 	return 0;
@@ -220,11 +231,13 @@ int videocreate(_obj* win)
 		const char *name = [[device localizedName] UTF8String];
 		int index        = [video_devices indexOfObject:device];
 		say("video[%d] %s\n", index, name);
+		videodevice_enumfmt(device);
 		chosen = device;
 	}
 	for (AVCaptureDevice* device in audio_devices) {
 		const char *name = [[device localizedName] UTF8String];
 		int index        = [audio_devices indexOfObject:device];
+		videodevice_enumfmt(device);
 		say("audio[%d] %s\n", index, name);
 	}/*
 	for (AVCaptureDevice* device in muxed_devices) {

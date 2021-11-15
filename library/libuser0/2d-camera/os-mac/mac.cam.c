@@ -50,11 +50,11 @@ int videochoose()
 {
 	return 0;
 }
-int video_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int video_take(_obj* cam,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int video_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int video_give(_obj* cam,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
