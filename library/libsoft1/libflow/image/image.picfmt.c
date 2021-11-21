@@ -1,4 +1,5 @@
 #include "libsoft.h"
+int copyfourcc(void*,void*);
 int decstr2u32(void*,void*);
 void yuyv_to_rgba(
 	u8* src, int s1, int w0, int h0, int x0, int y0, int x1, int y1,
@@ -18,11 +19,13 @@ void uyvy_to_yuvx(
 
 struct perobj{
     void* srcbuf[1];
+    u32 srclen;
     u32 srcfmt;
     u32 srcw;
     u32 srch;
 
     void* dstbuf[1];
+    u32 dstlen;
     u32 dstfmt;
     u32 dstw;
     u32 dsth;
@@ -39,7 +42,26 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
 {
     struct perobj* per = (void*)art->priv_256b;
     printmemory(buf, 16);
-	give_data_into_peer(art,_dst_, stack,sp, 0,0, buf,len);
+	//give_data_into_peer(art,_dst_, stack,sp, 0,0, buf,len);
+
+    if((_yuyv_ == per->srcfmt)&&(_yuvx_ == per->dstfmt)){
+        yuyv_to_yuvx(buf, len, per->srcw, per->srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
+        goto done;
+    }
+
+    if((_uyvy_ == per->srcfmt)&&(_yuvx_ == per->dstfmt)){
+        uyvy_to_yuvx(buf, len, per->srcw, per->srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
+        goto done;
+    }
+
+    if((_rggb_ == per->srcfmt)&&(_yuvx_ == per->dstfmt)){
+        rggb_to_rgba(buf, len, per->srcw, per->srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
+        goto done;
+    }
+
+done:
+    say("srcbuf=%p,srclen=%x, dstbuf=%p,dstlen=%x\n", buf,len, per->dstbuf[0],per->dstlen);
+	give_data_into_peer(art,_dst_, stack,sp, 0,0, per->dstbuf[0],per->dstlen);
 	return 0;
 }
 int picfmt_discon(struct halfrel* self, struct halfrel* peer)
@@ -69,6 +91,7 @@ int picfmt_create(_obj* ele, u8* url, int argc, char** argv)
     for(j=0;j<argc;j++){
         say("%d:%.8s\n", j, argv[j]);
         if(0 == ncmp(argv[j], "srcfmt:", 7)){
+            copyfourcc(&per->srcfmt, argv[j]+7);
             continue;
         }
         if(0 == ncmp(argv[j], "srcw:", 5)){
@@ -80,6 +103,7 @@ int picfmt_create(_obj* ele, u8* url, int argc, char** argv)
             continue;
         }
         if(0 == ncmp(argv[j], "dstfmt:", 7)){
+            copyfourcc(&per->dstfmt, argv[j]+7);
             continue;
         }
         if(0 == ncmp(argv[j], "dstw:", 5)){
@@ -91,14 +115,16 @@ int picfmt_create(_obj* ele, u8* url, int argc, char** argv)
             continue;
         }
     }
-
     if(0 == per->dstw)per->dstw = per->srcw;
     if(0 == per->dsth)per->dsth = per->srch;
 
+    per->dstlen = 4 * per->dstw * per->dsth;
+    per->dstbuf[0] = memorycreate(per->dstlen, 4);
+
     say("src:fmt=%.4s,w=%d,h=%d\n", &per->srcfmt, per->srcw, per->srch);
     say("dst:fmt=%.4s,w=%d,h=%d\n", &per->dstfmt, per->dstw, per->dsth);
+    say("buf:len=%x,ptr=%p\n", per->dstlen, per->dstbuf[0]);
 
-    per->dstbuf[0] = memorycreate(4 * per->dstw * per->dsth, 4);
 	return 1;
 }
 

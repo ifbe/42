@@ -42,13 +42,29 @@ void movsb(u8* rdi, u8* rsi, int rcx)
 
 
 
-int copypath(u8* path, u8* data)
+int copyfourcc(u8* dst, u8* src)
+{
+	int j;
+	for(j=0;j<4;j++)dst[j] = 0;
+	for(j=0;j<4;j++){
+		if( ('_' == src[j]) |
+			( (src[j] >= '0')&&(src[j] <= '9') )|
+			( (src[j] >= 'A')&&(src[j] <= 'Z') )|
+			( (src[j] >= 'a')&&(src[j] <= 'z') ))
+		{
+			dst[j] = src[j];
+		}
+		else break;
+	}
+	return j;
+}
+int copypath(u8* dst, u8* src)
 {
 	int j;
 	for(j=0;j<127;j++){
-		if(data[j] < 0x20)break;
-		path[j] = data[j];
+		if(src[j] < 0x20)break;
+		dst[j] = src[j];
 	}
-	path[j] = 0;
+	dst[j] = 0;
 	return j;
 }

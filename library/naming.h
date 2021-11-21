@@ -356,10 +356,16 @@
 #define _joy_ hex32('j','o','y',0)
 #define _kbd_ hex32('k','b','d',0)
 //
+#define _rgb_ hex32('r','g','b',0)
+#define _rgbx_ hex32('r','g','b','x')
 #define _bggr_ hex32('b','g','g','r')
 #define _rggb_ hex32('r','g','g','b')
+//
+#define _yuv_ hex32('y','u','v',0)
+#define _yuvx_ hex32('y','u','v','x')
 #define _yuyv_ hex32('y','u','y','v')
 #define _uyvy_ hex32('u','y','v','y')
+//
 #define _mjpg_ hex32('m','j','p','g')
 #define _h264_ hex32('h','2','6','4')
 //

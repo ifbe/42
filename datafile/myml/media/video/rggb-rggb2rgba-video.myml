@@ -12,6 +12,10 @@ fmt:virtual
 
 
 <supply>
+usbcam{
+fmt:cam
+url:/dev/video0
+}
 opengl{
 fmt:wnd
 title:"42"
@@ -23,12 +27,9 @@ depth:1024
 
 
 <artery>
-recut{
-fmt:recut
-}
-picfmt{
+convert{
 fmt:picfmt
-srcfmt:yuyv
+srcfmt:rggb
 srcw:640
 srch:480
 dstfmt:rgba
@@ -36,14 +37,6 @@ dstw:640
 dsth:480
 }
 </artery>
-
-
-<system>
-server{
-fmt:TCP
-url:0.0.0.0:9999
-}
-</system>
 
 
 <style>
@@ -80,14 +73,13 @@ q:1.0, 1.0
 
 <relation>
 #canvas depends on usbcam
-(server, 0, dst) -> (recut, 0, src)
-(recut, 0, dst) -> (picfmt, 0, src)
-(picfmt, 0, dst) -> (canvas, 0, yuv)
+(usbcam, 0, dst) -> (convert, 0, src)
+(convert, 0, dst) -> (canvas, 0, rgb)
 
 #virtual depends on inner objects
 (virtual, skygeom, 0) -> (canvas, skyhaha, 0)
 (virtual, freegeom, 0) -> (freecam, freemodl, 0)
 
-#glwnd depends on ctx + cam
+#glwnd depends on cam
 (opengl, freerect, 0) -> (freecam, 0, 0)
 </relation>

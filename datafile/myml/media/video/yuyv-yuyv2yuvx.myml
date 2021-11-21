@@ -1,0 +1,23 @@
+<artery>
+convert{
+fmt:picfmt
+srcfmt:yuyv
+srcw:640
+srch:480
+dstfmt:yuvx
+dstw:640
+dsth:480
+}
+</artery>
+
+
+<supply>
+usbcam{
+fmt:cam
+}
+</supply>
+
+
+<relation>
+(usbcam, 0, dst) -> (convert, 0, src)
+</relation>

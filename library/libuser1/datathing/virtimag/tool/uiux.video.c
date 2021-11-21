@@ -1,7 +1,6 @@
 #include "libuser.h"
 #define OWNBUF listptr.buf0
 #define _cam_ hex32('c','a','m',0)
-#define _yuv_ hex32('y','u','v',0)
 void yuyv_to_rgba(
 	u8* src, int s1, int w0, int h0, int x0, int y0, int x1, int y1,
 	u8* dst, int s2, int w1, int h1, int x2, int y2, int x3, int y3);
@@ -37,7 +36,7 @@ struct own{
 void video_prep(struct own* my)
 {
 	my->outbuf = memorycreate(1024*1024*4, 0);
-	my->outfmt = hex32('r','g','b','a');
+	my->outfmt = _yuvx_;
 	my->outw = 1024;
 	my->outh = 1024;
 }
@@ -301,6 +300,12 @@ void video_gl41draw(
 	vbuf[5][5] = 0.0;
 
 	//yuvx4yuyv(data->tex[0].data, 1024*1024*4, srcbuf, 640*480*2);
+	if(_yuvx_ == own->infmt){
+		data->tex[0].data = own->inbuf;
+	}
+	else{
+		data->tex[0].data = own->outbuf;
+	}
 	data->tex[0].w = 640;
 	data->tex[0].h = 480;
 	data->tex_enq[0] += 1;
@@ -414,20 +419,34 @@ static void video_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 	struct own* own = ent->OWNBUF;
 	if(0 == own)return;
 
+	say("@video_write.yuv: %p,%x,%p,%x\n", arg, key, buf, len);
 	if(_yuv_ == stack[sp-1].flag){
-		//say("@video_write.yuv: %llx,%x,%llx,%x\n", arg, key, buf, len);
-		own->inbuf = buf;
-		if(0 == own->outbuf)return;
 
+		own->inbuf = buf;
 		switch(key){
-		case _rggb_:
-			rggb_to_rgba(buf, 640*480, 640, 480,    own->outbuf, 1024*1024*4, 640, 480);
-			break;
 		case _uyvy_:
+			if(0 == own->outbuf)return;
 			uyvy_to_yuvx(buf, 640*480*2, 640, 480,    own->outbuf, 1024*1024*4, 640, 480);
 			break;
-		default:
+		case _yuyv_:
+			if(0 == own->outbuf)return;
 			yuyv_to_yuvx(buf, 640*480*2, 640, 480,    own->outbuf, 1024*1024*4, 640, 480);
+			break;
+		default:		//yuvx
+			say("@default_yuv:buf=%p,len=%x\n", buf, len);
+			own->infmt = _yuvx_;
+			break;
+		}
+	}
+
+	if(_rgb_ == stack[sp-1].flag){
+		own->inbuf = buf;
+		switch(key){
+		case _rggb_:
+			if(0 == own->outbuf)return;
+			rggb_to_rgba(buf, 640*480, 640, 480,    own->outbuf, 1024*1024*4, 640, 480);
+			break;
+		default:		//rgba
 			break;
 		}
 	}
