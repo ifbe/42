@@ -35,10 +35,10 @@ ogl_o = $(patsubst %.c, %.o, $(ogl_c))
 
 ############################bare#########################
 bare_c = \
-cmdline/bare/bare.stdio.c \
+control-cmdline/bare/bare.stdio.c \
 2d-camera/os-bare/bare.cam.c \
-gamepad/bare/bare.joy.c \
-systray/bare/bare.tray.c \
+control-gamepad/bare/bare.joy.c \
+control-systray/bare/bare.tray.c \
 sound-micphone/os-bare/bare.mic.c \
 sound-speaker/os-bare/bare.spk.c
 bare_o = $(patsubst %.c, %.o, $(bare_c))
@@ -99,61 +99,61 @@ efifb:$(else_o) $(bare_o) $(efifb_o)
 
 ############################linux#########################
 linux_c = \
-systray/linux/linux.tray.c \
+control-systray/linux/linux.tray.c \
 sound-micphone/os-linux/linux.pulsein.c \
 sound-speaker/os-linux/linux.pulseout.c \
-cmdline/linux/linux.stdio.c \
+control-cmdline/linux/linux.stdio.c \
 2d-camera/os-linux/linux.v4l2.c
 linux_o = $(patsubst %.c, %.o, $(linux_c))
 
 linuxcli_c = \
 2d-window/os-linux/linux.cli.c \
-gamepad/linux/linux.devjsn.c
+control-gamepad/linux/linux.devjsn.c
 linuxcli_o = $(patsubst %.c, %.o, $(linuxcli_c))
 
 linuxtui_c = \
 2d-window/os-linux/linux.tui.c \
-gamepad/linux/linux.devjsn.c
+control-gamepad/linux/linux.devjsn.c
 linuxtui_o = $(patsubst %.c, %.o, $(linuxtui_c))
 
 linuxfb_c = \
 2d-window/os-linux/linux.fb.c \
-gamepad/linux/linux.devjsn.c
+control-gamepad/linux/linux.devjsn.c
 linuxfb_o = $(patsubst %.c, %.o, $(linuxfb_c))
 
 linuxgtk_c = \
-gamepad/linux/linux.devjsn.c
+control-gamepad/linux/linux.devjsn.c
 linuxgtk_o = $(patsubst %.c, %.o, $(linuxgtk_c))
 
 linuxwayland_c = \
 2d-window/os-linux/linux.wayland.c \
-gamepad/linux/linux.devjsn.c
+control-gamepad/linux/linux.devjsn.c
 linuxwayland_o = $(patsubst %.c, %.o, $(linuxwayland_c))
 
 linuxxlib_c = \
 2d-window/os-linux/linux.xlib.c \
-gamepad/linux/linux.devjsn.c
+control-gamepad/linux/linux.devjsn.c
 linuxxlib_o = $(patsubst %.c, %.o, $(linuxxlib_c))
 
 linuxglut_c = \
 3d-output/render-gl/glut.c \
-gamepad/linux/linux.devjsn.c
+control-gamepad/linux/linux.devjsn.c
 linuxglut_o = $(patsubst %.c, %.o, $(linuxglut_c))
 
 linuxglfw_c = \
 3d-output/render-gl/gllib/glfw.c \
-gamepad/glfw/glfw.gamepad.c
+control-gamepad/glfw/glfw.gamepad.c
 linuxglfw_o = $(patsubst %.c, %.o, $(linuxglfw_c))
 
 linuxvulkan_c = \
 3d-output/render-vulkan/wnd/glfwvk.c \
 3d-output/render-vulkan/vk12/vk12.c \
 3d-output/render-vulkan/ctx/easy.c \
-gamepad/glfw/glfw.gamepad.c
+control-gamepad/glfw/glfw.gamepad.c
 linuxvulkan_o = $(patsubst %.c, %.o, $(linuxvulkan_c))
 
 linuxsdl_c = \
-gamepad/sdl/sdl.gamepad.c
+control-gamepad/sdl/sdl.gamepad.c
 linuxsdl_o = $(patsubst %.c, %.o, $(linuxsdl_c))
 
 .PHONY:linuxcli
@@ -192,8 +192,8 @@ linuxsdl:$(else_o) $(linux_o) $(linuxsdl_o)
 
 #############################mac##########################
 macos_c = \
-cmdline/mac/mac.stdio.c \
-systray/mac/mac.tray.c \
+control-cmdline/mac/mac.stdio.c \
+control-systray/mac/mac.tray.c \
 sound-micphone/os-mac/mac.aqin.c \
 sound-speaker/os-mac/mac.aqout.c
 macos_o = $(patsubst %.c, %.o, $(macos_c))
@@ -204,21 +204,21 @@ macos_m_o = $(patsubst %.m, %.m.o, $(macos_m))
 
 maccli_c = \
 2d-window/os-mac/mac.cli.c \
-gamepad/mac/mac.gamepad.c
+control-gamepad/mac/mac.gamepad.c
 maccli_o = $(patsubst %.c, %.o, $(maccli_c))
 
 mactui_c = \
 2d-window/os-mac/mac.tui.c \
-gamepad/mac/mac.gamepad.c
+control-gamepad/mac/mac.gamepad.c
 mactui_o = $(patsubst %.c, %.o, $(mactui_c))
 
 macquartz_c = \
 2d-window/os-mac/mac.quartz.c \
-gamepad/mac/mac.gamepad.c
+control-gamepad/mac/mac.gamepad.c
 macquartz_o = $(patsubst %.c, %.o, $(macquartz_c))
 
 maccocoa_c = \
-gamepad/mac/mac.gamepad.c
+control-gamepad/mac/mac.gamepad.c
 maccocoa_o = $(patsubst %.c, %.o, $(maccocoa_c))
 
 maccocoa_m = \
@@ -226,7 +226,7 @@ maccocoa_m = \
 maccocoa_m_o = $(patsubst %.m, %.m.o, $(maccocoa_m))
 
 macmetal_c = \
-gamepad/mac/mac.gamepad.c
+control-gamepad/mac/mac.gamepad.c
 macmetal_o = $(patsubst %.c, %.o, $(macmetal_c))
 
 macmetal_m = \
@@ -234,24 +234,24 @@ macmetal_m = \
 macmetal_m_o = $(patsubst %.m, %.m.o, $(macmetal_m))
 
 macsdl_c = \
-gamepad/sdl/sdl.gamepad.c
+control-gamepad/sdl/sdl.gamepad.c
 macsdl_o = $(patsubst %.c, %.o, $(macsdl_c))
 
 macglut_c = \
 3d-output/render-gl/glut.c \
-gamepad/mac/mac.gamepad.c
+control-gamepad/mac/mac.gamepad.c
 macglut_o = $(patsubst %.c, %.o, $(macglut_c))
 
 macglfw_c = \
 3d-output/render-gl/gllib/glfw.c \
-gamepad/glfw/glfw.gamepad.c
+control-gamepad/glfw/glfw.gamepad.c
 macglfw_o = $(patsubst %.c, %.o, $(macglfw_c))
 
 macvulkan_c = \
 3d-output/render-vulkan/wnd/glfwvk.c \
 3d-output/render-vulkan/vk12/vk12.c \
 3d-output/render-vulkan/ctx/easy.c \
-gamepad/glfw/glfw.gamepad.c
+control-gamepad/glfw/glfw.gamepad.c
 macvulkan_o = $(patsubst %.c, %.o, $(macvulkan_c))
 
 .PHONY:maccli
@@ -286,8 +286,8 @@ macvulkan:$(else_o) $(macos_o) $(macos_m_o) $(macvulkan_o)
 
 ###########################windows#######################
 win_c = \
-cmdline/win/win.stdio.c \
-systray/win/win.tray.c \
+control-cmdline/win/win.stdio.c \
+control-systray/win/win.tray.c \
 sound-micphone/os-win/win.wavein.c \
 sound-speaker/os-win/win.waveout.c
 win_o = $(patsubst %.c, %.o, $(win_c))
@@ -298,21 +298,21 @@ win_cpp_o = $(patsubst %.cpp, %.cpp.o, $(win_cpp))
 
 wincli_c = \
 2d-window/os-win/win.cli.c \
-gamepad/win/win.xinput.c
+control-gamepad/win/win.xinput.c
 win_cli_o = $(patsubst %.c, %.o, $(wincli_c))
 
 wintui_c = \
 2d-window/os-win/win.tui.c \
-gamepad/win/win.xinput.c
+control-gamepad/win/win.xinput.c
 wintui_o = $(patsubst %.c, %.o, $(wintui_c))
 
 winapi_c = \
 2d-window/os-win/win.api.c \
-gamepad/win/win.xinput.c
+control-gamepad/win/win.xinput.c
 winapi_o = $(patsubst %.c, %.o, $(winapi_c))
 
 windx11_c = \
-gamepad/win/win.xinput.c
+control-gamepad/win/win.xinput.c
 windx11_o = $(patsubst %.c, %.o, $(windx11_c))
 
 windx11_cpp = \
@@ -322,24 +322,24 @@ windx11_cpp_o = $(patsubst %.cpp, %.cpp.o, $(windx11_cpp))
 
 winglut_c = \
 3d-output/render-gl/glut.c \
-gamepad/win/win.xinput.c
+control-gamepad/win/win.xinput.c
 winglut_o = $(patsubst %.c, %.o, $(winglut_c))
 
 winglfw_c = \
 3d-output/render-gl/gllib/glfw.c \
-gamepad/glfw/glfw.gamepad.c
+control-gamepad/glfw/glfw.gamepad.c
 winglfw_o = $(patsubst %.c, %.o, $(winglfw_c))
 
 winvulkan_c = \
 3d-output/render-vulkan/wnd/glfwvk.c \
 3d-output/render-vulkan/vk12/vk12.c \
 3d-output/render-vulkan/ctx/easy.c \
-gamepad/glfw/glfw.gamepad.c
+control-gamepad/glfw/glfw.gamepad.c
 winvulkan_o = $(patsubst %.c, %.o, $(winvulkan_c))
 
 winsdl_c = \
 2d-window/lib-sdl/sdl2.c \
-gamepad/sdl/sdl.gamepad.c
+control-gamepad/sdl/sdl.gamepad.c
 winsdl_o = $(patsubst %.c, %.o, $(winsdl_c))
 
 .PHONY:wincli
