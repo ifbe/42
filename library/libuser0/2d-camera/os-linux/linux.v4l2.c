@@ -9,9 +9,6 @@
 #include <sys/mman.h>
 #include <linux/videodev2.h>
 #include "libuser.h"
-#define STRIDE whdf.fourth
-#define HEIGHT whdf.height
-#define FORMAT vfmt
 #define BUFCNT 24
 
 
@@ -29,6 +26,14 @@ struct perbuf{
 struct percam{
 	u64 thread;
 	int alive;
+
+	int wantstride;
+	int wantheight;
+	u32 wantformat;
+
+	int realstride;
+	int realheight;
+	u32 realformat;
 
 	int deq;
 	struct perbuf datainfo[BUFCNT];
@@ -78,6 +83,10 @@ void* cameraworker(_obj* cam)
 	struct v4l2_frmsizeenum frmsize;
 	struct v4l2_frmivalenum frmival;
 
+	pcam->realstride = 0;
+	pcam->realheight = 0;
+	pcam->realformat = 0;
+
 	desc.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	desc.index = 0;
 	say("v4l2_fmtdesc:\n");
@@ -96,6 +105,17 @@ void* cameraworker(_obj* cam)
 				enumy = frmsize.stepwise.max_height;
 			}
 			say("		w=%d,h=%d\n", enumx,enumy);
+
+			if( (pcam->wantformat == desc.pixelformat) &&
+			    (pcam->wantstride == enumx) &&
+			    (pcam->wantheight == enumy) &&
+			    (pcam->realformat == 0) )
+			{
+				pcam->realstride = enumx;
+				pcam->realheight = enumy;
+				pcam->realformat = desc.pixelformat;
+				printf("find what i want!\n");
+			}
 
 			frmival.index = 0;
 			frmival.pixel_format = desc.pixelformat;
@@ -127,13 +147,18 @@ void* cameraworker(_obj* cam)
 		return 0;
 	}
 
+	if(0 == pcam->realformat){
+		say("not support: w=%d,h=%d,fmt=%.4s\n", pcam->wantstride, pcam->wantheight, &pcam->wantformat);
+		goto failclose;
+	}
+
 	//v4l2_format
 	struct v4l2_format fmt;
 	fmt.type		= V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	fmt.fmt.pix.field       = V4L2_FIELD_INTERLACED;
-	fmt.fmt.pix.width       = cam->STRIDE;
-	fmt.fmt.pix.height      = cam->HEIGHT;
-	fmt.fmt.pix.pixelformat = desc.pixelformat;	//cam->FORMAT;
+	fmt.fmt.pix.width       = pcam->realstride;
+	fmt.fmt.pix.height      = pcam->realheight;
+	fmt.fmt.pix.pixelformat = pcam->realformat;
 	if(-1 == ioctl(fd, VIDIOC_S_FMT, &fmt))
 	{
 		printf("VIDIOC_S_FMT error\n");
@@ -248,6 +273,7 @@ void* cameraworker(_obj* cam)
 		munmap(myinfo->buf, v4l2buf->length);
 	}
 
+failclose:
 	//v4l2_release
 	close(fd);
 	return 0;
@@ -323,6 +349,8 @@ int videocreate(_obj* cam, void* arg, int argc, u8** argv)
 			if(0)return 0;
 			else if(0 == ncmp(arg, "mjpeg", 5))format = V4L2_PIX_FMT_MJPEG;
 			else if(0 == ncmp(arg, "h264", 4))format = V4L2_PIX_FMT_H264;
+			else if(0 == ncmp(arg, "bggr", 4))format = V4L2_PIX_FMT_SBGGR8;
+			else if(0 == ncmp(arg, "BG10", 4))format = V4L2_PIX_FMT_SBGGR10;
 		}
 		if(0 == ncmp(arg, "width:", 6)){
 			arg = argv[j]+6;
@@ -334,17 +362,17 @@ int videocreate(_obj* cam, void* arg, int argc, u8** argv)
 		}
 	}//for
 
-	//remember value
-	cam->STRIDE = stride;
-	cam->HEIGHT = height;
-	cam->FORMAT = format;
-
 	//percam data
 	struct percam* pcam = cam->priv_ptr = memorycreate(0x1000, 4);
 	if(0 == pcam){
 		say("oom@alloc pcam\n");
 		return -1;
 	}
+
+	//remember value
+	pcam->wantstride = stride;
+	pcam->wantheight = height;
+	pcam->wantformat = format;
 
 	//percam thread
 	pcam->alive = 1;
