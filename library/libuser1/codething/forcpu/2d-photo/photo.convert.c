@@ -1,8 +1,36 @@
 #define u8 unsigned char
+#define u16 unsigned short
 
 
 
 
+void bggr_to_rgba(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth)
+{
+	if(0 == srcbuf)return;
+	if(0 == dstbuf)return;
+	//printmemory(srcbuf, 0x10);
+
+	int x,y;
+	u8* dst;
+	u8* src;
+	for(y=0;y<srch;y++)
+	{
+		dst = dstbuf + (y*dstw*4);
+		src = srcbuf + (y&0xfffe)*srcw;
+		for(x=0;x<srcw;x+=2)
+		{
+			dst[4*x + 0] = src[x + 1 + srcw];
+			dst[4*x + 1] = src[x + 1];
+			dst[4*x + 2] = src[x + 0];
+
+			dst[4*x + 4] = src[x + 1 + srcw];
+			dst[4*x + 5] = src[x + 1];
+			dst[4*x + 6] = src[x + 0];
+		}
+	}
+}
 void rggb_to_rgba(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth)
@@ -27,6 +55,64 @@ void rggb_to_rgba(
 			dst[4*x + 4] = src[x + 0];
 			dst[4*x + 5] = src[x + 1];
 			dst[4*x + 6] = src[x + 1 + srcw];
+		}
+	}
+}
+
+
+
+
+void bggr10_to_rgba(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth)
+{
+	if(0 == srcbuf)return;
+	if(0 == dstbuf)return;
+	//printmemory(srcbuf, 0x10);
+
+	int x,y;
+	u8* dst;
+	u16* src;
+	for(y=0;y<srch;y++)
+	{
+		dst = dstbuf + (y*dstw*4);
+		src = (u16*)(srcbuf + (y&0xfffe)*srcw*2);
+		for(x=0;x<srcw;x+=2)
+		{
+			dst[4*x + 0] = (src[x + 1 + srcw]>>2)&0xff;
+			dst[4*x + 1] = (src[x + 1]>>2)&0xff;
+			dst[4*x + 2] = (src[x + 0]>>2)&0xff;
+
+			dst[4*x + 4] = (src[x + 1 + srcw]>>2)&0xff;
+			dst[4*x + 5] = (src[x + 1]>>2)&0xff;
+			dst[4*x + 6] = (src[x + 0]>>2)&0xff;
+		}
+	}
+}
+void rggb10_to_rgba(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth)
+{
+	if(0 == srcbuf)return;
+	if(0 == dstbuf)return;
+	//printmemory(srcbuf, 0x10);
+
+	int x,y;
+	u8* dst;
+	u16* src;
+	for(y=0;y<srch;y++)
+	{
+		dst = dstbuf + (y*dstw*4);
+		src = (u16*)(srcbuf + (y&0xfffe)*srcw*2);
+		for(x=0;x<srcw;x+=2)
+		{
+			dst[4*x + 0] = (src[x + 0]>>2)&0xff;
+			dst[4*x + 1] = (src[x + 1]>>2)&0xff;
+			dst[4*x + 2] = (src[x + 1 + srcw]>>2)&0xff;
+
+			dst[4*x + 4] = (src[x + 0]>>2)&0xff;
+			dst[4*x + 5] = (src[x + 1]>>2)&0xff;
+			dst[4*x + 6] = (src[x + 1 + srcw]>>2)&0xff;
 		}
 	}
 }

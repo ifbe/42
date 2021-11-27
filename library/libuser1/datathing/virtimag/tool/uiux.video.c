@@ -1,6 +1,7 @@
 #include "libuser.h"
 #define OWNBUF listptr.buf0
 #define _cam_ hex32('c','a','m',0)
+int copyfourcc(void*,void*);
 void yuyv_to_rgba(
 	u8* src, int s1, int w0, int h0, int x0, int y0, int x1, int y1,
 	u8* dst, int s2, int w1, int h1, int x2, int y2, int x3, int y3);
@@ -8,6 +9,9 @@ void yuyv_to_yuvx(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
 void uyvy_to_yuvx(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth);
+void bggr_to_rgba(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
 void rggb_to_rgba(
@@ -36,7 +40,7 @@ struct own{
 void video_prep(struct own* my)
 {
 	my->outbuf = memorycreate(1024*1024*4, 0);
-	my->outfmt = _yuvx_;
+	my->outfmt = _rgba_;
 	my->outw = 1024;
 	my->outh = 1024;
 }
@@ -62,7 +66,22 @@ char* video_hlsl_vs =
 	"output.color = float4(input.t, 1.0);\n"
 	"return output;\n"
 "}\n";
-char* video_hlsl_ps =
+char* video_hlsl_rgbx =
+"Texture2D    y8u8v8 : register(t0);\n"
+"SamplerState status : register(s0);\n"
+"struct PSin{\n"
+"	float4 where : SV_POSITION;\n"
+"	float4 color : COLOR;\n"
+"};\n"
+"float4 main(PSin input) : SV_TARGET{\n"
+"	float2 uvw = input.color;\n"
+"	float3 rgb = y8u8v8.Sample(status, uvw);\n"
+	"float b = yuv.b;\n"
+	"float g = yuv.g;\n"
+	"float r = yuv.r;\n"
+"	return float4(r, g, b, 1.0);\n"
+"}";
+char* video_hlsl_yuvx =
 "Texture2D    y8u8v8 : register(t0);\n"
 "SamplerState status : register(s0);\n"
 "struct PSin{\n"
@@ -84,14 +103,26 @@ static void video_dx11prep(struct own* my)
 {
 	struct mysrc* src = &my->dx11.src;
 
-	//shader
-	src->vs = video_hlsl_vs;
-	src->fs = video_hlsl_ps;
-	src->shader_enq = 42;
+	if(_yuvx_ == my->outfmt){
+		//shader
+		src->vs = video_hlsl_vs;
+		src->fs = video_hlsl_yuvx;
+		src->shader_enq = 42;
 
-	//texture
-	src->tex[0].data = my->outbuf;
-	src->tex[0].fmt = my->outfmt;
+		//texture
+		src->tex[0].data = my->outbuf;
+		src->tex[0].fmt = _rgba_;
+	}
+	else{
+		//shader
+		src->vs = video_hlsl_vs;
+		src->fs = video_hlsl_rgbx;
+		src->shader_enq = 42;
+
+		//texture
+		src->tex[0].data = my->outbuf;
+		src->tex[0].fmt = _rgba_;
+	}
 
 	//vertex
 	struct vertex* vtx = &src->vtx[0];
@@ -217,14 +248,26 @@ static void video_gl41prep(struct own* my)
 {
 	struct gl41data* data = &my->gl41;
 
-	//shader
-	data->src.vs = video_glsl_vs;
-	data->src.fs = video_glsl_yuvx;
-	data->src.shader_enq = 42;
+	if(_yuvx_ == my->outfmt){
+		//shader
+		data->src.vs = video_glsl_vs;
+		data->src.fs = video_glsl_yuvx;
+		data->src.shader_enq = 42;
 
-	//texture
-	data->src.tex[0].data = my->outbuf;
-	data->src.tex[0].fmt = my->outfmt;
+		//texture
+		data->src.tex[0].data = my->outbuf;
+		data->src.tex[0].fmt = _rgba_;
+	}
+	else{
+		//shader
+		data->src.vs = video_glsl_vs;
+		data->src.fs = video_glsl_rgba;
+		data->src.shader_enq = 42;
+
+		//texture
+		data->src.tex[0].data = my->outbuf;
+		data->src.tex[0].fmt = _rgba_;
+	}
 
 	//vertex
 	struct vertex* vtx = &data->src.vtx[0];
@@ -300,7 +343,7 @@ void video_gl41draw(
 	vbuf[5][5] = 0.0;
 
 	//yuvx4yuyv(data->tex[0].data, 1024*1024*4, srcbuf, 640*480*2);
-	if(_yuvx_ == own->infmt){
+	if(own->infmt == own->outfmt){
 		data->tex[0].data = own->inbuf;
 	}
 	else{
@@ -427,10 +470,12 @@ static void video_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 		case _uyvy_:
 			if(0 == own->outbuf)return;
 			uyvy_to_yuvx(buf, 640*480*2, 640, 480,    own->outbuf, 1024*1024*4, 640, 480);
+			own->infmt = _uyvy_;
 			break;
 		case _yuyv_:
 			if(0 == own->outbuf)return;
 			yuyv_to_yuvx(buf, 640*480*2, 640, 480,    own->outbuf, 1024*1024*4, 640, 480);
+			own->infmt = _yuyv_;
 			break;
 		default:		//yuvx
 			say("@default_yuv:buf=%p,len=%x\n", buf, len);
@@ -442,11 +487,19 @@ static void video_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 	if(_rgb_ == stack[sp-1].flag){
 		own->inbuf = buf;
 		switch(key){
+		case _bggr_:
+			if(0 == own->outbuf)return;
+			bggr_to_rgba(buf, 640*480, 640, 480,    own->outbuf, 1024*1024*4, 640, 480);
+			own->infmt = _bggr_;
+			break;
 		case _rggb_:
 			if(0 == own->outbuf)return;
 			rggb_to_rgba(buf, 640*480, 640, 480,    own->outbuf, 1024*1024*4, 640, 480);
+			own->infmt = _rggb_;
 			break;
 		default:		//rgba
+			say("@default_yuv:buf=%p,len=%x\n", buf, len);
+			own->infmt = _rgba_;
 			break;
 		}
 	}
@@ -471,12 +524,20 @@ static void video_delete(_obj* act)
 {
 	if(0 == act)return;
 }
-static void video_create(_obj* act)
+static void video_create(_obj* act, void* arg, int argc, u8** argv)
 {
 	if(0 == act)return;
 
 	struct own* own = act->OWNBUF = memorycreate(0x1000, 0);
 	if(0 == own)return;
+
+	int j;
+	for(j=0;j<argc;j++){
+		say("%d:%.4s\n", j, argv[j]);
+		if(0 == ncmp(argv[j], "outfmt:", 7)){
+			copyfourcc(&own->outfmt, argv[j]+7);
+		}
+	}
 
 	video_prep(own);
 	video_dx11prep(own);

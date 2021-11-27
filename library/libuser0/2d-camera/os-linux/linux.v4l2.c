@@ -351,6 +351,8 @@ int videocreate(_obj* cam, void* arg, int argc, u8** argv)
 			else if(0 == ncmp(arg, "h264", 4))format = V4L2_PIX_FMT_H264;
 			else if(0 == ncmp(arg, "bggr", 4))format = V4L2_PIX_FMT_SBGGR8;
 			else if(0 == ncmp(arg, "BG10", 4))format = V4L2_PIX_FMT_SBGGR10;
+			else if(0 == ncmp(arg, "rggb", 4))format = V4L2_PIX_FMT_SRGGB8;
+			else if(0 == ncmp(arg, "RG10", 4))format = V4L2_PIX_FMT_SRGGB10;
 		}
 		if(0 == ncmp(arg, "width:", 6)){
 			arg = argv[j]+6;

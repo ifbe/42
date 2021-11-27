@@ -1,12 +1,12 @@
 <artery>
 convert{
 fmt:picfmt
-srcfmt:bggr
-srcw:640
-srch:480
-dstfmt:yuvx
-dstw:640
-dsth:480
+srcfmt:RG10
+srcw:1920
+srch:1080
+dstfmt:rgbx
+dstw:1920
+dsth:1080
 }
 </artery>
 
@@ -14,9 +14,9 @@ dsth:480
 <supply>
 usbcam{
 fmt:cam
-format:bggr
-width:640
-height:480
+format:RG10
+width:1920
+height:1080
 }
 </supply>
 
