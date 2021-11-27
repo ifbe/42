@@ -16,17 +16,31 @@ int system_handler(u64 req, u64* arg);
 
 
 struct saved_cpureg{
-    u64 x0;
-    u64 x1;
-    u64 x2;
-    u64 x3;
-    u64 x4;
-    u64 x5;
-    u64 x6;
-    u64 x7;
-    u64 x8;     //call id
-    u64 x9;
-};
+	//[0,3f]
+	u64 r8;
+	u64 r9;
+	u64 r10;
+	u64 r11;
+	u64 r12;
+	u64 r13;
+	u64 r14;
+	u64 r15;
+	//[40,77]
+	u64 rax;
+	u64 rbx;
+	u64 rcx;
+	u64 rdx;
+	u64 rsi;
+	u64 rdi;
+	u64 rbp;
+	//[78,9f]
+	u64 ip;
+	u64 cs;
+	u64 flag;
+	u64 sp;
+	u64 ss;
+	//[a0,??]
+}__attribute__((packed));
 
 
 
@@ -66,35 +80,33 @@ void syscall_yield(void* cpureg)
 void syscall_handler(struct saved_cpureg* cpureg)
 {
 	//do what i can
-	switch(cpureg->x8){
-	case _ver_:syscall_version();return;
-	case _slp_:syscall_sleep();return;
+	switch(cpureg->rdx){
 	case _yield_:syscall_yield(cpureg);return;
 	case _exit_:syscall_exit(cpureg);return;
-	//default:say("unknown@syscall: %llx\n", cpureg->x8);
+	case _ver_:syscall_version();goto byebye;
+	case _slp_:syscall_sleep();goto byebye;
+	//default:say("unknown@syscall: %llx\n", cpureg->rdx);
 	}
 
 	//let system do rest
-	system_handler(cpureg->x8, (u64*)cpureg);
-}
-void syscall_caller(u64 req, u64* arg)
-{
-	//req: x8
-	//arg: x0, x1, x2, x3, x4, x5, x6, x7
-	asm(
-		"mov x0, %0\n"		//arg0
-		"mov x1, %1\n"		//arg1
-		"mov x2, %2\n"		//arg2
-		"mov x3, %3\n"		//arg3
-		"mov x4, %4\n"		//arg4
-		"mov x5, %5\n"		//arg5
-		"mov x6, %6\n"		//arg6
-		"mov x7, %7\n"		//arg7
-		"mov x8, %8\n"		//this is call id
-		"svc #0\n"
-		:
-		: "r"(arg[0]),"r"(arg[1]),"r"(arg[2]),"r"(arg[3]),
-		  "r"(arg[4]),"r"(arg[5]),"r"(arg[6]),"r"(arg[7]),"r"(req)
-		: "x0","x1","x2","x3","x4","x5","x6","x7","x8"
-	);
+	u64 arg[8];
+	arg[0] = cpureg->rax;
+	arg[1] = cpureg->rbx;
+	arg[2] = cpureg->rsi;
+	arg[3] = cpureg->rdi;
+	arg[4] = cpureg->r8;
+	arg[5] = cpureg->r9;
+	arg[6] = cpureg->r14;
+	arg[7] = cpureg->r15;
+	system_handler(cpureg->rdx, arg);
+
+byebye:
+	cpureg->rax = arg[0];
+	cpureg->rbx = arg[1];
+	cpureg->rsi = arg[2];
+	cpureg->rdi = arg[3];
+	cpureg->r8  = arg[4];
+	cpureg->r9  = arg[5];
+	cpureg->r14 = arg[6];
+	cpureg->r15 = arg[7];
 }

@@ -6,7 +6,7 @@ LF=-T link.ld
 
 all:
 	$(CC) $(CF) start.c
-	$(CC) $(CF) ../main.c
+	$(CC) $(CF) main.c
 	$(LD) $(LF) start.o main.o
 	aarch64-elf-objcopy a.out -O binary app.bin
 clean:

@@ -39,8 +39,7 @@ struct own{
 };
 void video_prep(struct own* my)
 {
-	my->outbuf = memorycreate(1024*1024*4, 0);
-	my->outfmt = _rgba_;
+	my->outbuf = memorycreate(2048*1024*4, 0);
 	my->outw = 1024;
 	my->outh = 1024;
 }
@@ -247,7 +246,21 @@ GLSL_VERSION
 static void video_gl41prep(struct own* my)
 {
 	struct gl41data* data = &my->gl41;
+/*
+	//dual plane yuv
+	if(){
+		//shader
+		data->src.vs = video_glsl_vs;
+		data->src.fs = video_glsl_yuv420p;
+		data->src.shader_enq = 42;
 
+		//texture
+		data->src.tex[0].data = my->outbuf;		//y plane
+		data->src.tex[0].fmt = _rgba_;
+		data->src.tex[1].data = my->outbuf;		//uv plane
+		data->src.tex[1].fmt = _rgba_;
+	}
+*/
 	if(_yuvx_ == my->outfmt){
 		//shader
 		data->src.vs = video_glsl_vs;
@@ -343,6 +356,7 @@ void video_gl41draw(
 	vbuf[5][5] = 0.0;
 
 	//yuvx4yuyv(data->tex[0].data, 1024*1024*4, srcbuf, 640*480*2);
+	//say("infmt=%.4s,outfmt=%.4s\n", &own->infmt, &own->outfmt);
 	if(own->infmt == own->outfmt){
 		data->tex[0].data = own->inbuf;
 	}
@@ -498,7 +512,7 @@ static void video_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 			own->infmt = _rggb_;
 			break;
 		default:		//rgba
-			say("@default_yuv:buf=%p,len=%x\n", buf, len);
+			say("@default_rgb:buf=%p,len=%x\n", buf, len);
 			own->infmt = _rgba_;
 			break;
 		}

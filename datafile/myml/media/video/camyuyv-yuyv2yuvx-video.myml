@@ -1,6 +1,7 @@
 <entity>
 canvas{
 fmt:video
+outfmt:yuvx
 }
 freecam{
 fmt:freecam
