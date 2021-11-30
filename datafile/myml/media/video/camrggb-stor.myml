@@ -1,0 +1,20 @@
+<artery>
+stor{
+fmt:stor
+}
+</artery>
+
+
+<supply>
+usbcam{
+fmt:cam
+format:rggb
+width:640
+height:480
+}
+</supply>
+
+
+<relation>
+(usbcam, 0, dst) -> (stor, 0, src)
+</relation>

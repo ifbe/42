@@ -1,4 +1,15 @@
 #include "libsoft.h"
+int sleep_us(int);
+int copypath(void*,void*);
+int openreadclose(void*,int, void*,int);
+
+
+
+
+struct perobj{
+	void* buf;
+	char path[128];
+};
 
 
 
@@ -30,10 +41,31 @@ int pump_linkup(struct halfrel* self, struct halfrel* peer)
 }
 
 
+static void funcaddr(_obj* art)
+{
+	struct halfrel stack[12];
+	struct perobj* per = (void*)art->priv_256b;
+	per->buf = memorycreate(0x100000, 4);
+	while(1){
+		int ret = openreadclose(per->path, 0, per->buf, 0x100000);
+
+		give_data_into_peer(art,_dst_, stack,0, 0,0, per->buf,ret);
+
+		sleep_us(1000*1000);
+	}
+
+	memorydelete(per->buf);
+	per->buf = 0;
+}
 
 
 int pump_create(_obj* ele, u8* url)
 {
-	say("@pump_create\n");
+	say("@pump_create:%.16s\n", url);
+
+	struct perobj* per = (void*)ele->priv_256b;
+	copypath(per->path, url);
+
+	threadcreate(funcaddr, ele);
 	return 1;
 }

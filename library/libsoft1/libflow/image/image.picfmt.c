@@ -1,18 +1,28 @@
 #include "libsoft.h"
 int copyfourcc(void*,void*);
 int decstr2u32(void*,void*);
+//
 void bggr_to_rgba(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
+void bggr10_to_rgba(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth);
+//
 void rggb_to_rgba(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
+void rggb10_to_rgba(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth);
+//
 void yuyv_to_yuvx(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
 void uyvy_to_yuvx(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
+//
 void yuyv_to_rgba(
 	u8* src, int s1, int w0, int h0, int x0, int y0, int x1, int y1,
 	u8* dst, int s2, int w1, int h1, int x2, int y2, int x3, int y3);
@@ -51,7 +61,6 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
         yuyv_to_yuvx(buf, len, per->srcw, per->srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
         goto done;
     }
-
     if((_uyvy_ == per->srcfmt)&&(_yuvx_ == per->dstfmt)){
         uyvy_to_yuvx(buf, len, per->srcw, per->srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
         goto done;
@@ -61,9 +70,17 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
         bggr_to_rgba(buf, len, per->srcw, per->srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
         goto done;
     }
+    if((_bg10_ == per->srcfmt)&&(_rgbx_ == per->dstfmt)){
+        bggr10_to_rgba(buf, len, per->srcw, per->srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
+        goto done;
+    }
 
     if((_rggb_ == per->srcfmt)&&(_rgbx_ == per->dstfmt)){
         rggb_to_rgba(buf, len, per->srcw, per->srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
+        goto done;
+    }
+    if((_rg10_ == per->srcfmt)&&(_rgbx_ == per->dstfmt)){
+        rggb10_to_rgba(buf, len, per->srcw, per->srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
         goto done;
     }
 

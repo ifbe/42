@@ -358,8 +358,12 @@
 //
 #define _rgb_ hex32('r','g','b',0)
 #define _rgbx_ hex32('r','g','b','x')
+//
 #define _bggr_ hex32('b','g','g','r')
 #define _rggb_ hex32('r','g','g','b')
+//
+#define _bg10_ hex32('b','g','1','0')
+#define _rg10_ hex32('r','g','1','0')
 //
 #define _yuv_ hex32('y','u','v',0)
 #define _yuvx_ hex32('y','u','v','x')

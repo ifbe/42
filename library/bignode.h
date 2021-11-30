@@ -416,6 +416,11 @@ struct item
 
 	//[100,1ff]: private
 	union{
+		u8   priv_u8;
+		u16   priv_u16;
+		u32   priv_u32;
+		u64   priv_u64;
+
 		int   priv_fd;
 		void* priv_ptr;
 		u8    priv_256b[0x100];
