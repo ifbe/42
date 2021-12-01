@@ -276,7 +276,13 @@ macx64:$(x64_o) $(macx64_o)
 winx64:$(x64_o) $(winx64_o)
 
 %.o: %.c
-	$(CC) $(CF) -o $(DIR)/$(notdir $@) $<
+	if [ $(DIR)/$(notdir $@) -nt $< ]; then \
+		true;\
+	else \
+		echo libhard0/$<;\
+		$(CC) $(CF) -o $(DIR)/$(notdir $@) $<;\
+	fi
+
 
 clean:
 	rm -f *.o *.a

@@ -389,7 +389,13 @@ OBJ = $(patsubst %.c,%.o,$(SRC))
 target: $(OBJ)
 
 %.o: %.c
-	$(CC) $(CF) -o $(DIR)/$(notdir $@) $<
+	if [ $(DIR)/$(notdir $@) -nt $< ]; then \
+		true;\
+	else \
+		echo libuser1/$<;\
+		$(CC) $(CF) -o $(DIR)/$(notdir $@) $<;\
+	fi
+
 
 clean:
 	rm -f *.o *.a

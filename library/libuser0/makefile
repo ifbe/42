@@ -369,11 +369,26 @@ winsdl:$(else_o) $(win_o) $(win_cpp_o) $(winsdl_o)
 
 
 %.o: %.c
-	$(CC) $(CF) -o $(DIR)/$(notdir $@) $<
+	if [ $(DIR)/$(notdir $@) -nt $< ]; then \
+		true;\
+	else \
+		echo make:$<;\
+		$(CC) $(CF) -o $(DIR)/$(notdir $@) $<;\
+	fi
 %.m.o: %.m
-	$(CC) $(CF) -o $(DIR)/$(notdir $@) $<
+	if [ $(DIR)/$(notdir $@) -nt $< ]; then \
+		true;\
+	else \
+		echo make:$<;\
+		$(CC) $(CF) -o $(DIR)/$(notdir $@) $<;\
+	fi
 %.cpp.o: %.cpp
-	$(CC) $(CF) -o $(DIR)/$(notdir $@) $<
+	if [ $(DIR)/$(notdir $@) -nt $< ]; then \
+		true;\
+	else \
+		echo libuser0/$<;\
+		$(CC) $(CF) -o $(DIR)/$(notdir $@) $<;\
+	fi
 
 
 clean:
