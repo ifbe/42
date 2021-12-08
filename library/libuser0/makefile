@@ -97,6 +97,16 @@ efifb:$(else_o) $(bare_o) $(efifb_o)
 #########################################################
 
 
+############################myos#########################
+myoscli_c = \
+2d-window/os-42/myos.fb.c
+myoscli_o = $(patsubst %.c, %.o, $(myoscli_c))
+
+.PHONY:myoscli
+myoscli:$(myoscli_o)
+#########################################################
+
+
 ############################linux#########################
 linux_c = \
 control-systray/linux/linux.tray.c \

@@ -26,6 +26,11 @@ system.c
 bareobj = $(patsubst %.c,%.o,$(baresrc))
 
 
+os42src = \
+system.c
+os42obj = $(patsubst %.c,%.o,$(os42src))
+
+
 efisrc = \
 efiapp/efi.flow.socket.c \
 efiapp/efi.flow.watcher.c \
@@ -121,6 +126,9 @@ winobj = $(patsubst %.c,%.o,$(winsrc))
 
 .PHONY:bare
 bare: $(bareobj)
+
+.PHONY:os42
+os42: $(os42obj)
 
 .PHONY:efi
 efiapp: $(efiobj)

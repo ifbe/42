@@ -23,6 +23,11 @@ bare/barex64/helpuart.c \
 origin.c
 bare_o = $(patsubst %.c, %.o, $(bare_c))
 
+bareapp_c = \
+app/bareapp/entry.c \
+origin.c
+bareapp_o = $(patsubst %.c, %.o, $(bare_c))
+
 efios_c = \
 bare/initer.c \
 bare/memory.c \
@@ -66,6 +71,9 @@ rpi:$(rpi_o)
 
 .PHONY:bare
 bare:$(bare_o)
+
+.PHONY:bareapp
+bareapp:$(bareapp_o)
 
 .PHONY:efios
 efios:$(efios_o)

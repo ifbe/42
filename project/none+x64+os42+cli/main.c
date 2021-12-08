@@ -13,7 +13,8 @@ typedef unsigned long long u64;
 #define _done_ hex32('d','o','n','e')
 #define _take_ hex32('t','a','k','e')
 #define _give_ hex32('g','i','v','e')
-void syscall(u64, u64*);
+void syscall_caller(u64, u64*);
+#define syscall syscall_caller
 
 
 

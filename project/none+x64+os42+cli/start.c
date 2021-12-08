@@ -14,7 +14,7 @@ void start()
 
 
 
-
+/*
 void syscall(u64 req, u64* arg)
 {
 	//req: rdx
@@ -37,3 +37,4 @@ void syscall(u64 req, u64* arg)
 
 	//return arg[0];
 }
+*/

@@ -263,6 +263,11 @@ barex64:$(x64_o) $(barex64_o) $(anyelse_o)
 	$(CC) $(CF) -mgeneral-regs-only tox86/cpu64/x64.syscall.handler.c     -o $(DIR)/x64.syscall.handler_c.o
 	yasm -a x86 -m amd64 -f elf64 tox86/cpu64/x64.syscall.handler.asm -o $(DIR)/x64.syscall.handler_asm.o
 
+.PHONY:os42x64
+os42x64:$(x64_o)
+	$(CC) $(CF) -mgeneral-regs-only tox86/cpu64/x64.syscall.caller.c     -o $(DIR)/x64.syscall.caller_c.o
+	yasm -a x86 -m amd64 -f elf64 tox86/cpu64/x64.syscall.caller.asm -o $(DIR)/x64.syscall.caller_asm.o
+
 .PHONY:efix64
 efix64:$(x64_o) $(efix64_o)
 
