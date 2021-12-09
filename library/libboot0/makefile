@@ -23,10 +23,10 @@ bare/barex64/helpuart.c \
 origin.c
 bare_o = $(patsubst %.c, %.o, $(bare_c))
 
-bareapp_c = \
-app/bareapp/entry.c \
+myos_c = \
+app/myos/entry.c \
 origin.c
-bareapp_o = $(patsubst %.c, %.o, $(bare_c))
+myos_o = $(patsubst %.c, %.o, $(myos_c))
 
 efios_c = \
 bare/initer.c \
@@ -72,8 +72,8 @@ rpi:$(rpi_o)
 .PHONY:bare
 bare:$(bare_o)
 
-.PHONY:bareapp
-bareapp:$(bareapp_o)
+.PHONY:myos
+myos:$(myos_o)
 
 .PHONY:efios
 efios:$(efios_o)

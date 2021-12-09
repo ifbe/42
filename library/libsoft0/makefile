@@ -26,9 +26,9 @@ system.c
 bareobj = $(patsubst %.c,%.o,$(baresrc))
 
 
-os42src = \
+myossrc = \
 system.c
-os42obj = $(patsubst %.c,%.o,$(os42src))
+myosobj = $(patsubst %.c,%.o,$(myossrc))
 
 
 efisrc = \
@@ -127,8 +127,8 @@ winobj = $(patsubst %.c,%.o,$(winsrc))
 .PHONY:bare
 bare: $(bareobj)
 
-.PHONY:os42
-os42: $(os42obj)
+.PHONY:myos
+myos: $(myosobj)
 
 .PHONY:efi
 efiapp: $(efiobj)
