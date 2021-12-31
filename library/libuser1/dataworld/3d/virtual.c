@@ -70,7 +70,6 @@ int virtual_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, 
 
 	switch(wnd->type){
 	case _wnd_:
-	case _fbo_:
 		gl41data_before(wnd);
 		gl41data_01cam(wnd);
 		virtual_traverse(ent,foot, stack,sp, arg,key);

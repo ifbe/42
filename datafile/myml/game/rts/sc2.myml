@@ -114,21 +114,21 @@ q:0.3, 0.3
 
 <relation>
 #gameroot depends on
-(gameroot, gndgeom, 0) -> (ground, gndslot, 0)
-(gameroot, treegeom, 0) -> (tree, treeslot, 0)
-(gameroot, rabgeom, 0) -> (rabbit, rabslot, 0)
-(gameroot, freegeom, 0) -> (freecam, freeslot, in)
+(gameroot, gndgeom, 0) @ (ground, gndslot, 0)
+(gameroot, treegeom, 0) @ (tree, treeslot, 0)
+(gameroot, rabgeom, 0) @ (rabbit, rabslot, 0)
+(gameroot, freegeom, 0) @ (freecam, freeslot, in)
 
 #uiuxroot depends on
-(uiuxroot, minirect, 0) -> (minimap, 0, 0)
-(uiuxroot, statrect, 0) -> (status, 0, 0)
-(uiuxroot, userrect, 0) -> (skill, 0, 0)
+(uiuxroot, minirect, 0) @ (minimap, 0, 0)
+(uiuxroot, statrect, 0) @ (status, 0, 0)
+(uiuxroot, userrect, 0) @ (skill, 0, 0)
 
 #glwnd depends on
-(opengl, fullrect, 0) -> (freecam, 0, 0)
-(opengl, uiuxrect, 0) -> (uiuxroot, 0, 0)
+(opengl, fullrect, 0) @ (freecam, 0, 0)
+(opengl, uiuxrect, 0) @ (uiuxroot, 0, 0)
 
 #event
-(camrts, 0, evto) -> (freecam, 0, evby)
-(camrts, 0, evby) -> (uiuxroot, 0, evto)
+(camrts, 0, evto) @ (freecam, 0, evby)
+(camrts, 0, evby) @ (uiuxroot, 0, evto)
 </relation>

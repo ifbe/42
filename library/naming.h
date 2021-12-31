@@ -279,11 +279,11 @@
 #define _spk_ hex32('s','p','k',0)
 //light
 #define _cam_ hex32('c','a','m',0)
-#define _fbo_ hex32('f','b','o',0)
 #define _wnd_ hex32('w','n','d',0)
 //
 #define _cap_ hex32('c','a','p',0)
 #define _holo_ hex32('h','o','l','o')
+#define _gpu_ hex32('g','p','u',0)
 //
 #define _tray_ hex32('t','r','a','y')	//tray
 #define _std_ hex32('s','t','d', 0)		//cmdline

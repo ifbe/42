@@ -1,4 +1,5 @@
 #include "libuser.h"
+#define _fbo_ hex32('f','b','o',0)
 #define CTXBUF listptr.buf0
 void gl41data_before(_obj* wnd);
 void gl41data_after(_obj* wnd);

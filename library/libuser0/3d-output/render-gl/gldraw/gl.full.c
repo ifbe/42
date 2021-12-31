@@ -269,7 +269,7 @@ void render_target(struct gl41data* cam, struct gl41data** lit, struct gl41data*
 	glViewport(x0, y0, ww, hh);
 	glScissor(x0, y0, ww, hh);
 	glClearColor(0.1, 0.1, 0.1, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_DEPTH_BUFFER_BIT);
 
 	glEnable(GL_SCISSOR_TEST);
 	glEnable(GL_DEPTH_TEST);
@@ -330,28 +330,6 @@ void fullwindow_render(struct gl41world* world, _obj* wnd, struct fstyle* area)
 
 
 
-void fullwindow_dealwith(struct gl41list* perogl, _obj* wnd, struct fstyle* area)
-{
-	int j;
-	for(j=0;j<1;j++){
-		//upload
-		fullwindow_upload(&wnd->gl41list.world[j]);
-
-		//render
-		fullwindow_render(&wnd->gl41list.world[j], wnd, area);
-	}
-
-	if(_gbuf_ == wnd->vfmt){
-
-		fullwindow_upload(&wnd->gl41list.world[1]);
-
-		fullwindow_render(&wnd->gl41list.world[1], wnd, area);
-	}
-}
-
-
-
-
 int fullwindow_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
 	//say("@gl41wnd0_read\n");
@@ -383,7 +361,17 @@ int fullwindow_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd,
 			stack[sp+1].flag = rel->dstflag;
 			entity_take(rel->pdstchip,rel->pdstfoot, stack,sp+2, arg,cmd, 0,0);
 
-			fullwindow_dealwith(&wnd->gl41list, wnd, area);
+			//forward render: only one step
+			//deferred render: step1
+			fullwindow_upload(&wnd->gl41list.world[0]);
+			fullwindow_render(&wnd->gl41list.world[0], wnd, area);
+
+			//forword render: no this step
+			//deferred render: step2
+			if(_gbuf_ == wnd->vfmt){
+			fullwindow_upload(&wnd->gl41list.world[1]);
+			fullwindow_render(&wnd->gl41list.world[1], wnd, area);
+			}
 		}
 
 		rel = samesrcnextdst(rel);

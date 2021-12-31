@@ -111,7 +111,6 @@ int supply_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, voi
 		case _spk_:return speaker_take(sup,foot, stack,sp, arg, idx, buf, len);
 
 		case _cam_:return video_take(sup,foot, stack,sp, arg, idx, buf, len);
-		case _fbo_:
 		case _wnd_:return window_take(sup,foot, stack,sp, arg, idx, buf, len);
 	}
 	return 0;
@@ -125,7 +124,6 @@ int supply_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, voi
 		case _spk_:return speaker_give(sup,foot, stack,sp, arg, idx, buf, len);
 
 		case _cam_:break;
-		case _fbo_:
 		case _wnd_:return window_give(sup,foot, stack,sp, arg, idx, buf, len);
 	}
 	switch(sup->hfmt){
@@ -176,7 +174,6 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 {
 	int j = 0;
 	_obj* win;
-	_obj* sub;
 
 	switch(type){
 //-------------------tobe delete--------------
@@ -257,7 +254,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		return win;
 	}
 
-//---------------------video-------------------
+//---------------------camera-------------------
 	case _cam_:
 	{
 		win = supply_alloc();
@@ -266,16 +263,6 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		win->type = _cam_;
 		win->hfmt = hex32('y','u','v',0);
 		videocreate(win, arg, argc, argv);
-		return win;
-	}
-	case _cap_:
-	{
-		win = supply_alloc();
-		if(0 == win)return 0;
-
-		win->type = _cam_;
-		win->hfmt = hex32('h','o','l','o');
-		//hologram_create(win, arg, argc, argv);
 		return win;
 	}
 
@@ -287,6 +274,30 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 
 		win->type = _wnd_;
 		windowcreate(win, arg, argc, argv);
+		return win;
+	}
+
+//---------------------3dinput-------------------
+	case _cap_:
+	{
+		win = supply_alloc();
+		if(0 == win)return 0;
+
+		win->type = _cap_;
+		win->hfmt = hex32('h','o','l','o');
+		//hologram_create(win, arg, argc, argv);
+		return win;
+	}
+
+//---------------------3doutput-------------------
+	case _gpu_:
+	{
+		win = supply_alloc();
+		if(0 == win)return 0;
+
+		win->type = _gpu_;
+		win->hfmt = _gpu_;
+		//gpulib_create(win, arg, argc, argv);
 		return win;
 	}
 	case _gl41none_:
