@@ -14,6 +14,7 @@ loop/loop.exiter.c \
 loop/loop.poller.c \
 loop/loop.pulser.c \
 loop/loop.waiter.c \
+setup/setup.subcmd.c \
 setup/setup.compiler.c \
 setup/setup.kernel.c \
 setup/setup.myml.c \

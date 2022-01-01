@@ -240,14 +240,12 @@ int mython_fromfile(u8* str, int len)
 int mython_create(struct item* wrk, void* url, int argc, u8** argv)
 {
 	int j;
-	if(0 == argv)return 0;
-	else if(argc <= 1)return 0;
-
 	for(j=1;j<argc;j++){
 		say("arg[%d]=%s\n", j, argv[j]);
 		mython_fromfile(argv[j], 0);
 	}
 
+	supplycreate(_std_, 0, 0, 0);
 	waiter(wrk);
 	return 0;
 }

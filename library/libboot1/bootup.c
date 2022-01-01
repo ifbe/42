@@ -34,6 +34,9 @@ void mython_create(struct item*, u8*, int, u8**);
 //
 void guiapp_init(void*);
 void guiapp_create(struct item*, u8*, int, u8**);
+//
+void subcmd_init(void*);
+void subcmd_create(struct item*, u8*, int, u8**);
 
 
 
@@ -93,6 +96,13 @@ void* bootupcreate(u64 type, void* url, int argc, u8** argv)
 	struct item* tmp;
 
 	//say("type=%.8s\n",&type);
+	if(_subcmd_ == type){
+		//self @ 0
+		tmp = bootup_alloc();
+		tmp->type = _subcmd_;
+		subcmd_create(tmp, url, argc, argv);
+		return tmp;
+	}
 	if(_compiler_ == type){
 		//self @ 0
 		tmp = bootup_alloc();

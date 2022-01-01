@@ -124,11 +124,10 @@ q:0.3, 0.3
 (uiuxroot, statrect, 0) @ (status, 0, 0)
 (uiuxroot, userrect, 0) @ (skill, 0, 0)
 
-#glwnd depends on
-(opengl, fullrect, 0) @ (freecam, 0, 0)
-(opengl, uiuxrect, 0) @ (uiuxroot, 0, 0)
+#manager
+(camrts, fullrect, game) @ (freecam, 0, 0)
+(camrts, uiuxrect, ui) @ (uiuxroot, 0, 0)
 
-#event
-(camrts, 0, evto) @ (freecam, 0, evby)
-(camrts, 0, evby) @ (uiuxroot, 0, evto)
+#opengl
+(opengl, 0, 0) @ (camrts, 0, 0)
 </relation>

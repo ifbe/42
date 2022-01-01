@@ -44,10 +44,13 @@ static void camrts_fixgeom(struct fstyle* geom)
 
 int camrts_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
+	say("@%s\n",__FUNCTION__);
 	return 0;
 }
 int camrts_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
+	say("@%s\n",__FUNCTION__);
+/*
 	struct fstyle* geom = camrts_find(ent);
 	if(0 == geom)return 0;
 
@@ -77,6 +80,7 @@ int camrts_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, v
 	}
 
 	camrts_fixgeom(geom);
+*/
 	return 0;
 }
 int camrts_discon(struct halfrel* self, struct halfrel* peer)

@@ -37,6 +37,7 @@
 #define _win32_ hex64('w','i','n','3','2', 0, 0, 0)
 #define _winmain_ hex64('w','i','n','m','a','i','n', 0)
 //worker
+#define _subcmd_ hex64('s','u','b','c','m','d', 0, 0)
 #define _compiler_ hex64('c','o','m','p','i','l','e','r')
 #define _kernel_ hex64('k','e','r','n','e','l', 0, 0)
 #define _myml_ hex32('m','y','m','l')

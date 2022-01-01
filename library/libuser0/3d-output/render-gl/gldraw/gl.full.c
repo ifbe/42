@@ -246,30 +246,33 @@ void render_material(struct gl41data* cam, struct gl41data* lit, struct gl41data
 void render_target(struct gl41data* cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque, _obj* wnd, struct fstyle* area)
 {
 	//say("fullwindow_render:%llx,%llx,%llx,%llx,%llx,%llx\n",cam,lit,solid,opaque,wnd,area);
-	int j;
+	int j,clear;
 	int x0,y0,ww,hh;
 	if(cam && cam->dst.fbo){
 		x0 = 0;
 		y0 = 0;
 		ww = cam->src.tex[0].w;
 		hh = cam->src.tex[0].h;
+		clear = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
 	}
-	else if(0 == area){
-		x0 = 0;
-		y0 = 0;
-		ww = 1024;
-		hh = 1024;
-	}
-	else{
+	else if(area){
 		x0 = area->vc[0] * wnd->whdf.fbwidth;
 		y0 = area->vc[1] * wnd->whdf.fbheight;
 		ww = area->vq[0] * wnd->whdf.fbwidth;
 		hh = area->vq[1] * wnd->whdf.fbheight;
+		clear = GL_DEPTH_BUFFER_BIT;
+	}
+	else{
+		x0 = 0;
+		y0 = 0;
+		ww = 1024;
+		hh = 1024;
+		clear = GL_DEPTH_BUFFER_BIT;
 	}
 	glViewport(x0, y0, ww, hh);
 	glScissor(x0, y0, ww, hh);
 	glClearColor(0.1, 0.1, 0.1, 1.0);
-	glClear(GL_DEPTH_BUFFER_BIT);
+	glClear(clear);
 
 	glEnable(GL_SCISSOR_TEST);
 	glEnable(GL_DEPTH_TEST);
@@ -347,20 +350,20 @@ int fullwindow_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd,
 	while(1){
 		if(0 == rel)break;
 
+		//get vertex
+		stack[sp+0].pchip = rel->psrcchip;
+		stack[sp+0].pfoot = rel->psrcfoot;
+		//stack[sp+0].type = rel->srctype;
+		stack[sp+0].flag = rel->srcflag;
+		stack[sp+1].pchip = rel->pdstchip;
+		stack[sp+1].pfoot = rel->pdstfoot;
+		//stack[sp+1].type = rel->dsttype;
+		stack[sp+1].flag = rel->dstflag;
+		entity_take(rel->pdstchip,rel->pdstfoot, stack,sp+2, arg,cmd, 0,0);
+
 		//wnd = rel->psrcchip;		//double check
 		struct fstyle* area = rel->psrcfoot;
 		if(area){
-			//get vertex
-			stack[sp+0].pchip = rel->psrcchip;
-			stack[sp+0].pfoot = rel->psrcfoot;
-			//stack[sp+0].type = rel->srctype;
-			stack[sp+0].flag = rel->srcflag;
-			stack[sp+1].pchip = rel->pdstchip;
-			stack[sp+1].pfoot = rel->pdstfoot;
-			//stack[sp+1].type = rel->dsttype;
-			stack[sp+1].flag = rel->dstflag;
-			entity_take(rel->pdstchip,rel->pdstfoot, stack,sp+2, arg,cmd, 0,0);
-
 			//forward render: only one step
 			//deferred render: step1
 			fullwindow_upload(&wnd->gl41list.world[0]);
@@ -380,6 +383,10 @@ int fullwindow_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd,
 }
 int fullwindow_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
+/*
+	if(mouse event from window)send to user
+	if(draw command from user)draw to window
+*/
 	float x,y,x0,y0,xn,yn;
 	short* v;
 	struct relation* rel;
@@ -392,15 +399,17 @@ int fullwindow_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd,
 		while(1){
 			if(0 == rel)return 0;
 			sty = rel->psrcfoot;
-			x0 = sty->vc[0] * wnd->whdf.width;
-			y0 = sty->vc[1] * wnd->whdf.height;
-			xn = sty->vq[0] * wnd->whdf.width + x0;
-			yn = sty->vq[1] * wnd->whdf.height + y0;
+			if(sty){
+				x0 = sty->vc[0] * wnd->whdf.width;
+				y0 = sty->vc[1] * wnd->whdf.height;
+				xn = sty->vq[0] * wnd->whdf.width + x0;
+				yn = sty->vq[1] * wnd->whdf.height + y0;
 
-			v = (short*)ev;
-			x = v[0];
-			y = (wnd->whdf.height-1) - v[1];
-			if( (x>x0) && (x<xn) && (y>y0) && (y<yn) )goto found;
+				v = (short*)ev;
+				x = v[0];
+				y = (wnd->whdf.height-1) - v[1];
+				if( (x>x0) && (x<xn) && (y>y0) && (y<yn) )goto found;
+			}
 			rel = samesrcprevdst(rel);
 		}
 		return 0;
@@ -412,15 +421,17 @@ int fullwindow_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd,
 	}
 
 found:
-	wnd->gl41list.glevto = rel;
-	stack[sp+0].pchip = rel->psrcchip;
-	stack[sp+0].pfoot = rel->psrcfoot;
-	stack[sp+0].flag = rel->srcflag;
+	if(rel){
+		wnd->gl41list.glevto = rel;
+		stack[sp+0].pchip = rel->psrcchip;
+		stack[sp+0].pfoot = rel->psrcfoot;
+		stack[sp+0].flag = rel->srcflag;
 
-	stack[sp+1].pchip = rel->pdstchip;
-	stack[sp+1].pfoot = rel->pdstfoot;
-	stack[sp+1].flag = rel->dstflag;
-	entity_give(rel->pdstchip, rel->pdstfoot, stack,sp+2, arg,cmd, ev,0);
+		stack[sp+1].pchip = rel->pdstchip;
+		stack[sp+1].pfoot = rel->pdstfoot;
+		stack[sp+1].flag = rel->dstflag;
+		entity_give(rel->pdstchip, rel->pdstfoot, stack,sp+2, arg,cmd, ev,0);
+	}
 	return 0;
 }
 void fullwindow_delete(_obj* ogl)
