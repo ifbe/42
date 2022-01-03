@@ -189,13 +189,14 @@ static void rccar_event(
 
 
 
-static void rccar_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void rccar_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
-	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	if(_camrts_ == wnd->hfmt)wnd = stack[sp-8].pchip;
+
 	rccar_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
 
@@ -220,7 +221,7 @@ static void rccar_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 	case _gl41list_:
 		break;
 	default:
-		rccar_wrl_cam_wnd(ent,foot, stack,sp);
+		rccar_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }

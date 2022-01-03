@@ -69,6 +69,9 @@ int virtual_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, 
 	if(0 == wnd)return 0;
 
 	switch(wnd->type){
+	case _camrts_:
+		wnd = stack[sp-4].pchip;
+		//fallthrough
 	case _wnd_:
 		gl41data_before(wnd);
 		gl41data_01cam(wnd);

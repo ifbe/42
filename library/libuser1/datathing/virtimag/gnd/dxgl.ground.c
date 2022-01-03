@@ -277,6 +277,8 @@ static void ground_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	if(_camrts_ == wnd->hfmt)wnd = stack[sp-8].pchip;
+
 	switch(wnd->hfmt){
 	case _dx11list_:ground_dx11_draw(ent,slot, wor,geom, wnd,area);break;
 	case _gl41list_:ground_gl41_draw(ent,slot, wor,geom, wnd,area);break;

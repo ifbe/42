@@ -626,24 +626,12 @@ static int freecam_byworld_bycam_bywnd_read(_obj* ent,void* slot, _syn* stack,in
 	}
 	return 0;
 }
-static int freecam_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
-{
-	struct privdata* own = ent->OWNBUF;
-	struct halfrel* self = own->self;
-	struct halfrel* peer = own->peer;
-	stack[sp+0].pchip = self->pchip;
-	stack[sp+0].pfoot = self->pfoot;
-	stack[sp+0].flag = self->flag;
-	stack[sp+1].pchip = peer->pchip;
-	stack[sp+1].pfoot = peer->pfoot;
-	stack[sp+1].flag = peer->flag;
 
-//[+0,+1]: cam,towr -> wor,geom
-//[-2,-1]: wnd,area -> cam,togl
-	_obj* wor;struct style* geom;
-	_obj* wnd;struct style* area;
-	wor = stack[sp+1].pchip;geom = stack[sp+1].pfoot;
-	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+
+
+static int freecam_generate(_obj* ent,void* slot, _syn* stack,int sp, _obj* wor,struct style* geom, _obj* wnd,struct style* area)
+{
 	switch(wnd->hfmt){
 
 	case _cli_:
@@ -676,7 +664,7 @@ static int freecam_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, void* ar
 		freecam_frus2wvp(ent,slot, wor,geom);
 		freecam_dx11_cam(ent,slot, wor,geom, wnd,area);
 		//render data
-		dx11data_taking(wor,0, stack,sp+2, 0,'v', buf,len);
+		dx11data_taking(wor,0, stack,sp+2, 0,'v', 0,0);
 		//enq++
 		dx11data_after(wnd);
 		break;
@@ -685,7 +673,7 @@ static int freecam_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, void* ar
 		//clear all
 		gl41data_before(wnd);
 		//render data
-		gl41data_taking(wor,0, stack,sp+2, 0,'v', buf,len);
+		gl41data_taking(wor,0, stack,sp+2, 0,'v', 0,0);
 		//enq++
 		gl41data_after(wnd);
 
@@ -716,11 +704,37 @@ static int freecam_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, void* ar
 		freecam_frus2wvp(ent,slot, wor,geom);
 		freecam_mt20_cam(ent,slot, wor,geom, wnd,area);
 		//data
-		mt20data_taking(wor,0, stack,sp+2, 0,'v', buf,len);
+		mt20data_taking(wor,0, stack,sp+2, 0,'v', 0,0);
 		//enq++
 		mt20data_after(wnd);
 		break;
 	}
+	return 0;
+}
+
+
+
+
+static int freecam_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	struct privdata* own = ent->OWNBUF;
+	struct halfrel* self = own->self;
+	struct halfrel* peer = own->peer;
+	stack[sp+0].pchip = self->pchip;
+	stack[sp+0].pfoot = self->pfoot;
+	stack[sp+0].flag = self->flag;
+	stack[sp+1].pchip = peer->pchip;
+	stack[sp+1].pfoot = peer->pfoot;
+	stack[sp+1].flag = peer->flag;
+
+//[+0,+1]: cam,towr -> wor,geom
+//[-2,-1]: wnd,area -> cam,togl
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
+	wor = stack[sp+1].pchip;geom = stack[sp+1].pfoot;
+	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	freecam_generate(ent,slot, stack,sp, wor,geom, wnd,area);
 	return 0;
 //say("@freecam_bywnd_read.end\n");
 }
@@ -745,6 +759,25 @@ static int freecam_bywnd_write(_obj* ent,struct event* ev)
 static int freecam_byrts_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@%s\n",__FUNCTION__);
+	struct privdata* own = ent->OWNBUF;
+	struct halfrel* self = own->self;
+	struct halfrel* peer = own->peer;
+	stack[sp+0].pchip = self->pchip;
+	stack[sp+0].pfoot = self->pfoot;
+	stack[sp+0].flag = self->flag;
+	stack[sp+1].pchip = peer->pchip;
+	stack[sp+1].pfoot = peer->pfoot;
+	stack[sp+1].flag = peer->flag;
+
+//[+0,+1]: cam,towr -> wor,geom
+//[-2,-1]: mixer,area -> cam,togl
+//[-4,-3]: wnd,0 -> mixer,0
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
+	wor = stack[sp+1].pchip;geom = stack[sp+1].pfoot;
+	wnd = stack[sp-4].pchip;area = stack[sp-2].pfoot;
+
+	freecam_generate(ent,slot, stack,sp, wor,geom, wnd,area);
 	return 0;
 }
 

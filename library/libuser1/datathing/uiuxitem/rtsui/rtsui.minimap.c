@@ -57,6 +57,7 @@ static void minimap_read_byuiux(_obj* ent,void* slot, _syn* stack,int sp)
 	_obj* wnd;struct style* rect;
 	uuu = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 	wnd = stack[sp-4].pchip;rect = stack[sp-4].pfoot;
+	if(_camrts_ == wnd->hfmt)wnd = stack[sp-6].pchip;
 
 	float x0,y0,xn,yn;
 	x0 = area->fs.vc[0];

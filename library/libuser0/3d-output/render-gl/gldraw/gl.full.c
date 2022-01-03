@@ -265,8 +265,8 @@ void render_target(struct gl41data* cam, struct gl41data** lit, struct gl41data*
 	else{
 		x0 = 0;
 		y0 = 0;
-		ww = 1024;
-		hh = 1024;
+		ww = wnd->whdf.fbwidth;
+		hh = wnd->whdf.fbheight;
 		clear = GL_DEPTH_BUFFER_BIT;
 	}
 	glViewport(x0, y0, ww, hh);
@@ -333,79 +333,28 @@ void fullwindow_render(struct gl41world* world, _obj* wnd, struct fstyle* area)
 
 
 
-int fullwindow_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
+void fullwindow_uploadandrender(_obj* wnd, struct fstyle* area)
 {
-	//say("@gl41wnd0_read\n");
-	//say("%d,%llx@fullwindow_renderwnd\n", rsp, stack);
-	//say("gl41wnd0_read:%llx,%llx,%llx,%x,%llx,%d\n",self,peer,stack,rsp,buf,len);
+	//forward render: only one step
+	//deferred render: step1
+	fullwindow_upload(&wnd->gl41list.world[0]);
+	fullwindow_render(&wnd->gl41list.world[0], wnd, area);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glViewport(0, 0, wnd->whdf.fbwidth, wnd->whdf.fbheight);
-	glScissor(0, 0, wnd->whdf.fbwidth, wnd->whdf.fbheight);
-	glClearColor(0.1, 0.1, 0.1, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	//foreach camera
-	struct relation* rel = wnd->orel0;
-	while(1){
-		if(0 == rel)break;
-
-		//get vertex
-		stack[sp+0].pchip = rel->psrcchip;
-		stack[sp+0].pfoot = rel->psrcfoot;
-		//stack[sp+0].type = rel->srctype;
-		stack[sp+0].flag = rel->srcflag;
-		stack[sp+1].pchip = rel->pdstchip;
-		stack[sp+1].pfoot = rel->pdstfoot;
-		//stack[sp+1].type = rel->dsttype;
-		stack[sp+1].flag = rel->dstflag;
-		entity_take(rel->pdstchip,rel->pdstfoot, stack,sp+2, arg,cmd, 0,0);
-
-		//wnd = rel->psrcchip;		//double check
-		struct fstyle* area = rel->psrcfoot;
-		if(area){
-			//forward render: only one step
-			//deferred render: step1
-			fullwindow_upload(&wnd->gl41list.world[0]);
-			fullwindow_render(&wnd->gl41list.world[0], wnd, area);
-
-			//forword render: no this step
-			//deferred render: step2
-			if(_gbuf_ == wnd->vfmt){
-			fullwindow_upload(&wnd->gl41list.world[1]);
-			fullwindow_render(&wnd->gl41list.world[1], wnd, area);
-			}
-		}
-
-		rel = samesrcnextdst(rel);
+	//forword render: no this step
+	//deferred render: step2
+	if(_gbuf_ == wnd->vfmt){
+		fullwindow_upload(&wnd->gl41list.world[1]);
+		fullwindow_render(&wnd->gl41list.world[1], wnd, area);
 	}
-	return 0;
 }
-int fullwindow_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
+int fullwindow_chooseandsend(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd, struct event* ev)
 {
-/*
-	if(mouse event from window)send to user
-	if(draw command from user)draw to window
-*/
-	_obj* caller = 0;
-	u64 callertype = 0;
-	if(sp >= 2){
-		caller = stack[sp-2].pchip;
-		if(caller)callertype = caller->hfmt;
-	}
-	if(_camrts_ == callertype)
-	{
-		say("@%s\n",__FUNCTION__);
-		return 0;
-	}
-
 	float x,y,x0,y0,xn,yn;
 	short* v;
 	struct relation* rel;
 	struct fstyle* sty;
 	//say("@gl41wnd0_write:%llx,%llx,%llx,%llx\n", ev->why, ev->what, ev->where, ev->when);
 
-	struct event* ev = buf;
 	if(0x4070 == ev->what){
 		rel = wnd->oreln;
 		while(1){
@@ -444,6 +393,74 @@ found:
 		stack[sp+1].flag = rel->dstflag;
 		entity_give(rel->pdstchip, rel->pdstfoot, stack,sp+2, arg,cmd, ev,0);
 	}
+	return 0;
+}
+
+
+
+
+int fullwindow_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
+{
+	//say("@gl41wnd0_read\n");
+	//say("%d,%llx@fullwindow_renderwnd\n", rsp, stack);
+	//say("gl41wnd0_read:%llx,%llx,%llx,%x,%llx,%d\n",self,peer,stack,rsp,buf,len);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, wnd->whdf.fbwidth, wnd->whdf.fbheight);
+	glScissor(0, 0, wnd->whdf.fbwidth, wnd->whdf.fbheight);
+	glClearColor(0.1, 0.1, 0.1, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//foreach camera
+	struct relation* rel = wnd->orel0;
+	while(1){
+		if(0 == rel)break;
+
+		//get vertex
+		stack[sp+0].pchip = rel->psrcchip;
+		stack[sp+0].pfoot = rel->psrcfoot;
+		//stack[sp+0].type = rel->srctype;
+		stack[sp+0].flag = rel->srcflag;
+		stack[sp+1].pchip = rel->pdstchip;
+		stack[sp+1].pfoot = rel->pdstfoot;
+		//stack[sp+1].type = rel->dsttype;
+		stack[sp+1].flag = rel->dstflag;
+		entity_take(rel->pdstchip,rel->pdstfoot, stack,sp+2, arg,cmd, 0,0);
+
+		//wnd = rel->psrcchip;		//double check
+		struct fstyle* area = rel->psrcfoot;
+		if(area)fullwindow_uploadandrender(wnd, area);
+
+		rel = samesrcnextdst(rel);
+	}
+	return 0;
+}
+int fullwindow_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
+{
+/*
+	if(mouse event from window)send to user
+	if(draw command from user)draw to window
+*/
+	_obj* caller = 0;
+	u64 callertype = 0;
+	if(sp >= 2){
+		caller = stack[sp-2].pchip;
+		if(caller)callertype = caller->hfmt;
+	}
+	if(_camrts_ == callertype)
+	{
+		say("@%s\n",__FUNCTION__);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, wnd->whdf.fbwidth, wnd->whdf.fbheight);
+		glScissor(0, 0, wnd->whdf.fbwidth, wnd->whdf.fbheight);
+		glClearColor(0.1, 0.1, 0.1, 1.0);
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		fullwindow_uploadandrender(wnd, 0);
+		return 0;
+	}
+
+	fullwindow_chooseandsend(wnd,foot, stack,sp, arg,cmd, buf);
 	return 0;
 }
 void fullwindow_delete(_obj* ogl)
