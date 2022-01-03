@@ -42,14 +42,75 @@ static void camrts_fixgeom(struct fstyle* geom)
 
 
 
-int camrts_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int camrts_window_take(_obj* ent,void* foot, _syn* stack,int sp)
+{
+	struct relation* rel = ent->orel0;
+	while(1){
+		if(0 == rel)break;
+
+		say("@%s,rel=%p\n",__FUNCTION__, rel);
+		stack[sp+0].pchip = rel->psrcchip;
+		stack[sp+0].pfoot = rel->psrcfoot;
+		stack[sp+0].flag = rel->srcflag;
+		stack[sp+1].pchip = rel->pdstchip;
+		stack[sp+1].pfoot = rel->pdstfoot;
+		stack[sp+1].flag = rel->dstflag;
+		entity_take(stack[sp+1].pchip, 0, stack, sp+2, 0, 0, 0, 0);
+
+		stack[sp+0].pchip = stack[sp-1].pchip;
+		stack[sp+0].pfoot = stack[sp-1].pfoot;
+		stack[sp+0].flag = stack[sp-1].flag;
+		stack[sp+1].pchip = stack[sp-2].pchip;
+		stack[sp+1].pfoot = stack[sp-2].pfoot;
+		stack[sp+1].flag = stack[sp-2].flag;
+		supply_give(stack[sp+1].pchip, 0, stack, sp+2, 0, 0, 0, 0);
+
+		rel = samesrcnextdst(rel);
+	}
+	return 0;
+}
+int camrts_window_give(_obj* ent,void* foot, _syn* stack,int sp)
+{
+	struct relation* rel = ent->orel0;
+	while(1){
+		if(0 == rel)break;
+		say("%p\n",rel);
+		rel = samesrcnextdst(rel);
+	}
+	return 0;
+}
+
+
+
+
+int camrts_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@%s\n",__FUNCTION__);
+
+	_obj* caller = stack[sp-2].pchip;
+	if(0 == caller)return 0;
+
+	switch(caller->type){
+	case _wnd_:
+		return camrts_window_take(ent,foot, stack,sp);
+	default:
+		say("%.4s\n",caller->hfmt);
+	}
 	return 0;
 }
 int camrts_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	say("@%s\n",__FUNCTION__);
+
+	_obj* caller = stack[sp-2].pchip;
+	if(0 == caller)return 0;
+
+	switch(caller->type){
+	case _wnd_:
+		return camrts_window_give(ent,foot, stack,sp);
+	default:
+		say("%.4s\n",caller->hfmt);
+	}
 /*
 	struct fstyle* geom = camrts_find(ent);
 	if(0 == geom)return 0;

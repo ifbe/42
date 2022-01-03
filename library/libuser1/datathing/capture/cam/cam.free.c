@@ -607,7 +607,7 @@ static void freecam_mt20_cam(
 
 
 
-static int freecam_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int freecam_byworld_bycam_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 //[-6,-5]: wnd,area -> cam,togl
 //[-4,-3]: cam,gl41 -> wor,geom		//the camera taking photo
@@ -626,7 +626,7 @@ static int freecam_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, void* ar
 	}
 	return 0;
 }
-static int freecam_read_bywnd(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int freecam_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct privdata* own = ent->OWNBUF;
 	struct halfrel* self = own->self;
@@ -722,9 +722,9 @@ static int freecam_read_bywnd(_obj* ent,void* slot, _syn* stack,int sp, void* ar
 		break;
 	}
 	return 0;
-//say("@freecam_read_bywnd.end\n");
+//say("@freecam_bywnd_read.end\n");
 }
-static int freecam_write_bywnd(_obj* ent,struct event* ev)
+static int freecam_bywnd_write(_obj* ent,struct event* ev)
 {
 //find world from camera
 	struct privdata* own = ent->OWNBUF;
@@ -742,6 +742,15 @@ static int freecam_write_bywnd(_obj* ent,struct event* ev)
 
 
 
+static int freecam_byrts_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	say("@%s\n",__FUNCTION__);
+	return 0;
+}
+
+
+
+
 static int freecam_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@freecam_read\n");
@@ -753,9 +762,13 @@ static int freecam_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 
 	switch(caller->type){
 	case _wnd_:
-		return freecam_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);
+		return freecam_bywnd_read(ent,foot, stack,sp, arg,key, buf,len);
+	case _camrts_:
+		return freecam_byrts_bywnd_read(ent,foot, stack,sp, arg,key, buf,len);
+	//case _?_:
+		//return freecam_byworld_bycam_byrts_bywnd_read(ent,foot, stack,sp, arg,key, buf,len);
 	default:
-		return freecam_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
+		return freecam_byworld_bycam_bywnd_read(ent,foot, stack,sp, arg,key, buf,len);
 	}
 	return 0;
 }
@@ -778,7 +791,7 @@ static int freecam_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 			return 0;
 		}
 	}
-	freecam_write_bywnd(ent, buf);
+	freecam_bywnd_write(ent, buf);
 	return 0;
 }
 static void freecam_discon(struct halfrel* self, struct halfrel* peer)

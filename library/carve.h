@@ -185,7 +185,7 @@ struct gldst
 	//framebuffer
 	u32 fbo;
 	u32 rbo;
-	u32 clear;
+	u32 clear;		//color,depth
 
 	//shader
 	u32 shader;

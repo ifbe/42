@@ -387,6 +387,18 @@ int fullwindow_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd,
 	if(mouse event from window)send to user
 	if(draw command from user)draw to window
 */
+	_obj* caller = 0;
+	u64 callertype = 0;
+	if(sp >= 2){
+		caller = stack[sp-2].pchip;
+		if(caller)callertype = caller->hfmt;
+	}
+	if(_camrts_ == callertype)
+	{
+		say("@%s\n",__FUNCTION__);
+		return 0;
+	}
+
 	float x,y,x0,y0,xn,yn;
 	short* v;
 	struct relation* rel;
