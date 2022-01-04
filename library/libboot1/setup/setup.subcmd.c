@@ -1,4 +1,5 @@
 #include "libboot.h"
+#define _term_ hex32('t','e','r','m')
 
 
 
@@ -19,6 +20,11 @@ int subcmd_create(struct item* wrk, void* url, int argc, u8** argv)
 	else if(0 == ncmp(argv[1], "mython", 6)){
 		say("mode=mython\n");
 		bootupcreate(_mython_, 0, argc-1, &argv[1]);
+		bootupdelete(thr);
+	}
+	else if(0 == ncmp(argv[1], "term", 4)){
+		say("mode=term\n");
+		bootupcreate(_term_, 0, argc-1, &argv[1]);
 		bootupdelete(thr);
 	}
 	else if(0 == ncmp(argv[1], "guiapp", 6)){

@@ -20,6 +20,7 @@ setup/setup.kernel.c \
 setup/setup.myml.c \
 setup/setup.mython.c \
 setup/setup.guiapp.c \
+setup/setup.term.c \
 bootup.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 

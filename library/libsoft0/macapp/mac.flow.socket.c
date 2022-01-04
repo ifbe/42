@@ -509,7 +509,7 @@ int socket_gone()
 {
 	return 0;
 }
-int socket_give(_obj* oo,int xx, struct sockaddr_in* tmp, void* buf, int len)
+int socket_give(_obj* oo,int xx, struct sockaddr_in* tmp,int cmd, void* buf, int len)
 {
 //say("@writesocket:%x,%llx,%llx,%x\n",fd,tmp,buf,len);
 	if(buf == 0)return 0;

@@ -16,7 +16,7 @@ int kqueue_add(int);
 
 
 
-static struct sysobj* obj;
+static struct item* obj;
 
 
 
@@ -51,7 +51,7 @@ void systemshell_child(char* p)
 
 
 
-int shell_create(char* p, int baud)
+_obj* shell_create(char* p, int baud)
 {
 	int fd;
 	int ret;
@@ -61,40 +61,45 @@ int shell_create(char* p, int baud)
 	if(fd <= 0)
 	{
 		printf("error@open:%d\n",errno);
-		return -1;
+		return 0;
 	}
 
 	ret = grantpt(fd);
 	if(ret < 0)
 	{
 		printf("error@grantpt:%d\n",errno);
-		return -2;
+		return 0;
 	}
 
 	ret = unlockpt(fd);
 	if(ret < 0)
 	{
 		printf("error@unlockpt:%d\n",errno);
-		return -3;
+		return 0;
 	}
 
 	name = ptsname(fd);
 	if(name == 0)
 	{
 		printf("error@ptsname:%d\n",errno);
-		return -4;
+		return 0;
 	}
 	printf("%.*s\n", 16, name);
 
 	ret = fork();
-	if(ret < 0)return -5;
-	else if(ret == 0)systemshell_child(name);
+	if(ret < 0)return 0;
+	if(ret == 0)systemshell_child(name);
 
+	obj[fd].sockinfo.fd = fd;
 	kqueue_add(fd);
-	return fd;
+	say("fd=%d,obj=%pab\n",fd,&obj[fd]);
+	return &obj[fd];
 }
-int shell_delete(int fd)
+int shell_delete(_obj* oo)
 {
+	int fd = oo->sockinfo.fd;
+	if(fd < 0)return 0;
+
 	close(fd);
 	return 0;
 }
@@ -111,15 +116,19 @@ int shell_modify(char* p, int speed)
 
 
 
-int shell_take(int fd, int off, char* buf, int len)
+int shell_take(_obj* oo,int xx, void* arg,int cmd, void* buf, int len)
 {
-	int ret;
-	ret = read(fd, buf, len);
+	int fd = oo->sockinfo.fd;
+	if(fd < 0)return 0;
+
+	int ret = read(fd, buf, len);
 	return ret;
 }
-int shell_give(int fd, int off, char* buf, int len)
+int shell_give(_obj* oo,int xx, void* arg,int cmd, void* buf, int len)
 {
-	int ret;
-	ret = write(fd, buf, len);
+	int fd = oo->sockinfo.fd;
+	if(fd < 0)return 0;
+
+	int ret = write(fd, buf, len);
 	return ret;
 }

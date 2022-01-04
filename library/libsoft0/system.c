@@ -342,10 +342,8 @@ int system_give(_obj* sys,void* foot, _syn* stack,int sp, void* arg,int cmd, voi
 		return file_give(sys,0, arg,cmd, buf,len);
 	case _ptmx_:
 		return shell_give(sys,0, arg,cmd, buf,len);
-		break;
 	case _uart_:
 		return uart_give(sys,0, arg,cmd, buf,len);
-		break;
 	case _TCP_:
 		sys = sys->sockinfo.child;
 		if(0 == sys)return -1;

@@ -32,6 +32,9 @@ void myml_create(struct item*, u8*, int, u8**);
 void mython_init(void*);
 void mython_create(struct item*, u8*, int, u8**);
 //
+void term_init(void*);
+void term_create(struct item*, u8*, int, u8**);
+//
 void guiapp_init(void*);
 void guiapp_create(struct item*, u8*, int, u8**);
 //
@@ -129,6 +132,13 @@ void* bootupcreate(u64 type, void* url, int argc, u8** argv)
 		tmp = bootup_alloc();
 		tmp->type = _mython_;
 		mython_create(tmp, url, argc, argv);
+		return tmp;
+	}
+	if(_term_ == type){
+		//self @ 0
+		tmp = bootup_alloc();
+		tmp->type = _term_;
+		term_create(tmp, url, argc, argv);
 		return tmp;
 	}
 	if(_guiapp_ == type){

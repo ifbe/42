@@ -42,6 +42,7 @@
 #define _kernel_ hex64('k','e','r','n','e','l', 0, 0)
 #define _myml_ hex32('m','y','m','l')
 #define _mython_ hex64('m','y','t','h','o','n', 0, 0)
+#define _term_ hex32('t','e','r','m')
 #define _guiapp_ hex64('g','u','i','a','p','p', 0, 0)
 //
 #define _exiter_ hex64('e','x','i','t','e','r', 0, 0)
