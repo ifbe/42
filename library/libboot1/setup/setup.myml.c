@@ -115,64 +115,67 @@ void role_test_relation(
 	struct halfrel dst;
 	struct relation* rel;
 
-	int j,k;
-	int wirellll = -1;
-	int wirerrrr = -1;
+	int run,val,tmp;
+	int bracket_l = -1;
+	int bracket_r = -1;
 
-	for(j=0;j<=len;j++) {
+	dst.chip = src.chip = 0;
+	for(run=0;run<=len;run++) {
 
-		k = buf[j];
-		if( (j == len) | ('\n' == k) ) {
-			wirellll = wirerrrr = -1;
+		val = buf[run];
+		if( (run == len) | ('\n' == val) ) {
+			if((0 != dst.chip) && (0 != src.chip))
+			{
+				say("%llx,%llx,%.4s,%.4s -> %llx,%llx,%.4s,%.4s\n",
+					src.chip, src.foot, &src.type, &src.flag,
+					dst.chip, dst.foot, &dst.type, &dst.flag
+				);
+				rel = relationcreate(
+					(void*)dst.chip, (void*)dst.foot, dst.type, dst.flag,
+					(void*)src.chip, (void*)src.foot, src.type, src.flag
+				);
+				relationlinkup((void*)&rel->srcchip, (void*)&rel->dstchip);
+			}
+//say("***\n");
+
+			dst.chip = src.chip = 0;
+			bracket_l = bracket_r = -1;
 			continue;
 		}
 
-		if('#' == k){
-			while('\n' != buf[j])j++;
-			j++;
-			k = buf[j];
+		if('#' == val){
+			tmp = run;
+			while('\n' != buf[tmp])tmp++;
+			say("[%x,%x]ignore note: (%.*s)\n", run, tmp, tmp-run, buf+run);
+			run = tmp;
+			continue;
 		}
 //say("@%c@\n",k);
 		//(src) -> (dst)
-		if('(' == k) {
-			if(wirellll < 0) {
-				wirellll = j+1;
+		if('(' == val) {
+			if(bracket_l < 0) {
+				bracket_l = run+1;
 			}
 			else {
-				wirerrrr = j+1;
+				bracket_r = run+1;
 			}
 		}
-		if(')' == k) {
-			if(wirerrrr >= 0) {
-				say("r(%.*s)\n", j-wirerrrr, buf+wirerrrr);
+		if(')' == val) {
+			if(bracket_r >= 0) {
+				say("[%x,%x)rrel: (%.*s)\n", bracket_r, run, run-bracket_r, buf+bracket_r);
 
 				dst.chip = dst.foot = 0;
 				dst.type = dst.flag = 0;
-				parserelation(buf+wirerrrr, j-wirerrrr,
+				parserelation(buf+bracket_r, run-bracket_r,
 					chip, clen, foot, flen,
 					&dst);
-
-				if((0 != dst.chip) && (0 != src.chip))
-				{
-					say("%llx,%llx,%.4s,%.4s -> %llx,%llx,%.4s,%.4s\n",
-						src.chip, src.foot, &src.type, &src.flag,
-						dst.chip, dst.foot, &dst.type, &dst.flag
-					);
-					rel = relationcreate(
-						(void*)dst.chip, (void*)dst.foot, dst.type, dst.flag,
-						(void*)src.chip, (void*)src.foot, src.type, src.flag
-					);
-					relationlinkup((void*)&rel->srcchip, (void*)&rel->dstchip);
-				}
-//say("***\n");
-				wirellll = wirerrrr = -1;
 			}
-			else if(wirellll >= 0) {
-				say("l(%.*s) to ", j-wirellll, buf+wirellll);
+			else if(bracket_l >= 0) {
+				say("[%x,%x)lrel: (%.*s)\n", bracket_l, run, run-bracket_l, buf+bracket_l);
 
 				src.chip = src.foot = 0;
 				src.type = src.flag = 0;
-				parserelation(buf+wirellll, j-wirellll,
+				parserelation(buf+bracket_l, run-bracket_l,
 					chip, clen, foot, flen,
 					&src);
 			}

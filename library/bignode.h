@@ -27,6 +27,8 @@ struct halfrel
 	u32 prev;
 	u32 next;
 };
+typedef struct halfrel _syn;
+
 struct relation
 {
 	//[0x00,0x1f]
@@ -59,10 +61,6 @@ struct relation
 	u32 samesrcprevdst;
 	u32 samesrcnextdst;
 };
-struct foot{
-	u64 type;
-}__attribute__((packed));
-typedef struct halfrel _syn;
 typedef struct relation _rel;
 
 
