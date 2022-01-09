@@ -431,6 +431,7 @@ void role_test1(u8* buf, int len)
 	int flen = 0;
 	struct footlist fbuf[80];
 
+	say("parsing myml\n");
 	for(j=0;j<=len;j++) {
 		k = buf[j];
 

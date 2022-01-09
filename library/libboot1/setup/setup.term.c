@@ -18,11 +18,14 @@ int term_create(struct item* wrk, u8* arg, int argc, u8** argv)
 	void* ccc = supplycreate(_std_, 0, 0, 0);
 
 	//server
-	//systemcreate();
+	void* sss = systemcreate(0, argv[1], 0, 0);
 
 
-	struct relation* rel = relationcreate(xxx,0, _art_,_dst_, ccc,0, _sup_,0);
-	relationlinkup((void*)&rel->srcchip, (void*)&rel->dstchip);
+	struct relation* crel = relationcreate(xxx,0, _art_,_dst_, ccc,0, _sup_,_dst_);
+	relationlinkup((void*)&crel->srcchip, (void*)&crel->dstchip);
+
+	struct relation* srel = relationcreate(xxx,0, _art_,_src_, sss,0, _sys_,_dst_);
+	relationlinkup((void*)&srel->srcchip, (void*)&srel->dstchip);
 
 	waiter(wrk);
 	return 0;

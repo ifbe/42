@@ -30,7 +30,7 @@ union addrv4v6{
 	struct sockaddr_in v4;
 	struct sockaddr_in6 v6;
 };
-struct item* obj;
+struct item* g_obj;
 
 
 
@@ -41,10 +41,18 @@ void initsocket(void* addr)
 	sa.sa_handler=SIG_IGN;
 	sigaction(SIGPIPE, &sa, 0);
 
-	obj = addr;
+	g_obj = addr;
 }
 void freesocket()
 {
+}
+static _obj* getobjbysock(int fd)
+{
+	return &g_obj[fd];
+}
+static int getsockbyobj(_obj* oo)
+{
+	return oo->sockinfo.fd;
 }
 
 
@@ -152,15 +160,18 @@ _obj* createsocket_raw(char* addr, int port)
 		return 0;
 	}
 
+	//mem
+	_obj* oo = getobjbysock(fd);
+	say("fd=%x,oo=%p\n", fd, oo);
+	oo->sockinfo.fd = fd;
+
 	kqueue_add(fd);
-	return &obj[fd];
+	return oo;
 }
 _obj* createsocket_udpserver(char* addr, int port)
 {
-	int fd,ret,size;
 	int sockfmt,socklen;
 	union addrv4v6 sockbuf;
-
 	memset(&sockbuf, 0, sizeof(sockbuf));
 	if(1){
 		sockfmt = AF_INET;
@@ -177,6 +188,7 @@ _obj* createsocket_udpserver(char* addr, int port)
 		sockbuf.v6.sin6_addr = in6addr_any;
 	}
 
+	int fd,ret,size;
 	//create
 	fd = socket(sockfmt, SOCK_DGRAM, 0);
 	if(-1 == fd){
@@ -187,6 +199,11 @@ _obj* createsocket_udpserver(char* addr, int port)
 		printf("fd>4096\n");
 		return 0;
 	}
+
+	//mem
+	_obj* oo = getobjbysock(fd);
+	say("fd=%x,oo=%p\n", fd, oo);
+	oo->sockinfo.fd = fd;
 
 	//reuse
 	size = 1;
@@ -205,9 +222,9 @@ _obj* createsocket_udpserver(char* addr, int port)
 	}
 
 	//done
-	memcpy(obj[fd].sockinfo.self, &sockbuf, socklen);
+	memcpy(oo->sockinfo.self, &sockbuf, socklen);
 	kqueue_add(fd);
-	return &obj[fd];
+	return oo;
 }
 _obj* createsocket_udpclient(char* myaddr, int myport, char* toaddr, int toport)
 {
@@ -226,6 +243,11 @@ _obj* createsocket_udpclient(char* myaddr, int myport, char* toaddr, int toport)
 		return 0;
 	}
 
+	//mem
+	_obj* oo = getobjbysock(fd);
+	say("fd=%x,oo=%p\n", fd, oo);
+	oo->sockinfo.fd = fd;
+
 	//reuse
 	ret = 1;
 	ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
@@ -236,7 +258,7 @@ _obj* createsocket_udpclient(char* myaddr, int myport, char* toaddr, int toport)
 
 if((0 != myaddr) && (0 != myport)){
 	//self
-	self = (void*)obj[fd].sockinfo.self;
+	self = (void*)oo->sockinfo.self;
 	memset(self, 0, sizeof(struct sockaddr_in));
 	self->sin_family = AF_INET;
 	self->sin_port = htons(myport);
@@ -252,7 +274,7 @@ if((0 != myaddr) && (0 != myport)){
 }
 
 	//peer
-	peer = (void*)obj[fd].sockinfo.peer;
+	peer = (void*)oo->sockinfo.peer;
 	memset(peer, 0, sizeof(struct sockaddr_in));
 	peer->sin_family = AF_INET;
 	peer->sin_port = htons(toport);
@@ -266,23 +288,21 @@ if((0 != myaddr) && (0 != myport)){
 	}
 
 	//get the random port
-	self = (void*)obj[fd].sockinfo.self;
+	self = (void*)oo->sockinfo.self;
 	socklen_t len = sizeof(struct sockaddr_in);
 	getsockname(fd, (void*)self, &len);
 	printf("myaddr=%s:%d\n", inet_ntoa(self->sin_addr), ntohs(self->sin_port));
 
 	//done
 	kqueue_add(fd);
-	return &obj[fd];
+	return oo;
 }
 _obj* createsocket_tcpserver(char* addr, int port)
 {
-	int fd,ret,size;
 	int sockfmt,socklen;
 	union addrv4v6 sockbuf;
-
 	memset(&sockbuf, 0, sizeof(sockbuf));
-	if(0){
+	if(1){
 		sockfmt = AF_INET;
 		socklen = sizeof(struct sockaddr_in);
 		sockbuf.v4.sin_family = sockfmt;
@@ -297,6 +317,7 @@ _obj* createsocket_tcpserver(char* addr, int port)
 		sockbuf.v6.sin6_addr = in6addr_any;
 	}
 
+	int fd,ret,size;
 	//create
 	fd = socket(sockfmt, SOCK_STREAM, 0);
 	if(-1 == fd){
@@ -307,6 +328,11 @@ _obj* createsocket_tcpserver(char* addr, int port)
 		printf("fd>4096\n");
 		return 0;
 	}
+
+	//mem
+	_obj* oo = getobjbysock(fd);
+	say("fd=%x,oo=%p\n", fd, oo);
+	oo->sockinfo.fd = fd;
 
 	//reuse
 	size = 1;
@@ -336,9 +362,9 @@ _obj* createsocket_tcpserver(char* addr, int port)
 	listen(fd, 5);
 
 	//done
-	memcpy(obj[fd].sockinfo.self, &sockbuf, socklen);
+	memcpy(oo->sockinfo.self, &sockbuf, socklen);
 	kqueue_add(fd);
-	return &obj[fd];
+	return oo;
 }
 _obj* createsocket_tcpclient(char* myaddr, int myport, char* toaddr, int toport)
 {
@@ -352,6 +378,11 @@ _obj* createsocket_tcpclient(char* myaddr, int myport, char* toaddr, int toport)
 		printf("errno=%d@socket\n",errno);
 		return 0;
 	}
+
+	//mem
+	_obj* oo = getobjbysock(fd);
+	say("fd=%x,oo=%p\n", fd, oo);
+	oo->sockinfo.fd = fd;
 
 	//reuse
 	ret = 1;
@@ -371,7 +402,7 @@ _obj* createsocket_tcpclient(char* myaddr, int myport, char* toaddr, int toport)
 
 if((0 != myaddr) && (0 != myport)){
 	//self
-	self = (void*)obj[fd].sockinfo.self;
+	self = (void*)oo->sockinfo.self;
 	memset(self, 0, sizeof(struct sockaddr_in));
 	self->sin_family = AF_INET;
 	self->sin_port = htons(myport);
@@ -387,7 +418,7 @@ if((0 != myaddr) && (0 != myport)){
 }
 
 	//peer
-	peer = (void*)obj[fd].sockinfo.peer;
+	peer = (void*)oo->sockinfo.peer;
 	memset(peer, 0, sizeof(struct sockaddr_in));
 	peer->sin_family = AF_INET;
 	peer->sin_port = htons(toport);
@@ -410,14 +441,14 @@ if((0 != myaddr) && (0 != myport)){
 	}
 
 	//get the random port
-	self = (void*)obj[fd].sockinfo.self;
+	self = (void*)oo->sockinfo.self;
 	socklen_t len = sizeof(struct sockaddr_in);
 	getsockname(fd, (void*)self, &len);
 	printf("myaddr=%s:%d\n", inet_ntoa(self->sin_addr), ntohs(self->sin_port));
 
 	//done
 	kqueue_add(fd);
-	return &obj[fd];
+	return oo;
 }
 
 
@@ -516,6 +547,7 @@ int socket_give(_obj* oo,int xx, struct sockaddr_in* tmp,int cmd, void* buf, int
 
 	int fd = oo->sockinfo.fd;
 	if(fd < 0)return 0;
+//say("oo=%p,fd=%d\n", oo, fd);
 
 	int ret, cnt=0;
 	u64 type = oo->type;
