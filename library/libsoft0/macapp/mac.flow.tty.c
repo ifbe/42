@@ -11,7 +11,7 @@ int kqueue_add(int);
 
 
 
-static struct sysobj* obj;
+static struct item* obj;
 
 
 
@@ -27,16 +27,22 @@ void freeuart()
 
 
 
-int uart_create(char* path, int speed)
+void* uart_create(char* path, int speed)
 {
-	struct termios options;
+	//fd
 	int fd = open(path , O_RDWR|O_NOCTTY|O_NDELAY);
 	if(fd <= 0){
 		say("error:%d@open:%s\n", errno, path);
-		return -1;
+		return 0;
 	}
 	//else say("open: %s, %d\n", path, speed);
 
+	//obj
+	struct item* oo = &obj[fd];
+	oo->sockinfo.fd = fd;
+	say("fd=%d,obj=%p\n", fd, oo);
+
+	//speed
 	switch(speed){
 		case 9600:  speed = B9600;  break;
 		case 19200: speed = B19200; break;
@@ -50,6 +56,7 @@ int uart_create(char* path, int speed)
 		default:return 0;
 	}
 
+	struct termios options;
 	tcgetattr(fd, &options);
 	cfsetispeed(&options, speed);
 	cfsetospeed(&options, speed);
@@ -92,10 +99,11 @@ int uart_create(char* path, int speed)
 	//obj[fd].buf = (void*)malloc(0x100000);
 	kqueue_add(fd);
 
-	return fd;
+	return oo;
 }
-int uart_delete(int fd)
+int uart_delete(struct item* oo)
 {
+	int fd = oo->sockinfo.fd;
 	close(fd);
 	return 0;
 }
@@ -113,13 +121,20 @@ int uart_modify()
 
 int uart_take(_obj* oo,int xx, void* arg,int off, void* buf,int len)
 {
-	int fd = oo->fileinfo.fd;
+	int fd = oo->sockinfo.fd;
+	//say("fd=%d,obj=%p\n", fd, oo);
+
 	int ret = read(fd, buf, len);
+	if(ret != len){
+		printf("err@read:%d,%d\n", ret, errno);
+	}
 	return ret;
 }
 int uart_give(_obj* oo,int xx, void* arg,int off, void* buf,int len)
 {
-	int fd = oo->fileinfo.fd;
+	int fd = oo->sockinfo.fd;
+	//say("fd=%d,obj=%p\n", fd, oo);
+
 	int ret = write(fd, buf, len);
 	if(ret != len){
 		printf("err@write:%d,%d\n", ret, errno);
