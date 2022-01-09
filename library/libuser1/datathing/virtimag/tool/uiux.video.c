@@ -473,12 +473,19 @@ static void video_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 }
 static void video_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	say("@video_write.yuv: %p,%x,%p,%x\n", arg, key, buf, len);
+
 	struct own* own = ent->OWNBUF;
 	if(0 == own)return;
 
-	say("@video_write.yuv: %p,%x,%p,%x\n", arg, key, buf, len);
-	if(_yuv_ == stack[sp-1].flag){
+	//inslot: if(not set)default value
+	int buffmt = stack[sp-1].flag;
+	if(0 == buffmt){
+		if(_yuvx_ == own->outfmt)buffmt = _yuv_;
+		else buffmt = _rgb_;
+	}
 
+	if(_yuv_ == buffmt){
 		own->inbuf = buf;
 		switch(key){
 		case _uyvy_:
@@ -498,7 +505,7 @@ static void video_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 		}
 	}
 
-	if(_rgb_ == stack[sp-1].flag){
+	if(_rgb_ == buffmt){
 		own->inbuf = buf;
 		switch(key){
 		case _bggr_:

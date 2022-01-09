@@ -23,6 +23,14 @@ void uyvy_to_yuvx(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
 //
+void yyyyuv_to_yuvx(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth);
+//
+void yuvx_to_rgba(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth);
+//
 void yuyv_to_rgba(
 	u8* src, int s1, int w0, int h0, int x0, int y0, int x1, int y1,
 	u8* dst, int s2, int w1, int h1, int x2, int y2, int x3, int y3);
@@ -65,6 +73,10 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
         uyvy_to_yuvx(buf, len, per->srcw, per->srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
         goto done;
     }
+    if((_yyyyuv_ == per->srcfmt)&&(_yuvx_ == per->dstfmt)){
+        yyyyuv_to_yuvx(buf, len, per->srcw, per->srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
+        goto done;
+    }
 
     if((_bggr_ == per->srcfmt)&&(_rgbx_ == per->dstfmt)){
         bggr_to_rgba(buf, len, per->srcw, per->srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
@@ -84,8 +96,15 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
         goto done;
     }
 
+    if((_yuvx_ == per->srcfmt)&&(_rgbx_ == per->dstfmt)){
+        yuvx_to_rgba(buf, len, per->srcw, per->srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
+        goto done;
+    }
+
 done:
-    say("srcbuf=%p,srclen=%x, dstbuf=%p,dstlen=%x\n", buf,len, per->dstbuf[0],per->dstlen);
+    say("src(buf=%p,len=%x,w=%d,h=%d) -> dst(buf=%p,dstlen=%x,w=%d,h=%d)\n",
+        buf, len, per->srcw, per->srch,
+        per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
 	give_data_into_peer(art,_dst_, stack,sp, 0,0, per->dstbuf[0],per->dstlen);
 	return 0;
 }

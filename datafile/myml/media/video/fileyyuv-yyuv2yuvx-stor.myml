@@ -1,0 +1,26 @@
+
+<artery>
+pump{
+fmt:pump
+url:C:\Users\NUC\Desktop\cts\mdp\02799_00015_00-o_w128_h288_y128_uv128_f12.bin
+}
+picfmt{
+fmt:picfmt
+srcfmt:yyuv
+srcw:128
+srch:288
+dstfmt:yuvx
+dstw:128
+dsth:288
+}
+stor{
+fmt:stor
+}
+</artery>
+
+
+
+<relation>
+(pump, 0, dst) -> (picfmt, 0, src)
+(picfmt, 0, dst) -> (stor, 0, src)
+</relation>
