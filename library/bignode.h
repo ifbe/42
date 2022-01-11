@@ -21,8 +21,8 @@ struct halfrel
 		void* pfoot;
 	};
 
-	u32 type;
-	u32 flag;
+	u32 nodetype;
+	u32 foottype;
 
 	u32 prev;
 	u32 next;
@@ -41,8 +41,8 @@ struct relation
 		u64 dstfoot;
 		void* pdstfoot;
 	};
-	u32 dsttype;
-	u32 dstflag;
+	u32 dstnodetype;
+	u32 dstfoottype;
 	u32 samedstprevsrc;
 	u32 samedstnextsrc;
 
@@ -56,8 +56,8 @@ struct relation
 		u64 srcfoot;
 		void* psrcfoot;
 	};
-	u32 srctype;
-	u32 srcflag;
+	u32 srcnodetype;
+	u32 srcfoottype;
 	u32 samesrcprevdst;
 	u32 samesrcnextdst;
 };

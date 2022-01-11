@@ -134,7 +134,7 @@ void overview_draw_pixel(
 		while(1)
 		{
 			if(0 == rel)break;
-			if(_sys_ == rel->srctype)
+			if(_sys_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(_obj);
@@ -144,7 +144,7 @@ void overview_draw_pixel(
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-31)*hh/32
 				);
 			}
-			else if(_art_ == rel->srctype)
+			else if(_art_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
 				k = k / sizeof(_obj);
@@ -153,7 +153,7 @@ void overview_draw_pixel(
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-31)*hh/32
 				);
 			}
-			else if(_sup_ == rel->srctype)
+			else if(_sup_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)supply;
 				k = k / sizeof(_obj);
@@ -162,7 +162,7 @@ void overview_draw_pixel(
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-31)*hh/32
 				);
 			}
-			else if(_ent_ == rel->srctype)
+			else if(_ent_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)entity;
 				k = k / sizeof(_obj);
@@ -184,7 +184,7 @@ void overview_draw_pixel(
 		while(1)
 		{
 			if(0 == rel)break;
-			if(_sys_ == rel->srctype)
+			if(_sys_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(_obj);
@@ -194,7 +194,7 @@ void overview_draw_pixel(
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-15)*hh/32
 				);
 			}
-			else if(_art_ == rel->srctype)
+			else if(_art_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
 				k = k / sizeof(_obj);
@@ -203,7 +203,7 @@ void overview_draw_pixel(
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-15)*hh/32
 				);
 			}
-			else if(_sup_ == rel->srctype)
+			else if(_sup_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)supply;
 				k = k / sizeof(_obj);
@@ -212,7 +212,7 @@ void overview_draw_pixel(
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-15)*hh/32
 				);
 			}
-			else if(_ent_ == rel->srctype)
+			else if(_ent_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)entity;
 				k = k / sizeof(_obj);
@@ -235,7 +235,7 @@ void overview_draw_pixel(
 		while(1)
 		{
 			if(0 == rel)break;
-			if(_sys_ == rel->srctype)
+			if(_sys_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(_obj);
@@ -245,7 +245,7 @@ void overview_draw_pixel(
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+ 1)*hh/32
 				);
 			}
-			else if(_art_ == rel->srctype)
+			else if(_art_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
 				k = k / sizeof(_obj);
@@ -254,7 +254,7 @@ void overview_draw_pixel(
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+ 1)*hh/32
 				);
 			}
-			else if(_sup_ == rel->srctype)
+			else if(_sup_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)supply;
 				k = k / sizeof(_obj);
@@ -263,7 +263,7 @@ void overview_draw_pixel(
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+ 1)*hh/32
 				);
 			}
-			else if(_ent_ == rel->srctype)
+			else if(_ent_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)entity;
 				k = k / sizeof(_obj);
@@ -285,7 +285,7 @@ void overview_draw_pixel(
 		while(1)
 		{
 			if(0 == rel)break;
-			if(_sys_ == rel->srctype)
+			if(_sys_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(_obj);
@@ -295,7 +295,7 @@ void overview_draw_pixel(
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+17)*hh/32
 				);
 			}
-			else if(_art_ == rel->srctype)
+			else if(_art_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
 				k = k / sizeof(_obj);
@@ -304,7 +304,7 @@ void overview_draw_pixel(
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+17)*hh/32
 				);
 			}
-			else if(_sup_ == rel->srctype)
+			else if(_sup_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)supply;
 				k = k / sizeof(_obj);
@@ -313,7 +313,7 @@ void overview_draw_pixel(
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+17)*hh/32
 				);
 			}
-			else if(_ent_ == rel->srctype)
+			else if(_ent_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)entity;
 				k = k / sizeof(_obj);
@@ -541,7 +541,7 @@ void overview_draw_gl41(
 		while(1)
 		{
 			if(0 == rel)break;
-			if(_sys_ == rel->srctype)
+			if(_sys_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(_obj);
@@ -560,7 +560,7 @@ void overview_draw_gl41(
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
 				gl41line_shorter(ctx, 0x0000ff, tc, tr);
 			}
-			else if(_art_ == rel->srctype)
+			else if(_art_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
 				k = k / sizeof(_obj);
@@ -578,7 +578,7 @@ void overview_draw_gl41(
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
 				gl41line_shorter(ctx, 0x00ffff, tc, tr);
 			}
-			else if(_sup_ == rel->srctype)
+			else if(_sup_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)supply;
 				k = k / sizeof(_obj);
@@ -596,7 +596,7 @@ void overview_draw_gl41(
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
 				gl41line_shorter(ctx, 0xffff00, tc, tr);
 			}
-			else if(_ent_ == rel->srctype)
+			else if(_ent_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)entity;
 				k = k / sizeof(_obj);
@@ -627,7 +627,7 @@ void overview_draw_gl41(
 		while(1)
 		{
 			if(0 == rel)break;
-			if(_sys_ == rel->srctype)
+			if(_sys_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(_obj);
@@ -646,7 +646,7 @@ void overview_draw_gl41(
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
 				gl41line_shorter(ctx, 0x4040ff, tc, tr);
 			}
-			else if(_art_ == rel->srctype)
+			else if(_art_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
 				k = k / sizeof(_obj);
@@ -664,7 +664,7 @@ void overview_draw_gl41(
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
 				gl41line_shorter(ctx, 0x40ffff, tc, tr);
 			}
-			else if(_sup_ == rel->srctype)
+			else if(_sup_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)supply;
 				k = k / sizeof(_obj);
@@ -682,7 +682,7 @@ void overview_draw_gl41(
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
 				gl41line_shorter(ctx, 0xffff40, tc, tr);
 			}
-			else if(_ent_ == rel->srctype)
+			else if(_ent_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)entity;
 				k = k / sizeof(_obj);
@@ -714,7 +714,7 @@ void overview_draw_gl41(
 		while(1)
 		{
 			if(0 == rel)break;
-			if(_sys_ == rel->srctype)
+			if(_sys_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(_obj);
@@ -733,7 +733,7 @@ void overview_draw_gl41(
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
 				gl41line_shorter(ctx, 0xc0ffc0, tc, tr);
 			}
-			else if(_art_ == rel->srctype)
+			else if(_art_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
 				k = k / sizeof(_obj);
@@ -751,7 +751,7 @@ void overview_draw_gl41(
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
 				gl41line_shorter(ctx, 0xc0ffc0, tc, tr);
 			}
-			else if(_sup_ == rel->srctype)
+			else if(_sup_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)supply;
 				k = k / sizeof(_obj);
@@ -769,7 +769,7 @@ void overview_draw_gl41(
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
 				gl41line_shorter(ctx, 0xffffff, tc, tr);
 			}
-			else if(_ent_ == rel->srctype)
+			else if(_ent_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)entity;
 				k = k / sizeof(_obj);
@@ -801,7 +801,7 @@ void overview_draw_gl41(
 		while(1)
 		{
 			if(0 == rel)break;
-			if(_sys_ == rel->srctype)
+			if(_sys_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(_obj);
@@ -820,7 +820,7 @@ void overview_draw_gl41(
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
 				gl41line_shorter(ctx, 0xc0ffc0, tc, tr);
 			}
-			else if(_art_ == rel->srctype)
+			else if(_art_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
 				k = k / sizeof(_obj);
@@ -838,7 +838,7 @@ void overview_draw_gl41(
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
 				gl41line_shorter(ctx, 0xc0ffc0, tc, tr);
 			}
-			else if(_sup_ == rel->srctype)
+			else if(_sup_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)supply;
 				k = k / sizeof(_obj);
@@ -856,7 +856,7 @@ void overview_draw_gl41(
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
 				gl41line_shorter(ctx, 0xffffff, tc, tr);
 			}
-			else if(_ent_ == rel->srctype)
+			else if(_ent_ == rel->srcnodetype)
 			{
 				k = (void*)(rel->srcchip) - (void*)entity;
 				k = k / sizeof(_obj);

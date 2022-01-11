@@ -213,7 +213,7 @@ int mbrclient_discon(struct halfrel* self, struct halfrel* peer)
 }
 int mbrclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@mbrclient_linkup:%x\n",self->flag);
+	say("@mbrclient_linkup:%x\n",self->foottype);
 	_obj* ele = self->pchip;
 	if(0 == ele)return 0;
 	void* buf = ele->listptr.buf0;

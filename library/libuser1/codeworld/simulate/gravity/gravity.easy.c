@@ -69,7 +69,7 @@ int graveasy_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key,
 int graveasy_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@graveasy_give:%p,%p\n",ent,foot);
-	if(_clk_ == stack[sp-1].flag)graveasy_working(ent);
+	if(_clk_ == stack[sp-1].foottype)graveasy_working(ent);
 	return 0;
 }
 int graveasy_discon(struct halfrel* self, struct halfrel* peer)

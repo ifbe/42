@@ -98,7 +98,7 @@ int wsclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 	say("@wsclient_write: %llx, %.4s, %d\n", art, &foot, len);
     printmemory(buf, len<16?len:16);
 
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	case _dst_:
 		ret = websocket_clientwrite(buf, len, tmp, 0x1000);
 		//printmemory(buf, len);
@@ -138,7 +138,7 @@ int wsclient_linkup(struct halfrel* self, struct halfrel* peer)
 	int ret;
 	u8 tmp[0x100];
 
-	if(_src_ == self->flag){
+	if(_src_ == self->foottype){
 		ret = websocket_clientwrite_handshake(0, 0, tmp, 0);
 		give_data_into_peer(self->pchip,_src_, 0,0, 0,0, tmp,ret);
 	}
@@ -372,7 +372,7 @@ int wsserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 	say("@wsserver_write: %llx, %.4s, %d\n", art, &foot, len);
     printmemory(buf, len<16?len:16);
 
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	case _dst_:
 		ret = websocket_serverwrite_head(buf, len, tmp, 0x100);
 		//printmemory(tmp, ret);
@@ -451,7 +451,7 @@ int wsmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 	relationcreate(Ws, 0, _art_, _src_, Tcp, 0, _sys_, _dst_);
 	stack[sp-2].pchip = Tcp;
 	stack[sp-1].pchip = Ws;
-	stack[sp-1].flag = _src_;
+	stack[sp-1].foottype = _src_;
 	wsserver_write(Ws,0, stack,sp, 0,0, buf,len);
 
 	//server -> ???

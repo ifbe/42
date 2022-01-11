@@ -301,7 +301,7 @@ static void drone_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	if(_imag_ == stack[sp-1].flag){
+	if(_imag_ == stack[sp-1].foottype){
 		drone_forgl41_estimate(ent,slot, wor,geom, wnd,area);
 	}
 	else{
@@ -332,7 +332,7 @@ static void drone_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 }
 static void drone_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(_quat_ == stack[sp-1].flag)drone_write_quaternion(ent, buf);
+	if(_quat_ == stack[sp-1].foottype)drone_write_quaternion(ent, buf);
 	else drone_write_euler(ent, buf);
 }
 static void drone_discon(struct halfrel* self, struct halfrel* peer)

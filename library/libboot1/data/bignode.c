@@ -11,8 +11,8 @@ void relcopy(struct halfrel* dst, struct halfrel* src)
 {
 	dst->chip = src->chip;
 	dst->foot = src->foot;
-	dst->type = src->type;
-	dst->flag = src->flag;
+	dst->nodetype = src->nodetype;
+	dst->foottype = src->foottype;
 }
 int relation_take(struct item* item,void* foot, struct halfrel* stack,int sp, void* arg, int cmd, void* buf, int len)
 {
@@ -42,7 +42,7 @@ int take_data_from_peer(void* chip,int ftype, struct halfrel* stack,int sp, void
 	rel = item->irel0;
 	while(1){
 		if(0 == rel)break;
-		if(ftype == rel->dstflag){
+		if(ftype == rel->dstfoottype){
 			if(stack){
 				relcopy(&stack[sp+0], (void*)rel->dst);
 				relcopy(&stack[sp+1], (void*)rel->src);
@@ -55,7 +55,7 @@ int take_data_from_peer(void* chip,int ftype, struct halfrel* stack,int sp, void
 	rel = item->orel0;
 	while(1){
 		if(0 == rel)break;
-		if(ftype == rel->srcflag){
+		if(ftype == rel->srcfoottype){
 			if(stack){
 				relcopy(&stack[sp+0], (void*)rel->src);
 				relcopy(&stack[sp+1], (void*)rel->dst);
@@ -78,7 +78,7 @@ int take_data_from_them(void* chip,int ftype, struct halfrel* stack,int sp, void
 	rel = item->irel0;
 	while(1){
 		if(0 == rel)break;
-		if(ftype == rel->dstflag){
+		if(ftype == rel->dstfoottype){
 			if(stack){
 				relcopy(&stack[sp+0], (void*)rel->dst);
 				relcopy(&stack[sp+1], (void*)rel->src);
@@ -91,7 +91,7 @@ int take_data_from_them(void* chip,int ftype, struct halfrel* stack,int sp, void
 	rel = item->orel0;
 	while(1){
 		if(0 == rel)break;
-		if(ftype == rel->srcflag){
+		if(ftype == rel->srcfoottype){
 			if(stack){
 				relcopy(&stack[sp+0], (void*)rel->src);
 				relcopy(&stack[sp+1], (void*)rel->dst);
@@ -148,8 +148,8 @@ int give_data_into_peer(void* chip,int ftype, struct halfrel* stack,int sp, void
 	rel = item->irel0;
 	while(1){
 		if(0 == rel)break;
-		//say("irel:%.8s\n",&rel->dstflag);
-		if(ftype == rel->dstflag){
+		//say("irel:%.8s\n",&rel->dstfoottype);
+		if(ftype == rel->dstfoottype){
 			if(stack){
 				relcopy(&stack[sp+0], (void*)rel->dst);
 				relcopy(&stack[sp+1], (void*)rel->src);
@@ -162,8 +162,8 @@ int give_data_into_peer(void* chip,int ftype, struct halfrel* stack,int sp, void
 	rel = item->orel0;
 	while(1){
 		if(0 == rel)break;
-		//say("orel:%.8s\n",&rel->srcflag);
-		if(ftype == rel->srcflag){
+		//say("orel:%.8s\n",&rel->srcfoottype);
+		if(ftype == rel->srcfoottype){
 			if(stack){
 				relcopy(&stack[sp+0], (void*)rel->src);
 				relcopy(&stack[sp+1], (void*)rel->dst);
@@ -186,8 +186,8 @@ int give_data_into_them(void* chip,int ftype, struct halfrel* stack,int sp, void
 	rel = item->irel0;
 	while(1){
 		if(0 == rel)break;
-		//say("irel:%.8s\n",&rel->dstflag);
-		if(ftype == rel->dstflag){
+		//say("irel:%.8s\n",&rel->dstfoottype);
+		if(ftype == rel->dstfoottype){
 			if(stack){
 				relcopy(&stack[sp+0], (void*)rel->dst);
 				relcopy(&stack[sp+1], (void*)rel->src);
@@ -200,8 +200,8 @@ int give_data_into_them(void* chip,int ftype, struct halfrel* stack,int sp, void
 	rel = item->orel0;
 	while(1){
 		if(0 == rel)break;
-		//say("orel:%.8s\n",&rel->srcflag);
-		if(ftype == rel->srcflag){
+		//say("orel:%.8s\n",&rel->srcfoottype);
+		if(ftype == rel->srcfoottype){
 			if(stack){
 				relcopy(&stack[sp+0], (void*)rel->src);
 				relcopy(&stack[sp+1], (void*)rel->dst);

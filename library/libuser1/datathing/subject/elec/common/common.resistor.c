@@ -118,7 +118,7 @@ static void resistor_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,
 	if(0 == stack)return;
 
 	//foot defined behavior
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	case 'a':
 		resistor_read_a(ent, key, buf,len);
 		return;
@@ -152,9 +152,9 @@ static void resistor_discon(struct halfrel* self, struct halfrel* peer)
 static void resistor_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ent = self->pchip;
-	switch(self->flag){
-		case 'a':ent->A_PEERFOOT = peer->flag;break;
-		case 'b':ent->B_PEERFOOT = peer->flag;break;
+	switch(self->foottype){
+		case 'a':ent->A_PEERFOOT = peer->foottype;break;
+		case 'b':ent->B_PEERFOOT = peer->foottype;break;
 	}
 }
 

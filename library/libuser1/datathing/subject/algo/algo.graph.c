@@ -263,7 +263,7 @@ static void graph_traverse(_obj* act, _obj* this)
 	while(1){
 		if(0 == irel)break;
 
-		child = graph_addnode(act, irel->srctype, (void*)(irel->srcchip));
+		child = graph_addnode(act, irel->srcnodetype, (void*)(irel->srcchip));
 		if(parent != child)graph_addpair(act, parent, child);
 
 		irel = samedstnextsrc(irel);
@@ -273,7 +273,7 @@ static void graph_traverse(_obj* act, _obj* this)
 	while(1){
 		if(0 == orel)break;
 
-		child = graph_addnode(act, orel->dsttype, (void*)(orel->dstchip));
+		child = graph_addnode(act, orel->dstnodetype, (void*)(orel->dstchip));
 		if(parent != child)graph_addpair(act, parent, child);
 
 		orel = samesrcnextdst(orel);

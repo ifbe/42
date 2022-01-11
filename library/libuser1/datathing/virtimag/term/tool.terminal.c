@@ -314,7 +314,7 @@ static void terminal_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,
 	if(0 == stack)return;
 
 	//foot defined behavior
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	case 'c':
 		return;
 	case 's':
@@ -348,7 +348,7 @@ static void terminal_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,
 {
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	case 'c':terminal_write_c(ent,foot, stack,sp, buf,len);return;
 	case 's':terminal_write_s(ent,foot, stack,sp, buf,len);return;
 	case _evby_:terminal_write_bywnd(ent,foot, stack,sp, buf,len);return;
@@ -367,7 +367,7 @@ static void terminal_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,
 static void terminal_discon(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ent = self->pchip;
-	switch(self->flag){
+	switch(self->foottype){
 	case 'c':ent->CLIENT = 0;break;
 	case 's':ent->SERVER = 0;break;
 	}
@@ -375,7 +375,7 @@ static void terminal_discon(struct halfrel* self, struct halfrel* peer)
 static void terminal_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ent = self->pchip;
-	switch(self->flag){
+	switch(self->foottype){
 	case 'c':ent->CLIENT = 1;break;
 	case 's':ent->SERVER = 1;break;
 	}

@@ -65,7 +65,7 @@ static void ladder_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 	if(0 == stack)return;
 
 	//foot defined behavior
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	}
 
 	//caller defined behavior

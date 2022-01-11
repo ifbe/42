@@ -571,7 +571,7 @@ static void stl3d_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	//foot defined behavior
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	}
 
 	//caller defined behavior
@@ -586,7 +586,7 @@ static void stl3d_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int
 }
 static void stl3d_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(_int_ == stack[sp-1].flag)stl3d_modify_matter(ent, buf,len);
+	if(_int_ == stack[sp-1].foottype)stl3d_modify_matter(ent, buf,len);
 	else stl3d_modify_ray(ent, buf);
 }
 static void stl3d_discon(struct halfrel* self, struct halfrel* peer)

@@ -262,7 +262,7 @@ static void mnist_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 	if(0 == stack)return;
 
 	//foot defined behavior
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	}
 
 	//caller defined behavior
@@ -296,7 +296,7 @@ static int mnist_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ent;
 	_obj* art;
-	if(_ann_ == self->flag){
+	if(_ann_ == self->foottype){
 		ent = self->pchip;
 		art = peer->pchip;
 		ent->WEIGHT = art->WEIGHT;

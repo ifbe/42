@@ -64,7 +64,7 @@ int toycar_read_byhttp(_obj* ent,void* foot, struct halfrel* stack,int sp)
 	}
 
 	ret += mysnprintf(buf+ret, 999-ret, "</body></html>");
-	give_data_into_peer(ent,stack[sp-1].flag, stack,sp, "text/html",0, buf,ret);
+	give_data_into_peer(ent,stack[sp-1].foottype, stack,sp, "text/html",0, buf,ret);
 	return ret;
 }
 int toycar_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
@@ -117,7 +117,7 @@ int toycar_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg,
 	tmp[ret] = '\n';
 	ret++;
 
-	give_data_into_peer(ent,stack[sp-1].flag, stack,sp, 0,0, tmp,ret);
+	give_data_into_peer(ent,stack[sp-1].foottype, stack,sp, 0,0, tmp,ret);
 	return 0;
 }
 void toycar_discon(struct halfrel* self, struct halfrel* peer)

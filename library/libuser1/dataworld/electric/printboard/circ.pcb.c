@@ -136,7 +136,7 @@ int printboard_discon(struct halfrel* self, struct halfrel* peer)
 }
 int printboard_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@printboard_linkup: %.4s\n", &self->flag);
+	say("@printboard_linkup: %.4s\n", &self->foottype);
 	return 0;
 }
 

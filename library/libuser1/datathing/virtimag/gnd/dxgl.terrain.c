@@ -511,7 +511,7 @@ static void terrain_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 	if(0 == stack)return;
 
 	//foot defined behavior
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	}
 
 	//caller defined behavior
@@ -530,7 +530,7 @@ static void terrain_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 }
 static void terrain_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(_int_ == stack[sp-1].flag)terrain_modify_matter(ent, buf,len);
+	if(_int_ == stack[sp-1].foottype)terrain_modify_matter(ent, buf,len);
 }
 static void terrain_discon(struct halfrel* self, struct halfrel* peer)
 {

@@ -62,7 +62,7 @@ static void arm64_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 }
 static void arm64_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(_clk_ == stack[sp-1].flag){
+	if(_clk_ == stack[sp-1].foottype){
 		struct cpu* cpu = ent->listptr.buf0;
 		if(0 == cpu)return;
 

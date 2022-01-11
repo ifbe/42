@@ -209,10 +209,10 @@ static int orthcam_read_bywnd(_obj* ent,void* foot, _syn* stack,int sp, void* ar
 	orthcam_search(ent, 0, &tmp[0], &tmp[1]);
 	stack[sp+0].pchip = tmp[0]->pchip;
 	stack[sp+0].pfoot = tmp[0]->pfoot;
-	stack[sp+0].flag = tmp[0]->flag;
+	stack[sp+0].foottype = tmp[0]->foottype;
 	stack[sp+1].pchip = tmp[1]->pchip;
 	stack[sp+1].pfoot = tmp[1]->pfoot;
-	stack[sp+1].flag = tmp[1]->flag;
+	stack[sp+1].foottype = tmp[1]->foottype;
 
 //[-2,-1]: wnd,area -> cam,togl
 //[+0,+1]: cam,towr -> wor,geom
@@ -275,7 +275,7 @@ static void orthcam_discon(struct halfrel* self, struct halfrel* peer)
 static void orthcam_linkup(struct halfrel* self, struct halfrel* peer)
 {
     say("@orthcam_linkup\n");
-	if(_evto_ == self->flag){
+	if(_evto_ == self->foottype){
 		_obj* cam = self->pchip;
 		cam->EVTYPE = EVSEND;
 	}

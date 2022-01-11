@@ -127,7 +127,7 @@ static void spectrum_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,
 }
 static void spectrum_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	case _pcm_:
 		spectrum_data(ent,slot, buf,len);
 		break;

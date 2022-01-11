@@ -63,7 +63,7 @@ int border3d_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, void* ar
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	//foot defined behavior
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	}
 
 	//caller defined behavior

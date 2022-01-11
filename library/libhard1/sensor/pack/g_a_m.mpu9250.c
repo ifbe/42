@@ -344,7 +344,7 @@ int mpu9250_write(struct item* dri,void* foot, _syn* stack,int sp, void* arg,int
 	float tmp[10];
 	say("@mpu9250_write:%p,%p\n", dri,foot);
 
-	if(_clk_ == stack[sp-1].flag){
+	if(_clk_ == stack[sp-1].foottype){
 		switch(dri->hfmt){
 		case _i2c_:ret = mpu9250_i2cread(dri, tmp);break;
 		case _spi_:ret = mpu9250_spiread(dri, tmp);break;
@@ -362,12 +362,12 @@ int mpu9250_discon(struct halfrel* self, struct halfrel* peer)
 int mpu9250_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	struct item* drv;
-	say("@mpu9250_linkup: %.4s\n", &self->flag);
+	say("@mpu9250_linkup: %.4s\n", &self->foottype);
 
 	drv = self->pchip;
 	if(0 == drv)return 0;
 
-	switch(self->flag){
+	switch(self->foottype){
 	case _i2c_:{
 		mpu9250_i2cinit(drv);
 		drv->hfmt = _i2c_;

@@ -21,7 +21,7 @@ int vncclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	int len;
 	u8* buf[32];
-	if(_src_ == self->flag){
+	if(_src_ == self->foottype){
 		len = mysnprintf(buf,32, "RFB 003.008\n");
 		give_data_into_peer(self->pchip,_src_, 0,0, 0,0, buf,len);
 	}

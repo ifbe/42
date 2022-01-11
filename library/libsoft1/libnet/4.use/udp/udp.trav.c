@@ -32,7 +32,7 @@ int udptravclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int
 {
 	//say("@udptravclient_write: %.4s\n", &foot);
 
-	if(_std_ == stack[sp-1].flag){
+	if(_std_ == stack[sp-1].foottype){
 		if(' ' == buf[0])give_data_into_peer(art,_src_, stack,sp, &art->listu64.data0,0, buf, 1);
 		else if(art->listu64.data1)give_data_into_peer(art,_src_, stack,sp, &art->listu64.data1,0, buf, 1);
 		return 0;
@@ -83,7 +83,7 @@ int udptravclient_discon(struct halfrel* self, struct halfrel* peer)
 }
 int udptravclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@udptravclient_linkup: %.4s\n", &self->flag);
+	say("@udptravclient_linkup: %.4s\n", &self->foottype);
 	return 0;
 }
 int udptravclient_delete(_obj* art)
@@ -159,18 +159,18 @@ int udptravmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int
 		for(j=0;j<4;j++){
 			if(0 == list[j])break;
 		}
-		give_data_into_peer(art,stack[sp-1].flag, stack,sp, arg,idx, list,j*8);
+		give_data_into_peer(art,stack[sp-1].foottype, stack,sp, arg,idx, list,j*8);
 	}
 	return 0;
 }
 int udptravmaster_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@udptravmaster_linkup: %.4s\n", &self->flag);
+	say("@udptravmaster_linkup: %.4s\n", &self->foottype);
 	return 0;
 }
 int udptravmaster_discon(struct halfrel* self, struct halfrel* peer)
 {
-	say("@udptravmaster_discon: %.4s\n", &self->flag);
+	say("@udptravmaster_discon: %.4s\n", &self->foottype);
 	return 0;
 }
 int udptravmaster_delete(_obj* art)

@@ -110,7 +110,7 @@ static void spectrum_linkup(struct halfrel* self, struct halfrel* peer)
 	struct style* pin = (void*)(self->foot);
 	_obj* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	if(_data_ == self->flag)return;
+	if(_data_ == self->foottype)return;
 /*
 	//
 	pair = alloc_winobj(win, 's');

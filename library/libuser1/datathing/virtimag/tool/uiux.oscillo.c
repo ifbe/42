@@ -294,7 +294,7 @@ static void oscillo_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 }
 static void oscillo_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(_pcm_ == stack[sp-1].flag){
+	if(_pcm_ == stack[sp-1].foottype){
 		oscillo_data(ent, 0, buf, len);
 		return;
 	}

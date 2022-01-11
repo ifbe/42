@@ -270,7 +270,7 @@ static void nmos_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 	if(0 == stack)return;
 
 	//foot defined behavior
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	case 'D':nmos_read_D(ent,key, stack,sp, buf,len);return;
 	case 'S':nmos_read_S(ent,key, stack,sp, buf,len);return;
 	//case 'B':nmos_read_B(ent,key, stack,sp, buf,len);return;
@@ -294,7 +294,7 @@ static void nmos_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 static void nmos_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	say("nmos_write: %llx, %.4s=%x\n", ent, &foot, buf[0]);
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 		case 'D':nmos_write_D(ent,key, stack,sp, buf,len);return;
 		case 'S':nmos_write_S(ent,key, stack,sp, buf,len);return;
 		//case 'B':nmos_write_B(ent,key, stack,sp, buf,len);return;
@@ -304,7 +304,7 @@ static void nmos_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 static void nmos_discon(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ent = self->pchip;
-	switch(self->flag){
+	switch(self->foottype){
 		case 'D':ent->Dcount -= 1;return;
 		case 'S':ent->Scount -= 1;return;
 		//case 'B';ent->Bcount -= 1;return;
@@ -314,7 +314,7 @@ static void nmos_discon(struct halfrel* self, struct halfrel* peer)
 static void nmos_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ent = self->pchip;
-	switch(self->flag){
+	switch(self->foottype){
 		case 'D':ent->Dcount += 1;return;
 		case 'S':ent->Scount += 1;return;
 		//case 'B';ent->Bcount += 1;return;

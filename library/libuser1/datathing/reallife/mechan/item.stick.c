@@ -144,7 +144,7 @@ static void stick_read_b(_obj* ent, int key, struct joint* jo,int thisone)
 
 static void stick_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	case 'a':stick_read_a(ent,key, buf,len);break;
 	case 'b':stick_read_b(ent,key, buf,len);break;
 	case 'f':stick_read_force(ent,stack[sp-8].pchip, buf,len);break;
@@ -158,11 +158,11 @@ static void stick_discon(struct halfrel* self, struct halfrel* peer)
 }
 static void stick_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@stick_linkup: %.4s,%.4s\n", &self->flag, &peer->flag);
+	say("@stick_linkup: %.4s,%.4s\n", &self->foottype, &peer->foottype);
 	_obj* ent = self->pchip;
-	switch(self->flag){
-		case 'a':ent->A_PEERFOOT = peer->flag;break;
-		case 'b':ent->B_PEERFOOT = peer->flag;break;
+	switch(self->foottype){
+		case 'a':ent->A_PEERFOOT = peer->foottype;break;
+		case 'b':ent->B_PEERFOOT = peer->foottype;break;
 	}
 }
 

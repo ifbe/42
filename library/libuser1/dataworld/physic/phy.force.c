@@ -163,9 +163,9 @@ void force_read_inner(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int ke
 		say("node: %llx\n", tab[j]);
 
 		stack[sp+0].pchip = ent;
-		stack[sp+0].flag = 0;
+		stack[sp+0].foottype = 0;
 		stack[sp+1].pchip = tab[j];
-		stack[sp+1].flag = 'f';
+		stack[sp+1].foottype = 'f';
 		entity_take(tab[j],0, stack,sp+2, 0,0, jo,0);
 	}
 }
@@ -178,7 +178,7 @@ int force_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, vo
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	//slot type known: do work based on slot type
-	//switch(stack[sp-1].flag){
+	//switch(stack[sp-1].foottype){
 	//}
 
 	//slot type unknown: do work based on caller fmt
@@ -208,9 +208,9 @@ int force_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	int j;
 	if(0 == self)return 0;
-	say("@force_linkup: %.4s\n", &self->flag);
+	say("@force_linkup: %.4s\n", &self->foottype);
 
-	j = self->flag;
+	j = self->foottype;
 	if('a' > j)return 0;
 	if('z' < j)return 0;
 

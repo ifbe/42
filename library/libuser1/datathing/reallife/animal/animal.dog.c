@@ -192,7 +192,7 @@ static void robodog_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 	if(0 == stack)return;
 
 	//foot defined behavior
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	}
 
 	//caller defined behavior
@@ -213,8 +213,13 @@ static void robodog_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 {
 	say("robodog_write\n");
 
-	if(_int_ == stack[sp-1].flag)robodog_write_int(ent,buf,len);
-	else robodog_write_float(ent,buf,len);
+	switch(stack[sp-1].foottype){
+	case _int_:
+		robodog_write_int(ent,buf,len);
+		break;
+	default:
+		robodog_write_float(ent,buf,len);
+	}
 }
 static void robodog_discon(struct halfrel* self, struct halfrel* peer)
 {

@@ -44,7 +44,7 @@ int tcptravclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg,int 
 	_obj* sys = stack[sp-2].pchip;
 	say("@tcptravclient_write:%.4s\n", &foot);
 
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	case _std_:
 		printmemory(buf, len < 16 ? len : 16);
 
@@ -134,9 +134,9 @@ int tcptravclient_discon(struct halfrel* self, struct halfrel* peer)
 }
 int tcptravclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@tcptravclient_linkup: %.4s\n", &self->flag);
-	if(_src_ == self->flag){
-		give_data_into_peer(self->pchip, self->flag, 0,0, 0,0, "?\n", 2);
+	say("@tcptravclient_linkup: %.4s\n", &self->foottype);
+	if(_src_ == self->foottype){
+		give_data_into_peer(self->pchip, self->foottype, 0,0, 0,0, "?\n", 2);
 	}
 	return 0;
 }
@@ -203,18 +203,18 @@ int tcptravmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg,int 
 		for(j=0;j<4;j++){
 			if(0 == list[j])break;
 		}
-		give_data_into_peer(art,stack[sp-1].flag, stack,sp, arg,idx, list,j*8);
+		give_data_into_peer(art,stack[sp-1].foottype, stack,sp, arg,idx, list,j*8);
 	}
 	return 0;
 }
 int tcptravmaster_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@tcptravmaster_linkup: %.4s\n", &self->flag);
+	say("@tcptravmaster_linkup: %.4s\n", &self->foottype);
 	return 0;
 }
 int tcptravmaster_discon(struct halfrel* self, struct halfrel* peer)
 {
-	say("@tcptravmaster_discon: %.4s\n", &self->flag);
+	say("@tcptravmaster_discon: %.4s\n", &self->foottype);
 	return 0;
 }
 int tcptravmaster_delete(_obj* art)

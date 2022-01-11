@@ -136,7 +136,7 @@ static void vsrc_read_n(_obj* ent, int key, struct wireindex* sts, int thisone)
 
 static void vsrc_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 		case 'p':vsrc_read_p(ent,key, buf,len);break;
 		case 'n':vsrc_read_n(ent,key, buf,len);break;
 		default:vsrc_read_bycam(ent,foot, stack,sp, arg,key, buf,len);break;
@@ -145,7 +145,7 @@ static void vsrc_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 static void vsrc_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@vsrc_write: %.4s\n", &foot);
-	if('n' == stack[sp-1].flag){
+	if('n' == stack[sp-1].foottype){
 		struct wireindex* sts = buf;
 		float volt = sts->volt + ent->whdf.fx0;
 		give_data_into_peer(ent,'p', stack,sp, 0,0, &volt,0);
@@ -157,9 +157,9 @@ static void vsrc_discon(struct halfrel* self, struct halfrel* peer)
 static void vsrc_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ent = self->pchip;
-	switch(self->flag){
-		case 'p':ent->P_PEERFOOT = peer->flag;break;
-		case 'n':ent->N_PEERFOOT = peer->flag;break;
+	switch(self->foottype){
+		case 'p':ent->P_PEERFOOT = peer->foottype;break;
+		case 'n':ent->N_PEERFOOT = peer->foottype;break;
 	}
 }
 

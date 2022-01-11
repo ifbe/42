@@ -188,7 +188,7 @@ static void nand_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 	if(0 == stack)return;
 
 	//foot defined behavior
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	}
 
 	//caller defined behavior
@@ -210,7 +210,7 @@ static void nand_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 	u8 tmp;
 	say("@nandgate_write:%x\n",buf[0]);
 
-	if(_src_ == stack[sp-1].flag){
+	if(_src_ == stack[sp-1].foottype){
 		tmp = buf[0] - 0x30;
 		if((tmp >= 0)&&(tmp <= 3)){
 			ent->whdf.ix0 = (tmp>>0)&1;
@@ -218,12 +218,12 @@ static void nand_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 			ent->whdf.iz0 = !(ent->whdf.ix0 && ent->whdf.iy0);
 		}
 	}
-	else if('a' == stack[sp-1].flag){
+	else if('a' == stack[sp-1].foottype){
 		if('0' == buf[0])ent->whdf.ix0 = 0;
 		else if('1' == buf[0])ent->whdf.ix0 = 1;
 		else return;
 	}
-	else if('b' == stack[sp-1].flag){
+	else if('b' == stack[sp-1].foottype){
 		if('0' == buf[0])ent->whdf.iy0 = 0;
 		else if('1' == buf[0])ent->whdf.iy0 = 1;
 		else return;

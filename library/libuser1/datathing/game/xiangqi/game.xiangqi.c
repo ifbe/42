@@ -660,7 +660,7 @@ static void xiangqi_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 	say("@xiangqi_giving: %p\n", foot);
 	struct perxiangqi* xq = ent->listptr.buf0;
 
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	case _mind_:
 		xiangqi_copydata((u8*)xq->data, buf);
 		return;

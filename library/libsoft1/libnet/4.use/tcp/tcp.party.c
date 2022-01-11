@@ -239,14 +239,14 @@ int partyclient_write_bystd(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf,i
 
 int partyclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	//say("@partyclient_write: %.4s\n", &self->flag);
+	//say("@partyclient_write: %.4s\n", &self->foottype);
 	//printmemory(buf,len);
 
 	if(0==stack|sp<2)return 0;
 	struct halfrel* self = &stack[sp-1];
 	struct halfrel* peer = &stack[sp-2];
 
-	switch(self->flag){
+	switch(self->foottype){
 	case _std_:partyclient_write_bystd(self,peer, stack,sp, buf,len);break;
 	case _dst_:partyclient_write_bydst(self,peer, stack,sp, buf,len);break;
 	case _src_:{
@@ -343,7 +343,7 @@ int partyserver_create(_obj* ele, u8* url)
 
 int partymaster_write_other(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf, int len)
 {
-	say("@partymaster_write_other: foot=%.4s,len=%x\n", &self->flag, len);
+	say("@partymaster_write_other: foot=%.4s,len=%x\n", &self->foottype, len);
 	printmemory(buf, 0x20);
 
 	_obj* art = self->pchip;
@@ -365,7 +365,7 @@ while(1){
 		say("to=%x,by=%x,cnt=%x,sum=%x,ret=%x,len=%x\n", to,by,cnt,sum, ret,len);
 
 		if(ret < 8){
-			give_data_into_peer(art,peer->flag, stack,sp, 0,0, "wrong head\n", 10);
+			give_data_into_peer(art,peer->foottype, stack,sp, 0,0, "wrong head\n", 10);
 			systemdelete(peer->pchip);
 			return 0;
 		}
@@ -515,7 +515,7 @@ fail:
 			"%d: %.4s\n", j, &peruser[j].sta_name
 		);
 	}
-	give_data_into_peer(art,self->flag, stack,sp, 0,0, tmp,ret);
+	give_data_into_peer(art,self->foottype, stack,sp, 0,0, tmp,ret);
 	systemdelete(xxx);
 	return 0;
 }
@@ -554,7 +554,7 @@ int partymaster_discon(struct halfrel* self, struct halfrel* peer)
 	_obj* art = self->pchip;
 	struct perobj* perobj = (void*)art->priv_256b;
 	struct peruser* peruser = perobj->peruser;
-	party_logout(peruser, self->flag);
+	party_logout(peruser, self->foottype);
 	return 0;
 }
 int partymaster_linkup(struct halfrel* self, struct halfrel* peer)

@@ -279,13 +279,17 @@ int gravtest_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key,
 int gravtest_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	say("@gravtest_write:%.4s\n",&foot);
-	if(_clk_ == stack[sp-1].flag)gravtest_foreach(ent);
-	if(_ioby_ == stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
+	case _clk_:
+		gravtest_foreach(ent);
+		break;
+	case _ioby_:
 		switch(buf[0]){
-			case '1':ent->TEST = 0xffffffff;break;
-			case '0':ent->TEST = 0;break;
-			default:ent->TEST += 16;
+		case '1':ent->TEST = 0xffffffff;break;
+		case '0':ent->TEST = 0;break;
+		default:ent->TEST += 16;
 		}
+		break;
 	}
 	return 0;
 }

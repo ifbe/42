@@ -68,7 +68,7 @@ int virtimu_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, 
 int virtimu_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	//say("@virtimu_write:%.4s\n",&foot);
-	if(_clk_ == stack[sp=1].flag){
+	if(_clk_ == stack[sp=1].foottype){
 		virtimu_checkplace(ent);
 		virtimu_senseforce(ent);
 	}

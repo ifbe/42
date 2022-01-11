@@ -71,14 +71,14 @@ static void digital_broadcast(_obj* ent, int pin, _syn* stack,int sp, u8* buf, i
 	rel = ent->irel0;
 	while(1){
 		if(0 == rel)break;
-		if(pin != rel->dstflag)goto next1;
+		if(pin != rel->dstfoottype)goto next1;
 
 		chip = rel->psrcchip;
 		if(digital_recur(stack,sp, chip))goto next1;
 
 		stack[sp+0].pchip = ent;
 		stack[sp+1].pchip = chip;
-		stack[sp+1].flag = rel->srcflag;
+		stack[sp+1].foottype = rel->srcfoottype;
 		entity_give(chip,0, stack,sp+2, 0,ent->STAMP, buf,len);
 next1:
 		rel = samedstnextsrc(rel);
@@ -87,14 +87,14 @@ next1:
 	rel = ent->orel0;
 	while(1){
 		if(0 == rel)break;
-		if(pin != rel->srcflag)goto next2;
+		if(pin != rel->srcfoottype)goto next2;
 
 		chip = rel->pdstchip;
 		if(digital_recur(stack,sp, chip))goto next2;
 
 		stack[sp+0].pchip = ent;
 		stack[sp+1].pchip = chip;
-		stack[sp+1].flag = rel->dstflag;
+		stack[sp+1].foottype = rel->dstfoottype;
 		entity_give(chip,0, stack,sp+2, 0,ent->STAMP, buf,len);
 next2:
 		rel = samesrcnextdst(rel);
@@ -261,7 +261,7 @@ int digital_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, 
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	//foot defined behavior
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	}
 
 	//caller defined behavior
@@ -282,7 +282,7 @@ int digital_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, 
 
 	struct event* ev;
 	int id;
-	int foottype = stack[sp-1].flag;
+	int foottype = stack[sp-1].foottype;
 	switch(foottype){
 	case _evby_:
 		ev = (void*)buf;
@@ -314,7 +314,7 @@ int digital_discon(struct halfrel* self, struct halfrel* peer)
 }
 int digital_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@digital_linkup: %.4s\n", &self->flag);
+	say("@digital_linkup: %.4s\n", &self->foottype);
 	return 0;
 }
 

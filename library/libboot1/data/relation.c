@@ -96,8 +96,8 @@ void* relation_generate(
 	w->dstchip = (u64)dc;
 	w->dstfoot = (u64)df;
 
-	w->dsttype = dctype;
-	w->dstflag = dftype;
+	w->dstnodetype = dctype;
+	w->dstfoottype = dftype;
 
 	w->samedstprevsrc = 0;
 	w->samedstnextsrc = 0;
@@ -106,8 +106,8 @@ void* relation_generate(
 	w->srcchip = (u64)sc;
 	w->srcfoot = (u64)sf;
 
-	w->srctype = sctype;
-	w->srcflag = sftype;
+	w->srcnodetype = sctype;
+	w->srcfoottype = sftype;
 
 	w->samesrcprevdst = 0;
 	w->samesrcnextdst = 0;
@@ -148,7 +148,7 @@ void* samesrcnextdst(struct relation* rel)
 
 int relation_d(struct halfrel* self, struct halfrel* peer)
 {
-	switch(self->type){
+	switch(self->nodetype){
 		case _ori_:return origindiscon(self, peer);
 		case _wrk_:return bootupdiscon(self, peer);
 		case _dev_:return devicediscon(self, peer);
@@ -172,7 +172,7 @@ int relationdiscon(struct halfrel* self, struct halfrel* peer)
 
 int relation_a(struct halfrel* self, struct halfrel* peer)
 {
-	switch(self->type){
+	switch(self->nodetype){
 		case _ori_:return originlinkup(self, peer);
 		case _wrk_:return bootuplinkup(self, peer);
 		case _dev_:return devicelinkup(self, peer);
@@ -337,7 +337,7 @@ int relationsearch(void* this, u32 foottype, struct halfrel* self[], struct half
 	{
 		if(0 == rel)break;
 
-		if(foottype == rel->srcflag){
+		if(foottype == rel->srcfoottype){
 			self[0] = (void*)(rel->src);
 			peer[0] = (void*)(rel->dst);
 			return 1;
@@ -351,7 +351,7 @@ int relationsearch(void* this, u32 foottype, struct halfrel* self[], struct half
 	{
 		if(0 == rel)break;
 
-		if(foottype == rel->dstflag){
+		if(foottype == rel->dstfoottype){
 			self[0] = (void*)(rel->dst);
 			peer[0] = (void*)(rel->src);
 			return 1;

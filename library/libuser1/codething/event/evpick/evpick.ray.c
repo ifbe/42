@@ -64,9 +64,11 @@ static int clickray_intersect(_obj* handler,void* foot,
 		if(ret){
 			//tell that world
 			stack[sp+0].pchip = totar[0]->pchip;
-			stack[sp+0].pfoot = totar[0]->pfoot;stack[sp+0].flag = totar[0]->flag;
+			stack[sp+0].pfoot = totar[0]->pfoot;
+			stack[sp+0].foottype = totar[0]->foottype;
 			stack[sp+1].pchip = totar[1]->pchip;
-			stack[sp+1].pfoot = totar[1]->pfoot;stack[sp+1].flag = totar[1]->flag;
+			stack[sp+1].pfoot = totar[1]->pfoot;
+			stack[sp+1].foottype = totar[1]->foottype;
 			entity_give(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, rel, 0, ray, 0);
 			return 1;
 		}

@@ -10,9 +10,9 @@ int vt100_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, voi
 int vt100_write(_obj* art,void* foot, _syn* stack,int sp, u8* arg, int idx, u8* buf, int len)
 {
 	int j;
-	//say("@vt100_write: %4s\n", &self->flag);
+	//say("@vt100_write: %4s\n", &self->foottype);
 	//ret = write(fd, "unset PROMPT_COMMAND\n", 21);
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	case _src_:
 		say("%.*s", len, buf);
 		break;

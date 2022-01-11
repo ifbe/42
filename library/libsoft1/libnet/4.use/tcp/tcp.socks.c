@@ -46,7 +46,7 @@ int socksclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 	say("@socksclient_write: %llx, %.4s, %x\n", art, &foot, len);
 	if(len>0)printmemory(buf, len<16?len:16);
 
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	case _dst_:{
 		//dst to src
 		give_data_into_peer(art,_src_, stack,sp, 0,0, buf, len);
@@ -95,15 +95,15 @@ int socksclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 }
 int socksclient_discon(struct halfrel* self, struct halfrel* peer)
 {
-	say("@socksclient_discon: %.4s\n", &self->flag);
+	say("@socksclient_discon: %.4s\n", &self->foottype);
 	return 0;
 }
 int socksclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ele;
-	say("@socksclient_linkup: %.4s\n", &self->flag);
+	say("@socksclient_linkup: %.4s\n", &self->foottype);
 
-	if(_src_ == self->flag){
+	if(_src_ == self->foottype){
 		ele = self->pchip;
 		give_data_into_peer(ele, _src_, 0,0, 0,0, socks5_client0,3);
 		ele->vfmt = 1;
@@ -161,7 +161,7 @@ int socksserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 	say("@socksserver_write:%p,%p, len=%d\n", art, foot, len);
 	printmemory(buf, len<16?len:16);
 
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	case 'a':
 		give_data_into_peer(art,'b', stack,sp, 0,0, buf,len);
 		break;
@@ -173,12 +173,12 @@ int socksserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 }
 int socksserver_discon(struct halfrel* self, struct halfrel* peer)
 {
-	say("@socksserver_discon: %.4s\n", &self->flag);
+	say("@socksserver_discon: %.4s\n", &self->foottype);
 	return 0;
 }
 int socksserver_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@socksserver_linkup: %.4s\n", &self->flag);
+	say("@socksserver_linkup: %.4s\n", &self->foottype);
 	return 0;
 }
 int socksserver_delete(_obj* ele)

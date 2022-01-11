@@ -51,18 +51,18 @@ int camrts_window_take(_obj* ent,void* foot, _syn* stack,int sp)
 		say("@%s,rel=%p\n",__FUNCTION__, rel);
 		stack[sp+0].pchip = rel->psrcchip;
 		stack[sp+0].pfoot = rel->psrcfoot;
-		stack[sp+0].flag = rel->srcflag;
+		stack[sp+0].foottype = rel->srcfoottype;
 		stack[sp+1].pchip = rel->pdstchip;
 		stack[sp+1].pfoot = rel->pdstfoot;
-		stack[sp+1].flag = rel->dstflag;
+		stack[sp+1].foottype = rel->dstfoottype;
 		entity_take(stack[sp+1].pchip, 0, stack, sp+2, 0, 0, 0, 0);
 
 		stack[sp+0].pchip = stack[sp-1].pchip;
 		stack[sp+0].pfoot = stack[sp-1].pfoot;
-		stack[sp+0].flag = stack[sp-1].flag;
+		stack[sp+0].foottype = stack[sp-1].foottype;
 		stack[sp+1].pchip = stack[sp-2].pchip;
 		stack[sp+1].pfoot = stack[sp-2].pfoot;
-		stack[sp+1].flag = stack[sp-2].flag;
+		stack[sp+1].foottype = stack[sp-2].foottype;
 		supply_give(stack[sp+1].pchip, 0, stack, sp+2, 0, 0, 0, 0);
 
 		rel = samesrcnextdst(rel);

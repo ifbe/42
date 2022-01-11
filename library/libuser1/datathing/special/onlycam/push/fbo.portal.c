@@ -423,7 +423,7 @@ static void portal_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,in
 	if(0 == stack)return;
 
 	//foot defined behavior
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	}
 
 	//caller defined behavior
@@ -455,7 +455,7 @@ static void portal_linkup(struct halfrel* self, struct halfrel* peer)
 	if(0 == ptr)return;
 
 	_obj* peer_portal;
-	switch(self->flag){
+	switch(self->foottype){
 	case hex32('p','e','e','r'):
 		peer_portal = peer->pchip;
 		if(0 == peer_portal)break;
@@ -480,7 +480,7 @@ static void portal_search(_obj* act, u32 foot, struct halfrel* self[], struct ha
 	rel = act->irel0;
 	while(1){
 		if(0 == rel)return;
-		if(foot == rel->dstflag){
+		if(foot == rel->dstfoottype){
 			self[0] = (void*)&rel->dstchip;
 			peer[0] = (void*)&rel->srcchip;
 			return;

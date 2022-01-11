@@ -373,7 +373,7 @@ static void xor_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int k
 	if(0 == stack)return;
 
 	//foot defined behavior
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	}
 
 	//caller defined behavior
@@ -393,7 +393,7 @@ static void xor_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int k
 static void xor_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	u8 tmp;
-	if(_src_ == stack[sp-1].flag){
+	if(_src_ == stack[sp-1].foottype){
 		tmp = buf[0] - 0x30;
 		if((tmp >= 0)&&(tmp <= 3)){
 			ent->whdf.ix0 = (tmp>>0)&1;

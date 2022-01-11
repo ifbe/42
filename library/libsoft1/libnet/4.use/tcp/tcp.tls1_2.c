@@ -1171,7 +1171,7 @@ int tls1v2master_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int 
 	relationcreate(ele, 0, _art_, _src_, child, 0, _sys_, _dst_);
 	stack[sp-2].pchip = child;
 	stack[sp-1].pchip = ele;
-	stack[sp-1].flag = _src_;
+	stack[sp-1].foottype = _src_;
 	tls1v2server_write(ele,0, stack,sp, 0,0, buf,len);
 	return 0;
 }

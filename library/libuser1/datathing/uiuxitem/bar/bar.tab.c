@@ -49,7 +49,7 @@ void tabbar_gl41_listtwig(_obj* win, struct style* sty, _obj* tmp, int t)
 	rel = tmp->orel0;
 	while(1){
 		if(0 == rel)break;
-		if(_ent_ == rel->dsttype){
+		if(_ent_ == rel->dstnodetype){
 			x = j%8;
 			y = j/8;
 			tc[0] = (2*x-7)/16.0;
@@ -100,7 +100,7 @@ void tabbar_gl41_listroot(
 	{
 		if(0 == rel)break;
 
-		if(_sup_ == rel->dsttype){
+		if(_sup_ == rel->dstnodetype){
 			tc[0] = vc[0] + vr[0]*(2*j-7)/16 - vf[0]*31/32;
 			tc[1] = vc[1] + vr[1]*(2*j-7)/16 - vf[1]*31/32;
 			tc[2] = vc[2] + vr[2]*(2*j-7)/16 - vf[2]*31/32 - 0.8;
@@ -152,7 +152,7 @@ void tabbar_pixel_listtwig(_obj* win, struct style* sty, _obj* tmp, int t)
 	rel = tmp->orel0;
 	while(1){
 		if(0 == rel)break;
-		if(_ent_ == rel->dsttype){
+		if(_ent_ == rel->dstnodetype){
 			x = j%8;
 			y = j/8;
 			drawsolid_rect(
@@ -195,7 +195,7 @@ void tabbar_pixel_listroot(
 	{
 		if(0 == rel)break;
 
-		if(_sup_ == rel->dsttype){
+		if(_sup_ == rel->dstnodetype){
 			drawsolid_rect(
 				win, 0x000080,
 				(j+4)*w/16, h*31/32,
@@ -270,7 +270,7 @@ static int tabbar_event_child(
 	{
 		if(0 == rel)break;
 
-		if(_sup_ == rel->dsttype){
+		if(_sup_ == rel->dstnodetype){
 			tmp = (void*)(rel->dstchip);
 			if(j == act->whdf.ix0)goto found;
 
@@ -298,7 +298,7 @@ found:
 	{
 		if(0 == rel)break;
 
-		if(_ent_ == rel->dsttype){
+		if(_ent_ == rel->dstnodetype){
 			st = (void*)(rel->srcfoot);
 			if(j == k){
 				if('#' == st->is.uc[3])st->is.uc[3] = 0;

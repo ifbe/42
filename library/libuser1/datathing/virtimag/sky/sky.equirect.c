@@ -327,7 +327,7 @@ static void texball_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 	if(0 == stack)return;
 
 	//foot defined behavior
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	}
 
 	//caller defined behavior

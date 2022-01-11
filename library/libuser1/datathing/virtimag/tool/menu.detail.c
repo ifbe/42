@@ -173,7 +173,7 @@ int detail_draw_gl41(
 		for(j=0;j<3;j++)tc[j] = vc[j] + vr[j]*c + vf[j]*s;
 
 		detail_draw_gl41_node(ctx, peer[k]->pchip, tc, tr, tf);
-		detail_draw_gl41_foot(ctx, &self[k]->flag, &peer[k]->flag, vc, tc, vr, vf, vt);
+		detail_draw_gl41_foot(ctx, &self[k]->foottype, &peer[k]->foottype, vc, tc, vr, vf, vt);
 	}
 	return 0;
 }

@@ -144,7 +144,7 @@ int carcon_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u
 {
 	//say("@carcon_write:%.4s\n",&foot);
 	float angle;
-	switch(stack[sp=1].flag){
+	switch(stack[sp=1].foottype){
 	case _clk_:
 		carcon_checkplace(ent);
 		carcon_applyforce(ent);

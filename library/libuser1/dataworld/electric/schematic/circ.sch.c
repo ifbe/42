@@ -90,7 +90,7 @@ int schematic_discon(struct halfrel* self, struct halfrel* peer)
 }
 int schematic_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@schematic_linkup: %.4s\n", &self->flag);
+	say("@schematic_linkup: %.4s\n", &self->foottype);
 	return 0;
 }
 

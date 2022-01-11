@@ -22,7 +22,7 @@ int mediamux_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 	u8 tmp[32];
 	say("@mediamux:%.4s\n", &foot);
 
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	case _a0by_:{
 		while(__sync_lock_test_and_set(&art->SENDLOCK,1))sleep_us(10);
 

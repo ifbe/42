@@ -98,8 +98,8 @@ static void spurgear_spread(_syn* stack, int sp, _obj* gear)
 	rel = gear->irel0;
 	while(1){
 		if(0 == rel)break;
-say("@11:%.4s\n",&rel->dstflag);
-		if(_gear_ != rel->dstflag)goto next1;
+say("@11:%.4s\n",&rel->dstfoottype);
+		if(_gear_ != rel->dstfoottype)goto next1;
 say("@12\n");
 		next = rel->psrcchip;
 		if(spurgear_recur(stack,sp, next))goto next1;
@@ -108,7 +108,7 @@ say("@12\n");
 say("@14\n");
 		stack[sp+0].pchip = gear;
 		stack[sp+1].pchip = next;
-		stack[sp+1].flag = _gear_;
+		stack[sp+1].foottype = _gear_;
 		entity_give(next,0, stack,sp+2, 0,0, &gear->whdf.fz0,1);
 next1:
 		rel = samedstnextsrc(rel);
@@ -117,8 +117,8 @@ next1:
 	rel = gear->orel0;
 	while(1){
 		if(0 == rel)break;
-say("@21:%.4s\n",&rel->srcflag);
-		if(_gear_ != rel->srcflag)goto next2;
+say("@21:%.4s\n",&rel->srcfoottype);
+		if(_gear_ != rel->srcfoottype)goto next2;
 say("@22\n");
 		next = rel->pdstchip;
 		if(spurgear_recur(stack,sp, next))goto next2;
@@ -127,7 +127,7 @@ say("@22\n");
 say("@24\n");
 		stack[sp+0].pchip = gear;
 		stack[sp+1].pchip = next;
-		stack[sp+1].flag = _gear_;
+		stack[sp+1].foottype = _gear_;
 		entity_give(next,0, stack,sp+2, 0,0, &gear->whdf.fz0,1);
 next2:
 		rel = samesrcnextdst(rel);
@@ -191,7 +191,7 @@ static void spurgear_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,
 	if(0 == stack)return;
 
 	//foot defined behavior
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	}
 
 	//caller defined behavior
@@ -211,7 +211,7 @@ static void spurgear_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,
 static void spurgear_giving(_obj* gear,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 
-	if(_gear_ == stack[sp-1].flag){
+	if(_gear_ == stack[sp-1].foottype){
 		say("@spurgear_gear:%llx\n", gear);
 		spurgear_write_val(gear, buf);
 		spurgear_spread(stack, sp, gear);

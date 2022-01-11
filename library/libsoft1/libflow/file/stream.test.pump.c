@@ -24,7 +24,7 @@ int pump_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, voi
 	u8 tmp[0x1000];
 
 	say("@pump.%4s\n", &foot);
-	if(_clk_ == stack[sp-1].flag){
+	if(_clk_ == stack[sp-1].foottype){
 		//whenever clock
 		ret = take_data_from_peer(art,_src_, stack,sp, 0,0, tmp,0x1000);
 		ret = give_data_into_peer(art,_dst_, stack,sp, 0,0, tmp,ret);

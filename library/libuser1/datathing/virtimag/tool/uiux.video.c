@@ -479,7 +479,7 @@ static void video_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 	if(0 == own)return;
 
 	//inslot: if(not set)default value
-	int buffmt = stack[sp-1].flag;
+	int buffmt = stack[sp-1].foottype;
 	if(0 == buffmt){
 		if(_yuvx_ == own->outfmt)buffmt = _yuv_;
 		else buffmt = _rgb_;

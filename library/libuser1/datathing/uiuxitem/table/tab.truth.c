@@ -178,7 +178,7 @@ static int truth_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int 
 }
 static int truth_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(_karnaugh_ == stack[sp-1].flag){
+	if(_karnaugh_ == stack[sp-1].foottype){
 		return truth_write_bykarnaugh(ent, buf);
 	}
 

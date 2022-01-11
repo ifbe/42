@@ -271,10 +271,10 @@ static int vrglass_read_bywnd(_obj* ent,void* slot, _syn* stack,int sp, void* ar
 	relationsearch(ent, _in_, &tmp[0], &tmp[1]);
 	stack[sp+0].pchip = tmp[0]->pchip;
 	stack[sp+0].pfoot = tmp[0]->pfoot;
-	stack[sp+0].flag = tmp[0]->flag;
+	stack[sp+0].foottype = tmp[0]->foottype;
 	stack[sp+1].pchip = tmp[1]->pchip;
 	stack[sp+1].pfoot = tmp[1]->pfoot;
-	stack[sp+1].flag = tmp[1]->flag;
+	stack[sp+1].foottype = tmp[1]->foottype;
 
 //[-2,-1]: wnd,area -> cam,togl
 //[+0,+1]: cam,towr -> wor,geom
@@ -312,7 +312,7 @@ static int vrglass_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	//foot defined behavior
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	}
 
 	//caller defined behavior

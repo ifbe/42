@@ -9,7 +9,7 @@ int gcodeclient_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int id
 }
 int gcodeclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 		case _src_:{
 			say("%.*s", len, buf);
 			break;

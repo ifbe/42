@@ -46,7 +46,7 @@ int virtual_traverse(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key
 	struct relation* rel = ent->orel0;
 	while(1){
 		if(0 == rel)break;
-		if(_ent_ == rel->dsttype){
+		if(_ent_ == rel->dstnodetype){
 			stack[sp+0].pchip = rel->psrcchip;
 			stack[sp+0].pfoot = rel->psrcfoot;
 			stack[sp+1].pchip = rel->pdstchip;

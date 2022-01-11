@@ -354,11 +354,11 @@ int flycon_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, v
 int flycon_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	//say("@flycon_write:%.4s\n",&foot);
-	if(_clk_ == stack[sp-1].flag){
+	if(_clk_ == stack[sp-1].foottype){
 		flycon_checkplace(ent);
 		flycon_applyforce(ent);
 	}
-	if(_evby_ == stack[sp-1].flag){
+	if(_evby_ == stack[sp-1].foottype){
 		flycon_checkplace(ent);
 		flycon_changedesire(ent, buf[0]*PI/50 - PI);
 	}

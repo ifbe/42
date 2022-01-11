@@ -67,7 +67,7 @@ int httpclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int id
 	say("@httpclient_write:%p,%p\n", art, foot);
 	if(len>0)printmemory(buf, len<16?len:16);
 
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	case _dst_:{
 		break;
 	}
@@ -108,17 +108,17 @@ int httpclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int id
 }
 int httpclient_discon(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	say("@httpclient_discon: %.4s\n", &self->flag);
+	say("@httpclient_discon: %.4s\n", &self->foottype);
 	return 0;
 }
 int httpclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* art;
 	_obj* obj;
-	say("@httpclient_linkup: %.4s\n", &self->flag);
+	say("@httpclient_linkup: %.4s\n", &self->foottype);
 
 	art = self->pchip;
-	if(_src_ == self->flag){
+	if(_src_ == self->foottype){
 		give_data_into_peer(art,_src_, 0,0, 0,0, art->BUF,art->LEN);
 		art->vfmt = 1;
 	}
@@ -201,12 +201,12 @@ int httpserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int id
 }
 int httpserver_discon(struct halfrel* self, struct halfrel* peer)
 {
-	say("@httpserver_discon: %.4s\n", &self->flag);
+	say("@httpserver_discon: %.4s\n", &self->foottype);
 	return 0;
 }
 int httpserver_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@httpserver_linkup: %.4s\n", &self->flag);
+	say("@httpserver_linkup: %.4s\n", &self->foottype);
 	return 0;
 }
 int httpserver_delete(_obj* ele)
@@ -261,7 +261,7 @@ int httpmaster_write_bysrc(_obj* art,void* foot, _syn* stack,int sp, void* arg, 
 		if(0 == rel)return 0;
 		stack[sp-2].pchip = Tcp;
 		stack[sp-1].pchip = Ws;
-		stack[sp-1].flag = _src_;
+		stack[sp-1].foottype = _src_;
 		artery_give(Ws,0, stack,sp, 0,0, buf,len);
 		return 0;
 	}
@@ -323,7 +323,7 @@ int httpmaster_write_bysrc(_obj* art,void* foot, _syn* stack,int sp, void* arg, 
 int httpmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	say("@httpmaster_write:%p,%p\n", art, foot);
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	case _dst_:return httpmaster_write_bydst(art,foot, stack,sp, arg,idx, buf,len);
 	default:return httpmaster_write_bysrc(art,foot, stack,sp, arg,idx, buf,len);
 	}

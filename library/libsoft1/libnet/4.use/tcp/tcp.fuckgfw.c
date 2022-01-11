@@ -9,19 +9,19 @@ int fuckgfwclient_read(struct halfrel* self, struct halfrel* peer, void* arg, in
 }
 int fuckgfwclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	say("@fuckgfwclient_write: %llx, %.4s, %d\n", self->pchip, &self->flag, len);
+	say("@fuckgfwclient_write: %llx, %.4s, %d\n", self->pchip, &self->foottype, len);
 	printmemory(buf, len<16?len:16);
 
 	return 0;
 }
 int fuckgfwclient_discon(struct halfrel* self, struct halfrel* peer)
 {
-	say("@fuckgfwclient_discon: %.4s\n", &self->flag);
+	say("@fuckgfwclient_discon: %.4s\n", &self->foottype);
 	return 0;
 }
 int fuckgfwclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@fuckgfwclient_linkup: %.4s\n", &self->flag);
+	say("@fuckgfwclient_linkup: %.4s\n", &self->foottype);
 	return 0;
 }
 int fuckgfwclient_delete(_obj* ele)
@@ -44,7 +44,7 @@ int fuckgfwserver_read(struct halfrel* self, struct halfrel* peer, void* arg, in
 int fuckgfwserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	_obj* ele = self->pchip;
-	if(_src_ == self->flag){
+	if(_src_ == self->foottype){
 /*
 		//type, id = decrypt(buf, len)
 		type, id, buf,len = decrypt(buf,len)
@@ -67,12 +67,12 @@ int fuckgfwserver_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 }
 int fuckgfwserver_discon(struct halfrel* self, struct halfrel* peer)
 {
-	say("@fuckgfwserver_discon: %.4s\n", &self->flag);
+	say("@fuckgfwserver_discon: %.4s\n", &self->foottype);
 	return 0;
 }
 int fuckgfwserver_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@fuckgfwserver_linkup: %.4s\n", &self->flag);
+	say("@fuckgfwserver_linkup: %.4s\n", &self->foottype);
 	return 0;
 }
 int fuckgfwserver_delete(_obj* ele)

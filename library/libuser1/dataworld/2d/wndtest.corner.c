@@ -432,7 +432,7 @@ static int corner_event_twig(
 	rel = win->orel0;
 	while(1){
 		if(0 == rel)break;
-		if(_sup_ == rel->dsttype){
+		if(_sup_ == rel->dstnodetype){
 			ar = (void*)(rel->dstchip);
 			//if(_ui3d_ == ar->hfmt)goto found;
 			//if(_ui2d_ == ar->hfmt)goto found;
@@ -448,7 +448,7 @@ found:
 	while(1){
 		if(0 == rel)break;
 
-		if(_ent_ == rel->dsttype){
+		if(_ent_ == rel->dstnodetype){
 			if(x == y){
 				st = (void*)(rel->srcfoot);
 
@@ -568,13 +568,13 @@ void corner_wnd(
 	while(1){
 		if(0 == rel)break;
 
-		if(_ent_ == rel->dsttype){
+		if(_ent_ == rel->dstnodetype){
 			stack[sp+0].pchip = rel->psrcchip;
 			stack[sp+0].pfoot = rel->psrcfoot;
-			stack[sp+0].flag = rel->srcflag;
+			stack[sp+0].foottype = rel->srcfoottype;
 			stack[sp+1].pchip = rel->pdstchip;
 			stack[sp+1].pfoot = rel->pdstfoot;
-			stack[sp+1].flag = rel->dstflag;
+			stack[sp+1].foottype = rel->dstfoottype;
 			entity_take(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, 0,0, 0,0);
 		}
 

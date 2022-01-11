@@ -142,7 +142,7 @@ static void calib3d_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 	if(0 == stack)return;
 
 	//foot defined behavior
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	}
 
 	//caller defined behavior
@@ -174,7 +174,7 @@ static void calib3d_linkup(struct halfrel* self, struct halfrel* peer)
 	struct style* pin = (void*)(self->foot);
 	_obj* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	if(_data_ == self->flag)return;
+	if(_data_ == self->foottype)return;
 /*
 	//
 	pair = alloc_winobj(win, 's');

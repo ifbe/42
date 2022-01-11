@@ -722,10 +722,10 @@ static int freecam_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, void* ar
 	struct halfrel* peer = own->peer;
 	stack[sp+0].pchip = self->pchip;
 	stack[sp+0].pfoot = self->pfoot;
-	stack[sp+0].flag = self->flag;
+	stack[sp+0].foottype = self->foottype;
 	stack[sp+1].pchip = peer->pchip;
 	stack[sp+1].pfoot = peer->pfoot;
-	stack[sp+1].flag = peer->flag;
+	stack[sp+1].foottype = peer->foottype;
 
 //[+0,+1]: cam,towr -> wor,geom
 //[-2,-1]: wnd,area -> cam,togl
@@ -764,10 +764,10 @@ static int freecam_byrts_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, vo
 	struct halfrel* peer = own->peer;
 	stack[sp+0].pchip = self->pchip;
 	stack[sp+0].pfoot = self->pfoot;
-	stack[sp+0].flag = self->flag;
+	stack[sp+0].foottype = self->foottype;
 	stack[sp+1].pchip = peer->pchip;
 	stack[sp+1].pfoot = peer->pfoot;
-	stack[sp+1].flag = peer->flag;
+	stack[sp+1].foottype = peer->foottype;
 
 //[+0,+1]: cam,towr -> wor,geom
 //[-2,-1]: mixer,area -> cam,togl
@@ -835,15 +835,14 @@ static void freecam_linkup(struct halfrel* self, struct halfrel* peer)
     say("@freecam_linkup\n");
 
 	_obj* this = self->pchip;
-	if(_mind_ == self->flag){
+	switch(self->foottype){
+	case _mind_:
 		this->EVTOTYPE |= MIND;
 		return;
-	}
-	if(_ioto_ == self->flag){
+	case _ioto_:
 		this->EVTOTYPE |= IOTO;
 		return;
-	}
-	if(_evto_ == self->flag){
+	case _evto_:
 		this->EVTOTYPE |= EVTO;
 		return;
 	}

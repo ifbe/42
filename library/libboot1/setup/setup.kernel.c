@@ -135,7 +135,7 @@ static int kernel_drawloop(struct item* wrk)
 
 		if(stack[0].pchip != wrk){
 			say("what fuck???\n\n\n");
-			for(j=0;j<4;j++)say("%d: %p,%p,%x,%x\n", j, stack[j].pchip, stack[j].pfoot, stack[j].type, stack[j].flag);
+			for(j=0;j<4;j++)say("%d: %p,%p,%x,%x\n", j, stack[j].pchip, stack[j].pfoot, stack[j].nodetype, stack[j].foottype);
 		}
 
 		//draw frame

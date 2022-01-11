@@ -18,7 +18,7 @@ int str2vec_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, 
 	u8 tmp_u8[256];
 	say("@str2vec_write: %.4s\n", &foot);
 
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	case _str_:
 		//printmemory(buf, len);
 

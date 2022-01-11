@@ -209,7 +209,7 @@ int gptclient_linkup(struct halfrel* self, struct halfrel* peer)
 	if(0 == buf)return 0;
 
 	//read
-	if(_src_ == self->flag){
+	if(_src_ == self->foottype){
 		int ret = take_data_from_peer(ele,_src_, 0,0, "",0, buf,0x4800);
 		if(ret != 0x4800)return 0;
 	}

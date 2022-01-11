@@ -386,11 +386,11 @@ found:
 		wnd->gl41list.glevto = rel;
 		stack[sp+0].pchip = rel->psrcchip;
 		stack[sp+0].pfoot = rel->psrcfoot;
-		stack[sp+0].flag = rel->srcflag;
+		stack[sp+0].foottype = rel->srcfoottype;
 
 		stack[sp+1].pchip = rel->pdstchip;
 		stack[sp+1].pfoot = rel->pdstfoot;
-		stack[sp+1].flag = rel->dstflag;
+		stack[sp+1].foottype = rel->dstfoottype;
 		entity_give(rel->pdstchip, rel->pdstfoot, stack,sp+2, arg,cmd, ev,0);
 	}
 	return 0;
@@ -420,11 +420,11 @@ int fullwindow_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd,
 		stack[sp+0].pchip = rel->psrcchip;
 		stack[sp+0].pfoot = rel->psrcfoot;
 		//stack[sp+0].type = rel->srctype;
-		stack[sp+0].flag = rel->srcflag;
+		stack[sp+0].foottype = rel->srcfoottype;
 		stack[sp+1].pchip = rel->pdstchip;
 		stack[sp+1].pfoot = rel->pdstfoot;
 		//stack[sp+1].type = rel->dsttype;
-		stack[sp+1].flag = rel->dstflag;
+		stack[sp+1].foottype = rel->dstfoottype;
 		entity_take(rel->pdstchip,rel->pdstfoot, stack,sp+2, arg,cmd, 0,0);
 
 		//wnd = rel->psrcchip;		//double check

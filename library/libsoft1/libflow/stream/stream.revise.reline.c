@@ -26,9 +26,9 @@ int reline_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u
 	int j,k,cur;
 	u8* tmp;
 	struct perobj* perobj = (void*)art->priv_256b;
-	//say("@reline_write:%.4s\n", &self->flag);
+	//say("@reline_write:%.4s\n", &self->foottype);
 
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	case _dst_:
 		printmemory(buf, len);
 		break;

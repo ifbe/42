@@ -34,12 +34,12 @@ int proxyclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 }
 int proxyclient_discon(struct halfrel* self, struct halfrel* peer)
 {
-	say("@proxyclient_discon: %.4s\n", &self->flag);
+	say("@proxyclient_discon: %.4s\n", &self->foottype);
 	return 0;
 }
 int proxyclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@proxyclient_linkup: %.4s\n", &self->flag);
+	say("@proxyclient_linkup: %.4s\n", &self->foottype);
 	return 0;
 }
 int proxyclient_delete(_obj* art)
@@ -66,7 +66,7 @@ int proxyserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 printmemory(buf, len<16?len:16);
 
 	struct perobj* perobj = (void*)art->priv_256b;
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	case 'c':	//client
 		give_data_into_peer(art,'s', stack,sp, 0,0, buf,len);
 		break;
@@ -92,12 +92,12 @@ printmemory(buf, len<16?len:16);
 }
 int proxyserver_discon(struct halfrel* self, struct halfrel* peer)
 {
-	say("@proxyserver_discon: %.4s\n", &self->flag);
+	say("@proxyserver_discon: %.4s\n", &self->foottype);
 	return 0;
 }
 int proxyserver_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@proxyserver_linkup: %.4s\n", &self->flag);
+	say("@proxyserver_linkup: %.4s\n", &self->foottype);
 	return 0;
 }
 int proxyserver_delete(_obj* art)
@@ -216,7 +216,7 @@ int proxymaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 			//fake ready from tcpclient to proxyserver
 			stack[sp-2].pchip = client;
 			stack[sp-1].pchip = Proxy;
-			stack[sp-1].flag = 's';
+			stack[sp-1].foottype = 's';
 			proxyserver_write(Proxy,0, stack,sp, 0,_ok_, 0,0);
 			break;
 		}//default

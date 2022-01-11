@@ -81,7 +81,7 @@ int wander_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, v
 int wander_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	say("@wander_write:%.4s\n",&foot);
-	if(_clk_ == stack[sp-1].flag){
+	if(_clk_ == stack[sp-1].foottype){
 		struct privdata* own = ent->priv_ptr;
 		if(0 == own->self)return 0;
 
@@ -108,11 +108,11 @@ int wander_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ent = self->pchip;
 	struct privdata* own = ent->priv_ptr;
-	say("@wander_linkup: %.4s\n", &self->flag);
+	say("@wander_linkup: %.4s\n", &self->foottype);
 
-    switch(self->flag){
-    case _self_:own->self = peer->pchip;break;
-    }
+	switch(self->foottype){
+	case _self_:own->self = peer->pchip;break;
+	}
 	return 0;
 }
 

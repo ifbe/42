@@ -453,8 +453,8 @@ int tls1v3client_discon(struct halfrel* self, struct halfrel* peer)
 }
 int tls1v3client_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@tls1v3client_linkup:%.4s\n",&self->flag);
-	if(_src_ == self->flag){
+	say("@tls1v3client_linkup:%.4s\n",&self->foottype);
+	if(_src_ == self->foottype){
 		_obj* art = self->pchip;
 		u8* buf = art->priv_ptr;
 		int ret = tls1v3_clienthello(buf, 0x10000);

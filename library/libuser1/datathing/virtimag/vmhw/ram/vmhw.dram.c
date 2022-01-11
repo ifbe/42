@@ -49,7 +49,7 @@ static void vmddr_create(_obj* act, void* arg, int argc, u8** argv)
 
 static int vmddr_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
-	if(_mmio_ == stack[sp-1].flag){
+	if(_mmio_ == stack[sp-1].foottype){
 		u8* ram = ent->listptr.buf0;
 		if(0 == ram)return 0;
 

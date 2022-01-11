@@ -90,13 +90,13 @@ int htmlroot_taketext(_obj* ent,void* foot, _syn* stack,int sp)
 	struct relation* rel = ent->orel0;
 	while(1){
 		if(0 == rel)break;
-		if(_ent_ == rel->dsttype){
+		if(_ent_ == rel->dstnodetype){
 			stack[sp+0].pchip = rel->psrcchip;
 			stack[sp+0].pfoot = rel->psrcfoot;
-			stack[sp+0].flag = rel->srcflag;
+			stack[sp+0].foottype = rel->srcfoottype;
 			stack[sp+1].pchip = rel->pdstchip;
 			stack[sp+1].pfoot = rel->pdstfoot;
-			stack[sp+1].flag = rel->dstflag;
+			stack[sp+1].foottype = rel->dstfoottype;
 			entity_take(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, 0,0, 0,0);
 		}
 		rel = samesrcnextdst(rel);
@@ -179,7 +179,7 @@ int htmlroot_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key,
 	say("caller:type=%.4s,fmt=%.4s\n", &caller->type, &caller->hfmt);
 
 	//slot type known: do work based on slot type
-	//switch(stack[sp-1].flag){
+	//switch(stack[sp-1].foottype){
 	//}
 
 	//slot type unknown: do work based on caller fmt
@@ -201,7 +201,7 @@ int htmlroot_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key,
 	say("caller:type=%.4s,fmt=%.4s\n", &caller->type, &caller->hfmt);
 
 	//slot type known: do work based on slot type
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	case 's':	//from server, change myself
 		htmlroot_parse(buf,len);
 		return 0;

@@ -11,7 +11,7 @@ int easymux_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, v
 }
 int easymux_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	case _by_:
 		give_data_into_peer(art,_src_, stack,sp, 0,0, buf,len);
 		break;

@@ -19,7 +19,7 @@ int goslow_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, v
 	int cur,max;
 	if(0 == art)return 0;
 
-	if(_src_ == stack[sp-1].flag){
+	if(_src_ == stack[sp-1].foottype){
 		cur = art->CURNUM;
 		max = art->MAXNUM;
 		say("@goslow_write:%d/%d\n", cur, max);

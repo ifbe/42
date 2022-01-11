@@ -142,7 +142,7 @@ int lsm9ds1_write(struct item* dri,void* foot, struct halfrel* stack,int sp, str
 {
 	int ret;
 	float tmp[10];
-	if(_clk_ == stack[sp-1].flag){
+	if(_clk_ == stack[sp-1].foottype){
 		ret = lsm9ds1_i2cread(dri, tmp);
 		say("@lsm9ds1_write_clk: %f,%f,%f, %f,%f,%f, %f,%f,%f\n", tmp[0],tmp[1],tmp[2], tmp[3],tmp[4],tmp[5], tmp[6],tmp[7],tmp[8]);
 		give_data_into_peer(dri,_dst_, stack,sp, 0,0, tmp,ret);
@@ -156,12 +156,12 @@ int lsm9ds1_discon(struct halfrel* self, struct halfrel* peer)
 int lsm9ds1_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	struct item* it;
-	say("@lsm9ds1_linkup\n", &self->flag);
+	say("@lsm9ds1_linkup\n", &self->foottype);
 
 	it = (void*)(self->chip);
 	if(0 == it)return 0;
 
-	switch(self->flag){
+	switch(self->foottype){
 		case _i2c_:lsm9ds1_i2cinit(it);break;
 		case _spi_:break;
 	}

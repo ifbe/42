@@ -167,7 +167,7 @@ int telnetmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int 
 	relationcreate(tel, 0, _art_, _src_, child, 0, _sys_, _dst_);
 	stack[sp-2].pchip = child;
 	stack[sp-1].pchip = tel;
-	stack[sp-1].flag = _src_;
+	stack[sp-1].foottype = _src_;
 	telnetserver_write(tel,0, stack,sp, arg,idx, buf,len);
 	return 0;
 }

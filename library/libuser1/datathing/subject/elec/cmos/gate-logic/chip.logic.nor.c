@@ -188,7 +188,7 @@ static void nor_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int k
 	if(0 == stack)return;
 
 	//foot defined behavior
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	}
 
 	//caller defined behavior
@@ -210,12 +210,12 @@ static void nor_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int k
 	u8 tmp;
 	say("@norgate_write:%x\n",buf[0]);
 
-	if('a' == stack[sp-1].flag){
+	if('a' == stack[sp-1].foottype){
 		if('0' == buf[0])ent->whdf.ix0 = 0;
 		else if('1' == buf[0])ent->whdf.ix0 = 1;
 		else return;
 	}
-	else if('b' == stack[sp-1].flag){
+	else if('b' == stack[sp-1].foottype){
 		if('0' == buf[0])ent->whdf.iy0 = 0;
 		else if('1' == buf[0])ent->whdf.iy0 = 1;
 		else return;

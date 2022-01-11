@@ -72,7 +72,7 @@ static void mosfet_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,in
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	//foot defined behavior
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	}
 
 	//caller defined behavior

@@ -636,7 +636,7 @@ int hfsclient_discon(struct halfrel* self, struct halfrel* peer)
 }
 int hfsclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	if(_src_ != self->flag)return 0;
+	if(_src_ != self->foottype)return 0;
 
 	_obj* art = self->pchip;
 /*

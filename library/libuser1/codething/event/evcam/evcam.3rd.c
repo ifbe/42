@@ -308,7 +308,7 @@ int cam3rd_linkup(struct halfrel* self, struct halfrel* peer)
 	say("@cam3rd_linkup\n");
 	_obj* ent = self->pchip;
 	struct privdata* own = ent->priv_ptr;
-	switch(self->flag){
+	switch(self->foottype){
 	case _cam_:own->cam = peer->pchip;break;
 	case _tar_:own->tar = peer->pchip;break;
 	}

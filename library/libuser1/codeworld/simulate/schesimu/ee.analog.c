@@ -184,10 +184,10 @@ int analog_read_child(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int ke
 		if(rel->srcfoot){
 			stack[sp+0].pchip = rel->psrcchip;
 			stack[sp+0].pfoot = rel->psrcfoot;
-			stack[sp+0].flag = rel->srcflag;
+			stack[sp+0].foottype = rel->srcfoottype;
 			stack[sp+1].pchip = rel->pdstchip;
 			stack[sp+1].pfoot = rel->pdstfoot;
-			stack[sp+1].flag = rel->dstflag;
+			stack[sp+1].foottype = rel->dstfoottype;
 			entity_take(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, arg,key, buf,len);
 		}
 		rel = samesrcnextdst(rel);
@@ -202,7 +202,7 @@ int analog_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, v
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	//foot defined behavior
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	}
 
 	//caller defined behavior
@@ -225,7 +225,7 @@ int analog_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, v
 	struct event* ev;
 	int id;
 say("analog_write: %.4s\n", &foot);
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	case _evby_:
 		ev = buf;
 		if(_char_ != ev->what)return 0;
@@ -239,7 +239,7 @@ say("analog_write: %.4s\n", &foot);
 	case 'b':
 	case 'c':
 	case 'd':
-		id = stack[sp-1].flag - 'a';
+		id = stack[sp-1].foottype - 'a';
 		analog_voltage(&sts[id], buf);
 		break;
 	}
@@ -251,7 +251,7 @@ int analog_discon(struct halfrel* self, struct halfrel* peer)
 }
 int analog_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@analog_linkup: %.4s\n", &self->flag);
+	say("@analog_linkup: %.4s\n", &self->foottype);
 	return 0;
 }
 

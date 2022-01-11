@@ -11,13 +11,13 @@ int rgbanode_draw(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, v
 	while(1){
 		if(0 == rel)break;
 
-		if(_ent_ == rel->dsttype){
+		if(_ent_ == rel->dstnodetype){
 			stack[sp+0].pchip = rel->psrcchip;
 			stack[sp+0].pfoot = rel->psrcfoot;
-			stack[sp+0].flag = rel->srcflag;
+			stack[sp+0].foottype = rel->srcfoottype;
 			stack[sp+1].pchip = rel->pdstchip;
 			stack[sp+1].pfoot = rel->pdstfoot;
-			stack[sp+1].flag = rel->dstflag;
+			stack[sp+1].foottype = rel->dstfoottype;
 			entity_take(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, arg,key, buf,len);
 		}
 next:
@@ -35,7 +35,7 @@ int rgbanode_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, v
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	//slot type known: do work based on slot type
-	//switch(stack[sp-1].flag){
+	//switch(stack[sp-1].foottype){
 	//}
 
 	//slot type unknown: do work based on caller fmt
@@ -59,7 +59,7 @@ int rgbanode_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, v
 	while(1){
 		if(0 == rel)break;
 
-		if(_ent_ == rel->dsttype){
+		if(_ent_ == rel->dstnodetype){
 			struct style* sty = (void*)(rel->srcfoot);
 			if(sty){
 				//say("%f\n", sty->fs.vc[3]);
@@ -77,10 +77,10 @@ int rgbanode_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, v
 	if(the){
 		stack[sp+0].pchip = the->psrcchip;
 		stack[sp+0].pfoot = the->psrcfoot;
-		stack[sp+0].flag = the->srcflag;
+		stack[sp+0].foottype = the->srcfoottype;
 		stack[sp+1].pchip = the->pdstchip;
 		stack[sp+1].pfoot = the->pdstfoot;
-		stack[sp+1].flag = the->dstflag;
+		stack[sp+1].foottype = the->dstfoottype;
 		entity_give(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, arg,key, buf,len);
 	}
 	return 0;

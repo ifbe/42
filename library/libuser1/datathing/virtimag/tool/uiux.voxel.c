@@ -154,7 +154,7 @@ static void voxel_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int
 }
 static void voxel_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	case _pcm_:
 		voxel_data(ent, 0, buf, len);
 		break;

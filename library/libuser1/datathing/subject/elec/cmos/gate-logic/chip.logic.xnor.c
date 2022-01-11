@@ -373,7 +373,7 @@ static void xnor_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 	if(0 == stack)return;
 
 	//foot defined behavior
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	}
 
 	//caller defined behavior
@@ -394,7 +394,7 @@ static void xnor_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 {
 	u8 tmp;
 	//say("@xorgate_write:%x\n",buf[0]);
-	if(_src_ == stack[sp-1].flag){
+	if(_src_ == stack[sp-1].foottype){
 		tmp = buf[0] - 0x30;
 		if((tmp >= 0)&&(tmp <= 3)){
 			ent->whdf.ix0 = (tmp>>0)&1;

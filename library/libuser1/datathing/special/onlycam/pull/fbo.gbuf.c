@@ -37,7 +37,7 @@ static void gbuffer_readfrom_gbuffer(_obj* ent, struct gl41data* data)
 	struct relation* rel = ent->orel0;
 	while(1){
 		if(0 == rel)return;
-		if(_fbog_ == rel->srcflag)break;
+		if(_fbog_ == rel->srcfoottype)break;
 		rel = samesrcnextdst(rel);
 	}
 
@@ -274,7 +274,7 @@ static void gbuffer_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 	if(0 == stack)return;
 
 	//foot defined behavior
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	}
 
 	//caller defined behavior
@@ -295,7 +295,7 @@ static void gbuffer_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 static void gbuffer_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@gbuffer_write\n");
-	if(_wnd_ == stack[sp-1].flag){
+	if(_wnd_ == stack[sp-1].foottype){
 		give_data_into_peer(ent,_fbog_, stack,sp, arg,key, buf,len);
 	}
 }

@@ -482,7 +482,7 @@ static void the2048_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 static void the2048_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@the2048_write\n");
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	case _ioby_:the2048_move(ent, *(u8*)buf);break;
 	default:the2048_event(ent, buf);
 	}

@@ -224,7 +224,7 @@ static int karnaugh_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 }
 static int karnaugh_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(_truthtable_ == stack[sp-1].flag){
+	if(_truthtable_ == stack[sp-1].foottype){
 		return karnaugh_write_bytruthtable(ent, buf);
 	}
 

@@ -20,7 +20,7 @@ int scene3d_world_camera_window(_obj* ent,void* foot, _syn* stack,int sp, void* 
 	struct relation* rel = ent->orel0;
 	while(1){
 		if(0 == rel)break;
-		if(_ent_ == rel->dsttype){
+		if(_ent_ == rel->dstnodetype){
 			if((rel == ent->priv_ptr) && stack){
 				scene3d_selected(stack[sp-6].pchip, rel->psrcfoot);
 			}
@@ -29,7 +29,7 @@ int scene3d_world_camera_window(_obj* ent,void* foot, _syn* stack,int sp, void* 
 
 			stack[sp-1].pchip = rel->pdstchip;
 			stack[sp-1].pfoot = rel->pdstfoot;
-			stack[sp-1].flag = rel->dstflag;
+			stack[sp-1].foottype = rel->dstfoottype;
 			entity_take(stack[sp-1].pchip,stack[sp-1].pfoot, stack,sp, arg,key, buf, len);
 		}
 		rel = samesrcnextdst(rel);
@@ -44,7 +44,7 @@ int scene3d_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, 
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	//foot defined behavior
-	switch(stack[sp-1].flag){
+	switch(stack[sp-1].foottype){
 	}
 
 	//caller defined behavior
@@ -69,9 +69,11 @@ int scene3d_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, 
 	//tell that thing, a ray coming
 	if(rel){
 		stack[sp+0].pchip = rel->psrcchip;
-		stack[sp+0].pfoot = rel->psrcfoot;stack[sp+0].flag = rel->srcflag;
+		stack[sp+0].pfoot = rel->psrcfoot;
+		stack[sp+0].foottype = rel->srcfoottype;
 		stack[sp+1].pchip = rel->pdstchip;
-		stack[sp+1].pfoot = rel->pdstfoot;stack[sp+1].flag = rel->dstflag;
+		stack[sp+1].pfoot = rel->pdstfoot;
+		stack[sp+1].foottype = rel->dstfoottype;
 		entity_give(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, 0, 0, buf, 0);
 	}
 

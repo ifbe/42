@@ -523,7 +523,7 @@ int fatclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	say("@fatclient_linkup\n");
 	int ret;
-	if(_src_ != self->flag)return 0;
+	if(_src_ != self->foottype)return 0;
 
 	_obj* art = self->pchip;
 	if(0 == art)return 0;

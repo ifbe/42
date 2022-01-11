@@ -168,8 +168,8 @@ int dnsclient_discon(struct halfrel* self, struct halfrel* peer)
 }
 int dnsclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("dnsclient_linkup:%.4s\n", &self->flag);
-	if(_src_ == self->flag){
+	say("dnsclient_linkup:%.4s\n", &self->foottype);
+	if(_src_ == self->foottype){
 		int ret;
 		u8 tmp[0x100];
 
@@ -177,7 +177,7 @@ int dnsclient_linkup(struct halfrel* self, struct halfrel* peer)
 		if(ret <= 0)return 0;
 
 		printmemory(tmp,ret);
-		give_data_into_peer(self->pchip,self->flag, 0,0, 0,0, tmp,ret);
+		give_data_into_peer(self->pchip,self->foottype, 0,0, 0,0, tmp,ret);
 	}
 	return 0;
 }

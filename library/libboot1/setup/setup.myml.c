@@ -78,7 +78,7 @@ void parserelation(u8* buf, int len,
 	for(k=0;k<clen;k++){
 		if(hash == chip[k].hash){
 			rel->pchip = chip[k].addr;
-			rel->type = chip[k].tier;
+			rel->nodetype = chip[k].tier;
 		}
 	}
 
@@ -97,13 +97,13 @@ void parserelation(u8* buf, int len,
 	j = c[1];
 	while(0x20 == buf[j])j++;
 	parsefmt(addr, buf+j);
-	rel->type = hash;
+	rel->nodetype = hash;
 */
 	//theflag
 	j = c[1];
 	while(0x20 == buf[j])j++;
 	parsefmt(addr, buf+j);
-	rel->flag = hash;
+	rel->foottype = hash;
 }
 void role_test_relation(
 	struct chiplist chip[], int clen,
@@ -127,12 +127,12 @@ void role_test_relation(
 			if((0 != dst.chip) && (0 != src.chip))
 			{
 				say("%llx,%llx,%.4s,%.4s -> %llx,%llx,%.4s,%.4s\n",
-					src.chip, src.foot, &src.type, &src.flag,
-					dst.chip, dst.foot, &dst.type, &dst.flag
+					src.chip, src.foot, &src.nodetype, &src.foottype,
+					dst.chip, dst.foot, &dst.nodetype, &dst.foottype
 				);
 				rel = relationcreate(
-					(void*)dst.chip, (void*)dst.foot, dst.type, dst.flag,
-					(void*)src.chip, (void*)src.foot, src.type, src.flag
+					(void*)dst.chip, (void*)dst.foot, dst.nodetype, dst.foottype,
+					(void*)src.chip, (void*)src.foot, src.nodetype, src.foottype
 				);
 				relationlinkup((void*)&rel->srcchip, (void*)&rel->dstchip);
 			}
@@ -165,7 +165,7 @@ void role_test_relation(
 				say("[%x,%x)rrel: (%.*s)\n", bracket_r, run, run-bracket_r, buf+bracket_r);
 
 				dst.chip = dst.foot = 0;
-				dst.type = dst.flag = 0;
+				dst.nodetype = dst.foottype = 0;
 				parserelation(buf+bracket_r, run-bracket_r,
 					chip, clen, foot, flen,
 					&dst);
@@ -174,7 +174,7 @@ void role_test_relation(
 				say("[%x,%x)lrel: (%.*s)\n", bracket_l, run, run-bracket_l, buf+bracket_l);
 
 				src.chip = src.foot = 0;
-				src.type = src.flag = 0;
+				src.nodetype = src.foottype = 0;
 				parserelation(buf+bracket_l, run-bracket_l,
 					chip, clen, foot, flen,
 					&src);

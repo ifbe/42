@@ -487,7 +487,7 @@ int playwith3d_pick(_obj* root, _obj* twig, _obj* act, int x, int y)
 	{
 		if(0 == rel)break;
 
-		if(_ent_ == rel->dsttype)
+		if(_ent_ == rel->dstnodetype)
 		{
 			sty = (void*)(rel->srcfoot);
 			ret = obb_ray(sty, ray, out);
@@ -551,7 +551,7 @@ int playwith3d_move(_obj* root, _obj* twig, int x0, int y0, int xn, int yn)
 	{
 		if(0 == rel)break;
 
-		if(_ent_ == rel->dsttype)
+		if(_ent_ == rel->dstnodetype)
 		{
 			sty = (void*)(rel->srcfoot);
 			goto found;
@@ -594,7 +594,7 @@ static int picker_draw(
 	{
 		if(0 == rel)break;
 
-		if(_sup_ == rel->dsttype)
+		if(_sup_ == rel->dstnodetype)
 		{
 			www = (void*)(rel->dstchip);
 			//if(_fg3d_ == www->hfmt)goto found;
@@ -611,7 +611,7 @@ found:
 	{
 		if(0 == rel)break;
 
-		if(_ent_ == rel->dsttype)
+		if(_ent_ == rel->dstnodetype)
 		{
 			sss = (void*)(rel->srcfoot);
 
@@ -639,7 +639,7 @@ static int picker_event(
 	{
 		if(0 == rel)break;
 
-		if(_sup_ == rel->dsttype)
+		if(_sup_ == rel->dstnodetype)
 		{
 			www = (void*)(rel->dstchip);
 			//if(_fg3d_ == www->hfmt)goto found;
