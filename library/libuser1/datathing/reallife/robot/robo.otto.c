@@ -168,10 +168,10 @@ static void otto_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 static void otto_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void otto_discon(struct halfrel* self, struct halfrel* peer)
+static void otto_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void otto_linkup(struct halfrel* self, struct halfrel* peer)
+static void otto_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -209,8 +209,8 @@ void otto_register(_obj* p)
 	p->onsearch = (void*)otto_search;
 	p->onmodify = (void*)otto_modify;
 
-	p->onlinkup = (void*)otto_linkup;
-	p->ondiscon = (void*)otto_discon;
+	p->onattach = (void*)otto_attach;
+	p->ondetach = (void*)otto_detach;
 	p->ontaking = (void*)otto_taking;
 	p->ongiving = (void*)otto_giving;
 }

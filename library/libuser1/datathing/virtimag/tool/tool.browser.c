@@ -216,10 +216,10 @@ static void browser_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 static void browser_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void browser_discon(struct halfrel* self, struct halfrel* peer)
+static void browser_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void browser_linkup(struct halfrel* self, struct halfrel* peer)
+static void browser_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -270,8 +270,8 @@ void browser_register(_obj* p)
 	p->onsearch = (void*)browser_search;
 	p->onmodify = (void*)browser_modify;
 
-	p->onlinkup = (void*)browser_linkup;
-	p->ondiscon = (void*)browser_discon;
+	p->onattach = (void*)browser_attach;
+	p->ondetach = (void*)browser_detach;
 	p->ontaking = (void*)browser_taking;
 	p->ongiving = (void*)browser_giving;
 }

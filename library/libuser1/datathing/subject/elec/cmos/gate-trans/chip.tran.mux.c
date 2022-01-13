@@ -97,10 +97,10 @@ static void mux_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int k
 static void mux_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void mux_discon(struct halfrel* self, struct halfrel* peer)
+static void mux_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void mux_linkup(struct halfrel* self, struct halfrel* peer)
+static void mux_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -133,8 +133,8 @@ void mux_register(_obj* p)
 	p->onsearch = (void*)mux_search;
 	p->onmodify = (void*)mux_modify;
 
-	p->onlinkup = (void*)mux_linkup;
-	p->ondiscon = (void*)mux_discon;
+	p->onattach = (void*)mux_attach;
+	p->ondetach = (void*)mux_detach;
 	p->ontaking = (void*)mux_taking;
 	p->ongiving = (void*)mux_giving;
 }

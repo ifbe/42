@@ -11,11 +11,11 @@ int bootpclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 {
 	return 0;
 }
-int bootpclient_discon(struct halfrel* self, struct halfrel* peer)
+int bootpclient_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int bootpclient_linkup(struct halfrel* self, struct halfrel* peer)
+int bootpclient_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -39,11 +39,11 @@ int bootpserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 {
 	return 0;
 }
-int bootpserver_discon(struct halfrel* self, struct halfrel* peer)
+int bootpserver_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int bootpserver_linkup(struct halfrel* self, struct halfrel* peer)
+int bootpserver_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

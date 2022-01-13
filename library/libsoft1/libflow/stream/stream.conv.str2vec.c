@@ -35,11 +35,11 @@ int str2vec_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, 
 	}
 	return 0;
 }
-int str2vec_discon(struct halfrel* self, struct halfrel* peer)
+int str2vec_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int str2vec_linkup(struct halfrel* self, struct halfrel* peer)
+int str2vec_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

@@ -24,11 +24,11 @@ int rtmpclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int id
 	art->vfmt += 1;
 	return 0;
 }
-int rtmpclient_discon(struct halfrel* self, struct halfrel* peer)
+int rtmpclient_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int rtmpclient_linkup(struct halfrel* self, struct halfrel* peer)
+int rtmpclient_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -56,11 +56,11 @@ int rtmpserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int id
 	}
 	return 0;
 }
-int rtmpserver_discon(struct halfrel* self, struct halfrel* peer)
+int rtmpserver_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int rtmpserver_linkup(struct halfrel* self, struct halfrel* peer)
+int rtmpserver_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -93,11 +93,11 @@ int rtmpmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int id
 	relationcreate(tel, 0, _art_, _src_, child, 0, _sys_, _dst_);
 	return 0;
 }
-int rtmpmaster_discon(struct halfrel* self, struct halfrel* peer)
+int rtmpmaster_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int rtmpmaster_linkup(struct halfrel* self, struct halfrel* peer)
+int rtmpmaster_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

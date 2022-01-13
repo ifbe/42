@@ -33,10 +33,10 @@ static void x8664_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 static void x8664_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void x8664_discon(struct halfrel* self, struct halfrel* peer)
+static void x8664_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void x8664_linkup(struct halfrel* self, struct halfrel* peer)
+static void x8664_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -53,8 +53,8 @@ void x8664_register(_obj* p)
 	p->onsearch = (void*)x8664_search;
 	p->onmodify = (void*)x8664_modify;
 
-	p->onlinkup = (void*)x8664_linkup;
-	p->ondiscon = (void*)x8664_discon;
+	p->onattach = (void*)x8664_attach;
+	p->ondetach = (void*)x8664_detach;
 	p->ontaking = (void*)x8664_taking;
 	p->ongiving = (void*)x8664_giving;
 }

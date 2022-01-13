@@ -328,10 +328,10 @@ static void codeimg_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 static void codeimg_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void codeimg_discon(struct halfrel* self, struct halfrel* peer)
+static void codeimg_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void codeimg_linkup(struct halfrel* self, struct halfrel* peer)
+static void codeimg_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -412,8 +412,8 @@ void codeimg_register(_obj* p)
 	p->onsearch = (void*)codeimg_search;
 	p->onmodify = (void*)codeimg_modify;
 
-	p->onlinkup = (void*)codeimg_linkup;
-	p->ondiscon = (void*)codeimg_discon;
+	p->onattach = (void*)codeimg_attach;
+	p->ondetach = (void*)codeimg_detach;
 	p->ontaking = (void*)codeimg_taking;
 	p->ongiving = (void*)codeimg_giving;
 }

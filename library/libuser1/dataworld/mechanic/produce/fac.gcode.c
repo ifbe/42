@@ -161,10 +161,10 @@ static void gcode_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int
 static void gcode_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void gcode_discon(struct halfrel* self, struct halfrel* peer)
+static void gcode_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void gcode_linkup(struct halfrel* self, struct halfrel* peer)
+static void gcode_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -181,8 +181,8 @@ void gcode_register(_obj* p)
 	p->onsearch = (void*)gcode_search;
 	p->onmodify = (void*)gcode_modify;
 
-	p->onlinkup = (void*)gcode_linkup;
-	p->ondiscon = (void*)gcode_discon;
+	p->onattach = (void*)gcode_attach;
+	p->ondetach = (void*)gcode_detach;
 	p->ontaking = (void*)gcode_taking;
 	p->ongiving = (void*)gcode_giving;
 }

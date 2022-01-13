@@ -97,10 +97,10 @@ static void jkff_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 static void jkff_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void jkff_discon(struct halfrel* self, struct halfrel* peer)
+static void jkff_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void jkff_linkup(struct halfrel* self, struct halfrel* peer)
+static void jkff_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -133,8 +133,8 @@ void jkff_register(_obj* p)
 	p->onsearch = (void*)jkff_search;
 	p->onmodify = (void*)jkff_modify;
 
-	p->onlinkup = (void*)jkff_linkup;
-	p->ondiscon = (void*)jkff_discon;
+	p->onattach = (void*)jkff_attach;
+	p->ondetach = (void*)jkff_detach;
 	p->ontaking = (void*)jkff_taking;
 	p->ongiving = (void*)jkff_giving;
 }

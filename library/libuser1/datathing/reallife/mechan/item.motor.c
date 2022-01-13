@@ -161,10 +161,10 @@ static void motor_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 static void motor_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void motor_discon(struct halfrel* self, struct halfrel* peer)
+static void motor_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void motor_linkup(struct halfrel* self, struct halfrel* peer)
+static void motor_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -202,8 +202,8 @@ void motor_register(_obj* p)
 	p->onsearch = (void*)motor_search;
 	p->onmodify = (void*)motor_modify;
 
-	p->onlinkup = (void*)motor_linkup;
-	p->ondiscon = (void*)motor_discon;
+	p->onattach = (void*)motor_attach;
+	p->ondetach = (void*)motor_detach;
 	p->ontaking = (void*)motor_taking;
 	p->ongiving = (void*)motor_giving;
 }

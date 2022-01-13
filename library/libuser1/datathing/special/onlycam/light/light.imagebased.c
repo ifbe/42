@@ -228,12 +228,12 @@ static void imagelight_taking(_obj* ent,void* slot, _syn* stack,int sp, void* ar
 static void imagelight_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void imagelight_discon(struct halfrel* self, struct halfrel* peer)
+static void imagelight_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void imagelight_linkup(struct halfrel* self, struct halfrel* peer)
+static void imagelight_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@imagelight_linkup\n");
+	say("@imagelight_attach\n");
 }
 
 
@@ -278,8 +278,8 @@ void imagelight_register(_obj* p)
 	p->onsearch = (void*)imagelight_search;
 	p->onmodify = (void*)imagelight_modify;
 
-	p->onlinkup = (void*)imagelight_linkup;
-	p->ondiscon = (void*)imagelight_discon;
+	p->onattach = (void*)imagelight_attach;
+	p->ondetach = (void*)imagelight_detach;
 	p->ontaking = (void*)imagelight_taking;
 	p->ongiving = (void*)imagelight_giving;
 }

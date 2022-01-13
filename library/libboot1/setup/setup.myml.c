@@ -134,7 +134,7 @@ void role_test_relation(
 					(void*)dst.chip, (void*)dst.foot, dst.nodetype, dst.foottype,
 					(void*)src.chip, (void*)src.foot, src.nodetype, src.foottype
 				);
-				relationlinkup((void*)&rel->srcchip, (void*)&rel->dstchip);
+				relationattach((void*)&rel->srcchip, (void*)&rel->dstchip);
 			}
 //say("***\n");
 

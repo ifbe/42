@@ -112,10 +112,10 @@ static void flower_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 static void flower_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void flower_discon(struct halfrel* self, struct halfrel* peer)
+static void flower_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void flower_linkup(struct halfrel* self, struct halfrel* peer)
+static void flower_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -148,8 +148,8 @@ void flower_register(_obj* p)
 	p->onsearch = (void*)flower_search;
 	p->onmodify = (void*)flower_modify;
 
-	p->onlinkup = (void*)flower_linkup;
-	p->ondiscon = (void*)flower_discon;
+	p->onattach = (void*)flower_attach;
+	p->ondetach = (void*)flower_detach;
 	p->ontaking = (void*)flower_taking;
 	p->ongiving = (void*)flower_giving;
 }

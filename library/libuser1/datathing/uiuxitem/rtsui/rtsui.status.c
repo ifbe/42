@@ -101,10 +101,10 @@ static void status_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,in
 static void status_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void status_discon(struct halfrel* self, struct halfrel* peer)
+static void status_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void status_linkup(struct halfrel* self, struct halfrel* peer)
+static void status_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -137,8 +137,8 @@ void status_register(_obj* p)
 	p->onsearch = (void*)status_search;
 	p->onmodify = (void*)status_modify;
 
-	p->onlinkup = (void*)status_linkup;
-	p->ondiscon = (void*)status_discon;
+	p->onattach = (void*)status_attach;
+	p->ondetach = (void*)status_detach;
 	p->ontaking = (void*)status_taking;
 	p->ongiving = (void*)status_giving;
 }

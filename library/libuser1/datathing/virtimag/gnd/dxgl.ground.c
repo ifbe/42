@@ -313,10 +313,10 @@ static void ground_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,in
 static void ground_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void ground_discon(struct halfrel* self, struct halfrel* peer)
+static void ground_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void ground_linkup(struct halfrel* self, struct halfrel* peer)
+static void ground_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -406,8 +406,8 @@ void ground_register(_obj* p)
 	p->onsearch = (void*)ground_search;
 	p->onmodify = (void*)ground_modify;
 
-	p->onlinkup = (void*)ground_linkup;
-	p->ondiscon = (void*)ground_discon;
+	p->onattach = (void*)ground_attach;
+	p->ondetach = (void*)ground_detach;
 	p->ontaking = (void*)ground_taking;
 	p->ongiving = (void*)ground_giving;
 }

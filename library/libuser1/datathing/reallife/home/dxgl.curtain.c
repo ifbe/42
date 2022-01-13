@@ -195,10 +195,10 @@ static void curtain_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 static void curtain_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void curtain_discon(struct halfrel* self, struct halfrel* peer)
+static void curtain_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void curtain_linkup(struct halfrel* self, struct halfrel* peer)
+static void curtain_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -215,8 +215,8 @@ void curtain_register(_obj* p)
 	p->onsearch = (void*)curtain_search;
 	p->onmodify = (void*)curtain_modify;
 
-	p->onlinkup = (void*)curtain_linkup;
-	p->ondiscon = (void*)curtain_discon;
+	p->onattach = (void*)curtain_attach;
+	p->ondetach = (void*)curtain_detach;
 	p->ontaking = (void*)curtain_taking;
 	p->ongiving = (void*)curtain_giving;
 }

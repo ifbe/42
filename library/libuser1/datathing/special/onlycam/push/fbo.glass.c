@@ -369,10 +369,10 @@ static void glass_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int
 static void glass_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void glass_discon(struct halfrel* self, struct halfrel* peer)
+static void glass_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void glass_linkup(struct halfrel* self, struct halfrel* peer)
+static void glass_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -427,8 +427,8 @@ void glass_register(_obj* p)
 	p->onsearch = (void*)glass_search;
 	p->onmodify = (void*)glass_modify;
 
-	p->onlinkup = (void*)glass_linkup;
-	p->ondiscon = (void*)glass_discon;
+	p->onattach = (void*)glass_attach;
+	p->ondetach = (void*)glass_detach;
 	p->ontaking = (void*)glass_taking;
 	p->ongiving = (void*)glass_giving;
 }

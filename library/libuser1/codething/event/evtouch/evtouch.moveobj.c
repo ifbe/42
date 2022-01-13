@@ -71,14 +71,14 @@ int touchobj_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx,
 	}
 	return 0;
 }
-int touchobj_discon(struct halfrel* self, struct halfrel* peer)
+int touchobj_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@touchobj_discon\n");
+	say("@touchobj_detach\n");
 	return 0;
 }
-int touchobj_linkup(struct halfrel* self, struct halfrel* peer)
+int touchobj_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@touchobj_linkup\n");
+	say("@touchobj_attach\n");
 	return 0;
 }
 

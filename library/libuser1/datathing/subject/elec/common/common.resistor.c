@@ -146,10 +146,10 @@ static void resistor_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,
 	say("@resistor_write: %.4s\n", &foot);
 	say("%d, %f\n", sts->sure, sts->volt);
 }
-static void resistor_discon(struct halfrel* self, struct halfrel* peer)
+static void resistor_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void resistor_linkup(struct halfrel* self, struct halfrel* peer)
+static void resistor_attach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ent = self->pchip;
 	switch(self->foottype){
@@ -190,8 +190,8 @@ void resistor_register(_obj* p)
 	p->onsearch = (void*)resistor_search;
 	p->onmodify = (void*)resistor_modify;
 
-	p->onlinkup = (void*)resistor_linkup;
-	p->ondiscon = (void*)resistor_discon;
+	p->onattach = (void*)resistor_attach;
+	p->ondetach = (void*)resistor_detach;
 	p->ontaking = (void*)resistor_taking;
 	p->ongiving = (void*)resistor_giving;
 }

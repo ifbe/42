@@ -85,10 +85,10 @@ static void ladder_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 static void ladder_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void ladder_discon(struct halfrel* self, struct halfrel* peer)
+static void ladder_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void ladder_linkup(struct halfrel* self, struct halfrel* peer)
+static void ladder_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -121,8 +121,8 @@ void ladder_register(_obj* p)
 	p->onsearch = (void*)ladder_search;
 	p->onmodify = (void*)ladder_modify;
 
-	p->onlinkup = (void*)ladder_linkup;
-	p->ondiscon = (void*)ladder_discon;
+	p->onattach = (void*)ladder_attach;
+	p->ondetach = (void*)ladder_detach;
 	p->ontaking = (void*)ladder_taking;
 	p->ongiving = (void*)ladder_giving;
 }

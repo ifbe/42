@@ -299,12 +299,12 @@ static void oscillo_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 		return;
 	}
 }
-static void oscillo_discon(struct halfrel* self, struct halfrel* peer)
+static void oscillo_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void oscillo_linkup(struct halfrel* self, struct halfrel* peer)
+static void oscillo_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@oscillo_linkup\n");
+	say("@oscillo_attach\n");
 }
 
 
@@ -348,8 +348,8 @@ void oscillo_register(_obj* p)
 	p->onsearch = (void*)oscillo_search;
 	p->onmodify = (void*)oscillo_modify;
 
-	p->onlinkup = (void*)oscillo_linkup;
-	p->ondiscon = (void*)oscillo_discon;
+	p->onattach = (void*)oscillo_attach;
+	p->ondetach = (void*)oscillo_detach;
 	p->ontaking = (void*)oscillo_taking;
 	p->ongiving = (void*)oscillo_giving;
 }

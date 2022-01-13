@@ -43,10 +43,10 @@ static void isrc_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 static void isrc_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void isrc_discon(struct halfrel* self, struct halfrel* peer)
+static void isrc_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void isrc_linkup(struct halfrel* self, struct halfrel* peer)
+static void isrc_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -80,8 +80,8 @@ void isrc_register(_obj* p)
 	p->onsearch = (void*)isrc_search;
 	p->onmodify = (void*)isrc_modify;
 
-	p->onlinkup = (void*)isrc_linkup;
-	p->ondiscon = (void*)isrc_discon;
+	p->onattach = (void*)isrc_attach;
+	p->ondetach = (void*)isrc_detach;
 	p->ontaking = (void*)isrc_taking;
 	p->ongiving = (void*)isrc_giving;
 }

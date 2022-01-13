@@ -254,11 +254,11 @@ int gl41data_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key,
 {
 	return 0;
 }
-int gl41data_discon(struct halfrel* self, struct halfrel* peer)
+int gl41data_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int gl41data_linkup(struct halfrel* self, struct halfrel* peer)
+int gl41data_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

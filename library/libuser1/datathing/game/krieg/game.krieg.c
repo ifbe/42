@@ -13,10 +13,10 @@ static void kriegspiel_taking(_obj* ent,void* foot, _syn* stack,int sp, void* ar
 static void kriegspiel_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void kriegspiel_discon(struct halfrel* self, struct halfrel* peer)
+static void kriegspiel_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void kriegspiel_linkup(struct halfrel* self, struct halfrel* peer)
+static void kriegspiel_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -54,8 +54,8 @@ void kriegspiel_register(_obj* p)
 	p->onsearch = (void*)kriegspiel_search;
 	p->onmodify = (void*)kriegspiel_modify;
 
-	p->onlinkup = (void*)kriegspiel_linkup;
-	p->ondiscon = (void*)kriegspiel_discon;
+	p->onattach = (void*)kriegspiel_attach;
+	p->ondetach = (void*)kriegspiel_detach;
 	p->ontaking = (void*)kriegspiel_taking;
 	p->ongiving = (void*)kriegspiel_giving;
 }

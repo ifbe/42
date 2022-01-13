@@ -298,14 +298,14 @@ int cam3rd_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, s
 	}
 	return 0;
 }
-int cam3rd_discon(struct halfrel* self, struct halfrel* peer)
+int cam3rd_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@cam3rd_discon\n");
+	say("@cam3rd_detach\n");
 	return 0;
 }
-int cam3rd_linkup(struct halfrel* self, struct halfrel* peer)
+int cam3rd_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@cam3rd_linkup\n");
+	say("@cam3rd_attach\n");
 	_obj* ent = self->pchip;
 	struct privdata* own = ent->priv_ptr;
 	switch(self->foottype){

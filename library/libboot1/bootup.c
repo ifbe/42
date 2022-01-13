@@ -231,13 +231,14 @@ int bootupmodify(int argc, u8** argv)
 
 
 
-int bootuplinkup(struct halfrel* self, struct halfrel* peer)
+int bootupattach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@bootuplinkup\n");
+	say("@bootupattach\n");
 	return 0;
 }
-int bootupdiscon(struct halfrel* self, struct halfrel* peer)
+int bootupdetach(struct halfrel* self, struct halfrel* peer)
 {
+	say("@bootupdetach\n");
 	return 0;
 }
 int bootup_take(struct item* wrk,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)

@@ -364,7 +364,7 @@ static void terminal_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,
 		return;
 	}
 }
-static void terminal_discon(struct halfrel* self, struct halfrel* peer)
+static void terminal_detach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ent = self->pchip;
 	switch(self->foottype){
@@ -372,7 +372,7 @@ static void terminal_discon(struct halfrel* self, struct halfrel* peer)
 	case 's':ent->SERVER = 0;break;
 	}
 }
-static void terminal_linkup(struct halfrel* self, struct halfrel* peer)
+static void terminal_attach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ent = self->pchip;
 	switch(self->foottype){
@@ -437,8 +437,8 @@ void terminal_register(_obj* p)
 	p->onsearch = (void*)terminal_search;
 	p->onmodify = (void*)terminal_modify;
 
-	p->onlinkup = (void*)terminal_linkup;
-	p->ondiscon = (void*)terminal_discon;
+	p->onattach = (void*)terminal_attach;
+	p->ondetach = (void*)terminal_detach;
 	p->ontaking = (void*)terminal_taking;
 	p->ongiving = (void*)terminal_giving;
 }

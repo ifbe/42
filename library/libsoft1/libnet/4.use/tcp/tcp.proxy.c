@@ -32,14 +32,14 @@ int proxyclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 
 	return 0;
 }
-int proxyclient_discon(struct halfrel* self, struct halfrel* peer)
+int proxyclient_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@proxyclient_discon: %.4s\n", &self->foottype);
+	say("@proxyclient_detach: %.4s\n", &self->foottype);
 	return 0;
 }
-int proxyclient_linkup(struct halfrel* self, struct halfrel* peer)
+int proxyclient_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@proxyclient_linkup: %.4s\n", &self->foottype);
+	say("@proxyclient_attach: %.4s\n", &self->foottype);
 	return 0;
 }
 int proxyclient_delete(_obj* art)
@@ -90,14 +90,14 @@ printmemory(buf, len<16?len:16);
 	}
 	return 0;
 }
-int proxyserver_discon(struct halfrel* self, struct halfrel* peer)
+int proxyserver_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@proxyserver_discon: %.4s\n", &self->foottype);
+	say("@proxyserver_detach: %.4s\n", &self->foottype);
 	return 0;
 }
-int proxyserver_linkup(struct halfrel* self, struct halfrel* peer)
+int proxyserver_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@proxyserver_linkup: %.4s\n", &self->foottype);
+	say("@proxyserver_attach: %.4s\n", &self->foottype);
 	return 0;
 }
 int proxyserver_delete(_obj* art)
@@ -204,7 +204,7 @@ int proxymaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 			rel = relationcreate(socks, 0, _art_, _src_, client, 0, _sys_, _dst_);
 
 			//fake ready from tcpclient to socksclient
-			relationlinkup((void*)rel->dst, (void*)rel->src);
+			relationattach((void*)rel->dst, (void*)rel->src);
 			break;
 		}//socks
 		default:{
@@ -224,13 +224,13 @@ int proxymaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 
 	return 0;
 }
-int proxymaster_discon(struct halfrel* self, struct halfrel* peer)
+int proxymaster_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int proxymaster_linkup(struct halfrel* self, struct halfrel* peer)
+int proxymaster_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@proxymaster_linkup\n");
+	say("@proxymaster_attach\n");
 	return 0;
 }
 int proxymaster_delete(_obj* art)

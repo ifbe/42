@@ -244,14 +244,14 @@ int mahony_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, v
 	give_data_into_peer(art,_dst_, stack,sp, 0,0, q,4);
 	return 0;
 }
-int mahony_discon(struct halfrel* self, struct halfrel* peer)
+int mahony_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@mahony_discon\n");
+	say("@mahony_detach\n");
 	return 0;
 }
-int mahony_linkup(struct halfrel* self, struct halfrel* peer)
+int mahony_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@mahony_linkup\n");
+	say("@mahony_attach\n");
 	return 0;
 }
 

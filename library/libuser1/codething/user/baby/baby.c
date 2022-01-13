@@ -13,14 +13,14 @@ int baby_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, voi
 	say("@baby_write: crying\n");
 	return 0;
 }
-int baby_discon(struct halfrel* self, struct halfrel* peer)
+int baby_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@baby_discon: crying\n");
+	say("@baby_detach: crying\n");
 	return 0;
 }
-int baby_linkup(struct halfrel* self, struct halfrel* peer)
+int baby_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@baby_linkup: crying\n");
+	say("@baby_attach: crying\n");
 	return 0;
 }
 

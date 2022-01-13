@@ -303,10 +303,10 @@ static int hexedit_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,in
 	}
 	return 0;
 }
-static void hexedit_discon(struct halfrel* self, struct halfrel* peer)
+static void hexedit_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void hexedit_linkup(struct halfrel* self, struct halfrel* peer)
+static void hexedit_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -323,8 +323,8 @@ void hexedit_register(_obj* p)
 	p->onsearch = (void*)hexedit_search;
 	p->onmodify = (void*)hexedit_modify;
 
-	p->onlinkup = (void*)hexedit_linkup;
-	p->ondiscon = (void*)hexedit_discon;
+	p->onattach = (void*)hexedit_attach;
+	p->ondetach = (void*)hexedit_detach;
 	p->ontaking = (void*)hexedit_taking;
 	p->ongiving = (void*)hexedit_giving;
 }

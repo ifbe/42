@@ -77,11 +77,11 @@ int reline_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u
 
 	return 0;
 }
-int reline_discon(struct halfrel* self, struct halfrel* peer)
+int reline_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int reline_linkup(struct halfrel* self, struct halfrel* peer)
+int reline_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

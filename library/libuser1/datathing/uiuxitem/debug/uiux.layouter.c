@@ -678,12 +678,12 @@ static int picker_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 {
 	return 0;
 }
-static void picker_discon(struct halfrel* self, struct halfrel* peer)
+static void picker_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void picker_linkup(struct halfrel* self, struct halfrel* peer)
+static void picker_attach(struct halfrel* self, struct halfrel* peer)
 {
-    say("@picker_linkup\n");
+    say("@picker_attach\n");
 }
 
 
@@ -716,8 +716,8 @@ void picker_register(_obj* p)
 	p->onsearch = (void*)picker_search;
 	p->onmodify = (void*)picker_modify;
 
-	p->onlinkup = (void*)picker_linkup;
-	p->ondiscon = (void*)picker_discon;
+	p->onattach = (void*)picker_attach;
+	p->ondetach = (void*)picker_detach;
 	p->ontaking = (void*)picker_taking;
 	p->ongiving = (void*)picker_giving;
 }

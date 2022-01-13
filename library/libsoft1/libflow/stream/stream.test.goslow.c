@@ -32,11 +32,11 @@ int goslow_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, v
 	}
 	return 0;
 }
-int goslow_discon(struct halfrel* self, struct halfrel* peer)
+int goslow_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int goslow_linkup(struct halfrel* self, struct halfrel* peer)
+int goslow_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

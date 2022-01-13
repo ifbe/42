@@ -113,10 +113,10 @@ static void stair_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 static void stair_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void stair_discon(struct halfrel* self, struct halfrel* peer)
+static void stair_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void stair_linkup(struct halfrel* self, struct halfrel* peer)
+static void stair_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -154,8 +154,8 @@ void stair_register(_obj* p)
 	p->onsearch = (void*)stair_search;
 	p->onmodify = (void*)stair_modify;
 
-	p->onlinkup = (void*)stair_linkup;
-	p->ondiscon = (void*)stair_discon;
+	p->onattach = (void*)stair_attach;
+	p->ondetach = (void*)stair_detach;
 	p->ontaking = (void*)stair_taking;
 	p->ongiving = (void*)stair_giving;
 }

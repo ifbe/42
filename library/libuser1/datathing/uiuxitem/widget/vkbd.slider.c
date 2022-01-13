@@ -144,11 +144,11 @@ static int slider_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 	}
 	return 0;
 }
-static int slider_discon(struct halfrel* self, struct halfrel* peer)
+static int slider_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-static int slider_linkup(struct halfrel* self, struct halfrel* peer)
+static int slider_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -166,8 +166,8 @@ void slider_register(_obj* p)
 	p->onsearch = (void*)slider_search;
 	p->onmodify = (void*)slider_modify;
 
-	p->onlinkup = (void*)slider_linkup;
-	p->ondiscon = (void*)slider_discon;
+	p->onattach = (void*)slider_attach;
+	p->ondetach = (void*)slider_detach;
 	p->ontaking = (void*)slider_taking;
 	p->ongiving = (void*)slider_giving;
 }

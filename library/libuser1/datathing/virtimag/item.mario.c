@@ -385,10 +385,10 @@ static void mario_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int
 static void mario_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void mario_discon(struct halfrel* self, struct halfrel* peer)
+static void mario_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void mario_linkup(struct halfrel* self, struct halfrel* peer)
+static void mario_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -457,8 +457,8 @@ void mario_register(_obj* p)
 	p->onsearch = (void*)mario_search;
 	p->onmodify = (void*)mario_modify;
 
-	p->onlinkup = (void*)mario_linkup;
-	p->ondiscon = (void*)mario_discon;
+	p->onattach = (void*)mario_attach;
+	p->ondetach = (void*)mario_detach;
 	p->ontaking = (void*)mario_taking;
 	p->ongiving = (void*)mario_giving;
 }

@@ -85,10 +85,10 @@ static void elevator_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,
 static void elevator_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void elevator_discon(struct halfrel* self, struct halfrel* peer)
+static void elevator_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void elevator_linkup(struct halfrel* self, struct halfrel* peer)
+static void elevator_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -121,8 +121,8 @@ void elevator_register(_obj* p)
 	p->onsearch = (void*)elevator_search;
 	p->onmodify = (void*)elevator_modify;
 
-	p->onlinkup = (void*)elevator_linkup;
-	p->ondiscon = (void*)elevator_discon;
+	p->onattach = (void*)elevator_attach;
+	p->ondetach = (void*)elevator_detach;
 	p->ontaking = (void*)elevator_taking;
 	p->ongiving = (void*)elevator_giving;
 }

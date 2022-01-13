@@ -189,10 +189,10 @@ static void chess_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 {
 	//say("@chess:%x,%x\n", ev->why, ev->what);
 }
-static void chess_discon(struct halfrel* self, struct halfrel* peer)
+static void chess_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void chess_linkup(struct halfrel* self, struct halfrel* peer)
+static void chess_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -266,8 +266,8 @@ void chess_register(_obj* p)
 	p->onsearch = (void*)chess_search;
 	p->onmodify = (void*)chess_modify;
 
-	p->onlinkup = (void*)chess_linkup;
-	p->ondiscon = (void*)chess_discon;
+	p->onattach = (void*)chess_attach;
+	p->ondetach = (void*)chess_detach;
 	p->ontaking = (void*)chess_taking;
 	p->ongiving = (void*)chess_giving;
 }

@@ -11,11 +11,11 @@ int rdpclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 {
 	return 0;
 }
-int rdpclient_discon(struct halfrel* self, struct halfrel* peer)
+int rdpclient_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int rdpclient_linkup(struct halfrel* self, struct halfrel* peer)
+int rdpclient_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -39,11 +39,11 @@ int rdpserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 {
 	return 0;
 }
-int rdpserver_discon(struct halfrel* self, struct halfrel* peer)
+int rdpserver_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int rdpserver_linkup(struct halfrel* self, struct halfrel* peer)
+int rdpserver_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -67,11 +67,11 @@ int rdpmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 {
 	return 0;
 }
-int rdpmaster_discon(struct halfrel* self, struct halfrel* peer)
+int rdpmaster_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int rdpmaster_linkup(struct halfrel* self, struct halfrel* peer)
+int rdpmaster_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

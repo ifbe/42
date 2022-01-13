@@ -12,13 +12,13 @@ int mmiospace_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key
 {
 	return 0;
 }
-int mmiospace_discon(struct halfrel* self, struct halfrel* peer)
+int mmiospace_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int mmiospace_linkup(struct halfrel* self, struct halfrel* peer)
+int mmiospace_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@mmiospace_linkup\n");
+	say("@mmiospace_attach\n");
 	return 0;
 }
 

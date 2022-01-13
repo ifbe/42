@@ -10,10 +10,10 @@ static void theeye_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 static void theeye_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void theeye_discon(struct halfrel* self, struct halfrel* peer)
+static void theeye_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void theeye_linkup(struct halfrel* self, struct halfrel* peer)
+static void theeye_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -46,8 +46,8 @@ void theeye_register(_obj* p)
 	p->onsearch = (void*)theeye_search;
 	p->onmodify = (void*)theeye_modify;
 
-	p->onlinkup = (void*)theeye_linkup;
-	p->ondiscon = (void*)theeye_discon;
+	p->onattach = (void*)theeye_attach;
+	p->ondetach = (void*)theeye_detach;
 	p->ontaking = (void*)theeye_taking;
 	p->ongiving = (void*)theeye_giving;
 }

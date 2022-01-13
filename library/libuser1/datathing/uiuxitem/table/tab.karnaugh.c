@@ -237,11 +237,11 @@ static int karnaugh_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 	}
 	return 0;
 }
-static int karnaugh_discon(struct halfrel* self, struct halfrel* peer)
+static int karnaugh_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-static int karnaugh_linkup(struct halfrel* self, struct halfrel* peer)
+static int karnaugh_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -259,8 +259,8 @@ void karnaugh_register(_obj* p)
 	p->onsearch = (void*)karnaugh_search;
 	p->onmodify = (void*)karnaugh_modify;
 
-	p->onlinkup = (void*)karnaugh_linkup;
-	p->ondiscon = (void*)karnaugh_discon;
+	p->onattach = (void*)karnaugh_attach;
+	p->ondetach = (void*)karnaugh_detach;
 	p->ontaking = (void*)karnaugh_taking;
 	p->ongiving = (void*)karnaugh_giving;
 }

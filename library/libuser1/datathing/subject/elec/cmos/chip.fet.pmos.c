@@ -281,7 +281,7 @@ static void pmos_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 		case 'G':pmos_write_G(ent,key, stack,sp, buf,len);return;
 	}
 }
-static void pmos_discon(struct halfrel* self, struct halfrel* peer)
+static void pmos_detach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ent = self->pchip;
 	switch(self->foottype){
@@ -291,7 +291,7 @@ static void pmos_discon(struct halfrel* self, struct halfrel* peer)
 		case 'G':ent->Gcount -= 1;return;
 	}
 }
-static void pmos_linkup(struct halfrel* self, struct halfrel* peer)
+static void pmos_attach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ent = self->pchip;
 	switch(self->foottype){
@@ -337,8 +337,8 @@ void pmos_register(_obj* p)
 	p->onsearch = (void*)pmos_search;
 	p->onmodify = (void*)pmos_modify;
 
-	p->onlinkup = (void*)pmos_linkup;
-	p->ondiscon = (void*)pmos_discon;
+	p->onattach = (void*)pmos_attach;
+	p->ondetach = (void*)pmos_detach;
 	p->ontaking = (void*)pmos_taking;
 	p->ongiving = (void*)pmos_giving;
 }

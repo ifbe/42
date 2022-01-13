@@ -9,10 +9,10 @@ static void speaker_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 static void speaker_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void speaker_discon(struct halfrel* self, struct halfrel* peer)
+static void speaker_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void speaker_linkup(struct halfrel* self, struct halfrel* peer)
+static void speaker_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -45,8 +45,8 @@ void speaker_register(_obj* p)
 	p->onsearch = (void*)speaker_search;
 	p->onmodify = (void*)speaker_modify;
 
-	p->onlinkup = (void*)speaker_linkup;
-	p->ondiscon = (void*)speaker_discon;
+	p->onattach = (void*)speaker_attach;
+	p->ondetach = (void*)speaker_detach;
 	p->ontaking = (void*)speaker_taking;
 	p->ongiving = (void*)speaker_giving;
 }

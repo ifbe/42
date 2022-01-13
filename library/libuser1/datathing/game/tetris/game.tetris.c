@@ -277,10 +277,10 @@ static void tetris_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 static void tetris_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void tetris_discon(struct halfrel* self, struct halfrel* peer)
+static void tetris_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void tetris_linkup(struct halfrel* self, struct halfrel* peer)
+static void tetris_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -323,8 +323,8 @@ void tetris_register(_obj* p)
 	p->onsearch = (void*)tetris_search;
 	p->onmodify = (void*)tetris_modify;
 
-	p->onlinkup = (void*)tetris_linkup;
-	p->ondiscon = (void*)tetris_discon;
+	p->onattach = (void*)tetris_attach;
+	p->ondetach = (void*)tetris_detach;
 	p->ontaking = (void*)tetris_taking;
 	p->ongiving = (void*)tetris_giving;
 }

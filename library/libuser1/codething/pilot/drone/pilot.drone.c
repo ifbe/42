@@ -364,11 +364,11 @@ int flycon_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u
 	}
 	return 0;
 }
-int flycon_discon(struct halfrel* self, struct halfrel* peer)
+int flycon_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int flycon_linkup(struct halfrel* self, struct halfrel* peer)
+int flycon_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

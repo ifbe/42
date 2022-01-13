@@ -97,10 +97,10 @@ static void tff_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int k
 static void tff_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void tff_discon(struct halfrel* self, struct halfrel* peer)
+static void tff_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void tff_linkup(struct halfrel* self, struct halfrel* peer)
+static void tff_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -133,8 +133,8 @@ void tff_register(_obj* p)
 	p->onsearch = (void*)tff_search;
 	p->onmodify = (void*)tff_modify;
 
-	p->onlinkup = (void*)tff_linkup;
-	p->ondiscon = (void*)tff_discon;
+	p->onattach = (void*)tff_attach;
+	p->ondetach = (void*)tff_detach;
 	p->ontaking = (void*)tff_taking;
 	p->ongiving = (void*)tff_giving;
 }

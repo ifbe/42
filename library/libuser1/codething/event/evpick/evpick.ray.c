@@ -156,11 +156,11 @@ say("%.8s->%.8s->%.8s\n",&wnd->hfmt, &cam->hfmt, &ent->hfmt);
 	}
 	return 0;
 }
-int clickray_discon(struct halfrel* self, struct halfrel* peer)
+int clickray_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int clickray_linkup(struct halfrel* self, struct halfrel* peer)
+int clickray_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

@@ -589,10 +589,10 @@ static void stl3d_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 	if(_int_ == stack[sp-1].foottype)stl3d_modify_matter(ent, buf,len);
 	else stl3d_modify_ray(ent, buf);
 }
-static void stl3d_discon(struct halfrel* self, struct halfrel* peer)
+static void stl3d_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void stl3d_linkup(struct halfrel* self, struct halfrel* peer)
+static void stl3d_attach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* act = self->pchip;
 	if(0 == act)return;
@@ -696,8 +696,8 @@ void stl3d_register(_obj* p)
 	p->onsearch = (void*)stl3d_search;
 	p->onmodify = (void*)stl3d_modify;
 
-	p->onlinkup = (void*)stl3d_linkup;
-	p->ondiscon = (void*)stl3d_discon;
+	p->onattach = (void*)stl3d_attach;
+	p->ondetach = (void*)stl3d_detach;
 	p->ontaking = (void*)stl3d_taking;
 	p->ongiving = (void*)stl3d_giving;
 }

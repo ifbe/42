@@ -93,10 +93,10 @@ static void gaafet_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,in
 static void gaafet_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void gaafet_discon(struct halfrel* self, struct halfrel* peer)
+static void gaafet_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void gaafet_linkup(struct halfrel* self, struct halfrel* peer)
+static void gaafet_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -133,8 +133,8 @@ void gaafet_register(_obj* p)
 	p->onsearch = (void*)gaafet_search;
 	p->onmodify = (void*)gaafet_modify;
 
-	p->onlinkup = (void*)gaafet_linkup;
-	p->ondiscon = (void*)gaafet_discon;
+	p->onattach = (void*)gaafet_attach;
+	p->ondetach = (void*)gaafet_detach;
 	p->ontaking = (void*)gaafet_taking;
 	p->ongiving = (void*)gaafet_giving;
 }

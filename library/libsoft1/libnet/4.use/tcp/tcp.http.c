@@ -106,16 +106,16 @@ int httpclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int id
 
 	return 0;
 }
-int httpclient_discon(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int httpclient_detach(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	say("@httpclient_discon: %.4s\n", &self->foottype);
+	say("@httpclient_detach: %.4s\n", &self->foottype);
 	return 0;
 }
-int httpclient_linkup(struct halfrel* self, struct halfrel* peer)
+int httpclient_attach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* art;
 	_obj* obj;
-	say("@httpclient_linkup: %.4s\n", &self->foottype);
+	say("@httpclient_attach: %.4s\n", &self->foottype);
 
 	art = self->pchip;
 	if(_src_ == self->foottype){
@@ -199,14 +199,14 @@ int httpserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int id
 	system_leafwrite(ele->obj, 0, ele, sty, buf, len);*/
 	return 0;
 }
-int httpserver_discon(struct halfrel* self, struct halfrel* peer)
+int httpserver_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@httpserver_discon: %.4s\n", &self->foottype);
+	say("@httpserver_detach: %.4s\n", &self->foottype);
 	return 0;
 }
-int httpserver_linkup(struct halfrel* self, struct halfrel* peer)
+int httpserver_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@httpserver_linkup: %.4s\n", &self->foottype);
+	say("@httpserver_attach: %.4s\n", &self->foottype);
 	return 0;
 }
 int httpserver_delete(_obj* ele)
@@ -333,11 +333,11 @@ int httpmaster_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx
 {
 	return 0;
 }
-int httpmaster_discon(struct halfrel* self, struct halfrel* peer)
+int httpmaster_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int httpmaster_linkup(struct halfrel* self, struct halfrel* peer)
+int httpmaster_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

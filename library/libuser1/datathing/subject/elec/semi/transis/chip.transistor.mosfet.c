@@ -89,10 +89,10 @@ static void mosfet_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,in
 static void mosfet_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void mosfet_discon(struct halfrel* self, struct halfrel* peer)
+static void mosfet_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void mosfet_linkup(struct halfrel* self, struct halfrel* peer)
+static void mosfet_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -129,8 +129,8 @@ void mosfet_register(_obj* p)
 	p->onsearch = (void*)mosfet_search;
 	p->onmodify = (void*)mosfet_modify;
 
-	p->onlinkup = (void*)mosfet_linkup;
-	p->ondiscon = (void*)mosfet_discon;
+	p->onattach = (void*)mosfet_attach;
+	p->ondetach = (void*)mosfet_detach;
 	p->ontaking = (void*)mosfet_taking;
 	p->ongiving = (void*)mosfet_giving;
 }

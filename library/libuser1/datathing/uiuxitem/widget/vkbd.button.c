@@ -102,10 +102,10 @@ static void button_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 	struct event* ev = buf;
 	if(0x2b70 == ev->what)give_data_into_peer(ent,_evto_, stack,sp, 0,0, "1",1);
 }
-static void button_discon(struct halfrel* self, struct halfrel* peer)
+static void button_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void button_linkup(struct halfrel* self, struct halfrel* peer)
+static void button_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -147,8 +147,8 @@ void button_register(_obj* p)
 	p->onsearch = (void*)button_search;
 	p->onmodify = (void*)button_modify;
 
-	p->onlinkup = (void*)button_linkup;
-	p->ondiscon = (void*)button_discon;
+	p->onattach = (void*)button_attach;
+	p->ondetach = (void*)button_detach;
 	p->ontaking = (void*)button_taking;
 	p->ongiving = (void*)button_giving;
 }

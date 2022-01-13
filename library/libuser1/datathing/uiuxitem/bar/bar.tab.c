@@ -354,11 +354,11 @@ static int tabbar_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 {
 	return 0;
 }
-static int tabbar_discon(struct halfrel* self, struct halfrel* peer)
+static int tabbar_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-static int tabbar_linkup(struct halfrel* self, struct halfrel* peer)
+static int tabbar_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -393,8 +393,8 @@ void tabbar_register(_obj* p)
 	p->onsearch = (void*)tabbar_search;
 	p->onmodify = (void*)tabbar_modify;
 
-	p->onlinkup = (void*)tabbar_linkup;
-	p->ondiscon = (void*)tabbar_discon;
+	p->onattach = (void*)tabbar_attach;
+	p->ondetach = (void*)tabbar_detach;
 	p->ontaking = (void*)tabbar_taking;
 	p->ongiving = (void*)tabbar_giving;
 }

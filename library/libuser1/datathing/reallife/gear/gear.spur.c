@@ -223,10 +223,10 @@ static void spurgear_giving(_obj* gear,void* foot, _syn* stack,int sp, void* arg
 		spurgear_spread(stack, sp, gear);
 	}
 }
-static void spurgear_discon(struct halfrel* self, struct halfrel* peer)
+static void spurgear_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void spurgear_linkup(struct halfrel* self, struct halfrel* peer)
+static void spurgear_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -243,8 +243,8 @@ void spurgear_register(_obj* p)
 	p->onsearch = (void*)spurgear_search;
 	p->onmodify = (void*)spurgear_modify;
 
-	p->onlinkup = (void*)spurgear_linkup;
-	p->ondiscon = (void*)spurgear_discon;
+	p->onattach = (void*)spurgear_attach;
+	p->ondetach = (void*)spurgear_detach;
 	p->ontaking = (void*)spurgear_taking;
 	p->ongiving = (void*)spurgear_giving;
 }

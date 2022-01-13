@@ -97,10 +97,10 @@ static void tristate_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,
 static void tristate_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void tristate_discon(struct halfrel* self, struct halfrel* peer)
+static void tristate_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void tristate_linkup(struct halfrel* self, struct halfrel* peer)
+static void tristate_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -133,8 +133,8 @@ void tristate_register(_obj* p)
 	p->onsearch = (void*)tristate_search;
 	p->onmodify = (void*)tristate_modify;
 
-	p->onlinkup = (void*)tristate_linkup;
-	p->ondiscon = (void*)tristate_discon;
+	p->onattach = (void*)tristate_attach;
+	p->ondetach = (void*)tristate_detach;
 	p->ontaking = (void*)tristate_taking;
 	p->ongiving = (void*)tristate_giving;
 }

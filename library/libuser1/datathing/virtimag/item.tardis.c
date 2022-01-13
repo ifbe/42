@@ -117,10 +117,10 @@ static void tardis_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,in
 static void tardis_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void tardis_discon(struct halfrel* self, struct halfrel* peer)
+static void tardis_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void tardis_linkup(struct halfrel* self, struct halfrel* peer)
+static void tardis_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -162,8 +162,8 @@ void tardis_register(_obj* p)
 	p->onsearch = (void*)tardis_search;
 	p->onmodify = (void*)tardis_modify;
 
-	p->onlinkup = (void*)tardis_linkup;
-	p->ondiscon = (void*)tardis_discon;
+	p->onattach = (void*)tardis_attach;
+	p->ondetach = (void*)tardis_detach;
 	p->ontaking = (void*)tardis_taking;
 	p->ongiving = (void*)tardis_giving;
 }

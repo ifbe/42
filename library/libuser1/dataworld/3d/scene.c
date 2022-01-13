@@ -79,13 +79,13 @@ int scene3d_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, 
 
 	return 0;
 }
-int scene3d_discon(struct halfrel* self, struct halfrel* peer)
+int scene3d_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int scene3d_linkup(struct halfrel* self, struct halfrel* peer)
+int scene3d_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@scene3d_linkup\n");
+	say("@scene3d_attach\n");
 	return 0;
 }
 

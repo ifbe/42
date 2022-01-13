@@ -245,11 +245,11 @@ static int camman_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 {
 	return 0;
 }
-static int camman_discon(struct halfrel* self, struct halfrel* peer)
+static int camman_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-static int camman_linkup(struct halfrel* self, struct halfrel* peer)
+static int camman_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -283,8 +283,8 @@ void camman_register(_obj* p)
 	p->onsearch = (void*)camman_search;
 	p->onmodify = (void*)camman_modify;
 
-	p->onlinkup = (void*)camman_linkup;
-	p->ondiscon = (void*)camman_discon;
+	p->onattach = (void*)camman_attach;
+	p->ondetach = (void*)camman_detach;
 	p->ontaking = (void*)camman_taking;
 	p->ongiving = (void*)camman_giving;
 }

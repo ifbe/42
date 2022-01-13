@@ -85,11 +85,11 @@ int telnetclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int 
 	art->vfmt += 1;
 	return 0;
 }
-int telnetclient_discon(struct halfrel* self, struct halfrel* peer)
+int telnetclient_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int telnetclient_linkup(struct halfrel* self, struct halfrel* peer)
+int telnetclient_attach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ele = self->pchip;
 	give_data_into_peer(ele,_src_, 0,0, 0,0, cpacket0,sizeof(cpacket0));
@@ -130,11 +130,11 @@ int telnetserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int 
 	art->vfmt += 1;
 	return 0;
 }
-int telnetserver_discon(struct halfrel* self, struct halfrel* peer)
+int telnetserver_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int telnetserver_linkup(struct halfrel* self, struct halfrel* peer)
+int telnetserver_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -171,11 +171,11 @@ int telnetmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int 
 	telnetserver_write(tel,0, stack,sp, arg,idx, buf,len);
 	return 0;
 }
-int telnetmaster_discon(struct halfrel* self, struct halfrel* peer)
+int telnetmaster_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int telnetmaster_linkup(struct halfrel* self, struct halfrel* peer)
+int telnetmaster_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

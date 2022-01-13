@@ -149,14 +149,14 @@ int lsm9ds1_write(struct item* dri,void* foot, struct halfrel* stack,int sp, str
 	}
 	return 0;
 }
-int lsm9ds1_discon(struct halfrel* self, struct halfrel* peer)
+int lsm9ds1_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int lsm9ds1_linkup(struct halfrel* self, struct halfrel* peer)
+int lsm9ds1_attach(struct halfrel* self, struct halfrel* peer)
 {
 	struct item* it;
-	say("@lsm9ds1_linkup\n", &self->foottype);
+	say("@lsm9ds1_attach\n", &self->foottype);
 
 	it = (void*)(self->chip);
 	if(0 == it)return 0;

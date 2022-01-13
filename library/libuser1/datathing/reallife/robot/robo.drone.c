@@ -335,10 +335,10 @@ static void drone_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 	if(_quat_ == stack[sp-1].foottype)drone_write_quaternion(ent, buf);
 	else drone_write_euler(ent, buf);
 }
-static void drone_discon(struct halfrel* self, struct halfrel* peer)
+static void drone_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void drone_linkup(struct halfrel* self, struct halfrel* peer)
+static void drone_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -376,8 +376,8 @@ void drone_register(_obj* p)
 	p->onsearch = (void*)drone_search;
 	p->onmodify = (void*)drone_modify;
 
-	p->onlinkup = (void*)drone_linkup;
-	p->ondiscon = (void*)drone_discon;
+	p->onattach = (void*)drone_attach;
+	p->ondetach = (void*)drone_detach;
 	p->ontaking = (void*)drone_taking;
 	p->ongiving = (void*)drone_giving;
 }

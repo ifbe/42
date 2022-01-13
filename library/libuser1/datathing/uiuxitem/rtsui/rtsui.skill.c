@@ -115,10 +115,10 @@ static void skill_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int
 static void skill_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void skill_discon(struct halfrel* self, struct halfrel* peer)
+static void skill_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void skill_linkup(struct halfrel* self, struct halfrel* peer)
+static void skill_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -151,8 +151,8 @@ void skill_register(_obj* p)
 	p->onsearch = (void*)skill_search;
 	p->onmodify = (void*)skill_modify;
 
-	p->onlinkup = (void*)skill_linkup;
-	p->ondiscon = (void*)skill_discon;
+	p->onattach = (void*)skill_attach;
+	p->ondetach = (void*)skill_detach;
 	p->ontaking = (void*)skill_taking;
 	p->ongiving = (void*)skill_giving;
 }

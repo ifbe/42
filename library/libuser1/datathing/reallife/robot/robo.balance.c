@@ -142,10 +142,10 @@ static void balance_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 {
 	balance_write_euler(ent, buf);
 }
-static void balance_discon(struct halfrel* self, struct halfrel* peer)
+static void balance_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void balance_linkup(struct halfrel* self, struct halfrel* peer)
+static void balance_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -182,8 +182,8 @@ void balance_register(_obj* p)
 	p->onsearch = (void*)balance_search;
 	p->onmodify = (void*)balance_modify;
 
-	p->onlinkup = (void*)balance_linkup;
-	p->ondiscon = (void*)balance_discon;
+	p->onattach = (void*)balance_attach;
+	p->ondetach = (void*)balance_detach;
 	p->ontaking = (void*)balance_taking;
 	p->ongiving = (void*)balance_giving;
 }

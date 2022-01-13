@@ -190,10 +190,10 @@ static void snake_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 static void snake_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void snake_discon(struct halfrel* self, struct halfrel* peer)
+static void snake_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void snake_linkup(struct halfrel* self, struct halfrel* peer)
+static void snake_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -236,8 +236,8 @@ void snake_register(_obj* p)
 	p->onsearch = (void*)snake_search;
 	p->onmodify = (void*)snake_modify;
 
-	p->onlinkup = (void*)snake_linkup;
-	p->ondiscon = (void*)snake_discon;
+	p->onattach = (void*)snake_attach;
+	p->ondetach = (void*)snake_detach;
 	p->ontaking = (void*)snake_taking;
 	p->ongiving = (void*)snake_giving;
 }

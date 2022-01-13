@@ -201,10 +201,10 @@ static void field_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int
 static void field_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void field_discon(struct halfrel* self, struct halfrel* peer)
+static void field_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void field_linkup(struct halfrel* self, struct halfrel* peer)
+static void field_attach(struct halfrel* self, struct halfrel* peer)
 {
 	int x,y,z;
 	float ax,ay,az;
@@ -267,8 +267,8 @@ void field_register(_obj* p)
 	p->onsearch = (void*)field_search;
 	p->onmodify = (void*)field_modify;
 
-	p->onlinkup = (void*)field_linkup;
-	p->ondiscon = (void*)field_discon;
+	p->onattach = (void*)field_attach;
+	p->ondetach = (void*)field_detach;
 	p->ontaking = (void*)field_taking;
 	p->ongiving = (void*)field_giving;
 }

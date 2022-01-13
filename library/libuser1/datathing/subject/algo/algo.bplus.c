@@ -182,10 +182,10 @@ static void bplus_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 static void bplus_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void bplus_discon(struct halfrel* self, struct halfrel* peer)
+static void bplus_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void bplus_linkup(struct halfrel* self, struct halfrel* peer)
+static void bplus_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -223,8 +223,8 @@ void bplus_register(_obj* p)
 	p->onsearch = (void*)bplus_search;
 	p->onmodify = (void*)bplus_modify;
 
-	p->onlinkup = (void*)bplus_linkup;
-	p->ondiscon = (void*)bplus_discon;
+	p->onattach = (void*)bplus_attach;
+	p->ondetach = (void*)bplus_detach;
 	p->ontaking = (void*)bplus_taking;
 	p->ongiving = (void*)bplus_giving;
 }

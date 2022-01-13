@@ -161,13 +161,14 @@ int originmodify(int argc, u8** argv)
 
 
 
-int originlinkup(struct halfrel* self, struct halfrel* peer)
+int originattach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@originlinkup\n");
+	say("@originattach\n");
 	return 0;
 }
-int origindiscon(struct halfrel* self, struct halfrel* peer)
+int origindetach(struct halfrel* self, struct halfrel* peer)
 {
+	say("@origindetach\n");
 	return 0;
 }
 int origin_take(struct item* ori,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)

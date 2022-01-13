@@ -74,11 +74,11 @@ int virtimu_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, 
 	}
 	return 0;
 }
-int virtimu_discon(struct halfrel* self, struct halfrel* peer)
+int virtimu_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int virtimu_linkup(struct halfrel* self, struct halfrel* peer)
+int virtimu_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

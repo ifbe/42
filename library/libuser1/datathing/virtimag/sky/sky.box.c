@@ -132,10 +132,10 @@ static void texbox_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,in
 static void texbox_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void texbox_discon(struct halfrel* self, struct halfrel* peer)
+static void texbox_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void texbox_linkup(struct halfrel* self, struct halfrel* peer)
+static void texbox_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -210,8 +210,8 @@ void texbox_register(_obj* p)
 	p->onsearch = (void*)texbox_search;
 	p->onmodify = (void*)texbox_modify;
 
-	p->onlinkup = (void*)texbox_linkup;
-	p->ondiscon = (void*)texbox_discon;
+	p->onattach = (void*)texbox_attach;
+	p->ondetach = (void*)texbox_detach;
 	p->ontaking = (void*)texbox_taking;
 	p->ongiving = (void*)texbox_giving;
 }

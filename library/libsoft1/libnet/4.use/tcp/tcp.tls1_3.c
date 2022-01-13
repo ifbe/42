@@ -447,13 +447,13 @@ int tls1v3client_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int 
 	}
 	return 0;
 }
-int tls1v3client_discon(struct halfrel* self, struct halfrel* peer)
+int tls1v3client_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int tls1v3client_linkup(struct halfrel* self, struct halfrel* peer)
+int tls1v3client_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@tls1v3client_linkup:%.4s\n",&self->foottype);
+	say("@tls1v3client_attach:%.4s\n",&self->foottype);
 	if(_src_ == self->foottype){
 		_obj* art = self->pchip;
 		u8* buf = art->priv_ptr;
@@ -485,11 +485,11 @@ int tls1v3server_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int 
 	say("@tls1v3server_write\n");
 	return 0;
 }
-int tls1v3server_discon(struct halfrel* self, struct halfrel* peer)
+int tls1v3server_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int tls1v3server_linkup(struct halfrel* self, struct halfrel* peer)
+int tls1v3server_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -515,13 +515,13 @@ int tls1v3master_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int 
 	printmemory(buf,len);
 	return 0;
 }
-int tls1v3master_discon(struct halfrel* self, struct halfrel* peer)
+int tls1v3master_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int tls1v3master_linkup(struct halfrel* self, struct halfrel* peer)
+int tls1v3master_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@tls1v3master_linkup\n");
+	say("@tls1v3master_attach\n");
 	return 0;
 }
 int tls1v3master_dartte(_obj* art)

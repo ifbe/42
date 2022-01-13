@@ -161,11 +161,11 @@ int carcon_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u
 	}
 	return 0;
 }
-int carcon_discon(struct halfrel* self, struct halfrel* peer)
+int carcon_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int carcon_linkup(struct halfrel* self, struct halfrel* peer)
+int carcon_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

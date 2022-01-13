@@ -142,10 +142,10 @@ static void mobius_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 static void mobius_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void mobius_discon(struct halfrel* self, struct halfrel* peer)
+static void mobius_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void mobius_linkup(struct halfrel* self, struct halfrel* peer)
+static void mobius_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -183,8 +183,8 @@ void mobius_register(_obj* p)
 	p->onsearch = (void*)mobius_search;
 	p->onmodify = (void*)mobius_modify;
 
-	p->onlinkup = (void*)mobius_linkup;
-	p->ondiscon = (void*)mobius_discon;
+	p->onattach = (void*)mobius_attach;
+	p->ondetach = (void*)mobius_detach;
 	p->ontaking = (void*)mobius_taking;
 	p->ongiving = (void*)mobius_giving;
 }

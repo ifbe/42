@@ -827,12 +827,12 @@ static int freecam_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 	freecam_bywnd_write(ent, buf);
 	return 0;
 }
-static void freecam_discon(struct halfrel* self, struct halfrel* peer)
+static void freecam_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void freecam_linkup(struct halfrel* self, struct halfrel* peer)
+static void freecam_attach(struct halfrel* self, struct halfrel* peer)
 {
-    say("@freecam_linkup\n");
+    say("@freecam_attach\n");
 
 	_obj* this = self->pchip;
 	switch(self->foottype){
@@ -922,8 +922,8 @@ void freecam_register(_obj* p)
 	p->onsearch = (void*)freecam_search;
 	p->onmodify = (void*)freecam_modify;
 
-	p->onlinkup = (void*)freecam_linkup;
-	p->ondiscon = (void*)freecam_discon;
+	p->onattach = (void*)freecam_attach;
+	p->ondetach = (void*)freecam_detach;
 	p->ontaking = (void*)freecam_taking;
 	p->ongiving = (void*)freecam_giving;
 }

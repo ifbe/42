@@ -31,11 +31,11 @@ int pump_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, voi
 	}
 	return 0;
 }
-int pump_discon(struct halfrel* self, struct halfrel* peer)
+int pump_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int pump_linkup(struct halfrel* self, struct halfrel* peer)
+int pump_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

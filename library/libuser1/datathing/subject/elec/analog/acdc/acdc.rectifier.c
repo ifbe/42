@@ -221,10 +221,10 @@ static void rectify_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 static void rectify_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void rectify_discon(struct halfrel* self, struct halfrel* peer)
+static void rectify_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void rectify_linkup(struct halfrel* self, struct halfrel* peer)
+static void rectify_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -257,8 +257,8 @@ void rectify_register(_obj* p)
 	p->onsearch = (void*)rectify_search;
 	p->onmodify = (void*)rectify_modify;
 
-	p->onlinkup = (void*)rectify_linkup;
-	p->ondiscon = (void*)rectify_discon;
+	p->onattach = (void*)rectify_attach;
+	p->ondetach = (void*)rectify_detach;
 	p->ontaking = (void*)rectify_taking;
 	p->ongiving = (void*)rectify_giving;
 }

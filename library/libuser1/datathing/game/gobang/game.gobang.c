@@ -13,10 +13,10 @@ static void gobang_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 static void gobang_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void gobang_discon(struct halfrel* self, struct halfrel* peer)
+static void gobang_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void gobang_linkup(struct halfrel* self, struct halfrel* peer)
+static void gobang_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -54,8 +54,8 @@ void gobang_register(_obj* p)
 	p->onsearch = (void*)gobang_search;
 	p->onmodify = (void*)gobang_modify;
 
-	p->onlinkup = (void*)gobang_linkup;
-	p->ondiscon = (void*)gobang_discon;
+	p->onattach = (void*)gobang_attach;
+	p->ondetach = (void*)gobang_detach;
 	p->ontaking = (void*)gobang_taking;
 	p->ongiving = (void*)gobang_giving;
 }

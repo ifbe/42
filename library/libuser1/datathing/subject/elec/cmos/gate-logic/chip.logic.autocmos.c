@@ -175,10 +175,10 @@ static void autocmos_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,
 {
 	//say("@autocmos_write:%x\n",buf[0]);
 }
-static void autocmos_discon(struct halfrel* self, struct halfrel* peer)
+static void autocmos_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void autocmos_linkup(struct halfrel* self, struct halfrel* peer)
+static void autocmos_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -215,8 +215,8 @@ void autocmos_register(_obj* p)
 	p->onsearch = (void*)autocmos_search;
 	p->onmodify = (void*)autocmos_modify;
 
-	p->onlinkup = (void*)autocmos_linkup;
-	p->ondiscon = (void*)autocmos_discon;
+	p->onattach = (void*)autocmos_attach;
+	p->ondetach = (void*)autocmos_detach;
 	p->ontaking = (void*)autocmos_taking;
 	p->ongiving = (void*)autocmos_giving;
 }

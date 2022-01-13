@@ -120,10 +120,10 @@ int toycar_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg,
 	give_data_into_peer(ent,stack[sp-1].foottype, stack,sp, 0,0, tmp,ret);
 	return 0;
 }
-void toycar_discon(struct halfrel* self, struct halfrel* peer)
+void toycar_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-void toycar_linkup(struct halfrel* self, struct halfrel* peer)
+void toycar_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 void toycar_delete(_obj* win)

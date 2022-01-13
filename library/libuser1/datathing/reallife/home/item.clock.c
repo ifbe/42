@@ -170,10 +170,10 @@ static void clock_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 static void clock_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void clock_discon(struct halfrel* self, struct halfrel* peer)
+static void clock_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void clock_linkup(struct halfrel* self, struct halfrel* peer)
+static void clock_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -211,8 +211,8 @@ void clock_register(_obj* p)
 	p->onsearch = (void*)clock_search;
 	p->onmodify = (void*)clock_modify;
 
-	p->onlinkup = (void*)clock_linkup;
-	p->ondiscon = (void*)clock_discon;
+	p->onattach = (void*)clock_attach;
+	p->ondetach = (void*)clock_detach;
 	p->ontaking = (void*)clock_taking;
 	p->ongiving = (void*)clock_giving;
 }

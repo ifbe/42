@@ -18,11 +18,11 @@ int reorder_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, 
 	say("@reorder_write:%d\n", len);
 	return 0;
 }
-int reorder_discon(struct halfrel* self, struct halfrel* peer)
+int reorder_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int reorder_linkup(struct halfrel* self, struct halfrel* peer)
+int reorder_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

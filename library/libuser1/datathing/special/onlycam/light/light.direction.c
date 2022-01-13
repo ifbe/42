@@ -354,10 +354,10 @@ static void dirlight_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,
 static void dirlight_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void dirlight_discon(struct halfrel* self, struct halfrel* peer)
+static void dirlight_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void dirlight_linkup(struct halfrel* self, struct halfrel* peer)
+static void dirlight_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -419,8 +419,8 @@ void dirlight_register(_obj* p)
 	p->onsearch = (void*)dirlight_search;
 	p->onmodify = (void*)dirlight_modify;
 
-	p->onlinkup = (void*)dirlight_linkup;
-	p->ondiscon = (void*)dirlight_discon;
+	p->onattach = (void*)dirlight_attach;
+	p->ondetach = (void*)dirlight_detach;
 	p->ontaking = (void*)dirlight_taking;
 	p->ongiving = (void*)dirlight_giving;
 }

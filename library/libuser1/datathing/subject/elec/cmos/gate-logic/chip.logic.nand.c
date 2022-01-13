@@ -234,10 +234,10 @@ static void nand_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 	tmp = ent->whdf.iz0 + 0x30;
 	give_data_into_peer(ent,'o', stack,sp, 0,0, &tmp,1);
 }
-static void nand_discon(struct halfrel* self, struct halfrel* peer)
+static void nand_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void nand_linkup(struct halfrel* self, struct halfrel* peer)
+static void nand_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -273,8 +273,8 @@ void nand_register(_obj* p)
 	p->onsearch = (void*)nand_search;
 	p->onmodify = (void*)nand_modify;
 
-	p->onlinkup = (void*)nand_linkup;
-	p->ondiscon = (void*)nand_discon;
+	p->onattach = (void*)nand_attach;
+	p->ondetach = (void*)nand_detach;
 	p->ontaking = (void*)nand_taking;
 	p->ongiving = (void*)nand_giving;
 }

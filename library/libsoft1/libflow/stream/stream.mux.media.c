@@ -87,11 +87,11 @@ error:
 	say("err=%d@mediamux\n",ret);
 	return 0;
 }
-int mediamux_discon(struct halfrel* self, struct halfrel* peer)
+int mediamux_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int mediamux_linkup(struct halfrel* self, struct halfrel* peer)
+int mediamux_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

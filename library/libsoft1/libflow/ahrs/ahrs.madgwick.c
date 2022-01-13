@@ -265,14 +265,14 @@ int madgwick_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 	give_data_into_peer(art,_dst_, stack,sp, 0,0, per->q,4);
 	return 0;
 }
-int madgwick_discon(struct halfrel* self, struct halfrel* peer)
+int madgwick_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@madgwick_discon\n");
+	say("@madgwick_detach\n");
 	return 0;
 }
-int madgwick_linkup(struct halfrel* self, struct halfrel* peer)
+int madgwick_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@madgwick_linkup\n");
+	say("@madgwick_attach\n");
 	return 0;
 }
 

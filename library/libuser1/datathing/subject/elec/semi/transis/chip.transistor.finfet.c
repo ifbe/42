@@ -166,10 +166,10 @@ static void finfet_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,in
 static void finfet_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void finfet_discon(struct halfrel* self, struct halfrel* peer)
+static void finfet_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void finfet_linkup(struct halfrel* self, struct halfrel* peer)
+static void finfet_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -202,8 +202,8 @@ void finfet_register(_obj* p)
 	p->onsearch = (void*)finfet_search;
 	p->onmodify = (void*)finfet_modify;
 
-	p->onlinkup = (void*)finfet_linkup;
-	p->ondiscon = (void*)finfet_discon;
+	p->onattach = (void*)finfet_attach;
+	p->ondetach = (void*)finfet_detach;
 	p->ontaking = (void*)finfet_taking;
 	p->ongiving = (void*)finfet_giving;
 }

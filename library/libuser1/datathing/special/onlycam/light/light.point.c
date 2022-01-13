@@ -133,10 +133,10 @@ static void pointlight_giving(_obj* ent,void* foot, _syn* stack,int sp, void* ar
 	if('0' == in[0])ent->ONOFF = 0;
 	if('1' == in[0])ent->ONOFF = 1;
 }
-static void pointlight_discon(struct halfrel* self, struct halfrel* peer)
+static void pointlight_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void pointlight_linkup(struct halfrel* self, struct halfrel* peer)
+static void pointlight_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -181,8 +181,8 @@ void pointlight_register(_obj* p)
 	p->onsearch = (void*)pointlight_search;
 	p->onmodify = (void*)pointlight_modify;
 
-	p->onlinkup = (void*)pointlight_linkup;
-	p->ondiscon = (void*)pointlight_discon;
+	p->onattach = (void*)pointlight_attach;
+	p->ondetach = (void*)pointlight_detach;
 	p->ontaking = (void*)pointlight_taking;
 	p->ongiving = (void*)pointlight_giving;
 }

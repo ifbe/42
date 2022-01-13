@@ -70,10 +70,10 @@ static void rawdump_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 static void rawdump_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void rawdump_discon(struct halfrel* self, struct halfrel* peer)
+static void rawdump_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void rawdump_linkup(struct halfrel* self, struct halfrel* peer)
+static void rawdump_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -118,8 +118,8 @@ void rawdump_register(_obj* p)
 	p->onsearch = (void*)rawdump_search;
 	p->onmodify = (void*)rawdump_modify;
 
-	p->onlinkup = (void*)rawdump_linkup;
-	p->ondiscon = (void*)rawdump_discon;
+	p->onattach = (void*)rawdump_attach;
+	p->ondetach = (void*)rawdump_detach;
 	p->ontaking = (void*)rawdump_taking;
 	p->ongiving = (void*)rawdump_giving;
 }

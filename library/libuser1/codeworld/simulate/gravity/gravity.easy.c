@@ -72,11 +72,11 @@ int graveasy_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key,
 	if(_clk_ == stack[sp-1].foottype)graveasy_working(ent);
 	return 0;
 }
-int graveasy_discon(struct halfrel* self, struct halfrel* peer)
+int graveasy_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int graveasy_linkup(struct halfrel* self, struct halfrel* peer)
+int graveasy_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

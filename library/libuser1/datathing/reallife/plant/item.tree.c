@@ -260,10 +260,10 @@ static void tree_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 static void tree_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void tree_discon(struct halfrel* self, struct halfrel* peer)
+static void tree_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void tree_linkup(struct halfrel* self, struct halfrel* peer)
+static void tree_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -280,8 +280,8 @@ void tree_register(_obj* p)
 	p->onsearch = (void*)tree_search;
 	p->onmodify = (void*)tree_modify;
 
-	p->onlinkup = (void*)tree_linkup;
-	p->ondiscon = (void*)tree_discon;
+	p->onattach = (void*)tree_attach;
+	p->ondetach = (void*)tree_detach;
 	p->ontaking = (void*)tree_taking;
 	p->ongiving = (void*)tree_giving;
 }

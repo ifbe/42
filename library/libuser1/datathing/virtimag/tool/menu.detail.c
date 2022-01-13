@@ -230,12 +230,12 @@ static int detail_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 {
 	return 1;
 }
-static void detail_discon(struct halfrel* self, struct halfrel* peer)
+static void detail_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void detail_linkup(struct halfrel* self, struct halfrel* peer)
+static void detail_attach(struct halfrel* self, struct halfrel* peer)
 {
-    say("@detail_linkup\n");
+    say("@detail_attach\n");
 }
 
 
@@ -268,8 +268,8 @@ void detail_register(_obj* p)
 	p->onsearch = (void*)detail_search;
 	p->onmodify = (void*)detail_modify;
 
-	p->onlinkup = (void*)detail_linkup;
-	p->ondiscon = (void*)detail_discon;
+	p->onattach = (void*)detail_attach;
+	p->ondetach = (void*)detail_detach;
 	p->ontaking = (void*)detail_taking;
 	p->ongiving = (void*)detail_giving;
 }

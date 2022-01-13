@@ -98,10 +98,10 @@ static void spectrum_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,
 static void spectrum_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void spectrum_discon(struct halfrel* self, struct halfrel* peer)
+static void spectrum_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void spectrum_linkup(struct halfrel* self, struct halfrel* peer)
+static void spectrum_attach(struct halfrel* self, struct halfrel* peer)
 {
 	struct datapair* pair;
 	struct mysrc* src;
@@ -208,8 +208,8 @@ void spectrum_register(_obj* p)
 	p->onsearch = (void*)spectrum_search;
 	p->onmodify = (void*)spectrum_modify;
 
-	p->onlinkup = (void*)spectrum_linkup;
-	p->ondiscon = (void*)spectrum_discon;
+	p->onattach = (void*)spectrum_attach;
+	p->ondetach = (void*)spectrum_detach;
 	p->ontaking = (void*)spectrum_taking;
 	p->ongiving = (void*)spectrum_giving;
 }

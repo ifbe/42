@@ -319,10 +319,10 @@ static void graph_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 static void graph_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void graph_discon(struct halfrel* self, struct halfrel* peer)
+static void graph_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void graph_linkup(struct halfrel* self, struct halfrel* peer)
+static void graph_attach(struct halfrel* self, struct halfrel* peer)
 {
 	int j;
 	_obj* act = (void*)(self->chip);
@@ -411,8 +411,8 @@ void graph_register(_obj* p)
 	p->onsearch = (void*)graph_search;
 	p->onmodify = (void*)graph_modify;
 
-	p->onlinkup = (void*)graph_linkup;
-	p->ondiscon = (void*)graph_discon;
+	p->onattach = (void*)graph_attach;
+	p->ondetach = (void*)graph_detach;
 	p->ontaking = (void*)graph_taking;
 	p->ongiving = (void*)graph_giving;
 }

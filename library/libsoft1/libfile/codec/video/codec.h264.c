@@ -42,11 +42,11 @@ int h264_delete(_obj* ele, void* url)
 {
     return 0;
 }
-int h264_linkup(struct halfrel* self, struct halfrel* peer)
+int h264_attach(struct halfrel* self, struct halfrel* peer)
 {
     return 0;
 }
-int h264_discon(struct halfrel* self, struct halfrel* peer)
+int h264_detach(struct halfrel* self, struct halfrel* peer)
 {
     return 0;
 }

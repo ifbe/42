@@ -30,11 +30,11 @@ int search_write(_obj* art,void* foot, _syn* stack,int sp, u8* arg, int idx, voi
 	give_data_into_peer(art,_src_, stack,sp, 0,0, arg,j);
 	return 0;
 }
-int search_discon(struct halfrel* self, struct halfrel* peer)
+int search_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int search_linkup(struct halfrel* self, struct halfrel* peer)
+int search_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

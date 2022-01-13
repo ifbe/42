@@ -133,10 +133,10 @@ static void dna_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int k
 static void dna_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void dna_discon(struct halfrel* self, struct halfrel* peer)
+static void dna_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void dna_linkup(struct halfrel* self, struct halfrel* peer)
+static void dna_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -174,8 +174,8 @@ void dna_register(_obj* p)
 	p->onsearch = (void*)dna_search;
 	p->onmodify = (void*)dna_modify;
 
-	p->onlinkup = (void*)dna_linkup;
-	p->ondiscon = (void*)dna_discon;
+	p->onattach = (void*)dna_attach;
+	p->ondetach = (void*)dna_detach;
 	p->ontaking = (void*)dna_taking;
 	p->ongiving = (void*)dna_giving;
 }

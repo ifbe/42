@@ -53,13 +53,13 @@ int ann_write(_obj* art,void* foot, struct halfrel* stack,int sp, void* arg,int 
 	}
 	return 0;
 }
-int ann_discon(struct halfrel* self, struct halfrel* peer)
+int ann_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int ann_linkup(struct halfrel* self, struct halfrel* peer)
+int ann_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@ann_linkup\n");
+	say("@ann_attach\n");
 	return 0;
 }
 

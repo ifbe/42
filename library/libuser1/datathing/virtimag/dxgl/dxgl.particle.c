@@ -218,10 +218,10 @@ static void particle_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,
 static void particle_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void particle_discon(struct halfrel* self, struct halfrel* peer)
+static void particle_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void particle_linkup(struct halfrel* self, struct halfrel* peer)
+static void particle_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -280,8 +280,8 @@ void particle_register(_obj* p)
 	p->onsearch = (void*)particle_search;
 	p->onmodify = (void*)particle_modify;
 
-	p->onlinkup = (void*)particle_linkup;
-	p->ondiscon = (void*)particle_discon;
+	p->onattach = (void*)particle_attach;
+	p->ondetach = (void*)particle_detach;
 	p->ontaking = (void*)particle_taking;
 	p->ongiving = (void*)particle_giving;
 }

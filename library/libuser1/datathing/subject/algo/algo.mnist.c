@@ -288,11 +288,11 @@ static int mnist_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 	}
 	return 0;
 }
-static int mnist_discon(struct halfrel* self, struct halfrel* peer)
+static int mnist_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-static int mnist_linkup(struct halfrel* self, struct halfrel* peer)
+static int mnist_attach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ent;
 	_obj* art;
@@ -318,8 +318,8 @@ void mnist_register(_obj* p)
 	p->onsearch = (void*)mnist_search;
 	p->onmodify = (void*)mnist_modify;
 
-	p->onlinkup = (void*)mnist_linkup;
-	p->ondiscon = (void*)mnist_discon;
+	p->onattach = (void*)mnist_attach;
+	p->ondetach = (void*)mnist_detach;
 	p->ontaking = (void*)mnist_taking;
 	p->ongiving = (void*)mnist_giving;
 }

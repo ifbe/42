@@ -350,10 +350,10 @@ static void projector_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg
 static void projector_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void projector_discon(struct halfrel* self, struct halfrel* peer)
+static void projector_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void projector_linkup(struct halfrel* self, struct halfrel* peer)
+static void projector_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -415,8 +415,8 @@ void projector_register(_obj* p)
 	p->onsearch = (void*)projector_search;
 	p->onmodify = (void*)projector_modify;
 
-	p->onlinkup = (void*)projector_linkup;
-	p->ondiscon = (void*)projector_discon;
+	p->onattach = (void*)projector_attach;
+	p->ondetach = (void*)projector_detach;
 	p->ontaking = (void*)projector_taking;
 	p->ongiving = (void*)projector_giving;
 }

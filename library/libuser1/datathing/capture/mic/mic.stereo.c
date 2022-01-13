@@ -9,10 +9,10 @@ static void stereo_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 static void stereo_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void stereo_discon(struct halfrel* self, struct halfrel* peer)
+static void stereo_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void stereo_linkup(struct halfrel* self, struct halfrel* peer)
+static void stereo_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -45,8 +45,8 @@ void stereo_register(_obj* p)
 	p->onsearch = (void*)stereo_search;
 	p->onmodify = (void*)stereo_modify;
 
-	p->onlinkup = (void*)stereo_linkup;
-	p->ondiscon = (void*)stereo_discon;
+	p->onattach = (void*)stereo_attach;
+	p->ondetach = (void*)stereo_detach;
 	p->ontaking = (void*)stereo_taking;
 	p->ongiving = (void*)stereo_giving;
 }

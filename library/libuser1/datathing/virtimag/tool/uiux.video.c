@@ -525,10 +525,10 @@ static void video_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 		}
 	}
 }
-static void video_discon(struct halfrel* self, struct halfrel* peer)
+static void video_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void video_linkup(struct halfrel* self, struct halfrel* peer)
+static void video_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -578,8 +578,8 @@ void video_register(_obj* p)
 	p->onsearch = (void*)video_search;
 	p->onmodify = (void*)video_modify;
 
-	p->onlinkup = (void*)video_linkup;
-	p->ondiscon = (void*)video_discon;
+	p->onattach = (void*)video_attach;
+	p->ondetach = (void*)video_detach;
 	p->ontaking = (void*)video_taking;
 	p->ongiving = (void*)video_giving;
 }

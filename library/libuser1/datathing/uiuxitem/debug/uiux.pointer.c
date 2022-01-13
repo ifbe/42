@@ -72,11 +72,11 @@ static int pointer_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 {
 	return 0;
 }
-static int pointer_discon(struct halfrel* self, struct halfrel* peer)
+static int pointer_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-static int pointer_linkup(struct halfrel* self, struct halfrel* peer)
+static int pointer_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -114,8 +114,8 @@ void pointer_register(_obj* p)
 	p->onsearch = (void*)pointer_search;
 	p->onmodify = (void*)pointer_modify;
 
-	p->onlinkup = (void*)pointer_linkup;
-	p->ondiscon = (void*)pointer_discon;
+	p->onattach = (void*)pointer_attach;
+	p->ondetach = (void*)pointer_detach;
 	p->ontaking = (void*)pointer_taking;
 	p->ongiving = (void*)pointer_giving;
 }

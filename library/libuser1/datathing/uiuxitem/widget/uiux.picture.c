@@ -175,10 +175,10 @@ static void picture_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 	say("@picture_write\n");
 	give_data_into_peer(ent,_evto_, stack,sp, 0,0, "calibrate\n", 10);
 }
-static void picture_discon(struct halfrel* self, struct halfrel* peer)
+static void picture_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void picture_linkup(struct halfrel* self, struct halfrel* peer)
+static void picture_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -221,8 +221,8 @@ void picture_register(_obj* p)
 	p->onsearch = (void*)picture_search;
 	p->onmodify = (void*)picture_modify;
 
-	p->onlinkup = (void*)picture_linkup;
-	p->ondiscon = (void*)picture_discon;
+	p->onattach = (void*)picture_attach;
+	p->ondetach = (void*)picture_detach;
 	p->ontaking = (void*)picture_taking;
 	p->ongiving = (void*)picture_giving;
 }

@@ -133,13 +133,14 @@ int supply_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, voi
 
 	return 0;
 }
-int supplydiscon(struct halfrel* self, struct halfrel* peer)
+int supplydetach(struct halfrel* self, struct halfrel* peer)
 {
+	say("@supplydetach\n");
 	return 0;
 }
-int supplylinkup(struct halfrel* self, struct halfrel* peer)
+int supplyattach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@supplylinkup\n");
+	say("@supplyattach\n");
 
 	if(0 == self)return 0;
 

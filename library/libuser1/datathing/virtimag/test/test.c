@@ -185,11 +185,11 @@ int test_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, voi
 {
 	return 0;
 }
-int test_discon(struct halfrel* self, struct halfrel* peer)
+int test_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int test_linkup(struct halfrel* self, struct halfrel* peer)
+int test_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

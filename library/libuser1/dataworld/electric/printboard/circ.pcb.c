@@ -130,13 +130,13 @@ int printboard_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int ke
 {
 	return 0;
 }
-int printboard_discon(struct halfrel* self, struct halfrel* peer)
+int printboard_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int printboard_linkup(struct halfrel* self, struct halfrel* peer)
+int printboard_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@printboard_linkup: %.4s\n", &self->foottype);
+	say("@printboard_attach: %.4s\n", &self->foottype);
 	return 0;
 }
 

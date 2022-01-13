@@ -424,10 +424,10 @@ static void weiqi_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 	}
 	}
 }
-static void weiqi_discon(struct halfrel* self, struct halfrel* peer)
+static void weiqi_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void weiqi_linkup(struct halfrel* self, struct halfrel* peer)
+static void weiqi_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -479,8 +479,8 @@ void weiqi_register(_obj* p)
 	p->onsearch = (void*)weiqi_search;
 	p->onmodify = (void*)weiqi_modify;
 
-	p->onlinkup = (void*)weiqi_linkup;
-	p->ondiscon = (void*)weiqi_discon;
+	p->onattach = (void*)weiqi_attach;
+	p->ondetach = (void*)weiqi_detach;
 	p->ontaking = (void*)weiqi_taking;
 	p->ongiving = (void*)weiqi_giving;
 }

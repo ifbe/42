@@ -13,10 +13,10 @@ static void mahjong_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 static void mahjong_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void mahjong_discon(struct halfrel* self, struct halfrel* peer)
+static void mahjong_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void mahjong_linkup(struct halfrel* self, struct halfrel* peer)
+static void mahjong_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -57,8 +57,8 @@ void mahjong_register(_obj* p)
 	p->onsearch = (void*)mahjong_search;
 	p->onmodify = (void*)mahjong_modify;
 
-	p->onlinkup = (void*)mahjong_linkup;
-	p->ondiscon = (void*)mahjong_discon;
+	p->onattach = (void*)mahjong_attach;
+	p->ondetach = (void*)mahjong_detach;
 	p->ontaking = (void*)mahjong_taking;
 	p->ongiving = (void*)mahjong_giving;
 }

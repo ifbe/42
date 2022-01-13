@@ -246,10 +246,10 @@ static void font_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 	printmemory(buf,16);
 	font_event(ent, 0, buf, len);
 }
-static void font_discon(struct halfrel* self, struct halfrel* peer)
+static void font_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void font_linkup(struct halfrel* self, struct halfrel* peer)
+static void font_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -284,8 +284,8 @@ void font_register(_obj* p)
 	p->onsearch = (void*)font_search;
 	p->onmodify = (void*)font_modify;
 
-	p->onlinkup = (void*)font_linkup;
-	p->ondiscon = (void*)font_discon;
+	p->onattach = (void*)font_attach;
+	p->ondetach = (void*)font_detach;
 	p->ontaking = (void*)font_taking;
 	p->ongiving = (void*)font_giving;
 }

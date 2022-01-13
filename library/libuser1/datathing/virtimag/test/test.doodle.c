@@ -166,10 +166,10 @@ static void doodle_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 static void doodle_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void doodle_discon(struct halfrel* self, struct halfrel* peer)
+static void doodle_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void doodle_linkup(struct halfrel* self, struct halfrel* peer)
+static void doodle_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -202,8 +202,8 @@ void doodle_register(_obj* p)
 	p->onsearch = (void*)doodle_search;
 	p->onmodify = (void*)doodle_modify;
 
-	p->onlinkup = (void*)doodle_linkup;
-	p->ondiscon = (void*)doodle_discon;
+	p->onattach = (void*)doodle_attach;
+	p->ondetach = (void*)doodle_detach;
 	p->ontaking = (void*)doodle_taking;
 	p->ongiving = (void*)doodle_giving;
 }

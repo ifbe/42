@@ -58,11 +58,11 @@ int recut_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8
 	perobj->deq = deq;
 	return 0;
 }
-int recut_discon(struct halfrel* self, struct halfrel* peer)
+int recut_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int recut_linkup(struct halfrel* self, struct halfrel* peer)
+int recut_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

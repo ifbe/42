@@ -14,14 +14,14 @@ int fuckgfwclient_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 
 	return 0;
 }
-int fuckgfwclient_discon(struct halfrel* self, struct halfrel* peer)
+int fuckgfwclient_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@fuckgfwclient_discon: %.4s\n", &self->foottype);
+	say("@fuckgfwclient_detach: %.4s\n", &self->foottype);
 	return 0;
 }
-int fuckgfwclient_linkup(struct halfrel* self, struct halfrel* peer)
+int fuckgfwclient_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@fuckgfwclient_linkup: %.4s\n", &self->foottype);
+	say("@fuckgfwclient_attach: %.4s\n", &self->foottype);
 	return 0;
 }
 int fuckgfwclient_delete(_obj* ele)
@@ -65,14 +65,14 @@ int fuckgfwserver_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 	}
 	return 0;
 }
-int fuckgfwserver_discon(struct halfrel* self, struct halfrel* peer)
+int fuckgfwserver_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@fuckgfwserver_discon: %.4s\n", &self->foottype);
+	say("@fuckgfwserver_detach: %.4s\n", &self->foottype);
 	return 0;
 }
-int fuckgfwserver_linkup(struct halfrel* self, struct halfrel* peer)
+int fuckgfwserver_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@fuckgfwserver_linkup: %.4s\n", &self->foottype);
+	say("@fuckgfwserver_attach: %.4s\n", &self->foottype);
 	return 0;
 }
 int fuckgfwserver_delete(_obj* ele)
@@ -117,13 +117,13 @@ int fuckgfwmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 	relationcreate(Fuckgfw, 0, _art_, _src_, Tcp, 0, _sys_, _dst_);
 	return 0;
 }
-int fuckgfwmaster_discon(struct halfrel* self, struct halfrel* peer)
+int fuckgfwmaster_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int fuckgfwmaster_linkup(struct halfrel* self, struct halfrel* peer)
+int fuckgfwmaster_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@fuckgfwmaster_linkup\n");
+	say("@fuckgfwmaster_attach\n");
 	return 0;
 }
 int fuckgfwmaster_delete(_obj* ele)

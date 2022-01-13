@@ -532,10 +532,10 @@ static void terrain_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 {
 	if(_int_ == stack[sp-1].foottype)terrain_modify_matter(ent, buf,len);
 }
-static void terrain_discon(struct halfrel* self, struct halfrel* peer)
+static void terrain_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void terrain_linkup(struct halfrel* self, struct halfrel* peer)
+static void terrain_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -617,8 +617,8 @@ void terrain_register(_obj* p)
 	p->onsearch = (void*)terrain_search;
 	p->onmodify = (void*)terrain_modify;
 
-	p->onlinkup = (void*)terrain_linkup;
-	p->ondiscon = (void*)terrain_discon;
+	p->onattach = (void*)terrain_attach;
+	p->ondetach = (void*)terrain_detach;
 	p->ontaking = (void*)terrain_taking;
 	p->ongiving = (void*)terrain_giving;
 }

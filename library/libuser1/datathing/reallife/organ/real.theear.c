@@ -10,10 +10,10 @@ static void theear_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 static void theear_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void theear_discon(struct halfrel* self, struct halfrel* peer)
+static void theear_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void theear_linkup(struct halfrel* self, struct halfrel* peer)
+static void theear_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -46,8 +46,8 @@ void theear_register(_obj* p)
 	p->onsearch = (void*)theear_search;
 	p->onmodify = (void*)theear_modify;
 
-	p->onlinkup = (void*)theear_linkup;
-	p->ondiscon = (void*)theear_discon;
+	p->onattach = (void*)theear_attach;
+	p->ondetach = (void*)theear_detach;
 	p->ontaking = (void*)theear_taking;
 	p->ongiving = (void*)theear_giving;
 }

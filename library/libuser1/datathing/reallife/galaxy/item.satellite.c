@@ -199,12 +199,12 @@ static void satellite_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg
 	ent->latitude = f[1];
 	ent->altitude = f[2];
 }
-static void satellite_discon(struct halfrel* self, struct halfrel* peer)
+static void satellite_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void satellite_linkup(struct halfrel* self, struct halfrel* peer)
+static void satellite_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@satellite_linkup\n");
+	say("@satellite_attach\n");
 }
 
 
@@ -248,8 +248,8 @@ void satellite_register(_obj* p)
 	p->onsearch = (void*)satellite_search;
 	p->onmodify = (void*)satellite_modify;
 
-	p->onlinkup = (void*)satellite_linkup;
-	p->ondiscon = (void*)satellite_discon;
+	p->onattach = (void*)satellite_attach;
+	p->ondetach = (void*)satellite_detach;
 	p->ontaking = (void*)satellite_taking;
 	p->ongiving = (void*)satellite_giving;
 }

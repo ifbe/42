@@ -248,11 +248,11 @@ static int vjoy_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int k
 	}
 	return 0;
 }
-static int vjoy_discon(struct halfrel* self, struct halfrel* peer)
+static int vjoy_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-static int vjoy_linkup(struct halfrel* self, struct halfrel* peer)
+static int vjoy_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -270,8 +270,8 @@ void vjoy_register(_obj* p)
 	p->onsearch = (void*)vjoy_search;
 	p->onmodify = (void*)vjoy_modify;
 
-	p->onlinkup = (void*)vjoy_linkup;
-	p->ondiscon = (void*)vjoy_discon;
+	p->onattach = (void*)vjoy_attach;
+	p->ondetach = (void*)vjoy_detach;
 	p->ontaking = (void*)vjoy_taking;
 	p->ongiving = (void*)vjoy_giving;
 }

@@ -95,7 +95,7 @@ void term_window(int argc, u8** argv)
 	struct style* termfoot = style_alloc();
 
 	struct relation* rel = relationcreate(ent,termfoot, _ent_,0, wnd,toterm, _sup_,0);
-	relationlinkup((void*)&rel->srcchip, (void*)&rel->dstchip);
+	relationattach((void*)&rel->srcchip, (void*)&rel->dstchip);
 }
 void term_ls(u8* buf, int len)
 {

@@ -630,11 +630,11 @@ int hfsclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx
 {
 	return 0;
 }
-int hfsclient_discon(struct halfrel* self, struct halfrel* peer)
+int hfsclient_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int hfsclient_linkup(struct halfrel* self, struct halfrel* peer)
+int hfsclient_attach(struct halfrel* self, struct halfrel* peer)
 {
 	if(_src_ != self->foottype)return 0;
 

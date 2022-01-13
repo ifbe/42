@@ -189,11 +189,11 @@ static int truth_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int 
 	}
 	return 0;
 }
-static int truth_discon(struct halfrel* self, struct halfrel* peer)
+static int truth_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-static int truth_linkup(struct halfrel* self, struct halfrel* peer)
+static int truth_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -211,8 +211,8 @@ void truth_register(_obj* p)
 	p->onsearch = (void*)truth_search;
 	p->onmodify = (void*)truth_modify;
 
-	p->onlinkup = (void*)truth_linkup;
-	p->ondiscon = (void*)truth_discon;
+	p->onattach = (void*)truth_attach;
+	p->ondetach = (void*)truth_detach;
 	p->ontaking = (void*)truth_taking;
 	p->ongiving = (void*)truth_giving;
 }

@@ -13,11 +13,11 @@ int vncclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx
 	printmemory(buf, len);
 	return 0;
 }
-int vncclient_discon(struct halfrel* self, struct halfrel* peer)
+int vncclient_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int vncclient_linkup(struct halfrel* self, struct halfrel* peer)
+int vncclient_attach(struct halfrel* self, struct halfrel* peer)
 {
 	int len;
 	u8* buf[32];
@@ -47,11 +47,11 @@ int vncserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx
 {
 	return 0;
 }
-int vncserver_discon(struct halfrel* self, struct halfrel* peer)
+int vncserver_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int vncserver_linkup(struct halfrel* self, struct halfrel* peer)
+int vncserver_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -75,11 +75,11 @@ int vncmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx
 {
 	return 0;
 }
-int vncmaster_discon(struct halfrel* self, struct halfrel* peer)
+int vncmaster_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int vncmaster_linkup(struct halfrel* self, struct halfrel* peer)
+int vncmaster_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

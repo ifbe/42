@@ -16,11 +16,11 @@ int echo_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, voi
 	say("@echo_write\n");
 	return give_data_into_peer(art,_src_, stack,sp, 0,0, buf,len);
 }
-int echo_discon(struct halfrel* self, struct halfrel* peer)
+int echo_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int echo_linkup(struct halfrel* self, struct halfrel* peer)
+int echo_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

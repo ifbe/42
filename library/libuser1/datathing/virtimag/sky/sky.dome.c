@@ -167,10 +167,10 @@ static void skydome_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 static void skydome_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void skydome_discon(struct halfrel* self, struct halfrel* peer)
+static void skydome_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void skydome_linkup(struct halfrel* self, struct halfrel* peer)
+static void skydome_attach(struct halfrel* self, struct halfrel* peer)
 {
 /*
 	//
@@ -243,8 +243,8 @@ void skydome_register(_obj* p)
 	p->onsearch = (void*)skydome_search;
 	p->onmodify = (void*)skydome_modify;
 
-	p->onlinkup = (void*)skydome_linkup;
-	p->ondiscon = (void*)skydome_discon;
+	p->onattach = (void*)skydome_attach;
+	p->ondetach = (void*)skydome_detach;
 	p->ontaking = (void*)skydome_taking;
 	p->ongiving = (void*)skydome_giving;
 }

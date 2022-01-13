@@ -97,10 +97,10 @@ static void tg_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int ke
 static void tg_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void tg_discon(struct halfrel* self, struct halfrel* peer)
+static void tg_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void tg_linkup(struct halfrel* self, struct halfrel* peer)
+static void tg_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -133,8 +133,8 @@ void tg_register(_obj* p)
 	p->onsearch = (void*)tg_search;
 	p->onmodify = (void*)tg_modify;
 
-	p->onlinkup = (void*)tg_linkup;
-	p->ondiscon = (void*)tg_discon;
+	p->onattach = (void*)tg_attach;
+	p->ondetach = (void*)tg_detach;
 	p->ontaking = (void*)tg_taking;
 	p->ongiving = (void*)tg_giving;
 }

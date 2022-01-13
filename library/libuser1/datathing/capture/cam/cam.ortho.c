@@ -269,12 +269,12 @@ static int orthcam_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 	if(EVSEND == ent->EVTYPE)give_data_into_peer(ent,_evto_, stack,sp, arg,key, buf,len);
 	return 0;
 }
-static void orthcam_discon(struct halfrel* self, struct halfrel* peer)
+static void orthcam_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void orthcam_linkup(struct halfrel* self, struct halfrel* peer)
+static void orthcam_attach(struct halfrel* self, struct halfrel* peer)
 {
-    say("@orthcam_linkup\n");
+    say("@orthcam_attach\n");
 	if(_evto_ == self->foottype){
 		_obj* cam = self->pchip;
 		cam->EVTYPE = EVSEND;
@@ -294,8 +294,8 @@ void orthcam_register(_obj* p)
 	p->onsearch = (void*)orthcam_search;
 	p->onmodify = (void*)orthcam_modify;
 
-	p->onlinkup = (void*)orthcam_linkup;
-	p->ondiscon = (void*)orthcam_discon;
+	p->onattach = (void*)orthcam_attach;
+	p->ondetach = (void*)orthcam_detach;
 	p->ontaking = (void*)orthcam_taking;
 	p->ongiving = (void*)orthcam_giving;
 }

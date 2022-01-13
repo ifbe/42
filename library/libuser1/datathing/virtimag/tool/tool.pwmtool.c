@@ -117,10 +117,10 @@ static void pwmtool_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 static void pwmtool_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void pwmtool_discon(struct halfrel* self, struct halfrel* peer)
+static void pwmtool_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void pwmtool_linkup(struct halfrel* self, struct halfrel* peer)
+static void pwmtool_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -160,8 +160,8 @@ void pwmtool_register(_obj* p)
 	p->onsearch = (void*)pwmtool_search;
 	p->onmodify = (void*)pwmtool_modify;
 
-	p->onlinkup = (void*)pwmtool_linkup;
-	p->ondiscon = (void*)pwmtool_discon;
+	p->onattach = (void*)pwmtool_attach;
+	p->ondetach = (void*)pwmtool_detach;
 	p->ontaking = (void*)pwmtool_taking;
 	p->ongiving = (void*)pwmtool_giving;
 }

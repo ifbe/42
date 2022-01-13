@@ -115,10 +115,10 @@ static void ch4_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int k
 static void ch4_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void ch4_discon(struct halfrel* self, struct halfrel* peer)
+static void ch4_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void ch4_linkup(struct halfrel* self, struct halfrel* peer)
+static void ch4_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -135,8 +135,8 @@ void ch4_register(_obj* p)
 	p->onsearch = (void*)ch4_search;
 	p->onmodify = (void*)ch4_modify;
 
-	p->onlinkup = (void*)ch4_linkup;
-	p->ondiscon = (void*)ch4_discon;
+	p->onattach = (void*)ch4_attach;
+	p->ondetach = (void*)ch4_detach;
 	p->ontaking = (void*)ch4_taking;
 	p->ongiving = (void*)ch4_giving;
 }

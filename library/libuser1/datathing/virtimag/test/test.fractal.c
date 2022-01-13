@@ -277,10 +277,10 @@ static void fractal_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 static void fractal_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void fractal_discon(struct halfrel* self, struct halfrel* peer)
+static void fractal_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void fractal_linkup(struct halfrel* self, struct halfrel* peer)
+static void fractal_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -335,8 +335,8 @@ void fractal_register(_obj* p)
 	p->onsearch = (void*)fractal_search;
 	p->onmodify = (void*)fractal_modify;
 
-	p->onlinkup = (void*)fractal_linkup;
-	p->ondiscon = (void*)fractal_discon;
+	p->onattach = (void*)fractal_attach;
+	p->ondetach = (void*)fractal_detach;
 	p->ontaking = (void*)fractal_taking;
 	p->ongiving = (void*)fractal_giving;
 }

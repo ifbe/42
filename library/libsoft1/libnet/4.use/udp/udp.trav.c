@@ -77,13 +77,13 @@ int udptravclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int
 	printmemory(buf,len);
 	return 0;
 }
-int udptravclient_discon(struct halfrel* self, struct halfrel* peer)
+int udptravclient_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int udptravclient_linkup(struct halfrel* self, struct halfrel* peer)
+int udptravclient_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@udptravclient_linkup: %.4s\n", &self->foottype);
+	say("@udptravclient_attach: %.4s\n", &self->foottype);
 	return 0;
 }
 int udptravclient_delete(_obj* art)
@@ -113,11 +113,11 @@ int udptravserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int
 {
 	return 0;
 }
-int udptravserver_discon(struct halfrel* self, struct halfrel* peer)
+int udptravserver_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int udptravserver_linkup(struct halfrel* self, struct halfrel* peer)
+int udptravserver_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -163,14 +163,14 @@ int udptravmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int
 	}
 	return 0;
 }
-int udptravmaster_linkup(struct halfrel* self, struct halfrel* peer)
+int udptravmaster_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@udptravmaster_linkup: %.4s\n", &self->foottype);
+	say("@udptravmaster_attach: %.4s\n", &self->foottype);
 	return 0;
 }
-int udptravmaster_discon(struct halfrel* self, struct halfrel* peer)
+int udptravmaster_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@udptravmaster_discon: %.4s\n", &self->foottype);
+	say("@udptravmaster_detach: %.4s\n", &self->foottype);
 	return 0;
 }
 int udptravmaster_delete(_obj* art)

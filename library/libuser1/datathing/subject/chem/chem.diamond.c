@@ -106,10 +106,10 @@ static void diamond_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 static void diamond_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void diamond_discon(struct halfrel* self, struct halfrel* peer)
+static void diamond_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void diamond_linkup(struct halfrel* self, struct halfrel* peer)
+static void diamond_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -126,8 +126,8 @@ void diamond_register(_obj* p)
 	p->onsearch = (void*)diamond_search;
 	p->onmodify = (void*)diamond_modify;
 
-	p->onlinkup = (void*)diamond_linkup;
-	p->ondiscon = (void*)diamond_discon;
+	p->onattach = (void*)diamond_attach;
+	p->ondetach = (void*)diamond_detach;
 	p->ontaking = (void*)diamond_taking;
 	p->ongiving = (void*)diamond_giving;
 }

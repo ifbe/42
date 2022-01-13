@@ -331,10 +331,10 @@ static void obj3d_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int
 static void obj3d_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void obj3d_discon(struct halfrel* self, struct halfrel* peer)
+static void obj3d_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void obj3d_linkup(struct halfrel* self, struct halfrel* peer)
+static void obj3d_attach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* act = self->pchip;
 	if(0 == act)return;
@@ -443,8 +443,8 @@ void obj3d_register(_obj* p)
 	p->onsearch = (void*)obj3d_search;
 	p->onmodify = (void*)obj3d_modify;
 
-	p->onlinkup = (void*)obj3d_linkup;
-	p->ondiscon = (void*)obj3d_discon;
+	p->onattach = (void*)obj3d_attach;
+	p->ondetach = (void*)obj3d_detach;
 	p->ontaking = (void*)obj3d_taking;
 	p->ongiving = (void*)obj3d_giving;
 }

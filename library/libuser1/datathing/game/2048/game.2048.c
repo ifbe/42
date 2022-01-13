@@ -487,10 +487,10 @@ static void the2048_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 	default:the2048_event(ent, buf);
 	}
 }
-static void the2048_discon(struct halfrel* self, struct halfrel* peer)
+static void the2048_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void the2048_linkup(struct halfrel* self, struct halfrel* peer)
+static void the2048_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -507,8 +507,8 @@ void the2048_register(_obj* p)
 	p->onsearch = (void*)the2048_search;
 	p->onmodify = (void*)the2048_modify;
 
-	p->onlinkup = (void*)the2048_linkup;
-	p->ondiscon = (void*)the2048_discon;
+	p->onattach = (void*)the2048_attach;
+	p->ondetach = (void*)the2048_detach;
 	p->ontaking = (void*)the2048_taking;
 	p->ongiving = (void*)the2048_giving;
 }

@@ -221,11 +221,11 @@ int htmlroot_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key,
 	}
 	return 0;
 }
-int htmlroot_discon(struct halfrel* self, struct halfrel* peer)
+int htmlroot_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int htmlroot_linkup(struct halfrel* self, struct halfrel* peer)
+int htmlroot_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

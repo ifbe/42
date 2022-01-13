@@ -221,10 +221,10 @@ static void dancemat_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,
 		case _art_:dancemat_write_data(ent, src, buf, len);break;
 	}
 }
-static void dancemat_discon(struct halfrel* self, struct halfrel* peer)
+static void dancemat_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void dancemat_linkup(struct halfrel* self, struct halfrel* peer)
+static void dancemat_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -346,8 +346,8 @@ void dancemat_register(_obj* p)
 	p->onsearch = (void*)dancemat_search;
 	p->onmodify = (void*)dancemat_modify;
 
-	p->onlinkup = (void*)dancemat_linkup;
-	p->ondiscon = (void*)dancemat_discon;
+	p->onattach = (void*)dancemat_attach;
+	p->ondetach = (void*)dancemat_detach;
 	p->ontaking = (void*)dancemat_taking;
 	p->ongiving = (void*)dancemat_giving;
 }

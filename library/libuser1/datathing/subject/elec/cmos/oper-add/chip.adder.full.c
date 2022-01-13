@@ -377,10 +377,10 @@ static void fulladd_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 		}
 	}
 }
-static void fulladd_discon(struct halfrel* self, struct halfrel* peer)
+static void fulladd_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void fulladd_linkup(struct halfrel* self, struct halfrel* peer)
+static void fulladd_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -419,8 +419,8 @@ void fulladd_register(_obj* p)
 	p->onsearch = (void*)fulladd_search;
 	p->onmodify = (void*)fulladd_modify;
 
-	p->onlinkup = (void*)fulladd_linkup;
-	p->ondiscon = (void*)fulladd_discon;
+	p->onattach = (void*)fulladd_attach;
+	p->ondetach = (void*)fulladd_detach;
 	p->ontaking = (void*)fulladd_taking;
 	p->ongiving = (void*)fulladd_giving;
 }

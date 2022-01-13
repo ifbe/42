@@ -83,10 +83,10 @@ static void graphene_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,
 static void graphene_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void graphene_discon(struct halfrel* self, struct halfrel* peer)
+static void graphene_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void graphene_linkup(struct halfrel* self, struct halfrel* peer)
+static void graphene_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -103,8 +103,8 @@ void graphene_register(_obj* p)
 	p->onsearch = (void*)graphene_search;
 	p->onmodify = (void*)graphene_modify;
 
-	p->onlinkup = (void*)graphene_linkup;
-	p->ondiscon = (void*)graphene_discon;
+	p->onattach = (void*)graphene_attach;
+	p->ondetach = (void*)graphene_detach;
 	p->ontaking = (void*)graphene_taking;
 	p->ongiving = (void*)graphene_giving;
 }

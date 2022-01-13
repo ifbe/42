@@ -102,10 +102,10 @@ static void minimap_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 static void minimap_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void minimap_discon(struct halfrel* self, struct halfrel* peer)
+static void minimap_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void minimap_linkup(struct halfrel* self, struct halfrel* peer)
+static void minimap_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -138,8 +138,8 @@ void minimap_register(_obj* p)
 	p->onsearch = (void*)minimap_search;
 	p->onmodify = (void*)minimap_modify;
 
-	p->onlinkup = (void*)minimap_linkup;
-	p->ondiscon = (void*)minimap_discon;
+	p->onattach = (void*)minimap_attach;
+	p->ondetach = (void*)minimap_detach;
 	p->ontaking = (void*)minimap_taking;
 	p->ongiving = (void*)minimap_giving;
 }

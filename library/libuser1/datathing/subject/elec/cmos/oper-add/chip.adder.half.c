@@ -99,10 +99,10 @@ static void halfadd_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 	tmp = ent->whdf.iy0 + 0x30;
 	give_data_into_peer(ent,'o', stack,sp, 0,0, &tmp,1);
 }
-static void halfadd_discon(struct halfrel* self, struct halfrel* peer)
+static void halfadd_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void halfadd_linkup(struct halfrel* self, struct halfrel* peer)
+static void halfadd_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -137,8 +137,8 @@ void halfadd_register(_obj* p)
 	p->onsearch = (void*)halfadd_search;
 	p->onmodify = (void*)halfadd_modify;
 
-	p->onlinkup = (void*)halfadd_linkup;
-	p->ondiscon = (void*)halfadd_discon;
+	p->onattach = (void*)halfadd_attach;
+	p->ondetach = (void*)halfadd_detach;
 	p->ontaking = (void*)halfadd_taking;
 	p->ongiving = (void*)halfadd_giving;
 }

@@ -171,10 +171,10 @@ static void not_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int k
 	tmp = ent->whdf.iy0 + 0x30;
 	give_data_into_peer(ent,'o', stack,sp, 0,0, &tmp,1);
 }
-static void not_discon(struct halfrel* self, struct halfrel* peer)
+static void not_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void not_linkup(struct halfrel* self, struct halfrel* peer)
+static void not_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -209,8 +209,8 @@ void not_register(_obj* p)
 	p->onsearch = (void*)not_search;
 	p->onmodify = (void*)not_modify;
 
-	p->onlinkup = (void*)not_linkup;
-	p->ondiscon = (void*)not_discon;
+	p->onattach = (void*)not_attach;
+	p->ondetach = (void*)not_detach;
 	p->ontaking = (void*)not_taking;
 	p->ongiving = (void*)not_giving;
 }

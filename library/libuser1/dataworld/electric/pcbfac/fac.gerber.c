@@ -262,10 +262,10 @@ static void gerber_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,in
 static void gerber_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void gerber_discon(struct halfrel* self, struct halfrel* peer)
+static void gerber_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void gerber_linkup(struct halfrel* self, struct halfrel* peer)
+static void gerber_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -282,8 +282,8 @@ void gerber_register(_obj* p)
 	p->onsearch = (void*)gerber_search;
 	p->onmodify = (void*)gerber_modify;
 
-	p->onlinkup = (void*)gerber_linkup;
-	p->ondiscon = (void*)gerber_discon;
+	p->onattach = (void*)gerber_attach;
+	p->ondetach = (void*)gerber_detach;
 	p->ontaking = (void*)gerber_taking;
 	p->ongiving = (void*)gerber_giving;
 }

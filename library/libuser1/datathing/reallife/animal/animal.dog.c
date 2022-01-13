@@ -221,10 +221,10 @@ static void robodog_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 		robodog_write_float(ent,buf,len);
 	}
 }
-static void robodog_discon(struct halfrel* self, struct halfrel* peer)
+static void robodog_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void robodog_linkup(struct halfrel* self, struct halfrel* peer)
+static void robodog_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -275,8 +275,8 @@ void robodog_register(_obj* p)
 	p->onsearch = (void*)robodog_search;
 	p->onmodify = (void*)robodog_modify;
 
-	p->onlinkup = (void*)robodog_linkup;
-	p->ondiscon = (void*)robodog_discon;
+	p->onattach = (void*)robodog_attach;
+	p->ondetach = (void*)robodog_detach;
 	p->ontaking = (void*)robodog_taking;
 	p->ongiving = (void*)robodog_giving;
 }

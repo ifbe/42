@@ -26,11 +26,11 @@ int control_write(_obj* art,void* foot, _syn* stack,int sp, u8* arg, int idx, vo
 	give_data_into_peer(art,_src_, stack,sp, "text/html",0, art->buf0,art->len);*/
 	return 0;
 }
-int control_discon(struct halfrel* self, struct halfrel* peer)
+int control_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int control_linkup(struct halfrel* self, struct halfrel* peer)
+int control_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

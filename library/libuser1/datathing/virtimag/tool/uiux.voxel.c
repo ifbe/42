@@ -160,12 +160,12 @@ static void voxel_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 		break;
 	}
 }
-static void voxel_discon(struct halfrel* self, struct halfrel* peer)
+static void voxel_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void voxel_linkup(struct halfrel* self, struct halfrel* peer)
+static void voxel_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@voxel_linkup\n");
+	say("@voxel_attach\n");
 }
 
 
@@ -199,8 +199,8 @@ void voxel_register(_obj* p)
 	p->onsearch = (void*)voxel_search;
 	p->onmodify = (void*)voxel_modify;
 
-	p->onlinkup = (void*)voxel_linkup;
-	p->ondiscon = (void*)voxel_discon;
+	p->onattach = (void*)voxel_attach;
+	p->ondetach = (void*)voxel_detach;
 	p->ontaking = (void*)voxel_taking;
 	p->ongiving = (void*)voxel_giving;
 }

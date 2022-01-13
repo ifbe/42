@@ -299,10 +299,10 @@ static void sudoku_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 static void sudoku_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void sudoku_discon(struct halfrel* self, struct halfrel* peer)
+static void sudoku_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void sudoku_linkup(struct halfrel* self, struct halfrel* peer)
+static void sudoku_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -355,8 +355,8 @@ void sudoku_register(_obj* p)
 	p->onsearch = (void*)sudoku_search;
 	p->onmodify = (void*)sudoku_modify;
 
-	p->onlinkup = (void*)sudoku_linkup;
-	p->ondiscon = (void*)sudoku_discon;
+	p->onattach = (void*)sudoku_attach;
+	p->ondetach = (void*)sudoku_detach;
 	p->ontaking = (void*)sudoku_taking;
 	p->ongiving = (void*)sudoku_giving;
 }

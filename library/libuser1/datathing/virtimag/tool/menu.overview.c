@@ -1271,12 +1271,12 @@ static int overview_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 	}
 	return 0;
 }
-static void overview_discon(struct halfrel* self, struct halfrel* peer)
+static void overview_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void overview_linkup(struct halfrel* self, struct halfrel* peer)
+static void overview_attach(struct halfrel* self, struct halfrel* peer)
 {
-    say("@overview_linkup\n");
+    say("@overview_attach\n");
 }
 
 
@@ -1309,8 +1309,8 @@ void overview_register(_obj* p)
 	p->onsearch = (void*)overview_search;
 	p->onmodify = (void*)overview_modify;
 
-	p->onlinkup = (void*)overview_linkup;
-	p->ondiscon = (void*)overview_discon;
+	p->onattach = (void*)overview_attach;
+	p->ondetach = (void*)overview_detach;
 	p->ontaking = (void*)overview_taking;
 	p->ongiving = (void*)overview_giving;
 }

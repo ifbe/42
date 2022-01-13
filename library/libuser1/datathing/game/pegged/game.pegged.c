@@ -175,10 +175,10 @@ static void pegged_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 static void pegged_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void pegged_discon(struct halfrel* self, struct halfrel* peer)
+static void pegged_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void pegged_linkup(struct halfrel* self, struct halfrel* peer)
+static void pegged_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -227,8 +227,8 @@ void pegged_register(_obj* p)
 	p->onsearch = (void*)pegged_search;
 	p->onmodify = (void*)pegged_modify;
 
-	p->onlinkup = (void*)pegged_linkup;
-	p->ondiscon = (void*)pegged_discon;
+	p->onattach = (void*)pegged_attach;
+	p->ondetach = (void*)pegged_detach;
 	p->ontaking = (void*)pegged_taking;
 	p->ongiving = (void*)pegged_giving;
 }

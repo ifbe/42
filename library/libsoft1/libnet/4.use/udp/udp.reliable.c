@@ -11,7 +11,7 @@ int reliableclient_write(struct halfrel* self, struct halfrel* peer, void* arg, 
 {
 	return 0;
 }
-int reliableclient_linkup(struct halfrel* self, struct halfrel* peer)
+int reliableclient_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -35,11 +35,11 @@ int reliableserver_write(struct halfrel* self, struct halfrel* peer, void* arg, 
 {
 	return 0;
 }
-int reliableserver_discon(struct halfrel* self, struct halfrel* peer)
+int reliableserver_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int reliableserver_linkup(struct halfrel* self, struct halfrel* peer)
+int reliableserver_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -63,11 +63,11 @@ int reliablemaster_write(struct halfrel* self, struct halfrel* peer, void* arg, 
 {
 	return 0;
 }
-int reliablemaster_linkup(struct halfrel* self, struct halfrel* peer)
+int reliablemaster_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int reliablemaster_discon(struct halfrel* self, struct halfrel* peer)
+int reliablemaster_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

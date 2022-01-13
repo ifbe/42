@@ -149,7 +149,7 @@ int mount_mbr_one(_obj* art, struct mbrpart* part)
 		if(0 == tmp)return 0;
 		struct relation* rel = relationcreate(tmp,0,_art_,_src_, art,(void*)(start<<9),_art_,_dst_);
 		if(0 == rel)return 0;
-		arterylinkup((void*)&rel->dst, (void*)&rel->src);
+		arteryattach((void*)&rel->dst, (void*)&rel->src);
 		break;
 	}
 	}//switch
@@ -207,13 +207,13 @@ static int mbrclient_ongive(_obj* art,void* foot, _syn* stack,int sp, u8* arg, i
 
 
 
-int mbrclient_discon(struct halfrel* self, struct halfrel* peer)
+int mbrclient_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int mbrclient_linkup(struct halfrel* self, struct halfrel* peer)
+int mbrclient_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@mbrclient_linkup:%x\n",self->foottype);
+	say("@mbrclient_attach:%x\n",self->foottype);
 	_obj* ele = self->pchip;
 	if(0 == ele)return 0;
 	void* buf = ele->listptr.buf0;

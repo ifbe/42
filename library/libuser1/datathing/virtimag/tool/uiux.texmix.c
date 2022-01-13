@@ -247,10 +247,10 @@ static int texmix_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int
 static void texmix_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void texmix_discon(struct halfrel* self, struct halfrel* peer)
+static void texmix_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void texmix_linkup(struct halfrel* self, struct halfrel* peer)
+static void texmix_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -267,8 +267,8 @@ void texmix_register(_obj* p)
 	p->onsearch = (void*)texmix_search;
 	p->onmodify = (void*)texmix_modify;
 
-	p->onlinkup = (void*)texmix_linkup;
-	p->ondiscon = (void*)texmix_discon;
+	p->onattach = (void*)texmix_attach;
+	p->ondetach = (void*)texmix_detach;
 	p->ontaking = (void*)texmix_taking;
 	p->ongiving = (void*)texmix_giving;
 }

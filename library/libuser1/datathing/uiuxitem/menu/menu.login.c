@@ -105,10 +105,10 @@ static void login_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int
 static void login_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void login_discon(struct halfrel* self, struct halfrel* peer)
+static void login_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void login_linkup(struct halfrel* self, struct halfrel* peer)
+static void login_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -146,8 +146,8 @@ void login_register(_obj* p)
 	p->onsearch = (void*)login_search;
 	p->onmodify = (void*)login_modify;
 
-	p->onlinkup = (void*)login_linkup;
-	p->ondiscon = (void*)login_discon;
+	p->onattach = (void*)login_attach;
+	p->ondetach = (void*)login_detach;
 	p->ontaking = (void*)login_taking;
 	p->ongiving = (void*)login_giving;
 }

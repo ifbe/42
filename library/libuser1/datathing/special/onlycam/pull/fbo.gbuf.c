@@ -299,10 +299,10 @@ static void gbuffer_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 		give_data_into_peer(ent,_fbog_, stack,sp, arg,key, buf,len);
 	}
 }
-static void gbuffer_discon(struct halfrel* self, struct halfrel* peer)
+static void gbuffer_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void gbuffer_linkup(struct halfrel* self, struct halfrel* peer)
+static void gbuffer_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -319,8 +319,8 @@ void gbuffer_register(_obj* p)
 	p->onsearch = (void*)gbuffer_search;
 	p->onmodify = (void*)gbuffer_modify;
 
-	p->onlinkup = (void*)gbuffer_linkup;
-	p->ondiscon = (void*)gbuffer_discon;
+	p->onattach = (void*)gbuffer_attach;
+	p->ondetach = (void*)gbuffer_detach;
 	p->ontaking = (void*)gbuffer_taking;
 	p->ongiving = (void*)gbuffer_giving;
 }

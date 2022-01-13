@@ -109,10 +109,10 @@ static void grass_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 static void grass_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void grass_discon(struct halfrel* self, struct halfrel* peer)
+static void grass_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void grass_linkup(struct halfrel* self, struct halfrel* peer)
+static void grass_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -161,8 +161,8 @@ void grass_register(_obj* p)
 	p->onsearch = (void*)grass_search;
 	p->onmodify = (void*)grass_modify;
 
-	p->onlinkup = (void*)grass_linkup;
-	p->ondiscon = (void*)grass_discon;
+	p->onattach = (void*)grass_attach;
+	p->ondetach = (void*)grass_detach;
 	p->ontaking = (void*)grass_taking;
 	p->ongiving = (void*)grass_giving;
 }

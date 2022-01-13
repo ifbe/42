@@ -77,10 +77,10 @@ static void spider_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 static void spider_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void spider_discon(struct halfrel* self, struct halfrel* peer)
+static void spider_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void spider_linkup(struct halfrel* self, struct halfrel* peer)
+static void spider_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -118,8 +118,8 @@ void spider_register(_obj* p)
 	p->onsearch = (void*)spider_search;
 	p->onmodify = (void*)spider_modify;
 
-	p->onlinkup = (void*)spider_linkup;
-	p->ondiscon = (void*)spider_discon;
+	p->onattach = (void*)spider_attach;
+	p->ondetach = (void*)spider_detach;
 	p->ontaking = (void*)spider_taking;
 	p->ongiving = (void*)spider_giving;
 }

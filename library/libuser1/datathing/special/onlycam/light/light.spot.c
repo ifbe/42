@@ -349,10 +349,10 @@ static void spotlight_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg
 static void spotlight_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void spotlight_discon(struct halfrel* self, struct halfrel* peer)
+static void spotlight_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void spotlight_linkup(struct halfrel* self, struct halfrel* peer)
+static void spotlight_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -416,8 +416,8 @@ void spotlight_register(_obj* p)
 	p->onsearch = (void*)spotlight_search;
 	p->onmodify = (void*)spotlight_modify;
 
-	p->onlinkup = (void*)spotlight_linkup;
-	p->ondiscon = (void*)spotlight_discon;
+	p->onattach = (void*)spotlight_attach;
+	p->ondetach = (void*)spotlight_detach;
 	p->ontaking = (void*)spotlight_taking;
 	p->ongiving = (void*)spotlight_giving;
 }

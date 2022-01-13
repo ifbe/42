@@ -85,11 +85,11 @@ int rgbanode_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, v
 	}
 	return 0;
 }
-int rgbanode_discon(_obj* win, struct style* sty)
+int rgbanode_detach(_obj* win, struct style* sty)
 {
 	return 0;
 }
-int rgbanode_linkup(_obj* twig, void* tf, _obj* root, void* rf)
+int rgbanode_attach(_obj* twig, void* tf, _obj* root, void* rf)
 {
 	return 0;
 }

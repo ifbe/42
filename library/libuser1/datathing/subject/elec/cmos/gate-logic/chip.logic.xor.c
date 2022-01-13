@@ -402,10 +402,10 @@ static void xor_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int k
 		}
 	}
 }
-static void xor_discon(struct halfrel* self, struct halfrel* peer)
+static void xor_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void xor_linkup(struct halfrel* self, struct halfrel* peer)
+static void xor_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -441,8 +441,8 @@ void xor_register(_obj* p)
 	p->onsearch = (void*)xor_search;
 	p->onmodify = (void*)xor_modify;
 
-	p->onlinkup = (void*)xor_linkup;
-	p->ondiscon = (void*)xor_discon;
+	p->onattach = (void*)xor_attach;
+	p->ondetach = (void*)xor_detach;
 	p->ontaking = (void*)xor_taking;
 	p->ongiving = (void*)xor_giving;
 }

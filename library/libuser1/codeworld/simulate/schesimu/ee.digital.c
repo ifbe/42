@@ -308,13 +308,13 @@ int digital_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, 
 	}
 	return 0;
 }
-int digital_discon(struct halfrel* self, struct halfrel* peer)
+int digital_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int digital_linkup(struct halfrel* self, struct halfrel* peer)
+int digital_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@digital_linkup: %.4s\n", &self->foottype);
+	say("@digital_attach: %.4s\n", &self->foottype);
 	return 0;
 }
 

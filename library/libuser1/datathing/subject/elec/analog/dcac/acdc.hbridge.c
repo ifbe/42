@@ -154,10 +154,10 @@ static void hbridge_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 static void hbridge_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void hbridge_discon(struct halfrel* self, struct halfrel* peer)
+static void hbridge_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void hbridge_linkup(struct halfrel* self, struct halfrel* peer)
+static void hbridge_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -190,8 +190,8 @@ void hbridge_register(_obj* p)
 	p->onsearch = (void*)hbridge_search;
 	p->onmodify = (void*)hbridge_modify;
 
-	p->onlinkup = (void*)hbridge_linkup;
-	p->ondiscon = (void*)hbridge_discon;
+	p->onattach = (void*)hbridge_attach;
+	p->ondetach = (void*)hbridge_detach;
 	p->ontaking = (void*)hbridge_taking;
 	p->ongiving = (void*)hbridge_giving;
 }

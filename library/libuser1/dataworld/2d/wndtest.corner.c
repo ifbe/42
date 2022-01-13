@@ -611,11 +611,11 @@ static int corner_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 	printmemory(buf,16);
 	return 0;
 }
-static int corner_discon(struct halfrel* self, struct halfrel* peer)
+static int corner_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-static int corner_linkup(struct halfrel* self, struct halfrel* peer)
+static int corner_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -653,8 +653,8 @@ void corner_register(_obj* p)
 	p->onsearch = (void*)corner_search;
 	p->onmodify = (void*)corner_modify;
 
-	p->onlinkup = (void*)corner_linkup;
-	p->ondiscon = (void*)corner_discon;
+	p->onattach = (void*)corner_attach;
+	p->ondetach = (void*)corner_detach;
 	p->ontaking = (void*)corner_taking;
 	p->ongiving = (void*)corner_giving;
 }

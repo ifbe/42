@@ -153,12 +153,12 @@ static void stick_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 static void stick_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void stick_discon(struct halfrel* self, struct halfrel* peer)
+static void stick_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void stick_linkup(struct halfrel* self, struct halfrel* peer)
+static void stick_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@stick_linkup: %.4s,%.4s\n", &self->foottype, &peer->foottype);
+	say("@stick_attach: %.4s,%.4s\n", &self->foottype, &peer->foottype);
 	_obj* ent = self->pchip;
 	switch(self->foottype){
 		case 'a':ent->A_PEERFOOT = peer->foottype;break;
@@ -204,8 +204,8 @@ void stick_register(_obj* p)
 	p->onsearch = (void*)stick_search;
 	p->onmodify = (void*)stick_modify;
 
-	p->onlinkup = (void*)stick_linkup;
-	p->ondiscon = (void*)stick_discon;
+	p->onattach = (void*)stick_attach;
+	p->ondetach = (void*)stick_detach;
 	p->ontaking = (void*)stick_taking;
 	p->ongiving = (void*)stick_giving;
 }

@@ -9,10 +9,10 @@ static void monomic_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 static void monomic_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void monomic_discon(struct halfrel* self, struct halfrel* peer)
+static void monomic_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void monomic_linkup(struct halfrel* self, struct halfrel* peer)
+static void monomic_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -45,8 +45,8 @@ void monomic_register(_obj* p)
 	p->onsearch = (void*)monomic_search;
 	p->onmodify = (void*)monomic_modify;
 
-	p->onlinkup = (void*)monomic_linkup;
-	p->ondiscon = (void*)monomic_discon;
+	p->onattach = (void*)monomic_attach;
+	p->ondetach = (void*)monomic_detach;
 	p->ontaking = (void*)monomic_taking;
 	p->ongiving = (void*)monomic_giving;
 }

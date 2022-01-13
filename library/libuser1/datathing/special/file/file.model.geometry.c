@@ -198,10 +198,10 @@ static void geometry_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,
 static void geometry_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void geometry_discon(struct halfrel* self, struct halfrel* peer)
+static void geometry_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void geometry_linkup(struct halfrel* self, struct halfrel* peer)
+static void geometry_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -242,8 +242,8 @@ void geometry_register(_obj* p)
 	p->onsearch = (void*)geometry_search;
 	p->onmodify = (void*)geometry_modify;
 
-	p->onlinkup = (void*)geometry_linkup;
-	p->ondiscon = (void*)geometry_discon;
+	p->onattach = (void*)geometry_attach;
+	p->ondetach = (void*)geometry_detach;
 	p->ontaking = (void*)geometry_taking;
 	p->ongiving = (void*)geometry_giving;
 }

@@ -186,10 +186,10 @@ static void palette_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 static void palette_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void palette_discon(struct halfrel* self, struct halfrel* peer)
+static void palette_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void palette_linkup(struct halfrel* self, struct halfrel* peer)
+static void palette_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -230,8 +230,8 @@ void palette_register(_obj* p)
 	p->onsearch = (void*)palette_search;
 	p->onmodify = (void*)palette_modify;
 
-	p->onlinkup = (void*)palette_linkup;
-	p->ondiscon = (void*)palette_discon;
+	p->onattach = (void*)palette_attach;
+	p->ondetach = (void*)palette_detach;
 	p->ontaking = (void*)palette_taking;
 	p->ongiving = (void*)palette_giving;
 }

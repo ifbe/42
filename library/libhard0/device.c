@@ -181,13 +181,14 @@ int devicemodify(int argc, u8** argv)
 
 
 
-int devicelinkup(struct halfrel* self, struct halfrel* peer)
+int deviceattach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@devicelinkup\n");
+	say("@deviceattach\n");
 	return 0;
 }
-int devicediscon(struct halfrel* self, struct halfrel* peer)
+int devicedetach(struct halfrel* self, struct halfrel* peer)
 {
+	say("@devicedetach\n");
 	return 0;
 }
 int device_take(struct item* dev,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)

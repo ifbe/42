@@ -131,7 +131,7 @@ void mount_gpt_one(_obj* art, struct gptpart* part)
 		if(0 == tmp)return;
 		struct relation* rel = relationcreate(tmp,0,_art_,_src_, art,(void*)(part->lba_start<<9),_art_,_dst_);
 		if(0 == rel)return;
-		arterylinkup((void*)&rel->dst, (void*)&rel->src);
+		arteryattach((void*)&rel->dst, (void*)&rel->src);
 	}
 }
 void mount_gpt(_obj* art, u8* src)
@@ -197,11 +197,11 @@ int gptclient_ongive(_obj* art,void* foot, _syn* stack,int sp, u8* arg,int idx, 
 
 
 
-int gptclient_discon(struct halfrel* self, struct halfrel* peer)
+int gptclient_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int gptclient_linkup(struct halfrel* self, struct halfrel* peer)
+int gptclient_attach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ele = self->pchip;
 	if(0 == ele)return 0;

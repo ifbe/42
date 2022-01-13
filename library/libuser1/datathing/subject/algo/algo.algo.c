@@ -162,10 +162,10 @@ static void algorithm_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg
 static void algorithm_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void algorithm_discon(struct halfrel* self, struct halfrel* peer)
+static void algorithm_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void algorithm_linkup(struct halfrel* self, struct halfrel* peer)
+static void algorithm_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -198,8 +198,8 @@ void algorithm_register(_obj* p)
 	p->onsearch = (void*)algorithm_search;
 	p->onmodify = (void*)algorithm_modify;
 
-	p->onlinkup = (void*)algorithm_linkup;
-	p->ondiscon = (void*)algorithm_discon;
+	p->onattach = (void*)algorithm_attach;
+	p->ondetach = (void*)algorithm_detach;
 	p->ontaking = (void*)algorithm_taking;
 	p->ongiving = (void*)algorithm_giving;
 }

@@ -11,11 +11,11 @@ int areapick_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, void* ar
 {
 	return 0;
 }
-int areapick_discon(struct halfrel* self, struct halfrel* peer)
+int areapick_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int areapick_linkup(struct halfrel* self, struct halfrel* peer)
+int areapick_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

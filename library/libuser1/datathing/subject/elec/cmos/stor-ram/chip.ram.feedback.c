@@ -210,10 +210,10 @@ static void mem_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int k
 
 	ent->whdf.iy0 = !ent->whdf.ix0;
 }
-static void mem_discon(struct halfrel* self, struct halfrel* peer)
+static void mem_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void mem_linkup(struct halfrel* self, struct halfrel* peer)
+static void mem_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -248,8 +248,8 @@ void mem_register(_obj* p)
 	p->onsearch = (void*)mem_search;
 	p->onmodify = (void*)mem_modify;
 
-	p->onlinkup = (void*)mem_linkup;
-	p->ondiscon = (void*)mem_discon;
+	p->onattach = (void*)mem_attach;
+	p->ondetach = (void*)mem_detach;
 	p->ontaking = (void*)mem_taking;
 	p->ongiving = (void*)mem_giving;
 }

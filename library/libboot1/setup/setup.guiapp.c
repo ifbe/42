@@ -31,7 +31,7 @@ static void guiapp_mgr_to_ent(_obj* mgr)
 	mgr_to_term->fshape.vq[0] = 1.0;
 	mgr_to_term->fshape.vq[1] = 1.0;
 	struct relation* rel1 = relationcreate(term,term_to_mgr, _ent_,0, mgr,mgr_to_term, _ent_,0);
-	relationlinkup((void*)&rel1->srcchip, (void*)&rel1->dstchip);
+	relationattach((void*)&rel1->srcchip, (void*)&rel1->dstchip);
 /*
 	_obj* game = entitycreate(_2048_,0, 0, 0);
 	struct style* game_to_mgr = style_alloc();
@@ -41,7 +41,7 @@ static void guiapp_mgr_to_ent(_obj* mgr)
 	mgr_to_game->fshape.vq[0] = 1.0;
 	mgr_to_game->fshape.vq[1] = 1.0;
 	struct relation* rel2 = relationcreate(game,game_to_mgr, _ent_,0, mgr,mgr_to_game, _ent_,0);
-	relationlinkup((void*)&rel2->srcchip, (void*)&rel2->dstchip);
+	relationattach((void*)&rel2->srcchip, (void*)&rel2->dstchip);
 */
 }
 static void guiapp_wnd_to_mgr(_obj* wnd)
@@ -54,7 +54,7 @@ static void guiapp_wnd_to_mgr(_obj* wnd)
 	wnd_to_mgr->fshape.vq[0] = 1.0;
 	wnd_to_mgr->fshape.vq[1] = 1.0;
 	struct relation* rel0 = relationcreate(mgr,mgr_to_wnd, _ent_,0, wnd,wnd_to_mgr, _sup_,0);
-	relationlinkup((void*)&rel0->srcchip, (void*)&rel0->dstchip);
+	relationattach((void*)&rel0->srcchip, (void*)&rel0->dstchip);
 
 	guiapp_mgr_to_ent(mgr);
 }
@@ -92,7 +92,7 @@ static void guiapp_wnd_to_3d(_obj* wnd)
 	wrd_to_cam->frus.vn[3] = 0.001;
 	wrd_to_cam->frus.vf[3] = 1000.0;
 	struct relation* rel2 = relationcreate(cam,cam_to_wrd, _ent_,_in_, wrd,wrd_to_cam, _ent_,0);
-	relationlinkup((void*)&rel2->srcchip, (void*)&rel2->dstchip);
+	relationattach((void*)&rel2->srcchip, (void*)&rel2->dstchip);
 
 	struct style* wrd_to_abc = style_alloc();
 	struct style* abc_to_wrd = style_alloc();
@@ -109,7 +109,7 @@ static void guiapp_wnd_to_3d(_obj* wnd)
 	wrd_to_abc->fshape.vt[1] = 0.0;
 	wrd_to_abc->fshape.vt[2] = 1000.0;		//10km
 	struct relation* rel3 = relationcreate(abc,abc_to_wrd, _ent_,0, wrd,wrd_to_abc, _ent_,0);
-	relationlinkup((void*)&rel3->srcchip, (void*)&rel3->dstchip);
+	relationattach((void*)&rel3->srcchip, (void*)&rel3->dstchip);
 
 	struct style* cam_to_wnd = style_alloc();
 	struct style* wnd_to_cam = style_alloc();
@@ -118,7 +118,7 @@ static void guiapp_wnd_to_3d(_obj* wnd)
 	wnd_to_cam->fshape.vq[0] = 1.0;
 	wnd_to_cam->fshape.vq[1] = 0.8;
 	struct relation* rel1 = relationcreate(cam,cam_to_wnd, _ent_,0, wnd,wnd_to_cam, _sup_,0);
-	relationlinkup((void*)&rel1->srcchip, (void*)&rel1->dstchip);
+	relationattach((void*)&rel1->srcchip, (void*)&rel1->dstchip);
 
 }
 

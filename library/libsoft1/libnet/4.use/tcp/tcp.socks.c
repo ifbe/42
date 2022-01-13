@@ -93,15 +93,15 @@ int socksclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 	}//switch
 	return 0;
 }
-int socksclient_discon(struct halfrel* self, struct halfrel* peer)
+int socksclient_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@socksclient_discon: %.4s\n", &self->foottype);
+	say("@socksclient_detach: %.4s\n", &self->foottype);
 	return 0;
 }
-int socksclient_linkup(struct halfrel* self, struct halfrel* peer)
+int socksclient_attach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ele;
-	say("@socksclient_linkup: %.4s\n", &self->foottype);
+	say("@socksclient_attach: %.4s\n", &self->foottype);
 
 	if(_src_ == self->foottype){
 		ele = self->pchip;
@@ -171,14 +171,14 @@ int socksserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 	}
 	return 0;
 }
-int socksserver_discon(struct halfrel* self, struct halfrel* peer)
+int socksserver_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@socksserver_discon: %.4s\n", &self->foottype);
+	say("@socksserver_detach: %.4s\n", &self->foottype);
 	return 0;
 }
-int socksserver_linkup(struct halfrel* self, struct halfrel* peer)
+int socksserver_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@socksserver_linkup: %.4s\n", &self->foottype);
+	say("@socksserver_attach: %.4s\n", &self->foottype);
 	return 0;
 }
 int socksserver_delete(_obj* ele)
@@ -248,13 +248,13 @@ say("4\n");
 	give_data_into_peer(art,_src_, stack,sp, arg,idx, socks5_server1,10);
 	return 0;
 }
-int socksmaster_discon(struct halfrel* self, struct halfrel* peer)
+int socksmaster_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int socksmaster_linkup(struct halfrel* self, struct halfrel* peer)
+int socksmaster_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@socksmaster_linkup\n");
+	say("@socksmaster_attach\n");
 	return 0;
 }
 int socksmaster_delete(_obj* ele)

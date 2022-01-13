@@ -443,10 +443,10 @@ static void portal_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,in
 static void portal_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void portal_discon(struct halfrel* self, struct halfrel* peer)
+static void portal_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void portal_linkup(struct halfrel* self, struct halfrel* peer)
+static void portal_attach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ent = self->pchip;
 	if(0 == ent)return;
@@ -517,8 +517,8 @@ void portal_register(_obj* p)
 	p->onsearch = (void*)portal_search;
 	p->onmodify = (void*)portal_modify;
 
-	p->onlinkup = (void*)portal_linkup;
-	p->ondiscon = (void*)portal_discon;
+	p->onattach = (void*)portal_attach;
+	p->ondetach = (void*)portal_detach;
 	p->ontaking = (void*)portal_taking;
 	p->ongiving = (void*)portal_giving;
 }

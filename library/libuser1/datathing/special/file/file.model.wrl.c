@@ -87,10 +87,10 @@ static void wrl3d_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int
 static void wrl3d_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void wrl3d_discon(struct halfrel* self, struct halfrel* peer)
+static void wrl3d_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void wrl3d_linkup(struct halfrel* self, struct halfrel* peer)
+static void wrl3d_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -123,8 +123,8 @@ void wrl3d_register(_obj* p)
 	p->onsearch = (void*)wrl3d_search;
 	p->onmodify = (void*)wrl3d_modify;
 
-	p->onlinkup = (void*)wrl3d_linkup;
-	p->ondiscon = (void*)wrl3d_discon;
+	p->onattach = (void*)wrl3d_attach;
+	p->ondetach = (void*)wrl3d_detach;
 	p->ontaking = (void*)wrl3d_taking;
 	p->ongiving = (void*)wrl3d_giving;
 }

@@ -162,13 +162,13 @@ int dnsclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx
 	say("}\n");
 	return 0;
 }
-int dnsclient_discon(struct halfrel* self, struct halfrel* peer)
+int dnsclient_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int dnsclient_linkup(struct halfrel* self, struct halfrel* peer)
+int dnsclient_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("dnsclient_linkup:%.4s\n", &self->foottype);
+	say("dnsclient_attach:%.4s\n", &self->foottype);
 	if(_src_ == self->foottype){
 		int ret;
 		u8 tmp[0x100];
@@ -203,11 +203,11 @@ int dnsserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx
 	printmemory(buf, len);
 	return 0;
 }
-int dnsserver_discon(struct halfrel* self, struct halfrel* peer)
+int dnsserver_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int dnsserver_linkup(struct halfrel* self, struct halfrel* peer)
+int dnsserver_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

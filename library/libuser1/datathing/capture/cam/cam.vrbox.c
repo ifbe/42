@@ -385,10 +385,10 @@ static int vrbox_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 	}
 	return 0;
 }
-static void vrbox_discon(struct halfrel* self, struct halfrel* peer)
+static void vrbox_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void vrbox_linkup(struct halfrel* self, struct halfrel* peer)
+static void vrbox_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -405,8 +405,8 @@ void vrbox_register(_obj* p)
 	p->onsearch = (void*)vrbox_search;
 	p->onmodify = (void*)vrbox_modify;
 
-	p->onlinkup = (void*)vrbox_linkup;
-	p->ondiscon = (void*)vrbox_discon;
+	p->onattach = (void*)vrbox_attach;
+	p->ondetach = (void*)vrbox_detach;
 	p->ontaking = (void*)vrbox_taking;
 	p->ongiving = (void*)vrbox_giving;
 }

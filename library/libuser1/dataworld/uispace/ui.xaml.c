@@ -11,13 +11,13 @@ int xamlroot_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key,
 {
 	return 0;
 }
-int xamlroot_discon(struct halfrel* self, struct halfrel* peer)
+int xamlroot_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int xamlroot_linkup(struct halfrel* self, struct halfrel* peer)
+int xamlroot_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@xamlroot_linkup\n");
+	say("@xamlroot_attach\n");
 	return 0;
 }
 

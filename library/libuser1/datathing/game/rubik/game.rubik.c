@@ -955,10 +955,10 @@ static void rubikscube_giving(_obj* ent,void* foot, _syn* stack,int sp, void* ar
 	ent->CODE = p[0];
 	ent->TIME = timeread();
 }
-static void rubikscube_discon(struct halfrel* self, struct halfrel* peer)
+static void rubikscube_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void rubikscube_linkup(struct halfrel* self, struct halfrel* peer)
+static void rubikscube_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -1010,8 +1010,8 @@ void rubikscube_register(_obj* p)
 	p->onsearch = (void*)rubikscube_search;
 	p->onmodify = (void*)rubikscube_modify;
 
-	p->onlinkup = (void*)rubikscube_linkup;
-	p->ondiscon = (void*)rubikscube_discon;
+	p->onattach = (void*)rubikscube_attach;
+	p->ondetach = (void*)rubikscube_detach;
 	p->ontaking = (void*)rubikscube_taking;
 	p->ongiving = (void*)rubikscube_giving;
 }

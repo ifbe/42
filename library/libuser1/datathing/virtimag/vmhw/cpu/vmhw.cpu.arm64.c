@@ -80,10 +80,10 @@ static void arm64_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 		cpu->pc += 4;
 	}
 }
-static void arm64_discon(struct halfrel* self, struct halfrel* peer)
+static void arm64_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void arm64_linkup(struct halfrel* self, struct halfrel* peer)
+static void arm64_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -100,8 +100,8 @@ void arm64_register(_obj* p)
 	p->onsearch = (void*)arm64_search;
 	p->onmodify = (void*)arm64_modify;
 
-	p->onlinkup = (void*)arm64_linkup;
-	p->ondiscon = (void*)arm64_discon;
+	p->onattach = (void*)arm64_attach;
+	p->ondetach = (void*)arm64_detach;
 	p->ontaking = (void*)arm64_taking;
 	p->ongiving = (void*)arm64_giving;
 }

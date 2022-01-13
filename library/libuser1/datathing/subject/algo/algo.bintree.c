@@ -250,10 +250,10 @@ static void bintree_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 static void bintree_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void bintree_linkup(struct halfrel* self, struct halfrel* peer)
+static void bintree_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void bintree_discon(struct halfrel* self, struct halfrel* peer)
+static void bintree_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -291,8 +291,8 @@ void bintree_register(_obj* p)
 	p->onsearch = (void*)bintree_search;
 	p->onmodify = (void*)bintree_modify;
 
-	p->onlinkup = (void*)bintree_linkup;
-	p->ondiscon = (void*)bintree_discon;
+	p->onattach = (void*)bintree_attach;
+	p->ondetach = (void*)bintree_detach;
 	p->ontaking = (void*)bintree_taking;
 	p->ongiving = (void*)bintree_giving;
 }

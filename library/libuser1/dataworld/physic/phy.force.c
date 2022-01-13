@@ -200,15 +200,15 @@ int force_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, vo
 {
 	return 0;
 }
-int force_discon(struct halfrel* self, struct halfrel* peer)
+int force_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int force_linkup(struct halfrel* self, struct halfrel* peer)
+int force_attach(struct halfrel* self, struct halfrel* peer)
 {
 	int j;
 	if(0 == self)return 0;
-	say("@force_linkup: %.4s\n", &self->foottype);
+	say("@force_attach: %.4s\n", &self->foottype);
 
 	j = self->foottype;
 	if('a' > j)return 0;

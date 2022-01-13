@@ -201,13 +201,13 @@ u64 file_check(u8* buf, int len)
 
 
 
-int filetype_discon(struct halfrel* self, struct halfrel* peer)
+int filetype_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int filetype_linkup(struct halfrel* self, struct halfrel* peer)
+int filetype_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@filetype_linkup\n");
+	say("@filetype_attach\n");
 	_obj* ele = self->pchip;
 	if(0 == ele)return 0;
 	void* buf = ele->listptr.buf0;

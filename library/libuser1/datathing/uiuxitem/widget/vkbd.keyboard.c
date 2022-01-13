@@ -338,11 +338,11 @@ static int vkbd_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int k
 	}
 	return 0;
 }
-static int vkbd_discon(struct halfrel* self, struct halfrel* peer)
+static int vkbd_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-static int vkbd_linkup(struct halfrel* self, struct halfrel* peer)
+static int vkbd_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -360,8 +360,8 @@ void vkbd_register(_obj* p)
 	p->onsearch = (void*)vkbd_search;
 	p->onmodify = (void*)vkbd_modify;
 
-	p->onlinkup = (void*)vkbd_linkup;
-	p->ondiscon = (void*)vkbd_discon;
+	p->onattach = (void*)vkbd_attach;
+	p->ondetach = (void*)vkbd_detach;
 	p->ontaking = (void*)vkbd_taking;
 	p->ongiving = (void*)vkbd_giving;
 }

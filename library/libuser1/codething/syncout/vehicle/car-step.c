@@ -125,10 +125,10 @@ int stepcar_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg
 
 	return 0;
 }
-void stepcar_discon(struct halfrel* self, struct halfrel* peer)
+void stepcar_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-void stepcar_linkup(struct halfrel* self, struct halfrel* peer)
+void stepcar_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 int stepcar_delete(_obj* win)

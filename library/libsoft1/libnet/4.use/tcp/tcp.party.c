@@ -268,11 +268,11 @@ int partyclient_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int id
 {
 	return 0;
 }
-int partyclient_discon(struct halfrel* self, struct halfrel* peer)
+int partyclient_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int partyclient_linkup(struct halfrel* self, struct halfrel* peer)
+int partyclient_attach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* sock = peer->pchip;
 	if( (_sys_ == sock->tier) && (_tcp_ == sock->type) ){
@@ -548,18 +548,18 @@ int partymaster_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int id
 {
 	return 0;
 }
-int partymaster_discon(struct halfrel* self, struct halfrel* peer)
+int partymaster_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@partymaster_discon\n");
+	say("@partymaster_detach\n");
 	_obj* art = self->pchip;
 	struct perobj* perobj = (void*)art->priv_256b;
 	struct peruser* peruser = perobj->peruser;
 	party_logout(peruser, self->foottype);
 	return 0;
 }
-int partymaster_linkup(struct halfrel* self, struct halfrel* peer)
+int partymaster_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@partymaster_linkup\n");
+	say("@partymaster_attach\n");
 	return 0;
 }
 int partymaster_delete(_obj* ele)

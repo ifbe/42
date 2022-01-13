@@ -348,12 +348,12 @@ static void texball_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 static void texball_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void texball_discon(struct halfrel* self, struct halfrel* peer)
+static void texball_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void texball_linkup(struct halfrel* self, struct halfrel* peer)
+static void texball_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@texball_linkup\n");
+	say("@texball_attach\n");
 }
 
 
@@ -396,8 +396,8 @@ void texball_register(_obj* p)
 	p->onsearch = (void*)texball_search;
 	p->onmodify = (void*)texball_modify;
 
-	p->onlinkup = (void*)texball_linkup;
-	p->ondiscon = (void*)texball_discon;
+	p->onattach = (void*)texball_attach;
+	p->ondetach = (void*)texball_detach;
 	p->ontaking = (void*)texball_taking;
 	p->ongiving = (void*)texball_giving;
 }

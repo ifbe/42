@@ -11,11 +11,11 @@ int camfrus_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg
 {
 	return 0;
 }
-int camfrus_discon(struct halfrel* self, struct halfrel* peer)
+int camfrus_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int camfrus_linkup(struct halfrel* self, struct halfrel* peer)
+int camfrus_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

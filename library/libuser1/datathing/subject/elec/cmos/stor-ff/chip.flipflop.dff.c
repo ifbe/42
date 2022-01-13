@@ -233,10 +233,10 @@ static void dff_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int k
 static void dff_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void dff_discon(struct halfrel* self, struct halfrel* peer)
+static void dff_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void dff_linkup(struct halfrel* self, struct halfrel* peer)
+static void dff_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -269,8 +269,8 @@ void dff_register(_obj* p)
 	p->onsearch = (void*)dff_search;
 	p->onmodify = (void*)dff_modify;
 
-	p->onlinkup = (void*)dff_linkup;
-	p->ondiscon = (void*)dff_discon;
+	p->onattach = (void*)dff_attach;
+	p->ondetach = (void*)dff_detach;
 	p->ontaking = (void*)dff_taking;
 	p->ongiving = (void*)dff_giving;
 }

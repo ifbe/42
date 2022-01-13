@@ -548,10 +548,10 @@ static void sketchpad_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg
 static void sketchpad_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void sketchpad_discon(struct halfrel* self, struct halfrel* peer)
+static void sketchpad_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void sketchpad_linkup(struct halfrel* self, struct halfrel* peer)
+static void sketchpad_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -613,8 +613,8 @@ void sketchpad_register(_obj* p)
 	p->onsearch = (void*)sketchpad_search;
 	p->onmodify = (void*)sketchpad_modify;
 
-	p->onlinkup = (void*)sketchpad_linkup;
-	p->ondiscon = (void*)sketchpad_discon;
+	p->onattach = (void*)sketchpad_attach;
+	p->ondetach = (void*)sketchpad_detach;
 	p->ontaking = (void*)sketchpad_taking;
 	p->ongiving = (void*)sketchpad_giving;
 }

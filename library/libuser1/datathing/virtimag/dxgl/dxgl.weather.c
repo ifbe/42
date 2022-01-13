@@ -147,10 +147,10 @@ static void weather_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 static void weather_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void weather_discon(struct halfrel* self, struct halfrel* peer)
+static void weather_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void weather_linkup(struct halfrel* self, struct halfrel* peer)
+static void weather_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -188,8 +188,8 @@ void weather_register(_obj* p)
 	p->onsearch = (void*)weather_search;
 	p->onmodify = (void*)weather_modify;
 
-	p->onlinkup = (void*)weather_linkup;
-	p->ondiscon = (void*)weather_discon;
+	p->onattach = (void*)weather_attach;
+	p->ondetach = (void*)weather_detach;
 	p->ontaking = (void*)weather_taking;
 	p->ongiving = (void*)weather_giving;
 }

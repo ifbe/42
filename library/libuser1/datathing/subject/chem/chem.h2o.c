@@ -122,10 +122,10 @@ static void h2o_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int k
 static void h2o_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void h2o_discon(struct halfrel* self, struct halfrel* peer)
+static void h2o_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void h2o_linkup(struct halfrel* self, struct halfrel* peer)
+static void h2o_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -142,8 +142,8 @@ void h2o_register(_obj* p)
 	p->onsearch = (void*)h2o_search;
 	p->onmodify = (void*)h2o_modify;
 
-	p->onlinkup = (void*)h2o_linkup;
-	p->ondiscon = (void*)h2o_discon;
+	p->onattach = (void*)h2o_attach;
+	p->ondetach = (void*)h2o_detach;
 	p->ontaking = (void*)h2o_taking;
 	p->ongiving = (void*)h2o_giving;
 }

@@ -144,14 +144,14 @@ int camrts_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, v
 */
 	return 0;
 }
-int camrts_discon(struct halfrel* self, struct halfrel* peer)
+int camrts_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@camrts_discon\n");
+	say("@camrts_detach\n");
 	return 0;
 }
-int camrts_linkup(struct halfrel* self, struct halfrel* peer)
+int camrts_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@camrts_linkup\n");
+	say("@camrts_attach\n");
 	return 0;
 }
 

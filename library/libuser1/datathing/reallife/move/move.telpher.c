@@ -81,10 +81,10 @@ static void telpher_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 static void telpher_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void telpher_discon(struct halfrel* self, struct halfrel* peer)
+static void telpher_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void telpher_linkup(struct halfrel* self, struct halfrel* peer)
+static void telpher_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -117,8 +117,8 @@ void telpher_register(_obj* p)
 	p->onsearch = (void*)telpher_search;
 	p->onmodify = (void*)telpher_modify;
 
-	p->onlinkup = (void*)telpher_linkup;
-	p->ondiscon = (void*)telpher_discon;
+	p->onattach = (void*)telpher_attach;
+	p->ondetach = (void*)telpher_detach;
 	p->ontaking = (void*)telpher_taking;
 	p->ongiving = (void*)telpher_giving;
 }

@@ -18,10 +18,10 @@ void chemequa_read()
 void chemequa_write()
 {
 }
-void chemequa_linkup()
+void chemequa_attach()
 {
 }
-void chemequa_discon()
+void chemequa_detach()
 {
 }
 void chemequa_create(void* base, u64* p)

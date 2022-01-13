@@ -172,10 +172,10 @@ static void planet_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 static void planet_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void planet_discon(struct halfrel* self, struct halfrel* peer)
+static void planet_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void planet_linkup(struct halfrel* self, struct halfrel* peer)
+static void planet_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -210,8 +210,8 @@ void planet_register(_obj* p)
 	p->onsearch = (void*)planet_search;
 	p->onmodify = (void*)planet_modify;
 
-	p->onlinkup = (void*)planet_linkup;
-	p->ondiscon = (void*)planet_discon;
+	p->onattach = (void*)planet_attach;
+	p->ondetach = (void*)planet_detach;
 	p->ontaking = (void*)planet_taking;
 	p->ongiving = (void*)planet_giving;
 }

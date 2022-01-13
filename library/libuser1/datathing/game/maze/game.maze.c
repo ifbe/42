@@ -388,10 +388,10 @@ static void maze_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 static void maze_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void maze_discon(struct halfrel* self, struct halfrel* peer)
+static void maze_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void maze_linkup(struct halfrel* self, struct halfrel* peer)
+static void maze_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -437,8 +437,8 @@ void maze_register(_obj* p)
 	p->onsearch = (void*)maze_search;
 	p->onmodify = (void*)maze_modify;
 
-	p->onlinkup = (void*)maze_linkup;
-	p->ondiscon = (void*)maze_discon;
+	p->onattach = (void*)maze_attach;
+	p->ondetach = (void*)maze_detach;
 	p->ontaking = (void*)maze_taking;
 	p->ongiving = (void*)maze_giving;
 }

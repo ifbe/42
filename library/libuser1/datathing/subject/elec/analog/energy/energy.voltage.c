@@ -151,10 +151,10 @@ static void vsrc_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 		give_data_into_peer(ent,'p', stack,sp, 0,0, &volt,0);
 	}
 }
-static void vsrc_discon(struct halfrel* self, struct halfrel* peer)
+static void vsrc_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void vsrc_linkup(struct halfrel* self, struct halfrel* peer)
+static void vsrc_attach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ent = self->pchip;
 	switch(self->foottype){
@@ -195,8 +195,8 @@ void vsrc_register(_obj* p)
 	p->onsearch = (void*)vsrc_search;
 	p->onmodify = (void*)vsrc_modify;
 
-	p->onlinkup = (void*)vsrc_linkup;
-	p->ondiscon = (void*)vsrc_discon;
+	p->onattach = (void*)vsrc_attach;
+	p->ondetach = (void*)vsrc_detach;
 	p->ontaking = (void*)vsrc_taking;
 	p->ongiving = (void*)vsrc_giving;
 }

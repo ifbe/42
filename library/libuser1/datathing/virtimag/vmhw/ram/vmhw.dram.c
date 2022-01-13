@@ -63,11 +63,11 @@ static int vmddr_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 {
 	return 0;
 }
-static int vmddr_discon(struct halfrel* self, struct halfrel* peer)
+static int vmddr_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-static int vmddr_linkup(struct halfrel* self, struct halfrel* peer)
+static int vmddr_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -85,8 +85,8 @@ void vmddr_register(_obj* p)
 	p->onsearch = (void*)vmddr_search;
 	p->onmodify = (void*)vmddr_modify;
 
-	p->onlinkup = (void*)vmddr_linkup;
-	p->ondiscon = (void*)vmddr_discon;
+	p->onattach = (void*)vmddr_attach;
+	p->ondetach = (void*)vmddr_detach;
 	p->ontaking = (void*)vmddr_taking;
 	p->ongiving = (void*)vmddr_giving;
 }

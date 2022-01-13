@@ -97,10 +97,10 @@ static void or_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int ke
 static void or_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void or_discon(struct halfrel* self, struct halfrel* peer)
+static void or_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void or_linkup(struct halfrel* self, struct halfrel* peer)
+static void or_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -133,8 +133,8 @@ void or_register(_obj* p)
 	p->onsearch = (void*)or_search;
 	p->onmodify = (void*)or_modify;
 
-	p->onlinkup = (void*)or_linkup;
-	p->ondiscon = (void*)or_discon;
+	p->onattach = (void*)or_attach;
+	p->ondetach = (void*)or_detach;
 	p->ontaking = (void*)or_taking;
 	p->ongiving = (void*)or_giving;
 }

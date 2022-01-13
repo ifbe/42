@@ -403,10 +403,10 @@ static void xnor_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 		}
 	}
 }
-static void xnor_discon(struct halfrel* self, struct halfrel* peer)
+static void xnor_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void xnor_linkup(struct halfrel* self, struct halfrel* peer)
+static void xnor_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -442,8 +442,8 @@ void xnor_register(_obj* p)
 	p->onsearch = (void*)xnor_search;
 	p->onmodify = (void*)xnor_modify;
 
-	p->onlinkup = (void*)xnor_linkup;
-	p->ondiscon = (void*)xnor_discon;
+	p->onattach = (void*)xnor_attach;
+	p->ondetach = (void*)xnor_detach;
 	p->ontaking = (void*)xnor_taking;
 	p->ongiving = (void*)xnor_giving;
 }

@@ -213,10 +213,10 @@ static void skillbar_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,
 static void skillbar_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void skillbar_discon(struct halfrel* self, struct halfrel* peer)
+static void skillbar_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void skillbar_linkup(struct halfrel* self, struct halfrel* peer)
+static void skillbar_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -257,8 +257,8 @@ void skillbar_register(_obj* p)
 	p->onsearch = (void*)skillbar_search;
 	p->onmodify = (void*)skillbar_modify;
 
-	p->onlinkup = (void*)skillbar_linkup;
-	p->ondiscon = (void*)skillbar_discon;
+	p->onattach = (void*)skillbar_attach;
+	p->ondetach = (void*)skillbar_detach;
 	p->ontaking = (void*)skillbar_taking;
 	p->ongiving = (void*)skillbar_giving;
 }

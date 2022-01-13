@@ -97,10 +97,10 @@ static void sram_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 static void sram_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void sram_discon(struct halfrel* self, struct halfrel* peer)
+static void sram_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void sram_linkup(struct halfrel* self, struct halfrel* peer)
+static void sram_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -133,8 +133,8 @@ void sram_register(_obj* p)
 	p->onsearch = (void*)sram_search;
 	p->onmodify = (void*)sram_modify;
 
-	p->onlinkup = (void*)sram_linkup;
-	p->ondiscon = (void*)sram_discon;
+	p->onattach = (void*)sram_attach;
+	p->ondetach = (void*)sram_detach;
 	p->ontaking = (void*)sram_taking;
 	p->ongiving = (void*)sram_giving;
 }

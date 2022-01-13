@@ -382,11 +382,11 @@ struct item
 		char padding3[8];
 	};
 	union{
-		int (*onlinkup)(void* self, void* peer);
+		int (*onattach)(void* self, void* peer);
 		char padding4[8];
 	};
 	union{
-		int (*ondiscon)(void* self, void* peer);
+		int (*ondetach)(void* self, void* peer);
 		char padding5[8];
 	};
 	union{
@@ -461,62 +461,62 @@ typedef struct item _obj;
 //--------------------------------function--------------------------------
 int entity_take(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 int entity_give(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int entitydiscon(struct halfrel* self, struct halfrel* peer);
-int entitylinkup(struct halfrel* self, struct halfrel* peer);
+int entitydetach(struct halfrel* self, struct halfrel* peer);
+int entityattach(struct halfrel* self, struct halfrel* peer);
 int entitydelete(_obj*);
 void* entitycreate(u64 type, void* addr, int argc, u8** argv);
 //
 int supply_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 int supply_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int supplydiscon(struct halfrel* self, struct halfrel* peer);
-int supplylinkup(struct halfrel* self, struct halfrel* peer);
+int supplydetach(struct halfrel* self, struct halfrel* peer);
+int supplyattach(struct halfrel* self, struct halfrel* peer);
 int supplydelete(_obj*);
 void* supplycreate(u64 type, void* addr, int argc, u8** argv);
 //
 int artery_take(_obj* art,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 int artery_give(_obj* art,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int arterydiscon(struct halfrel* self, struct halfrel* peer);
-int arterylinkup(struct halfrel* self, struct halfrel* peer);
+int arterydetach(struct halfrel* self, struct halfrel* peer);
+int arteryattach(struct halfrel* self, struct halfrel* peer);
 int arterydelete(_obj*);
 void* arterycreate(u64 type, void* addr, int argc, u8** argv);
 //
 int system_take(_obj* obj,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 int system_give(_obj* obj,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int systemdiscon(struct halfrel* self, struct halfrel* peer);
-int systemlinkup(struct halfrel* self, struct halfrel* peer);
+int systemdetach(struct halfrel* self, struct halfrel* peer);
+int systemattach(struct halfrel* self, struct halfrel* peer);
 int systemdelete(_obj*);
 void* systemcreate(u64 type, void* addr, int argc, u8** argv);
 //
 int driver_take(struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 int driver_give(struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int driverdiscon(struct halfrel* self, struct halfrel* peer);
-int driverlinkup(struct halfrel* self, struct halfrel* peer);
+int driverdetach(struct halfrel* self, struct halfrel* peer);
+int driverattach(struct halfrel* self, struct halfrel* peer);
 int driverdelete(_obj*);
 void* drivercreate(u64 type, void* addr, int argc, u8** argv);
 //
 int device_take(struct item* dev,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 int device_give(struct item* dev,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int devicediscon(struct halfrel* self, struct halfrel* peer);
-int devicelinkup(struct halfrel* self, struct halfrel* peer);
+int devicedetach(struct halfrel* self, struct halfrel* peer);
+int deviceattach(struct halfrel* self, struct halfrel* peer);
 int devicedelete(_obj*);
 void* devicecreate(u64 type, void* addr, int argc, u8** argv);
 //
 int bootup_take(struct item* wrk,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 int bootup_give(struct item* wrk,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int bootupdiscon(struct halfrel* self, struct halfrel* peer);
-int bootuplinkup(struct halfrel* self, struct halfrel* peer);
+int bootupdetach(struct halfrel* self, struct halfrel* peer);
+int bootupattach(struct halfrel* self, struct halfrel* peer);
 int bootupdelete(_obj*);
 void* bootupcreate(u64 type, void* addr, int argc, u8** argv);
 //
 int origin_take(struct item* ori,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 int origin_give(struct item* ori,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int origindiscon(struct halfrel* self, struct halfrel* peer);
-int originlinkup(struct halfrel* self, struct halfrel* peer);
+int origindetach(struct halfrel* self, struct halfrel* peer);
+int originattach(struct halfrel* self, struct halfrel* peer);
 int origindelete(_obj*);
 void* origincreate(u64 type, void* addr, int argc, u8** argv);
 //
-int relationdiscon(struct halfrel* self, struct halfrel* peer);
-int relationlinkup(struct halfrel* self, struct halfrel* peer);
+int relationdetach(struct halfrel* self, struct halfrel* peer);
+int relationattach(struct halfrel* self, struct halfrel* peer);
 int relationsearch(void* item,u32 foot, struct halfrel** self,struct halfrel** peer);
 int relationmodify(void* item,u32 foot, struct halfrel** self,struct halfrel** peer);
 int relationdelete(_rel* rel);

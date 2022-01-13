@@ -210,10 +210,10 @@ static void ooxx_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 static void ooxx_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void ooxx_discon(struct halfrel* self, struct halfrel* peer)
+static void ooxx_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void ooxx_linkup(struct halfrel* self, struct halfrel* peer)
+static void ooxx_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -261,8 +261,8 @@ void ooxx_register(_obj* p)
 	p->onsearch = (void*)ooxx_search;
 	p->onmodify = (void*)ooxx_modify;
 
-	p->onlinkup = (void*)ooxx_linkup;
-	p->ondiscon = (void*)ooxx_discon;
+	p->onattach = (void*)ooxx_attach;
+	p->ondetach = (void*)ooxx_detach;
 	p->ontaking = (void*)ooxx_taking;
 	p->ongiving = (void*)ooxx_giving;
 }

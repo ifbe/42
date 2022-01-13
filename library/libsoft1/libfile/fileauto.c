@@ -2,12 +2,12 @@
 u64 file_check(u8* buf, int len);
 int mbrclient_create(_obj* ele, void* url, int argc, u8** argv);
 int mbrclient_delete(_obj* ele, void* url);
-int mbrclient_linkup(struct halfrel* self, struct halfrel* peer);
-int mbrclient_discon(struct halfrel* self, struct halfrel* peer);
+int mbrclient_attach(struct halfrel* self, struct halfrel* peer);
+int mbrclient_detach(struct halfrel* self, struct halfrel* peer);
 int gptclient_create(_obj* ele, void* url, int argc, u8** argv);
 int gptclient_delete(_obj* ele, void* url);
-int gptclient_linkup(struct halfrel* self, struct halfrel* peer);
-int gptclient_discon(struct halfrel* self, struct halfrel* peer);
+int gptclient_attach(struct halfrel* self, struct halfrel* peer);
+int gptclient_detach(struct halfrel* self, struct halfrel* peer);
 
 
 
@@ -135,13 +135,13 @@ int fileauto_create(_obj* ele, u8* url)
 	ele->listptr.buf0 = memorycreate(0x10000, 0);
 	return 0;
 }
-int fileauto_discon(struct halfrel* self, struct halfrel* peer)
+int fileauto_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int fileauto_linkup(struct halfrel* self, struct halfrel* peer)
+int fileauto_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@fileauto_linkup\n");
+	say("@fileauto_attach\n");
 	_obj* ele = self->pchip;
 	if(0 == ele)return 0;
 	void* buf = ele->listptr.buf0;
@@ -174,11 +174,11 @@ int fileauto_linkup(struct halfrel* self, struct halfrel* peer)
 	switch(type){
 	case _mbr_:
 		mbrclient_create(ele,0,0,0);
-		mbrclient_linkup(self,peer);
+		mbrclient_attach(self,peer);
 		break;
 	case _gpt_:
 		gptclient_create(ele,0,0,0);
-		gptclient_linkup(self,peer);
+		gptclient_attach(self,peer);
 		break;
 	}
 	return 0;

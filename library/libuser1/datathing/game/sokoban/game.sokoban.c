@@ -43,10 +43,10 @@ static void sokoban_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 static void sokoban_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void sokoban_discon(struct halfrel* self, struct halfrel* peer)
+static void sokoban_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void sokoban_linkup(struct halfrel* self, struct halfrel* peer)
+static void sokoban_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -86,8 +86,8 @@ void sokoban_register(_obj* p)
 	p->onsearch = (void*)sokoban_search;
 	p->onmodify = (void*)sokoban_modify;
 
-	p->onlinkup = (void*)sokoban_linkup;
-	p->ondiscon = (void*)sokoban_discon;
+	p->onattach = (void*)sokoban_attach;
+	p->ondetach = (void*)sokoban_detach;
 	p->ontaking = (void*)sokoban_taking;
 	p->ongiving = (void*)sokoban_giving;
 }

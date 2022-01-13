@@ -352,10 +352,10 @@ static void mirror_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,in
 static void mirror_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void mirror_discon(struct halfrel* self, struct halfrel* peer)
+static void mirror_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void mirror_linkup(struct halfrel* self, struct halfrel* peer)
+static void mirror_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -395,8 +395,8 @@ void mirror_register(_obj* p)
 	p->onsearch = (void*)mirror_search;
 	p->onmodify = (void*)mirror_modify;
 
-	p->onlinkup = (void*)mirror_linkup;
-	p->ondiscon = (void*)mirror_discon;
+	p->onattach = (void*)mirror_attach;
+	p->ondetach = (void*)mirror_detach;
 	p->ontaking = (void*)mirror_taking;
 	p->ongiving = (void*)mirror_giving;
 }

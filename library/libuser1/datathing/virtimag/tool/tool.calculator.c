@@ -279,10 +279,10 @@ static void calculator_giving(_obj* ent,void* foot, _syn* stack,int sp, void* ar
 	}
 	}
 }
-static void calculator_discon(struct halfrel* self, struct halfrel* peer)
+static void calculator_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void calculator_linkup(struct halfrel* self, struct halfrel* peer)
+static void calculator_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -325,8 +325,8 @@ void calculator_register(_obj* p)
 	p->onsearch = (void*)calculator_search;
 	p->onmodify = (void*)calculator_modify;
 
-	p->onlinkup = (void*)calculator_linkup;
-	p->ondiscon = (void*)calculator_discon;
+	p->onattach = (void*)calculator_attach;
+	p->ondetach = (void*)calculator_detach;
 	p->ontaking = (void*)calculator_taking;
 	p->ongiving = (void*)calculator_giving;
 }

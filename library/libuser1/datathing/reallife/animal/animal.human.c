@@ -369,10 +369,10 @@ static int human_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 {
 	return 0;
 }
-static void human_discon(struct halfrel* self, struct halfrel* peer)
+static void human_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void human_linkup(struct halfrel* self, struct halfrel* peer)
+static void human_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -389,8 +389,8 @@ void human_register(_obj* p)
 	p->onsearch = (void*)human_search;
 	p->onmodify = (void*)human_modify;
 
-	p->onlinkup = (void*)human_linkup;
-	p->ondiscon = (void*)human_discon;
+	p->onattach = (void*)human_attach;
+	p->ondetach = (void*)human_detach;
 	p->ontaking = (void*)human_taking;
 	p->ongiving = (void*)human_giving;
 }

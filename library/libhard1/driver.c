@@ -3,16 +3,16 @@
 #define _lsm9ds1_ hex64('l','s','m','9','d','s','1',0)
 int lsm9ds1_create(struct item* ele, void* url, int argc, u8** argv);
 int lsm9ds1_delete(struct item* ele);
-int lsm9ds1_linkup(struct halfrel* self, struct halfrel* peer);
-int lsm9ds1_discon(struct halfrel* self, struct halfrel* peer);
+int lsm9ds1_attach(struct halfrel* self, struct halfrel* peer);
+int lsm9ds1_detach(struct halfrel* self, struct halfrel* peer);
 int lsm9ds1_write( struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len);
 int lsm9ds1_read(  struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len);
 //
 #define _mpu9250_ hex64('m','p','u','9','2','5','0',0)
 int mpu9250_create(struct item* ele, void* url, int argc, u8** argv);
 int mpu9250_delete(struct item* ele);
-int mpu9250_linkup(struct halfrel* self, struct halfrel* peer);
-int mpu9250_discon(struct halfrel* self, struct halfrel* peer);
+int mpu9250_attach(struct halfrel* self, struct halfrel* peer);
+int mpu9250_detach(struct halfrel* self, struct halfrel* peer);
 int mpu9250_write( struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len);
 int mpu9250_read(  struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len);
 
@@ -127,23 +127,23 @@ int drivermodify(int argc, u8** argv)
 
 
 
-int driverlinkup(struct halfrel* self, struct halfrel* peer)
+int driverattach(struct halfrel* self, struct halfrel* peer)
 {
 	struct item* ele = (void*)(self->chip);
-	say("@driverlinkup\n");
+	say("@driverattach\n");
 	switch(ele->type){
-		case _mpu9250_:return mpu9250_linkup(self, peer);break;
-		case _lsm9ds1_:return lsm9ds1_linkup(self, peer);break;
+		case _mpu9250_:return mpu9250_attach(self, peer);break;
+		case _lsm9ds1_:return lsm9ds1_attach(self, peer);break;
 	}
 	return 0;
 }
-int driverdiscon(struct halfrel* self, struct halfrel* peer)
+int driverdetach(struct halfrel* self, struct halfrel* peer)
 {
 	struct item* ele = (void*)(self->chip);
-	say("@driverdiscon\n");
+	say("@driverdetach\n");
 	switch(ele->type){
-		case _mpu9250_:return mpu9250_discon(self, peer);break;
-		case _lsm9ds1_:return lsm9ds1_discon(self, peer);break;
+		case _mpu9250_:return mpu9250_detach(self, peer);break;
+		case _lsm9ds1_:return lsm9ds1_detach(self, peer);break;
 	}
 	return 0;
 }

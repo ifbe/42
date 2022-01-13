@@ -164,10 +164,10 @@ static void qrcode_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 static void qrcode_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void qrcode_discon(struct halfrel* self, struct halfrel* peer)
+static void qrcode_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void qrcode_linkup(struct halfrel* self, struct halfrel* peer)
+static void qrcode_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -206,8 +206,8 @@ void qrcode_register(_obj* p)
 	p->onsearch = (void*)qrcode_search;
 	p->onmodify = (void*)qrcode_modify;
 
-	p->onlinkup = (void*)qrcode_linkup;
-	p->ondiscon = (void*)qrcode_discon;
+	p->onattach = (void*)qrcode_attach;
+	p->ondetach = (void*)qrcode_detach;
 	p->ontaking = (void*)qrcode_taking;
 	p->ongiving = (void*)qrcode_giving;
 }

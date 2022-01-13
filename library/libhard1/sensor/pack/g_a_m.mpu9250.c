@@ -355,14 +355,14 @@ int mpu9250_write(struct item* dri,void* foot, _syn* stack,int sp, void* arg,int
 	}
 	return 0;
 }
-int mpu9250_discon(struct halfrel* self, struct halfrel* peer)
+int mpu9250_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int mpu9250_linkup(struct halfrel* self, struct halfrel* peer)
+int mpu9250_attach(struct halfrel* self, struct halfrel* peer)
 {
 	struct item* drv;
-	say("@mpu9250_linkup: %.4s\n", &self->foottype);
+	say("@mpu9250_attach: %.4s\n", &self->foottype);
 
 	drv = self->pchip;
 	if(0 == drv)return 0;

@@ -14,11 +14,11 @@ int crawler_write(_obj* art,void* foot, _syn* stack,int sp, u8* arg, int idx, vo
 	printmemory(buf, len);
 	return 0;
 }
-int crawler_discon(struct halfrel* self, struct halfrel* peer)
+int crawler_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int crawler_linkup(struct halfrel* self, struct halfrel* peer)
+int crawler_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

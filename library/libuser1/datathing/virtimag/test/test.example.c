@@ -154,10 +154,10 @@ static void example_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 static void example_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void example_discon(struct halfrel* self, struct halfrel* peer)
+static void example_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void example_linkup(struct halfrel* self, struct halfrel* peer)
+static void example_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -192,8 +192,8 @@ void example_register(_obj* p)
 	p->onsearch = (void*)example_search;
 	p->onmodify = (void*)example_modify;
 
-	p->onlinkup = (void*)example_linkup;
-	p->ondiscon = (void*)example_discon;
+	p->onattach = (void*)example_attach;
+	p->ondetach = (void*)example_detach;
 	p->ontaking = (void*)example_taking;
 	p->ongiving = (void*)example_giving;
 }

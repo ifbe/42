@@ -197,10 +197,10 @@ static void house_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 static void house_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void house_discon(struct halfrel* self, struct halfrel* peer)
+static void house_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void house_linkup(struct halfrel* self, struct halfrel* peer)
+static void house_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -238,8 +238,8 @@ void house_register(_obj* p)
 	p->onsearch = (void*)house_search;
 	p->onmodify = (void*)house_modify;
 
-	p->onlinkup = (void*)house_linkup;
-	p->ondiscon = (void*)house_discon;
+	p->onattach = (void*)house_attach;
+	p->ondetach = (void*)house_detach;
 	p->ontaking = (void*)house_taking;
 	p->ongiving = (void*)house_giving;
 }

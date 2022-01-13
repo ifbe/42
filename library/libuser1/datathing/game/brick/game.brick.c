@@ -13,10 +13,10 @@ static void brick_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 static void brick_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void brick_discon(struct halfrel* self, struct halfrel* peer)
+static void brick_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void brick_linkup(struct halfrel* self, struct halfrel* peer)
+static void brick_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -57,8 +57,8 @@ void brick_register(_obj* p)
 	p->onsearch = (void*)brick_search;
 	p->onmodify = (void*)brick_modify;
 
-	p->onlinkup = (void*)brick_linkup;
-	p->ondiscon = (void*)brick_discon;
+	p->onattach = (void*)brick_attach;
+	p->ondetach = (void*)brick_detach;
 	p->ontaking = (void*)brick_taking;
 	p->ongiving = (void*)brick_giving;
 }

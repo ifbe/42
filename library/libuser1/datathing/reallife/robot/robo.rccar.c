@@ -228,10 +228,10 @@ static void rccar_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 static void rccar_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void rccar_discon(struct halfrel* self, struct halfrel* peer)
+static void rccar_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void rccar_linkup(struct halfrel* self, struct halfrel* peer)
+static void rccar_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -266,8 +266,8 @@ void rccar_register(_obj* p)
 	p->onsearch = (void*)rccar_search;
 	p->onmodify = (void*)rccar_modify;
 
-	p->onlinkup = (void*)rccar_linkup;
-	p->ondiscon = (void*)rccar_discon;
+	p->onattach = (void*)rccar_attach;
+	p->ondetach = (void*)rccar_detach;
 	p->ontaking = (void*)rccar_taking;
 	p->ongiving = (void*)rccar_giving;
 }

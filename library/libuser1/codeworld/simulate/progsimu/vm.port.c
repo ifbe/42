@@ -12,13 +12,13 @@ int portspace_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, void* a
 {
 	return 0;
 }
-int portspace_discon(struct halfrel* self, struct halfrel* peer)
+int portspace_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int portspace_linkup(struct halfrel* self, struct halfrel* peer)
+int portspace_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@portspace_linkup\n");
+	say("@portspace_attach\n");
 	return 0;
 }
 

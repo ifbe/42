@@ -669,10 +669,10 @@ static void xiangqi_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 	give_data_into_peer(ent,_mind_, stack,sp, 0,0, buf, 16);	//on event
 	give_data_into_peer(ent,_sync_, stack,sp, 0,0, xq->data, 9*10);	//on change
 }
-static void xiangqi_discon(struct halfrel* self, struct halfrel* peer)
+static void xiangqi_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void xiangqi_linkup(struct halfrel* self, struct halfrel* peer)
+static void xiangqi_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -725,8 +725,8 @@ void xiangqi_register(_obj* p)
 	p->onsearch = (void*)xiangqi_search;
 	p->onmodify = (void*)xiangqi_modify;
 
-	p->onlinkup = (void*)xiangqi_linkup;
-	p->ondiscon = (void*)xiangqi_discon;
+	p->onattach = (void*)xiangqi_attach;
+	p->ondetach = (void*)xiangqi_detach;
 	p->ontaking = (void*)xiangqi_taking;
 	p->ongiving = (void*)xiangqi_giving;
 }

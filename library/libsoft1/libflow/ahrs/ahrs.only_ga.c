@@ -99,14 +99,14 @@ int easyag_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, v
 	give_data_into_peer(art,_dst_, stack,sp, 0,0, q,4);
 	return 0;
 }
-int easyag_discon(struct halfrel* self, struct halfrel* peer)
+int easyag_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@easyag_discon\n");
+	say("@easyag_detach\n");
 	return 0;
 }
-int easyag_linkup(struct halfrel* self, struct halfrel* peer)
+int easyag_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@easyag_linkup\n");
+	say("@easyag_attach\n");
 	return 0;
 }
 

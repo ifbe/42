@@ -29,11 +29,11 @@ int rotate_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, v
 	give_data_into_peer(art,_dst_, stack,sp, 0,0, dst,640*480*2);
 	return 0;
 }
-int rotate_discon(struct halfrel* self, struct halfrel* peer)
+int rotate_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int rotate_linkup(struct halfrel* self, struct halfrel* peer)
+int rotate_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

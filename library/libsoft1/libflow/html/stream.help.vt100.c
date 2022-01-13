@@ -26,11 +26,11 @@ int vt100_write(_obj* art,void* foot, _syn* stack,int sp, u8* arg, int idx, u8* 
 	}
 	return 0;
 }
-int vt100_discon(struct halfrel* self, struct halfrel* peer)
+int vt100_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int vt100_linkup(struct halfrel* self, struct halfrel* peer)
+int vt100_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

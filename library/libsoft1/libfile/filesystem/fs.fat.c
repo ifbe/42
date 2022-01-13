@@ -519,9 +519,9 @@ int fat_parse(_obj* art, u8* addr)
 
 
 
-int fatclient_linkup(struct halfrel* self, struct halfrel* peer)
+int fatclient_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@fatclient_linkup\n");
+	say("@fatclient_attach\n");
 	int ret;
 	if(_src_ != self->foottype)return 0;
 
@@ -552,7 +552,7 @@ int fatclient_linkup(struct halfrel* self, struct halfrel* peer)
 
 	return 0;
 }
-int fatclient_discon(struct halfrel* self, struct halfrel* peer)
+int fatclient_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

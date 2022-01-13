@@ -11,11 +11,11 @@ int tftpclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg,int idx
 {
 	return 0;
 }
-int tftpclient_discon(struct halfrel* self, struct halfrel* peer)
+int tftpclient_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int tftpclient_linkup(struct halfrel* self, struct halfrel* peer)
+int tftpclient_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -65,11 +65,11 @@ int tftpserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg,int idx
 	give_data_into_peer(art,_src_, stack,sp, 0,0, buf,len);
 	return 0;
 }
-int tftpserver_discon(struct halfrel* self, struct halfrel* peer)
+int tftpserver_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int tftpserver_linkup(struct halfrel* self, struct halfrel* peer)
+int tftpserver_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

@@ -245,13 +245,13 @@ say("analog_write: %.4s\n", &foot);
 	}
 	return 0;
 }
-int analog_discon(struct halfrel* self, struct halfrel* peer)
+int analog_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int analog_linkup(struct halfrel* self, struct halfrel* peer)
+int analog_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@analog_linkup: %.4s\n", &self->foottype);
+	say("@analog_attach: %.4s\n", &self->foottype);
 	return 0;
 }
 

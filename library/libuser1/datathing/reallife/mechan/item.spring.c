@@ -163,12 +163,12 @@ static void spring_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 static void spring_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void spring_discon(struct halfrel* self, struct halfrel* peer)
+static void spring_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void spring_linkup(struct halfrel* self, struct halfrel* peer)
+static void spring_attach(struct halfrel* self, struct halfrel* peer)
 {
-	//say("@spring_linkup: %.4s,%.4s\n", &self->foottype, &peer->foottype);
+	//say("@spring_attach: %.4s,%.4s\n", &self->foottype, &peer->foottype);
 	_obj* ent = self->pchip;
 	switch(self->foottype){
 		case 'a':ent->A_PEERFOOT = peer->foottype;break;
@@ -217,8 +217,8 @@ void spring_register(_obj* p)
 	p->onsearch = (void*)spring_search;
 	p->onmodify = (void*)spring_modify;
 
-	p->onlinkup = (void*)spring_linkup;
-	p->ondiscon = (void*)spring_discon;
+	p->onattach = (void*)spring_attach;
+	p->ondetach = (void*)spring_detach;
 	p->ontaking = (void*)spring_taking;
 	p->ongiving = (void*)spring_giving;
 }

@@ -181,10 +181,10 @@ static int mmioedit_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 	}
 	return 0;
 }
-static void mmioedit_discon(struct halfrel* self, struct halfrel* peer)
+static void mmioedit_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void mmioedit_linkup(struct halfrel* self, struct halfrel* peer)
+static void mmioedit_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -201,8 +201,8 @@ void mmioedit_register(_obj* p)
 	p->onsearch = (void*)mmioedit_search;
 	p->onmodify = (void*)mmioedit_modify;
 
-	p->onlinkup = (void*)mmioedit_linkup;
-	p->ondiscon = (void*)mmioedit_discon;
+	p->onattach = (void*)mmioedit_attach;
+	p->ondetach = (void*)mmioedit_detach;
 	p->ontaking = (void*)mmioedit_taking;
 	p->ongiving = (void*)mmioedit_giving;
 }

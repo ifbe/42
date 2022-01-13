@@ -97,10 +97,10 @@ static void and_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int k
 static void and_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void and_discon(struct halfrel* self, struct halfrel* peer)
+static void and_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void and_linkup(struct halfrel* self, struct halfrel* peer)
+static void and_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -133,8 +133,8 @@ void and_register(_obj* p)
 	p->onsearch = (void*)and_search;
 	p->onmodify = (void*)and_modify;
 
-	p->onlinkup = (void*)and_linkup;
-	p->ondiscon = (void*)and_discon;
+	p->onattach = (void*)and_attach;
+	p->ondetach = (void*)and_detach;
 	p->ontaking = (void*)and_taking;
 	p->ongiving = (void*)and_giving;
 }

@@ -354,10 +354,10 @@ static void water_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int
 static void water_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void water_discon(struct halfrel* self, struct halfrel* peer)
+static void water_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void water_linkup(struct halfrel* self, struct halfrel* peer)
+static void water_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -415,8 +415,8 @@ void water_register(_obj* p)
 	p->onsearch = (void*)water_search;
 	p->onmodify = (void*)water_modify;
 
-	p->onlinkup = (void*)water_linkup;
-	p->ondiscon = (void*)water_discon;
+	p->onattach = (void*)water_attach;
+	p->ondetach = (void*)water_detach;
 	p->ontaking = (void*)water_taking;
 	p->ongiving = (void*)water_giving;
 }

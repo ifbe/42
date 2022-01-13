@@ -76,16 +76,16 @@ int lookat_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, v
 	}
 	return 0;
 }
-int lookat_discon(struct halfrel* self, struct halfrel* peer)
+int lookat_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@lookat_discon\n");
+	say("@lookat_detach\n");
 	return 0;
 }
-int lookat_linkup(struct halfrel* self, struct halfrel* peer)
+int lookat_attach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ent = self->pchip;
 	struct privdata* own = ent->priv_ptr;
-	say("@lookat_linkup: %.4s\n", &self->foottype);
+	say("@lookat_attach: %.4s\n", &self->foottype);
 
 	switch(self->foottype){
 	case _self_:own->self = peer->pchip;break;

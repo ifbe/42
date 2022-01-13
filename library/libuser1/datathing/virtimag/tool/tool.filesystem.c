@@ -239,10 +239,10 @@ static void fslist_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 		break;
 	}
 }
-static void fslist_discon(struct halfrel* self, struct halfrel* peer)
+static void fslist_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void fslist_linkup(struct halfrel* self, struct halfrel* peer)
+static void fslist_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -291,8 +291,8 @@ void fslist_register(_obj* p)
 	p->onsearch = (void*)fslist_search;
 	p->onmodify = (void*)fslist_modify;
 
-	p->onlinkup = (void*)fslist_linkup;
-	p->ondiscon = (void*)fslist_discon;
+	p->onattach = (void*)fslist_attach;
+	p->ondetach = (void*)fslist_detach;
 	p->ontaking = (void*)fslist_taking;
 	p->ongiving = (void*)fslist_giving;
 }

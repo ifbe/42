@@ -90,14 +90,14 @@ int virtual_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, 
 	give_data_into_peer(ent,_evto_, stack,sp, arg,key, buf,len);
 	return 0;
 }
-int virtual_discon(struct halfrel* self, struct halfrel* peer)
+int virtual_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("virtual_discon\n");
+	say("virtual_detach\n");
 	return 0;
 }
-int virtual_linkup(struct halfrel* self, struct halfrel* peer)
+int virtual_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@virtual_linkup\n");
+	say("@virtual_attach\n");
 	return 0;
 }
 

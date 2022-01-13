@@ -11,11 +11,11 @@ int dhcpclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 {
 	return 0;
 }
-int dhcpclient_discon(struct halfrel* self, struct halfrel* peer)
+int dhcpclient_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int dhcpclient_linkup(struct halfrel* self, struct halfrel* peer)
+int dhcpclient_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -39,11 +39,11 @@ int dhcpserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 {
 	return 0;
 }
-int dhcpserver_discon(struct halfrel* self, struct halfrel* peer)
+int dhcpserver_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int dhcpserver_linkup(struct halfrel* self, struct halfrel* peer)
+int dhcpserver_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

@@ -13,10 +13,10 @@ static void puzzle_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 static void puzzle_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void puzzle_discon(struct halfrel* self, struct halfrel* peer)
+static void puzzle_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void puzzle_linkup(struct halfrel* self, struct halfrel* peer)
+static void puzzle_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -57,8 +57,8 @@ void puzzle_register(_obj* p)
 	p->onsearch = (void*)puzzle_search;
 	p->onmodify = (void*)puzzle_modify;
 
-	p->onlinkup = (void*)puzzle_linkup;
-	p->ondiscon = (void*)puzzle_discon;
+	p->onattach = (void*)puzzle_attach;
+	p->ondetach = (void*)puzzle_detach;
 	p->ontaking = (void*)puzzle_taking;
 	p->ongiving = (void*)puzzle_giving;
 }

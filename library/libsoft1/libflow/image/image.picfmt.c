@@ -108,11 +108,11 @@ done:
 	give_data_into_peer(art,_dst_, stack,sp, 0,0, per->dstbuf[0],per->dstlen);
 	return 0;
 }
-int picfmt_discon(struct halfrel* self, struct halfrel* peer)
+int picfmt_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int picfmt_linkup(struct halfrel* self, struct halfrel* peer)
+int picfmt_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

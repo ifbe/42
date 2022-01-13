@@ -226,10 +226,10 @@ static void nor_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int k
 	tmp = ent->whdf.iz0 + 0x30;
 	give_data_into_peer(ent,'o', stack,sp, 0,0, &tmp,1);
 }
-static void nor_discon(struct halfrel* self, struct halfrel* peer)
+static void nor_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void nor_linkup(struct halfrel* self, struct halfrel* peer)
+static void nor_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -265,8 +265,8 @@ void nor_register(_obj* p)
 	p->onsearch = (void*)nor_search;
 	p->onmodify = (void*)nor_modify;
 
-	p->onlinkup = (void*)nor_linkup;
-	p->ondiscon = (void*)nor_discon;
+	p->onattach = (void*)nor_attach;
+	p->ondetach = (void*)nor_detach;
 	p->ontaking = (void*)nor_taking;
 	p->ongiving = (void*)nor_giving;
 }

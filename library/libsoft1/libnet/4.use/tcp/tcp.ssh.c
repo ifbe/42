@@ -575,15 +575,15 @@ int sshclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx
 	art->vfmt += 1;
 	return 0;
 }
-int sshclient_discon(struct halfrel* self, struct halfrel* peer)
+int sshclient_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int sshclient_linkup(struct halfrel* self, struct halfrel* peer)
+int sshclient_attach(struct halfrel* self, struct halfrel* peer)
 {
 	int ret;
 	u8 buf[0x100];
-	say("@sshclient_linkup\n");
+	say("@sshclient_attach\n");
 
 	ret = secureshell_clientwrite_handshake(buf, 0x100);
 	ret = give_data_into_peer(self->pchip,_src_, 0,0, 0,0, buf,ret);
@@ -815,11 +815,11 @@ int sshserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx
 	art->vfmt += 1;
 	return 0;
 }
-int sshserver_discon(struct halfrel* self, struct halfrel* peer)
+int sshserver_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int sshserver_linkup(struct halfrel* self, struct halfrel* peer)
+int sshserver_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -881,11 +881,11 @@ int sshmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx
 	relationcreate(art, 0, _art_, _src_, child, 0, _sys_, _dst_);
 	return 0;
 }
-int sshmaster_discon(struct halfrel* self, struct halfrel* peer)
+int sshmaster_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int sshmaster_linkup(struct halfrel* self, struct halfrel* peer)
+int sshmaster_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

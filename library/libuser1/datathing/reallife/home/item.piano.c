@@ -399,10 +399,10 @@ static void piano_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 		case _gl41list_:piano_write_bywnd(ent,foot, stack,sp, arg,key, buf,len);break;
 	}
 }
-static void piano_discon(struct halfrel* self, struct halfrel* peer)
+static void piano_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void piano_linkup(struct halfrel* self, struct halfrel* peer)
+static void piano_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -444,8 +444,8 @@ void piano_register(_obj* p)
 	p->onsearch = (void*)piano_search;
 	p->onmodify = (void*)piano_modify;
 
-	p->onlinkup = (void*)piano_linkup;
-	p->ondiscon = (void*)piano_discon;
+	p->onattach = (void*)piano_attach;
+	p->ondetach = (void*)piano_detach;
 	p->ontaking = (void*)piano_taking;
 	p->ongiving = (void*)piano_giving;
 }

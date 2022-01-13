@@ -85,10 +85,10 @@ static void poker_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 static void poker_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void poker_discon(struct halfrel* self, struct halfrel* peer)
+static void poker_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void poker_linkup(struct halfrel* self, struct halfrel* peer)
+static void poker_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -128,8 +128,8 @@ void poker_register(_obj* p)
 	p->onsearch = (void*)poker_search;
 	p->onmodify = (void*)poker_modify;
 
-	p->onlinkup = (void*)poker_linkup;
-	p->ondiscon = (void*)poker_discon;
+	p->onattach = (void*)poker_attach;
+	p->ondetach = (void*)poker_detach;
 	p->ontaking = (void*)poker_taking;
 	p->ongiving = (void*)poker_giving;
 }

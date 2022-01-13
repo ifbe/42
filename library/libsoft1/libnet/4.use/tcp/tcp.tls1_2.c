@@ -980,11 +980,11 @@ int tls1v2client_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int 
 	art->vfmt += 1;
 	return 0;
 }
-int tls1v2client_discon(struct halfrel* self, struct halfrel* peer)
+int tls1v2client_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int tls1v2client_linkup(struct halfrel* self, struct halfrel* peer)
+int tls1v2client_attach(struct halfrel* self, struct halfrel* peer)
 {
 	int ret;
 	u8 tmp[0x1000];
@@ -1126,11 +1126,11 @@ int tls1v2server_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int 
 	art->vfmt += 1;
 	return 0;
 }
-int tls1v2server_discon(struct halfrel* self, struct halfrel* peer)
+int tls1v2server_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int tls1v2server_linkup(struct halfrel* self, struct halfrel* peer)
+int tls1v2server_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -1175,11 +1175,11 @@ int tls1v2master_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int 
 	tls1v2server_write(ele,0, stack,sp, 0,0, buf,len);
 	return 0;
 }
-int tls1v2master_discon(struct halfrel* self, struct halfrel* peer)
+int tls1v2master_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int tls1v2master_linkup(struct halfrel* self, struct halfrel* peer)
+int tls1v2master_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

@@ -331,10 +331,10 @@ static int vrglass_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 	vrglass_event(ent, 0, buf, 0);
 	return 0;
 }
-static void vrglass_discon(struct halfrel* self, struct halfrel* peer)
+static void vrglass_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void vrglass_linkup(struct halfrel* self, struct halfrel* peer)
+static void vrglass_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -351,8 +351,8 @@ void vrglass_register(_obj* p)
 	p->onsearch = (void*)vrglass_search;
 	p->onmodify = (void*)vrglass_modify;
 
-	p->onlinkup = (void*)vrglass_linkup;
-	p->ondiscon = (void*)vrglass_discon;
+	p->onattach = (void*)vrglass_attach;
+	p->ondetach = (void*)vrglass_detach;
 	p->ontaking = (void*)vrglass_taking;
 	p->ongiving = (void*)vrglass_giving;
 }

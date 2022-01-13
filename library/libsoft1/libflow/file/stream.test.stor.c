@@ -23,11 +23,11 @@ int stor_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, voi
 	art->priv_u32 += 1;
 	return 0;
 }
-int stor_discon(struct halfrel* self, struct halfrel* peer)
+int stor_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int stor_linkup(struct halfrel* self, struct halfrel* peer)
+int stor_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

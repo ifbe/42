@@ -238,14 +238,14 @@ int systemdelete(struct item* oo)
 	//del irel, orel
 	rel = oo->irel0;
 	if(0 != rel){
-		relationdiscon((void*)&rel->srcchip, (void*)&rel->dstchip);
+		relationdetach((void*)&rel->srcchip, (void*)&rel->dstchip);
 		relationdelete(rel);
 	}
 	oo->irel0 = oo->ireln = 0;
 
 	rel = oo->orel0;
 	if(0 != rel){
-		relationdiscon((void*)&rel->srcchip, (void*)&rel->dstchip);
+		relationdetach((void*)&rel->srcchip, (void*)&rel->dstchip);
 		relationdelete(rel);
 	}
 	oo->orel0 = oo->oreln = 0;
@@ -315,14 +315,14 @@ void* systemmodify(int argc, u8** argv)
 
 
 
-int systemlinkup(struct halfrel* self, struct halfrel* peer)
+int systemattach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@system_linkup\n");
+	say("@systemattach\n");
 	return 0;
 }
-int systemdiscon(struct halfrel* self, struct halfrel* peer)
+int systemdetach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@system_discon\n");
+	say("@systemdetach\n");
 	return 0;
 }
 int system_take(_obj* sys,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)

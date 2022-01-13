@@ -9,10 +9,10 @@ static void screen_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 static void screen_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void screen_discon(struct halfrel* self, struct halfrel* peer)
+static void screen_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void screen_linkup(struct halfrel* self, struct halfrel* peer)
+static void screen_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -45,8 +45,8 @@ void screen_register(_obj* p)
 	p->onsearch = (void*)screen_search;
 	p->onmodify = (void*)screen_modify;
 
-	p->onlinkup = (void*)screen_linkup;
-	p->ondiscon = (void*)screen_discon;
+	p->onattach = (void*)screen_attach;
+	p->ondetach = (void*)screen_detach;
 	p->ontaking = (void*)screen_taking;
 	p->ongiving = (void*)screen_giving;
 }

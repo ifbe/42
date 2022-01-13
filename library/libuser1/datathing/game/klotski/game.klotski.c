@@ -149,10 +149,10 @@ static void klotski_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 static void klotski_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void klotski_discon(struct halfrel* self, struct halfrel* peer)
+static void klotski_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void klotski_linkup(struct halfrel* self, struct halfrel* peer)
+static void klotski_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -205,8 +205,8 @@ void klotski_register(_obj* p)
 	p->onsearch = (void*)klotski_search;
 	p->onmodify = (void*)klotski_modify;
 
-	p->onlinkup = (void*)klotski_linkup;
-	p->ondiscon = (void*)klotski_discon;
+	p->onattach = (void*)klotski_attach;
+	p->ondetach = (void*)klotski_detach;
 	p->ontaking = (void*)klotski_taking;
 	p->ongiving = (void*)klotski_giving;
 }
