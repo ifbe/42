@@ -112,7 +112,7 @@ void system_recycle()
 
 
 
-void* systemcreate(u64 type, void* argstr, int argc, u8** argv)
+void* system_create(u64 type, void* argstr, int argc, u8** argv)
 {
 	int j,k,ret;
 	u8 host[0x100];	//127.0.0.1
@@ -229,7 +229,7 @@ void* systemcreate(u64 type, void* argstr, int argc, u8** argv)
 
 	return 0;
 }
-int systemdelete(struct item* oo)
+int system_delete(struct item* oo)
 {
 	struct relation* rel;
 	if(0 == oo)return 0;
@@ -275,7 +275,68 @@ int systemdelete(struct item* oo)
 	oo->vfmt = 0;
 	return 0;
 }
-void* systemsearch(u8* buf, int len)
+int system_reader(_obj* sys,void* foot, void* arg,int cmd, void* buf,int len)
+{
+	return 0;
+}
+int system_writer(_obj* sys,void* foot, void* arg,int cmd, void* buf,int len)
+{
+	return 0;
+}
+
+
+
+
+int system_attach(struct halfrel* self, struct halfrel* peer)
+{
+	say("@systemattach\n");
+	return 0;
+}
+int system_detach(struct halfrel* self, struct halfrel* peer)
+{
+	say("@systemdetach\n");
+	return 0;
+}
+int system_takeby(_obj* sys,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
+{
+	switch(sys->type){
+	case _FILE_:
+	case _file_:
+		return file_take(sys, 0, arg, cmd, buf, len);
+	}
+	return 0;
+}
+int system_giveby(_obj* sys,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
+{
+	switch(sys->type){
+	case _FILE_:
+	case _file_:
+		return file_give(sys,0, arg,cmd, buf,len);
+	case _ptmx_:
+		return shell_give(sys,0, arg,cmd, buf,len);
+	case _uart_:
+		return uart_give(sys,0, arg,cmd, buf,len);
+	case _TCP_:
+		sys = sys->sockinfo.child;
+		if(0 == sys)return -1;
+	default:
+		return socket_give(sys,0, arg,cmd, buf,len);
+	}
+	return 0;
+}
+
+
+
+
+int system_insert(u8* buf, int len)
+{
+	return 0;
+}
+int system_remove(u8* buf, int len)
+{
+	return 0;
+}
+void* system_search(u8* buf, int len)
 {
 	int j,k=0;
 	struct item* tmp;
@@ -292,7 +353,7 @@ void* systemsearch(u8* buf, int len)
 	if(0 == k)say("empth system\n");
 	return 0;
 }
-void* systemmodify(int argc, u8** argv)
+void* system_modify(int argc, u8** argv)
 {
 	int j;
 	u64 name = 0;
@@ -307,48 +368,7 @@ void* systemmodify(int argc, u8** argv)
 			tmp[j] = argv[2][j];
 		}
 		say("%llx,%llx\n",name, argv[3]);
-		systemcreate(name, argv[3], argc-3, &argv[3]);
-	}
-	return 0;
-}
-
-
-
-
-int systemattach(struct halfrel* self, struct halfrel* peer)
-{
-	say("@systemattach\n");
-	return 0;
-}
-int systemdetach(struct halfrel* self, struct halfrel* peer)
-{
-	say("@systemdetach\n");
-	return 0;
-}
-int system_take(_obj* sys,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
-{
-	switch(sys->type){
-	case _FILE_:
-	case _file_:
-		return file_take(sys, 0, arg, cmd, buf, len);
-	}
-	return 0;
-}
-int system_give(_obj* sys,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
-{
-	switch(sys->type){
-	case _FILE_:
-	case _file_:
-		return file_give(sys,0, arg,cmd, buf,len);
-	case _ptmx_:
-		return shell_give(sys,0, arg,cmd, buf,len);
-	case _uart_:
-		return uart_give(sys,0, arg,cmd, buf,len);
-	case _TCP_:
-		sys = sys->sockinfo.child;
-		if(0 == sys)return -1;
-	default:
-		return socket_give(sys,0, arg,cmd, buf,len);
+		system_create(name, argv[3], argc-3, &argv[3]);
 	}
 	return 0;
 }

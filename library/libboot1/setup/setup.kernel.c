@@ -54,13 +54,13 @@ static void kernel_wndctx(_obj* wnd)
 
 
 	//things
-	_obj* termnode = entitycreate(_term_,0, 0, 0);
+	_obj* termnode = entity_create(_term_,0, 0, 0);
 	struct style* termfoot = style_alloc();
 
-	_obj* gamenode = entitycreate(_clock_,0, 0, 0);
+	_obj* gamenode = entity_create(_clock_,0, 0, 0);
 	struct style* gamefoot = style_alloc();
 
-	_obj* editnode = entitycreate(_mmioedit_,0, 0, 0);
+	_obj* editnode = entity_create(_mmioedit_,0, 0, 0);
 	struct style* editfoot = style_alloc();
 
 
@@ -108,7 +108,7 @@ static int kernel_pollloop(struct item* wrk)
 			if(0 == ev)break;
 			if(0 == ev->what)return 0;
 
-			supply_give(wnd,0, stack,2, 0,0, ev,0);
+			supply_giveby(wnd,0, stack,2, 0,0, ev,0);
 		}
 
 		t1 = timeread();
@@ -139,7 +139,7 @@ static int kernel_drawloop(struct item* wrk)
 		}
 
 		//draw frame
-		supply_take(wnd,0, stack,2, 0,0, 0,0);
+		supply_takeby(wnd,0, stack,2, 0,0, 0,0);
 
 		t1 = timeread();
 		//say("dt=%d\n",t1-t0);
@@ -177,7 +177,7 @@ static int kernel_failloop(struct item* wrk)
 		//drawloop fail, i have to draw
 		if(0 == heartbeat_draw){
 			if(curr <= STALL_SEC)say("drawloop fail after %d sec\n", curr);
-			supply_take(wnd,0, stack,2, 0,0, 0,0);
+			supply_takeby(wnd,0, stack,2, 0,0, 0,0);
 		}
 
 		//pollloop fail, i have to poll
@@ -198,7 +198,7 @@ static int kernel_failloop(struct item* wrk)
 				if(0 == ev)break;
 				if(0 == ev->what)return 0;
 
-				supply_give(wnd,0, stack,2, 0,0, ev,0);
+				supply_giveby(wnd,0, stack,2, 0,0, ev,0);
 			}
 		}
 	}
@@ -228,8 +228,8 @@ static int kernel_idleloop(struct item* wrk)
 int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 {
 	//debug device
-	//_obj* tty = supplycreate(_tty_, 0, 0, 0);
-	_obj* wnd = supplycreate(_wnd_, 0, 0, 0);
+	//_obj* tty = supply_create(_tty_, 0, 0, 0);
+	_obj* wnd = supply_create(_wnd_, 0, 0, 0);
 	wrk->priv_ptr = wnd;
 
 	//hardware prepare

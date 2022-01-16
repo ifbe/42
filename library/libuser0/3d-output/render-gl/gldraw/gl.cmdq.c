@@ -60,7 +60,7 @@ void cmdqwindow_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd
 	while(1){
 		if(0 == rel)break;
 
-		entity_take(rel->pdstchip,rel->dst, stack,sp+2, arg,cmd, 0,0);
+		entity_takeby(rel->pdstchip,rel->dst, stack,sp+2, arg,cmd, 0,0);
 
 		rel = samesrcnextdst(rel);
 	}

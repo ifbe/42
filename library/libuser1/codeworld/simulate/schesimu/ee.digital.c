@@ -79,7 +79,7 @@ static void digital_broadcast(_obj* ent, int pin, _syn* stack,int sp, u8* buf, i
 		stack[sp+0].pchip = ent;
 		stack[sp+1].pchip = chip;
 		stack[sp+1].foottype = rel->srcfoottype;
-		entity_give(chip,0, stack,sp+2, 0,ent->STAMP, buf,len);
+		entity_giveby(chip,0, stack,sp+2, 0,ent->STAMP, buf,len);
 next1:
 		rel = samedstnextsrc(rel);
 	}
@@ -95,7 +95,7 @@ next1:
 		stack[sp+0].pchip = ent;
 		stack[sp+1].pchip = chip;
 		stack[sp+1].foottype = rel->dstfoottype;
-		entity_give(chip,0, stack,sp+2, 0,ent->STAMP, buf,len);
+		entity_giveby(chip,0, stack,sp+2, 0,ent->STAMP, buf,len);
 next2:
 		rel = samesrcnextdst(rel);
 	}

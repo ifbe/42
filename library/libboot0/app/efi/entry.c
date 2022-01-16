@@ -11,10 +11,10 @@ EFI_STATUS efi_main(EFI_HANDLE handle, EFI_SYSTEM_TABLE* efitab)
 {
 	sethandleandefitab(handle, efitab);
 
-	void* all = origincreate(_efimain_, efi_main, 0, 0);
-	void* wrk = bootupcreate(_kernel_, 0, 0, 0);
-	bootupdelete(wrk);
-	origindelete(all);
+	void* all = origin_create(_efimain_, efi_main, 0, 0);
+	void* wrk = bootup_create(_kernel_, 0, 0, 0);
+	bootup_delete(wrk);
+	origin_delete(all);
 
 	return EFI_SUCCESS;
 }

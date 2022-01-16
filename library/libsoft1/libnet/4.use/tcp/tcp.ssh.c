@@ -877,7 +877,7 @@ int sshmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx
 	_obj* child = obj->sockinfo.child;
 	if(0 == child)return 0;
 
-	art = arterycreate(_Ssh_, 0, 0, 0);
+	art = artery_create(_Ssh_, 0, 0, 0);
 	relationcreate(art, 0, _art_, _src_, child, 0, _sys_, _dst_);
 	return 0;
 }

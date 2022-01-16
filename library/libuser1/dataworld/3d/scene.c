@@ -30,7 +30,7 @@ int scene3d_world_camera_window(_obj* ent,void* foot, _syn* stack,int sp, void* 
 			stack[sp-1].pchip = rel->pdstchip;
 			stack[sp-1].pfoot = rel->pdstfoot;
 			stack[sp-1].foottype = rel->dstfoottype;
-			entity_take(stack[sp-1].pchip,stack[sp-1].pfoot, stack,sp, arg,key, buf, len);
+			entity_takeby(stack[sp-1].pchip,stack[sp-1].pfoot, stack,sp, arg,key, buf, len);
 		}
 		rel = samesrcnextdst(rel);
 	}
@@ -74,7 +74,7 @@ int scene3d_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, 
 		stack[sp+1].pchip = rel->pdstchip;
 		stack[sp+1].pfoot = rel->pdstfoot;
 		stack[sp+1].foottype = rel->dstfoottype;
-		entity_give(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, 0, 0, buf, 0);
+		entity_giveby(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, 0, 0, buf, 0);
 	}
 
 	return 0;

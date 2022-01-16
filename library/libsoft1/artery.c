@@ -698,10 +698,10 @@ void artery_init(u8* addr)
 	for(j=0;j<0x200000;j++)addr[j] = 0;
 	for(j=0;j<max;j++)ele[j].tier = _art_;
 
-	//arterycreate(0, (u8*)"HACK://0.0.0.0:2222");
-	//arterycreate(0, (u8*)"QUIC://0.0.0.0:4444");
-	//arterycreate(0,  (u8*)"SSH://0.0.0.0:2222");
-	//arterycreate(0, (u8*)"HTTP://0.0.0.0:4444");
+	//artery_create(0, (u8*)"HACK://0.0.0.0:2222");
+	//artery_create(0, (u8*)"QUIC://0.0.0.0:4444");
+	//artery_create(0,  (u8*)"SSH://0.0.0.0:2222");
+	//artery_create(0, (u8*)"HTTP://0.0.0.0:4444");
 
 	say("[a,c):artery inited\n");
 }
@@ -741,7 +741,7 @@ int parsetypefromurl(u8* url, u8* type)
 
 
 
-void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
+void* artery_create(u64 type, void* argstr, int argc, u8** argv)
 {
 	int j,fd,ret,port;
 	_obj* e;
@@ -1712,54 +1712,26 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 
 	return 0;
 }
-int arterydelete(_obj* ele)
+int artery_delete(_obj* ele)
 {
 	return 0;
 }
-void* arterysearch(u8* buf, int len)
+int artery_reader(_obj* art,void* foot, void* arg, int idx, void* buf, int len)
 {
-	int j,k=0;
-	_obj* art;
-	for(j=0;j<0x1000;j++)
-	{
-		art = &ele[j];
-		if(0 == art->type)continue;
-
-		k++;
-		say("[%04x]: %.8s, %.8s\n", j,
-			&art->tier, &art->type);
-	}
-
-	if(0 == k)say("empth artery\n");
 	return 0;
 }
-void* arterymodify(int argc, u8** argv)
+int artery_writer(_obj* art,void* foot, void* arg, int idx, void* buf, int len)
 {
-	int j;
-	u64 name = 0;
-	u8* tmp = (u8*)&name;
-	if(argc < 2)return 0;
-//say("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
-	if(0 == ncmp(argv[1], "create", 6))
-	{
-		for(j=0;j<8;j++)
-		{
-			if(argv[2][j] <= 0x20)break;
-			tmp[j] = argv[2][j];
-		}
-		say("%llx,%llx\n",name, argv[3]);
-		arterycreate(name, argv[3], argc-3, &argv[3]);
-	}
 	return 0;
 }
 
 
 
 
-int arteryattach(struct halfrel* self, struct halfrel* peer)
+int artery_attach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ele;
-	say("@arteryattach\n");
+	say("@artery_attach\n");
 
 	ele = self->pchip;
 	if(0 == ele)return 0;
@@ -1838,7 +1810,7 @@ int arteryattach(struct halfrel* self, struct halfrel* peer)
 	}//switch
 	return 0;
 }
-int arterydetach(struct halfrel* self, struct halfrel* peer)
+int artery_detach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ele;
 	say("@arterydetach\n");
@@ -1920,7 +1892,7 @@ int arterydetach(struct halfrel* self, struct halfrel* peer)
 	}//switch
 	return 0;
 }
-int artery_take(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int artery_takeby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	switch(art->type){
 	//case _gpt_:return gptclient_take(art,foot, stack,sp, arg,idx, buf,len);break;
@@ -2038,7 +2010,7 @@ int artery_take(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
 	}//switch
 	return 0;
 }
-int artery_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int artery_giveby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	//say("@arterywrite: %.8s\n", &ele->type);
 	switch(art->type){
@@ -2154,5 +2126,53 @@ int artery_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
 	case _Tls1_3_:return tls1v3server_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _tls1_3_:return tls1v3client_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	}//switch
+	return 0;
+}
+
+
+
+
+int artery_insert(u8* buf, int len)
+{
+	return 0;
+}
+int artery_remove(u8* buf, int len)
+{
+	return 0;
+}
+void* artery_search(u8* buf, int len)
+{
+	int j,k=0;
+	_obj* art;
+	for(j=0;j<0x1000;j++)
+	{
+		art = &ele[j];
+		if(0 == art->type)continue;
+
+		k++;
+		say("[%04x]: %.8s, %.8s\n", j,
+			&art->tier, &art->type);
+	}
+
+	if(0 == k)say("empth artery\n");
+	return 0;
+}
+void* artery_modify(int argc, u8** argv)
+{
+	int j;
+	u64 name = 0;
+	u8* tmp = (u8*)&name;
+	if(argc < 2)return 0;
+//say("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
+	if(0 == ncmp(argv[1], "create", 6))
+	{
+		for(j=0;j<8;j++)
+		{
+			if(argv[2][j] <= 0x20)break;
+			tmp[j] = argv[2][j];
+		}
+		say("%llx,%llx\n",name, argv[3]);
+		artery_create(name, argv[3], argc-3, &argv[3]);
+	}
 	return 0;
 }

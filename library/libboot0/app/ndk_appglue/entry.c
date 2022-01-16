@@ -254,10 +254,10 @@ void android_main(struct android_app* app)
 	mag = ASensorManager_getDefaultSensor(sensorManager, ASENSOR_TYPE_MAGNETIC_FIELD);
 
 
-	void* all = origincreate(_ndkmain_, 0, 0, 0);
-	void* thr = bootupcreate(_guiapp_, 0, 0, 0);
-	bootupdelete(thr);
-	origindelete(all);
+	void* all = origin_create(_ndkmain_, 0, 0, 0);
+	void* thr = bootup_create(_guiapp_, 0, 0, 0);
+	bootup_delete(thr);
+	origin_delete(all);
 
 
 	exit(0);

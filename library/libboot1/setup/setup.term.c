@@ -12,13 +12,13 @@ void term_delete(struct item* wrk, u8* arg)
 int term_create(struct item* wrk, u8* arg, int argc, u8** argv)
 {
 	//composer
-	void* xxx = arterycreate(_vt100_, 0, 0, 0);
+	void* xxx = artery_create(_vt100_, 0, 0, 0);
 
 	//client
-	void* ccc = supplycreate(_std_, 0, 0, 0);
+	void* ccc = supply_create(_std_, 0, 0, 0);
 
 	//server
-	void* sss = systemcreate(0, argv[1], 0, 0);
+	void* sss = system_create(0, argv[1], 0, 0);
 
 
 	struct relation* crel = relationcreate(xxx,0, _art_,_dst_, ccc,0, _sup_,_dst_);

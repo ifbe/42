@@ -1165,7 +1165,7 @@ int tls1v2master_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int 
 	_obj* child = obj->sockinfo.child;
 	if(0 == child)return 0;
 
-	_obj* ele = arterycreate(_Tls1_2_, 0, 0, 0);
+	_obj* ele = artery_create(_Tls1_2_, 0, 0, 0);
 	if(0 == ele)return 0;
 
 	relationcreate(ele, 0, _art_, _src_, child, 0, _sys_, _dst_);

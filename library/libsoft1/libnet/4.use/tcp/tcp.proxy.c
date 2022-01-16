@@ -162,7 +162,7 @@ int proxymaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 	if(0 == Tcp)return 0;
 
 	//master, servant
-	Proxy = arterycreate(_Proxy_, 0, 0, 0);
+	Proxy = artery_create(_Proxy_, 0, 0, 0);
 	if(0 == Proxy)return 0;
 
 	//child -> servant
@@ -194,12 +194,12 @@ int proxymaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 	switch(art->hfmt){
 		case _socks_:{
 			//socksclient -> proxyserver
-			socks = arterycreate(_socks_, perobj->data, 0, 0);
+			socks = artery_create(_socks_, perobj->data, 0, 0);
 			if(0 == socks)break;
 			relationcreate(Proxy, 0, _art_, 's', socks, 0, _art_, _dst_);
 
 			//tcpclient -> socksclient
-			client = systemcreate(_tcp_, artobj->data, 0, 0);
+			client = system_create(_tcp_, artobj->data, 0, 0);
 			if(0 == client)break;
 			rel = relationcreate(socks, 0, _art_, _src_, client, 0, _sys_, _dst_);
 
@@ -209,7 +209,7 @@ int proxymaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 		}//socks
 		default:{
 			//tcpclient -> proxyserver
-			client = systemcreate(_tcp_, perobj->data, 0, 0);
+			client = system_create(_tcp_, perobj->data, 0, 0);
 			if(0 == client)break;
 			rel = relationcreate(Proxy, 0, _art_, 's', client, 0, _sys_, _dst_);
 

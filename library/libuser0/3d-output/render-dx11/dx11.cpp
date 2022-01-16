@@ -715,7 +715,7 @@ static void restorestackdeliverevent(_obj* wnd, struct event* ev)
 	stack[sp+1].pfoot = rel->pdstfoot;
 	//stack[sp+1].type = rel->dsttype;
 	stack[sp+1].flag = rel->dstflag;
-	entity_give((_obj*)rel->pdstchip, rel->pdstfoot, stack,sp+2, 0,0, ev, 0);
+	entity_giveby((_obj*)rel->pdstchip, rel->pdstfoot, stack,sp+2, 0,0, ev, 0);
 }
 LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
@@ -967,7 +967,7 @@ int fullwindow_taking(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* 
 			stack[sp+1].pfoot = rel->pdstfoot;
 			//stack[sp+1].type = rel->dsttype;
 			stack[sp+1].flag = rel->dstflag;
-			entity_take((_obj*)rel->pdstchip, rel->pdstfoot, stack,sp+2, 0,'v', 0, 0);
+			entity_takeby((_obj*)rel->pdstchip, rel->pdstfoot, stack,sp+2, 0,'v', 0, 0);
 		}
 
 		//give

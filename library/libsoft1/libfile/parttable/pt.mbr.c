@@ -145,11 +145,11 @@ int mount_mbr_one(_obj* art, struct mbrpart* part)
 	case 0x0c:
 	case 0x1c:
 	{
-		_obj* tmp = arterycreate(_fat_,0,0,0);
+		_obj* tmp = artery_create(_fat_,0,0,0);
 		if(0 == tmp)return 0;
 		struct relation* rel = relationcreate(tmp,0,_art_,_src_, art,(void*)(start<<9),_art_,_dst_);
 		if(0 == rel)return 0;
-		arteryattach((void*)&rel->dst, (void*)&rel->src);
+		artery_attach((void*)&rel->dst, (void*)&rel->src);
 		break;
 	}
 	}//switch

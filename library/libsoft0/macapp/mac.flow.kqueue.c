@@ -93,7 +93,7 @@ int kqueue_thread(int argc, const char * argv[])
 				cnt = read(fd, tmpbuf, BUFFER_SIZE);
 				if(0 == cnt){
 					say("error@%.4s:len=%x\n", &here->type, cnt);
-					systemdelete(here);
+					system_delete(here);
 					break;
 				}
 				give_data_into_peer(here,_dst_, stack,0, 0,0, tmpbuf,cnt);
@@ -113,7 +113,7 @@ int kqueue_thread(int argc, const char * argv[])
 				if(cnt <= 0)
 				{
 					kqueue_del(fd);
-					systemdelete(here);
+					system_delete(here);
 					//close(fd);
 					//here->type = 0;
 				}
@@ -142,7 +142,7 @@ int kqueue_thread(int argc, const char * argv[])
 				if(cnt <= 0)
 				{
 					kqueue_del(fd);
-					systemdelete(here);
+					system_delete(here);
 					//close(fd);
 					//here->type = 0;
 				}

@@ -109,7 +109,7 @@ say("@14\n");
 		stack[sp+0].pchip = gear;
 		stack[sp+1].pchip = next;
 		stack[sp+1].foottype = _gear_;
-		entity_give(next,0, stack,sp+2, 0,0, &gear->whdf.fz0,1);
+		entity_giveby(next,0, stack,sp+2, 0,0, &gear->whdf.fz0,1);
 next1:
 		rel = samedstnextsrc(rel);
 	}
@@ -128,7 +128,7 @@ say("@24\n");
 		stack[sp+0].pchip = gear;
 		stack[sp+1].pchip = next;
 		stack[sp+1].foottype = _gear_;
-		entity_give(next,0, stack,sp+2, 0,0, &gear->whdf.fz0,1);
+		entity_giveby(next,0, stack,sp+2, 0,0, &gear->whdf.fz0,1);
 next2:
 		rel = samesrcnextdst(rel);
 	}

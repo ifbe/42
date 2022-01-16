@@ -255,14 +255,14 @@ int httpmaster_write_bysrc(_obj* art,void* foot, _syn* stack,int sp, void* arg, 
 		if(0 == TCP)return 0;
 		_obj* Tcp = TCP->sockinfo.child;
 		if(0 == Tcp)return 0;
-		_obj* Ws = arterycreate(_Ws_, 0, 0, 0);
+		_obj* Ws = artery_create(_Ws_, 0, 0, 0);
 		if(0 == Ws)return 0;
 		struct relation* rel = relationcreate(Ws, 0, _art_, _src_, Tcp, 0, _sys_, _dst_);
 		if(0 == rel)return 0;
 		stack[sp-2].pchip = Tcp;
 		stack[sp-1].pchip = Ws;
 		stack[sp-1].foottype = _src_;
-		artery_give(Ws,0, stack,sp, 0,0, buf,len);
+		artery_giveby(Ws,0, stack,sp, 0,0, buf,len);
 		return 0;
 	}
 
@@ -317,7 +317,7 @@ int httpmaster_write_bysrc(_obj* art,void* foot, _syn* stack,int sp, void* arg, 
 	{
 		if(0 == ncmp(p.Connection, "keep-alive", 10))return 0;
 	}
-	//systemdelete(obj);
+	//system_delete(obj);
 	return 0;
 }
 int httpmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)

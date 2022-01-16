@@ -97,7 +97,7 @@ int htmlroot_taketext(_obj* ent,void* foot, _syn* stack,int sp)
 			stack[sp+1].pchip = rel->pdstchip;
 			stack[sp+1].pfoot = rel->pdstfoot;
 			stack[sp+1].foottype = rel->dstfoottype;
-			entity_take(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, 0,0, 0,0);
+			entity_takeby(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, 0,0, 0,0);
 		}
 		rel = samesrcnextdst(rel);
 	}

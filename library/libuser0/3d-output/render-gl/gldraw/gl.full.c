@@ -391,7 +391,7 @@ found:
 		stack[sp+1].pchip = rel->pdstchip;
 		stack[sp+1].pfoot = rel->pdstfoot;
 		stack[sp+1].foottype = rel->dstfoottype;
-		entity_give(rel->pdstchip, rel->pdstfoot, stack,sp+2, arg,cmd, ev,0);
+		entity_giveby(rel->pdstchip, rel->pdstfoot, stack,sp+2, arg,cmd, ev,0);
 	}
 	return 0;
 }
@@ -425,7 +425,7 @@ int fullwindow_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd,
 		stack[sp+1].pfoot = rel->pdstfoot;
 		//stack[sp+1].type = rel->dsttype;
 		stack[sp+1].foottype = rel->dstfoottype;
-		entity_take(rel->pdstchip,rel->pdstfoot, stack,sp+2, arg,cmd, 0,0);
+		entity_takeby(rel->pdstchip,rel->pdstfoot, stack,sp+2, arg,cmd, 0,0);
 
 		//wnd = rel->psrcchip;		//double check
 		struct fstyle* area = rel->psrcfoot;

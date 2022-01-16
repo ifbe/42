@@ -161,7 +161,7 @@ int telnetmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int 
 	_obj* child = obj->sockinfo.child;
 	if(0 == child)return 0;
 
-	_obj* tel = arterycreate(_Telnet_, 0, 0, 0);
+	_obj* tel = artery_create(_Telnet_, 0, 0, 0);
 	if(0 == tel)return 0;
 
 	relationcreate(tel, 0, _art_, _src_, child, 0, _sys_, _dst_);

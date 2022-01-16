@@ -58,7 +58,7 @@ int supplyevent(struct halfrel* stack, struct event* e)
 		case _gl41cmdq_:
 		default:{
 			stack[1].pchip = win;
-			supply_give(win,0, stack,2, 0,0, &ev,0);break;
+			supply_giveby(win,0, stack,2, 0,0, &ev,0);break;
 		}
 	}
 	return 0;
@@ -75,11 +75,11 @@ int supplyread_all(struct halfrel* stack)
 
 		if(_wnd_ == win->type){
 			stack[1].pchip = win;
-			supply_take(win,0, stack,2, 0,0, 0,0);
+			supply_takeby(win,0, stack,2, 0,0, 0,0);
 		}
 /*		if(_spk_ == win->type){
 			stack[1].pchip = win;
-			supply_take(win,0, stack,2, 0,0, 0,0);
+			supply_takeby(win,0, stack,2, 0,0, 0,0);
 		}*/
 	}
 	return 0;

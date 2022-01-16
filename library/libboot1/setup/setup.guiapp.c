@@ -23,7 +23,7 @@ void* style_recycle();
 
 static void guiapp_mgr_to_ent(_obj* mgr)
 {
-	_obj* term = entitycreate(_term_,0, 0, 0);
+	_obj* term = entity_create(_term_,0, 0, 0);
 	struct style* term_to_mgr = style_alloc();
 	struct style* mgr_to_term = style_alloc();
 	mgr_to_term->fshape.vc[0] = 0.0;
@@ -33,7 +33,7 @@ static void guiapp_mgr_to_ent(_obj* mgr)
 	struct relation* rel1 = relationcreate(term,term_to_mgr, _ent_,0, mgr,mgr_to_term, _ent_,0);
 	relationattach((void*)&rel1->srcchip, (void*)&rel1->dstchip);
 /*
-	_obj* game = entitycreate(_2048_,0, 0, 0);
+	_obj* game = entity_create(_2048_,0, 0, 0);
 	struct style* game_to_mgr = style_alloc();
 	struct style* mgr_to_game = style_alloc();
 	mgr_to_game->fshape.vc[0] = 0.0;
@@ -46,7 +46,7 @@ static void guiapp_mgr_to_ent(_obj* mgr)
 }
 static void guiapp_wnd_to_mgr(_obj* wnd)
 {
-	_obj* mgr = entitycreate(_corner_,0, 0, 0);
+	_obj* mgr = entity_create(_corner_,0, 0, 0);
 	struct style* mgr_to_wnd = style_alloc();
 	struct style* wnd_to_mgr = style_alloc();
 	wnd_to_mgr->fshape.vc[0] = 0.0;
@@ -60,10 +60,10 @@ static void guiapp_wnd_to_mgr(_obj* wnd)
 }
 static void guiapp_wnd_to_3d(_obj* wnd)
 {
-	//_obj* abc = entitycreate(_texball_,"datafile/jpg/texball-grassland.jpg", 0, 0);
-	_obj* abc = entitycreate(_texball_,"datafile/jpg/360d-park.jpg", 0, 0);
-	_obj* wrd = entitycreate(_virtual_,0, 0, 0);
-	_obj* cam = entitycreate(_vrbox_,0, 0, 0);
+	//_obj* abc = entity_create(_texball_,"datafile/jpg/texball-grassland.jpg", 0, 0);
+	_obj* abc = entity_create(_texball_,"datafile/jpg/360d-park.jpg", 0, 0);
+	_obj* wrd = entity_create(_virtual_,0, 0, 0);
+	_obj* cam = entity_create(_vrbox_,0, 0, 0);
 
 	struct style* wrd_to_cam = style_alloc();
 	struct style* cam_to_wrd = style_alloc();
@@ -130,7 +130,7 @@ void guiapp_delete(struct item* wrk, u8* arg)
 }
 int guiapp_create(struct item* wrk, u8* arg, int argc, u8** argv)
 {
-	_obj* wnd = supplycreate(_wnd_, 0, 0, 0);
+	_obj* wnd = supply_create(_wnd_, 0, 0, 0);
 	wrk->priv_ptr = wnd;
 
 	guiapp_wnd_to_mgr(wnd);
@@ -142,7 +142,7 @@ int guiapp_create(struct item* wrk, u8* arg, int argc, u8** argv)
 
 	struct event* ev;
 	while(1){
-		supply_take(wnd,0, stack,2, 0,0, 0,0);
+		supply_takeby(wnd,0, stack,2, 0,0, 0,0);
 
 		//cleanup events
 		while(1){
@@ -150,7 +150,7 @@ int guiapp_create(struct item* wrk, u8* arg, int argc, u8** argv)
 			if(0 == ev)break;
 			if(0 == ev->what)return 0;
 
-			supply_give(wnd,0, stack,2, 0,0, ev,0);
+			supply_giveby(wnd,0, stack,2, 0,0, ev,0);
 		}
 	}
 	return 0;

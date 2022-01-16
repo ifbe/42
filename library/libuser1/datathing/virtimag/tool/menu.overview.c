@@ -961,7 +961,7 @@ void overview_drag(_obj* win, int x0, int y0, int x1, int y1)
 		if((x0==x1)&&(y0==y1))
 		{
 			if(0 == act_s->type)return;
-			entitycreate(0, act_s, 0, 0);
+			entity_create(0, act_s, 0, 0);
 		}
 		else if(y1 < 8)
 		{
@@ -972,8 +972,8 @@ void overview_drag(_obj* win, int x0, int y0, int x1, int y1)
 					act_s, 0, _ent_, 0
 				);
 			}
-			else if(0 == act_s->type)entitycreate(act_d->hfmt, 0, 0, 0);
-			else if(0 == act_d->type)entitycreate(act_s->hfmt, 0, 0, 0);
+			else if(0 == act_s->type)entity_create(act_d->hfmt, 0, 0, 0);
+			else if(0 == act_d->type)entity_create(act_s->hfmt, 0, 0, 0);
 		}
 		else if(y1 < 16)
 		{

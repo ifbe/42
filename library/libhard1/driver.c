@@ -61,7 +61,7 @@ void driver_recycle()
 
 
 
-void* drivercreate(u64 type, void* url, int argc, u8** argv)
+void* driver_create(u64 type, void* url, int argc, u8** argv)
 {
 	struct item* dr;
 	say("@drivercreate: %.8s\n", &type);
@@ -87,11 +87,72 @@ void* drivercreate(u64 type, void* url, int argc, u8** argv)
 
 	return 0;
 }
-int driverdelete(_obj* this)
+int driver_delete(_obj* this)
 {
 	return 0;
 }
-int driversearch(u8* buf, int len)
+int driver_reader(struct item* dri,void* foot, void* arg, int idx, void* buf, int len)
+{
+	return 0;
+}
+int driver_writer(struct item* dri,void* foot, void* arg, int idx, void* buf, int len)
+{
+	return 0;
+}
+
+
+
+
+int driver_attach(struct halfrel* self, struct halfrel* peer)
+{
+	struct item* ele = (void*)(self->chip);
+	say("@driverattach\n");
+	switch(ele->type){
+		case _mpu9250_:return mpu9250_attach(self, peer);break;
+		case _lsm9ds1_:return lsm9ds1_attach(self, peer);break;
+	}
+	return 0;
+}
+int driver_detach(struct halfrel* self, struct halfrel* peer)
+{
+	struct item* ele = (void*)(self->chip);
+	say("@driverdetach\n");
+	switch(ele->type){
+		case _mpu9250_:return mpu9250_detach(self, peer);break;
+		case _lsm9ds1_:return lsm9ds1_detach(self, peer);break;
+	}
+	return 0;
+}
+int driver_takeby(struct item* dri,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+{
+	switch(dri->type){
+		case _mpu9250_:mpu9250_read(dri,foot, stack,sp, arg,idx, buf,len);break;
+		case _lsm9ds1_:lsm9ds1_read(dri,foot, stack,sp, arg,idx, buf,len);break;
+	}
+	return 0;
+}
+int driver_giveby(struct item* dri,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+{
+	//say("@driverwrite\n");
+	switch(dri->type){
+		case _mpu9250_:return mpu9250_write(dri,foot, stack,sp, arg,idx, buf,len);break;
+		case _lsm9ds1_:return lsm9ds1_write(dri,foot, stack,sp, arg,idx, buf,len);break;
+	}
+	return 0;
+}
+
+
+
+
+int driver_insert(u8* buf, int len)
+{
+	return 0;
+}
+int driver_remove(u8* buf, int len)
+{
+	return 0;
+}
+int driver_search(u8* buf, int len)
 {
 	int j,k=0;
 	for(j=0;j<64;j++)
@@ -104,7 +165,7 @@ int driversearch(u8* buf, int len)
 	if(0 == k)say("empth driver\n");
 	return 0;
 }
-int drivermodify(int argc, u8** argv)
+int driver_modify(int argc, u8** argv)
 {
 	int j;
 	u64 name = 0;
@@ -119,48 +180,7 @@ int drivermodify(int argc, u8** argv)
 			tmp[j] = argv[2][j];
 		}
 		say("%llx,%llx\n",name, argv[3]);
-		drivercreate(name, argv[3], argc-3, &argv[3]);
-	}
-	return 0;
-}
-
-
-
-
-int driverattach(struct halfrel* self, struct halfrel* peer)
-{
-	struct item* ele = (void*)(self->chip);
-	say("@driverattach\n");
-	switch(ele->type){
-		case _mpu9250_:return mpu9250_attach(self, peer);break;
-		case _lsm9ds1_:return lsm9ds1_attach(self, peer);break;
-	}
-	return 0;
-}
-int driverdetach(struct halfrel* self, struct halfrel* peer)
-{
-	struct item* ele = (void*)(self->chip);
-	say("@driverdetach\n");
-	switch(ele->type){
-		case _mpu9250_:return mpu9250_detach(self, peer);break;
-		case _lsm9ds1_:return lsm9ds1_detach(self, peer);break;
-	}
-	return 0;
-}
-int driver_take(struct item* dri,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
-{
-	switch(dri->type){
-		case _mpu9250_:mpu9250_read(dri,foot, stack,sp, arg,idx, buf,len);break;
-		case _lsm9ds1_:lsm9ds1_read(dri,foot, stack,sp, arg,idx, buf,len);break;
-	}
-	return 0;
-}
-int driver_give(struct item* dri,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
-{
-	//say("@driverwrite\n");
-	switch(dri->type){
-		case _mpu9250_:return mpu9250_write(dri,foot, stack,sp, arg,idx, buf,len);break;
-		case _lsm9ds1_:return lsm9ds1_write(dri,foot, stack,sp, arg,idx, buf,len);break;
+		driver_create(name, argv[3], argc-3, &argv[3]);
 	}
 	return 0;
 }

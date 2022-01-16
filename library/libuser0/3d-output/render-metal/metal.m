@@ -620,7 +620,7 @@ int fullwindow_taking(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* 
 			stack[sp+1].pfoot = rel->pdstfoot;
 			//stack[sp+1].type = rel->dsttype;
 			stack[sp+1].flag = rel->dstflag;
-			entity_take((_obj*)rel->pdstchip, rel->pdstfoot, stack,sp+2, 0,'v', 0, 0);
+			entity_takeby((_obj*)rel->pdstchip, rel->pdstfoot, stack,sp+2, 0,'v', 0, 0);
 		}
 
 		[view draweach:area];

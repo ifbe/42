@@ -128,7 +128,7 @@ int wndmgr_rgba_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key
 			stack[sp+1].pchip = rel->pdstchip;
 			stack[sp+1].pfoot = rel->pdstfoot;
 			stack[sp+1].foottype = rel->dstfoottype;
-			entity_take(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, arg,key, buf,len);
+			entity_takeby(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, arg,key, buf,len);
 
 			struct style* sty = rel->psrcfoot;
 			int x0 = sty->fs.vc[0] - sty->fs.vr[0];	//(left, top)
@@ -236,7 +236,7 @@ int wndmgr_rgba_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key
 		stack[sp+1].pchip = the->pdstchip;
 		stack[sp+1].pfoot = the->pdstfoot;
 		stack[sp+1].foottype = the->dstfoottype;
-		entity_give(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, arg,key, buf,len);
+		entity_giveby(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, arg,key, buf,len);
 	}
 
 	int x = wnd->whdf.ix0;

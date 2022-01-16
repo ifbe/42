@@ -20,14 +20,14 @@ int relation_take(struct item* item,void* foot, struct halfrel* stack,int sp, vo
 		return item->ontaking(item,foot, stack,sp, arg,cmd, buf,len);
 	}
 	switch(item->tier){
-		case _ori_:return origin_take(item,foot, stack,sp, arg, cmd, buf, len);
-		case _wrk_:return bootup_take(item,foot, stack,sp, arg, cmd, buf, len);
-		case _dev_:return device_take(item,foot, stack,sp, arg, cmd, buf, len);
-		case _dri_:return driver_take(item,foot, stack,sp, arg, cmd, buf, len);
-		case _sys_:return system_take((void*)item,foot, stack,sp, arg, cmd, buf, len);
-		case _art_:return artery_take((void*)item,foot, stack,sp, arg, cmd, buf, len);
-		case _sup_:return supply_take((void*)item,foot, stack,sp, arg, cmd, buf, len);
-		case _ent_:return entity_take((void*)item,foot, stack,sp, arg, cmd, buf, len);
+		case _ori_:return origin_takeby(item,foot, stack,sp, arg, cmd, buf, len);
+		case _wrk_:return bootup_takeby(item,foot, stack,sp, arg, cmd, buf, len);
+		case _dev_:return device_takeby(item,foot, stack,sp, arg, cmd, buf, len);
+		case _dri_:return driver_takeby(item,foot, stack,sp, arg, cmd, buf, len);
+		case _sys_:return system_takeby((void*)item,foot, stack,sp, arg, cmd, buf, len);
+		case _art_:return artery_takeby((void*)item,foot, stack,sp, arg, cmd, buf, len);
+		case _sup_:return supply_takeby((void*)item,foot, stack,sp, arg, cmd, buf, len);
+		case _ent_:return entity_takeby((void*)item,foot, stack,sp, arg, cmd, buf, len);
 	}
 	return 0;
 }
@@ -113,14 +113,14 @@ int relation_w(struct item* item,void* foot, struct halfrel* stack,int sp, void*
 		return item->ongiving(item,foot, stack,sp, arg,cmd, buf,len);
 	}
 	switch(item->tier){
-		case _ori_:return origin_give(item,foot, stack,sp, arg,cmd, buf,len);
-		case _wrk_:return bootup_give(item,foot, stack,sp, arg,cmd, buf,len);
-		case _dev_:return device_give(item,foot, stack,sp, arg,cmd, buf,len);
-		case _dri_:return driver_give(item,foot, stack,sp, arg,cmd, buf,len);
-		case _sys_:return system_give((void*)item,foot, stack,sp, arg,cmd, buf,len);
-		case _art_:return artery_give((void*)item,foot, stack,sp, arg,cmd, buf,len);
-		case _sup_:return supply_give((void*)item,foot, stack,sp, arg,cmd, buf,len);
-		case _ent_:return entity_give((void*)item,foot, stack,sp, arg,cmd, buf,len);
+		case _ori_:return origin_giveby(item,foot, stack,sp, arg,cmd, buf,len);
+		case _wrk_:return bootup_giveby(item,foot, stack,sp, arg,cmd, buf,len);
+		case _dev_:return device_giveby(item,foot, stack,sp, arg,cmd, buf,len);
+		case _dri_:return driver_giveby(item,foot, stack,sp, arg,cmd, buf,len);
+		case _sys_:return system_giveby((void*)item,foot, stack,sp, arg,cmd, buf,len);
+		case _art_:return artery_giveby((void*)item,foot, stack,sp, arg,cmd, buf,len);
+		case _sup_:return supply_giveby((void*)item,foot, stack,sp, arg,cmd, buf,len);
+		case _ent_:return entity_giveby((void*)item,foot, stack,sp, arg,cmd, buf,len);
 	}
 	return 0;
 }

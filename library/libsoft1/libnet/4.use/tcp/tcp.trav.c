@@ -96,7 +96,7 @@ int tcptravclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg,int 
 			r[4],r[5],r[6],r[7], (r[2]<<8)+r[3]
 		);
 		for(j=0;j<10;j++){
-			ccc = systemcreate(_tcp_, tmp, 0, 0);
+			ccc = system_create(_tcp_, tmp, 0, 0);
 			say("ccc=%llx\n",ccc);
 			if(ccc){
 				relationcreate(art, 0, _art_, _ccc_, ccc, 0, _sys_, _dst_);
@@ -111,7 +111,7 @@ int tcptravclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg,int 
 			"%d.%d.%d.%d:%d",
 			t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]
 		);
-		sss = systemcreate(_TCP_, tmp, 0, 0);
+		sss = system_create(_TCP_, tmp, 0, 0);
 		if(sss){
 			relationcreate(art, 0, _art_, _sss_, sss, 0, _sys_, _dst_);
 		}

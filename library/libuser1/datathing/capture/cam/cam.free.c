@@ -652,7 +652,7 @@ static int freecam_generate(_obj* ent,void* slot, _syn* stack,int sp, _obj* wor,
 		//printmat4(m);
 
 		pixel_cleardepth(wnd);
-		entity_take(stack[sp+1].pchip, 0, stack, sp+2, m, ent->DRAWTYPE, 0, 0);
+		entity_takeby(stack[sp+1].pchip, 0, stack, sp+2, m, ent->DRAWTYPE, 0, 0);
 		break;
 
 	case _dx11list_:

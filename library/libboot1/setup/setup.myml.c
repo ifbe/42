@@ -270,13 +270,13 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 				chip[clen].type = fmt;
 				chip[clen].hash = hash;
 				switch(tier){
-					case _ent_:chip[clen].addr = entitycreate(fmt, url, argc, argv);break;
-					case _sup_:chip[clen].addr = supplycreate(fmt, url, argc, argv);break;
-					case _art_:chip[clen].addr = arterycreate(fmt, url, argc, argv);break;
-					case _sys_:chip[clen].addr = systemcreate(fmt, url, argc, argv);break;
-					case _dri_:chip[clen].addr = drivercreate(fmt, url, argc, argv);break;
-					case _dev_:chip[clen].addr = devicecreate(fmt, url, argc, argv);break;
-					case _wrk_:chip[clen].addr = bootupcreate(fmt, url, argc, argv);break;
+					case _ent_:chip[clen].addr = entity_create(fmt, url, argc, argv);break;
+					case _sup_:chip[clen].addr = supply_create(fmt, url, argc, argv);break;
+					case _art_:chip[clen].addr = artery_create(fmt, url, argc, argv);break;
+					case _sys_:chip[clen].addr = system_create(fmt, url, argc, argv);break;
+					case _dri_:chip[clen].addr = driver_create(fmt, url, argc, argv);break;
+					case _dev_:chip[clen].addr = device_create(fmt, url, argc, argv);break;
+					case _wrk_:chip[clen].addr = bootup_create(fmt, url, argc, argv);break;
 				}
 
 				nodename = -1;
@@ -566,7 +566,7 @@ int myml_create(struct item* wrk, void* url, int argc, u8** argv)
 		role_fromfile((u8*)"datafile/myml/index.myml", 0);
 	}
 	else if(argc <= 1){
-		supplycreate(_std_, 0, 0, 0);
+		supply_create(_std_, 0, 0, 0);
 	}
 	else{
 		for(j=1;j<argc;j++){

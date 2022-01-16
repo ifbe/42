@@ -235,11 +235,11 @@ say("1\n");
 	if(0 == child)return 0;
 say("2\n");
 	//side b
-	void* sys = systemcreate(_tcp_, tmp, 0, 0);
+	void* sys = system_create(_tcp_, tmp, 0, 0);
 	if(0 == sys)return 0;
 say("3\n");
 	//connect s->a s->b
-	void* s5 = arterycreate(_Socks_, 0, 0, 0);
+	void* s5 = artery_create(_Socks_, 0, 0, 0);
 	if(0 == s5)return 0;
 	relationcreate(s5, 0, _art_, 'a', child, 0, _sys_, _dst_);
 	relationcreate(s5, 0, _art_, 'b', sys, 0, _sys_, _dst_);

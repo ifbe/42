@@ -109,7 +109,7 @@ static void* epollthread(void* p)
 					cnt = read(fd, tmpbuf, BUFFER_SIZE);
 					if(0 == cnt){
 						say("error@%.4s:len=%x\n", &here->type, cnt);
-						systemdelete(here);
+						system_delete(here);
 						break;
 					}
 					give_data_into_peer(here,_dst_, stack,0, 0,0, tmpbuf,cnt);
@@ -129,7 +129,7 @@ static void* epollthread(void* p)
 					if(cnt <= 0)
 					{
 						epoll_del(fd);
-						systemdelete(here);
+						system_delete(here);
 						//close(fd);
 						//here->type = 0;
 						continue;
@@ -159,7 +159,7 @@ static void* epollthread(void* p)
 					if(cnt <= 0)
 					{
 						epoll_del(fd);
-						systemdelete(here);
+						system_delete(here);
 						//close(fd);
 						//here->type = 0;
 						continue;

@@ -8,22 +8,22 @@ void* threadsearch(void*, int);
 int processsearch(void* buf, int len);
 int processcreate(void* file, void* args);
 //
-void* originsearch(void*, int);
-void* bootupsearch(void*, int);
-void* devicesearch(void*, int);
-void* driversearch(void*, int);
-void* systemsearch(void*, int);
-void* arterysearch(void*, int);
-void* supplysearch(void*, int);
-void* entitysearch(void*, int);
-void* originmodify(int argc, void* argv);
-void* bootupmodify(int argc, void* argv);
-void* devicemodify(int argc, void* argv);
-void* drivermodify(int argc, void* argv);
-void* systemmodify(int argc, void* argv);
-void* arterymodify(int argc, void* argv);
-void* supplymodify(int argc, void* argv);
-void* entitymodify(int argc, void* argv);
+void* origin_search(void*, int);
+void* bootup_search(void*, int);
+void* device_search(void*, int);
+void* driver_search(void*, int);
+void* system_search(void*, int);
+void* artery_search(void*, int);
+void* supply_search(void*, int);
+void* entity_search(void*, int);
+void* origin_modify(int argc, void* argv);
+void* bootup_modify(int argc, void* argv);
+void* device_modify(int argc, void* argv);
+void* driver_modify(int argc, void* argv);
+void* system_modify(int argc, void* argv);
+void* artery_modify(int argc, void* argv);
+void* supply_modify(int argc, void* argv);
+void* entity_modify(int argc, void* argv);
 //
 void* style_alloc();
 void style_recycle();
@@ -63,13 +63,13 @@ u64 u64fromstr(u8* buf)
 }
 void term_window(int argc, u8** argv)
 {
-	_obj* wnd = supplycreate(_wnd_, 0, 0, 0);
+	_obj* wnd = supply_create(_wnd_, 0, 0, 0);
 	if(0 == wnd)return;
 	if(argc <=1)return;
 
 	u64 type = u64fromstr(argv[1]);
 
-	struct entity* ent = entitycreate(type, 0, 0, 0);
+	struct entity* ent = entity_create(type, 0, 0, 0);
 	if(0 == ent)return;
 
 	struct style* toterm = style_alloc();
@@ -101,33 +101,33 @@ void term_ls(u8* buf, int len)
 {
 	if(buf[3] <= 0x20)
 	{
-		originsearch(0, 0);
+		origin_search(0, 0);
 		say("----------------\n");
-		bootupsearch(0, 0);
+		bootup_search(0, 0);
 		say("----------------\n");
-		devicesearch(0, 0);
+		device_search(0, 0);
 		say("----------------\n");
-		driversearch(0, 0);
+		driver_search(0, 0);
 		say("----------------\n");
-		systemsearch(0, 0);
+		system_search(0, 0);
 		say("----------------\n");
-		arterysearch(0, 0);
+		artery_search(0, 0);
 		say("----------------\n");
-		supplysearch(0, 0);
+		supply_search(0, 0);
 		say("----------------\n");
-		entitysearch(0, 0);
+		entity_search(0, 0);
 		return;
 	}
 
 	buf += 3;
-	if(0 == ncmp(buf, "origin", 6))originsearch(0, 0);
-	else if(0 == ncmp(buf, "bootup", 6))bootupsearch(0, 0);
-	else if(0 == ncmp(buf, "device", 6))devicesearch(0, 0);
-	else if(0 == ncmp(buf, "driver", 6))driversearch(0, 0);
-	else if(0 == ncmp(buf, "system", 6))systemsearch(0, 0);
-	else if(0 == ncmp(buf, "artery", 6))arterysearch(0, 0);
-	else if(0 == ncmp(buf, "supply", 6))supplysearch(0, 0);
-	else if(0 == ncmp(buf, "entity", 6))entitysearch(0, 0);
+	if(0 == ncmp(buf, "origin", 6))origin_search(0, 0);
+	else if(0 == ncmp(buf, "bootup", 6))bootup_search(0, 0);
+	else if(0 == ncmp(buf, "device", 6))device_search(0, 0);
+	else if(0 == ncmp(buf, "driver", 6))driver_search(0, 0);
+	else if(0 == ncmp(buf, "system", 6))system_search(0, 0);
+	else if(0 == ncmp(buf, "artery", 6))artery_search(0, 0);
+	else if(0 == ncmp(buf, "supply", 6))supply_search(0, 0);
+	else if(0 == ncmp(buf, "entity", 6))entity_search(0, 0);
 	else say("ls(%s)\n", buf);
 }
 void term_mmio(int argc, u8** argv)
@@ -198,14 +198,14 @@ int termwrite(u8* buf, int len)
 	else if(0 == ncmp(buf, "thread", 6))term_thread(j, argv);
 	else if(0 == ncmp(buf, "process", 7))term_process(j, argv);
 	else if(0 == ncmp(buf, "window", 6))term_window(j, argv);
-	else if(0 == ncmp(buf, "origin", 6))originmodify(j, argv);
-	else if(0 == ncmp(buf, "bootup", 6))bootupmodify(j, argv);
-	else if(0 == ncmp(buf, "device", 6))devicemodify(j, argv);
-	else if(0 == ncmp(buf, "driver", 6))drivermodify(j, argv);
-	else if(0 == ncmp(buf, "system", 6))systemmodify(j, argv);
-	else if(0 == ncmp(buf, "artery", 6))arterymodify(j, argv);
-	else if(0 == ncmp(buf, "supply", 6))supplymodify(j, argv);
-	else if(0 == ncmp(buf, "entity", 6))entitymodify(j, argv);
+	else if(0 == ncmp(buf, "origin", 6))origin_modify(j, argv);
+	else if(0 == ncmp(buf, "bootup", 6))bootup_modify(j, argv);
+	else if(0 == ncmp(buf, "device", 6))device_modify(j, argv);
+	else if(0 == ncmp(buf, "driver", 6))driver_modify(j, argv);
+	else if(0 == ncmp(buf, "system", 6))system_modify(j, argv);
+	else if(0 == ncmp(buf, "artery", 6))artery_modify(j, argv);
+	else if(0 == ncmp(buf, "supply", 6))supply_modify(j, argv);
+	else if(0 == ncmp(buf, "entity", 6))entity_modify(j, argv);
 
 finish:
 	term_prompt();
@@ -245,7 +245,7 @@ int mython_create(struct item* wrk, void* url, int argc, u8** argv)
 		mython_fromfile(argv[j], 0);
 	}
 
-	supplycreate(_std_, 0, 0, 0);
+	supply_create(_std_, 0, 0, 0);
 	waiter(wrk);
 	return 0;
 }

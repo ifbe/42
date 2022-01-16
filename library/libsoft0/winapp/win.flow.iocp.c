@@ -150,7 +150,7 @@ DWORD WINAPI iocpthread(LPVOID pM)
 		if(0 == tran)
 		{
 			iocp_del(fd, 0);
-			systemdelete(oo);
+			system_delete(oo);
 			continue;
 		}
 

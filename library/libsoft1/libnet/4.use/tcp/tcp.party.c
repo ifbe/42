@@ -186,7 +186,7 @@ while(1){
 		}
 	}
 	else{
-		systemdelete(peer->pchip);
+		system_delete(peer->pchip);
 		return 0;
 	}
 }
@@ -366,7 +366,7 @@ while(1){
 
 		if(ret < 8){
 			give_data_into_peer(art,peer->foottype, stack,sp, 0,0, "wrong head\n", 10);
-			systemdelete(peer->pchip);
+			system_delete(peer->pchip);
 			return 0;
 		}
 
@@ -405,7 +405,7 @@ say("dbg4\n");
 			per->hash_cur += party_sum(buf, len);
 			if(per->hash_all != per->hash_cur){
 				say("%x nequal %x\n", per->hash_all, per->hash_cur);
-				systemdelete(peer->pchip);
+				system_delete(peer->pchip);
 			}
 
 			per->sts = 0;
@@ -417,7 +417,7 @@ say("dbg5\n");
 			per->hash_cur += party_sum(buf, per->len);
 			if(per->hash_all != per->hash_cur){
 				say("%x nequal %x\n", per->hash_all, per->hash_cur);
-				systemdelete(peer->pchip);
+				system_delete(peer->pchip);
 			}
 
 			per->sts = 0;
@@ -436,7 +436,7 @@ say("dbg6\n");
 	}
 	else{
 		say("error@partymaster_write_other:unknown per->sts\n");
-		systemdelete(peer->pchip);
+		system_delete(peer->pchip);
 		return 0;
 	}
 }
@@ -516,7 +516,7 @@ fail:
 		);
 	}
 	give_data_into_peer(art,self->foottype, stack,sp, 0,0, tmp,ret);
-	systemdelete(xxx);
+	system_delete(xxx);
 	return 0;
 }
 

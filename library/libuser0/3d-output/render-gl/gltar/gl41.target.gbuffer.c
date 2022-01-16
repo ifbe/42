@@ -53,7 +53,7 @@ int gl41fbog_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int idx, v
 			stack[sp+1].pfoot = rel->pdstfoot;
 			//stack[sp+1].type = rel->dsttype;
 			stack[sp+1].flag = rel->dstflag;
-			entity_take(rel->pdstchip, rel->pdstfoot, stack,sp+2, 0,'v', 0, 0);
+			entity_takeby(rel->pdstchip, rel->pdstfoot, stack,sp+2, 0,'v', 0, 0);
 
 			//upload
 			fullwindow_upload(wnd->gl41list.camera, wnd->gl41list.light, wnd->gl41list.solid, wnd->gl41list.opaque);

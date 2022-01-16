@@ -166,7 +166,7 @@ void force_read_inner(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int ke
 		stack[sp+0].foottype = 0;
 		stack[sp+1].pchip = tab[j];
 		stack[sp+1].foottype = 'f';
-		entity_take(tab[j],0, stack,sp+2, 0,0, jo,0);
+		entity_takeby(tab[j],0, stack,sp+2, 0,0, jo,0);
 	}
 }
 int force_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

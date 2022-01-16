@@ -61,7 +61,7 @@ void device_recycle()
 
 
 
-void* devicecreate(u64 type, void* name, int argc, u8** argv)
+void* device_create(u64 type, void* name, int argc, u8** argv)
 {
 	if(0 == type){
 		return device_alloc();
@@ -139,11 +139,75 @@ void* devicecreate(u64 type, void* name, int argc, u8** argv)
 	}
 	return 0;
 }
-int devicedelete(_obj* this)
+int device_delete(_obj* this)
 {
 	return 0;
 }
-int devicesearch(u8* buf, int len)
+int device_reader(struct item* dev,void* foot, void* arg,int idx, void* buf,int len)
+{
+	return 0;
+}
+int device_writer(struct item* dev,void* foot, void* arg,int idx, void* buf,int len)
+{
+	return 0;
+}
+
+
+
+
+int device_attach(struct halfrel* self, struct halfrel* peer)
+{
+	say("@deviceattach\n");
+	return 0;
+}
+int device_detach(struct halfrel* self, struct halfrel* peer)
+{
+	say("@devicedetach\n");
+	return 0;
+}
+int device_takeby(struct item* dev,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+{
+	//say("@deviceread\n");
+	if(dev->ontaking){
+		return dev->ontaking(dev,foot, stack,sp, arg,idx, buf,len);
+	}
+
+	int fd = dev->priv_fd;
+	switch(dev->type){
+		case _i2c_:return i2c_read(fd, idx, buf, len);break;
+		case _spi_:return spi_read(fd, idx, buf, len);break;
+	}
+	return 0;
+}
+int device_giveby(struct item* dev,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+{
+	u8 t[2];
+	if(0 == buf){
+		t[0] = len;
+		buf = t;
+		len = 1;
+	}
+
+	int fd = dev->priv_fd;
+	switch(dev->type){
+		case _i2c_:return i2c_write(fd, idx, buf, len);break;
+		case _spi_:return spi_write(fd, idx, buf, len);break;
+	}
+	return 0;
+}
+
+
+
+
+int device_insert(u8* buf, int len)
+{
+	return 0;
+}
+int device_remove(u8* buf, int len)
+{
+	return 0;
+}
+int device_search(u8* buf, int len)
 {
 	int j,k=0;
 	struct item* p;
@@ -158,7 +222,7 @@ int devicesearch(u8* buf, int len)
 	if(0 == k)say("empth device\n");
 	return 0;
 }
-int devicemodify(int argc, u8** argv)
+int device_modify(int argc, u8** argv)
 {
 	int j;
 	u64 name = 0;
@@ -173,51 +237,7 @@ int devicemodify(int argc, u8** argv)
 			tmp[j] = argv[2][j];
 		}
 		say("%llx,%llx\n",name, argv[3]);
-		devicecreate(name, argv[3], argc-3, &argv[3]);
-	}
-	return 0;
-}
-
-
-
-
-int deviceattach(struct halfrel* self, struct halfrel* peer)
-{
-	say("@deviceattach\n");
-	return 0;
-}
-int devicedetach(struct halfrel* self, struct halfrel* peer)
-{
-	say("@devicedetach\n");
-	return 0;
-}
-int device_take(struct item* dev,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
-{
-	//say("@deviceread\n");
-	if(dev->ontaking){
-		return dev->ontaking(dev,foot, stack,sp, arg,idx, buf,len);
-	}
-
-	int fd = dev->priv_fd;
-	switch(dev->type){
-		case _i2c_:return i2c_read(fd, idx, buf, len);break;
-		case _spi_:return spi_read(fd, idx, buf, len);break;
-	}
-	return 0;
-}
-int device_give(struct item* dev,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
-{
-	u8 t[2];
-	if(0 == buf){
-		t[0] = len;
-		buf = t;
-		len = 1;
-	}
-
-	int fd = dev->priv_fd;
-	switch(dev->type){
-		case _i2c_:return i2c_write(fd, idx, buf, len);break;
-		case _spi_:return spi_write(fd, idx, buf, len);break;
+		device_create(name, argv[3], argc-3, &argv[3]);
 	}
 	return 0;
 }

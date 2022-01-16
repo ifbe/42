@@ -63,6 +63,36 @@ static _obj* supply = 0;
 static int winlen = 0;
 static struct style* pinid = 0;
 static int pinlen = 0;
+void supply_init(u8* addr)
+{
+	say("[c,e):supply initing\n");
+
+	int j;
+	supply = (void*)(addr+0x000000);
+	pinid = (void*)(addr+0x100000);
+
+#define max (0x100000/sizeof(_obj))
+	for(j=0;j<0x200000;j++)addr[j]=0;
+	for(j=0;j<max;j++)supply[j].tier = _sup_;
+
+	initstd(supply);
+	initwindow(supply);
+	inittray(supply);
+	initjoy(supply);
+
+	say("[c,e):supply inited\n");
+}
+void supply_exit()
+{
+	say("[c,e):supply exiting\n");
+
+	freewindow();
+	freetray();
+	freestd();
+	freejoy();
+
+	say("[c,e):supply exited\n");
+}
 void* supply_alloc()
 {
 	int j;
@@ -102,76 +132,7 @@ void pinid_recycle()
 
 
 
-int supply_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
-{
-	switch(sup->type){
-		case _std_:return stdio_take(sup,foot, stack,sp, arg,idx, buf,len);
-
-		case _mic_:break;
-		case _spk_:return speaker_take(sup,foot, stack,sp, arg, idx, buf, len);
-
-		case _cam_:return video_take(sup,foot, stack,sp, arg, idx, buf, len);
-		case _wnd_:return window_take(sup,foot, stack,sp, arg, idx, buf, len);
-	}
-	return 0;
-}
-int supply_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
-{
-	switch(sup->type){
-		case _std_:return stdio_give(sup,foot, stack,sp, arg,idx, buf,len);
-
-		case _mic_:break;
-		case _spk_:return speaker_give(sup,foot, stack,sp, arg, idx, buf, len);
-
-		case _cam_:break;
-		case _wnd_:return window_give(sup,foot, stack,sp, arg, idx, buf, len);
-	}
-	switch(sup->hfmt){
-		case _ahrs_:return ahrs_give(sup,foot, stack,sp, arg, idx, buf, len);
-		case _slam_:return slam_give(sup,foot, stack,sp, arg, idx, buf, len);
-	}
-
-	return 0;
-}
-int supplydetach(struct halfrel* self, struct halfrel* peer)
-{
-	say("@supplydetach\n");
-	return 0;
-}
-int supplyattach(struct halfrel* self, struct halfrel* peer)
-{
-	say("@supplyattach\n");
-
-	if(0 == self)return 0;
-
-	_obj* win = (void*)(self->chip);
-	if(0 == win)return 0;
-
-	return 0;
-}
-
-
-
-
-int supplydelete(_obj* win)
-{
-	if(0 == win)return 0;
-
-	//1.close
-	windowdelete(win);
-
-	//2.unlink
-	win->irel0 = 0;
-	win->ireln = 0;
-	win->orel0 = 0;
-	win->oreln = 0;
-
-	//3.cleanup
-	win->type = 0;
-	win->hfmt = 0;
-	return 0;
-}
-void* supplycreate(u64 type, void* arg, int argc, u8** argv)
+void* supply_create(u64 type, void* arg, int argc, u8** argv)
 {
 	int j = 0;
 	_obj* win;
@@ -345,27 +306,96 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 	}//switch
 	return 0;
 }
-void* supplymodify(int argc, u8** argv)
+int supply_delete(_obj* win)
 {
-	int j;
-	u64 name = 0;
-	u8* tmp = (u8*)&name;
-	if(argc < 2)return 0;
-//say("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
-	if(0 == ncmp(argv[1], "create", 6))
-	{
-		for(j=0;j<8;j++)
-		{
-			if(argv[2][j] <= 0x20)break;
-			tmp[j] = argv[2][j];
-		}
-		say("%llx,%llx\n",name, argv[3]);
-		supplycreate(name, argv[3], argc-3, &argv[3]);
+	if(0 == win)return 0;
+
+	//1.close
+	windowdelete(win);
+
+	//2.unlink
+	win->irel0 = 0;
+	win->ireln = 0;
+	win->orel0 = 0;
+	win->oreln = 0;
+
+	//3.cleanup
+	win->type = 0;
+	win->hfmt = 0;
+	return 0;
+}
+int supply_reader(_obj* sup,void* foot, void* arg,int idx, void* buf,int len)
+{
+	return 0;
+}
+int supply_writer(_obj* sup,void* foot, void* arg,int idx, void* buf,int len)
+{
+	return 0;
+}
+
+
+
+
+int supply_attach(struct halfrel* self, struct halfrel* peer)
+{
+	say("@supplyattach\n");
+
+	if(0 == self)return 0;
+
+	_obj* win = (void*)(self->chip);
+	if(0 == win)return 0;
+
+	return 0;
+}
+int supply_detach(struct halfrel* self, struct halfrel* peer)
+{
+	say("@supplydetach\n");
+	return 0;
+}
+int supply_takeby(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+{
+	switch(sup->type){
+		case _std_:return stdio_take(sup,foot, stack,sp, arg,idx, buf,len);
+
+		case _mic_:break;
+		case _spk_:return speaker_take(sup,foot, stack,sp, arg, idx, buf, len);
+
+		case _cam_:return video_take(sup,foot, stack,sp, arg, idx, buf, len);
+		case _wnd_:return window_take(sup,foot, stack,sp, arg, idx, buf, len);
+	}
+	return 0;
+}
+int supply_giveby(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+{
+	switch(sup->type){
+		case _std_:return stdio_give(sup,foot, stack,sp, arg,idx, buf,len);
+
+		case _mic_:break;
+		case _spk_:return speaker_give(sup,foot, stack,sp, arg, idx, buf, len);
+
+		case _cam_:break;
+		case _wnd_:return window_give(sup,foot, stack,sp, arg, idx, buf, len);
+	}
+	switch(sup->hfmt){
+		case _ahrs_:return ahrs_give(sup,foot, stack,sp, arg, idx, buf, len);
+		case _slam_:return slam_give(sup,foot, stack,sp, arg, idx, buf, len);
 	}
 
 	return 0;
 }
-void* supplysearch(u8* buf, int len)
+
+
+
+
+int supply_insert(u8* buf, int len)
+{
+	return 0;
+}
+int supply_remove(u8* buf, int len)
+{
+	return 0;
+}
+void* supply_search(u8* buf, int len)
 {
 	int j,k;
 	u8* p;
@@ -405,37 +435,23 @@ void* supplysearch(u8* buf, int len)
 	}
 	return 0;
 }
-
-
-
-
-void supply_exit()
+void* supply_modify(int argc, u8** argv)
 {
-	say("[c,e):supply exiting\n");
-
-	freewindow();
-	freetray();
-	freestd();
-	freejoy();
-
-	say("[c,e):supply exited\n");
-}
-void supply_init(u8* addr)
-{
-	say("[c,e):supply initing\n");
-
 	int j;
-	supply = (void*)(addr+0x000000);
-	pinid = (void*)(addr+0x100000);
+	u64 name = 0;
+	u8* tmp = (u8*)&name;
+	if(argc < 2)return 0;
+//say("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
+	if(0 == ncmp(argv[1], "create", 6))
+	{
+		for(j=0;j<8;j++)
+		{
+			if(argv[2][j] <= 0x20)break;
+			tmp[j] = argv[2][j];
+		}
+		say("%llx,%llx\n",name, argv[3]);
+		supply_create(name, argv[3], argc-3, &argv[3]);
+	}
 
-#define max (0x100000/sizeof(_obj))
-	for(j=0;j<0x200000;j++)addr[j]=0;
-	for(j=0;j<max;j++)supply[j].tier = _sup_;
-
-	initstd(supply);
-	initwindow(supply);
-	inittray(supply);
-	initjoy(supply);
-
-	say("[c,e):supply inited\n");
+	return 0;
 }

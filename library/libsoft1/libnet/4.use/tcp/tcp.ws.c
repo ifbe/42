@@ -444,7 +444,7 @@ int wsmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 	if(0 == Tcp)return 0;
 
 	//server
-	_obj* Ws = arterycreate(_Ws_, 0, 0, 0);
+	_obj* Ws = artery_create(_Ws_, 0, 0, 0);
 	if(0 == Ws)return 0;
 
 	//socket -> server
@@ -457,14 +457,14 @@ int wsmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 	//server -> ???
 	switch(art->hfmt){
 	case _echo_:{
-		_obj* echo = arterycreate(_echo_, 0, 0, 0);
+		_obj* echo = artery_create(_echo_, 0, 0, 0);
 		if(0 == echo)break;
 		relationcreate(Ws, 0, _art_, _dst_, echo, 0, _art_, _src_);
 		//relationstart(&rel->srcchip, &rel->dstchip);
 		break;
 	}//echo
 	case _ptmx_:{
-		_obj* ptmx = systemcreate(_ptmx_, "/dev/ptmx", 0, 0);
+		_obj* ptmx = system_create(_ptmx_, "/dev/ptmx", 0, 0);
 		if(0 == ptmx)break;
 		relationcreate(Ws, 0, _art_, _dst_, ptmx, 0, _sys_, _dst_);
 		//relationstart(&rel->srcchip, &rel->dstchip);

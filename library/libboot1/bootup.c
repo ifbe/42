@@ -94,7 +94,7 @@ void bootup_recycle()
 
 
 
-void* bootupcreate(u64 type, void* url, int argc, u8** argv)
+void* bootup_create(u64 type, void* url, int argc, u8** argv)
 {
 	struct item* tmp;
 
@@ -188,14 +188,56 @@ void* bootupcreate(u64 type, void* url, int argc, u8** argv)
 
 	return 0;
 }
-int bootupdelete(struct item* tmp)
+int bootup_delete(struct item* tmp)
 {
 	if(0 == tmp)return 0;
-	say("bootupdelete:%.8s\n", &tmp->type);
+	say("bootup_delete:%.8s\n", &tmp->type);
 
 	return 0;
 }
-int bootupsearch(u8* buf, int len)
+int bootup_reader(struct item* wrk,void* foot, void* arg,int idx, void* buf,int len)
+{
+	return 0;
+}
+int bootup_writer(struct item* wrk,void* foot, void* arg,int idx, void* buf,int len)
+{
+	return 0;
+}
+
+
+
+
+int bootup_attach(struct halfrel* self, struct halfrel* peer)
+{
+	say("@bootupattach\n");
+	return 0;
+}
+int bootup_detach(struct halfrel* self, struct halfrel* peer)
+{
+	say("@bootupdetach\n");
+	return 0;
+}
+int bootup_takeby(struct item* wrk,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+{
+	return 0;
+}
+int bootup_giveby(struct item* wrk,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+{
+	return 0;
+}
+
+
+
+
+int bootup_insert(u8* buf, int len)
+{
+	return 0;
+}
+int bootup_remove(u8* buf, int len)
+{
+	return 0;
+}
+int bootup_search(u8* buf, int len)
 {
 	int j,k=0;
 	for(j=0;j<64;j++)
@@ -208,7 +250,7 @@ int bootupsearch(u8* buf, int len)
 	if(0 == k)say("empth bootup\n");
 	return 0;
 }
-int bootupmodify(int argc, u8** argv)
+int bootup_modify(int argc, u8** argv)
 {
 	int j;
 	u64 name = 0;
@@ -223,29 +265,7 @@ int bootupmodify(int argc, u8** argv)
 			tmp[j] = argv[2][j];
 		}
 		say("%llx,%llx\n",name, argv[3]);
-		bootupcreate(name, argv[3], argc-3, &argv[3]);
+		bootup_create(name, argv[3], argc-3, &argv[3]);
 	}
-	return 0;
-}
-
-
-
-
-int bootupattach(struct halfrel* self, struct halfrel* peer)
-{
-	say("@bootupattach\n");
-	return 0;
-}
-int bootupdetach(struct halfrel* self, struct halfrel* peer)
-{
-	say("@bootupdetach\n");
-	return 0;
-}
-int bootup_take(struct item* wrk,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
-{
-	return 0;
-}
-int bootup_give(struct item* wrk,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
-{
 	return 0;
 }

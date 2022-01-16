@@ -149,14 +149,14 @@ void* samesrcnextdst(struct relation* rel)
 int relation_d(struct halfrel* self, struct halfrel* peer)
 {
 	switch(self->nodetype){
-		case _ori_:return origindetach(self, peer);
-		case _wrk_:return bootupdetach(self, peer);
-		case _dev_:return devicedetach(self, peer);
-		case _dri_:return driverdetach(self, peer);
-		case _sys_:return systemdetach(self, peer);
-		case _art_:return arterydetach(self, peer);
-		case _sup_:return supplydetach(self, peer);
-		case _ent_:return entitydetach(self, peer);
+		case _ori_:return origin_detach(self, peer);
+		case _wrk_:return bootup_detach(self, peer);
+		case _dev_:return device_detach(self, peer);
+		case _dri_:return driver_detach(self, peer);
+		case _sys_:return system_detach(self, peer);
+		case _art_:return artery_detach(self, peer);
+		case _sup_:return supply_detach(self, peer);
+		case _ent_:return entity_detach(self, peer);
 	}
 	return 0;
 }
@@ -173,14 +173,14 @@ int relationdetach(struct halfrel* self, struct halfrel* peer)
 int relation_a(struct halfrel* self, struct halfrel* peer)
 {
 	switch(self->nodetype){
-		case _ori_:return originattach(self, peer);
-		case _wrk_:return bootupattach(self, peer);
-		case _dev_:return deviceattach(self, peer);
-		case _dri_:return driverattach(self, peer);
-		case _sys_:return systemattach(self, peer);
-		case _art_:return arteryattach(self, peer);
-		case _sup_:return supplyattach(self, peer);
-		case _ent_:return entityattach(self, peer);
+		case _ori_:return origin_attach(self, peer);
+		case _wrk_:return bootup_attach(self, peer);
+		case _dev_:return device_attach(self, peer);
+		case _dri_:return driver_attach(self, peer);
+		case _sys_:return system_attach(self, peer);
+		case _art_:return artery_attach(self, peer);
+		case _sup_:return supply_attach(self, peer);
+		case _ent_:return entity_attach(self, peer);
 	}
 	return 0;
 }

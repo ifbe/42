@@ -18,7 +18,7 @@ int rgbanode_draw(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, v
 			stack[sp+1].pchip = rel->pdstchip;
 			stack[sp+1].pfoot = rel->pdstfoot;
 			stack[sp+1].foottype = rel->dstfoottype;
-			entity_take(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, arg,key, buf,len);
+			entity_takeby(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, arg,key, buf,len);
 		}
 next:
 		rel = samesrcnextdst(rel);
@@ -81,7 +81,7 @@ int rgbanode_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, v
 		stack[sp+1].pchip = the->pdstchip;
 		stack[sp+1].pfoot = the->pdstfoot;
 		stack[sp+1].foottype = the->dstfoottype;
-		entity_give(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, arg,key, buf,len);
+		entity_giveby(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, arg,key, buf,len);
 	}
 	return 0;
 }

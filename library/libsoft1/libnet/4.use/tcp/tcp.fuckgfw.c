@@ -51,7 +51,7 @@ int fuckgfwserver_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 
 		//connect or transmit
 		if(connect == type){
-			website = systemcreate();
+			website = system_create();
 			relationcreate(ele,id, website, _dst_);
 		}
 		if(message == type){
@@ -110,7 +110,7 @@ int fuckgfwmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 	//master, servant
 	FUCKGFW = self->pchip;
 	if(0 == FUCKGFW)return 0;
-	Fuckgfw = arterycreate(_Fuckgfw_, 0, 0, 0);
+	Fuckgfw = artery_create(_Fuckgfw_, 0, 0, 0);
 	if(0 == Fuckgfw)return 0;
 
 	//child -> servant

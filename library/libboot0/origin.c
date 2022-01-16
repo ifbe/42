@@ -59,7 +59,7 @@ void origin_recycle()
 
 
 
-void* origincreate(u64 type, void* func, int argc, u8** argv)
+void* origin_create(u64 type, void* func, int argc, u8** argv)
 {
 	int j;
 	struct item* tmp=0;
@@ -103,10 +103,10 @@ void* origincreate(u64 type, void* func, int argc, u8** argv)
 	}
 	return 0;
 }
-int origindelete(_obj* tmp)
+int origin_delete(_obj* tmp)
 {
 	if(0 == tmp)return 0;
-	say("origindelete:%.8s\n", &tmp->type);
+	say("origin_delete:%.8s\n", &tmp->type);
 
 	switch(tmp->type){
 	case _start_:
@@ -125,7 +125,49 @@ int origindelete(_obj* tmp)
 	}
 	return 0;
 }
-int originsearch(u8* buf, int len)
+int origin_reader(struct item* ori,void* foot, void* arg, int idx, void* buf, int len)
+{
+	return 0;
+}
+int origin_writer(struct item* ori,void* foot, void* arg, int idx, void* buf, int len)
+{
+	return 0;
+}
+
+
+
+
+int origin_attach(struct halfrel* self, struct halfrel* peer)
+{
+	say("@originattach\n");
+	return 0;
+}
+int origin_detach(struct halfrel* self, struct halfrel* peer)
+{
+	say("@origindetach\n");
+	return 0;
+}
+int origin_takeby(struct item* ori,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+{
+	return 0;
+}
+int origin_giveby(struct item* ori,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+{
+	return 0;
+}
+
+
+
+
+int origin_insert(u8* buf, int len)
+{
+	return 0;
+}
+int origin_remove(u8* buf, int len)
+{
+	return 0;
+}
+int origin_search(u8* buf, int len)
 {
 	int j,k=0;
 	for(j=0;j<64;j++)
@@ -138,7 +180,7 @@ int originsearch(u8* buf, int len)
 	if(0 == k)say("empth origin\n");
 	return 0;
 }
-int originmodify(int argc, u8** argv)
+int origin_modify(int argc, u8** argv)
 {
 	int j;
 	u64 name = 0;
@@ -153,29 +195,7 @@ int originmodify(int argc, u8** argv)
 			tmp[j] = argv[2][j];
 		}
 		say("%llx,%llx\n",name, argv[3]);
-		origincreate(name, argv[3], argc-3, &argv[3]);
+		origin_create(name, argv[3], argc-3, &argv[3]);
 	}
-	return 0;
-}
-
-
-
-
-int originattach(struct halfrel* self, struct halfrel* peer)
-{
-	say("@originattach\n");
-	return 0;
-}
-int origindetach(struct halfrel* self, struct halfrel* peer)
-{
-	say("@origindetach\n");
-	return 0;
-}
-int origin_take(struct item* ori,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
-{
-	return 0;
-}
-int origin_give(struct item* ori,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
-{
 	return 0;
 }

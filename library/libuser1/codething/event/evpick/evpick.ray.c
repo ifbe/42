@@ -69,14 +69,14 @@ static int clickray_intersect(_obj* handler,void* foot,
 			stack[sp+1].pchip = totar[1]->pchip;
 			stack[sp+1].pfoot = totar[1]->pfoot;
 			stack[sp+1].foottype = totar[1]->foottype;
-			entity_give(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, rel, 0, ray, 0);
+			entity_giveby(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, rel, 0, ray, 0);
 			return 1;
 		}
 		rel = samesrcnextdst(rel);
 	}
 
 	say("clickray_send: miss\n");
-	entity_give(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, 0, 0, ray, 0);
+	entity_giveby(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, 0, 0, ray, 0);
 	return 0;
 }
 

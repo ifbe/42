@@ -20,7 +20,7 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 			stack[sp+1].pchip = rel->pdstchip;
 			stack[sp+1].pfoot = rel->pdstfoot;
 			stack[sp+1].flag = rel->dstflag;
-			entity_take(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, arg,key, buf,len);
+			entity_takeby(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, arg,key, buf,len);
 		}
 		rel = samesrcnextdst(rel);
 	}

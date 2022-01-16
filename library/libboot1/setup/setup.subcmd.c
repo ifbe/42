@@ -14,23 +14,23 @@ int subcmd_create(struct item* wrk, void* url, int argc, u8** argv)
 	}
 	else if(0 == ncmp(argv[1], "myml", 4)){
 		say("mode=myml\n");
-		bootupcreate(_myml_, 0, argc-1, &argv[1]);
-		bootupdelete(thr);
+		bootup_create(_myml_, 0, argc-1, &argv[1]);
+		bootup_delete(thr);
 	}
 	else if(0 == ncmp(argv[1], "mython", 6)){
 		say("mode=mython\n");
-		bootupcreate(_mython_, 0, argc-1, &argv[1]);
-		bootupdelete(thr);
+		bootup_create(_mython_, 0, argc-1, &argv[1]);
+		bootup_delete(thr);
 	}
 	else if(0 == ncmp(argv[1], "term", 4)){
 		say("mode=term\n");
-		bootupcreate(_term_, 0, argc-1, &argv[1]);
-		bootupdelete(thr);
+		bootup_create(_term_, 0, argc-1, &argv[1]);
+		bootup_delete(thr);
 	}
 	else if(0 == ncmp(argv[1], "guiapp", 6)){
 		say("mode=guiapp\n");
-		bootupcreate(_guiapp_, 0, argc-1, &argv[1]);
-		bootupdelete(thr);
+		bootup_create(_guiapp_, 0, argc-1, &argv[1]);
+		bootup_delete(thr);
 	}
 	return 0;
 }
