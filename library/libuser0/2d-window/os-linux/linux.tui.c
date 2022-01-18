@@ -62,12 +62,12 @@ void windowdraw(_obj* wnd)
 	u8* buf;
 	printf("\033[H\033[J");
 /*
-	printf("%s",wnd->textbuf);
+	printf("%s",wnd->tuitext.buf);
 	fflush(stdout);
 */
-	w = wnd->width;
-	h = wnd->height;
-	buf = wnd->textbuf;
+	w = wnd->whdf.width;
+	h = wnd->whdf.height;
+	buf = wnd->tuitext.buf;
 	for(y=0;y<h;y++)
 	{
 		for(x=0;x<w;x++)
@@ -114,14 +114,16 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 {
 	struct winsize ws;
 	ioctl(0, TIOCGWINSZ, &ws);
-	wnd->width = ws.ws_col;
-	wnd->height = ws.ws_row;
+	wnd->whdf.width = ws.ws_col;
+	wnd->whdf.height = ws.ws_row;
 
 	//read context
-	tuinode_read(wnd,0, stack,sp, arg,key, buf,len);
+	tuinode_take(wnd,0, stack,sp, arg,key, buf,len);
 
 	//update screen
 	windowdraw(wnd);
+
+	usleep(100*1000);
 }
 void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
@@ -147,16 +149,16 @@ void windowdelete(_obj* w)
 }
 void windowcreate(_obj* w)
 {
-	w->fmt = _tui_;
+	w->hfmt = _tui_;
 	w->vfmt = 0;
 
-	w->width = 80;
-	w->height= 25;
+	w->whdf.width = 80;
+	w->whdf.height= 25;
 
 	//w->fbwidth = 80*8;
 	//w->fbheight= 25*16;
 
-	w->textbuf = malloc(0x100000);
+	w->tuitext.buf = malloc(0x100000);
 	//threadcreate(textuithread, w);
 }
 

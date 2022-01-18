@@ -428,6 +428,7 @@ void video_draw_tui(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
+	gentui_rect(win, 0x7, 0, 0, 32, 16);
 }
 void video_draw_cli(
 	_obj* act, struct style* pin,
@@ -464,6 +465,11 @@ static void video_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 	if(0 == stack)return;
 
 	switch(caller->hfmt){
+	case _cli_:
+		break;
+	case _tui_:
+		video_draw_tui(ent,0, caller, area);
+		break;
 	case _rgba_:
 		video_draw_pixel(ent,0, caller, area);
 		break;
