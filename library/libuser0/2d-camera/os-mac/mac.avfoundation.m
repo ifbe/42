@@ -15,7 +15,7 @@ _obj* thewin = 0;
  didOutputSampleBuffer:(CMSampleBufferRef)videoFrame
 	    fromConnection:(AVCaptureConnection *)connection
 {
-	NSLog(@"captureOutput");
+	//NSLog(@"captureOutput");
 
 	// Get a CMSampleBuffer's Core Video image buffer for the media data
     CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(videoFrame);
@@ -35,8 +35,8 @@ _obj* thewin = 0;
     size_t height = CVPixelBufferGetHeight(imageBuffer);
 
 	OSType pixelFormat = CVPixelBufferGetPixelFormatType(imageBuffer);
-	NSLog(@"fmt=%.4s", (char*)&pixelFormat);
-    NSLog(@"w=%zu, h=%zu, bytesPerRow=%zu, bytesTotal=%zu", width, height, bytesPerRow, bytesTotal);
+	//NSLog(@"fmt=%.4s", (char*)&pixelFormat);
+    //NSLog(@"w=%zu, h=%zu, bytesPerRow=%zu, bytesTotal=%zu", width, height, bytesPerRow, bytesTotal);
 
 /*
 	// Create a device-dependent RGB color space

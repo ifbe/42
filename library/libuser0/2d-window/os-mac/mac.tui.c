@@ -59,7 +59,8 @@ static void attr(u8 bg, u8 fg)
 	if(fg >= 8)str[2] = '1';
 	str[5] = '0' + (bg&7);
 	str[8] = '0' + (fg&7);
-	printf("%s",str);
+	write(1, str, 10);
+	//printf("%s",str);
 }
 void windowdraw(_obj* wnd)
 {
@@ -67,7 +68,7 @@ void windowdraw(_obj* wnd)
 	u8 ch,bg=0,fg=0;
 	u8* p;
 	u8* buf;
-	printf("\033[H\033[J");
+	write(1, "\033[H\033[J", 6);
 
 	buf = (u8*)(wnd->tuitext.buf);
 	for(y=0;y<wnd->whdf.height;y++)
@@ -103,11 +104,13 @@ void windowdraw(_obj* wnd)
 				//这是ascii
 				ch = p[0];
 				if(ch < 0x20)ch = 0x20;
-				printf("%c",ch);
+				if(ch > 0x7e)ch = 0x7e;
+				write(1, &ch, 1);
+				//printf("%c",ch);
 			}
 		}
 	}
-	printf("\033[0m");
+	write(1, "\033[0m", 4);
 }
 
 

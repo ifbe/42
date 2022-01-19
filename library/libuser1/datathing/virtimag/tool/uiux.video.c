@@ -17,6 +17,9 @@ void bggr_to_rgba(
 void rggb_to_rgba(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
+void yuvx_to_ascii(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth);
 void dx11data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 
@@ -425,10 +428,13 @@ void video_draw_html(
 	htmlprintf(win, 2, "<div class=\"video\">\n");
 }
 void video_draw_tui(
-	_obj* act, struct style* pin,
+	_obj* ent, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	gentui_rect(win, 0x7, 0, 0, 32, 16);
+	struct own* own = ent->OWNBUF;
+	if(0 == own->inbuf)return;
+
+	yuvx_to_ascii(own->inbuf, 0, 640, 480, win->tuitext.buf, 0, win->whdf.width, win->whdf.height);
 }
 void video_draw_cli(
 	_obj* act, struct style* pin,
@@ -479,7 +485,7 @@ static void video_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 }
 static void video_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	say("@video_write.yuv: %p,%x,%p,%x\n", arg, key, buf, len);
+	//say("@video_write.yuv: %p,%x,%p,%x\n", arg, key, buf, len);
 
 	struct own* own = ent->OWNBUF;
 	if(0 == own)return;
@@ -505,7 +511,7 @@ static void video_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 			own->infmt = _yuyv_;
 			break;
 		default:		//yuvx
-			say("@default_yuv:buf=%p,len=%x\n", buf, len);
+			//say("@default_yuv:buf=%p,len=%x\n", buf, len);
 			own->infmt = _yuvx_;
 			break;
 		}
@@ -525,7 +531,7 @@ static void video_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 			own->infmt = _rggb_;
 			break;
 		default:		//rgba
-			say("@default_rgb:buf=%p,len=%x\n", buf, len);
+			//say("@default_rgb:buf=%p,len=%x\n", buf, len);
 			own->infmt = _rgba_;
 			break;
 		}
