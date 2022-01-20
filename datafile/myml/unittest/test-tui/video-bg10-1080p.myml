@@ -9,9 +9,9 @@ outfmt:rgba
 <supply>
 usbcam{
 fmt:cam
-format:bggr
-width:640
-height:480
+format:BG10
+width:1920
+height:1080
 url:/dev/video0
 }
 wnd{
@@ -23,9 +23,9 @@ fmt:wnd
 <artery>
 convert{
 fmt:picfmt
-srcfmt:bggr
-srcw:640
-srch:480
+srcfmt:bg10
+srcw:1920
+srch:1080
 dstfmt:rgbx
 dstw:640
 dsth:480

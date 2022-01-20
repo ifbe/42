@@ -43,10 +43,12 @@ void bggr10_to_rgba(
 	u16* src;
 	for(y=0;y<srch;y++)
 	{
+		if(y>=dsth)break;
 		dst = dstbuf + (y*dstw*4);
 		src = (u16*)(srcbuf + (y&0xfffe)*srcw*2);
 		for(x=0;x<srcw;x+=2)
 		{
+			if(x>=dstw)break;
 			dst[4*x + 0] = (src[x + 1 + srcw]>>2)&0xff;
 			dst[4*x + 1] = (src[x + 1]>>2)&0xff;
 			dst[4*x + 2] = (src[x + 0]>>2)&0xff;
@@ -168,9 +170,12 @@ void rggb10_to_rgba(
 	u16* src = (u16*)srcbuf;
 	for(y=2;y<srch-2;y+=2)
 	{
+		if(y>=dsth)break;
+
 		dst = dstbuf + y*dstw*4;
 		for(x=2;x<srcw-2;x+=2)
 		{
+			if(x>=dstw)break;
 /*
 r g r g r g
 g b g b g b
@@ -212,6 +217,7 @@ g b g b g b
 		dst = dstbuf + (y+1)*dstw*4;
 		for(x=2;x<srcw-2;x+=2)
 		{
+			if(x>=dstw)break;
 /*
 r g r g r g
 g b G b g b		//G@(x,y+1)
