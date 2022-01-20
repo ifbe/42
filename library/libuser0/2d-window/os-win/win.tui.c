@@ -182,10 +182,10 @@ DWORD WINAPI windowthread(_obj* win)
 				GetConsoleScreenBufferInfo(hStdout, &bInfo);
 				x = bInfo.srWindow.Right - bInfo.srWindow.Left + 1;
 				y = bInfo.srWindow.Bottom - bInfo.srWindow.Top + 1;
-				win->width = x;
-				win->height = y;
+				win->whdf.width = x;
+				win->whdf.height = y;
 
-				win->fbwidth = x*4;
+				win->whdf.fbwidth = x*4;
 				//eventwrite(x+(y<<16), _size_, 0, 0);
 			}
 			else if(MENU_EVENT == ret)
@@ -261,9 +261,9 @@ void windowdraw(_obj* win)
 	int x,y;
 	u8 ch, bg=0, fg=7;
 	u8* p;
-	u8* buf = (u8*)(win->textbuf);
-	int width = win->width;
-	int height = win->height;
+	u8* buf = (u8*)(win->tuitext.buf);
+	int width = win->whdf.width;
+	int height = win->whdf.height;
 	gotoxy(0, 0);
 
 	//
@@ -312,7 +312,7 @@ void windowdraw(_obj* win)
 void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//read context
-	tuinode_read(wnd,0, stack,sp, arg,key, buf,len);
+	tuinode_take(wnd,0, stack,sp, arg,key, buf,len);
 
 	//update screen
 	windowdraw(wnd);
@@ -347,16 +347,16 @@ void windowcreate(_obj* w)
 	width = bInfo.srWindow.Right - bInfo.srWindow.Left + 1;
 	height = bInfo.srWindow.Bottom - bInfo.srWindow.Top + 1;
 
-	w->fmt = _tui_;
+	w->hfmt = _tui_;
 	w->vfmt = 0;
 
-	w->width = width;
-	w->height = height;
+	w->whdf.width = width;
+	w->whdf.height = height;
 
-	w->fbwidth = width*4;
+	w->whdf.fbwidth = width*4;
 	//w->fbheight = 0;
 
-	w->textbuf = malloc(0x100000);
+	w->tuitext.buf = malloc(0x100000);
 	threadcreate(windowthread, w);
 }
 

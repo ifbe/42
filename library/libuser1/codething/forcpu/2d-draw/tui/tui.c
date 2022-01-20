@@ -17,6 +17,8 @@ void yuvx_to_ascii(
 	int avgr,avgg,avgb;
 	for(y=0;y<dsth;y++){
 		for(x=0;x<dstw;x++){
+			if(x*8+8 > srcw)continue;
+			if(y*16+16 > srch)continue;
 			avgy = 0;
 			avgu = 0;
 			avgv = 0;
@@ -33,6 +35,40 @@ void yuvx_to_ascii(
 			avgb =  1.164 * (avgy - 16) +  2.018 * (avgu - 128);
 			avgg =  1.164 * (avgy - 16) -  0.391 * (avgu - 128) - 0.813 * (avgv - 128);
 			avgr =  1.164 * (avgy - 16)                         + 1.596 * (avgv - 128);
+			dstbuf[4*(y*dstw+x) + 0] = ascii4y(avgy);
+			dstbuf[4*(y*dstw+x) + 2] &= (avgr<0x40) ? ~0x01 : ~0;
+			dstbuf[4*(y*dstw+x) + 2] &= (avgg<0x40) ? ~0x02 : ~0;
+			dstbuf[4*(y*dstw+x) + 2] &= (avgb<0x40) ? ~0x04 : ~0;
+		}
+	}
+}
+void rgbx_to_ascii(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth)
+{
+	int x,y,dx,dy;
+	int avgy,avgu,avgv;
+	int avgr,avgg,avgb;
+	for(y=0;y<dsth;y++){
+		for(x=0;x<dstw;x++){
+			if(x*8+8 > srcw)continue;
+			if(y*16+16 > srch)continue;
+			avgr = 0;
+			avgg = 0;
+			avgb = 0;
+			for(dy=0;dy<16;dy++){
+				for(dx=0;dx<8;dx++){
+					avgr += srcbuf[4*(srcw*(y*16+dy)+(x*8+dx))+0];
+					avgg += srcbuf[4*(srcw*(y*16+dy)+(x*8+dx))+1];
+					avgb += srcbuf[4*(srcw*(y*16+dy)+(x*8+dx))+2];
+				}
+			}
+			avgr = avgr >> 7;
+			avgg = avgg >> 7;
+			avgb = avgb >> 7;
+			avgy = ( 77*avgr +150*avgg + 29*avgb)>>8;
+//			avgu =((-44*avgr - 87*avgg +131*avgb)>>8) + 128;
+//			avgv =((131*avgr -110*avgg - 21*avgb)>>8) + 128 ;
 			dstbuf[4*(y*dstw+x) + 0] = ascii4y(avgy);
 			dstbuf[4*(y*dstw+x) + 2] &= (avgr<0x40) ? ~0x01 : ~0;
 			dstbuf[4*(y*dstw+x) + 2] &= (avgg<0x40) ? ~0x02 : ~0;

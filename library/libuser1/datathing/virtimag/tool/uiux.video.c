@@ -20,6 +20,9 @@ void rggb_to_rgba(
 void yuvx_to_ascii(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
+void rgbx_to_ascii(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth);
 void dx11data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 
@@ -433,8 +436,14 @@ void video_draw_tui(
 {
 	struct own* own = ent->OWNBUF;
 	if(0 == own->inbuf)return;
-
-	yuvx_to_ascii(own->inbuf, 0, 640, 480, win->tuitext.buf, 0, win->whdf.width, win->whdf.height);
+	switch(own->infmt){
+	case _yuvx_:
+		yuvx_to_ascii(own->inbuf, 0, 640, 480, win->tuitext.buf, 0, win->whdf.width, win->whdf.height);
+		break;
+	case _rgba_:
+		rgbx_to_ascii(own->inbuf, 0, 640, 480, win->tuitext.buf, 0, win->whdf.width, win->whdf.height);
+		break;
+	}
 }
 void video_draw_cli(
 	_obj* act, struct style* pin,
