@@ -13,20 +13,85 @@ void bggr_to_rgba(
 
 	int x,y;
 	u8* dst;
-	u8* src;
-	for(y=0;y<srch;y++)
+	u8* src = srcbuf;
+	for(y=2;y<srch-2;y+=2)
 	{
-		dst = dstbuf + (y*dstw*4);
-		src = srcbuf + (y&0xfffe)*srcw;
-		for(x=0;x<srcw;x+=2)
+		dst = dstbuf + y*dstw*4;
+		for(x=2;x<srcw-2;x+=2)
 		{
-			dst[4*x + 0] = src[x + 1 + srcw];
-			dst[4*x + 1] = src[x + 1];
-			dst[4*x + 2] = src[x + 0];
+/*
+g r g r g r
+b g B-g b g		//B@(x,y)
+g r g-r g r
+*/
+			dst[4*x + 2] = 
+				src[srcw*y + x];
+			dst[4*x + 1] = (
+				src[srcw*(y+0) + x-1]
+			+	src[srcw*(y+0) + x+1]
+			+	src[srcw*(y-1) + x+0]
+			+	src[srcw*(y+1) + x+0]
+			)/4;
+			dst[4*x + 0] = (
+				src[srcw*(y-1) + x-1]
+			+	src[srcw*(y-1) + x+1]
+			+	src[srcw*(y+1) + x-1]
+			+	src[srcw*(y+1) + x+1]
+			)/4;
+/*
+g r g r g r
+b g b-G b g		//G@(x+1,y)
+g r g-r g r
+*/
+			dst[4*x + 6] = (
+				src[srcw*y + x+0]
+			+	src[srcw*y + x+2]
+			)/2;
+			dst[4*x + 5] = 
+				src[srcw*y + x+1];
+			dst[4*x + 4] = (
+				src[srcw*(y-1) + x+1]
+			+	src[srcw*(y+1) + x+1]
+			)/2;
+		}
 
-			dst[4*x + 4] = src[x + 1 + srcw];
-			dst[4*x + 5] = src[x + 1];
-			dst[4*x + 6] = src[x + 0];
+		dst = dstbuf + (y+1)*dstw*4;
+		for(x=2;x<srcw-2;x+=2)
+		{
+/*
+b g b-g b g
+g r G-r g r		//G@(x,y+1)
+b g b g b g
+*/
+			dst[4*x + 2] = (
+				src[srcw*(y+0) + x]
+			+	src[srcw*(y+2) + x]
+			)/2;
+			dst[4*x + 1] = 
+				src[srcw*(y+1) + x];
+			dst[4*x + 0] = (
+				src[srcw*(y+1) + x-1]
+			+	src[srcw*(y+1) + x+1]
+			)/2;
+/*
+b g b-g b g
+g r g-R g r		//R@(x+1,y+1)
+b g b g b g
+*/
+			dst[4*x + 6] = (
+				src[srcw*(y+0) + x+0]
+			+	src[srcw*(y+0) + x+2]
+			+	src[srcw*(y+2) + x+0]
+			+	src[srcw*(y+2) + x+2]
+			)/4;
+			dst[4*x + 5] = (
+				src[srcw*(y+1) + x+0]
+			+	src[srcw*(y+1) + x+2]
+			+	src[srcw*(y+0) + x+1]
+			+	src[srcw*(y+2) + x+1]
+			)/4;
+			dst[4*x + 4] = 
+				src[srcw*(y+1) + x+1];
 		}
 	}
 }
@@ -40,22 +105,85 @@ void bggr10_to_rgba(
 
 	int x,y;
 	u8* dst;
-	u16* src;
-	for(y=0;y<srch;y++)
+	u16* src = (u16*)srcbuf;
+	for(y=2;y<srch-2;y+=2)
 	{
-		if(y>=dsth)break;
-		dst = dstbuf + (y*dstw*4);
-		src = (u16*)(srcbuf + (y&0xfffe)*srcw*2);
-		for(x=0;x<srcw;x+=2)
+		dst = dstbuf + y*dstw*4;
+		for(x=2;x<srcw-2;x+=2)
 		{
-			if(x>=dstw)break;
-			dst[4*x + 0] = (src[x + 1 + srcw]>>2)&0xff;
-			dst[4*x + 1] = (src[x + 1]>>2)&0xff;
-			dst[4*x + 2] = (src[x + 0]>>2)&0xff;
+/*
+g r g r g r
+b g B-g b g		//R@(x,y)
+g r g-r g r
+*/
+			dst[4*x + 2] = 
+				src[srcw*y + x] / 4;
+			dst[4*x + 1] = (
+				src[srcw*(y+0) + x-1]
+			+	src[srcw*(y+0) + x+1]
+			+	src[srcw*(y-1) + x+0]
+			+	src[srcw*(y+1) + x+0]
+			) / 4 / 4;
+			dst[4*x + 0] = (
+				src[srcw*(y-1) + x-1]
+			+	src[srcw*(y-1) + x+1]
+			+	src[srcw*(y+1) + x-1]
+			+	src[srcw*(y+1) + x+1]
+			) / 4 / 4;
+/*
+g r g r g r
+b g b-G b g		//G@(x+1,y)
+g r g-r g r
+*/
+			dst[4*x + 6] = (
+				src[srcw*y + x+0]
+			+	src[srcw*y + x+2]
+			) / 2 / 4;
+			dst[4*x + 5] = 
+				src[srcw*y + x+1] / 4;
+			dst[4*x + 4] = (
+				src[srcw*(y-1) + x+1]
+			+	src[srcw*(y+1) + x+1]
+			) / 2 / 4;
+		}
 
-			dst[4*x + 4] = (src[x + 1 + srcw]>>2)&0xff;
-			dst[4*x + 5] = (src[x + 1]>>2)&0xff;
-			dst[4*x + 6] = (src[x + 0]>>2)&0xff;
+		dst = dstbuf + (y+1)*dstw*4;
+		for(x=2;x<srcw-2;x+=2)
+		{
+/*
+b g b-g b g
+g r G-r g r		//G@(x,y+1)
+b g b g b g
+*/
+			dst[4*x + 2] = (
+				src[srcw*(y+0) + x]
+			+	src[srcw*(y+2) + x]
+			) / 2 / 4;
+			dst[4*x + 1] = 
+				src[srcw*(y+1) + x] / 4;
+			dst[4*x + 0] = (
+				src[srcw*(y+1) + x-1]
+			+	src[srcw*(y+1) + x+1]
+			) / 2 / 4;
+/*
+b g b-g b g
+g r g-R g r		//B@(x+1,y+1)
+b g b g b g
+*/
+			dst[4*x + 6] = (
+				src[srcw*(y+0) + x+0]
+			+	src[srcw*(y+0) + x+2]
+			+	src[srcw*(y+2) + x+0]
+			+	src[srcw*(y+2) + x+2]
+			) / 4 / 4;
+			dst[4*x + 5] = (
+				src[srcw*(y+1) + x+0]
+			+	src[srcw*(y+1) + x+2]
+			+	src[srcw*(y+0) + x+1]
+			+	src[srcw*(y+2) + x+1]
+			) / 4 / 4;
+			dst[4*x + 4] = 
+				src[srcw*(y+1) + x+1] / 4;
 		}
 	}
 }
@@ -80,10 +208,9 @@ void rggb_to_rgba(
 		for(x=2;x<srcw-2;x+=2)
 		{
 /*
-r g r g r g
 g b g b g b
-r g R g r g		//R@(x,y)
-g b g b g b
+r g R-g r g		//R@(x,y)
+g b g-b g b
 */
 			dst[4*x + 0] = 
 				src[srcw*y + x];
@@ -100,10 +227,9 @@ g b g b g b
 			+	src[srcw*(y+1) + x+1]
 			)/4;
 /*
-r g r g r g
 g b g b g b
-r g r G r g		//G@(x+1,y)
-g b g b g b
+r g r-G r g		//G@(x+1,y)
+g b g-b g b
 */
 			dst[4*x + 4] = (
 				src[srcw*y + x+0]
@@ -121,8 +247,8 @@ g b g b g b
 		for(x=2;x<srcw-2;x+=2)
 		{
 /*
-r g r g r g
-g b G b g b		//G@(x,y+1)
+r g r-g r g
+g b G-b g b		//G@(x,y+1)
 r g r g r g
 */
 			dst[4*x + 0] = (
@@ -136,8 +262,8 @@ r g r g r g
 			+	src[srcw*(y+1) + x+1]
 			)/2;
 /*
-r g r g r g
-g b g B g b		//B@(x+1,y+1)
+r g r-g r g
+g b g-B g b		//B@(x+1,y+1)
 r g r g r g
 */
 			dst[4*x + 4] = (
@@ -170,17 +296,13 @@ void rggb10_to_rgba(
 	u16* src = (u16*)srcbuf;
 	for(y=2;y<srch-2;y+=2)
 	{
-		if(y>=dsth)break;
-
 		dst = dstbuf + y*dstw*4;
 		for(x=2;x<srcw-2;x+=2)
 		{
-			if(x>=dstw)break;
 /*
-r g r g r g
 g b g b g b
-r g R g r g		//R@(x,y)
-g b g b g b
+r g R-g r g		//R@(x,y)
+g b g-b g b
 */
 			dst[4*x + 0] = 
 				src[srcw*y + x] / 4;
@@ -197,10 +319,9 @@ g b g b g b
 			+	src[srcw*(y+1) + x+1]
 			) / 4 / 4;
 /*
-r g r g r g
 g b g b g b
-r g r G r g		//G@(x+1,y)
-g b g b g b
+r g r-G r g		//G@(x+1,y)
+g b g-b g b
 */
 			dst[4*x + 4] = (
 				src[srcw*y + x+0]
@@ -217,10 +338,9 @@ g b g b g b
 		dst = dstbuf + (y+1)*dstw*4;
 		for(x=2;x<srcw-2;x+=2)
 		{
-			if(x>=dstw)break;
 /*
-r g r g r g
-g b G b g b		//G@(x,y+1)
+r g r-g r g
+g b G-b g b		//G@(x,y+1)
 r g r g r g
 */
 			dst[4*x + 0] = (
@@ -234,8 +354,8 @@ r g r g r g
 			+	src[srcw*(y+1) + x+1]
 			) / 2 / 4;
 /*
-r g r g r g
-g b g B g b		//B@(x+1,y+1)
+r g r-g r g
+g b g-B g b		//B@(x+1,y+1)
 r g r g r g
 */
 			dst[4*x + 4] = (
