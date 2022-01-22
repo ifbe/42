@@ -16,9 +16,12 @@ void bggr_to_rgba(
 	u8* src = srcbuf;
 	for(y=2;y<srch-2;y+=2)
 	{
+		if(y >= dsth)break;
+
 		dst = dstbuf + y*dstw*4;
 		for(x=2;x<srcw-2;x+=2)
 		{
+			if(x >= dstw)break;
 /*
 g r g r g r
 b g B-g b g		//B@(x,y)
@@ -58,6 +61,7 @@ g r g-r g r
 		dst = dstbuf + (y+1)*dstw*4;
 		for(x=2;x<srcw-2;x+=2)
 		{
+			if(x >= dstw)break;
 /*
 b g b-g b g
 g r G-r g r		//G@(x,y+1)
@@ -108,9 +112,12 @@ void bggr10_to_rgba(
 	u16* src = (u16*)srcbuf;
 	for(y=2;y<srch-2;y+=2)
 	{
+		if(y >= dsth)break;
+
 		dst = dstbuf + y*dstw*4;
 		for(x=2;x<srcw-2;x+=2)
 		{
+			if(x >= dstw)break;
 /*
 g r g r g r
 b g B-g b g		//R@(x,y)
@@ -150,6 +157,7 @@ g r g-r g r
 		dst = dstbuf + (y+1)*dstw*4;
 		for(x=2;x<srcw-2;x+=2)
 		{
+			if(x >= dstw)break;
 /*
 b g b-g b g
 g r G-r g r		//G@(x,y+1)
@@ -204,9 +212,12 @@ void rggb_to_rgba(
 	u8* src = srcbuf;
 	for(y=2;y<srch-2;y+=2)
 	{
+		if(y >= dsth)break;
+
 		dst = dstbuf + y*dstw*4;
 		for(x=2;x<srcw-2;x+=2)
 		{
+			if(x >= dstw)break;
 /*
 g b g b g b
 r g R-g r g		//R@(x,y)
@@ -246,6 +257,7 @@ g b g-b g b
 		dst = dstbuf + (y+1)*dstw*4;
 		for(x=2;x<srcw-2;x+=2)
 		{
+			if(x >= dstw)break;
 /*
 r g r-g r g
 g b G-b g b		//G@(x,y+1)
@@ -296,9 +308,12 @@ void rggb10_to_rgba(
 	u16* src = (u16*)srcbuf;
 	for(y=2;y<srch-2;y+=2)
 	{
+		if(y >= dsth)break;
+
 		dst = dstbuf + y*dstw*4;
 		for(x=2;x<srcw-2;x+=2)
 		{
+			if(x >= dstw)break;
 /*
 g b g b g b
 r g R-g r g		//R@(x,y)
@@ -338,6 +353,7 @@ g b g-b g b
 		dst = dstbuf + (y+1)*dstw*4;
 		for(x=2;x<srcw-2;x+=2)
 		{
+			if(x >= dstw)break;
 /*
 r g r-g r g
 g b G-b g b		//G@(x,y+1)
