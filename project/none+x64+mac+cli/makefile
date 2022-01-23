@@ -63,4 +63,5 @@ exe:
 	-framework AudioToolbox
 clean:
 	rm -f *.exe *.out *.o *.a *.dylib
+	rm -f */*.o
 	make -C $(library) clean

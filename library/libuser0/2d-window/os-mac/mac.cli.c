@@ -13,13 +13,13 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 	struct relation* rel = wnd->orel0;
 	while(1){
 		if(0 == rel)break;
-		if(_ent_ == rel->dsttype){
+		if(_ent_ == rel->dstnodetype){
 			stack[sp+0].pchip = rel->psrcchip;
 			stack[sp+0].pfoot = rel->psrcfoot;
-			stack[sp+0].flag = rel->srcflag;
+			stack[sp+0].foottype = rel->srcfoottype;
 			stack[sp+1].pchip = rel->pdstchip;
 			stack[sp+1].pfoot = rel->pdstfoot;
-			stack[sp+1].flag = rel->dstflag;
+			stack[sp+1].foottype = rel->dstfoottype;
 			entity_takeby(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, arg,key, buf,len);
 		}
 		rel = samesrcnextdst(rel);
@@ -28,31 +28,18 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 void window_give(_obj* win,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-void windowlist()
-{
-}
-void windowchange()
-{
-}
-void windowstart()
-{
-}
-void windowstop()
-{
-}
+
+
+
+
 void windowdelete(_obj* w)
 {
 }
 void windowcreate(_obj* w)
 {
-	w->fmt = _cli_;
+	w->hfmt = _cli_;
 	w->vfmt = 0;
 
-	w->width = 80;
-	w->height = 25;
-
-	w->fbwidth = 80;
-	//w->fbheight = 0;
 }
 
 

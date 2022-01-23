@@ -210,12 +210,13 @@ static void sudoku_draw_cli(
 	int x,y;
 	u8* data = act->listptr.buf0;
 
+	say("sudoku(%x,%x,%x,%x)\n", win, act, sty, pin);
 	for(y=0;y<9;y++)
 	{
 		for(x=0;x<9;x++)
 		{
 			if(data[y*9+x] == 0)continue;
-			say("%d	",data[y*9+x]);
+			say("%d ",data[y*9+x]);
 		}
 		say("\n");
 	}

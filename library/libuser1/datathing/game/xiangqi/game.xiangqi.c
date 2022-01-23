@@ -613,6 +613,18 @@ static void xiangqi_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
+	say("xiangqi(%x,%x,%x,%x)\n", win, act, sty, pin);
+	int x,y,tmp;
+	struct perxiangqi* xq = act->listptr.buf0;
+	for(y=0;y<10;y++)
+	{
+		for(x=0;x<9;x++)
+		{
+			tmp = xq->data[y][x];
+			if(0 == char2hanzi(tmp))tmp = '.';
+			say("%c%c", tmp, (x==8) ? '\n' : ' ');
+		}
+	}
 }
 
 
