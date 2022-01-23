@@ -1,0 +1,26 @@
+<entity>
+sudoku{
+fmt:sudoku
+}
+</entity>
+
+
+<supply>
+wnd{
+fmt:wnd
+}
+</supply>
+
+
+<style>
+where{
+c:256,256,0
+r:256,0,0
+f:0,256,0
+}
+</style>
+
+
+<relation>
+(wnd, where, 0) -> (sudoku, 0, 0)
+</relation>

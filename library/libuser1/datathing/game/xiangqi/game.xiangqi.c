@@ -201,7 +201,7 @@ void* char2hanzi(int val)
 		case 's':return "兵";
 		case 'z':return "炮";
 	}
-	return "";
+	return 0;
 }
 void xiangqi_draw_pixel(
 	_obj* act, struct style* pin,
@@ -299,14 +299,9 @@ void xiangqi_draw_pixel(
 			if(*(u8*)pin == 'r')temp = xq->data[y][x];
 			else temp = xq->data[9-y][8-x];
 
-			//empty
-			if(temp < 'A')continue;
-
-			//>0x41
-			else if(temp <= 'Z')fontcolor = black;
-
-			//>0x61
-			else if(temp <= 'z')fontcolor = red;
+			if(     (temp >= 'A')&&(temp <= 'Z'))fontcolor = black;
+			else if((temp >= 'a')&&(temp <= 'z'))fontcolor = red;
+			else continue;
 
 			if( (xq->px == x)&&(xq->py == y) )chesscolor = 0xabcdef;
 			else chesscolor = brown;
@@ -496,14 +491,9 @@ static void xiangqi_gl41draw(
 	{
 		for(x=0;x<9;x++)
 		{
-			//empty
-			if(xq->data[y][x] < 'A')continue;
-
-			//>0x41
-			else if(xq->data[y][x] <= 'Z')fontcolor = 0;
-
-			//>0x61
-			else if(xq->data[y][x] <= 'z')fontcolor = 0xff0000;
+			if(     (xq->data[y][x] >= 'A')&&(xq->data[y][x] <= 'Z'))fontcolor = 0;
+			else if((xq->data[y][x] >= 'a')&&(xq->data[y][x] <= 'z'))fontcolor = 0xff0000;
+			else continue;
 
 			f[0] = (x+x-8)/9.0;
 			f[1] = (y+y-9)/10.0;
@@ -554,6 +544,7 @@ static void xiangqi_draw_html(
 	_obj* win, struct style* sty)
 {
 	int x,y;
+	u8* tmp;
 	struct perxiangqi* xq = act->listptr.buf0;
 
 	//<head>
@@ -568,9 +559,12 @@ static void xiangqi_draw_html(
 	{
 		for(x=0;x<9;x++)
 		{
+			tmp = char2hanzi(xq->data[y][x]);
+			if(0 == tmp)continue;
+
 			htmlprintf(win, 2,
 				"<div class=\"xqfg\">%s</div>\n",
-				char2hanzi(xq->data[y][x])
+				tmp
 			);
 		}//forx
 	}//fory
@@ -596,21 +590,22 @@ static void xiangqi_draw_tui(
 		for(x=0;x<9;x++)
 		{
 			q = char2hanzi(xq->data[y][x]);
-			if(q == 0)
-			{
-				if(x != xq->qx)continue;
-				if(y != xq->qy)continue;
+			if(0 == q){
+				if((x==xq->qx)&&(y==xq->qy))color = 5;
+				else color = 7;
+				gentui_rect(win, color, x*6, y*3, x*6+5, y*3+2);
 			}
+			else{
+				//color
+				if( (xq->px==x)&& (xq->py==y) )color = 5;
+				else if( (xq->qx==x)&& (xq->qy==y) )color = 2;
+				else if(xq->data[y][x] >= 'a')color = 1;
+				else color = 4;
+				gentui_rect(win, color, x*6, y*3, x*6+5, y*3+2);
 
-			//color
-			if( (xq->px==x)&& (xq->py==y) )color = 5;
-			else if( (xq->qx==x)&& (xq->qy==y) )color = 2;
-			else if(xq->data[y][x] >= 'a')color = 1;
-			else color = 4;
-			gentui_rect(win, color, x*6, y*3, x*6+5, y*3+2);
-
-			//character
-			gentui_utf8(win, 0, x*6+2, y*3+1, char2hanzi(xq->data[y][x]), 0);
+				//character
+				gentui_utf8(win, 0, x*6+2, y*3+1, q, 0);
+			}
 		}
 	}
 }
@@ -647,6 +642,12 @@ static void xiangqi_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	switch(caller->hfmt){
+	case _cli_:
+		xiangqi_draw_cli(ent,slot, caller,area);
+		break;
+	case _tui_:
+		xiangqi_draw_tui(ent,slot, caller,area);
+		break;
 	case _gl41list_:
 		xiangqi_draw_gl41_nocam(ent,slot, caller,area);
 		break;

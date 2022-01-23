@@ -274,7 +274,7 @@ static void sudoku_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void sudoku_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void sudoku_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -287,16 +287,22 @@ static void sudoku_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	switch(caller->hfmt){
+	case _cli_:
+		sudoku_draw_cli(ent,slot, caller,area);
+		break;
+	case _tui_:
+		sudoku_draw_tui(ent,slot, caller,area);
+		break;
 	case _rgba_:
 		break;
 	case _gl41list_:
 		break;
 	default:
-		sudoku_wrl_cam_wnd(ent,foot, stack,sp);
+		sudoku_wrl_cam_wnd(ent,slot, stack,sp);
 		break;
 	}
 }
-static void sudoku_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void sudoku_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void sudoku_detach(struct halfrel* self, struct halfrel* peer)

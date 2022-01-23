@@ -453,6 +453,9 @@ static void the2048_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	switch(caller->hfmt){
+	case _cli_:
+		the2048_draw_cli(ent,slot, caller,area);
+		break;
 	case _tui_:
 		the2048_draw_tui(ent,slot, caller,area);
 		break;
