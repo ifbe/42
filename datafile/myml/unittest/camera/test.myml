@@ -1,5 +1,6 @@
 <supply>
 usbcam{
 fmt:cam
+path:/dev/video0
 }
 </supply>

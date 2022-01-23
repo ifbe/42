@@ -24,16 +24,23 @@ struct perbuf{
 	};
 };
 struct percam{
-	u64 thread;
-	int alive;
-
+	//want
+	u8 path[0x100];
 	int wantstride;
 	int wantheight;
 	u32 wantformat;
 
+	//cam itself
+	int fd;
+	int started;
+
 	int realstride;
 	int realheight;
 	u32 realformat;
+
+	//cam handler
+	u64 thread;
+	int alive;
 
 	int deq;
 	struct perbuf datainfo[BUFCNT];
@@ -45,23 +52,61 @@ struct percam{
 
 
 
-void* cameraworker(_obj* cam)
+int v4l2cam_destroy(_obj* cam)
 {
-	struct halfrel stack[0x80];
 	struct percam* pcam = cam->priv_ptr;
 	if(0 == pcam){
-		say("@cameraworker:0=pcam\n");
+		say("@v4l2cam_destroy:0=pcam\n");
 		return 0;
 	}
 
-	//v4l2_open
+	int fd = pcam->fd;
+	if(fd <= 0)return 0;
+
 	int j;
-	int fd = open("/dev/video0",O_RDWR);    //|O_NONBLOCK);
+	struct perbuf* myinfo;
+	struct v4l2_buffer* v4l2buf;
+	if(0 == pcam->started)goto doclose;
+
+dostop:
+	j = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+	if(-1 == ioctl(fd, VIDIOC_STREAMOFF, &j))
+	{
+		printf("@OFF:errno=%d\n",errno);
+		goto doclose;
+	}
+
+dounmap:
+	for(j=0;j<BUFCNT;j++)
+	{
+		myinfo = &pcam->datainfo[j];
+		v4l2buf = &myinfo->v4l2buf;
+		munmap(myinfo->buf, v4l2buf->length);
+	}
+
+doclose:
+	close(fd);
+	return 0;
+}
+int v4l2cam_prepare(_obj* cam)
+{
+	struct percam* pcam = cam->priv_ptr;
+	if(0 == pcam){
+		say("@v4l2cam_prepare:0=pcam\n");
+		return 0;
+	}
+	pcam->fd = 0;
+	pcam->started = 0;
+
+	//v4l2_open
+	int fd = open(pcam->path, O_RDWR);    //|O_NONBLOCK);
 	if(fd <= 0)
 	{
 		printf("error@open /dev/video0\n");
 		return 0;
 	}
+	pcam->fd = fd;
+
 
 	//v4l2_capability
 	struct v4l2_capability cap;
@@ -76,6 +121,35 @@ void* cameraworker(_obj* cam)
 	printf("	bus_info: %s\n", cap.bus_info);
 	printf("	version: %08X\n", cap.version);
 	printf("	capabilities: %08X\n", cap.capabilities);
+	if(cap.capabilities&V4L2_CAP_VIDEO_CAPTURE)       printf("		V4L2_CAP_VIDEO_CAPTURE\n");
+	if(cap.capabilities&V4L2_CAP_VIDEO_CAPTURE_MPLANE)printf("		V4L2_CAP_VIDEO_CAPTURE_MPLANE\n");
+	if(cap.capabilities&V4L2_CAP_VIDEO_OUTPUT)        printf("		V4L2_CAP_VIDEO_OUTPUT\n");
+	if(cap.capabilities&V4L2_CAP_VIDEO_OUTPUT_MPLANE) printf("		V4L2_CAP_VIDEO_OUTPUT_MPLANE\n");
+	if(cap.capabilities&V4L2_CAP_VIDEO_M2M)           printf("		V4L2_CAP_VIDEO_M2M\n");
+	if(cap.capabilities&V4L2_CAP_VIDEO_M2M_MPLANE)    printf("		V4L2_CAP_VIDEO_M2M_MPLANE\n");
+	if(cap.capabilities&V4L2_CAP_VIDEO_OVERLAY)       printf("		V4L2_CAP_VIDEO_OVERLAY\n");
+	if(cap.capabilities&V4L2_CAP_VBI_CAPTURE)         printf("		V4L2_CAP_VBI_CAPTURE\n");
+	if(cap.capabilities&V4L2_CAP_VBI_OUTPUT)          printf("		V4L2_CAP_VBI_OUTPUT\n");
+	if(cap.capabilities&V4L2_CAP_SLICED_VBI_CAPTURE)  printf("		V4L2_CAP_SLICED_VBI_CAPTURE\n");
+	if(cap.capabilities&V4L2_CAP_SLICED_VBI_OUTPUT)   printf("		V4L2_CAP_SLICED_VBI_OUTPUT\n");
+	if(cap.capabilities&V4L2_CAP_RDS_CAPTURE)         printf("		V4L2_CAP_RDS_CAPTURE\n");
+	if(cap.capabilities&V4L2_CAP_VIDEO_OUTPUT_OVERLAY)printf("		V4L2_CAP_VIDEO_OUTPUT_OVERLAY\n");
+	if(cap.capabilities&V4L2_CAP_HW_FREQ_SEEK)        printf("		V4L2_CAP_HW_FREQ_SEEK\n");
+	if(cap.capabilities&V4L2_CAP_RDS_OUTPUT)          printf("		V4L2_CAP_RDS_OUTPUT\n");
+	if(cap.capabilities&V4L2_CAP_TUNER)               printf("		V4L2_CAP_TUNER\n");
+	if(cap.capabilities&V4L2_CAP_AUDIO)               printf("		V4L2_CAP_AUDIO\n");
+	if(cap.capabilities&V4L2_CAP_RADIO)               printf("		V4L2_CAP_RADIO\n");
+	if(cap.capabilities&V4L2_CAP_MODULATOR)           printf("		V4L2_CAP_MODULATOR\n");
+	if(cap.capabilities&V4L2_CAP_SDR_CAPTURE)         printf("		V4L2_CAP_SDR_CAPTURE\n");
+	if(cap.capabilities&V4L2_CAP_EXT_PIX_FORMAT)      printf("		V4L2_CAP_EXT_PIX_FORMAT\n");
+	if(cap.capabilities&V4L2_CAP_SDR_OUTPUT)          printf("		V4L2_CAP_SDR_OUTPUT\n");
+	if(cap.capabilities&V4L2_CAP_READWRITE)           printf("		V4L2_CAP_READWRITE\n");
+	if(cap.capabilities&V4L2_CAP_ASYNCIO)             printf("		V4L2_CAP_ASYNCIO\n");
+	if(cap.capabilities&V4L2_CAP_STREAMING)           printf("		V4L2_CAP_STREAMING\n");
+	if(cap.capabilities&V4L2_CAP_TOUCH)               printf("		V4L2_CAP_TOUCH\n");
+	if(cap.capabilities&V4L2_CAP_DEVICE_CAPS)         printf("		V4L2_CAP_DEVICE_CAPS\n");
+	if(0 == cap.capabilities&V4L2_CAP_VIDEO_CAPTURE)return 0;
+
 
 	//v4l2_fmtdesc
 	int enumx,enumy;
@@ -100,15 +174,19 @@ void* cameraworker(_obj* cam)
 			if (frmsize.type == V4L2_FRMSIZE_TYPE_DISCRETE) {
 				enumx = frmsize.discrete.width;
 				enumy = frmsize.discrete.height;
+				say("		DISCRETE:w=%d,h=%d\n", enumx,enumy);
 			} else if (frmsize.type == V4L2_FRMSIZE_TYPE_STEPWISE) {
 				enumx = frmsize.stepwise.max_width;
 				enumy = frmsize.stepwise.max_height;
+				say("		STEPWISE:w=%d,h=%d\n", enumx,enumy);
 			}
-			say("		w=%d,h=%d\n", enumx,enumy);
+			else{
+				say("		frmsize.type=%x\n", frmsize.type);
+			}
 
-			if( (pcam->wantformat == desc.pixelformat) &&
-			    (pcam->wantstride == enumx) &&
+			if( (pcam->wantstride == enumx) &&
 			    (pcam->wantheight == enumy) &&
+				(pcam->wantformat == desc.pixelformat) &&
 			    (pcam->realformat == 0) )
 			{
 				pcam->realstride = enumx;
@@ -116,7 +194,7 @@ void* cameraworker(_obj* cam)
 				pcam->realformat = desc.pixelformat;
 				printf("find what i want!\n");
 			}
-
+/*
 			frmival.index = 0;
 			frmival.pixel_format = desc.pixelformat;
 			frmival.width = enumx;
@@ -132,7 +210,7 @@ void* cameraworker(_obj* cam)
 				say("			VIDIOC_ENUM_FRAMEINTERVALS:errno=%d\n",errno);
 				//return 0;
 			}
-
+*/
 			frmsize.index++;
 		}
 		if(0 == frmsize.index){
@@ -161,7 +239,7 @@ void* cameraworker(_obj* cam)
 	fmt.fmt.pix.pixelformat = pcam->realformat;
 	if(-1 == ioctl(fd, VIDIOC_S_FMT, &fmt))
 	{
-		printf("VIDIOC_S_FMT error\n");
+		printf("@VIDIOC_S_FMT:errno=%d\n",errno);
 		return 0;
 	}
 
@@ -172,11 +250,12 @@ void* cameraworker(_obj* cam)
 	req.memory      = V4L2_MEMORY_MMAP;     //V4L2_MEMORY_USERPTR;
 	if(-1 == ioctl(fd,VIDIOC_REQBUFS,&req))
 	{
-		printf("VIDIOC_REQBUFS error\n");
+		printf("@VIDIOC_REQBUFS:error=%d\n",errno);
 		return 0;
 	}
 
 	//prepare
+	int j;
 	struct perbuf* myinfo;
 	struct v4l2_buffer* v4l2buf;
 	for(j=0;j<BUFCNT;j++)
@@ -189,7 +268,7 @@ void* cameraworker(_obj* cam)
 		v4l2buf->index = j;
 		if(-1 == ioctl(fd, VIDIOC_QUERYBUF, v4l2buf))
 		{
-			printf("VIDIOC_QUERYBUF\n");
+			printf("@VIDIOC_QUERYBUF:errno=%d\n",errno);
 			return 0;
 		}
 
@@ -204,12 +283,12 @@ void* cameraworker(_obj* cam)
 
 		if(MAP_FAILED == pcam->datainfo[j].buf)
 		{
-			printf("fail@mmap\n");
+			printf("@mmap:errno=%d\n",errno);
 			return 0;
 		}
 		if(-1 == ioctl(fd, VIDIOC_QBUF, v4l2buf))
 		{
-			printf("VIDEOC_QBUF\n");
+			printf("@VIDEOC_QBUF:errno=%d\n",errno);
 			return 0;
 		}
 	}
@@ -218,18 +297,43 @@ void* cameraworker(_obj* cam)
 	j = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	if(-1 == ioctl(fd, VIDIOC_STREAMON, &j))
 	{
-		printf("error@ON\n");
+		printf("@ON:errno=%d\n",errno);
 		return 0;
 	}
+	pcam->started = 1;
+
+	return fd;
+
+failclose:
+	v4l2cam_destroy(cam);
+	return 0;
+}
+void* cameraworker(_obj* cam)
+{
+	struct percam* pcam = cam->priv_ptr;
+	if(0 == pcam){
+		say("@cameraworker:0=pcam\n");
+		return 0;
+	}
+	pcam->deq = 0;
+
+	int fd = pcam->fd;
+	if(0 == fd)return 0;
+	if(0 == pcam->started)return 0;
 
 	//record
 	int epfd;
-	struct epoll_event ev;
 	epfd = epoll_create(256);
+
+	struct epoll_event ev;
 	ev.data.fd=fd;
 	ev.events = EPOLLIN | EPOLLET;
 	epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &ev);
-	pcam->deq = 0;
+
+	int j;
+	struct halfrel stack[0x80];
+	struct perbuf* myinfo;
+	struct v4l2_buffer* v4l2buf;
 	while(pcam->alive)
 	{
 		//!!!!!!!!!!!!!!must take out ontime!!!!!!!!!!!!!!
@@ -260,22 +364,7 @@ void* cameraworker(_obj* cam)
 		}
 	}
 
-	//stop
-	j = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	if(-1 == ioctl(fd, VIDIOC_STREAMOFF, &j))
-	{
-		printf("error@OFF\n");
-	}
-	for(j=0;j<BUFCNT;j++)
-	{
-		myinfo = &pcam->datainfo[j];
-		v4l2buf = &myinfo->v4l2buf;
-		munmap(myinfo->buf, v4l2buf->length);
-	}
-
-failclose:
-	//v4l2_release
-	close(fd);
+	v4l2cam_destroy(cam);
 	return 0;
 }
 
@@ -324,6 +413,7 @@ int videodelete(_obj* cam)
 int videocreate(_obj* cam, void* arg, int argc, u8** argv)
 {
 	//default value
+	u8* path = "/dev/video0";
 	int stride = 640;
 	int height = 480;
 	int format = 
@@ -342,7 +432,11 @@ int videocreate(_obj* cam, void* arg, int argc, u8** argv)
 	for(j=1;j<argc;j++){
 		arg = argv[j];
 		if(0 == arg)break;
-		//say("%d->%.16s\n",j,arg;
+		//say("%d->%.16s\n",j,arg[j]);
+
+		if(0 == ncmp(arg, "path:", 5)){
+			path = argv[j]+5;
+		}
 		if(0 == ncmp(arg, "format:", 7)){
 			arg = argv[j]+7;
 			//say("format=%.5s\n",arg);
@@ -372,9 +466,17 @@ int videocreate(_obj* cam, void* arg, int argc, u8** argv)
 	}
 
 	//remember value
+	for(j=0;j<0x100;j++){
+		if(path[j] <= 0x20){pcam->path[j] = 0;break;}
+		else pcam->path[j] = path[j];
+	}
 	pcam->wantstride = stride;
 	pcam->wantheight = height;
 	pcam->wantformat = format;
+
+	//enum
+	int ret = v4l2cam_prepare(cam);
+	if(ret <= 0)return 0;
 
 	//percam thread
 	pcam->alive = 1;
