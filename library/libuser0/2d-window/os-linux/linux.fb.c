@@ -2,8 +2,10 @@
 #include <unistd.h>		//close
 #include <stdio.h>		//printf
 #include <stdlib.h>		//malloc
+#include <errno.h>
 #include <termios.h>		//termios,getchar
 #include <sys/ioctl.h>		//ioctl
+#include <sys/mman.h>		//mmap
 #include <linux/fb.h>		//framebuffer
 #include "libuser.h"
 int rgbanode_take(void*,void*, void*,int, void*,int, void*,int);
@@ -11,75 +13,113 @@ int rgbanode_give(void*,void*, void*,int, void*,int, void*,int);
 
 
 
-//physical info
-static u64 fbaddr = 0;
 static int fbfd = -1;
-static int fbtotalbyte = 0;
-static int fboneline = 0;
+static u8* fbmem = 0;
+//physical info
+static u64 paddr = 0;
+static int totalbyte = 0;
+static int oneline = 0;
 //virtual info
 static int xmax = 0;
 static int ymax = 0;
 static int bpp = 0;
+void window_update(_obj* wnd)
+{
+	int x,y,ret;
+	u8* canvas = (void*)(wnd->rgbanode.buf);
+
+	//update screen
+	if(16 == bpp)
+	{
+		if(0 == fbmem){
+			for(x=0;x<xmax*ymax;x++)
+			{
+				*(u16*)(canvas+x*2) =
+				    (canvas[x*4+0]>>3)
+				+ ( (canvas[x*4+1]>>2) <<  5 )
+				+ ( (canvas[x*4+2]>>3) << 11 );
+				//*(u16*)(canvas+x*2) = 0x4567;
+			}
+			lseek(fbfd, 0, SEEK_SET);
+			write(fbfd, canvas, xmax*ymax*2);
+		}
+		else{
+			for(y=0;y<ymax;y++){
+				for(x=0;x<xmax;x++){
+					*(u16*)(fbmem+y*oneline+x*2) =
+					    (canvas[x*4+0]>>3)
+					+ ( (canvas[x*4+1]>>2) <<  5 )
+					+ ( (canvas[x*4+2]>>3) << 11 );
+				}
+			}
+		}
+	}
+	else if(24 == bpp)
+	{
+		if(0 == fbmem){
+			x = xmax*bpp/8;
+			for(y=0;y<ymax;y++)
+			{
+				ret = lseek(fbfd, y*oneline, SEEK_SET);
+				ret = write(fbfd, canvas + y*x, x);
+			}
+		}
+		else{
+			for(y=0;y<ymax;y++){
+				for(x=0;x<xmax;x++){
+					fbmem[y*oneline+3*x+0] = canvas[y*oneline+4*x+0];
+					fbmem[y*oneline+3*x+1] = canvas[y*oneline+4*x+1];
+					fbmem[y*oneline+3*x+2] = canvas[y*oneline+4*x+2];
+				}
+			}
+		}
+	}
+	else if(32 == bpp)
+	{
+		if(0 == fbmem){
+			lseek(fbfd, 0, SEEK_SET);
+			write(fbfd, canvas, totalbyte);
+		}
+		else{
+			for(y=0;y<ymax;y++){
+				for(x=0;x<xmax;x++){
+					fbmem[y*oneline+4*x+0] = canvas[y*oneline+4*x+0];
+					fbmem[y*oneline+4*x+1] = canvas[y*oneline+4*x+1];
+					fbmem[y*oneline+4*x+2] = canvas[y*oneline+4*x+2];
+				}
+			}
+		}
+	}
+}
 
 
 
 
 void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	int x,y,ret;
-	u8* canvas;
-
 	//read context
 	rgbanode_take(wnd,0, stack,sp, arg,key, buf,len);
 
-	//update screen
-	canvas = (void*)(wnd->rgbanode.buf);
-	if(16 == bpp)
-	{
-		for(x=0;x<xmax*ymax;x++)
-		{
-			*(u16*)(canvas+x*2) =
-			    (canvas[x*4+0]>>3)
-			+ ( (canvas[x*4+1]>>2) <<  5 )
-			+ ( (canvas[x*4+2]>>3) << 11 );
-			//*(u16*)(canvas+x*2) = 0x4567;
-		}
-		lseek(fbfd, 0, SEEK_SET);
-		write(fbfd, canvas, xmax*ymax*2);
-	}
-	else if(24 == bpp)
-	{
-		x = xmax*bpp/8;
-		for(y=0;y<ymax;y++)
-		{
-			ret = lseek(fbfd, y*fboneline, SEEK_SET);
-			ret = write(fbfd, canvas + y*x, x);
-		}
-	}
-	else if(32 == bpp)
-	{
-		lseek(fbfd, 0, SEEK_SET);
-		write(fbfd, canvas, fbtotalbyte);
-	}
+	//update area
+	window_update(wnd);
 }
 void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 }
-void windowlist()
-{
-}
-void windowchange()
-{
-}
-void windowstop()
-{
-}
-void windowstart()
-{
-}
+
+
+
+
 void windowdelete(_obj* w)
 {
-	if(fbfd != -1)close(fbfd);
+	if(fbmem != 0){
+		munmap(fbmem, totalbyte);
+		fbmem = 0;
+	}
+	if(fbfd != -1){
+		close(fbfd);
+		fbfd = -1;
+	}
 }
 void windowcreate(_obj* sup, void* arg)
 {
@@ -98,13 +138,13 @@ void windowcreate(_obj* sup, void* arg)
 	struct fb_fix_screeninfo finfo;
 	if(ioctl(fbfd,FBIOGET_FSCREENINFO,&finfo))
 	{
-		printf("error2\n");
+		printf("FBIOGET_FSCREENINFO:errno=%d\n",errno);
 		exit(-1);
 	}
-	fbaddr = finfo.smem_start;
-	fbtotalbyte = finfo.smem_len;
-	fboneline = finfo.line_length;
-	printf("fbaddr=%llx,fbtotalbyte=%x,fboneline=%x\n",fbaddr,fbtotalbyte,fboneline);
+	paddr = finfo.smem_start;
+	totalbyte = finfo.smem_len;
+	oneline = finfo.line_length;
+	printf("paddr=%llx,totalbyte=%x,oneline=%x\n",paddr,totalbyte,oneline);
 	printf("linelen=%x(%d)\n",finfo.line_length,finfo.line_length);
 
 	//可变参数
@@ -120,6 +160,8 @@ void windowcreate(_obj* sup, void* arg)
 	printf("xmax=%d,ymax=%d,bpp=%d\n",xmax,ymax,bpp);
 
 
+	fbmem = mmap(NULL, totalbyte, PROT_READ|PROT_WRITE, MAP_SHARED, fbfd, 0);
+	printf("mmap=%p\n",fbmem);
 
 
 	//
@@ -129,7 +171,7 @@ void windowcreate(_obj* sup, void* arg)
 	sup->whdf.width  = xmax;
 	sup->whdf.height = ymax;
 
-	sup->whdf.fbwidth = fboneline;
+	sup->whdf.fbwidth = oneline;
 	//sup->fbheight = 0;
 
 	sup->rgbanode.buf = malloc(2048*1024*4);
