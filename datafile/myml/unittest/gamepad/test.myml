@@ -1,0 +1,8 @@
+<supply>
+player1{
+fmt:joy
+}
+player2{
+fmt:joy
+}
+</supply>

@@ -27,7 +27,7 @@ static void joystick_sendevent(struct halfrel* stack,int sp, struct xyzwpair* pa
 	if(0 == joy)return;
 
 	if((0 == joy->orel0) && (0 == joy->irel0)){
-		say("@2\n");
+		say("id=%d,obj=%p\n", j, joy);
 		ev.why = *(u64*)(&pair->x0);
 		ev.what = joy_left;
 		printmemory(&ev, 16);

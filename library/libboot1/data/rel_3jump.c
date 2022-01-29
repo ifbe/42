@@ -1,9 +1,25 @@
+//3jump: nodeA to slotA to slotB to nodeB
 #include "libboot.h"
 #define maxlen 0x100000
 
 
 
 
+struct complexrelation{
+    u64 nodechip;
+    u64 nodefoot;
+    u32 nodechiptype;
+    u32 nodefoottype;
+    u32 nodeprev;
+    u32 nodenext;
+
+    u64 relchip;    //voltage of wire body?
+    u64 relfoot;    //current of wire branch?
+    u32 relchiptype;
+    u32 relfoottype;
+    u32 relprev;
+    u32 relnext;
+};
 struct nondirrel
 {
 	//0x00,0x1f
@@ -15,7 +31,7 @@ struct nondirrel
 	u32 next;
 
 	//0x20,0x7f
-	struct halfrel{
+	struct testhalfrel{
         u64 chip;
         u64 foot;
         u32 chiptype;
@@ -27,7 +43,7 @@ struct nondirrel
 
 
 
-
+/*
 void* findprev(struct halfrel* rel){
     tmp = offs2addr(rel->next);
 }
@@ -63,3 +79,4 @@ void* newrel_twoguy(struct halfrel* a,struct halfrel* b){
 void* newrel_addguy(struct nondirrel* r, struct halfrel* a){
     copytoxxxfrom(r->rel[2],a);
 }
+*/

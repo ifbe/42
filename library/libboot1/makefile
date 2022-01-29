@@ -2,8 +2,12 @@ CC:=gcc
 CF:="-c -O2 -fPIC -I.."
 DIR:=$(shell pwd)
 SRC= \
-data/bignode.c \
-data/relation.c \
+data/bignode_self.c \
+data/bignode_slot.c \
+data/rel_0jump.c \
+data/rel_1jump.c \
+data/rel_2jump.c \
+data/rel_3jump.c \
 data/linklist.c \
 data/rbtree.c \
 inout/in.ev.c \
