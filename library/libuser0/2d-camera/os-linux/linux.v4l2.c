@@ -153,6 +153,7 @@ int v4l2cam_prepare(_obj* cam)
 
 	//v4l2_fmtdesc
 	int enumx,enumy;
+	int minx,miny,maxx,maxy,stepx,stepy;
 	struct v4l2_fmtdesc desc;
 	struct v4l2_frmsizeenum frmsize;
 	struct v4l2_frmivalenum frmival;
@@ -176,9 +177,20 @@ int v4l2cam_prepare(_obj* cam)
 				enumy = frmsize.discrete.height;
 				say("		DISCRETE:w=%d,h=%d\n", enumx,enumy);
 			} else if (frmsize.type == V4L2_FRMSIZE_TYPE_STEPWISE) {
-				enumx = frmsize.stepwise.max_width;
-				enumy = frmsize.stepwise.max_height;
-				say("		STEPWISE:w=%d,h=%d\n", enumx,enumy);
+				minx = frmsize.stepwise.min_width;
+				miny = frmsize.stepwise.min_height;
+				maxx = frmsize.stepwise.max_width;
+				maxy = frmsize.stepwise.max_height;
+				stepx = frmsize.stepwise.step_width;
+				stepy = frmsize.stepwise.step_height;
+				say("		STEPWISE:min=(%d,%d),max=(%d,%d),step=(%d,%d)\n", minx,miny,maxx,maxy,stepx,stepy);
+
+				if( (0==(pcam->wantstride-minx)%stepx)&&
+				    (0==(pcam->wantheight-miny)%stepy) )
+				{
+					enumx = pcam->wantstride;
+					enumy = pcam->wantheight;
+				}
 			}
 			else{
 				say("		frmsize.type=%x\n", frmsize.type);
@@ -186,7 +198,7 @@ int v4l2cam_prepare(_obj* cam)
 
 			if( (pcam->wantstride == enumx) &&
 			    (pcam->wantheight == enumy) &&
-				(pcam->wantformat == desc.pixelformat) &&
+			    (pcam->wantformat == desc.pixelformat) &&
 			    (pcam->realformat == 0) )
 			{
 				pcam->realstride = enumx;
