@@ -6,9 +6,6 @@ int findhead(void*);
 int findtail(void*);
 int openreadclose(void* name, u64 off, void* mem, u64 len);
 int openwriteclose(void* name, u64 off, void* mem, u64 len);
-int wsserver_read(void*, void*, void*, void*, void* buf, int len);
-int wsserver_write(void*, void*, void*, void*, void* buf, int len);
-int tlsserver_write(void*, void*, void*, void*, void* buf, int len);
 
 
 

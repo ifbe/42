@@ -148,6 +148,13 @@
 #define _HTTP_ hex32('H','T','T','P')
 #define _Http_ hex32('H','t','t','p')
 #define _http_ hex32('h','t','t','p')
+#define _HTTP2_ hex64('H','T','T','P','2',0,0,0)
+#define _Http2_ hex64('H','t','t','p','2',0,0,0)
+#define _http2_ hex64('h','t','t','p','2',0,0,0)
+#define _HTTP3_ hex64('H','T','T','P','3',0,0,0)
+#define _Http3_ hex64('H','t','t','p','3',0,0,0)
+#define _http3_ hex64('h','t','t','p','3',0,0,0)
+//
 #define _WS_   hex32('W','S',0,0)
 #define _Ws_   hex32('W','s',0,0)
 #define _ws_   hex32('w','s',0,0)

@@ -149,6 +149,9 @@ _obj* createsocket_bt(char* addr, int port)
 	_obj* oo = getobjbysock(fd);
 	say("fd=%x,oo=%p\n", fd, oo);
 
+	struct perfd* perfd = (void*)(oo->priv_256b);
+	perfd->sock = fd;
+
 	//
 	iocp_add(fd, _bt_);
 	iocp_mod(fd, _bt_);
@@ -171,6 +174,9 @@ _obj* createsocket_raw(char* addr, int port)
 	//mem
 	_obj* oo = getobjbysock(fd);
 	say("fd=%x,oo=%p\n", fd, oo);
+
+	struct perfd* perfd = (void*)(oo->priv_256b);
+	perfd->sock = fd;
 
 	//
 	int one = 1;
@@ -220,6 +226,9 @@ _obj* createsocket_udpserver(char* addr, int port)
 	_obj* oo = getobjbysock(fd);
 	say("fd=%x,oo=%p\n", fd, oo);
 
+	struct perfd* perfd = (void*)(oo->priv_256b);
+	perfd->sock = fd;
+
 	//self
 	struct sockaddr_in* self = (void*)(oo->sockinfo.self);
 	memset(self, 0, sizeof(struct sockaddr_in));
@@ -258,6 +267,9 @@ _obj* createsocket_udpclient(char* myaddr, int myport, char* toaddr, int toport)
 	//mem
 	_obj* oo = getobjbysock(fd);
 	say("fd=%x,oo=%p\n", fd, oo);
+
+	struct perfd* perfd = (void*)(oo->priv_256b);
+	perfd->sock = fd;
 
 if((0 != myaddr) && (0 != myport)){
 	//self
@@ -312,7 +324,11 @@ _obj* createsocket_tcpserver(char* addr, int port)
 
 	//mem
 	_obj* oo = getobjbysock(fd);
+	struct perfd* parentperfd = (void*)(oo->priv_256b);
 	say("fd=%x,oo=%p\n", fd, oo);
+
+	oo->sockinfo.fd = fd;
+	parentperfd->sock = fd;
 
 	//self
 	struct sockaddr_in* self = (void*)(oo->sockinfo.self);
@@ -408,6 +424,9 @@ _obj* createsocket_tcpclient(char* myaddr, int myport, char* toaddr, int toport)
 	//mem
 	_obj* oo = getobjbysock(fd);
 	say("fd=%x,oo=%p\n", fd, oo);
+
+	struct perfd* perfd = (void*)(oo->priv_256b);
+	perfd->sock = fd;
 
 	//reuse
 	ret = 1;
@@ -547,7 +566,7 @@ int socket_modify(_obj* oo)
 
 
 
-int socket_take(_obj* oo,int xx, struct sockaddr_in* tmp, void* buf, int len)
+int socket_take(_obj* oo,int xx, struct sockaddr_in* tmp,int cmd, void* buf, int len)
 {
 	int j,ret;
 	char* src;
@@ -579,7 +598,7 @@ int socket_take(_obj* oo,int xx, struct sockaddr_in* tmp, void* buf, int len)
 	iocp_mod(sock, oo->type);
 	return ret;
 }
-int socket_give(_obj* oo,int xx, struct sockaddr_in* tmp, void* buf, int len)
+int socket_give(_obj* oo,int xx, struct sockaddr_in* tmp,int cmd, void* buf, int len)
 {
 	int ret;
 	DWORD dwret;
@@ -588,6 +607,7 @@ int socket_give(_obj* oo,int xx, struct sockaddr_in* tmp, void* buf, int len)
 	SOCKET sock = getsockbyobj(oo);
 	struct perfd* perfd = (void*)(oo->priv_256b);
 	struct perio* perio = &perfd->perio[0];
+	//printf("write:sock=%x,len=%x\n",sock,len);
 
 	if(_UDP_ == oo->type)
 	{

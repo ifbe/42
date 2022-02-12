@@ -168,7 +168,6 @@ libnet/4.use/udp/udp.trav.c \
 libnet/4.use/tcp/tcp.dl.c \
 libnet/4.use/tcp/tcp.ftp.c \
 libnet/4.use/tcp/tcp.fuckgfw.c \
-libnet/4.use/tcp/tcp.http.c \
 libnet/4.use/tcp/tcp.party.c \
 libnet/4.use/tcp/tcp.proxy.c \
 libnet/4.use/tcp/tcp.rdp.c \
@@ -182,6 +181,9 @@ libnet/4.use/tcp/tcp.tls1_3.c \
 libnet/4.use/tcp/tcp.trav.c \
 libnet/4.use/tcp/tcp.vnc.c \
 libnet/4.use/tcp/tcp.ws.c \
+libnet/4.use/any/http1.c \
+libnet/4.use/any/http2.c \
+libnet/4.use/any/http3.c \
 libflow/ahrs/ahrs.only_g.c \
 libflow/ahrs/ahrs.only_ga.c \
 libflow/ahrs/ahrs.mahony.c \

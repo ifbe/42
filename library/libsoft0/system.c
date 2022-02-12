@@ -308,6 +308,7 @@ int system_takeby(_obj* sys,void* foot, _syn* stack,int sp, void* arg,int cmd, v
 }
 int system_giveby(_obj* sys,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
+	//say("@systemwrite: obj=%.8s,len=%x\n", &sys->type,len);
 	switch(sys->type){
 	case _FILE_:
 	case _file_:

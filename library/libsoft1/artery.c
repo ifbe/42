@@ -555,7 +555,7 @@ int vncmaster_attach(struct halfrel* self, struct halfrel* peer);
 int vncmaster_detach(struct halfrel* self, struct halfrel* peer);
 int vncmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
 int vncmaster_read( _obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
-//tcp.http
+//http1
 int httpclient_create(_obj* ele, void* url, int argc, u8** argv);
 int httpclient_delete(_obj* ele, void* url);
 int httpclient_attach(struct halfrel* self, struct halfrel* peer);
@@ -574,6 +574,25 @@ int httpmaster_attach(struct halfrel* self, struct halfrel* peer);
 int httpmaster_detach(struct halfrel* self, struct halfrel* peer);
 int httpmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
 int httpmaster_read( _obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+//http3
+int http3client_create(_obj* ele, void* url, int argc, u8** argv);
+int http3client_delete(_obj* ele, void* url);
+int http3client_attach(struct halfrel* self, struct halfrel* peer);
+int http3client_detach(struct halfrel* self, struct halfrel* peer);
+int http3client_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+int http3client_read( _obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+int http3server_create(_obj* ele, void* url, int argc, u8** argv);
+int http3server_delete(_obj* ele, void* url);
+int http3server_attach(struct halfrel* self, struct halfrel* peer);
+int http3server_detach(struct halfrel* self, struct halfrel* peer);
+int http3server_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+int http3server_read( _obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+int http3master_create(_obj* ele, void* url, int argc, u8** argv);
+int http3master_delete(_obj* ele, void* url);
+int http3master_attach(struct halfrel* self, struct halfrel* peer);
+int http3master_detach(struct halfrel* self, struct halfrel* peer);
+int http3master_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+int http3master_read( _obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
 //tcp.ws
 int wsclient_create(_obj* ele, void* url, int argc, u8** argv);
 int wsclient_delete(_obj* ele, void* url);
@@ -1552,6 +1571,36 @@ void* artery_create(u64 type, void* argstr, int argc, u8** argv)
 		return e;
 	}
 
+	//http: master,server,client
+	if(_HTTP3_ == type)
+	{
+		e = artery_alloc();
+		if(0 == e)return 0;
+
+		e->type = _HTTP3_;
+		http3master_create(e, url, argc, argv);
+		return e;
+	}
+	if(_Http3_ == type)
+	{
+		e = artery_alloc();
+		if(0 == e)return 0;
+
+		e->type = _Http3_;
+		http3server_create(e, url, argc, argv);
+		return e;
+	}
+	if(_http3_ == type)
+	{
+		e = artery_alloc();
+		if(0 == e)return 0;
+
+		e->type = _http3_;
+		http3client_create(e, url, argc, argv);
+
+		return e;
+	}
+
 	//ws: master,server,client
 	if(_WS_ == type)
 	{
@@ -1787,6 +1836,9 @@ int artery_attach(struct halfrel* self, struct halfrel* peer)
 	case _http_:return httpclient_attach(self, peer);break;
 	case _Http_:return httpserver_attach(self, peer);break;
 	case _HTTP_:return httpmaster_attach(self, peer);break;
+	case _http3_:return http3client_attach(self, peer);break;
+	case _Http3_:return http3server_attach(self, peer);break;
+	case _HTTP3_:return http3master_attach(self, peer);break;
 	case _ws_:return wsclient_attach(self, peer);break;
 	case _Ws_:return wsserver_attach(self, peer);break;
 	case _WS_:return wsmaster_attach(self, peer);break;
@@ -1869,6 +1921,9 @@ int artery_detach(struct halfrel* self, struct halfrel* peer)
 	case _http_:return httpclient_detach(self, peer);break;
 	case _Http_:return httpserver_detach(self, peer);break;
 	case _HTTP_:return httpmaster_detach(self, peer);break;
+	case _http3_:return http3client_detach(self, peer);break;
+	case _Http3_:return http3server_detach(self, peer);break;
+	case _HTTP3_:return http3master_detach(self, peer);break;
 	case _ws_:return wsclient_detach(self, peer);break;
 	case _Ws_:return wsserver_detach(self, peer);break;
 	case _WS_:return wsmaster_detach(self, peer);break;
@@ -1997,6 +2052,9 @@ int artery_takeby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, 
 	case _HTTP_:httpmaster_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _Http_:httpserver_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _http_:httpclient_read(art,foot, stack,sp, arg,idx, buf,len);break;
+	case _HTTP3_:http3master_read(art,foot, stack,sp, arg,idx, buf,len);break;
+	case _Http3_:http3server_read(art,foot, stack,sp, arg,idx, buf,len);break;
+	case _http3_:http3client_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _WS_:wsmaster_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _Ws_:wsserver_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _ws_:wsclient_read(art,foot, stack,sp, arg,idx, buf,len);break;
@@ -2012,7 +2070,7 @@ int artery_takeby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, 
 }
 int artery_giveby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	//say("@arterywrite: %.8s\n", &ele->type);
+	//say("@arterywrite: obj=%.8s,len=%x\n", &ele->type,len);
 	switch(art->type){
 	//case _gpt_:return gptclient_give(art,foot, stack,sp, arg,idx, buf,len);break;
 	//case _mbr_:return mbrclient_give(art,foot, stack,sp, arg,idx, buf,len);break;
@@ -2115,6 +2173,9 @@ int artery_giveby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, 
 	case _HTTP_:return httpmaster_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _Http_:return httpserver_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _http_:return httpclient_write(art,foot, stack,sp, arg,idx, buf,len);break;
+	case _HTTP3_:return http3master_write(art,foot, stack,sp, arg,idx, buf,len);break;
+	case _Http3_:return http3server_write(art,foot, stack,sp, arg,idx, buf,len);break;
+	case _http3_:return http3client_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _WS_:return wsmaster_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _Ws_:return wsserver_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _ws_:return wsclient_write(art,foot, stack,sp, arg,idx, buf,len);break;

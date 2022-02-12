@@ -1,0 +1,23 @@
+<system>
+tcphost{
+fmt:TCP
+url:0.0.0.0:9999
+}
+udphost{
+fmt:UDP
+url:0.0.0.0:443
+}
+</system>
+
+
+<artery>
+http3{
+fmt:HTTP3
+}
+</artery>
+
+
+<relation>
+(tcphost, 0, dst) -> (http3, 0, src)
+(udphost, 0, dst) -> (http3, 0, quic)
+</relation>

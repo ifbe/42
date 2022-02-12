@@ -125,13 +125,12 @@ DWORD WINAPI iocpthread(LPVOID pM)
 		);
 		if(0 == ret)continue;
 
-		perfd = (void*)(oo->priv_256b);
-		fd = perfd->sock;
+		fd = getsockbyobj(oo);
 		if(_TCP_ == oo->type)
 		{
 			cc = perio->childsock;
 			child = getobjbysock(cc);
-			printf("parent=%x, child=%x\n", fd, cc);
+			printf("accept: fd=%x, parent=%x\n", cc, fd);
 
 			child->type = _Tcp_;
 			memcpy(child->sockinfo.peer, oo->sockinfo.peer, 32);
@@ -151,6 +150,7 @@ DWORD WINAPI iocpthread(LPVOID pM)
 		{
 			iocp_del(fd, 0);
 			system_delete(oo);
+			printf("discon: fd=%x\n", fd);
 			continue;
 		}
 
@@ -171,6 +171,7 @@ DWORD WINAPI iocpthread(LPVOID pM)
 			break;
 		}//Tcp
 		case _UDP_:{
+			printf("UDP recv:fd=%x,len=%x\n",fd,tran);
 			give_data_into_peer(oo,_dst_, stack,0, oo->sockinfo.peer,0, perio->bufing.buf,tran);
 			iocp_mod(fd, oo->type);
 			break;
