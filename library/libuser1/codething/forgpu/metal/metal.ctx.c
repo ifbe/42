@@ -9,7 +9,7 @@ struct unidata{
 
 void mt20data_nocam(_obj* wnd)
 {
-	void* trick = wnd->mt20list.camera;
+	void* trick = wnd->mt20list.world[0].camera;
 	struct mt20data* data = trick + 0x400;
 	struct unidata* uni = trick + 0x800;
 	data->src.uni[0].buf = uni;
@@ -27,11 +27,11 @@ void mt20data_nocam(_obj* wnd)
 	m[2][2] = 1.0;
 	m[3][3] = 1.0;
 
-	wnd->mt20list.camera[0] = data;
+	wnd->mt20list.world[0].camera[0] = data;
 }
 void mt20data_01cam(_obj* wnd)
 {
-	void* trick = wnd->mt20list.camera;
+	void* trick = wnd->mt20list.world[0].camera;
 	struct mt20data* data = trick + 0x400;
 	struct unidata* uni = trick + 0x800;
 	data->src.uni[0].buf = uni;
@@ -49,11 +49,11 @@ void mt20data_01cam(_obj* wnd)
 	m[2][2] =-1.0;
 	m[3][3] = 1.0;
 
-	wnd->mt20list.camera[0] = data;
+	wnd->mt20list.world[0].camera[0] = data;
 }
 void mt20data_whcam(_obj* wnd, struct fstyle* area)
 {
-	void* trick = wnd->mt20list.camera;
+	void* trick = wnd->mt20list.world[0].camera;
 	struct mt20data* data = trick + 0x400;
 	struct unidata* uni = trick + 0x800;
 	data->src.uni[0].buf = uni;
@@ -72,7 +72,7 @@ void mt20data_whcam(_obj* wnd, struct fstyle* area)
 	m[3][3] = 1.0;
 	//say("%f,%f\n", m[0][0], m[1][1]);
 
-	wnd->mt20list.camera[0] = data;
+	wnd->mt20list.world[0].camera[0] = data;
 }
 
 
@@ -94,34 +94,34 @@ void mt20data_before(_obj* ctx)
 	struct mt20data* p;
 
 	//camera: default
-	ctx->mt20list.camera[0] = 0;
+	ctx->mt20list.world[0].camera[0] = 0;
 
 	//light: default
-	//ctx->mt20list.light[0] = 0;
+	//ctx->mt20list.world[0].light[0] = 0;
 	mt20data_nolit(ctx);
 
 	//solid: clear myown, forget other
 	for(j=0;j<solidaid_max;j++){
-		p = ctx->mt20list.solid[j];
+		p = ctx->mt20list.world[0].solid[j];
 		if(0 == p)continue;
 
 		p->src.vtx[0].vbuf_h = 0;
 		p->src.vtx[0].ibuf_h = 0;
 	}
 	for(;j<64;j++){
-		ctx->mt20list.solid[j] = 0;
+		ctx->mt20list.world[0].solid[j] = 0;
 	}
 
 	//opaque: clear myown, forget other
 	for(j=0;j<opaqueaid_max;j++){
-		p = ctx->mt20list.opaque[j];
+		p = ctx->mt20list.world[0].opaque[j];
 		if(0 == p)continue;
 
 		p->src.vtx[0].vbuf_h = 0;
 		p->src.vtx[0].ibuf_h = 0;
 	}
 	for(;j<64;j++){
-		ctx->mt20list.opaque[j] = 0;
+		ctx->mt20list.world[0].opaque[j] = 0;
 	}
 }
 void mt20data_after(_obj* ctx)
@@ -132,7 +132,7 @@ void mt20data_after(_obj* ctx)
 	//solid: enqueue
 	for(j=0;j<solidaid_max;j++)
 	{
-		p = ctx->mt20list.solid[j];
+		p = ctx->mt20list.world[0].solid[j];
 		if(0 == p)continue;
 
 		p->src.vbuf_enq += 1;
@@ -142,7 +142,7 @@ void mt20data_after(_obj* ctx)
 	//opaque: enqueue
 	for(j=0;j<opaqueaid_max;j++)
 	{
-		p = ctx->mt20list.opaque[j];
+		p = ctx->mt20list.world[0].opaque[j];
 		if(0 == p)continue;
 
 		p->src.vbuf_enq += 1;
@@ -156,16 +156,16 @@ void mt20data_insert(_obj* ctx, int type, struct mt20data* src, int cnt)
 
 	if('s' == type){
 		for(j=solidaid_max;j<64;j++){
-			if(0 == ctx->mt20list.solid[j]){
-				ctx->mt20list.solid[j] = src;
+			if(0 == ctx->mt20list.world[0].solid[j]){
+				ctx->mt20list.world[0].solid[j] = src;
 				break;
 			}
 		}
 	}
 	if('o' == type){
 		for(j=opaqueaid_max;j<64;j++){
-			if(0 == ctx->mt20list.opaque[j]){
-				ctx->mt20list.opaque[j] = src;
+			if(0 == ctx->mt20list.world[0].opaque[j]){
+				ctx->mt20list.world[0].opaque[j] = src;
 				break;
 			}
 		}
@@ -228,9 +228,9 @@ int mt20data_delete(_obj* win)
 }
 int mt20data_create(_obj* act, void* flag)
 {
-	act->mt20list.camera = memorycreate(0x10000, 0);
-	act->mt20list.light  = memorycreate(0x10000, 0);
-	act->mt20list.solid  = memorycreate(0x10000, 0);
-	act->mt20list.opaque = memorycreate(0x10000, 0);
+	act->mt20list.world[0].camera = memorycreate(0x10000, 0);
+	act->mt20list.world[0].light  = memorycreate(0x10000, 0);
+	act->mt20list.world[0].solid  = memorycreate(0x10000, 0);
+	act->mt20list.world[0].opaque = memorycreate(0x10000, 0);
 	return 0;
 }

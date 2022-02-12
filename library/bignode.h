@@ -323,11 +323,17 @@ struct mt20easy{
 	struct mt20data* solid;
 	struct mt20data* opaque;
 };
-struct mt20list{
+struct mt20world{
 	struct mt20data** camera;
 	struct mt20data** light;
 	struct mt20data** solid;
 	struct mt20data** opaque;
+};
+struct mt20list{
+	struct mt20world world[2];
+
+	void* delegate;
+	void* view;
 };
 struct mt20cmdq{
 	u64* data;

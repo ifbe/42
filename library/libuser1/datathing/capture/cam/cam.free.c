@@ -601,7 +601,7 @@ static void freecam_mt20_cam(
 		for(x=0;x<4;x++)mat[y][x] = own->world2clip[y][x];
 	}
 
-	wnd->mt20list.camera[0] = data;
+	wnd->mt20list.world[0].camera[0] = data;
 }
 
 

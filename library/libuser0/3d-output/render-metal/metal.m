@@ -484,9 +484,11 @@ NSLog(@"setup");
 	}
 	id<MTLBuffer> uniform = mt->dst.uniform;
 
+	struct mt20world* world = &thewnd->mt20list.world[0];
+	float (*cam)[4] = world->camera[0]->src.uni[0].buf;
+
 	int x,y;
 	float (*tmp)[4] = (float (*)[4])[uniform contents];
-	float (*cam)[4] = thewnd->mtfull_camera[0]->src.uni[0].buf;
 	for(y=0;y<4;y++){
 		for(x=0;x<4;x++)tmp[y][x] = cam[y][x];
 	}
@@ -548,7 +550,7 @@ NSLog(@"setup");
 	int j;
 	struct mt20data* mt;
 	for(j=0;j<64;j++){
-		mt = thewnd->mtfull_solid[j];
+		mt = thewnd->mt20list.world[0].solid[j];
 		if(0 == mt)continue;
 
 		//NSLog(@"%d, %p", j, mt);
@@ -601,7 +603,7 @@ NSLog(@"mouseDragged");
 
 int fullwindow_taking(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	MyView* view = thewnd->mtkview;
+	MyView* view = thewnd->mt20list.view;
 	[view drawprep];
 
 	//take
@@ -615,11 +617,11 @@ int fullwindow_taking(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* 
 			stack[sp+0].pchip = rel->psrcchip;
 			stack[sp+0].pfoot = rel->psrcfoot;
 			//stack[sp+0].type = rel->srctype;
-			stack[sp+0].flag = rel->srcflag;
+			stack[sp+0].foottype = rel->srcfoottype;
 			stack[sp+1].pchip = rel->pdstchip;
 			stack[sp+1].pfoot = rel->pdstfoot;
 			//stack[sp+1].type = rel->dsttype;
-			stack[sp+1].flag = rel->dstflag;
+			stack[sp+1].foottype = rel->dstfoottype;
 			entity_takeby((_obj*)rel->pdstchip, rel->pdstfoot, stack,sp+2, 0,'v', 0, 0);
 		}
 
@@ -677,18 +679,10 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-void windowlist()
-{
-}
-void windowchoose()
-{
-}
-void windowstart()
-{
-}
-void windowstop()
-{
-}
+
+
+
+
 void windowdelete(_obj* w)
 {
 }
@@ -696,18 +690,18 @@ void windowcreate(_obj* wnd)
 {
 	//wnd->tier
 	//wnd->type
-	wnd->fmt = _mt20list_;
-	wnd->vfmt= _mt20list_;
+	wnd->hfmt = _mt20list_;
+	wnd->vfmt = _mt20list_;
 
-	wnd->width = 1024;
-	wnd->height = 768;
-	wnd->fbwidth = 1024;
-	wnd->fbheight = 768;
+	wnd->whdf.width = 1024;
+	wnd->whdf.height = 768;
+	wnd->whdf.fbwidth = 1024;
+	wnd->whdf.fbheight = 768;
 
-	wnd->mtfull_camera = (struct mt20data**)memorycreate(0x10000, 0);
-	wnd->mtfull_light  = (struct mt20data**)memorycreate(0x10000, 0);
-	wnd->mtfull_solid  = (struct mt20data**)memorycreate(0x10000, 0);
-	wnd->mtfull_opaque = (struct mt20data**)memorycreate(0x10000, 0);
+	wnd->mt20list.world[0].camera = (struct mt20data**)memorycreate(0x10000, 0);
+	wnd->mt20list.world[0].light  = (struct mt20data**)memorycreate(0x10000, 0);
+	wnd->mt20list.world[0].solid  = (struct mt20data**)memorycreate(0x10000, 0);
+	wnd->mt20list.world[0].opaque = (struct mt20data**)memorycreate(0x10000, 0);
 	thewnd = wnd;
 
 
@@ -737,8 +731,8 @@ void windowcreate(_obj* wnd)
 	MyView* myview = [[[MyView alloc] initWithFrame:windowRect] autorelease];
 	[window setContentView:myview];
 
-	wnd->mtkwnd = windowdelegate;
-	wnd->mtkview = myview;
+	wnd->mt20list.delegate = windowdelegate;
+	wnd->mt20list.view = myview;
 }
 
 
