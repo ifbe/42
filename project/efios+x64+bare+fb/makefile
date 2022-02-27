@@ -53,7 +53,51 @@ link:
 	libsoft0/*.o libsoft1/*.o \
 	libuser0/*.o libuser1/*.o \
 	data.o -lgcc -o BOOTX64.EFI
+
+
+#----------------linux----------------
+linuxmkfs:
+	dd if=/dev/zero of=test.img bs=1048576 count=62
+	mkfs.fat -F32 test.img
+linuxmount:
+	mkdir -p mntdir
+	sudo mount test.img mntdir
+	mkdir -p mntdir/efi/boot
+linuxcopy:
+	cp BOOTX64.EFI mntdir/efi/boot
+	ls -l mntdir/efi/boot
+linuxumount:
+	sudo umount mntdir
+linuxremove:
+	rm test.img
+
+
+
+#----------------mac----------------
+macmkfs:
+	dd if=/dev/zero of=test.img bs=1048576 count=64
+	$(eval DISK := $(shell hdiutil attach -nomount test.img))
+	newfs_msdos -F 32 $(DISK)
+	hdiutil detach $(DISK)
+macmount:
+	hdiutil attach -mountpoint mntdir test.img
+	mkdir -p mntdir/efi/boot
+	ls -l mntdir/efi/boot
+maccopy:
+	cp BOOTX64.EFI mntdir/efi/boot
+	ls -l mntdir/efi/boot
+macumount:
+	hdiutil detach mntdir
+macremove:
+	rm test.img
+
+
+#----------------run----------------
+vhd:
+	qemu-img convert -f raw -O vpc -o subformat=fixed test.img test.vhd
+run:
+	../../../live/virt/qemu/ovmf.sh "qemu-system-x86_64" $(shell pwd)/test.vhd $(shell pwd)/test.img
+
 clean:
 	rm -rf lib*/*.o
-	rm -f *.o *.EFI
-	make -C $(library) clean
+	rm -f *.o *.EFI *.img *.vhd

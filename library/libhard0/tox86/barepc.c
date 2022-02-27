@@ -40,15 +40,15 @@ void inithardware()
 	apicwhere();
 
 	//cpu_bsp: gdt,paging,idt,apic...
-	p = devicecreate(_cpu_, 0, 0, 0);
+	p = device_create(_cpu_, 0, 0, 0);
 	initcpu_bsp(p);
 
 	//interrupter
-	p = devicecreate(_irq_, 0, 0, 0);
+	p = device_create(_irq_, 0, 0, 0);
 	initirq(p);
 
 	//timer
-	p = devicecreate(_tmr_, 0, 0, 0);
+	p = device_create(_tmr_, 0, 0, 0);
 	initrtc();
 	init825x();
 
@@ -56,7 +56,7 @@ void inithardware()
 	initcpu_ap();
 
 	//pci
-	p = devicecreate(_pci_, 0, 0, 0);
+	p = device_create(_pci_, 0, 0, 0);
 	initpci_port(p);
 	initpci_mmio();
 }

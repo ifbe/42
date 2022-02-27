@@ -58,13 +58,13 @@ int filemanager_registerpart(_obj* node, void* foot)
 	for(j=0;j<ret;j++){
 		say("%d: %llx,%llx,%llx,%llx\n", j, tmp[j].type, tmp[j].name, tmp[j].start, tmp[j].count);
 		if(_fat_ == tmp[j].type){
-			fsys = arterycreate(_fat_,0,0,0);
+			fsys = artery_create(_fat_,0,0,0);
 			if(0 == fsys)continue;
 
 			rel = relationcreate(fsys,0,_art_,_src_, node,(void*)(tmp[j].start<<9),_art_,_dst_);
 			if(0 == rel)continue;
 
-			arterylinkup((void*)&rel->dst, (void*)&rel->src);
+			artery_attach((void*)&rel->dst, (void*)&rel->src);
 
 			filemanager_registerfsys(fsys, 0);
 		}
@@ -83,11 +83,11 @@ int filemanager_registersupplier(void* node, void* foot)
 	//2.check
 
 	//3.contractor
-	_obj* tmp = arterycreate(_fileauto_,0,0,0);
+	_obj* tmp = artery_create(_fileauto_,0,0,0);
 	if(0 == tmp)return -1;
 	struct relation* rel = relationcreate(tmp,0,_art_,_src_, node,foot,_dev_,_dst_);
 	if(0 == rel)return -2;
-	arterylinkup((void*)&rel->dst, (void*)&rel->src);
+	artery_attach((void*)&rel->dst, (void*)&rel->src);
 
 	//4.next
 	if( (_mbr_ == tmp->type) | (_gpt_ == tmp->type) ){

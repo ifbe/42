@@ -65,13 +65,13 @@ void initpci_port()
 
 		switch(type >> 16){
 		case 0x0101:
-			xx = devicecreate(_ide_, 0, 0, 0);
+			xx = device_create(_ide_, 0, 0, 0);
 			ide_portinit(xx, addr);
 			break;
 
 		case 0x0106:
 			if(0x01 == ((type>>8)&0xff)){
-				xx = devicecreate(_ahci_, 0, 0, 0);
+				xx = device_create(_ahci_, 0, 0, 0);
 				ahci_portinit(xx, addr);
 			}
 			break;
@@ -80,7 +80,7 @@ void initpci_port()
 			switch((type>>8)&0xff){
 			case 0x02:
 			case 0x03:
-				xx = devicecreate(_nvme_, 0, 0, 0);
+				xx = device_create(_nvme_, 0, 0, 0);
 				nvme_portinit(xx, addr);
 				break;
 			}
@@ -88,7 +88,7 @@ void initpci_port()
 
 		case 0x0200:
 			if(0x100e8086 == idid){
-				xx = devicecreate(_eth_, 0, 0, 0);
+				xx = device_create(_eth_, 0, 0, 0);
 				e1000_portinit(xx, addr);
 			}
 			break;
@@ -99,7 +99,7 @@ void initpci_port()
 			//case 0x10:ohci_portinit(addr);break;
 			//case 0x20:ehci_portinit(addr);break;
 			case 0x30:
-				xx = devicecreate(_xhci_, 0, 0, 0);
+				xx = device_create(_xhci_, 0, 0, 0);
 				xhci_portinit(xx, addr);
 				break;
 			}//usbver

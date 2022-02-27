@@ -1452,7 +1452,7 @@ void xhci_listall(struct item* xhci, int count)
 		slotdata->myctx.devctx.routestring = 0;
 
 		//let usb do rest
-		struct item* usb = devicecreate(_usb_, 0, 0, 0);
+		struct item* usb = device_create(_usb_, 0, 0, 0);
 		if(usb)usbany_linkup(usb, 0, xhci, slot);
 	}
 }

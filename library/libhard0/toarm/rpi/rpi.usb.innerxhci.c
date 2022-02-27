@@ -15,7 +15,7 @@ void brcmxhci_init()
 	void* addr = mmiobase()+BRCM_XHCI;
 	printmmio(addr, 0x100);
 
-	struct item* per = devicecreate(_xhci_, 0, 0, 0);
+	struct item* per = device_create(_xhci_, 0, 0, 0);
 	xhci_mmioinit(per, addr);
 }
 void brcmxhci_exit()

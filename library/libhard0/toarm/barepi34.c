@@ -56,11 +56,11 @@ void inithardware()
 	initdevmap();
 
 	//timer
-	p = devicecreate(_tmr_, 0, 0, 0);
+	p = device_create(_tmr_, 0, 0, 0);
 	initsystmr(p);
 
 	//cpu
-	p = devicecreate(_cpu_, 0, 0, 0);
+	p = device_create(_cpu_, 0, 0, 0);
 	initcpu_bsp(p);
 	initcpu_ap(p);
 /*
@@ -81,15 +81,15 @@ typec-2=
 	switch(raspi_version() ){
 	case 4:
 		//sdhost: can be confiured to use on gpio 22-26(sd0)
-		p = devicecreate(_mmc_, 0, 0, 0);
+		p = device_create(_mmc_, 0, 0, 0);
 		initsdhost(p);
 
 		//sdhci_old: wifi		//todo
-		//p = devicecreate(_mmc_, 0, 0, 0);
+		//p = device_create(_mmc_, 0, 0, 0);
 		//initsdhci(p, SDHCI_OFFS_OLD);
 
 		//sdhci_new: pi4.sdcard or cm4.emmc
-		p = devicecreate(_mmc_, 0, 0, 0);
+		p = device_create(_mmc_, 0, 0, 0);
 		initsdhci(p, SDHCI_OFFS_NEW);
 
 		//typec: dwc2 or internal_xhci
@@ -103,11 +103,11 @@ typec-2=
 
 	case 3:
 		//sdhost: it's sdcard on pi3, it's none on qemu
-		p = devicecreate(_mmc_, 0, 0, 0);
+		p = device_create(_mmc_, 0, 0, 0);
 		initsdhost(p);
 
 		//sdhci_old: it's wifi on pi3, it's sdcard on qemu
-		p = devicecreate(_mmc_, 0, 0, 0);
+		p = device_create(_mmc_, 0, 0, 0);
 		initsdhci(p, SDHCI_OFFS_OLD);
 
 		break;
