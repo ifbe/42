@@ -259,14 +259,27 @@ void explaineverydesc(u8* buf, int len)
 
 
 
-void usbany_handledevdesc(struct item* usb, int xxx, struct item* xhci, int slot, struct DeviceDescriptor* desc, int len)
+int usbany_handleaddress(struct item* xhci, int slot)
 {
-	explaindevdesc(desc);
-	if( (0xef == desc->bDeviceClass) && (2 == desc->bDeviceSubClass) && (1 == desc->bDeviceProtocol) ){
-		say("[usbcore]composite device ?!\n");
-	}
+	if(1){	//if(xhci)
+		//int slot = xhci_giveorderwaitevent(xhci,slot, 'h',TRB_command_EnableSlot, 0,0, 0,0);
 
-	struct perusb* perusb = usb->priv_ptr;
+		int ret = xhci->give_pxpxpxpx(
+			xhci,slot,
+			0,0,
+			0,_tohc_addr_,
+			0,0
+		);
+		if(ret < 0)return -1;
+	}
+	return 0;
+}
+
+
+
+
+void explaindevdesc_tomy(struct DeviceDescriptor* desc, struct perusb* perusb)
+{
 	struct descnode* node = &perusb->node[perusb->my.nodelen];
 	node->type = 1;
 	node->index = 0;
@@ -282,6 +295,136 @@ void usbany_handledevdesc(struct item* usb, int xxx, struct item* xhci, int slot
 	perusb->my.iManufac = desc->iManufacturer;
 	perusb->my.iProduct = desc->iProduct;
 	perusb->my.iSerial  = desc->iSerialNumber;
+}
+
+
+
+
+int usbany_handledevdesc(struct item* usb, int xxx, struct item* xhci, int slot)
+{
+	struct perusb* perusb = usb->priv_ptr;
+	u8* tmp = perusb->desc + perusb->my.desclen;
+
+	int ret;
+	struct UsbRequest req;
+
+	//GET_DESCRIPTOR devdesc 8B (FS device only)
+	if(1){
+		//GET_DESCRIPTOR devdesc[0,7]
+		DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x100, 0, 8);
+		ret = xhci->give_pxpxpxpx(
+			xhci,slot,
+			0,0,
+			&req,8,
+			tmp,req.wLength
+		);
+		if(8 != ret)return -2;
+
+		//tell xhci bMaxPacketSize0 changed
+		if(1){
+			xhci->give_pxpxpxpx(
+				xhci,slot,
+				0,0,
+				0,_tohc_eval_,
+				tmp,8
+			);
+		}
+	}
+
+	//GET_DESCRIPTOR devdesc all
+	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x100, 0, 0x12);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot,
+		0,0,
+		&req,8,
+		tmp,req.wLength
+	);
+	if(0x12 != ret)return -3;
+	perusb->my.desclen += 0x12;
+
+	//parse Device Descriptor
+	explaindevdesc((void*)tmp);
+	explaindevdesc_tomy((void*)tmp, perusb);
+	return 0;
+}
+
+
+
+
+int usbany_ReadAndHandleString(struct item* usb, int xxx, struct item* xhci, int slot, u16 lang, u16 id)
+{
+	say("[usbcore]readstr: lang=%x,id=%x\n", lang, id);
+	int j,ret;
+	struct perusb* perusb = usb->priv_ptr;
+	u8* tmp = perusb->desc + perusb->my.desclen;
+
+	struct UsbRequest req;
+	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300 + id, lang, 4);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot,
+		0,0,
+		&req,8,
+		tmp,req.wLength
+	);
+	if(4 != ret)return -7;
+
+	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300 + id, lang, tmp[0]);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot,
+		0,0,
+		&req,8,
+		tmp,req.wLength
+	);
+	if(req.wLength != ret)return -8;
+
+	perusb->my.desclen += req.wLength;
+
+	//printmemory(tmp, req.wLength);
+	say("unicode2ascii{");
+	for(j=2;j<req.wLength;j+=2){
+		say("%c",tmp[j]);
+	}
+	say("}\n");
+
+	return 0;
+}
+int usbany_handlestrdesc(struct item* usb, int xxx, struct item* xhci, int slot)
+{
+	int ret;
+	struct UsbRequest req;
+	struct perusb* perusb = usb->priv_ptr;
+	u8* tmp = perusb->desc + perusb->my.desclen;
+
+	//GET_DESCRIPTOR stringdesc 4B
+	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300, 0, 4);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot,
+		0,0,
+		&req,8,
+		tmp,req.wLength
+	);
+	if(4 != ret)return -6;
+
+	//GET_DESCRIPTOR stringdesc all
+	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300, 0, tmp[0]);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot,
+		0,0,
+		&req,8,
+		tmp,req.wLength
+	);
+	if(req.wLength != ret)return -7;
+	perusb->my.desclen += req.wLength;
+
+	int lang = *(u16*)(tmp+2);
+	say("[usbcore]wLANGID=%04x\n", lang);
+
+	if(perusb->my.iManufac)usbany_ReadAndHandleString(usb,xxx, xhci,slot, lang,perusb->my.iManufac);
+	if(perusb->my.iProduct)usbany_ReadAndHandleString(usb,xxx, xhci,slot, lang,perusb->my.iProduct);
+	if(perusb->my.iSerial) usbany_ReadAndHandleString(usb,xxx, xhci,slot, lang,perusb->my.iSerial);
+	//if(my->iConfigure)usbany_ReadAndHandleString(usb,xxx, xhci,slot, lang,my->iConfigure);
+	//if(my->iInterface)usbany_ReadAndHandleString(usb,xxx, xhci,slot, lang,my->iInterface);
+	return 0;
 }
 
 
@@ -501,63 +644,6 @@ int usbany_FirstConfig(struct item* usb, int xxx, struct item* xhci, int slot)
 
 
 
-int usbany_ReadAndHandleString(struct item* usb, int xxx, struct item* xhci, int slot, u16 lang, u16 id)
-{
-	int j,ret;
-	struct UsbRequest req;
-	struct perusb* perusb = usb->priv_ptr;
-	u8* tmp = perusb->desc + perusb->my.desclen;
-
-	say("[usbcore]readstr: lang=%x,id=%x\n", lang, id);
-
-	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300 + id, lang, 4);
-	ret = xhci->give_pxpxpxpx(
-		xhci,slot,
-		0,0,
-		&req,8,
-		tmp,req.wLength
-	);
-	if(4 != ret)return -7;
-
-	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300 + id, lang, tmp[0]);
-	ret = xhci->give_pxpxpxpx(
-		xhci,slot,
-		0,0,
-		&req,8,
-		tmp,req.wLength
-	);
-	if(req.wLength != ret)return -8;
-
-	perusb->my.desclen += req.wLength;
-
-	//printmemory(tmp, req.wLength);
-	say("unicode2ascii{");
-	for(j=2;j<req.wLength;j+=2){
-		say("%c",tmp[j]);
-	}
-	say("}\n");
-
-	return 0;
-}
-int usbany_ReadAndHandleLang(struct item* usb, int xxx, struct item* xhci, int slot, u16 lang)
-{
-	say("[usbcore]wLANGID=%04x\n", lang);
-	int ret;
-	struct UsbRequest req;
-	struct perusb* perusb = usb->priv_ptr;
-	u8* tmp = perusb->desc + perusb->my.desclen;
-
-	if(perusb->my.iManufac)  usbany_ReadAndHandleString(usb,xxx, xhci,slot, lang,perusb->my.iManufac);
-	if(perusb->my.iProduct)  usbany_ReadAndHandleString(usb,xxx, xhci,slot, lang,perusb->my.iProduct);
-	if(perusb->my.iSerial)   usbany_ReadAndHandleString(usb,xxx, xhci,slot, lang,perusb->my.iSerial);
-	//if(my->iConfigure)usbany_ReadAndHandleString(usb,xxx, xhci,slot, lang,my->iConfigure);
-	//if(my->iInterface)usbany_ReadAndHandleString(usb,xxx, xhci,slot, lang,my->iInterface);
-	return 0;
-}
-
-
-
-
 int usbany_discon()
 {
 	return 0;
@@ -567,7 +653,6 @@ int usbany_linkup(struct item* usb, int xxx, struct item* xhci, int slot)
 	say("[usbcore]@usblinkup: %p,%x,%p,%x\n",usb,xxx,xhci,slot);
 
 	int j,num,ret;
-	struct UsbRequest req;
 	struct perusb* perusb = usb->priv_ptr = memorycreate(0x100000, 0);
 
 	//clear memory
@@ -577,100 +662,25 @@ int usbany_linkup(struct item* usb, int xxx, struct item* xhci, int slot)
 
 //-------------let xhci prepare device-----------------
 	say("[usbcore]set_address\n");
-	if(1){	//if(xhci)
-		//int slot = xhci_giveorderwaitevent(xhci,slot, 'h',TRB_command_EnableSlot, 0,0, 0,0);
-
-		int ret = xhci->give_pxpxpxpx(
-			xhci,slot,
-			0,0,
-			0,_tohc_addr_,
-			0,0
-		);
-		if(ret < 0)return -1;
-	}
+	usbany_handleaddress(xhci,slot);
 
 
 //-----------------device descroptor------------------
 	say("[usbcore]get_desc: device desc\n");
-	//begin reading
-	tmp = perusb->desc + perusb->my.desclen;
-
-	//GET_DESCRIPTOR devdesc 8B (FS device only)
-	if(1){
-		//GET_DESCRIPTOR devdesc[0,7]
-		DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x100, 0, 8);
-		ret = xhci->give_pxpxpxpx(
-			xhci,slot,
-			0,0,
-			&req,8,
-			tmp,req.wLength
-		);
-		if(8 != ret)return -2;
-
-		//tell xhci bMaxPacketSize0 changed
-		if(1){
-			xhci->give_pxpxpxpx(
-				xhci,slot,
-				0,0,
-				0,_tohc_eval_,
-				tmp,8
-			);
-		}
-	}
-
-	//GET_DESCRIPTOR devdesc all
-	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x100, 0, 0x12);
-	ret = xhci->give_pxpxpxpx(
-		xhci,slot,
-		0,0,
-		&req,8,
-		tmp,req.wLength
-	);
-	if(0x12 != ret)return -3;
-	perusb->my.desclen += 0x12;
-
-	//parse Device Descriptor
-	usbany_handledevdesc(usb,xxx, xhci,slot, (void*)tmp,ret);
-
-
-//---------------------configure descriptor--------------------
-	say("[usbcore]get_desc: config desc\n");
-	//foreach value, read configure descriptor
-	num = tmp[0x11];		//bNumConfigurations
-	for(j=0;j<num;j++){
-		usbany_ReadAndHandleConfigure(usb,xxx, xhci,slot, j);
-	}
+	usbany_handledevdesc(usb,xxx, xhci,slot);
 
 
 //----------------------string descriptor-----------------
 	say("[usbcore]get_desc: string desc\n");
-	tmp = perusb->desc + perusb->my.desclen;
+	usbany_handlestrdesc(usb,xxx, xhci,slot);
 
-	//GET_DESCRIPTOR stringdesc 4B
-	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300, 0, 4);
-	ret = xhci->give_pxpxpxpx(
-		xhci,slot,
-		0,0,
-		&req,8,
-		tmp,req.wLength
-	);
-	if(4 != ret)return -6;
 
-	//GET_DESCRIPTOR stringdesc all
-	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300, 0, tmp[0]);
-	ret = xhci->give_pxpxpxpx(
-		xhci,slot,
-		0,0,
-		&req,8,
-		tmp,req.wLength
-	);
-	if(req.wLength != ret)return -7;
-	perusb->my.desclen += req.wLength;
-
-	//foreach lang, read string descriptor
-	num = req.wLength;
-	for(j=2;j<num;j+=2){
-		usbany_ReadAndHandleLang(usb,xxx, xhci,slot, *(u16*)(tmp+j));
+//---------------------configure descriptor--------------------
+	say("[usbcore]get_desc: config desc\n");
+	tmp = perusb->desc;
+	num = tmp[0x11];		//bNumConfigurations
+	for(j=0;j<num;j++){
+		usbany_ReadAndHandleConfigure(usb,xxx, xhci,slot, j);
 	}
 
 
