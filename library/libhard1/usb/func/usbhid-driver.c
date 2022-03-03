@@ -255,19 +255,24 @@ static int parsekeyboard(struct report_keyboard* report)
 	}
 	return 0;
 }
-static int parsemouse(struct report_mouse* report)
+static int parsemouse(u8* in)
 {
-	u64 type;
-	short xx[4];
 	//say("[usbmouse]btn=%x,dx=%d,dy=%d\n", report->btn, report->dx, report->dy);
+	//printmemory(in, 8);
 
-	type = 0x4070;
-	if(report->btn){
-		type = 0x2b70;
+	short xx[4];
+	u64 type = 0x4070;
+	if(1){
+	struct report_mouse* report = (void*)in;
+		if(report->btn)type = 0x2b70;
+		xx[0] = report->dx;
+		xx[1] = report->dy;
 	}
-
-	xx[0] = report->dx;
-	xx[1] = report->dy;
+	else{
+		char* logicg502 = (void*)in;
+		xx[0] = logicg502[2];
+		xx[1] = logicg502[4];
+	}
 	eventwrite(*(u64*)xx, type, 0, 0);
 	return 0;
 }
@@ -411,6 +416,16 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 
 
 //------------------------device side------------------------
+	say("[usbhid]set_config\n");
+	DEVICE_REQUEST_SET_CONFIGURATION(&req, confdesc->bConfigurationValue);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot,
+		0,0,
+		&req,8,
+		0,0
+	);
+	if(ret < 0)return -10;
+
 	if(2 == intfdesc->bInterfaceProtocol){		//mouse must set protocol
 	INTERFACE_REQUEST_SET_PROTOCOL(&req, 0, 0);
 	ret = xhci->give_pxpxpxpx(
@@ -427,15 +442,6 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	ret = xhci->ongiving(xhci,slot, 'd',0, &req,8, buf,req.wLength);
 	if(4 != ret)return -11;
 */
-	say("[usbhid]set_config\n");
-	DEVICE_REQUEST_SET_CONFIGURATION(&req, confdesc->bConfigurationValue);
-	ret = xhci->give_pxpxpxpx(
-		xhci,slot,
-		0,0,
-		&req,8,
-		0,0
-	);
-	if(ret < 0)return -10;
 
 //------------------------transfer ring------------------------
 	say("[usbhid]making trb\n");
