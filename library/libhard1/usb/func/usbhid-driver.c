@@ -232,8 +232,11 @@ void INTERFACE_REQUEST_SET_PROTOCOL(struct UsbRequest* req, u16 intf, u16 val)
 
 
 
-static int parsekeyboard(struct report_keyboard* report)
+static int parsekeyboard(struct item* usb,int xxx, struct item* xhci,int endp,
+	void* sbuf,int slen, void* rbuf,int rlen)
 {
+	struct report_keyboard* report = *(void**)sbuf;
+
 	int j,k,v;
 	for(j=0;j<6;j++){
 		k = report->keys[j];
@@ -255,24 +258,31 @@ static int parsekeyboard(struct report_keyboard* report)
 	}
 	return 0;
 }
-static int parsemouse(u8* in)
+static int parsemouse(struct item* usb,int xxx, struct item* xhci,int endp,
+	void* sbuf,int slen, void* rbuf,int rlen)
 {
+	struct report_mouse* report = *(void**)sbuf;
 	//say("[usbmouse]btn=%x,dx=%d,dy=%d\n", report->btn, report->dx, report->dy);
-	//printmemory(in, 8);
+	//printmemory(in, 
+
+	u64 type = 0x4070;
+	if(report->btn)type = 0x2b70;
 
 	short xx[4];
+	xx[0] = report->dx;
+	xx[1] = report->dy;
+	eventwrite(*(u64*)xx, type, 0, 0);
+	return 0;
+}
+static int parsemouse_g502(struct item* usb,int xxx, struct item* xhci,int endp,
+	void* sbuf,int slen, void* rbuf,int rlen)
+{
+	char* in = *(void**)sbuf;
 	u64 type = 0x4070;
-	if(1){
-	struct report_mouse* report = (void*)in;
-		if(report->btn)type = 0x2b70;
-		xx[0] = report->dx;
-		xx[1] = report->dy;
-	}
-	else{
-		char* logicg502 = (void*)in;
-		xx[0] = logicg502[2];
-		xx[1] = logicg502[4];
-	}
+
+	short xx[4];
+	xx[0] = in[2];
+	xx[1] = in[4];
 	eventwrite(*(u64*)xx, type, 0, 0);
 	return 0;
 }
@@ -285,15 +295,7 @@ static int usbhid_ongive(struct item* usb,int xxx, struct item* xhci,int endp, v
 	struct InterfaceDescriptor* intfdesc = (void*)perusb + intfnode->real;
 
 	void* data = *(void**)sbuf;
-	if(1 == intfdesc->bInterfaceProtocol){
-		parsekeyboard(data);
-	}
-	else if(2 == intfdesc->bInterfaceProtocol){
-		parsemouse(data);
-	}
-	else{
-		printmemory(data, 8);
-	}
+	printmemory(data, 8);
 	return 0;
 }
 int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct descnode* intfnode, struct InterfaceDescriptor* intfdesc)
@@ -416,17 +418,45 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 
 
 //------------------------device side------------------------
-	say("[usbhid]set_config\n");
-	DEVICE_REQUEST_SET_CONFIGURATION(&req, confdesc->bConfigurationValue);
-	ret = xhci->give_pxpxpxpx(
-		xhci,slot,
-		0,0,
-		&req,8,
-		0,0
-	);
-	if(ret < 0)return -10;
+/*	if(	(2 == intfdesc->bInterfaceProtocol)&&
+		(0x0461 == devdesc->idVendor)&&
+		(0x4d81 == devdesc->idProduct)){		//special mouse must set protocol
+	if(	(1 == intfdesc->bInterfaceProtocol)&&
+		(0x04d9 == devdesc->idVendor)&&
+		(0x1702 == devdesc->idProduct)){		//special keyboard must set protocol
+*/
+	int need_to_set_protocol = 1;
+	if(2 == intfdesc->bInterfaceProtocol){
+		if( (0x046d == devdesc->idVendor) && (0xc092 == devdesc->idProduct) ){
+			need_to_set_protocol = 0;
+		}
+	}
+	if(need_to_set_protocol){
+		say("[usbhid]set_protocol\n");
+		INTERFACE_REQUEST_SET_PROTOCOL(&req, 0, 0);
+		ret = xhci->give_pxpxpxpx(
+			xhci,slot,
+			0,0,
+			&req,8,
+			0,0
+		);
+		if(ret < 0)return -11;
+	}
 
-	if(2 == intfdesc->bInterfaceProtocol){		//mouse must set protocol
+	int need_to_set_configuration = 1;
+	if(need_to_set_configuration){
+		say("[usbhid]set_config\n");
+		DEVICE_REQUEST_SET_CONFIGURATION(&req, confdesc->bConfigurationValue);
+		ret = xhci->give_pxpxpxpx(
+			xhci,slot,
+			0,0,
+			&req,8,
+			0,0
+		);
+		if(ret < 0)return -10;
+	}
+/*
+	say("[usbhid]set_protocol\n");
 	INTERFACE_REQUEST_SET_PROTOCOL(&req, 0, 0);
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
@@ -435,7 +465,7 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		0,0
 	);
 	if(ret < 0)return -11;
-	}
+*/
 /*
 	say("[usbhid]set_interface\n");
 	INTERFACE_REQUEST_SET_INTERFACE(&req, my->intf, 0);
@@ -444,9 +474,22 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 */
 
 //------------------------transfer ring------------------------
-	say("[usbhid]making trb\n");
-	usb->ongiving = (void*)usbhid_ongive;
+	if(1 == intfdesc->bInterfaceProtocol){
+		usb->ongiving = (void*)parsekeyboard;
+	}
+	else if(2 == intfdesc->bInterfaceProtocol){
+		if( (0x046d == devdesc->idVendor) && (0xc092 == devdesc->idProduct) ){
+			usb->ongiving = (void*)parsemouse_g502;
+		}
+		else{
+			usb->ongiving = (void*)parsemouse;
+		}
+	}
+	else{
+		usb->ongiving = (void*)usbhid_ongive;
+	}
 
+	say("[usbhid]making trb\n");
 	if(pktlen > 0x40)pktlen = 0x40;
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot|(inaddr<<8),
