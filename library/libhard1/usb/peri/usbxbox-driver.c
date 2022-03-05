@@ -4,6 +4,13 @@ void eventwrite(u64,u64,u64,u64);
 void DEVICE_REQUEST_SET_CONFIGURATION(void* req, u16 conf);
 void INTERFACE_REQUEST_GET_REPORT_DESC(void* req, u16 intf, u16 typeindex, u16 len);
 void INTERFACE_REQUEST_SET_IDLE(struct UsbRequest* req, u16 intf, u16 val);
+
+int usbdesc_addr2offs(struct perusb* perusb, void* desc);
+void* usbdesc_offs2addr(struct perusb* perusb, int offs);
+
+
+
+
 struct xbox360report{
 	u8 msgtype;	//0: 0x00
 	u8 msglen;	//1: 0x14
@@ -122,30 +129,13 @@ static int xboxhid_ongive(struct item* usb,int xxx, struct item* xhci,int endp, 
 }
 int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct descnode* intfnode, struct InterfaceDescriptor* intfdesc)
 {
-	int j,ret;
-	struct UsbRequest req;
-	struct perusb* perusb;
 	//per device
-	struct descnode* devnode;
-	struct DeviceDescriptor* devdesc;
-	struct descnode* confnode;
-	struct ConfigurationDescriptor* confdesc;
-	//per interface
-	struct descnode* endpnode;
-	struct EndpointDescriptor* endpdesc;
-
-
-//------------------------basic information------------------------
-	perusb = usb->priv_ptr;
+	struct perusb* perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
 
-	if(0 == perusb->my.devnode)return -1;		//no devdesc?
-	devnode = (void*)perusb + perusb->my.devnode;
-	devdesc = (void*)perusb + devnode->real;
-
-	if(0 == devnode->lchild)return -2;		//no confdesc?
-	confnode = (void*)perusb + perusb->my.confnode;
-	confdesc = (void*)perusb + confnode->real;
+	struct DeviceDescriptor* devdesc = &perusb->origin.devdesc;
+	struct descnode* confnode = &perusb->parsed.node[0];
+	struct ConfigurationDescriptor* confdesc = usbdesc_offs2addr(perusb, confnode->real);
 
 	say("[xbox]intf=%x,alt=%x,epcnt=%x\n",intfdesc->bInterfaceNumber, intfdesc->bAlternateSetting, intfdesc->bNumEndpoints);
 	if(0 == intfdesc->bNumEndpoints){
@@ -155,6 +145,11 @@ int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 
 
 //------------------------host side + my parse------------------------
+	//per interface
+	struct descnode* endpnode;
+	struct EndpointDescriptor* endpdesc;
+	int j,ret;
+	struct UsbRequest req;
 	int outaddr = 2;
 	int inaddr = 3;
 	int pktlen = 0x40;
@@ -256,22 +251,12 @@ int usbxbox_driver(struct item* usb, int xxx, struct item* xhci, int slot)
 {
 	struct perusb* perusb = usb->priv_ptr;
 
-	struct descnode* devnode;
-	struct DeviceDescriptor* devdesc;
-	struct descnode* confnode;
-	struct ConfigurationDescriptor* confdesc;
+	struct DeviceDescriptor* devdesc = &perusb->origin.devdesc;
+	struct descnode* confnode = &perusb->parsed.node[0];
+	struct ConfigurationDescriptor* confdesc = usbdesc_offs2addr(perusb, confnode->real);
+
 	struct descnode* intfnode;
 	struct InterfaceDescriptor* intfdesc;
-
-	if(0 == perusb->my.devnode)return -1;		//no devdesc?
-	devnode = (void*)perusb + perusb->my.devnode;
-	devdesc = (void*)perusb + devnode->real;
-
-	if(0 == devnode->lchild)return -2;		//no confdesc?
-	confnode = (void*)perusb + devnode->lchild;
-	confdesc = (void*)perusb + confnode->real;
-	perusb->my.confnode = (u8*)confnode - (u8*)perusb;
-
 	if(0 == confnode->lchild)return -3;		//no intfdesc?
 	intfnode = (void*)perusb + confnode->lchild;
 	intfdesc = (void*)perusb + intfnode->real;

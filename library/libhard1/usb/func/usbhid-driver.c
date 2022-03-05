@@ -2,6 +2,9 @@
 #include "usb.h"
 void eventwrite(u64,u64,u64,u64);
 void DEVICE_REQUEST_SET_CONFIGURATION(void* req, u16 conf);
+
+int usbdesc_addr2offs(struct perusb* perusb, void* desc);
+void* usbdesc_offs2addr(struct perusb* perusb, int offs);
 //
 #define desctype_HID 0x21
 #define desctype_report 0x22
@@ -288,44 +291,19 @@ static int parsemouse_g502(struct item* usb,int xxx, struct item* xhci,int endp,
 }
 static int usbhid_ongive(struct item* usb,int xxx, struct item* xhci,int endp, void* sbuf,int slen, void* rbuf,int rlen)
 {
-	struct perusb* perusb = usb->priv_ptr;
-	if(0 == perusb)return 0;
-
-	struct descnode* intfnode = (void*)perusb + perusb->my.intfnode;
-	struct InterfaceDescriptor* intfdesc = (void*)perusb + intfnode->real;
-
 	void* data = *(void**)sbuf;
 	printmemory(data, 8);
 	return 0;
 }
 int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct descnode* intfnode, struct InterfaceDescriptor* intfdesc)
 {
-	int j,ret;
-	struct UsbRequest req;
-	struct perusb* perusb;
 	//per device
-	struct descnode* devnode;
-	struct DeviceDescriptor* devdesc;
-	struct descnode* confnode;
-	struct ConfigurationDescriptor* confdesc;
-	//per interface
-	struct descnode* endpnode;
-	struct EndpointDescriptor* endpdesc;
-	struct descnode* hidnode;
-	struct HIDDescriptor* hiddesc;
-
-
-//------------------------basic information------------------------
-	perusb = usb->priv_ptr;
+	struct perusb* perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
 
-	if(0 == perusb->my.devnode)return -1;		//no devdesc?
-	devnode = (void*)perusb + perusb->my.devnode;
-	devdesc = (void*)perusb + devnode->real;
-
-	if(0 == devnode->lchild)return -2;		//no confdesc?
-	confnode = (void*)perusb + perusb->my.confnode;
-	confdesc = (void*)perusb + confnode->real;
+	struct DeviceDescriptor* devdesc = &perusb->origin.devdesc;
+	struct descnode* confnode = &perusb->parsed.node[0];
+	struct ConfigurationDescriptor* confdesc = usbdesc_offs2addr(perusb, confnode->real);
 
 
 //------------------------check type------------------------
@@ -358,6 +336,14 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 
 
 //------------------------host side + my parse------------------------
+	//per interface
+	struct descnode* endpnode;
+	struct EndpointDescriptor* endpdesc;
+	struct descnode* hidnode;
+	struct HIDDescriptor* hiddesc;
+
+	int j,ret;
+	struct UsbRequest req;
 	int outaddr = 2;
 	int inaddr = 3;
 	int pktlen = 8;

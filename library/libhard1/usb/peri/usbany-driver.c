@@ -159,6 +159,18 @@ void ENDPOINT_REQUEST_SYNCH_FRAME(struct UsbRequest* req, u16 endp)
 
 
 
+int usbdesc_addr2offs(struct perusb* perusb, void* desc)
+{
+	return desc - (void*)perusb;
+}
+void* usbdesc_offs2addr(struct perusb* perusb, int offs)
+{
+	return (void*)perusb + offs;
+}
+
+
+
+
 void explaindevdesc(struct DeviceDescriptor* desc)
 {
 	say(".bLength=%x\n",            desc->bLength);
@@ -280,21 +292,10 @@ int usbany_handleaddress(struct item* xhci, int slot)
 
 void explaindevdesc_tomy(struct DeviceDescriptor* desc, struct perusb* perusb)
 {
-	struct descnode* node = &perusb->node[perusb->my.nodelen];
-	node->type = 1;
-	node->index = 0;
-	node->real = (u8*)desc - (u8*)perusb;
-	node->chosen = 0;
-	node->lfellow = 0;
-	node->rfellow = 0;
-	node->lchild = 0;
-	node->rchild = 0;
-	perusb->my.nodelen += 1;
-	perusb->my.devnode = (u8*)node - (u8*)perusb;
-
-	perusb->my.iManufac = desc->iManufacturer;
-	perusb->my.iProduct = desc->iProduct;
-	perusb->my.iSerial  = desc->iSerialNumber;
+	perusb->parsed.iManufac = desc->iManufacturer;
+	perusb->parsed.iProduct = desc->iProduct;
+	perusb->parsed.iSerial  = desc->iSerialNumber;
+	perusb->parsed.numconf = desc->bNumConfigurations;
 }
 
 
@@ -303,30 +304,31 @@ void explaindevdesc_tomy(struct DeviceDescriptor* desc, struct perusb* perusb)
 int usbany_handledevdesc(struct item* usb, int xxx, struct item* xhci, int slot)
 {
 	struct perusb* perusb = usb->priv_ptr;
-	u8* tmp = perusb->desc + perusb->my.desclen;
+	if(0 == perusb)return -1;
+
+	struct DeviceDescriptor* devdesc = &perusb->origin.devdesc;
 
 	int ret;
 	struct UsbRequest req;
-
 	//GET_DESCRIPTOR devdesc 8B (FS device only)
 	if(1){
 		//GET_DESCRIPTOR devdesc[0,7]
 		DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x100, 0, 8);
 		ret = xhci->give_pxpxpxpx(
-			xhci,slot,
-			0,0,
-			&req,8,
-			tmp,req.wLength
+			xhci, slot,
+			0, 0,
+			&req, 8,
+			devdesc, req.wLength
 		);
 		if(8 != ret)return -2;
 
 		//tell xhci bMaxPacketSize0 changed
 		if(1){
 			xhci->give_pxpxpxpx(
-				xhci,slot,
-				0,0,
-				0,_tohc_eval_,
-				tmp,8
+				xhci, slot,
+				0, 0,
+				0, _tohc_eval_,
+				devdesc, 8
 			);
 		}
 	}
@@ -337,197 +339,207 @@ int usbany_handledevdesc(struct item* usb, int xxx, struct item* xhci, int slot)
 		xhci,slot,
 		0,0,
 		&req,8,
-		tmp,req.wLength
+		devdesc, req.wLength
 	);
 	if(0x12 != ret)return -3;
-	perusb->my.desclen += 0x12;
+
+	//update curr
+	perusb->origin.byteused = usbdesc_addr2offs(perusb, (void*)devdesc + devdesc->bLength);
 
 	//parse Device Descriptor
-	explaindevdesc((void*)tmp);
-	explaindevdesc_tomy((void*)tmp, perusb);
+	explaindevdesc(&perusb->origin.devdesc);
+	explaindevdesc_tomy(&perusb->origin.devdesc, perusb);
 	return 0;
 }
 
 
 
 
-int usbany_ReadAndHandleString(struct item* usb, int xxx, struct item* xhci, int slot, u16 lang, u16 id)
-{
-	say("[usbcore]readstr: lang=%x,id=%x\n", lang, id);
-	int j,ret;
-	struct perusb* perusb = usb->priv_ptr;
-	u8* tmp = perusb->desc + perusb->my.desclen;
-
-	struct UsbRequest req;
-	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300 + id, lang, 4);
-	ret = xhci->give_pxpxpxpx(
-		xhci,slot,
-		0,0,
-		&req,8,
-		tmp,req.wLength
-	);
-	if(4 != ret)return -7;
-
-	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300 + id, lang, tmp[0]);
-	ret = xhci->give_pxpxpxpx(
-		xhci,slot,
-		0,0,
-		&req,8,
-		tmp,req.wLength
-	);
-	if(req.wLength != ret)return -8;
-
-	perusb->my.desclen += req.wLength;
-
-	//printmemory(tmp, req.wLength);
-	say("unicode2ascii{");
-	for(j=2;j<req.wLength;j+=2){
-		say("%c",tmp[j]);
-	}
-	say("}\n");
-
-	return 0;
-}
 int usbany_handlestrdesc(struct item* usb, int xxx, struct item* xhci, int slot)
 {
+	struct perusb* perusb = usb->priv_ptr;
+
+	struct StringDescriptor* strdesc = &perusb->origin.strdesc;
+
 	int ret;
 	struct UsbRequest req;
-	struct perusb* perusb = usb->priv_ptr;
-	u8* tmp = perusb->desc + perusb->my.desclen;
-
 	//GET_DESCRIPTOR stringdesc 4B
 	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300, 0, 4);
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
 		&req,8,
-		tmp,req.wLength
+		strdesc,req.wLength
 	);
 	if(4 != ret)return -6;
 
 	//GET_DESCRIPTOR stringdesc all
-	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300, 0, tmp[0]);
+	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300, 0, strdesc->bLength);
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
 		&req,8,
-		tmp,req.wLength
+		strdesc,strdesc->bLength
 	);
 	if(req.wLength != ret)return -7;
-	perusb->my.desclen += req.wLength;
 
-	int lang = *(u16*)(tmp+2);
-	say("[usbcore]wLANGID=%04x\n", lang);
+	//update curr
+	perusb->origin.byteused = usbdesc_addr2offs(perusb, (void*)strdesc + strdesc->bLength);
 
-	if(perusb->my.iManufac)usbany_ReadAndHandleString(usb,xxx, xhci,slot, lang,perusb->my.iManufac);
-	if(perusb->my.iProduct)usbany_ReadAndHandleString(usb,xxx, xhci,slot, lang,perusb->my.iProduct);
-	if(perusb->my.iSerial) usbany_ReadAndHandleString(usb,xxx, xhci,slot, lang,perusb->my.iSerial);
-	//if(my->iConfigure)usbany_ReadAndHandleString(usb,xxx, xhci,slot, lang,my->iConfigure);
-	//if(my->iInterface)usbany_ReadAndHandleString(usb,xxx, xhci,slot, lang,my->iInterface);
+	//lang0
+	perusb->parsed.lang0 = perusb->origin.strdesc.wLANGID[0];
+	say("[usbcore]wLANGID=%04x\n", perusb->parsed.lang0);
+	return 0;
+}
+int usbany_ReadAndHandleString(struct item* usb, int xxx, struct item* xhci, int slot, u16 lang, u16 id)
+{
+	say("[usbcore]readstr: lang=%x,id=%x\n", lang, id);
+	struct perusb* perusb = usb->priv_ptr;
+
+	struct StringDescriptor* strdesc = usbdesc_offs2addr(perusb, perusb->origin.byteused);
+
+	int j,ret;
+	struct UsbRequest req;
+	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300 + id, lang, 4);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot,
+		0,0,
+		&req,8,
+		strdesc,req.wLength
+	);
+	if(4 != ret)return -7;
+
+	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300 + id, lang, strdesc->bLength);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot,
+		0,0,
+		&req,8,
+		strdesc,req.wLength
+	);
+	if(req.wLength != ret)return -8;
+
+	//update curr
+	perusb->origin.byteused += strdesc->bLength;
+
+	//printmemory(tmp, req.wLength);
+	say("unicode2ascii{");
+	for(j=0;j<(strdesc->bLength-2)/2;j++){
+		say("%c",(strdesc->unicode[j])&0x7f);
+	}
+	say("}\n");
+
 	return 0;
 }
 
 
 
 
-void usbany_handleconfdesc(struct item* usb, int xxx, struct item* xhci, int slot, u8* buf, int len)
+void explainconfdesc_tomy(struct item* usb, int xxx, struct item* xhci, int slot, struct ConfigurationDescriptor* confdesc, int len)
 {
-	explaineverydesc(buf, len);
+	struct perusb* perusb = usb->priv_ptr;
 
-	struct perusb* perusb;
-	struct descnode* devnode;
 	struct descnode* helpnode;
-
 	struct descnode* confnode;
+
+	struct descnode* assonode;
+	struct InterfaceAssociation* assodesc;
 	struct descnode* intfnode;
+	struct InterfaceDescriptor* intfdesc;
 	struct descnode* endpnode;
-	struct ConfigurationDescriptor* conf;
-	struct InterfaceDescriptor* intf;
-	struct EndpointDescriptor* endp;
+	struct EndpointDescriptor* endpdesc;
 
-	perusb = usb->priv_ptr;
-	devnode = (void*)perusb + perusb->my.devnode;
 
+	//1
+	confnode = &perusb->parsed.node[0];
+	perusb->parsed.nodecount = 1;
+
+	confnode->type = 2;
+	confnode->real = usbdesc_addr2offs(perusb, confdesc);
+	confnode->id = confdesc->bConfigurationValue;
+	confnode->altid = 0;
+	confnode->lfellow = 0;
+	confnode->rfellow = 0;
+	confnode->lchild = 0;
+	confnode->rchild = 0;
+
+
+	//2
 	int j = 0;
+	u8* buf = (u8*)confdesc + confdesc->bLength;
 	while(1){
 		if(j >= len)break;
 
 		//say("[usbcore]@[%x,%x]:%x\n", j, j+buf[j]-1, buf[j+1]);
 		switch(buf[j+1]){
-		case 0x02:
-			conf = (void*)(buf+j);
-			confnode = &perusb->node[perusb->my.nodelen];
-			confnode->type = 2;
-			confnode->index = conf->bConfigurationValue;
-			confnode->real = (u8*)conf - (u8*)perusb;
-			confnode->chosen = 0;
-			confnode->lfellow = 0;
-			confnode->rfellow = 0;
-			confnode->lchild = 0;
-			confnode->rchild = 0;
-			perusb->my.nodelen += 1;
-			if(devnode->rchild){
-				confnode->lfellow = devnode->rchild;
+		case 0x0b:		//association
+			assodesc = (void*)(buf+j);
+			assonode = &perusb->parsed.node[perusb->parsed.nodecount];
+			perusb->parsed.nodecount += 1;
 
-				helpnode = (void*)perusb + devnode->rchild;
-				helpnode->rfellow = devnode->rchild = (u8*)confnode - (u8*)perusb;
+			assonode->type = buf[j+1];
+			assonode->real = usbdesc_addr2offs(perusb, assodesc);
+			assonode->id = assodesc->bFirstInterface;
+			assonode->altid = assodesc->bInterfaceCount;
+			assonode->lfellow = 0;
+			assonode->rfellow = 0;
+			assonode->lchild = 0;
+			assonode->rchild = 0;
+			if(confnode->rchild){
+				assonode->lfellow = confnode->rchild;
+
+				helpnode = usbdesc_offs2addr(perusb, confnode->rchild);
+				helpnode->rfellow = confnode->rchild = usbdesc_addr2offs(perusb, assonode);
 			}
 			else{
-				devnode->lchild = devnode->rchild = (u8*)confnode - (u8*)perusb;
+				confnode->lchild = confnode->rchild = usbdesc_addr2offs(perusb, assonode);
 			}
-			//perusb->iConfigure = conf->iConfiguration;
 			break;
 		case 0x04:		//interface
-		case 0x0b:		//association
-			intf = (void*)(buf+j);
-			intfnode = &perusb->node[perusb->my.nodelen];
+			intfdesc = (void*)(buf+j);
+			intfnode = &perusb->parsed.node[perusb->parsed.nodecount];
+			perusb->parsed.nodecount += 1;
+
 			intfnode->type = buf[j+1];
-			intfnode->index = 0;
-			intfnode->real = (u8*)intf - (u8*)perusb;
-			intfnode->chosen = 0;
+			intfnode->real = usbdesc_addr2offs(perusb, intfdesc);
+			intfnode->id = intfdesc->bInterfaceNumber;
+			intfnode->altid = intfdesc->bAlternateSetting;
 			intfnode->lfellow = 0;
 			intfnode->rfellow = 0;
 			intfnode->lchild = 0;
 			intfnode->rchild = 0;
-			perusb->my.nodelen += 1;
 			if(confnode->rchild){
 				intfnode->lfellow = confnode->rchild;
 
-				helpnode = (void*)perusb + confnode->rchild;
-				helpnode->rfellow = confnode->rchild = (u8*)intfnode - (u8*)perusb;
+				helpnode = usbdesc_offs2addr(perusb, confnode->rchild);
+				helpnode->rfellow = confnode->rchild = usbdesc_addr2offs(perusb, intfnode);
 			}
 			else{
-				confnode->lchild = confnode->rchild = (u8*)intfnode - (u8*)perusb;
+				confnode->lchild = confnode->rchild = usbdesc_addr2offs(perusb, intfnode);
 			}
-			//my->class = intf->bInterfaceClass;
-			//my->subcl = intf->bInterfaceSubClass;
-			//my->proto = intf->bInterfaceProtocol;
-
-			//my->intf = intf->bInterfaceNumber;
-			//my->iInterface = intf->iInterface;
 			break;
 		case 0x05:		//ep desc
 		case 0x21:		//hid desc
-			endp = (void*)(buf+j);
-			endpnode = &perusb->node[perusb->my.nodelen];
+			endpdesc = (void*)(buf+j);
+			endpnode = &perusb->parsed.node[perusb->parsed.nodecount];
+			perusb->parsed.nodecount += 1;
+
 			endpnode->type = buf[j+1];
-			endpnode->index = 0;
-			endpnode->real = (u8*)endp - (u8*)perusb;
-			endpnode->chosen = 0;
+			endpnode->real = usbdesc_addr2offs(perusb, endpdesc);
+			endpnode->id = 0;
+			endpnode->altid = 0;
 			endpnode->lfellow = 0;
 			endpnode->rfellow = 0;
 			endpnode->lchild = 0;
 			endpnode->rchild = 0;
-			perusb->my.nodelen += 1;
 
 			if(intfnode->rchild){
 				endpnode->lfellow = intfnode->rchild;
 
-				helpnode = (void*)perusb + intfnode->rchild;
-				helpnode->rfellow = intfnode->rchild = (u8*)endpnode - (u8*)perusb;
+				helpnode = usbdesc_offs2addr(perusb, intfnode->rchild);
+				helpnode->rfellow = intfnode->rchild = usbdesc_addr2offs(perusb, endpnode);
 			}
 			else{
-				intfnode->lchild = intfnode->rchild = (u8*)endpnode - (u8*)perusb;
+				intfnode->lchild = intfnode->rchild = usbdesc_addr2offs(perusb, endpnode);
 			}
 			//my->endp = endp->bEndpointAddress;
 			break;
@@ -538,71 +550,112 @@ void usbany_handleconfdesc(struct item* usb, int xxx, struct item* xhci, int slo
 		if(buf[j] <= 2)break;
 		j += buf[j];
 	}
+
+	//printmemory(perusb->parsed.node, perusb->parsed.nodecount*sizeof(struct descnode));
+	struct descnode* stack[4];
+	int sp = 0;
+	char* tabs = "        ";
+
+	helpnode = confnode;
+	while(1){
+		if(0 == helpnode)break;
+		switch(helpnode->type){
+		case 0x2:
+			say("%.*sconfig:%d.%d\n", sp,tabs, helpnode->id, helpnode->altid);
+			break;
+		case 0xb:
+			say("%.*sassociate:%d.%d\n", sp,tabs, helpnode->id, helpnode->altid);
+			break;
+		case 0x4:
+			say("%.*sinterface:%d.%d\n", sp,tabs, helpnode->id, helpnode->altid);
+			break;
+		case 0x5:
+			say("%.*sendpoint:%d.%d\n", sp,tabs, helpnode->id, helpnode->altid);
+			break;
+		case 0x21:
+			say("%.*shid:%d.%d\n", sp,tabs, helpnode->id, helpnode->altid);
+			break;
+		}
+		//first child
+		if(helpnode->lchild){
+			stack[sp] = usbdesc_offs2addr(perusb, helpnode->rfellow);
+			sp++;
+			helpnode = usbdesc_offs2addr(perusb, helpnode->lchild);
+			continue;
+		}
+		//then brother
+		if(helpnode->rfellow){
+			helpnode = usbdesc_offs2addr(perusb, helpnode->rfellow);
+			continue;
+		}
+		//then parent
+		if(0 == sp)break;
+		sp--;
+		helpnode = stack[sp];
+	}
 }
 int usbany_ReadAndHandleConfigure(struct item* usb, int xxx, struct item* xhci, int slot, u16 value)
 {
+	struct perusb* perusb = usb->priv_ptr;
+
+	struct ConfigurationDescriptor* confdesc = (void*)&perusb->origin + perusb->origin.byteused;
+
 	int ret;
 	struct UsbRequest req;
-	struct perusb* perusb = usb->priv_ptr;
-	u8* tmp = perusb->desc + perusb->my.desclen;
-
 	//GET_DESCRIPTOR confdesc 8B
 	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x200+value, 0, 8);
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
 		&req,8,
-		tmp,req.wLength
+		confdesc,req.wLength
 	);
 	if(8 != ret)return -4;
 
 	//GET_DESCRIPTOR confdesc all
-	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x200+value, 0, *(u16*)(tmp+2));
+	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x200+value, 0, confdesc->wTotalLength);
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
 		&req,8,
-		tmp,req.wLength
+		confdesc,confdesc->wTotalLength
 	);
 	if(req.wLength != ret)return -5;
 
-	//parse Configure Descriptor
-	usbany_handleconfdesc(usb,xxx, xhci,slot, tmp,ret);
+	//update curr
+	perusb->origin.byteused += confdesc->wTotalLength;
 
-	perusb->my.desclen += req.wLength;
-	tmp = perusb->desc + perusb->my.desclen;
+	//parse Configure Descriptor
+	explaineverydesc((void*)confdesc,ret);
+	explainconfdesc_tomy(usb,xxx, xhci,slot, (void*)confdesc,ret);
+
+	if(confdesc->iConfiguration)usbany_ReadAndHandleString(usb,xxx, xhci,slot, perusb->parsed.lang0,confdesc->iConfiguration);
 	return 0;
 }
+
+
+
+
 int usbany_FirstConfig(struct item* usb, int xxx, struct item* xhci, int slot)
 {
 	struct perusb* perusb = usb->priv_ptr;
-	printmemory(perusb->node, perusb->my.nodelen*sizeof(struct descnode));
 
-	struct descnode* devnode;
-	struct DeviceDescriptor* devdesc;
 	struct descnode* confnode;
 	struct ConfigurationDescriptor* confdesc;
 	struct descnode* intfnode;
 	struct InterfaceDescriptor* intfdesc;
 
-	if(0 == perusb->my.devnode)return -1;		//no devdesc?
-	devnode = (void*)perusb + perusb->my.devnode;
-	devdesc = (void*)perusb + devnode->real;
+	confnode = &perusb->parsed.node[0];
+	confdesc = usbdesc_offs2addr(perusb, confnode->real);
 
-	if(0 == devnode->lchild)return -2;		//no confdesc?
-	confnode = (void*)perusb + devnode->lchild;
-	confdesc = (void*)perusb + confnode->real;
-	perusb->my.confnode = (u8*)confnode - (u8*)perusb;
-
-	if(0 == confnode->lchild)return -3;		//no intfdesc?
-	intfnode = (void*)perusb + confnode->lchild;
-	intfdesc = (void*)perusb + intfnode->real;
+	intfnode = usbdesc_offs2addr(perusb, confnode->lchild);
+	intfdesc = usbdesc_offs2addr(perusb, intfnode->real);
 
 	//if not composite device
+	struct DeviceDescriptor* devdesc = &perusb->origin.devdesc;
 	if( (0xef != devdesc->bDeviceClass) | (2 != devdesc->bDeviceSubClass) | (1 != devdesc->bDeviceProtocol) ){
 		say("[usbcore]class=%x,subclass=%x,protocol=%x\n", intfdesc->bInterfaceClass, intfdesc->bInterfaceSubClass, intfdesc->bInterfaceProtocol);
 
-		perusb->my.intfnode = (u8*)intfnode - (u8*)perusb;
 		switch(intfdesc->bInterfaceClass){
 		case class_hid:
 			usbhid_driver(usb,xxx, xhci,slot, intfnode, intfdesc);
@@ -623,7 +676,7 @@ int usbany_FirstConfig(struct item* usb, int xxx, struct item* xhci, int slot)
 	while(1){
 		if(0xb == intfnode->type){
 			assonode = (void*)intfnode;
-			assodesc = (void*)perusb + assonode->real;
+			assodesc = usbdesc_offs2addr(perusb, assonode->real);
 			say("[usbcore]association: node=%p,desc=%p, first=%x,count=%x, c=%x,s=%x,p=%x\n",
 			intfnode,intfdesc, assodesc->bFirstInterface, assodesc->bInterfaceCount,
 			assodesc->bFunctionClass, assodesc->bFunctionSubclass, assodesc->bFunctionProtocol);
@@ -635,8 +688,8 @@ int usbany_FirstConfig(struct item* usb, int xxx, struct item* xhci, int slot)
 		}
 
 		if(0 == intfnode->rfellow)break;
-		intfnode = (void*)perusb + intfnode->rfellow;
-		intfdesc = (void*)perusb + intfnode->real;
+		intfnode = usbdesc_offs2addr(perusb, intfnode->rfellow);
+		intfdesc = usbdesc_offs2addr(perusb, intfnode->real);
 	}
 	return 0;
 }
@@ -673,21 +726,23 @@ int usbany_linkup(struct item* usb, int xxx, struct item* xhci, int slot)
 //----------------------string descriptor-----------------
 	say("[usbcore]get_desc: string desc\n");
 	usbany_handlestrdesc(usb,xxx, xhci,slot);
+	if(perusb->parsed.iManufac)usbany_ReadAndHandleString(usb,xxx, xhci,slot, perusb->parsed.lang0,perusb->parsed.iManufac);
+	if(perusb->parsed.iProduct)usbany_ReadAndHandleString(usb,xxx, xhci,slot, perusb->parsed.lang0,perusb->parsed.iProduct);
+	if(perusb->parsed.iSerial) usbany_ReadAndHandleString(usb,xxx, xhci,slot, perusb->parsed.lang0,perusb->parsed.iSerial);
+	//if(my->iConfigure)usbany_ReadAndHandleString(usb,xxx, xhci,slot, lang,my->iConfigure);
+	//if(my->iInterface)usbany_ReadAndHandleString(usb,xxx, xhci,slot, lang,my->iInterface);
 
 
 //---------------------configure descriptor--------------------
 	say("[usbcore]get_desc: config desc\n");
-	tmp = perusb->desc;
-	num = tmp[0x11];		//bNumConfigurations
+	num = perusb->origin.devdesc.bNumConfigurations;
 	for(j=0;j<num;j++){
 		usbany_ReadAndHandleConfigure(usb,xxx, xhci,slot, j);
 	}
 
 
 //-----------now that all read, choose one-------------
-	struct descnode* devnode = (void*)perusb + perusb->my.devnode;
-	struct DeviceDescriptor* devdesc = (void*)perusb + devnode->real;
-
+	struct DeviceDescriptor* devdesc = &perusb->origin.devdesc;
 	if(0x045e == devdesc->idVendor){
 		switch(devdesc->idProduct){
 		case 0x0202:

@@ -112,7 +112,10 @@ struct ConfigurationDescriptor{
 struct StringDescriptor{
 	u8            bLength;		//0
 	u8    bDescriptorType;		//1: 0x03
-	u16        wLANGID[0];		//[2,3]: at least one, 0409=en-US
+	union{
+		u16 wLANGID[0];		//[2,3]: at least one, 0409=en-US
+		u16 unicode[0];
+	};
 }__attribute__((packed));
 
 struct InterfaceDescriptor{
@@ -220,42 +223,51 @@ struct CS_ENDPOINT{
 
 struct descnode{
 	u32    type;	//dev,conf,intf,endp,str
-	u32   index;	//value of this desc
-	u32    real;	//offset to real desc
-	u32  chosen;	//setted as current
+	u32    real;	//value of this desc
+	u32      id;	//offset to real desc
+	u32   altid;	//setted as current
 	u32 lfellow;	//prev brother node, if(0){first}
 	u32 rfellow;	//next brother node, if(0){last}
 	u32  lchild;	//first child node
 	u32  rchild;	//last child node
 }__attribute__((packed));
-struct bufhead{
-	//[0x00, 0xff]
-	u32  devnode;	//chosen node for device descriptor
-	u32 confnode;	//chosen node for configure descriptor
-	u32 intfnode;	//chosen node for interface descriptor
-	u32  strnode;	//chosen node for string descriptor(chosen language)
-	u32 nodelen;
-	u32 desclen;
 
+
+struct usbdesc_parsed{
+	//device descriptor
 	u8 iManufac;	//won't change
 	u8 iProduct;	//won't change
 	u8 iSerial; 	//won't change
-	u8 iConfigure;	//change when new conf
-	u8 iInterface;	//change when new intf
+	u8 numconf;
+
+	//string descriptor
+	u16 lang0;
+
+	//config descriptor
+	u32 nodecount;
+	struct descnode node[0];
 }__attribute__((packed));
+
+
+struct usbdesc_origin{
+	int byteused;
+	struct DeviceDescriptor devdesc;
+	struct StringDescriptor strdesc;
+}__attribute__((packed));
+
+
 struct perusb{
+	//[0x0, 0xfff]
 	union{
-		struct bufhead my;
-		u8 padding0[0x100];
+		struct usbdesc_parsed parsed;
+		u8 padding0[0x1000];
 	};
 
-	//[0x100, 0xfff]
-	struct descnode node[0];	//0xf00/0x20=0x78, enough for node
-	u8 padding1[0xf00];
-
 	//[0x1000, 0xffff]
-	u8 desc[0];					//0xf000=61440, enough for desc
-	u8 padding2[0xf000];
+	union{
+		struct usbdesc_origin origin;
+		u8 padding1[0xf000];
+	};
 
 	//[0x10000, 0xfffff]
 	u8 freebuf[0];

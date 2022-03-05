@@ -3,6 +3,9 @@
 void DEVICE_REQUEST_SET_CONFIGURATION(void* req, u16 conf);
 void filemanager_registersupplier(void*, void*);
 
+int usbdesc_addr2offs(struct perusb* perusb, void* desc);
+void* usbdesc_offs2addr(struct perusb* perusb, int offs);
+
 //subclass
 #define subclass_RBC        1
 #define subclass_MMC5_ATAPI 2
@@ -360,31 +363,13 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 {
 	say("[usbdisk]begin...\n");
 
-	int j,ret;
-	int inaddr=0,outaddr=0;
-	struct UsbRequest req;
-	struct perusb* perusb;
 	//per device
-	struct descnode* devnode;
-	struct DeviceDescriptor* devdesc;
-	struct descnode* confnode;
-	struct ConfigurationDescriptor* confdesc;
-	//per interface
-	struct descnode* endpnode;
-	struct EndpointDescriptor* endpdesc;
-
-
-//------------------------basic information------------------------
-	perusb = usb->priv_ptr;
+	struct perusb* perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
 
-	if(0 == perusb->my.devnode)return -1;		//no devdesc?
-	devnode = (void*)perusb + perusb->my.devnode;
-	devdesc = (void*)perusb + devnode->real;
-
-	if(0 == devnode->lchild)return -2;		//no confdesc?
-	confnode = (void*)perusb + perusb->my.confnode;
-	confdesc = (void*)perusb + confnode->real;
+	struct DeviceDescriptor* devdesc = &perusb->origin.devdesc;
+	struct descnode* confnode = &perusb->parsed.node[0];
+	struct ConfigurationDescriptor* confdesc = usbdesc_offs2addr(perusb, confnode->real);
 
 
 //------------------------check type------------------------
@@ -407,6 +392,14 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 
 
 //------------------------host side + my parse------------------------
+	//per interface
+	struct descnode* endpnode;
+	struct EndpointDescriptor* endpdesc;
+
+	int j,ret;
+	int inaddr=0,outaddr=0;
+	struct UsbRequest req;
+
 	j = intfnode->lchild;
 	while(1){
 		if(0 == j)break;
