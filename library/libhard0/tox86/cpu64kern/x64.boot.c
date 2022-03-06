@@ -189,7 +189,7 @@ int percpu_coreid()
 {
 	return localapic_coreid();
 }
-void* percpu_finddatabyid(coreid)
+void* percpu_finddatabyid(int coreid)
 {
 	int j;
 	for(j=0;j<cpucnt;j++){

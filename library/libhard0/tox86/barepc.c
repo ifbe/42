@@ -19,6 +19,8 @@ void initpci_mmio();
 //
 void init825x();        //timer.pit
 void initrtc();         //timer.rtc
+//
+void init8042();
 
 
 
@@ -36,14 +38,14 @@ void inithardware()
 	//acpi
 	parsedevmap_acpi(getdevmap());
 
-	//where
+	//localapic check
 	apicwhere();
 
 	//cpu_bsp: gdt,paging,idt,apic...
 	p = device_create(_cpu_, 0, 0, 0);
 	initcpu_bsp(p);
 
-	//interrupter
+	//ioapic or dual8259
 	p = device_create(_irq_, 0, 0, 0);
 	initirq(p);
 
@@ -54,6 +56,9 @@ void inithardware()
 
 	//cpu_app: after cpu_bsp and pic and timer
 	initcpu_ap();
+
+	//input
+	init8042();
 
 	//pci
 	p = device_create(_pci_, 0, 0, 0);

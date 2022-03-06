@@ -247,26 +247,6 @@ void explainotherdesc(u8* buf)
 	say(".bLength=%x\n",         buf[0]);
 	say(".bDescriptorType=%x\n", buf[1]);
 }
-void explaineverydesc(u8* buf, int len)
-{
-	int j = 0;
-	while(1){
-		if(j >= len)break;
-
-		say("@[%x,%x]:type=%x\n", j, j+buf[j]-1, buf[j+1]);
-		switch(buf[j+1]){
-		case 0x02:explainconfdesc((void*)(buf+j));break;
-		case 0x04:explainintfdesc((void*)(buf+j));break;
-		case 0x05:explainendpdesc((void*)(buf+j));break;
-		case 0x0b:explainInterfaceAssociation((void*)(buf+j));break;
-		case 0x21:explainHIDdesc((void*)(buf+j));break;
-		default:explainotherdesc(buf+j);
-		}
-
-		if(buf[j] <= 2)break;
-		j += buf[j];
-	}
-}
 
 
 
@@ -434,6 +414,50 @@ int usbany_ReadAndHandleString(struct item* usb, int xxx, struct item* xhci, int
 
 
 
+void explainconfdesc_tostr(struct item* usb, int xxx, struct item* xhci, int slot, u8* buf, int len)
+{
+	struct perusb* perusb = usb->priv_ptr;
+	if(0 == perusb)return;
+
+	struct ConfigurationDescriptor* confdesc;
+	struct InterfaceAssociation* assodesc;
+	struct InterfaceDescriptor* intfdesc;
+
+	int j = 0;
+	while(1){
+		if(j >= len)break;
+
+		say("@[%x,%x]:type=%x\n", j, j+buf[j]-1, buf[j+1]);
+		switch(buf[j+1]){
+		case 0x02:
+			confdesc = (void*)(buf+j);
+			explainconfdesc(confdesc);
+			if(confdesc->iConfiguration)usbany_ReadAndHandleString(usb,xxx, xhci,slot, perusb->parsed.lang0,confdesc->iConfiguration);
+			break;
+		case 0x04:
+			intfdesc = (void*)(buf+j);
+			explainintfdesc(intfdesc);
+			if(intfdesc->iInterface)usbany_ReadAndHandleString(usb,xxx, xhci,slot, perusb->parsed.lang0,intfdesc->iInterface);
+			break;
+		case 0x05:
+			explainendpdesc((void*)(buf+j));
+			break;
+		case 0x0b:
+			assodesc = (void*)(buf+j);
+			explainInterfaceAssociation(assodesc);
+			if(assodesc->iFunction)usbany_ReadAndHandleString(usb,xxx, xhci,slot, perusb->parsed.lang0,assodesc->iFunction);
+			break;
+		case 0x21:
+			explainHIDdesc((void*)(buf+j));
+			break;
+		default:
+			explainotherdesc(buf+j);
+		}
+
+		if(buf[j] <= 2)break;
+		j += buf[j];
+	}
+}
 void explainconfdesc_tomy(struct item* usb, int xxx, struct item* xhci, int slot, struct ConfigurationDescriptor* confdesc, int len)
 {
 	struct perusb* perusb = usb->priv_ptr;
@@ -558,40 +582,55 @@ void explainconfdesc_tomy(struct item* usb, int xxx, struct item* xhci, int slot
 
 	helpnode = confnode;
 	while(1){
-		if(0 == helpnode)break;
-		switch(helpnode->type){
-		case 0x2:
-			say("%.*sconfig:%d.%d\n", sp,tabs, helpnode->id, helpnode->altid);
-			break;
-		case 0xb:
-			say("%.*sassociate:%d.%d\n", sp,tabs, helpnode->id, helpnode->altid);
-			break;
-		case 0x4:
-			say("%.*sinterface:%d.%d\n", sp,tabs, helpnode->id, helpnode->altid);
-			break;
-		case 0x5:
-			say("%.*sendpoint:%d.%d\n", sp,tabs, helpnode->id, helpnode->altid);
-			break;
-		case 0x21:
-			say("%.*shid:%d.%d\n", sp,tabs, helpnode->id, helpnode->altid);
+		if(0 == helpnode){		//0 represent error or last brother
+			if(sp > 0){
+				sp--;
+				helpnode = stack[sp];
+				continue;
+			}
 			break;
 		}
-		//first child
+
+		switch(helpnode->type){
+		case 0x2:
+			say("%.*sconfig:%d.%d\n", 2*sp,tabs, helpnode->id, helpnode->altid);
+			break;
+		case 0xb:
+			say("%.*sassociate:%d.%d\n", 2*sp,tabs, helpnode->id, helpnode->altid);
+			break;
+		case 0x4:
+			say("%.*sinterface:%d.%d\n", 2*sp,tabs, helpnode->id, helpnode->altid);
+			break;
+		case 0x5:
+			say("%.*sendpoint:%d.%d\n", 2*sp,tabs, helpnode->id, helpnode->altid);
+			break;
+		case 0x21:
+			say("%.*shid:%d.%d\n", 2*sp,tabs, helpnode->id, helpnode->altid);
+			break;
+		}
+
+		//push brother, goto child
 		if(helpnode->lchild){
-			stack[sp] = usbdesc_offs2addr(perusb, helpnode->rfellow);
-			sp++;
+			if(helpnode->rfellow){
+				stack[sp] = usbdesc_offs2addr(perusb, helpnode->rfellow);
+				sp++;
+			}
+			else{
+				stack[sp] = 0;	//indicate go back
+				sp++;
+			}
 			helpnode = usbdesc_offs2addr(perusb, helpnode->lchild);
 			continue;
 		}
-		//then brother
+
+		//goto brother
 		if(helpnode->rfellow){
 			helpnode = usbdesc_offs2addr(perusb, helpnode->rfellow);
 			continue;
 		}
-		//then parent
-		if(0 == sp)break;
-		sp--;
-		helpnode = stack[sp];
+		else{
+			helpnode = 0;	//indicate go back
+		}
 	}
 }
 int usbany_ReadAndHandleConfigure(struct item* usb, int xxx, struct item* xhci, int slot, u16 value)
@@ -626,10 +665,8 @@ int usbany_ReadAndHandleConfigure(struct item* usb, int xxx, struct item* xhci, 
 	perusb->origin.byteused += confdesc->wTotalLength;
 
 	//parse Configure Descriptor
-	explaineverydesc((void*)confdesc,ret);
+	explainconfdesc_tostr(usb,xxx, xhci,slot, (void*)confdesc,ret);
 	explainconfdesc_tomy(usb,xxx, xhci,slot, (void*)confdesc,ret);
-
-	if(confdesc->iConfiguration)usbany_ReadAndHandleString(usb,xxx, xhci,slot, perusb->parsed.lang0,confdesc->iConfiguration);
 	return 0;
 }
 

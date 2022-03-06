@@ -1369,6 +1369,7 @@ int resetport(struct item* xhci, int countfrom0)
 
 	//bit4 = PR = reset
 	port->PORTSC |= 0x10;
+	xhci_print("write reset, wait reseted...\n");
 
 	//wait for reset done
 	int j = 0xfffffff;
@@ -1378,7 +1379,7 @@ int resetport(struct item* xhci, int countfrom0)
 		j--;
 		if(0 == j)return -1;
 	}
-	xhci_print("port reseted\n");
+	xhci_print("port reseted, wait enabled...\n");
 
 	//wait for enable=1
 	j = 0xfffffff;
@@ -1388,7 +1389,7 @@ int resetport(struct item* xhci, int countfrom0)
 		j--;
 		if(0 == j)return -3;
 	}
-	xhci_print("port enabled\n");
+	xhci_print("port enabled, wait changed...\n");
 
 	//wait for portchange event
 	if(xhci_waitevent(xhci, TRB_event_PortStatusChange, countfrom0+1) < 0){

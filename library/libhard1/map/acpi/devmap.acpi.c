@@ -29,7 +29,62 @@ struct ACPIHEAD{
 	u32    creatorID;	//[1c,1f]
 	u32   creatorrev;	//[20,23]
 }__attribute__((packed));
+struct FADT{
+	struct ACPIHEAD h;
+	u32 FirmwareCtrl;
+	u32 Dsdt;
 
+	// field used in ACPI 1.0; no longer in use, for compatibility only
+	u8  Reserved;
+	u8  PreferredPowerManagementProfile;
+	u16 SCI_Interrupt;
+	u32 SMI_CommandPort;
+	u8  AcpiEnable;
+	u8  AcpiDisable;
+	u8  S4BIOS_REQ;
+	u8  PSTATE_Control;
+	u32 PM1aEventBlock;
+	u32 PM1bEventBlock;
+	u32 PM1aControlBlock;
+	u32 PM1bControlBlock;
+	u32 PM2ControlBlock;
+	u32 PMTimerBlock;
+	u32 GPE0Block;
+	u32 GPE1Block;
+	u8  PM1EventLength;
+	u8  PM1ControlLength;
+	u8  PM2ControlLength;
+	u8  PMTimerLength;
+	u8  GPE0Length;
+	u8  GPE1Length;
+	u8  GPE1Base;
+	u8  CStateControl;
+	u16 WorstC2Latency;
+	u16 WorstC3Latency;
+	u16 FlushSize;
+	u16 FlushStride;
+	u8  DutyOffset;
+	u8  DutyWidth;
+	u8  DayAlarm;
+	u8  MonthAlarm;
+	u8  Century;
+
+	// reserved in ACPI 1.0; used since ACPI 2.0+
+	u16 BootArchitectureFlags;
+
+	u8  Reserved2;
+	u32 Flags;
+
+	// 12 byte structure; see below for details
+	u8 ResetReg[0x12];
+
+	u8  ResetValue;
+	u8  Reserved3[3];
+
+	// 64bit pointers - Available on ACPI 2.0+
+	u64 X_FirmwareControl;
+	u64 X_Dsdt;
+}__attribute__((packed));
 struct HPET_BASEADDR{
 	u8  space;	//0
 	u8  width;	//1
@@ -116,6 +171,18 @@ void acpi_getportanddata(u16* p, u16* d)
 }
 
 
+static u8 have8042 = 1;
+static u8 cmos_rtc_not_present = 0;
+int acpi_have8042()
+{
+	return have8042;
+}
+int acpi_cmosrtc()
+{
+	return !cmos_rtc_not_present;
+}
+
+
 static u64 knowncores = 0;
 u64 acpi_getknowncores()
 {
@@ -186,16 +253,21 @@ void acpi_DSDT(void* p)
 }
 void acpi_FACP(void* p)
 {
-	u16 port;
-	u64 addr;
+	struct FADT* fadt = p;
 
+	u16 BootArchitectureFlags = fadt->BootArchitectureFlags;
+	say("BootArchFlag:offs=%d,data=%x\n", (void*)&fadt->BootArchitectureFlags-p, BootArchitectureFlags);
+	if(0 == (BootArchitectureFlags&2))have8042 = 0;
+	if(BootArchitectureFlags&0x20)cmos_rtc_not_present = 1;
+
+	u16 port;
 	port = *(u16*)(p+0x40);
 	say("port=%p\n", port);
+	power_port = port;
 
+	u64 addr;
 	addr = *(u32*)(p+0x28);
 	acpi_DSDT((void*)addr);
-
-	power_port = port;
 }
 void acpi_HPET(void* p)
 {

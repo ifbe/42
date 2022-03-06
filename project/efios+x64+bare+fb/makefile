@@ -4,7 +4,9 @@ CC=x86_64-w64-mingw32-gcc
 CF="-c -fPIC -ffreestanding -mno-red-zone -Wno-address-of-packed-member -I.. -I../gnu-efi/inc -I../gnu-efi/inc/x86_64 -I../gnu-efi/inc/protocol"
 LD=x86_64-w64-mingw32-gcc
 LF=-e efi_main -nostdlib -fno-use-linker-plugin -Wl,-dll -shared -Wl,--subsystem,10
-all:libboot0 libboot1 libhard1 libsoft0 libsoft1 libuser0 libuser1 gnuefi
+all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1 gnuefi
+	make -s link
+withclang:libboot0 libboot1 libhard1 libsoft0 libsoft1 libuser0 libuser1 gnuefi
 	make -f makefile.clang -s libhard0	#mingw64 bug: attribute interrupt
 	make -s link
 .PHONY:libboot0
