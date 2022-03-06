@@ -70,7 +70,7 @@ void say(void*, ...);
 
 static volatile u8* addr_localapic = 0;
 static volatile u8* addr_irqioapic = 0;
-void apicwhere()
+void localapic_check()
 {
 	say("@apicwhere\n");
 

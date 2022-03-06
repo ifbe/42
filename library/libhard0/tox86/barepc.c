@@ -8,7 +8,7 @@ void* getdevmap();
 void parsedevmap_acpi(void*);
 void parsedevmap_dts(void*);
 //
-void apicwhere();
+void localapic_check();
 void initirq();
 //
 void initcpu_bsp(struct item* p);
@@ -39,7 +39,7 @@ void inithardware()
 	parsedevmap_acpi(getdevmap());
 
 	//localapic check
-	apicwhere();
+	localapic_check();
 
 	//cpu_bsp: gdt,paging,idt,apic...
 	p = device_create(_cpu_, 0, 0, 0);

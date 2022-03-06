@@ -3,7 +3,6 @@ u8 in8(u16 port);
 void out8(u16 port, u8 data);
 //
 int acpi_have8042();
-void portkbd_disable();
 //
 void enableirq(int);
 //
@@ -14,10 +13,6 @@ void say(void*, ...);
 
 
 static int enable = 1;
-void portkbd_disable()
-{
-	enable = 0;
-}
 int kbdled(u8 on)
 {
 	//bit0=scrolllock, bit1=numlock, bit2=capslock
