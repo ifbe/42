@@ -1,5 +1,5 @@
 #include "libhard.h"
-#include "usb.h"
+#include "drv-usb.h"
 void DEVICE_REQUEST_SET_CONFIGURATION(void* req, u16 conf);
 void filemanager_registersupplier(void*, void*);
 

@@ -1,9 +1,9 @@
-#include "naming.h"
-#include "struct.h"
-#include "bignode.h"
+#include "my-naming.h"
+#include "my-struct.h"
+#include "my-bignode.h"
 
-#include "draw.h"
-#include "carve.h"
+#include "my-draw.h"
+#include "my-carve.h"
 
 
 

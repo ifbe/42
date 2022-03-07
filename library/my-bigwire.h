@@ -1,5 +1,5 @@
-#include "naming.h"
-#include "struct.h"
+#include "my-naming.h"
+#include "my-struct.h"
 #ifndef _BIGWIRE_H
 #define _BIGWIRE_H
 

@@ -1,5 +1,5 @@
 #include "libhard.h"
-#include "usb.h"
+#include "drv-usb.h"
 void eventwrite(u64,u64,u64,u64);
 void DEVICE_REQUEST_SET_CONFIGURATION(void* req, u16 conf);
 void INTERFACE_REQUEST_GET_REPORT_DESC(void* req, u16 intf, u16 typeindex, u16 len);

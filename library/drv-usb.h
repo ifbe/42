@@ -1,4 +1,4 @@
-#include "struct.h"
+#include "my-struct.h"
 
 
 

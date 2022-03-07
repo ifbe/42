@@ -1,5 +1,5 @@
-#include "naming.h"
-#include "struct.h"
+#include "my-naming.h"
+#include "my-struct.h"
 #ifndef _BIGNODE_H
 #define _BIGNODE_H
 
