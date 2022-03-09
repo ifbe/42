@@ -191,8 +191,8 @@ int wndmgr_rgba_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key
 	struct relation* the = wndmgr_find_maxw(wnd);
 
 	struct event* ev = buf;
+	short* pp = (short*)ev;
 	if('p' == (ev->what&0xff)){
-		short* pp = (short*)ev;
 		wnd->whdf.ix0 += pp[0];
 		if(wnd->whdf.ix0 < 0)wnd->whdf.ix0 = 0;
 		if(wnd->whdf.ix0 >= wnd->whdf.width)wnd->whdf.ix0 = wnd->whdf.width-1;
@@ -202,6 +202,7 @@ int wndmgr_rgba_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key
 		if(wnd->whdf.iy0 >= wnd->whdf.height)wnd->whdf.iy0 = wnd->whdf.height-1;
 	}
 	if(0x2b70 == ev->what){
+		say("mouse dn: %d,%d\n",pp[0],pp[1]);
 		hit = wndmgr_find_close(wnd, wnd->whdf.ix0, wnd->whdf.iy0);
 		//say("the=%p,hit=%p\n",the,hit);
 		if(hit){
@@ -214,7 +215,7 @@ int wndmgr_rgba_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key
 		return 0;
 	}
 	if(0x2d70 == ev->what){
-		say("mouse up\n");
+		say("mouse up: %d,%d\n",pp[0],pp[1]);
 		return 0;
 	}
 	if(0x4070 == ev->what){

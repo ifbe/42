@@ -236,7 +236,7 @@ static int usbstor_readdata(struct item* usb,void* foot,struct halfrel* stack,in
 	struct perusb* perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
 
-	struct perstor* info = (void*)(perusb->freebuf);
+	struct perstor* info = (void*)(perusb->perfunc);
 	if(0 == info->host)return 0;
 	if(0 == info->blocksize)return 0;
 
@@ -324,7 +324,7 @@ static int usbstor_readinfo(struct item* usb,void* foot,struct halfrel* stack,in
 	struct perusb* perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
 
-	struct perstor* info = (void*)(perusb->freebuf);
+	struct perstor* info = (void*)(perusb->perfunc);
 	if(0 == info->host)return 0;
 	if(0 == info->blocksize)return 0;
 
@@ -367,6 +367,8 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	struct perusb* perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
 
+	struct perstor* perstor = (void*)perusb->perfunc;
+
 	struct DeviceDescriptor* devdesc = &perusb->origin.devdesc;
 	struct descnode* confnode = &perusb->parsed.node[0];
 	struct ConfigurationDescriptor* confdesc = usbdesc_offs2addr(perusb, confnode->real);
@@ -403,8 +405,8 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	j = intfnode->lchild;
 	while(1){
 		if(0 == j)break;
-		endpnode = (void*)perusb + j;
-		endpdesc = (void*)perusb + endpnode->real;
+		endpnode = usbdesc_offs2addr(perusb,  j);
+		endpdesc = usbdesc_offs2addr(perusb, endpnode->real);
 
 		switch(endpdesc->bDescriptorType){
 		case 5:{
@@ -457,9 +459,9 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 
 //------------------------send INQUERY------------------------
 	say("[usbdisk]Inquiry...\n");
-	struct CommandBlockWrapper* inqcbw = (void*)(perusb->freebuf);
-	struct CommandStatusWrapper* inqcsw = (void*)(perusb->freebuf + 0x100);
-	struct INQUERY_Reply* inqrep = (void*)(perusb->freebuf + 0x200);
+	struct CommandBlockWrapper* inqcbw = (void*)perstor + 0x100;
+	struct CommandStatusWrapper* inqcsw = (void*)perstor + 0x200;
+	struct INQUERY_Reply* inqrep = (void*)perstor + 0x300;
 	usbstor_ZeroMemory(inqcbw, 0x1f);	//31byte
 	usbstor_ZeroMemory(inqcsw, 0x0d);	//14byte
 	usbstor_ZeroMemory(inqrep, 0x24);	//36byte
@@ -505,8 +507,8 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 
 //------------------------send TestUnitReady------------------------
 	say("[usbdisk]Test Unit Ready...\n");
-	struct CommandBlockWrapper* turcbw = (void*)(perusb->freebuf);
-	struct CommandStatusWrapper* turcsw = (void*)(perusb->freebuf + 0x100);
+	struct CommandBlockWrapper* turcbw = (void*)perstor + 0x100;
+	struct CommandStatusWrapper* turcsw = (void*)perstor + 0x200;
 	usbstor_ZeroMemory(turcbw, 0x1f);
 	usbstor_ZeroMemory(turcsw, 0x0d);
 
@@ -538,9 +540,9 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 
 //------------------------send ReadCapacity------------------------
 	say("[usbdisk]Read Capacity...\n");
-	struct CommandBlockWrapper* capcbw = (void*)(perusb->freebuf);
-	struct CommandStatusWrapper* capcsw = (void*)(perusb->freebuf + 0x100);
-	struct READ_CAPACITY_Reply* caprep = (void*)(perusb->freebuf + 0x200);
+	struct CommandBlockWrapper* capcbw = (void*)perstor + 0x100;
+	struct CommandStatusWrapper* capcsw = (void*)perstor + 0x200;
+	struct READ_CAPACITY_Reply* caprep = (void*)perstor + 0x300;
 	usbstor_ZeroMemory(capcbw, 0x1f);
 	usbstor_ZeroMemory(capcsw, 0x0d);
 	usbstor_ZeroMemory(caprep, 8);
@@ -585,14 +587,13 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 
 
 //------------------------serve for the people------------------------
-	struct perstor* info = (void*)(perusb->freebuf);
-	usbstor_ZeroMemory(info, 0x100);
-	info->host = xhci;
-	info->slot = slot;
-	info->bulkin = inaddr;
-	info->bulkout = outaddr;
-	info->blocksize = blocksize;
-	info->totalsize = totalsize;
+	usbstor_ZeroMemory(perstor, 0x100);
+	perstor->host = xhci;
+	perstor->slot = slot;
+	perstor->bulkin = inaddr;
+	perstor->bulkout = outaddr;
+	perstor->blocksize = blocksize;
+	perstor->totalsize = totalsize;
 	usb->ongiving = (void*)usbstor_ongive;
 	usb->ontaking = (void*)usbstor_ontake;
 

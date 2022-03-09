@@ -175,6 +175,26 @@ struct report_mouse{
 
 
 
+struct perkbd{
+	int modifer;
+}__attribute__((packed));
+
+struct permouse{
+	int button;
+}__attribute__((packed));
+
+struct perfunc{		//0x10000 byte per func
+	union{
+		struct perkbd perkbd;
+		struct permouse permouse;
+		u8 padding[0x1000];
+	};
+	u8 trb[0xf000];
+}__attribute__((packed));
+
+
+
+
 void INTERFACE_REQUEST_GET_REPORT_DESC(struct UsbRequest* req, u16 intf, u16 typeindex, u16 len)
 {
 	req->bmRequestType = 0x81;
@@ -238,7 +258,13 @@ void INTERFACE_REQUEST_SET_PROTOCOL(struct UsbRequest* req, u16 intf, u16 val)
 static int parsekeyboard(struct item* usb,int xxx, struct item* xhci,int endp,
 	void* sbuf,int slen, void* rbuf,int rlen)
 {
+	struct perusb* perusb = usb->priv_ptr;
+	if(0 == perusb)return 0;
+	struct perfunc* perfunc = (void*)perusb->perfunc;
+	//if(0 == perfunc)return 0;
+
 	struct report_keyboard* report = *(void**)sbuf;
+	perfunc->perkbd.modifer = report->modifier;
 
 	int j,k,v;
 	for(j=0;j<6;j++){
@@ -264,12 +290,23 @@ static int parsekeyboard(struct item* usb,int xxx, struct item* xhci,int endp,
 static int parsemouse(struct item* usb,int xxx, struct item* xhci,int endp,
 	void* sbuf,int slen, void* rbuf,int rlen)
 {
+	struct perusb* perusb = usb->priv_ptr;
+	if(0 == perusb)return 0;
+	struct perfunc* perfunc = (void*)perusb->perfunc;
+	//if(0 == perfunc)return 0;
+
 	struct report_mouse* report = *(void**)sbuf;
 	//say("[usbmouse]btn=%x,dx=%d,dy=%d\n", report->btn, report->dx, report->dy);
 	//printmemory(in, 
 
 	u64 type = 0x4070;
-	if(report->btn)type = 0x2b70;
+	if(perfunc->permouse.button != report->btn){
+		say("mouse key: old=%x,new=%x\n",perfunc->permouse.button, report->btn);
+		if(report->btn)type = 0x2b70;
+		else type = 0x2d70;
+
+		perfunc->permouse.button = report->btn;
+	}
 
 	short xx[4];
 	xx[0] = report->dx;
@@ -280,8 +317,22 @@ static int parsemouse(struct item* usb,int xxx, struct item* xhci,int endp,
 static int parsemouse_g502(struct item* usb,int xxx, struct item* xhci,int endp,
 	void* sbuf,int slen, void* rbuf,int rlen)
 {
+	struct perusb* perusb = usb->priv_ptr;
+	if(0 == perusb)return 0;
+	struct perfunc* perfunc = (void*)perusb->perfunc;
+	//if(0 == perfunc)return 0;
+
 	char* in = *(void**)sbuf;
+	//say("[usbmouse]btn=%x,dx=%d,dy=%d\n", in[0], in[1], in[2]);
+
 	u64 type = 0x4070;
+	if(perfunc->permouse.button != in[0]){
+		say("mouse key: old=%x,new=%x\n",perfunc->permouse.button, in[0]);
+		if(in[0])type = 0x2b70;
+		else type = 0x2d70;
+
+		perfunc->permouse.button = in[0];
+	}
 
 	short xx[4];
 	xx[0] = in[2];
@@ -300,6 +351,8 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	//per device
 	struct perusb* perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
+	struct perfunc* perfunc = (void*)perusb->perfunc;
+	//if(0 == perfunc)return 0;
 
 	struct DeviceDescriptor* devdesc = &perusb->origin.devdesc;
 	struct descnode* confnode = &perusb->parsed.node[0];
@@ -351,8 +404,8 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	j = intfnode->lchild;
 	while(1){
 		if(0 == j)break;
-		endpnode = (void*)perusb + j;
-		endpdesc = (void*)perusb + endpnode->real;
+		endpnode = usbdesc_offs2addr(perusb, j);
+		endpdesc = usbdesc_offs2addr(perusb, endpnode->real);
 
 		switch(endpdesc->bDescriptorType){
 		case 5:{
@@ -478,10 +531,10 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	say("[usbhid]making trb\n");
 	if(pktlen > 0x40)pktlen = 0x40;
 	ret = xhci->give_pxpxpxpx(
-		xhci,slot|(inaddr<<8),
-		0,0,
-		perusb->freebuf,pktlen,
-		usb,0
+		xhci, slot|(inaddr<<8),
+		0, 0,
+		perfunc->trb, pktlen,
+		usb, 0
 	);
 	return 0;
 }

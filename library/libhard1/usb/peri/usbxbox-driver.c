@@ -99,6 +99,13 @@ struct xboxonecommand{
 
 
 
+struct perfunc{
+	u8 trb[0];
+}__attribute__((packed));
+
+
+
+
 static int xboxhid_ongive(struct item* usb,int xxx, struct item* xhci,int endp, void* sbuf,int slen, void* rbuf,int rlen)
 {
 	struct perusb* perusb = usb->priv_ptr;
@@ -132,6 +139,8 @@ int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	//per device
 	struct perusb* perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
+	struct perfunc* perfunc = (void*)perusb->perfunc;
+	//if(0 == perfunc)return 0;
 
 	struct DeviceDescriptor* devdesc = &perusb->origin.devdesc;
 	struct descnode* confnode = &perusb->parsed.node[0];
@@ -240,9 +249,9 @@ int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 
 	if(pktlen > 0x40)pktlen = 0x40;
 	ret = xhci->give_pxpxpxpx(
-		xhci,slot|(inaddr<<8),
-		0,0,
-		perusb->freebuf,pktlen,
+		xhci, slot|(inaddr<<8),
+		0, 0,
+		perfunc->trb, pktlen,
 		usb,0
 	);
 	return 0;

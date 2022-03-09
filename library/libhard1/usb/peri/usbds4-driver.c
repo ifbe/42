@@ -55,6 +55,13 @@ struct ds4report{
 
 
 
+struct perfunc{
+	u8 trb[0];
+}__attribute__((packed));
+
+
+
+
 static void dpad2lrdu(u8 dpad, u8* p)
 {
 	p[0] = p[1] = p[2] = p[3] = 0;
@@ -92,6 +99,8 @@ int ds4hid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	//per device
 	struct perusb* perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
+	struct perfunc* perfunc = (void*)perusb->perfunc;
+	//if(0 == perfunc)return 0;
 
 	struct DeviceDescriptor* devdesc = &perusb->origin.devdesc;
 	struct descnode* confnode = &perusb->parsed.node[0];
@@ -215,9 +224,9 @@ int ds4hid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 
 	if(pktlen > 0x40)pktlen = 0x40;
 	ret = xhci->give_pxpxpxpx(
-		xhci,slot|(inaddr<<8),
-		0,0,
-		perusb->freebuf,pktlen,
+		xhci, slot|(inaddr<<8),
+		0, 0,
+		perfunc->trb, pktlen,
 		usb,0
 	);
 	return 0;

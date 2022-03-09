@@ -6,6 +6,7 @@ LD=x86_64-w64-mingw32-gcc
 LF=-e efi_main -nostdlib -fno-use-linker-plugin -Wl,-dll -shared -Wl,--subsystem,10
 all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1 gnuefi
 	make -s link
+	@echo "--------mingw may have bug, if so, make withclang--------"
 withclang:libboot0 libboot1 libhard1 libsoft0 libsoft1 libuser0 libuser1 gnuefi
 	make -f makefile.clang -s libhard0	#mingw64 bug: attribute interrupt
 	make -s link
@@ -76,8 +77,9 @@ linuxremove:
 
 
 #----------------mac----------------
-macmkfs:
+macdd:
 	dd if=/dev/zero of=test.img bs=1048576 count=64
+macmkfs:
 	$(eval DISK := $(shell hdiutil attach -nomount test.img))
 	newfs_msdos -F 32 $(DISK)
 	hdiutil detach $(DISK)
@@ -92,6 +94,13 @@ macumount:
 	hdiutil detach mntdir
 macremove:
 	rm test.img
+macall:
+	make -s macmkfs
+	make -s macmount
+	make -s maccopy
+	make -s macumount
+	make -s vhd
+	make -s run
 
 
 #----------------run----------------

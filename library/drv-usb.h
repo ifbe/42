@@ -270,5 +270,5 @@ struct perusb{
 	};
 
 	//[0x10000, 0xfffff]
-	u8 freebuf[0];
+	u8 perfunc[0];
 }__attribute__((packed));
