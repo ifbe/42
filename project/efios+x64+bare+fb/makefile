@@ -106,9 +106,11 @@ macall:
 #----------------run----------------
 vhd:
 	qemu-img convert -f raw -O vpc -o subformat=fixed test.img test.vhd
+vmdk:
+	qemu-img convert -f raw -O vmdk test.img test.vmdk
 run:
 	../../../live/virt/qemu/ovmf.sh "qemu-system-x86_64" $(shell pwd)/test.vhd $(shell pwd)/test.img
 
 clean:
 	rm -rf lib*/*.o
-	rm -f *.o *.EFI *.img *.vhd
+	rm -f *.o *.EFI

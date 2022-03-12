@@ -5,21 +5,6 @@ CF:=-c -O2 -fPIC -I..
 
 
 
-#---------------------else-------------------------
-anyelse_c = \
-anyusb/ehci/ehci-driver.c \
-anyusb/xhci/xhci-driver.c
-anyelse_o = $(patsubst %.c, %.o, $(anyelse_c))
-
-mmc_c = \
-anymmc/usbhost/sdhci.c \
-anymmc/usbperi/sdcard.c
-mmc_o = $(patsubst %.c, %.o, $(mmc_c))
-
-
-
-
-
 #---------------------arm32-------------------------
 arm_c = \
 toarm/cpu32/arm.fp.c \
@@ -183,6 +168,10 @@ device.c
 x64_o = $(patsubst %.c, %.o, $(x64_c))
 
 barex64_c = \
+anyusb/ehci/ehci-driver.c \
+anyusb/xhci/xhci-driver.c \
+anystor/ahci/ahci-driver.c \
+anystor/nvme/nvme-driver.c \
 tox86/cpu64kern/x64.paging.c \
 tox86/cpu64virt/vt/x64.vt.c \
 tox86/cpu64virt/svm/x64.svm.c \
@@ -192,6 +181,7 @@ tox86/bus/pci/pci-port.c \
 tox86/bus/pci/pci-mmio.c \
 tox86/bus/pci/pci.ahci.c \
 tox86/bus/pci/pci.xhci.c \
+tox86/bus/pci/pci.nvme.c \
 tox86/irq/irq.c \
 tox86/irq/8259/8259.c \
 tox86/irq/apic/apic.io.c \
@@ -199,8 +189,6 @@ tox86/irq/apic/apic.local.c \
 tox86/irq/apic/apic.timer.c \
 tox86/pmic/power.c \
 tox86/stor/ide-driver.c \
-tox86/stor/ahci-driver.c \
-tox86/stor/nvme-driver.c \
 tox86/timer/825x.c \
 tox86/timer/rtc.c \
 tox86/wire/bare.wire.bt.c \
@@ -261,7 +249,7 @@ inwin/hardware.c
 winx64_o = $(patsubst %.c, %.o, $(winx64_c))
 
 .PHONY:barex64
-barex64:$(x64_o) $(barex64_o) $(anyelse_o)
+barex64:$(x64_o) $(barex64_o)
 	$(CC) $(CF) tox86/cpu64kern/x64.asm.c                             -o $(DIR)/x64.asm.o
 	yasm -a x86 -m amd64 -f elf64 tox86/cpu64kern/x64.asmhelp.asm     -o $(DIR)/x64.asmhelp.o
 	$(CC) $(CF) tox86/cpu64kern/x64.boot.c                            -o $(DIR)/x64.boot.o
