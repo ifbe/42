@@ -3,6 +3,7 @@
 void eventwrite(u64,u64,u64,u64);
 void DEVICE_REQUEST_SET_CONFIGURATION(void* req, u16 conf);
 void INTERFACE_REQUEST_SET_INTERFACE(struct UsbRequest* req, u16 intf, u16 alt);
+void INTERFACE_REQUEST_CLEAR_FEATURE(struct UsbRequest* req, u16 intf, u16 feature);
 
 int usbdesc_addr2offs(struct perusb* perusb, void* desc);
 void* usbdesc_offs2addr(struct perusb* perusb, int offs);
@@ -450,6 +451,30 @@ static int parsemouse_g502(struct item* usb,int xxx, struct item* xhci,int endp,
 	eventwrite(*(u64*)xx, type, 0, 0);
 	return 0;
 }
+static int parsemouse_qemu(struct item* usb,int xxx, struct item* xhci,int endp,
+	void* sbuf,int slen, void* rbuf,int rlen)
+{
+	struct perusb* perusb = usb->priv_ptr;
+	if(0 == perusb)return 0;
+	struct perfunc* perfunc = (void*)perusb->perfunc;
+	//if(0 == perfunc)return 0;
+
+	char* in = *(void**)sbuf;
+	//say("[usbmouse]btn=%x,dx=%d,dy=%d\n", in[0], in[1], in[2]);
+
+	u64 type = 0x4070;
+	if(perfunc->permouse.button != in[0]){
+		say("mouse key: old=%x,new=%x\n",perfunc->permouse.button, in[0]);
+		if(in[0])type = 0x2b70;
+		else type = 0x2d70;
+
+		perfunc->permouse.button = in[0];
+	}
+
+	short* pos = (void*)(in+1);
+	say("%x,%x\n", pos[0], pos[1]);
+	return 0;
+}
 static int usbhid_ongive(struct item* usb,int xxx, struct item* xhci,int endp, void* sbuf,int slen, void* rbuf,int rlen)
 {
 	void* data = *(void**)sbuf;
@@ -467,12 +492,7 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	struct DeviceDescriptor* devdesc = &perusb->origin.devdesc;
 	struct descnode* confnode = &perusb->parsed.node[0];
 	struct ConfigurationDescriptor* confdesc = usbdesc_offs2addr(perusb, confnode->real);
-/*
-	if( (0x0e0f == devdesc->idVendor) && (0x0003 == devdesc->idProduct) ){
-		intfnode = usbdesc_offs2addr(perusb, confnode->rchild);
-		intfdesc = usbdesc_offs2addr(perusb, intfnode->real);
-	}
-*/
+
 //------------------------check type------------------------
 	if(3 == intfdesc->bInterfaceClass){
 		say("[usbhid]this is hid device\n");
@@ -489,8 +509,8 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		say("[usbhid]mouse\n");
 	}
 	else{
-		if( (0x0e0f == devdesc->idVendor) && (0x0003 == devdesc->idProduct) ){
-			say("vmware: mouse\n");
+		if( (0x0627 == devdesc->idVendor) && (0x0001 == devdesc->idProduct) ){
+			say("qemu: mouse\n");
 		}
 		else{
 			say("[usbhid]proto=%x, unknown, byebye\n",intfdesc->bInterfaceProtocol);
@@ -502,8 +522,8 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		say("[usbhid]bootmode\n");
 	}
 	else{
-		if( (0x0e0f == devdesc->idVendor) && (0x0003 == devdesc->idProduct) ){
-			say("vmware: unknown mode\n");
+		if( (0x0627 == devdesc->idVendor) && (0x0001 == devdesc->idProduct) ){
+			say("qemu: unknown mode\n");
 		}
 		else{
 			say("[usbhid]reportmode, byebye\n");
@@ -570,24 +590,22 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 				hiddesc->bReportDescType, hiddesc->wReportDescLength
 			);
 
-			if( (0x0e0f == devdesc->idVendor) && (0x0003 == devdesc->idProduct) ){
-				say("get report\n");
-				void* temp = usbdesc_offs2addr(perusb, perusb->origin.byteused);
-				INTERFACE_REQUEST_GET_REPORT_DESC(&req,
-					intfdesc->bInterfaceNumber,
-					0 | (hiddesc->bReportDescType<<8),
-					hiddesc->wReportDescLength
-				);
-				ret = xhci->give_pxpxpxpx(
-					xhci,slot,
-					0,0,
-					&req,8,
-					temp,hiddesc->wReportDescLength
-				);
-				if(ret >= 0){
-					//printmemory(temp,hiddesc->wReportDescLength);
-					printreport(temp,hiddesc->wReportDescLength);
-				}
+			say("get reportdesc\n");
+			void* temp = usbdesc_offs2addr(perusb, perusb->origin.byteused);
+			INTERFACE_REQUEST_GET_REPORT_DESC(&req,
+				intfdesc->bInterfaceNumber,
+				0 | (hiddesc->bReportDescType<<8),
+				hiddesc->wReportDescLength
+			);
+			ret = xhci->give_pxpxpxpx(
+				xhci,slot,
+				0,0,
+				&req,8,
+				temp,hiddesc->wReportDescLength
+			);
+			if(ret >= 0){
+				//printmemory(temp,hiddesc->wReportDescLength);
+				printreport(temp,hiddesc->wReportDescLength);
 			}
 			break;
 		}//hid desc
@@ -609,7 +627,7 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		(0x1702 == devdesc->idProduct)){		//special keyboard must set protocol
 */
 	int need_to_set_protocol = 1;
-	if( (0x0e0f == devdesc->idVendor) && (0x0003 == devdesc->idProduct) ){
+	if( (0x0627 == devdesc->idVendor) && (0x0001 == devdesc->idProduct) ){
 		need_to_set_protocol = 0;
 	}
 	if(2 == intfdesc->bInterfaceProtocol){
@@ -619,7 +637,7 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	}
 	if(need_to_set_protocol){
 		say("[usbhid]set_protocol\n");
-		INTERFACE_REQUEST_SET_PROTOCOL(&req, 0, 0);
+		INTERFACE_REQUEST_SET_PROTOCOL(&req, intfdesc->bInterfaceNumber, 0);
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
@@ -642,38 +660,13 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		if(ret < 0)return -10;
 	}
 
-	int need_to_set_altinterface = 0;
-	if(need_to_set_altinterface){
-		say("[usbhid]set_interface\n");
-		INTERFACE_REQUEST_SET_INTERFACE(&req, intfdesc->bInterfaceNumber, intfdesc->bAlternateSetting);
-		ret = xhci->give_pxpxpxpx(
-			xhci,slot,
-			0,0,
-			&req,8,
-			0,0
-		);
-		if(4 != ret)return -11;
+//------------------------callback------------------------
+	if(0 == intfdesc->bInterfaceProtocol){
+		if( (0x0627 == devdesc->idVendor) && (0x0001 == devdesc->idProduct) ){
+			usb->ongiving = (void*)parsemouse_qemu;
+		}
 	}
-
-	int need_to_set_idle = 0;
-	if( (0x0e0f == devdesc->idVendor) && (0x0003 == devdesc->idProduct) ){
-		need_to_set_idle = 0;
-	}
-	if(need_to_set_idle){
-		say("set idle\n");
-		INTERFACE_REQUEST_SET_IDLE(&req,
-			intfdesc->bInterfaceNumber,
-			0
-		);
-		ret = xhci->give_pxpxpxpx(
-			xhci,slot,
-			0,0,
-			&req,8,
-			0,0
-		);
-	}
-//------------------------transfer ring------------------------
-	if(1 == intfdesc->bInterfaceProtocol){
+	else if(1 == intfdesc->bInterfaceProtocol){
 		usb->ongiving = (void*)parsekeyboard;
 	}
 	else if(2 == intfdesc->bInterfaceProtocol){
@@ -688,6 +681,7 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		usb->ongiving = (void*)usbhid_ongive;
 	}
 
+//------------------------transfer ring------------------------
 	say("[usbhid]making trb@%p\n", perfunc->trb);
 	if(pktlen > 0x40)pktlen = 0x40;
 	ret = xhci->give_pxpxpxpx(

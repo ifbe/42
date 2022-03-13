@@ -15,6 +15,7 @@ usb/peri/usbany-driver.c \
 usb/peri/usbhub-driver.c \
 usb/peri/usbds4-driver.c \
 usb/peri/usbxbox-driver.c \
+usb/peri/usbvmware-driver.c \
 usb/func/usbhid-driver.c \
 usb/func/usbstor-driver.c \
 eth/eth.c \

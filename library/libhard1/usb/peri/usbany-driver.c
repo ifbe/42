@@ -3,6 +3,7 @@
 //device driver
 int usbds4_driver(struct item* usb, int xxx, struct item* xhci, int slot);
 int usbxbox_driver(struct item* usb, int xxx, struct item* xhci, int slot);
+int usbvmware_driver(struct item* usb, int xxx, struct item* xhci, int slot);
 //interface driver
 int usbhid_driver(struct item* usb, int xxx, struct item* xhci, int slot, void*, void*);
 int usbstor_driver(struct item* usb, int xxx, struct item* xhci, int slot, void*, void*);
@@ -780,6 +781,11 @@ int usbany_linkup(struct item* usb, int xxx, struct item* xhci, int slot)
 
 //-----------now that all read, choose one-------------
 	struct DeviceDescriptor* devdesc = &perusb->origin.devdesc;
+	if(0x0e0f == devdesc->idVendor){
+		if(0x0003 == devdesc->idProduct){
+			return usbvmware_driver(usb,xxx, xhci,slot);
+		}
+	}
 	if(0x045e == devdesc->idVendor){
 		switch(devdesc->idProduct){
 		case 0x0202:
