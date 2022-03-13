@@ -11,13 +11,13 @@ sensor/gyro/gyro.l3gd20.c \
 sensor/pack/g_a_b.icm20789.c \
 sensor/pack/g_a_m.lsm9ds1.c \
 sensor/pack/g_a_m.mpu9250.c \
-usb/peri/usbany-driver.c \
-usb/peri/usbhub-driver.c \
-usb/peri/usbds4-driver.c \
-usb/peri/usbxbox-driver.c \
-usb/peri/usbvmware-driver.c \
-usb/func/usbhid-driver.c \
-usb/func/usbstor-driver.c \
+usb/perdev/usbhub-driver.c \
+usb/perdev/usbds4-driver.c \
+usb/perdev/usbxbox-driver.c \
+usb/perdev/usbvmware-driver.c \
+usb/perfunc/usbhid-driver.c \
+usb/perfunc/usbstor-driver.c \
+usb/usbcore.c \
 eth/eth.c \
 driver.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
