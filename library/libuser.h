@@ -1,6 +1,7 @@
 #include "my-naming.h"
 #include "my-struct.h"
 #include "my-bignode.h"
+#include "my-bigwire.h"
 
 #include "my-draw.h"
 #include "my-carve.h"
@@ -8,31 +9,34 @@
 
 
 
-//
-#ifdef __ANDROID__
-	#define GLSL_VERSION "#version 320 es\n"
-	#define GLSL_PRECISION "precision highp float;\n"
-#else
-	#define GLSL_VERSION "#version 410 core\n"
-	#define GLSL_PRECISION "precision mediump float;\n"
-#endif
-//mouse
-#define point_onto hex16('p','+')
-#define point_away hex16('p','-')
-#define point_move hex16('p','@')
-#define point_shut hex16('p','?')
-//touch
-#define touch_onto hex16('t','+')
-#define touch_away hex16('t','-')
-#define touch_move hex16('t','@')
-#define touch_shut hex16('t','?')
 //keyboard
 #define kbd_up 0x48
 #define kbd_down 0x50
 #define kbd_left 0x4b
 #define kbd_right 0x4d
+
+
+//mouse
+#define point_mask 0xff
+#define point_type 'p'
+#define point_onto hex16('p','+')
+#define point_away hex16('p','-')
+#define point_move hex16('p','@')
+#define point_shut hex16('p','?')
+
+
+//touch
+#define touch_mask 0xff
+#define touch_type 't'
+#define touch_onto hex16('t','+')
+#define touch_away hex16('t','-')
+#define touch_move hex16('t','@')
+#define touch_shut hex16('t','?')
+
+
 //gamepad
 #define joy_mask  0xff00ff
+#define joy_type 'j'
 #define joy_left  hex32('j', 0 ,'l', 0 )
 #define joy_right hex32('j', 0 ,'r', 0 )
 //
@@ -54,40 +58,12 @@
 #define joyr_thumb   0x0040
 #define joyr_start   0x0080
 //
-#define vbuffmt_3      0x3
-#define vbuffmt_33     0x33
-#define vbuffmt_333    0x333
-#define vbuffmt_3333   0x3333
-#define vbuffmt_33333  0x33333
-#define vbuffmt_333333 0x333333
-#define vbuffmt_4      0x4
-#define vbuffmt_44     0x44
-#define vbuffmt_444    0x444
-#define vbuffmt_4444   0x4444
-#define vbuffmt_44444  0x44444
-#define vbuffmt_444444 0x444444
 #define pcm2      0x2
 #define pcm22     0x22
 #define pcm222    0x222
 #define pcm2222   0x2222
 #define pcm22222  0x22222
 #define pcm222222 0x222222
-//solid
-#define point3d  0
-#define line3d   1
-#define trigon3d 2
-#define voxel3d  3
-#define solidaid_max 4
-//opaque
-#define font3d0 0
-#define font3d1 1
-#define font3d2 2
-#define font3d3 3
-#define opaquepoint3d  4
-#define opaqueline3d   5
-#define opaquetrigon3d 6
-#define opaquevoxel3d  7
-#define opaqueaid_max 8
 
 
 
@@ -193,11 +169,6 @@ double power(double, double);
 
 
 
-
-void* samesrcprevdst(void*);
-void* samesrcnextdst(void*);
-void* samedstprevsrc(void*);
-void* samedstnextsrc(void*);
 
 //
 u32 getrandom();

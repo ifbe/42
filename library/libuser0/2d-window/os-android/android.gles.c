@@ -106,7 +106,7 @@ void initwindow()
 	while(0==height)checkevent();
 	//fusion = arterycreate(_easyag_, 0, 0, 0);
 	//fusion = arterycreate(_mahony_, 0, 0, 0);
-	fusion = arterycreate(_madgwick_, 0, 0, 0);
+	fusion = artery_create(_madgwick_, 0, 0, 0);
 }
 void freewindow()
 {

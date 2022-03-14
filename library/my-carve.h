@@ -1,4 +1,42 @@
 #include "my-bignode.h"
+//
+#ifdef __ANDROID__
+	#define GLSL_VERSION "#version 320 es\n"
+	#define GLSL_PRECISION "precision highp float;\n"
+#else
+	#define GLSL_VERSION "#version 410 core\n"
+	#define GLSL_PRECISION "precision mediump float;\n"
+#endif
+
+//solid
+#define point3d  0
+#define line3d   1
+#define trigon3d 2
+#define voxel3d  3
+#define solidaid_max 4
+//opaque
+#define font3d0 0
+#define font3d1 1
+#define font3d2 2
+#define font3d3 3
+#define opaquepoint3d  4
+#define opaqueline3d   5
+#define opaquetrigon3d 6
+#define opaquevoxel3d  7
+#define opaqueaid_max 8
+//
+#define vbuffmt_3      0x3
+#define vbuffmt_33     0x33
+#define vbuffmt_333    0x333
+#define vbuffmt_3333   0x3333
+#define vbuffmt_33333  0x33333
+#define vbuffmt_333333 0x333333
+#define vbuffmt_4      0x4
+#define vbuffmt_44     0x44
+#define vbuffmt_444    0x444
+#define vbuffmt_4444   0x4444
+#define vbuffmt_44444  0x44444
+#define vbuffmt_444444 0x444444
 
 
 

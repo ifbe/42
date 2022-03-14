@@ -287,6 +287,8 @@ int usbvmware_perintf(struct item* usb,int xxx, struct item* xhci,int slot, stru
 		perfunc->trb, pktlen,
 		usb, 0
 	);
+
+	return 0;
 }
 int usbvmware_driver(struct item* usb,int xxx, struct item* xhci,int slot)
 {
@@ -311,4 +313,5 @@ int usbvmware_driver(struct item* usb,int xxx, struct item* xhci,int slot)
 	intfdesc = usbdesc_offs2addr(perusb, intfnode->real);
 	usbvmware_perintf(usb,xxx, xhci,slot, intfnode,intfdesc);
 
+	return 0;
 }

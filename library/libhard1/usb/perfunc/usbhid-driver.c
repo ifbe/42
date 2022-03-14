@@ -268,7 +268,7 @@ int printreport_getvalue(u8* buf, int len)
 }
 void printreport(u8* buf, int len)
 {
-	int j;
+	int j = 0;
 	int type,size;
 	while(j<len){
 		type = buf[j] & 0xfc;

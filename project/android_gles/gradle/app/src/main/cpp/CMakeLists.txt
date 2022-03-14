@@ -41,7 +41,12 @@ ${LIB42}/libboot0/origin.c
 )
 set(libboot1
 ${LIB42}/libboot1/data/bignode.c
-${LIB42}/libboot1/data/relation.c
+${LIB42}/libboot1/data/bignode_self.c
+${LIB42}/libboot1/data/rel.c
+${LIB42}/libboot1/data/rel_0jump.c
+${LIB42}/libboot1/data/rel_1jump.c
+${LIB42}/libboot1/data/rel_2jump.c
+${LIB42}/libboot1/data/rel_3jump.c
 ${LIB42}/libboot1/data/linklist.c
 ${LIB42}/libboot1/data/rbtree.c
 ${LIB42}/libboot1/inout/in.ev.c
@@ -53,10 +58,12 @@ ${LIB42}/libboot1/loop/loop.poller.c
 ${LIB42}/libboot1/loop/loop.pulser.c
 ${LIB42}/libboot1/loop/loop.waiter.c
 ${LIB42}/libboot1/setup/setup.compiler.c
+${LIB42}/libboot1/setup/setup.guiapp.c
 ${LIB42}/libboot1/setup/setup.kernel.c
 ${LIB42}/libboot1/setup/setup.myml.c
 ${LIB42}/libboot1/setup/setup.mython.c
-${LIB42}/libboot1/setup/setup.guiapp.c
+${LIB42}/libboot1/setup/setup.subcmd.c
+${LIB42}/libboot1/setup/setup.term.c
 ${LIB42}/libboot1/bootup.c
 )
 if(ANDROID_ABI STREQUAL armeabi-v7a)
@@ -122,12 +129,13 @@ ${LIB42}/libhard1/sensor/gyro/gyro.l3gd20.c
 ${LIB42}/libhard1/sensor/pack/g_a_b.icm20789.c
 ${LIB42}/libhard1/sensor/pack/g_a_m.lsm9ds1.c
 ${LIB42}/libhard1/sensor/pack/g_a_m.mpu9250.c
-${LIB42}/libhard1/usb/peri/usbany-driver.c
-${LIB42}/libhard1/usb/peri/usbhub-driver.c
-${LIB42}/libhard1/usb/peri/usbds4-driver.c
-${LIB42}/libhard1/usb/peri/usbxbox-driver.c
-${LIB42}/libhard1/usb/func/usbhid-driver.c
-${LIB42}/libhard1/usb/func/usbstor-driver.c
+${LIB42}/libhard1/usb/usbcore.c
+${LIB42}/libhard1/usb/perdev/usbhub-driver.c
+${LIB42}/libhard1/usb/perdev/usbds4-driver.c
+${LIB42}/libhard1/usb/perdev/usbxbox-driver.c
+${LIB42}/libhard1/usb/perdev/usbvmware-driver.c
+${LIB42}/libhard1/usb/perfunc/usbhid-driver.c
+${LIB42}/libhard1/usb/perfunc/usbstor-driver.c
 ${LIB42}/libhard1/driver.c
 )
 set(libsoft0
@@ -345,7 +353,6 @@ ${LIB42}/libsoft1/libnet/4.use/udp/udp.trav.c
 ${LIB42}/libsoft1/libnet/4.use/tcp/tcp.dl.c
 ${LIB42}/libsoft1/libnet/4.use/tcp/tcp.ftp.c
 ${LIB42}/libsoft1/libnet/4.use/tcp/tcp.fuckgfw.c
-${LIB42}/libsoft1/libnet/4.use/tcp/tcp.http.c
 ${LIB42}/libsoft1/libnet/4.use/tcp/tcp.party.c
 ${LIB42}/libsoft1/libnet/4.use/tcp/tcp.proxy.c
 ${LIB42}/libsoft1/libnet/4.use/tcp/tcp.rdp.c
@@ -359,6 +366,9 @@ ${LIB42}/libsoft1/libnet/4.use/tcp/tcp.tls1_3.c
 ${LIB42}/libsoft1/libnet/4.use/tcp/tcp.trav.c
 ${LIB42}/libsoft1/libnet/4.use/tcp/tcp.vnc.c
 ${LIB42}/libsoft1/libnet/4.use/tcp/tcp.ws.c
+${LIB42}/libsoft1/libnet/4.use/any/http1.c
+${LIB42}/libsoft1/libnet/4.use/any/http2.c
+${LIB42}/libsoft1/libnet/4.use/any/http3.c
 ${LIB42}/libsoft1/libphys/phys.elec.c
 ${LIB42}/libsoft1/libphys/phys.mech.c
 ${LIB42}/libsoft1/libphys/phys.rigid.c
