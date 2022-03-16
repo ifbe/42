@@ -281,11 +281,16 @@ struct dx11easy{
 	struct dx11data* solid;
 	struct dx11data* opaque;
 };
-struct dx11list{
+struct dx11world{
 	struct dx11data** camera;
 	struct dx11data** light;
 	struct dx11data** solid;
 	struct dx11data** opaque;
+};
+struct dx11list{
+	struct dx11world world[2];
+	void* hwnd;
+	void* spsave;
 };
 struct dx11cmdq{
 	u64* data;

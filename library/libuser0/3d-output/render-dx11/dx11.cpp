@@ -461,14 +461,14 @@ void Render_one(struct dx11data* cam, struct dx11data* lit, struct dx11data* one
 void Render_all(struct dx11data** cam, struct dx11data** lit, struct dx11data** solid, struct dx11data** opaque, _obj* wnd, struct fstyle* area)
 {
 	//viewport
-	float x0 = area->vc[0] * wnd->fbwidth;
-	float y0 = area->vc[1] * wnd->fbheight;
-	float ww = area->vq[0] * wnd->fbwidth;
-	float hh = area->vq[1] * wnd->fbheight;
+	float x0 = area->vc[0] * wnd->whdf.fbwidth;
+	float y0 = area->vc[1] * wnd->whdf.fbheight;
+	float ww = area->vq[0] * wnd->whdf.fbwidth;
+	float hh = area->vq[1] * wnd->whdf.fbheight;
 
 	D3D11_VIEWPORT vp = {0};
 	vp.TopLeftX = x0;
-	vp.TopLeftY = wnd->fbheight - (y0+hh);
+	vp.TopLeftY = wnd->whdf.fbheight - (y0+hh);
 	vp.Width	= ww;
 	vp.Height	= hh;
 	vp.MinDepth = 0.0f;
@@ -536,8 +536,8 @@ BOOL InitTEXcd(_obj* wnd)
 	);
 
 	D3D11_TEXTURE2D_DESC depthStencilDesc = {0};
-	depthStencilDesc.Width				= wnd->width;
-	depthStencilDesc.Height				= wnd->height;
+	depthStencilDesc.Width				= wnd->whdf.width;
+	depthStencilDesc.Height				= wnd->whdf.height;
 	depthStencilDesc.MipLevels			= 1;
 	depthStencilDesc.ArraySize			= 1;
 	depthStencilDesc.Format				= DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -613,8 +613,8 @@ BOOL InitD3D11(_obj* wnd)
 
 	// c.准备交换链属性
 	DXGI_SWAP_CHAIN_DESC sd = {0};
-	sd.BufferDesc.Width = wnd->width;
-	sd.BufferDesc.Height = wnd->height;
+	sd.BufferDesc.Width = wnd->whdf.width;
+	sd.BufferDesc.Height = wnd->whdf.height;
 	sd.BufferDesc.RefreshRate.Numerator = 60;
 	sd.BufferDesc.RefreshRate.Denominator = 1;
 	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -625,7 +625,7 @@ BOOL InitD3D11(_obj* wnd)
 	sd.SampleDesc.Quality = m4xMsaaQuality-1;
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	sd.BufferCount = 1;
-	sd.OutputWindow = (HWND)wnd->hwnd;
+	sd.OutputWindow = (HWND)wnd->dx11list.hwnd;
 	sd.Windowed = true;
 	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	sd.Flags = 0;
@@ -695,7 +695,7 @@ BOOL InitD3D11(_obj* wnd)
 
 static void restorestackdeliverevent(_obj* wnd, struct event* ev)
 {
-	u64* save = (u64*)wnd->spsave;
+	u64* save = (u64*)wnd->dx11list.spsave;
 	if(0 == save){
 		eventwrite(ev->why, ev->what, ev->where, 0);
 		return;
@@ -710,11 +710,11 @@ static void restorestackdeliverevent(_obj* wnd, struct event* ev)
 	stack[sp+0].pchip = rel->psrcchip;
 	stack[sp+0].pfoot = rel->psrcfoot;
 	//stack[sp+0].type = rel->srctype;
-	stack[sp+0].flag = rel->srcflag;
+	stack[sp+0].foottype = rel->srcfoottype;
 	stack[sp+1].pchip = rel->pdstchip;
 	stack[sp+1].pfoot = rel->pdstfoot;
 	//stack[sp+1].type = rel->dsttype;
-	stack[sp+1].flag = rel->dstflag;
+	stack[sp+1].foottype = rel->dstfoottype;
 	entity_giveby((_obj*)rel->pdstchip, rel->pdstfoot, stack,sp+2, 0,0, ev, 0);
 }
 LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -886,8 +886,8 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			if(win){
 				FreeTEXcd();
 
-				win->fbwidth = win->width = w;
-				win->fbheight= win->height= h;
+				win->whdf.fbwidth = win->whdf.width = w;
+				win->whdf.fbheight= win->whdf.height= h;
 
 				g_dx11swapchain->ResizeBuffers(0,0,0, DXGI_FORMAT_UNKNOWN, 0);
 
@@ -914,9 +914,9 @@ BOOL InitWin32(_obj* wnd)
 {
 	RECT tmp;
 	tmp.left = 0;
-	tmp.right = wnd->width;
+	tmp.right = wnd->whdf.width;
 	tmp.top = 0;
-	tmp.bottom = wnd->height;
+	tmp.bottom = wnd->whdf.height;
 	AdjustWindowRect(&tmp, WS_OVERLAPPEDWINDOW, FALSE);
 
 	HWND hwnd = CreateWindow(
@@ -941,7 +941,7 @@ BOOL InitWin32(_obj* wnd)
 	UpdateWindow(hwnd);
 
 	SetWindowLongPtr(hwnd, GWLP_USERDATA, (u64)wnd);
-	wnd->hwnd = hwnd;
+	wnd->dx11list.hwnd = hwnd;
 	return TRUE;
 }
 
@@ -962,19 +962,19 @@ int fullwindow_taking(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* 
 			stack[sp+0].pchip = rel->psrcchip;
 			stack[sp+0].pfoot = rel->psrcfoot;
 			//stack[sp+0].type = rel->srctype;
-			stack[sp+0].flag = rel->srcflag;
+			stack[sp+0].foottype = rel->srcfoottype;
 			stack[sp+1].pchip = rel->pdstchip;
 			stack[sp+1].pfoot = rel->pdstfoot;
 			//stack[sp+1].type = rel->dsttype;
-			stack[sp+1].flag = rel->dstflag;
+			stack[sp+1].foottype = rel->dstfoottype;
 			entity_takeby((_obj*)rel->pdstchip, rel->pdstfoot, stack,sp+2, 0,'v', 0, 0);
 		}
 
 		//give
-		Upload_all(wnd->dxfull_camera, wnd->dxfull_light, wnd->dxfull_solid, wnd->dxfull_opaque);
+		Upload_all(wnd->dx11list.world[0].camera, wnd->dx11list.world[0].light, wnd->dx11list.world[0].solid, wnd->dx11list.world[0].opaque);
 
 		//draw
-		Render_all(wnd->dxfull_camera, wnd->dxfull_light, wnd->dxfull_solid, wnd->dxfull_opaque, wnd, area);
+		Render_all(wnd->dx11list.world[0].camera, wnd->dx11list.world[0].light, wnd->dx11list.world[0].solid, wnd->dx11list.world[0].opaque, wnd, area);
 
 		//next
 		rel = (struct relation*)samesrcnextdst(rel);
@@ -1011,7 +1011,7 @@ int window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,in
 	u64 save[2];
 	save[0] = (u64)stack;
 	save[1] = sp;
-	wnd->spsave = save;
+	wnd->dx11list.spsave = save;
 
 	//event
 	MSG msg = {0};
@@ -1020,7 +1020,7 @@ int window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,in
 		DispatchMessage(&msg);
 	}
 
-	wnd->spsave = 0;
+	wnd->dx11list.spsave = 0;
 	return 0;
 }
 int window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
@@ -1059,15 +1059,15 @@ int windowcreate(_obj* wnd)
 {
 	//wnd->tier
 	//wnd->type
-	wnd->fmt = _dx11list_;
+	wnd->hfmt = _dx11list_;
 	wnd->vfmt= _dx11list_;
 
-	wnd->width = wnd->fbwidth = 1024;
-	wnd->height= wnd->fbheight= 768;
-	wnd->dxfull_camera = (struct dx11data**)memorycreate(0x10000, 0);
-	wnd->dxfull_light  = (struct dx11data**)memorycreate(0x10000, 0);
-	wnd->dxfull_solid  = (struct dx11data**)memorycreate(0x10000, 0);
-	wnd->dxfull_opaque = (struct dx11data**)memorycreate(0x10000, 0);
+	wnd->whdf.width = wnd->whdf.fbwidth = 1024;
+	wnd->whdf.height= wnd->whdf.fbheight= 768;
+	wnd->dx11list.world[0].camera = (struct dx11data**)memorycreate(0x10000, 0);
+	wnd->dx11list.world[0].light  = (struct dx11data**)memorycreate(0x10000, 0);
+	wnd->dx11list.world[0].solid  = (struct dx11data**)memorycreate(0x10000, 0);
+	wnd->dx11list.world[0].opaque = (struct dx11data**)memorycreate(0x10000, 0);
 
 	if(!InitWin32(wnd))return -1;
 	if(!InitD3D11(wnd))return -1;

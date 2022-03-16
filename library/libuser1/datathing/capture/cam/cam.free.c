@@ -576,7 +576,7 @@ static void freecam_dx11_cam(
 		for(x=0;x<4;x++)mat[y][x] = own->world2clip[x][y];
 	}
 
-	wnd->dx11list.camera[0] = data;
+	wnd->dx11list.world[0].camera[0] = data;
 }
 
 

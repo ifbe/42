@@ -1,7 +1,7 @@
 #include "libhard.h"
 #include "drv-usb.h"
 //device driver
-int usbds4_driver(struct item* usb, int xxx, struct item* xhci, int slot);
+int usbdualshock_driver(struct item* usb, int xxx, struct item* xhci, int slot);
 int usbxbox_driver(struct item* usb, int xxx, struct item* xhci, int slot);
 int usbvmware_driver(struct item* usb, int xxx, struct item* xhci, int slot);
 //interface driver
@@ -805,7 +805,7 @@ int usbany_linkup(struct item* usb, int xxx, struct item* xhci, int slot)
 		case 0x05c4:
 		case 0x09cc:
 		case 0x0ba0:
-		case 0x0ce6:return usbds4_driver(usb,xxx, xhci,slot);
+		case 0x0ce6:return usbdualshock_driver(usb,xxx, xhci,slot);
 		}
 	}
 
