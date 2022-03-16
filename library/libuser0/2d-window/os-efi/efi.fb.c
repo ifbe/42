@@ -68,6 +68,7 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(foot){
+		//update area
 		int w = wnd->whdf.width;
 		int h = wnd->whdf.height + (key<<4);
 		drawsolid_rect((void*)wnd,0, 0,h, w,h+16);

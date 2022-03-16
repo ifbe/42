@@ -152,7 +152,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 					y = AMotionEvent_getY(ev, j);
 					why[0] = j;
 					why[0] = x+(y<<16)+(why[0]<<48);
-					why[1] = touch_move;
+					why[1] = touch_abs;
 					why[2] = (u64)(theapp->userData);
 					//fullwindow_write(theapp->userData, (void*)why);
 					eventwrite(why[0], why[1], why[2], why[3]);

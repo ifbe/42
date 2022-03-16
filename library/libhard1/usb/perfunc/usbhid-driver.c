@@ -1,6 +1,6 @@
 #include "libhard.h"
+#include "libuser.h"
 #include "drv-usb.h"
-void eventwrite(u64,u64,u64,u64);
 void DEVICE_REQUEST_SET_CONFIGURATION(void* req, u16 conf);
 void INTERFACE_REQUEST_SET_INTERFACE(struct UsbRequest* req, u16 intf, u16 alt);
 void INTERFACE_REQUEST_CLEAR_FEATURE(struct UsbRequest* req, u16 intf, u16 feature);
@@ -410,11 +410,11 @@ static int parsemouse(struct item* usb,int xxx, struct item* xhci,int endp,
 	//say("[usbmouse]btn=%x,dx=%d,dy=%d\n", report->btn, report->dx, report->dy);
 	//printmemory(in, 
 
-	u64 type = 0x4070;
+	u64 type = point_dlt;
 	if(perfunc->permouse.button != report->btn){
 		say("mouse key: old=%x,new=%x\n",perfunc->permouse.button, report->btn);
-		if(report->btn)type = 0x2b70;
-		else type = 0x2d70;
+		if(report->btn)type = point_onto;
+		else type = point_away;
 
 		perfunc->permouse.button = report->btn;
 	}
@@ -436,11 +436,11 @@ static int parsemouse_g502(struct item* usb,int xxx, struct item* xhci,int endp,
 	char* in = *(void**)sbuf;
 	//say("[usbmouse]btn=%x,dx=%d,dy=%d\n", in[0], in[1], in[2]);
 
-	u64 type = 0x4070;
+	u64 type = point_dlt;
 	if(perfunc->permouse.button != in[0]){
 		say("mouse key: old=%x,new=%x\n",perfunc->permouse.button, in[0]);
-		if(in[0])type = 0x2b70;
-		else type = 0x2d70;
+		if(in[0])type = point_onto;
+		else type = point_away;
 
 		perfunc->permouse.button = in[0];
 	}
@@ -462,17 +462,22 @@ static int parsemouse_qemu(struct item* usb,int xxx, struct item* xhci,int endp,
 	char* in = *(void**)sbuf;
 	//say("[usbmouse]btn=%x,dx=%d,dy=%d\n", in[0], in[1], in[2]);
 
-	u64 type = 0x4070;
+	u64 type = point_per;
 	if(perfunc->permouse.button != in[0]){
 		say("mouse key: old=%x,new=%x\n",perfunc->permouse.button, in[0]);
-		if(in[0])type = 0x2b70;
-		else type = 0x2d70;
+		if(in[0])type = point_onto;
+		else type = point_away;
 
 		perfunc->permouse.button = in[0];
 	}
 
 	short* pos = (void*)(in+1);
-	say("%x,%x\n", pos[0], pos[1]);
+	//say("%x,%x\n", pos[0], pos[1]);
+
+	short xx[4];
+	xx[0] = pos[0];
+	xx[1] = pos[1];
+	eventwrite(*(u64*)xx, type, 0, 0);
 	return 0;
 }
 static int usbhid_ongive(struct item* usb,int xxx, struct item* xhci,int endp, void* sbuf,int slen, void* rbuf,int rlen)

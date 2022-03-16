@@ -7,7 +7,6 @@ int acpi_have8042();
 void enableirq(int);
 //
 void eventwrite(u64,u64,u64,u64);
-void say(void*, ...);
 
 
 

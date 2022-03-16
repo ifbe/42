@@ -11,7 +11,6 @@ void e1000_portinit(struct item* dev, u32 addr);
 //
 u32 in32(u16 port);
 void out32(u16 port, u32 data);
-void say(void*, ...);
 
 
 

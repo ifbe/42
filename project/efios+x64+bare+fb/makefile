@@ -108,9 +108,10 @@ vhd:
 	qemu-img convert -f raw -O vpc -o subformat=fixed test.img test.vhd
 vmdk:
 	qemu-img convert -f raw -O vmdk test.img test.vmdk
-ovmf:
+qemu-mouse:
 	../../../live/virt/qemu/ovmf.sh "qemu-system-x86_64" $(shell pwd)/test.img $(shell pwd)/test.vhd
-run:
+qemu-tablet:
+qemu:
 	../../../live/virt/qemu/usb-tablet.sh "qemu-system-x86_64" $(shell pwd)/test.img $(shell pwd)/test.vhd
 
 clean:

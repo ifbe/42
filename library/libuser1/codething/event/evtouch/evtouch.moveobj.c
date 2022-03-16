@@ -56,7 +56,7 @@ int touchobj_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx,
 
 		//screen position to world position
 	}
-	if(touch_move == ev->what){
+	if(touch_abs == ev->what){
 		if(t[3] < 0)return 0;
 		if(t[3] <10)return 0;
 

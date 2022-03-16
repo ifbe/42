@@ -414,7 +414,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			//eventwrite(x + (y<<16) + (k<<48), 0x4070, addr, 0);
 
 			ev.why = x + (y<<16) + (k<<48);
-			ev.what = touch_move;
+			ev.what = touch_abs;
 			ev.where = addr;
 			//printmemory(&ev,16);
 			restorestackdeliverevent(win, &ev);

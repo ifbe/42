@@ -21,8 +21,11 @@
 #define point_type 'p'
 #define point_onto hex16('p','+')
 #define point_away hex16('p','-')
-#define point_move hex16('p','@')
 #define point_shut hex16('p','?')
+//
+#define point_abs hex16('p','@')   //absolute position(windows)
+#define point_per hex16('p','%')   //percentage position(qemu mouse)
+#define point_dlt hex16('p','~')   //delta position(usb mouse)
 
 
 //touch
@@ -30,8 +33,11 @@
 #define touch_type 't'
 #define touch_onto hex16('t','+')
 #define touch_away hex16('t','-')
-#define touch_move hex16('t','@')
 #define touch_shut hex16('t','?')
+//
+#define touch_abs hex16('t','@')
+#define touch_per hex16('t','%')
+#define touch_dlt hex16('t','~')
 
 
 //gamepad

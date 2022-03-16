@@ -191,41 +191,59 @@ int wndmgr_rgba_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key
 	struct relation* the = wndmgr_find_maxw(wnd);
 
 	struct event* ev = buf;
-	short* pp = (short*)ev;
-	if('p' == (ev->what&0xff)){
-		wnd->whdf.ix0 += pp[0];
-		if(wnd->whdf.ix0 < 0)wnd->whdf.ix0 = 0;
-		if(wnd->whdf.ix0 >= wnd->whdf.width)wnd->whdf.ix0 = wnd->whdf.width-1;
+	if(point_type == (ev->what&point_mask)){
+		short* pp = (short*)ev;
+		int tx = pp[0];
+		int ty = pp[1];
 
-		wnd->whdf.iy0 += pp[1];
-		if(wnd->whdf.iy0 < 0)wnd->whdf.iy0 = 0;
-		if(wnd->whdf.iy0 >= wnd->whdf.height)wnd->whdf.iy0 = wnd->whdf.height-1;
-	}
-	if(0x2b70 == ev->what){
-		say("mouse dn: %d,%d\n",pp[0],pp[1]);
-		hit = wndmgr_find_close(wnd, wnd->whdf.ix0, wnd->whdf.iy0);
-		//say("the=%p,hit=%p\n",the,hit);
-		if(hit){
-			struct style* tmp = (void*)(hit->srcfoot);
-			tmp->fs.vr[0] /= 2;
-			tmp->fs.vr[1] /= 2;
-			tmp->fs.vf[0] /= 2;
-			tmp->fs.vf[1] /= 2;
+		//mouse position
+		switch(ev->what){
+		case point_abs:
+			wnd->whdf.ix0 = tx;
+			wnd->whdf.iy0 = ty;
+			break;
+		case point_per:
+			wnd->whdf.ix0 = (wnd->whdf.width * tx)>>15;
+			wnd->whdf.iy0 = (wnd->whdf.height * ty)>>15;
+			break;
+		case point_dlt:
+			wnd->whdf.ix0 += tx;
+			if(wnd->whdf.ix0 < 0)wnd->whdf.ix0 = 0;
+			if(wnd->whdf.ix0 >= wnd->whdf.width)wnd->whdf.ix0 = wnd->whdf.width-1;
+
+			wnd->whdf.iy0 += ty;
+			if(wnd->whdf.iy0 < 0)wnd->whdf.iy0 = 0;
+			if(wnd->whdf.iy0 >= wnd->whdf.height)wnd->whdf.iy0 = wnd->whdf.height-1;
+			break;
 		}
-		return 0;
-	}
-	if(0x2d70 == ev->what){
-		say("mouse up: %d,%d\n",pp[0],pp[1]);
-		return 0;
-	}
-	if(0x4070 == ev->what){
-		hit = wndmgr_find_hit(wnd, wnd->whdf.ix0, wnd->whdf.iy0);
-		//say("the=%p,hit=%p\n",the,hit);
-		if(hit && the && (hit != the)){
-			struct style* hitsty = (void*)(hit->srcfoot);
-			struct style* thesty = (void*)(the->srcfoot);
-			hitsty->fs.vc[3] = thesty->fs.vc[3]+1.0;
-			the = hit;
+
+		//other work
+		if(0x2b70 == ev->what){
+			say("mouse dn: %d,%d\n",tx,ty);
+			hit = wndmgr_find_close(wnd, wnd->whdf.ix0, wnd->whdf.iy0);
+			//say("the=%p,hit=%p\n",the,hit);
+			if(hit){
+				struct style* tmp = (void*)(hit->srcfoot);
+				tmp->fs.vr[0] /= 2;
+				tmp->fs.vr[1] /= 2;
+				tmp->fs.vf[0] /= 2;
+				tmp->fs.vf[1] /= 2;
+			}
+			return 0;
+		}
+		if(0x2d70 == ev->what){
+			say("mouse up: %d,%d\n",tx,ty);
+			return 0;
+		}
+		if(0x4070 == ev->what){
+			hit = wndmgr_find_hit(wnd, wnd->whdf.ix0, wnd->whdf.iy0);
+			//say("the=%p,hit=%p\n",the,hit);
+			if(hit && the && (hit != the)){
+				struct style* hitsty = (void*)(hit->srcfoot);
+				struct style* thesty = (void*)(the->srcfoot);
+				hitsty->fs.vc[3] = thesty->fs.vc[3]+1.0;
+				the = hit;
+			}
 		}
 	}
 

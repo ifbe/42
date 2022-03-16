@@ -68,7 +68,7 @@ static int vrglass_event(_obj* act, struct fstyle* pin, struct event* ev, int le
 
 	switch(ev->what){
 	case 0x4070:
-	case touch_move:
+	case touch_abs:
 		if(0 == act->whdf.fwn)return 0;
 		t = (void*)ev;
 

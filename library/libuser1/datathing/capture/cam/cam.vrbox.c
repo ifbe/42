@@ -58,7 +58,7 @@ static int vrbox_event(_obj* act, struct fstyle* pin, struct event* ev, int len)
 	short* t;
 	switch(ev->what){
 	case 0x4070:
-	case touch_move:
+	case touch_abs:
 		if(0 == act->whdf.fwn)return 1;
 		t = (void*)ev;
 
