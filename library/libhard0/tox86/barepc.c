@@ -21,6 +21,8 @@ void init825x();        //timer.pit
 void initrtc();         //timer.rtc
 //
 void init8042();
+//
+void initvmtool();
 
 
 
@@ -64,4 +66,7 @@ void inithardware()
 	p = device_create(_pci_, 0, 0, 0);
 	initpci_port(p);
 	initpci_mmio();
+
+	//vmware
+	initvmtool();
 }

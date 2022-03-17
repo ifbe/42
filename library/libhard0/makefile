@@ -197,6 +197,7 @@ tox86/wire/bare.wire.i2c.c \
 tox86/wire/bare.wire.spi.c \
 tox86/wire/bare.wire.uart.c \
 tox86/wire/bare.wire.wifi.c \
+tox86/vmtool/vmware.c \
 tox86/barepc.c
 barex64_o = $(patsubst %.c, %.o, $(barex64_c))
 

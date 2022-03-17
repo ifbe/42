@@ -1,6 +1,6 @@
 #include "libhard.h"
+#include "libuser.h"
 #include "drv-usb.h"
-void eventwrite(u64,u64,u64,u64);
 void DEVICE_REQUEST_SET_CONFIGURATION(void* req, u16 conf);
 void INTERFACE_REQUEST_GET_REPORT_DESC(void* req, u16 intf, u16 typeindex, u16 len);
 void INTERFACE_REQUEST_SET_IDLE(struct UsbRequest* req, u16 intf, u16 val);
@@ -87,10 +87,10 @@ struct xboxonereport{
 	u16 lt;		//[6,7]
 	u16 rt;		//[8,9]
 
-	u16 lx;		//[a.b]
-	u16 ly;		//[c,d]
-	u16 rx;		//[e,f]
-	u16 ry;		//[10,11]
+	short lx;		//[a.b]
+	short ly;		//[c,d]
+	short rx;		//[e,f]
+	short ry;		//[10,11]
 }__attribute__((packed));
 struct xboxonecommand{
 	u8 what;
@@ -99,7 +99,14 @@ struct xboxonecommand{
 
 
 
-struct perfunc{
+struct perhid{
+	u8 stat;
+};
+struct perxbox{
+	union{
+		struct perhid hid;
+		u8 hid_padding[0x1000];
+	};
 	u8 trb[0];
 }__attribute__((packed));
 
@@ -110,10 +117,13 @@ static int xboxhid_ongive(struct item* usb,int xxx, struct item* xhci,int endp, 
 {
 	struct perusb* perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
+	struct perxbox* perxbox = (void*)perusb->perfunc;
+	struct perhid* perhid = (void*)&perxbox->hid;
 
 	struct xboxonereport* data = *(void**)sbuf;
-	printmemory(data, 0x40);
+	//printmemory(data, 0x40);
 
+	int notold, now;
 	switch(data->type){
 	case 0x01:	//invalid op data
 	case 0x02:	//waiting for connection
@@ -121,14 +131,33 @@ static int xboxhid_ongive(struct item* usb,int xxx, struct item* xhci,int endp, 
 	case 0x07:	//guide button status
 		break;
 	case 0x20:	//button data
-		say("l=%x,r=%x,d=%x,u=%x,a=%x,b=%x,x=%x,y=%x\n",data->dpad_l,data->dpad_r,data->dpad_d,data->dpad_u,data->kpad_a,data->kpad_b,data->kpad_x,data->kpad_y);
-		say("lb=%d,rb=%d,ls=%d,rs=%d,back=%d,start=%d\n",data->lb,data->rb,data->ls,data->rs,data->back,data->start);
-		say("lx=%d,ly=%d,rx=%d,ry=%d,lt=%d,rt=%d\n",data->lx,data->ly,data->rx,data->ry,data->lt,data->rt);
+		int j;
+		u8* tmp = *(void**)sbuf;
+		u8* debug = (void*)0;
+		for(j=0;j<0x40;j++)debug[j] = tmp[j];
 
-		if(data->dpad_l)eventwrite(0x4b, _kbd_, 0, 0);
-		if(data->dpad_r)eventwrite(0x4d, _kbd_, 0, 0);
-		if(data->dpad_d)eventwrite(0x50, _kbd_, 0, 0);
-		if(data->dpad_u)eventwrite(0x48, _kbd_, 0, 0);
+		//say("l=%x,r=%x,d=%x,u=%x,a=%x,b=%x,x=%x,y=%x\n",data->dpad_l,data->dpad_r,data->dpad_d,data->dpad_u,data->kpad_a,data->kpad_b,data->kpad_x,data->kpad_y);
+		//say("lb=%d,rb=%d,ls=%d,rs=%d,back=%d,start=%d\n",data->lb,data->rb,data->ls,data->rs,data->back,data->start);
+		//say("lx=%d,ly=%d,rx=%d,ry=%d,lt=%d,rt=%d\n",data->lx,data->ly,data->rx,data->ry,data->lt,data->rt);
+
+		//key
+		notold = ~perhid->stat;
+		now = data->dpad_l|(data->dpad_r<<1)|(data->dpad_d<<2)|(data->dpad_u<<3);
+		if( (now&1) && (notold&1) )eventwrite(0x4b, _kbd_, 0, 0);
+		if( (now&2) && (notold&2) )eventwrite(0x4d, _kbd_, 0, 0);
+		if( (now&4) && (notold&4) )eventwrite(0x50, _kbd_, 0, 0);
+		if( (now&8) && (notold&8) )eventwrite(0x48, _kbd_, 0, 0);
+		perhid->stat = now;
+
+		//stick
+		short xx[4];
+		xx[0] = data->lx;
+		if((xx[0] < -0x800)|(xx[0] > 0x800))xx[0] /= 0x800;
+		else xx[0] = 0;
+		xx[1] = 0 - data->ly;
+		if((xx[1] < -0x800)|(xx[1] > 0x800))xx[1] /= 0x800;
+		else xx[1] = 0;
+		if(xx[0] | xx[1])eventwrite(*(u64*)xx, point_dlt, 0, 0);
 		break;
 	}
 
@@ -139,8 +168,8 @@ int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	//per device
 	struct perusb* perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
-	struct perfunc* perfunc = (void*)perusb->perfunc;
-	//if(0 == perfunc)return 0;
+	struct perxbox* perxbox = (void*)perusb->perfunc;
+	//if(0 == perxbox)return 0;
 
 	struct DeviceDescriptor* devdesc = &perusb->origin.devdesc;
 	struct descnode* confnode = &perusb->parsed.node[0];
@@ -251,7 +280,7 @@ int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	ret = xhci->give_pxpxpxpx(
 		xhci, slot|(inaddr<<8),
 		0, 0,
-		perfunc->trb, pktlen,
+		perxbox->trb, pktlen,
 		usb,0
 	);
 	return 0;

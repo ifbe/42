@@ -17,6 +17,23 @@ void say(void*, ...);
 
 
 
+struct RSDPDescriptor {
+	char Signature[8];
+	u8 Checksum;
+	char OEMID[6];
+	u8 Revision;
+	u32 RsdtAddress;
+} __attribute__ ((packed));
+struct RSDPDescriptor20 {
+	struct RSDPDescriptor firstPart;
+	u32 Length;
+	u64 XsdtAddress;
+	u8 ExtendedChecksum;
+	u8 reserved[3];
+} __attribute__ ((packed));
+
+
+
 
 struct ACPIHEAD{
 	u32    signature;	//[0,3]
@@ -158,6 +175,15 @@ struct MCFG{
 	u64                      what;	//[24,2b]
 	struct MCFG_CONFSPACE conf[0];	//[2c,??]
 }__attribute__((packed));
+
+
+
+
+static u8 oemid[8];
+u8* getoemid()
+{
+	return oemid;
+}
 
 
 
@@ -368,12 +394,16 @@ void acpixsdt(void* buf)
 		acpitable((void*)addr);
 	}
 }
-void parsedevmap_acpi(void* buf)
+void parsedevmap_acpi(u8* buf)
 {
 	if(0 == buf)return;
 
-	int len = *(u8*)(buf+4);
-	say("rsdptr,%x@%p\n", len, buf);
+	say("rsdptr@%p\n", buf);
+	printmemory(buf, 0x20);
+
+	int j;
+	for(j=0;j<6;j++)oemid[j] = buf[j+9];
+	oemid[6] = oemid[7] = 0;
 
 	if(0 == *(u8*)(buf+0xf)){
 		void* rsdt = (void*)(u64)(*(u32*)(buf+0x10));
