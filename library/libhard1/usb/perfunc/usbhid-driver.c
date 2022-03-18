@@ -480,6 +480,39 @@ static int parsemouse_qemu(struct item* usb,int xxx, struct item* xhci,int endp,
 	eventwrite(*(u64*)xx, type, 0, 0);
 	return 0;
 }
+static int parsemouse_vbox(struct item* usb,int xxx, struct item* xhci,int endp,
+	void* sbuf,int slen, void* rbuf,int rlen)
+{
+	//must do:
+	//1.install virtualbox extension pack
+	//2.settings -> usbdevice -> xhci controller
+	//3.settings -> pointer device -> usb tablet
+	struct perusb* perusb = usb->priv_ptr;
+	if(0 == perusb)return 0;
+	struct perfunc* perfunc = (void*)perusb->perfunc;
+	//if(0 == perfunc)return 0;
+
+	char* in = *(void**)sbuf;
+	//say("[usbmouse]btn=%x,dx=%d,dy=%d\n", in[0], in[1], in[2]);
+
+	u64 type = point_per;
+	if(perfunc->permouse.button != in[0]){
+		say("mouse key: old=%x,new=%x\n",perfunc->permouse.button, in[0]);
+		if(in[0])type = point_onto;
+		else type = point_away;
+
+		perfunc->permouse.button = in[0];
+	}
+
+	short* pos = (void*)(in+4);
+	//say("%x,%x\n", pos[0], pos[1]);
+
+	short xx[4];
+	xx[0] = pos[0];
+	xx[1] = pos[1];
+	eventwrite(*(u64*)xx, type, 0, 0);
+	return 0;
+}
 static int usbhid_ongive(struct item* usb,int xxx, struct item* xhci,int endp, void* sbuf,int slen, void* rbuf,int rlen)
 {
 	void* data = *(void**)sbuf;
@@ -517,6 +550,9 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		if( (0x0627 == devdesc->idVendor) && (0x0001 == devdesc->idProduct) ){
 			say("qemu: mouse\n");
 		}
+		else if( (0x80ee == devdesc->idVendor) && (0x0021 == devdesc->idProduct) ){
+			say("vbox: tablet\n");
+		}
 		else{
 			say("[usbhid]proto=%x, unknown, byebye\n",intfdesc->bInterfaceProtocol);
 			return -6;
@@ -529,6 +565,9 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	else{
 		if( (0x0627 == devdesc->idVendor) && (0x0001 == devdesc->idProduct) ){
 			say("qemu: unknown mode\n");
+		}
+		else if( (0x80ee == devdesc->idVendor) && (0x0021 == devdesc->idProduct) ){
+			say("vbox: unknown mode\n");
 		}
 		else{
 			say("[usbhid]reportmode, byebye\n");
@@ -635,6 +674,9 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	if( (0x0627 == devdesc->idVendor) && (0x0001 == devdesc->idProduct) ){
 		need_to_set_protocol = 0;
 	}
+	if( (0x80ee == devdesc->idVendor) && (0x0021 == devdesc->idProduct) ){
+		need_to_set_protocol = 0;
+	}
 	if(2 == intfdesc->bInterfaceProtocol){
 		if( (0x046d == devdesc->idVendor) && (0xc092 == devdesc->idProduct) ){	//g502
 			need_to_set_protocol = 0;
@@ -666,9 +708,13 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	}
 
 //------------------------callback------------------------
+	usb->ongiving = (void*)usbhid_ongive;
 	if(0 == intfdesc->bInterfaceProtocol){
 		if( (0x0627 == devdesc->idVendor) && (0x0001 == devdesc->idProduct) ){
 			usb->ongiving = (void*)parsemouse_qemu;
+		}
+		if( (0x80ee == devdesc->idVendor) && (0x0021 == devdesc->idProduct) ){
+			usb->ongiving = (void*)parsemouse_vbox;
 		}
 	}
 	else if(1 == intfdesc->bInterfaceProtocol){
@@ -681,9 +727,6 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		else{
 			usb->ongiving = (void*)parsemouse;
 		}
-	}
-	else{
-		usb->ongiving = (void*)usbhid_ongive;
 	}
 
 //------------------------transfer ring------------------------

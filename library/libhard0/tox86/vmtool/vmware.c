@@ -184,6 +184,9 @@ void initvmtool()
 	else if(0 == ncmp(oemid, "BOCHS ",6)){
 		say("qemu,ovmf?\n");
 	}
+	else if(0 == ncmp(oemid, "VBOX  ",6)){
+		say("virtual box?\n");
+	}
 	else{
 		say("oemid=%p\n",oemid);
 	}

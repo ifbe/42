@@ -1774,6 +1774,7 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 
 
 	//wait until device detected
+	xhci_print("waiting for port change...\n");
 	wait2 = 0xffffff;
 	while(1){
 		//bit4 = Port Change Detect
@@ -1781,7 +1782,7 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 
 		wait2--;
 		if(0 == wait2){
-			xhci_print("xhci: USBCMD=%08x, USBSTS=%08x, no port change detected\n", optreg->USBCMD, optreg->USBSTS);
+			xhci_print("USBCMD=%08x, USBSTS=%08x, no port change detected\n", optreg->USBCMD, optreg->USBSTS);
 			break;
 		}
 	}

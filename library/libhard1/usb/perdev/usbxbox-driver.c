@@ -131,11 +131,6 @@ static int xboxhid_ongive(struct item* usb,int xxx, struct item* xhci,int endp, 
 	case 0x07:	//guide button status
 		break;
 	case 0x20:	//button data
-		int j;
-		u8* tmp = *(void**)sbuf;
-		u8* debug = (void*)0;
-		for(j=0;j<0x40;j++)debug[j] = tmp[j];
-
 		//say("l=%x,r=%x,d=%x,u=%x,a=%x,b=%x,x=%x,y=%x\n",data->dpad_l,data->dpad_r,data->dpad_d,data->dpad_u,data->kpad_a,data->kpad_b,data->kpad_x,data->kpad_y);
 		//say("lb=%d,rb=%d,ls=%d,rs=%d,back=%d,start=%d\n",data->lb,data->rb,data->ls,data->rs,data->back,data->start);
 		//say("lx=%d,ly=%d,rx=%d,ry=%d,lt=%d,rt=%d\n",data->lx,data->ly,data->rx,data->ry,data->lt,data->rt);
