@@ -1,17 +1,16 @@
 #include "libhard.h"
-u8 in8(u16 port);
-void out8(u16 port, u8 data);
-//
 int acpi_have8042();
 //
+void interruptinstall_bsp(int num, u64 isr);
 void enableirq(int);
+void endofextirq(int);
 //
-void eventwrite(u64,u64,u64,u64);
+u8 in8(u16 port);
+void out8(u16 port, u8 data);
 
 
 
-
-static int enable = 1;
+static int enablepolling = 1;
 int kbdled(u8 on)
 {
 	//bit0=scrolllock, bit1=numlock, bit2=capslock
@@ -33,8 +32,6 @@ int readkbd_one(u8* buf)
 }
 int readkbd(u8* buf, int len)
 {
-	if(0 == enable)return 0;
-
 	int j,ret;
 	for(j=0;j<len;j++)
 	{
@@ -103,14 +100,9 @@ static u8 ch[41*2] =
 0x39,0x20,      //space
 0x00,0x00
 };
-void* read8042(struct event* ev)
+int convert8042(u8* buf, struct event* ev)
 {
 	int j;
-	u8 buf[1];
-	j = readkbd(buf, 1);
-	if(j == 0)return 0;
-	if(buf[0] >= 0x80)return 0;
-
 	//kbd
 	for(j=0;j<9;j++)
 	{
@@ -118,7 +110,7 @@ void* read8042(struct event* ev)
 		{
 			ev->what = _kbd_;
 			ev->why = kbd[(j*2) + 1];
-			return ev;
+			return 1;
 		}
 	}
 
@@ -129,11 +121,34 @@ void* read8042(struct event* ev)
 		{
 			ev->what = _char_;
 			ev->why = ch[(j*2) + 1];
-			return ev;
+			return 2;
 		}
 	}
-
 	return 0;
+}
+
+
+
+
+void* read8042(struct event* ev)
+{
+	int j;
+	u8 buf[1];
+	if(0 == enablepolling)return 0;
+
+	j = readkbd(buf, 1);
+	if(j == 0)return 0;
+	if(buf[0] >= 0x80)return 0;
+
+	convert8042(buf, ev);
+
+	return ev;
+}
+void init8042()
+{
+	say("@init8042\n");
+	if(0 == acpi_have8042())enablepolling = 0;
+	say("enablepoll=%d\n\n", enablepolling);
 }
 
 
@@ -149,41 +164,88 @@ static u8 keymap[0x80] = {
  'b', 'n', 'm', ',', '.', '/',   0,   0,	//[30,37]
    0, ' '
 };
-void isr_8042()
+__attribute__((interrupt)) static void ps2kbd_isr(void* p)
 {
-	u8 ch;
-	ch = in8(0x64);
-	if((ch&1) != 1)return;
-	ch = in8(0x60);
-	say("%02x\n",ch);
-	if(ch == 0xe0)
-	{
-		ch = in8(0x60);
-		//say("%02x\n",ch);
-		if(ch >= 0x80)return;
-		eventwrite(ch, _kbd_, 0, 0);
-		return;
-	}
-	if(ch >= 0x80)return;
-	//say("%02x,%c\n",ch,keymap[ch]);
-	if((ch>=0x3b)&&(ch<=0x44))eventwrite(ch-0x3b+0xf1, _kbd_, 0, 0);
-	if((ch>=0x57)&&(ch<=0x58))eventwrite(ch-0x57+0xfb, _kbd_, 0, 0);
-	else eventwrite(keymap[ch], _char_, 0, 0);
+	int j;
+	u8 buf[1];
+
+	buf[0] = in8(0x60);
+	if(buf[0] >= 0x80)goto byebye;
+
+	struct event ev;
+	convert8042(buf, &ev);
+
+	eventwrite(ev.why, ev.what, 0, 0);
+
+byebye:
+	endofextirq(1);
+}
+void initps2kbd()
+{
+	say("@initps2kbd\n");
+	enablepolling = 0;
+
+	interruptinstall_bsp(1, (u64)ps2kbd_isr);
+	enableirq(1);
 }
 
 
 
 
-void init8042()
+void mouse_write(u8 a_write) //unsigned char
 {
-	say("@init8042\n");
-/*
-	addr = (u32*)(u64)(0xfec00000);
-	addr[0] = 0x10 + (2*1);
-	addr[4] = 0x21;
-	addr[0] = 0x11 + (2*1);
-	addr[4] = 0;
-	enableirq(1);
-*/
-	if(0 == acpi_have8042())enable = 0;
+	//Wait to be able to send a command
+	//sleep_us(1000);
+	//Tell the mouse we are sending a command
+	out8(0x64, 0xD4);
+
+	//Wait for the final part
+	//sleep_us(1000);
+	//Finally write
+	out8(0x60, a_write);
+}
+u8 mouse_read()
+{
+	//Get's response from mouse
+	//sleep_us(1000);
+	return in8(0x60);
+}
+__attribute__((interrupt)) static void ps2mouse_isr(void* p)
+{
+	u8 data = in8(0x60);
+	//say("data0=%x\n", data);
+
+	endofextirq(12);
+}
+void initps2mouse()
+{
+	say("@initps2mouse\n");
+
+	u8 _status;	//unsigned char
+
+	//Enable the auxiliary mouse device
+	sleep_us(1000);
+	out8(0x64, 0xA8);
+
+	//Enable the interrupts
+	sleep_us(1000);
+	out8(0x64, 0x20);
+	sleep_us(1000);
+	_status=(in8(0x60) | 2);
+	sleep_us(1000);
+	out8(0x64, 0x60);
+	sleep_us(1000);
+	out8(0x60, _status);
+
+	//Tell the mouse to use default settings
+	mouse_write(0xF6);
+	mouse_read();	//Acknowledge
+
+	//Enable the mouse
+	mouse_write(0xF4);
+	mouse_read();	//Acknowledge
+
+	//Setup the mouse handler
+	interruptinstall_bsp(12, (u64)ps2mouse_isr);
+	enableirq(12);
 }

@@ -244,8 +244,8 @@ __attribute__((interrupt)) static void allcpu_isr20(void* p){
 	endofextirq(0);
 }
 __attribute__((interrupt)) static void allcpu_isr21(void* p){
-	//say("kbd!\n");
-	isr_8042();
+	say("ps2kbd!\n");
+	//isr_8042();
 	endofextirq(1);
 }
 __attribute__((interrupt)) static void allcpu_isr27(struct int_frame* p){
@@ -262,6 +262,10 @@ __attribute__((interrupt)) static void allcpu_isr28(void* p){
 	//say("rtc!\n");
 	isr_rtc();
 	endofextirq(8);
+}
+__attribute__((interrupt)) static void allcpu_isr2c(void* p){
+	say("ps2mouse!\n");
+	endofextirq(12);
 }
 
 
@@ -297,6 +301,14 @@ void interruptinstall(void* idt, int num, u64 isr, int flag)
 	addr->byte23 = (isr>>16)&0xffff;
 	addr->byte47 = (isr>>32)&0xffffffff;
 	addr->what = 0;
+}
+void interruptinstall_bsp(int num, u64 isr)
+{
+	//external irq
+	num += 0x20;
+
+	u8* idt = (void*)BSPCPU_IDT;
+	interruptinstall(idt, num, isr, 0);
 }
 void initidt_bsp()
 {
@@ -346,6 +358,7 @@ void initidt_bsp()
 	interruptinstall(idt, 0x21, (u64)allcpu_isr21, 0);
 	interruptinstall(idt, 0x27, (u64)allcpu_isr27, 0);
 	interruptinstall(idt, 0x28, (u64)allcpu_isr28, 0);
+	interruptinstall(idt, 0x2c, (u64)allcpu_isr2c, 0);
 
 	//apic timer
 	interruptinstall(idt, 0x40, getisr40(), 0);
@@ -407,6 +420,7 @@ void initidt_ap(int coreid)
 	interruptinstall(idt, 0x21, (u64)allcpu_isr21, 0);
 	interruptinstall(idt, 0x27, (u64)allcpu_isr27, 0);
 	interruptinstall(idt, 0x28, (u64)allcpu_isr28, 0);
+	interruptinstall(idt, 0x2c, (u64)allcpu_isr2c, 0);
 
 	//apic timer
 	interruptinstall(idt, 0x40, getisr40(), 0);

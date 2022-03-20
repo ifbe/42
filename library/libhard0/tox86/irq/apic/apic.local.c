@@ -72,13 +72,15 @@ static volatile u8* addr_localapic = 0;
 static volatile u8* addr_irqioapic = 0;
 void localapic_check()
 {
-	say("@apicwhere\n");
+	say("@localapic_check\n");
 
 	u8* addr = acpi_getlocalapic();
 	if(LAPIC_BASE != (u64)addr)return;
 
 	addr_localapic = (void*)addr;
 	say("apic@%p\n", addr_localapic);
+
+	say("\n\n");
 }
 
 

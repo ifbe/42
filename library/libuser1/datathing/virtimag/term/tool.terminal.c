@@ -402,7 +402,7 @@ static void terminal_create(_obj* act, void* arg, int argc, u8** argv)
 	act->SERVER = 0;
 
 	act->whdf.ix0 = 0;
-	act->whdf.iy0 = 840;
+	act->whdf.iy0 = 100;
 
 	//struct str* dat = act->RAWBUF = memorycreate(0x100000, 0);
 	//dat->len = 0;

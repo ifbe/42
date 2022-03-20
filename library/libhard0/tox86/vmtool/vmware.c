@@ -1,5 +1,13 @@
 #include "libhard.h"
+#include "libuser.h"
 u8* getoemid();
+//
+void initps2kbd();
+void initps2mouse();
+//
+void interruptinstall_bsp(int num, u64 isr);
+void enableirq(int);
+void endofextirq(int);
 
 
 
@@ -82,6 +90,9 @@ u8* getoemid();
 #define   BDOOR_CMD_NESTING_CONTROL          63
 #define   BDOOR_CMD_FIRMWARE_INIT            64 /* CPL 0 only. */
 #define   BDOOR_CMD_FIRMWARE_ACPI_SERVICES   65 /* CPL 0 only. */
+#define   BDOOR_CMD_SENDPSHAREHINTS          66 /* Not in use. Deprecated. */
+#define   BDOOR_CMD_ENABLE_USB_MOUSE         67
+#define   BDOOR_CMD_GET_VCPU_INFO            68
 typedef struct {
 	union {
 		u32 ax;
@@ -155,6 +166,63 @@ void vmware_backdoor_mouse_relative(void) {
 	cmd.command = CMD_ABSPOINTER_COMMAND;
 	vmware_send(&cmd);
 }
+void vmware_handle_mouse(void) {
+	vmware_cmd cmd;
+	/* Read the mouse status */
+	cmd.bx = 0;
+	cmd.command = CMD_ABSPOINTER_STATUS;
+	vmware_send(&cmd);
+
+	/* Mouse status is in EAX */
+	if (cmd.ax == 0xFFFF0000) {
+		/* An error has occured, let's turn the device off and back on */
+		vmware_backdoor_mouse_relative();
+		vmware_backdoor_mouse_absolute();
+		return;
+	}
+//say("1111\n");
+
+	/* The status command returns a size we need to read, should be at least 4. */
+	if ((cmd.ax & 0xFFFF) < 4) return;
+//say("2222\n");
+
+	/* Read 4 bytes of mouse data */
+	cmd.bx = 4;
+	cmd.command = CMD_ABSPOINTER_DATA;
+	vmware_send(&cmd);
+
+	/* Mouse data is now stored in AX, BX, CX, and DX */
+	int flags   = (cmd.ax & 0xFFFF0000) >> 16; /* Not important */
+	int buttons = (cmd.ax & 0xFFFF); /* 0x10 = Right, 0x20 = Left, 0x08 = Middle */
+	int x       = (cmd.bx); /* Both X and Y are scaled from 0 to 0xFFFF */
+	int y       = (cmd.cx); /* You should map these somewhere to the actual resolution. */
+	int z       = (u8)(cmd.dx); /* Z is a single signed byte indicating scroll direction. */
+	//say("x=%x,y=%x\n", x, y);
+
+	/* TODO: Do something useful here with these values, such as providing them to userspace! */
+	short tmp[4];
+	tmp[0] = x/2;
+	tmp[1] = y/2;
+	eventwrite(*(u64*)tmp, point_per, 0, 0);
+}
+__attribute__((interrupt)) static void ps2mouse_vmware_isr(void* p)
+{
+	u8 data = in8(0x60);
+	//say("data0=%x\n", data);
+
+	vmware_handle_mouse();
+
+	endofextirq(12);
+}
+void initps2mouse_vmware()
+{
+	interruptinstall_bsp(12, (u64)ps2mouse_vmware_isr);
+	enableirq(12);
+}
+
+
+
+
 void vmware_tool()
 {
 	vmware_cmd cmd;
@@ -179,6 +247,11 @@ void initvmtool()
 	u8* oemid = getoemid();
 	if(0 == oemid)return;
 	else if(0 == ncmp(oemid, "VMWARE", 6)){
+		initps2kbd();
+
+		initps2mouse();
+		initps2mouse_vmware();
+
 		vmware_tool();
 	}
 	else if(0 == ncmp(oemid, "BOCHS ",6)){
