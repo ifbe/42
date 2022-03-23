@@ -216,6 +216,7 @@ static int kernel_idleloop(struct item* wrk)
 		}
 		if(time > heartbeat_poll + 1000*1000*STALL_SEC){
 			say("pollloop: stall >%ds\n",STALL_SEC);
+			break;
 		}
 		haltwaitforint();
 	}
@@ -245,16 +246,16 @@ int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 		threadcreate(kernel_drawloop, wrk);
 		threadcreate(kernel_pollloop, wrk);
 
-		//check if thread ok, wait at most 10s
-		sleep_us(100*1000);
+		//wait 1s
+		sleep_us(1000*1000);
 	}
 	else{
 		//processcreate("/init");
 	}
 
 	//check fail
-	if((0 == heartbeat_draw)|(0 == heartbeat_poll))kernel_failloop(wrk);
-	else kernel_idleloop(wrk);
+	if(heartbeat_draw && heartbeat_poll)kernel_idleloop(wrk);
+	kernel_failloop(wrk);
 
 	return 0;
 }

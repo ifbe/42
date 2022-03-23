@@ -4,12 +4,17 @@ u8* getoemid();
 //
 void initps2kbd();
 void initps2mouse();
+u8 in8(u16 port);
 //
 void interruptinstall_bsp(int num, u64 isr);
 void enableirq(int);
 void endofextirq(int);
 
 
+struct _vmmouse_{
+	u8 button;
+};
+static struct _vmmouse_ vmmouse;
 
 
 //https://wiki.osdev.org/VMware_tools
@@ -200,10 +205,19 @@ void vmware_handle_mouse(void) {
 	//say("x=%x,y=%x\n", x, y);
 
 	/* TODO: Do something useful here with these values, such as providing them to userspace! */
+	u64 what = point_per;
+	if(buttons != vmmouse.button){
+		say("mouse key: old=%x,new=%x\n",vmmouse.button, buttons);
+		if(buttons)what = point_onto;
+		else what = point_away;
+
+		vmmouse.button = buttons;
+	}
+
 	short tmp[4];
 	tmp[0] = x/2;
 	tmp[1] = y/2;
-	eventwrite(*(u64*)tmp, point_per, 0, 0);
+	eventwrite(*(u64*)tmp, what, 0, 0);
 }
 __attribute__((interrupt)) static void ps2mouse_vmware_isr(void* p)
 {
@@ -260,7 +274,11 @@ void initvmtool()
 	else if(0 == ncmp(oemid, "VBOX  ",6)){
 		say("virtual box?\n");
 	}
+	else if(0 == ncmp(oemid, "PRLS  ",6)){
+		say("parallels desktop?\n");
+		//initps2mouse();
+	}
 	else{
-		say("oemid=%p\n",oemid);
+		say("oemid={%.6s}\n",oemid);
 	}
 }

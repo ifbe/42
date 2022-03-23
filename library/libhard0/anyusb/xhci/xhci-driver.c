@@ -1673,7 +1673,7 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 	optreg->USBCMD = optreg->USBCMD | 2;
 
 	//等一会
-	u32 wait2 = 0xfffffff;
+	u32 wait2 = 0xffffff;
 	while(1){
 		if(0 == (optreg->USBCMD&0x2))break;
 		wait2--;

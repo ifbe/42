@@ -103,11 +103,16 @@ macall:
 	make -s run
 
 
-#----------------run----------------
+#----------------img----------------
 vhd:
 	qemu-img convert -f raw -O vpc -o subformat=fixed test.img test.vhd
 vmdk:
 	qemu-img convert -f raw -O vmdk test.img test.vmdk
+hdd:
+	qemu-img convert -f raw -O parallels test.img test.hdd
+
+
+#----------------run----------------
 qemu-mouse:
 	../../../live/virt/qemu/ovmf.sh "qemu-system-x86_64" $(shell pwd)/test.img $(shell pwd)/test.vhd
 qemu-tablet:

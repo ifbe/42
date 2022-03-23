@@ -213,7 +213,7 @@ u8 mouse_read()
 __attribute__((interrupt)) static void ps2mouse_isr(void* p)
 {
 	u8 data = in8(0x60);
-	//say("data0=%x\n", data);
+	say("data0=%x\n", data);
 
 	endofextirq(12);
 }
