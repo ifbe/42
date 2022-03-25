@@ -159,4 +159,6 @@ void initgdt_ap(u8* newgdt)
 	//run
 	loadgdt_ap();
 	loadtss_ap();
+
+	say("\n\n");
 }

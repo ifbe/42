@@ -36,7 +36,7 @@ void fpu_fxrstor(u64 addr);
 void fpu_xsave(u64 addr);
 void fpu_rstor(u64 addr);
 //
-void initpaging(void*);
+void initpaging(void*, int, void*, int);
 //
 void initgdt(void*);
 void initgdt_ap(void*);
@@ -278,7 +278,11 @@ void initcpu_bsp(struct item* p)
 
 
 //----------------prep descs----------------
-	initpaging((void*)CR3BUF);
+	//paging mapping: 1T space=[0,0x100,0000,0000)
+	u8* pdir = memorycreate(0x400000, 0x100000);
+	initpaging((void*)CR3BUF, 0x10000, pdir, 0x400000);
+
+	//gdt
 	initgdt((void*)BSPCPU_GDT);
 
 	if(!enable_fpu())say("fail@enable_fpu\n");
@@ -340,7 +344,7 @@ void initcpu_other()
 
 
 //----------------prep descs----------------
-	//initpaging((void*)CR3BUF);	//already there
+	//initpaging((void*)CR3BUF);	//already there from x64.boothelp.asm
 	initgdt_ap((void*)APPCPU_GDT);
 
 	if(!enable_fpu())say("fail@enable_fpu\n");

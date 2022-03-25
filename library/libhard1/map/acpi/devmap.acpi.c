@@ -373,8 +373,11 @@ void acpitable(void* p)
 void acpirsdt(void* buf)
 {
 	int j;
-	int len = *(u8*)(buf+4);
+	int len = *(u32*)(buf+4);
 	say("rsdt,%x@%p\n", len, buf);
+
+	len &= 0xffff;
+	printmemory(buf, len);
 
 	u64 addr;
 	for(j=0x24;j<len;j+=4){
@@ -385,8 +388,11 @@ void acpirsdt(void* buf)
 void acpixsdt(void* buf)
 {
 	int j;
-	int len = *(u8*)(buf+4);
+	int len = *(u32*)(buf+4);
 	say("xsdt,%x@%p\n", len, buf);
+
+	len &= 0xffff;
+	printmemory(buf, len);
 
 	u64 addr;
 	for(j=0x24;j<len;j+=8){

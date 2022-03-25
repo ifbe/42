@@ -12,10 +12,10 @@
 //
 #define PML4OFFS 0x00000
 #define PDPTOFFS 0x01000
-#define PDIROFFS 0x02000
+#define GIGACOUNT 1024			//1 terabyte
+//
 #define PDPTUSER 0x40000
 #define PDIRUSER 0x41000
-#define GIGACOUNT (64-2)
 
 
 
@@ -68,11 +68,12 @@ u64 pagetable_virt2phys(u64 cr3, u64 va)
 
 
 
-void pagetable_makekern(u8* buf, int len)
+void pagetable_makekern(u8* buf, int len, u8* tmp, int plen)
 {
 	//clear memory
 	u64 j;
 	for(j=0;j<len;j++)buf[j] = 0;
+	for(j=0;j<len;j++)tmp[j] = 0;
 
 
 	//page table: unused
@@ -80,24 +81,26 @@ void pagetable_makekern(u8* buf, int len)
 
 	//page directory: waste 0x1000*62 B, means 62 GB
 	//realaddr8B_per_item, 512item_per_table, 62table_we_used
-	u64* pdir = (u64*)(buf+PDIROFFS);
+	u64* pdir = (u64*)tmp;
 	for(j=0;j<512*GIGACOUNT;j++)pdir[j] = ((j<<21) + 0) | Isleaf | Writable | Present;
 
 
 	//page directory pointer: waste 0x1000 B, actually 62*8 B
 	//pdiraddr8B_per_item, 512item_per_table, 1table_cant_less
-	u64* pdpt = (u64*)(buf+PDPTOFFS);
-	for(j=0;j<GIGACOUNT;j++)pdpt[j] = ((j<<12) + (u64)pdir) | Writable | Present;
+	u64* pdpt0 = (u64*)(buf+PDPTOFFS);
+	u64* pdpt1 = (u64*)(buf+PDPTOFFS+0x1000);
+	for(j=0;j<GIGACOUNT;j++)pdpt0[j] = ((j<<12) + (u64)pdir) | Writable | Present;
 
 
 	//page map level 4: waste 0x1000 B, actually 8B
 	//pdptaddr8B_per_item, 512item_per_table, 1table_cant_less
 	u64* pml4 = (u64*)(buf+PML4OFFS);
-	pml4[0] = (u64)pdpt | Writable | Present;
+	pml4[0] = (u64)pdpt0 | Writable | Present;
+	pml4[1] = (u64)pdpt1 | Writable | Present;
 }
 void pagetable_makeuser(u8* buf, int len, u64 pa, int plen, u64 va, int vlen)
 {
-	pagetable_makekern(buf, 0x40000);
+	//pagetable_makekern(buf, 0x40000);
 
 	//copy kern
 	//whereis va, *where = pa | Allowuser | Writable | Present;
@@ -125,8 +128,23 @@ void pagetable_makeuser(u8* buf, int len, u64 pa, int plen, u64 va, int vlen)
 
 
 
+void pagetable_readcr3()
+{
+	u8* old;
+	asm __volatile__(
+		"mov %%cr3, %%rax\n"
+		"mov %%rax, %0\n"
+		:
+		:"m"(old)
+	);
+	say("old cr3=%p\n", old);
+	printmemory(old, 0x20);
+}
 void pagetable_use(u8* cr3)
 {
+	say("@pagetable_writecr3+++\n");
+	printmemory(cr3, 0x20);
+
 	//write cr3
 	asm __volatile__(
 		"mov %0, %%rax\n"
@@ -134,15 +152,20 @@ void pagetable_use(u8* cr3)
 		:
 		:"m"(cr3)
 	);
+
+	say("@pagetable_writecr3---\n");
 }
-void initpaging(u8* pagehome)
+void initpaging(u8* pagehome, int len, void* pdir, int plen)
 {
 	say("@initpaging\n");
 
-	pagetable_makekern(pagehome, 0x40000);
+	pagetable_readcr3();
+
+	pagetable_makekern(pagehome, len, pdir, plen);
 	//pagetable_makeuser(pagehome, 0x42000, 0,0, 0,0);
 
 	pagetable_use(pagehome);
 
 	//printmemory((u8*)0xffffffffffe00000, 0x100);
+	say("\n\n");
 }

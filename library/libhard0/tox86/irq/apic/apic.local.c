@@ -74,10 +74,7 @@ void localapic_check()
 {
 	say("@localapic_check\n");
 
-	u8* addr = acpi_getlocalapic();
-	if(LAPIC_BASE != (u64)addr)return;
-
-	addr_localapic = (void*)addr;
+	addr_localapic = acpi_getlocalapic();
 	say("apic@%p\n", addr_localapic);
 
 	say("\n\n");
