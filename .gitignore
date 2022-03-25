@@ -39,6 +39,7 @@
 *.old
 *.img
 *.vhd
+*.vhdx
 *.vmdk
 *.hdd
 

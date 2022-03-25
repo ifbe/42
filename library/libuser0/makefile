@@ -318,7 +318,7 @@ wintui_o = $(patsubst %.c, %.o, $(wintui_c))
 
 winapi_c = \
 2d-window/os-win/win.api.c \
-control-gamepad/win/win.xinput.c
+control-gamepad/gamepad.none.c
 winapi_o = $(patsubst %.c, %.o, $(winapi_c))
 
 windx11_c = \

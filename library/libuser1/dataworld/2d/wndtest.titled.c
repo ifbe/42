@@ -1,4 +1,5 @@
 #include "libuser.h"
+#define SAVETIME whdf.iw0
 int gl41cmdq_clear(void*);
 
 
@@ -170,16 +171,19 @@ next:
 		rel = samesrcnextdst(rel);
 	}
 
-	//float
+	//button and time
 	int qx = wnd->whdf.width-64;
 	int qy = wnd->whdf.height-64;
-	u32 c = timeread();
-	drawsolid_rect((void*)wnd, c, qx-32, qy-32, qx+32, qy+32);
-	drawsolid_circle((void*)wnd, ~c, qx, qy, 32);
+	u32 now = timeread();
+	drawsolid_rect((void*)wnd, now, qx-32, qy-32, qx+32, qy+32);
+	drawsolid_circle((void*)wnd, ~now, qx, qy, 32);
+	drawdecimal((void*)wnd, 0xff00ff, qx-32, qy-8, now-wnd->SAVETIME);
 
 	//mouse
 	drawline((void*)wnd, 0xffff00, x-16, y, x+16, y);
 	drawline((void*)wnd, 0xffff00, x, y-16, x, y+16);
+
+	wnd->SAVETIME = now;
 	return 0;
 }
 int wndmgr_rgba_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

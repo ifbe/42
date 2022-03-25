@@ -53,7 +53,7 @@ dll:
 	libhard0/*.o libhard1/*.o \
 	libsoft0/*.o libsoft1/*.o \
 	libuser0/*.o libuser1/*.o \
-	-lgdi32 -lole32 -lstrmiids -lxinput -lwinmm -lws2_32
+	-lgdi32 -lole32 -lstrmiids -lwinmm -lws2_32
 exe:
 	windres --input-format=rc -O coff -i $(datafile)/winres/42.rc -o $(datafile)/winres/42.res
 	g++ -mwindows $(datafile)/winres/42.res \
@@ -61,7 +61,7 @@ exe:
 	libhard0/*.o libhard1/*.o \
 	libsoft0/*.o libsoft1/*.o \
 	libuser0/*.o libuser1/*.o \
-	-lgdi32 -lole32 -lstrmiids -lxinput -lwinmm -lws2_32
+	-lgdi32 -lole32 -lstrmiids -lwinmm -lws2_32
 clean:
 	rm -f */*.o
 	rm -f *.o *.a *.so
