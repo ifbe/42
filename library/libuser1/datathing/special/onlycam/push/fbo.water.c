@@ -195,7 +195,7 @@ static void water_gl41geom_update(
 	struct waterbuf* water = act->CTXBUF;
 	if(0 == water)return;
 
-	water->time = (timeread()%10000000)/10000000.0;
+	water->time = (timeread_us()%10000000)/10000000.0;
 
 
 	struct gl41data* body = &water->geom;

@@ -1,5 +1,5 @@
 #include "libhard.h"
-#define xhci_print(fmt, ...) say("<%08lld,xhci>"fmt, timeread(), ##__VA_ARGS__)
+#define xhci_print(fmt, ...) say("<%08lld,xhci>"fmt, timeread_us(), ##__VA_ARGS__)
 int usbany_linkup(void*,int,void*,int);
 
 
@@ -733,12 +733,10 @@ int xhci_waitevent(struct item* xhci, u32 wanttype, u32 wantarg)
 	u32 stat,port;
 	u32 slot,endp;
 	u32 type,arg;
-
-	u64 time;
-	u64 deadline = timeread() + 0x1000000;
-
 	u32* ev;
-	u32 timeout = 0xfffffff;
+
+	u64 deadline = timeread_us() + 0x1000000;
+	u32 endcycle = 0xffffff;
 	while(1){
 		ev = xhci_takeevent(xhci);
 		if(ev){
@@ -784,11 +782,10 @@ int xhci_waitevent(struct item* xhci, u32 wanttype, u32 wantarg)
 			xhci_print("event unwanted: wanttype=%x,thistype=%x,wantarg=%x,thisarg=%x\n", wanttype, type, wantarg, arg);
 		}//if(ev)
 
-		time = timeread();
-		if(time > deadline)break;
+		if(timeread_us() > deadline)break;
 
-		timeout -= 1;
-		if(0 == timeout)break;
+		endcycle -= 1;
+		if(0 == endcycle)break;
 	}
 
 	xhci_print("timeout!!!!!!\n");
@@ -1372,29 +1369,35 @@ int resetport(struct item* xhci, int countfrom0)
 	xhci_print("write reset, wait reseted...\n");
 
 	//wait for reset done
-	int j = 0xfffffff;
+	int endcycle = 0xffffff;
+	u64 endtime = timeread_us() + 3000*1000;
 	while(1){
 		if(0 == (port->PORTSC & 0x10))break;
 
-		j--;
-		if(0 == j)return -1;
+		if(timeread_us() > endtime)return -1;
+
+		endcycle--;
+		if(0 == endcycle)return -1;
 	}
 	xhci_print("port reseted, wait enabled...\n");
 
 	//wait for enable=1
-	j = 0xfffffff;
+	endcycle = 0xffffff;
+	endtime = timeread_us() + 3000*1000;
 	while(1){
 		if(2 == (port->PORTSC & 2))break;
 
-		j--;
-		if(0 == j)return -3;
+		if(timeread_us() > endtime)return -2;
+
+		endcycle--;
+		if(0 == endcycle)return -2;
 	}
 	xhci_print("port enabled, wait changed...\n");
 
 	//wait for portchange event
 	if(xhci_waitevent(xhci, TRB_event_PortStatusChange, countfrom0+1) < 0){
 		xhci_print("portstatus unchanged: USBSTS=%x\n", optreg->USBSTS);
-		return -2;
+		return -3;
 	}
 	xhci_print("port changed\n");
 
@@ -1468,16 +1471,22 @@ int ownership(volatile u32* p)
 	p[0] |= 0x1000000;
 
 	//wait until bit16==0 && bit24==1
-	volatile int timeout = 0xfffffff;
+	volatile int endcycle = 0xffffff;
+	volatile u64 endtime = timeread_us() + 3000*1000;
 	while(1){
 		if(0x01000000 == (p[0] & 0x01010000)){
 			xhci_print("after handoff:%08x,%08x\n", p[0],p[1]);
 			return 1;
 		}
 
-		timeout--;
-		if(0 == timeout){
-			xhci_print("timeout@handoff\n");
+		if(timeread_us() > endtime){
+			xhci_print("handoff: timeout@endtime\n");
+			return -1;
+		}
+
+		endcycle--;
+		if(0 == endcycle){
+			xhci_print("handoff: timeout@endcycle\n");
 			return -1;
 		}
 	}
@@ -1647,6 +1656,8 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 
 
 //------------operational registers----------------
+	u32 endcycle;
+	u64 endtime;
 	xhci_print("setup optreg@%p\n", optreg);
 
 	//xhci正在运行吗
@@ -1657,12 +1668,19 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 		optreg->USBCMD = optreg->USBCMD & 0xfffffffe;
 
 		//等一会
-		u32 wait1 = 0xfffffff;
+		endcycle = 0xffffff;
+		endtime = timeread_us() + 3000*1000;
 		while(1){
 			if(1 == (optreg->USBSTS&0x1))break;
-			wait1--;
-			if(0 == wait1){
-				xhci_print("not stop\n");
+
+			if(timeread_us() > endtime){
+				xhci_print("not stop: endtime\n");
+				return -2;
+			}
+
+			endcycle--;
+			if(0 == endcycle){
+				xhci_print("not stop: endcycle\n");
 				return -2;
 			}
 		}
@@ -1673,16 +1691,23 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 	optreg->USBCMD = optreg->USBCMD | 2;
 
 	//等一会
-	u32 wait2 = 0xffffff;
+	endcycle = 0xffffff;
+	endtime = timeread_us() + 3000*1000;
 	while(1){
 		if(0 == (optreg->USBCMD&0x2))break;
-		wait2--;
-		if(0 == wait2){
-			xhci_print("reset failed:%x\n", optreg->USBCMD);
+
+		if(timeread_us() > endtime){
+			xhci_print("reset: err=endtime, USBCMD=%x\n", optreg->USBCMD);
+			return -3;
+		}
+
+		endcycle--;
+		if(0 == endcycle){
+			xhci_print("reset: err=endcycle, USBCMD=%x\n", optreg->USBCMD);
 			return -3;
 		}
 	}
-	xhci_print("hc reseted,wait=%x\n",wait2);
+	xhci_print("hc reseted,wait=%x\n",endcycle);
 
 	//controller not ready=1就是没准备好
 	if(0x800 == (optreg->USBSTS&0x800)){
@@ -1775,14 +1800,20 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 
 	//wait until device detected
 	xhci_print("waiting for port change...\n");
-	wait2 = 0xffffff;
+	endcycle = 0xffffff;
+	endtime = timeread_us() + 3000*1000;
 	while(1){
 		//bit4 = Port Change Detect
 		if(0x10 == (optreg->USBSTS & 0x10))break;
 
-		wait2--;
-		if(0 == wait2){
-			xhci_print("USBCMD=%08x, USBSTS=%08x, no port change detected\n", optreg->USBCMD, optreg->USBSTS);
+		if(timeread_us() > endtime){
+			xhci_print("USBCMD=%08x, USBSTS=%08x, no port change, endtime\n", optreg->USBCMD, optreg->USBSTS);
+			break;
+		}
+
+		endcycle--;
+		if(0 == endcycle){
+			xhci_print("USBCMD=%08x, USBSTS=%08x, no port change, endcycle\n", optreg->USBCMD, optreg->USBSTS);
 			break;
 		}
 	}

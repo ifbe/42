@@ -99,7 +99,7 @@ static void* epollthread(void* p)
 			if(ev[j].events & EPOLLRDHUP)
 			{
 				printf("rdhup!!!!!!!\n");
-				eventwrite('-', _sys_, fd, timeread());
+				eventwrite('-', _sys_, fd, timeread_us());
 			}
 			else if(ev[j].events & EPOLLIN)
 			{

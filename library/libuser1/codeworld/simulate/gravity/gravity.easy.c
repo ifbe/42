@@ -38,7 +38,7 @@ int graveasy_working(_obj* ent)
 	world = rel->pdstchip;
 	if((_virtual_ != world->hfmt)&&(_scene3d_ != world->hfmt))return 0;
 
-	now = timeread();
+	now = timeread_us();
 	say("%llx\n", now);
 	dt = (float)((now - ent->TIME)%1000000)/1000000.0;
 	say("dt=%f\n",dt);

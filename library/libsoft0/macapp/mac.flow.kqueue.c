@@ -173,7 +173,7 @@ int kqueue_thread(int argc, const char * argv[])
 					//here->sockinfo.parent = 0;
 					here->sockinfo.child = child;
 					kqueue_add(cc);
-					//eventwrite('+', _fd_, cc, timeread());
+					//eventwrite('+', _fd_, cc, timeread_us());
 				}
 				break;
 			}//TCP

@@ -52,7 +52,7 @@ static void tardis_draw_gl41(
 		tf[j] = vf[j]/2;
 		tt[j] = vt[j]/2;
 	}
-	time = (timeread()%1000000)*512/1000000;
+	time = (timeread_us()%1000000)*512/1000000;
 	if(time>255)time = 511-time;
 	gl41opaque_prism4(wnd, 0x0000ff|(time<<24), tc, tr, tf, tt);
 }

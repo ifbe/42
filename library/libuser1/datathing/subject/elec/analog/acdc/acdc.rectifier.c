@@ -62,7 +62,7 @@ static void rectify_draw_gl41(
 	float* vu = geom->fs.vt;
 	gl41line_prism4(ctx, 0xffffff, vc, vr, vf, vu);
 
-	time = timeread() / 1000;
+	time = timeread_us() / 1000;
 	a = time * PI / 1000;
 	s[0] = getsin(a - PI*2.0/3.0);
 	s[1] = getsin(a);

@@ -184,7 +184,7 @@ int sleep_us(int);
 int sleep_ns(int);
 //
 u64 dateread();
-u64 timeread();
+u64 timeread_us();
 //
 int threaddelete(u64);
 u64 threadcreate(void*, void*);

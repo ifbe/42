@@ -92,7 +92,7 @@ static int kernel_pollloop(struct item* wrk)
 	stack[1].pchip = wnd;
 	say("pollloop: stack@%p,window@%p\n", stack, wnd);
 
-	t0 = timeread();
+	t0 = timeread_us();
 	while(1){
 		heartbeat_poll = t0+1;
 
@@ -106,12 +106,15 @@ static int kernel_pollloop(struct item* wrk)
 		while(1){
 			ev = eventread();
 			if(0 == ev)break;
-			if(0 == ev->what)return 0;
+			if(0 == ev->what){
+				say("exit event, ignore it@%p\n", ev);
+				break;
+			}
 
 			supply_giveby(wnd,0, stack,2, 0,0, ev,0);
 		}
 
-		t1 = timeread();
+		t1 = timeread_us();
 		//say("dt=%d\n",t1-t0);
 		t0 = t1;
 	}
@@ -129,7 +132,7 @@ static int kernel_drawloop(struct item* wrk)
 	say("drawloop: stack@%p,window@%p\n", stack, wnd);
 
 	//loop
-	t0 = timeread();
+	t0 = timeread_us();
 	while(1){
 		heartbeat_draw = t0+1;
 
@@ -141,7 +144,7 @@ static int kernel_drawloop(struct item* wrk)
 		//draw frame
 		supply_takeby(wnd,0, stack,2, 0,0, 0,0);
 
-		t1 = timeread();
+		t1 = timeread_us();
 		//say("dt=%d\n",t1-t0);
 		t0 = t1;
 	}
@@ -164,14 +167,14 @@ static int kernel_failloop(struct item* wrk)
 
 	struct event* ev;
 	u64 curr;
-	u64 time = timeread();
+	u64 time = timeread_us();
 	//sleep_us(1000*1000);
 
 	//loop
 	while(1){
 		if((0 != heartbeat_draw)&&(0 != heartbeat_poll))break;
 
-		curr = timeread();
+		curr = timeread_us();
 		curr = (curr-time)/1000/1000;
 
 		//drawloop fail, i have to draw
@@ -210,7 +213,7 @@ static int kernel_idleloop(struct item* wrk)
 	say("idleloop(core=0), sleep wait for int\n");
 
 	while(1){
-		time = timeread();
+		time = timeread_us();
 		if(time > heartbeat_draw + 1000*1000*STALL_SEC){
 			say("drawloop: stall >%ds\n",STALL_SEC);
 		}

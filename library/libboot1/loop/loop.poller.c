@@ -97,7 +97,7 @@ void poller(void* poller)
 	while(alive)
 	{
 		//cur time
-		t0 = timeread();
+		t0 = timeread_us();
 
 		//draw frame
 		supplyread_all(stack);
@@ -113,7 +113,7 @@ void poller(void* poller)
 		}
 
 		//max fps
-		dt = timeread() - t0;
+		dt = timeread_us() - t0;
 		//say("dt=%d\n", delta);
 		if(dt < 16000)sleep_us(16000-dt);
 	}

@@ -219,7 +219,7 @@ static void parsefolder(_obj* art, u8* rsi)
 
 static u16 fat16_nextclus(_obj* art, u16 clus)
 {
-	struct perfs* per = art->listptr.buf0;
+	struct perfs* per = art->priv_ptr;
 	u16* cache = (void*)per->fatbuffer;
 	return cache[clus];
 }
@@ -228,7 +228,7 @@ static int fat16_read(_obj* art, int ign, u32 clus,int offs, u8* buf,int len)
 	u32 tmp;
 	int ret, cnt;
 	int byteperclus;
-	struct perfs* per = art->listptr.buf0;
+	struct perfs* per = art->priv_ptr;
 
 	cnt = 0;
 	byteperclus = per->byte_per_sec * per->sec_per_clus;
@@ -263,7 +263,7 @@ retcnt:
 static u32 fat32_nextclus(_obj* art, u32 clus)
 {
 	u64 byte;
-	struct perfs* per = art->listptr.buf0;
+	struct perfs* per = art->priv_ptr;
 	u32* cache = (void*)per->fatbuffer;
 	u32 remain = clus % per->cache_count;
 
@@ -281,7 +281,7 @@ static int fat32_read(_obj* art, int ign, u64 clus,int offs, u8* buf,int len)
 {
 	u64 tmp;
 	int ret, cnt = 0;
-	struct perfs* per = art->listptr.buf0;
+	struct perfs* per = art->priv_ptr;
 	int byteperclus = per->byte_per_sec * per->sec_per_clus;
 
 	while(1){
@@ -333,7 +333,7 @@ retcnt:
 
 int fat_buildcache(_obj* art)
 {
-	struct perfs* per = art->listptr.buf0;
+	struct perfs* per = art->priv_ptr;
 	per->cache_first = 0;
 	per->cache_count = 0x10000;
 	return take_data_from_peer(art,_src_, 0,0, "",per->sec_of_fat0 * per->byte_per_sec, per->fatbuffer,0x40000);
@@ -381,16 +381,13 @@ u32 fat_searchfolder(u8* ptr, char* name)
 }
 int fat_cd(_obj* art, char* name)
 {
-	int ret;
-	u32 clus;
-	struct perfs* per;
-	u8* dirhome;
-
-	per = art->listptr.buf0;
+	struct perfs* per = art->priv_ptr;
 	if(0 == per)return 0;
 
-	dirhome = per->dirhome;
+	u8* dirhome = per->dirhome;
 
+	int ret;
+	u32 clus;
 	if(16 == per->version){
 		clus = fat_searchfolder(dirhome, name);
 		if(0 == clus)return 0;
@@ -419,7 +416,7 @@ u32 fat_name2clus(_obj* art, char* name)
 	u32 ret = 0;
 	int j,k=0,depth=0;
 
-	struct perfs* per = art->listptr.buf0;
+	struct perfs* per = art->priv_ptr;
 	if(0 == per)return 0;
 
 	for(j=0;j<256;j++){
@@ -470,7 +467,7 @@ int fat_parse(_obj* art, u8* addr)
 {
 	u8* p;
 	struct BPB_FAT* fat = (void*)addr;
-	struct perfs* per = art->listptr.buf0;
+	struct perfs* per = art->priv_ptr;
 
 	p = fat->byte_per_sec;
 	per->byte_per_sec = p[0] + (p[1]<<8);
@@ -528,7 +525,7 @@ int fatclient_attach(struct halfrel* self, struct halfrel* peer)
 	_obj* art = self->pchip;
 	if(0 == art)return 0;
 
-	struct perfs* per = art->listptr.buf0;
+	struct perfs* per = art->priv_ptr;
 	if(0 == per)return 0;
 
 	ret = take_data_from_peer(art,_src_, 0,0, "",0, per->pbrbuffer,0x200);
@@ -586,7 +583,7 @@ int fatclient_create(_obj* art)
 	say("@fatclient_create\n");
 
 	struct perfs* per = memorycreate(0x200000, 0);
-	art->listptr.buf0 = per;
+	art->priv_ptr = per;
 
 	art->ongiving = (void*)fatclient_ongive;
 	art->ontaking = (void*)fatclient_ontake;

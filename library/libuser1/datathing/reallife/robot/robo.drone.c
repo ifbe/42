@@ -75,7 +75,7 @@ static void drone_forgl41_actual(
 	gl41solid_prism4(ctx, 0xfedcba, tc, tr, tf, tu);
 
 	//tmp
-	dt = timeread() % 1000000;
+	dt = timeread_us() % 1000000;
 	for(j=0;j<3;j++){
 		kr[j] = vr[j] / 4;
 		kf[j] = vf[j] / 4;
@@ -154,7 +154,7 @@ static void drone_forgl41_estimate(
 	gl41opaque_prism4(ctx, 0x3ffedcba, tc, tr, tf, tu);
 
 	//tmp
-	dt = timeread() % 1000000;
+	dt = timeread_us() % 1000000;
 	for(j=0;j<3;j++){
 		kr[j] = vr[j] / 4;
 		kf[j] = vf[j] / 4;

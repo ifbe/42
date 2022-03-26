@@ -10,12 +10,12 @@ void pulser(struct item* pulser)
 	struct halfrel stack[0x80];
 
 	while(1){
-		t0 = timeread();
+		t0 = timeread_us();
 
 		//say("@pulser: %llx\n", t0);
 		give_data_into_them(pulser, _clk_, stack,0, 0,0, &t0,8);
 
-		dt = timeread() - t0;
+		dt = timeread_us() - t0;
 		if(dt < 16000)sleep_us(16000-dt);
 	}
 }

@@ -95,12 +95,9 @@ macumount:
 macremove:
 	rm test.img
 macall:
-	make -s macmkfs
 	make -s macmount
 	make -s maccopy
 	make -s macumount
-	make -s vhd
-	make -s run
 
 
 #----------------img----------------

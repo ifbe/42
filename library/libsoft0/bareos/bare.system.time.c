@@ -45,7 +45,7 @@ void timewrite(u64 t)
 	time = t;
 	//archtimer_write(t);
 }
-u64 timeread()
+u64 timeread_us()
 {
 	return archtimer_us();
 }

@@ -47,7 +47,7 @@ void datewrite(u64 x)
 
 
 
-u64 timeread()
+u64 timeread_us()
 {
 	return mach_absolute_time() / 1000;
 }

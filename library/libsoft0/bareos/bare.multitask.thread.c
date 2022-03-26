@@ -236,7 +236,7 @@ void thread_switchbuffer(struct threadstate* curr, struct threadstate* next, voi
 void thread_schedule(void* cpureg)
 {
 	//if(first 1008/1024 of one sec)dont change
-	//u64 time = timeread() >> 10;
+	//u64 time = timeread_us() >> 10;
 	//if((time&0x3ff) < 0x3f0)return;
 
 	//0.which core want change, and his own table

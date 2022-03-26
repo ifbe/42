@@ -32,7 +32,7 @@ static void planet_draw_pixel(
 	u32 c;
 	int x,y,l,r,j;
 	int cx, cy, ww, hh;
-	u64 t = timeread() / 10000;
+	u64 t = timeread_us() / 10000;
 	if(sty)
 	{
 		cx = sty->fs.vc[0];
@@ -76,7 +76,7 @@ static void planet_draw_gl41(
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vu = geom->fs.vt;
-	u64 t = timeread() / 10000;
+	u64 t = timeread_us() / 10000;
 
 	for(j=0;j<9;j++)
 	{

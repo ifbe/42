@@ -20,7 +20,7 @@ void sleep_us(int t)
 void timewrite(u64 time)
 {
 }
-u64 timeread()
+u64 timeread_us()
 {
 	return 0;
 }

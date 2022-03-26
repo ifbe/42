@@ -1,6 +1,6 @@
 
 #include "libhard.h"
-#define xhci_print(fmt, ...) say("<%08lld,xhci>"fmt, timeread(), ##__VA_ARGS__)
+#define xhci_print(fmt, ...) say("<%08lld,xhci>"fmt, timeread_us(), ##__VA_ARGS__)
 u32 in32(u16 port);
 void out32(u16 port, u32 data);
 int xhci_mmioinit(struct item* dev, u8* xhciaddr);

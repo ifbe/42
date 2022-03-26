@@ -46,7 +46,7 @@ void datewrite()
 
 
 
-u64 timeread()
+u64 timeread_us()
 {
 	return 1000 * GetTickCount64();
 }

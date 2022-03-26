@@ -20,7 +20,7 @@ void button_draw_pixel(
 	int h = ctx->whdf.height;
 	u32* pix = ctx->rgbanode.buf;
 
-	time = 511*(timeread()%1000000)/1000000;
+	time = 511*(timeread_us()%1000000)/1000000;
 	if(time > 255)time = 511-time;
 	for(y=0;y<8;y++){
 	for(x=0;x<8;x++){

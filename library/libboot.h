@@ -13,7 +13,7 @@ int sleep_us(int);
 int sleep_ns(int);
 //
 u64 dateread();
-u64 timeread();
+u64 timeread_us();
 //
 void* eventread();
 void* eventwrite(u64,u64,u64,u64);

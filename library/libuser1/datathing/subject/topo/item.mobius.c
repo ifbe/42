@@ -34,7 +34,7 @@ static void mobius_draw_gl41(
 	tf[2] = vf[2]*0.75;
 	gl41line_circle(wnd, 0xff0000, tc, tr, tf);
 
-	act->whdf.ix0 = (timeread()/10000) % 360;
+	act->whdf.ix0 = (timeread_us()/10000) % 360;
 	for(j=0;j<180;j++)
 	{
 		a = j*PI/90;

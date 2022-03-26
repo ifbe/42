@@ -311,7 +311,7 @@ static void rubikscube_draw_dx11(
 	if(0 == buf)return;
 
 	if(act->CODE){
-		u64 time = timeread();
+		u64 time = timeread_us();
 		q[3] = (time - act->TIME) / 1000000.0;
 		if((q[3] < 0.0)|(q[3] > 1.0)){
 			rubikscube_rotate((void*)buf, act->CODE);
@@ -502,7 +502,7 @@ static void rubikscube_draw_gl41(
 	if(0 == buf)return;
 
 	if(act->CODE){
-		u64 time = timeread();
+		u64 time = timeread_us();
 		q[3] = (time - act->TIME) / 1000000.0;
 		if((q[3] < 0.0)|(q[3] > 1.0)){
 			rubikscube_rotate((void*)buf, act->CODE);
@@ -693,7 +693,7 @@ static void rubikscube_draw_mt20(
 	if(0 == buf)return;
 
 	if(act->CODE){
-		u64 time = timeread();
+		u64 time = timeread_us();
 		q[3] = (time - act->TIME) / 1000000.0;
 		if((q[3] < 0.0)|(q[3] > 1.0)){
 			rubikscube_rotate((void*)buf, act->CODE);
@@ -953,7 +953,7 @@ static void rubikscube_giving(_obj* ent,void* foot, _syn* stack,int sp, void* ar
 {
 	u8* p = buf;
 	ent->CODE = p[0];
-	ent->TIME = timeread();
+	ent->TIME = timeread_us();
 }
 static void rubikscube_detach(struct halfrel* self, struct halfrel* peer)
 {

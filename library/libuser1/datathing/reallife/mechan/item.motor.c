@@ -73,7 +73,7 @@ static void motor_draw_gl41(
 
 
 
-	a = timeread() / 1000000.0;
+	a = timeread_us() / 1000000.0;
 
 	s = getsin(a);
 	v1[0] = vc[0] + (vf[0]/2)*s;

@@ -10,7 +10,7 @@
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
-u64 timeread();
+u64 timeread_us();
 u64 dateread();
 //
 void* memorycreate(int, int);

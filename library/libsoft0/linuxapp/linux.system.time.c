@@ -53,7 +53,7 @@ u64 time_ns()
 	clock_gettime(CLOCK_REALTIME, &t);
 	return (t.tv_sec*1000*1000*1000) + t.tv_nsec;
 }
-u64 timeread()
+u64 timeread_us()
 {
 	struct timeval t;
 	gettimeofday(&t,0);

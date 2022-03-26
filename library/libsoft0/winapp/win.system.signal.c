@@ -2,7 +2,7 @@
 #include<stdlib.h>
 #include<windows.h>
 #define u64 unsigned long long
-u64 timeread();
+u64 timeread_us();
 void eventwrite(u64,u64,u64,u64);
 
 
@@ -22,7 +22,7 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
 		{
 			die = old;
 			old = new;
-			new = timeread();
+			new = timeread_us();
 
 			if(new-old < 500*1000)  //0.5 s
 			{

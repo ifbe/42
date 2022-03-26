@@ -32,7 +32,7 @@ static void planetary_draw_gl41(
 	float* vf = geom->fs.vf;
 	float* vt = geom->fs.vt;
 
-	r = tau*(timeread()%10000000)/10000000.0;
+	r = tau*(timeread_us()%10000000)/10000000.0;
 	gl41line_rotategear(ctx, 0x444444, vc, vr, vf, 48, r*18/48.0);
 
 	for(j=0;j<3;j++){

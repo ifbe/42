@@ -1,5 +1,5 @@
 #include "libhard.h"
-#define ahci_print(fmt, ...) say("<%08lld,ahci>" fmt, timeread(), ##__VA_ARGS__)
+#define ahci_print(fmt, ...) say("<%08lld,ahci>" fmt, timeread_us(), ##__VA_ARGS__)
 u32 in32(u16 port);
 void out32(u16 port, u32 data);
 void filemanager_registersupplier(void*,void*);
@@ -384,11 +384,17 @@ int ahci_readblock(struct HBA_PORT* port, u64 from, u8* buf, u64 count)
 
 	//make the table
 	u32 temp=0;
-	volatile int timeout = 0;
+	volatile int endcycle = 0xffffff;
+	volatile u64 endtime = timeread_us() + 3000*1000;
 	while(1){
-		timeout++;
-		if(timeout>0xfffff){
-			ahci_print("(timeout1)port->tfd:%x\n",(u64)port->tfd);
+		if(timeread_us() > endtime){
+			ahci_print("ahci_readblock: err=endtime, tfd=%x\n",(u64)port->tfd);
+			return -11;
+		}
+
+		endcycle--;
+		if(0 == endcycle){
+			ahci_print("ahci_readblock: err=endcycle, tfd=%x\n",(u64)port->tfd);
 			return -11;
 		}
 
@@ -404,24 +410,28 @@ int ahci_readblock(struct HBA_PORT* port, u64 from, u8* buf, u64 count)
 
 	//issue
 	port->ci = 1<<cmdslot;    //Issue command
-	timeout=0;
+	endcycle = 0xffffff;
+	endtime = timeread_us() + 3000*1000;
 	while (1){
-		timeout++;
-		if(timeout>0xffffff){
-			ahci_print("(timeout2)port->ci=%x\n",temp);
+		if(timeread_us() > endtime){
+			ahci_print("ahci_readblock: err=endtime, is=%x,ci=%x\n", port->is, port->ci);
+			return -11;
+		}
+
+		endcycle--;
+		if(0 == endcycle){
+			ahci_print("ahci_readblock: err=endcycle, is=%x,ci=%x\n", port->is, port->ci);
 			return -22;
 		}
 
 		//
-		temp=port->is;
-		if (temp & 0x40000000){  //Task file error
+		if (port->is & 0x40000000){  //Task file error
 			ahci_print("port err 1\n",0);
 			return -33;
 		}
 
 		// in the PxIS port field as well (1 << 5)
-		temp=port->ci;
-		if((temp & (1<<cmdslot)) != 0)continue;
+		if((port->ci & (1<<cmdslot)) != 0)continue;
 
 		break;
 	}
@@ -477,12 +487,17 @@ static int ahci_identify(volatile struct HBA_PORT* port, struct SATA_ident* rdi)
 	fis->device = 0;		//LBA mode
 
 	//wait until the port is no longer busy
-	volatile int timeout = 0;
-	while(1)
-	{
-		timeout++;
-		if(timeout>0xfffff){
-			ahci_print("(timeout1)port->tfd:%x\n",(u64)port->tfd);
+	volatile int endcycle = 0xffffff;
+	volatile u64 endtime = timeread_us() + 3000*1000;
+	while(1){
+		if(timeread_us() > endtime){
+			ahci_print("ahci_identify: err=endtime, port->tfd=%x\n",(u64)port->tfd);
+			return -1;
+		}
+
+		endcycle--;
+		if(0 == endcycle){
+			ahci_print("ahci_identify: err=endcycle, port->tfd=%x\n",(u64)port->tfd);
 			return -1;
 		}
 
@@ -497,12 +512,17 @@ static int ahci_identify(volatile struct HBA_PORT* port, struct SATA_ident* rdi)
 	//u32* pointer=(u32*)(u64)(port->fb);
 	//set issue,wait for completion
 	port->ci = 1<<cmdslot;  // Issue command,start reading
-	timeout=0;
-	while(1)
-	{
-		timeout++;
-		if(timeout>0xfffff){
-			ahci_print("(timeout2)ci=%x,prdbc=%x\n",temp,cmdheader->prdbc);
+	endcycle = 0xffffff;
+	endtime = timeread_us() + 3000*1000;
+	while(1){
+		if(timeread_us() > endtime){
+			ahci_print("ahci_identify: err=endtime, ci=%x,prdbc=%x\n",temp,cmdheader->prdbc);
+			return -2;
+		}
+
+		endcycle--;
+		if(0 == endcycle){
+			ahci_print("ahci_identify: err=endtime, ci=%x,prdbc=%x\n",temp,cmdheader->prdbc);
 			return -2;
 		}
 
@@ -655,11 +675,17 @@ static void disableport(volatile struct HBA_PORT* port)
 	port->cmd &= 0xfffffffe;	//0x18,bit0
 	port->cmd &= 0xffffffef;	//0x18,bit4,FRE
  
-	int timeout = 100000;
-	while(timeout){
-		timeout--;
-		if(0 == timeout){
-			ahci_print("(timeout)still running:%x\n",(u64)(port->cmd));
+	int endcycle = 0xffffff;
+	u64 endtime = timeread_us() + 1000*1000;
+	while(1){
+		if(timeread_us() > endtime){
+			ahci_print("disableport: err=endtime, cmd=%x\n", (u64)(port->cmd));
+			return;
+		}
+
+		endcycle--;
+		if(0 == endcycle){
+			ahci_print("disableport: err=endcycle, cmd=%x\n", (u64)(port->cmd));
 			return;
 		}
 
@@ -676,19 +702,29 @@ static void disableport(volatile struct HBA_PORT* port)
 
 	//reset port
 	port->sctl |= 0x2;
-	for(timeout=0;timeout<0xffffff;timeout++)asm("nop");	//wait 1ms(5ms)
+	ahci_print("sleep 5ms+++\n");
+	sleep_ms(5);	//wait 1ms(5ms)
+	ahci_print("sleep 5ms---\n");
+	//for(endcycle=0;endcycle<0xffffff;endcycle++)asm("nop");
 	port->sctl &= 0xfffffffd;
 
 	//wait for device detect and communication established
-	timeout = 100000;
-	while(timeout){
-		timeout--;
-		if(0 == timeout){
-			//ahci_print("no device:%x",11111);
+	endcycle = 0xffffff;
+	endtime = timeread_us() + 1000*1000;
+	while(1){
+		if( (port->ssts & 0x3) == 0x3)break;
+
+		if(timeread_us() > endtime){
+			ahci_print("disableport: err=endtime, ssts=%x\n",port->ssts);
 			return;
 		}
 
-		if( (port->ssts & 0x3) == 0x3)break;
+		endcycle--;
+		if(0 == endcycle){
+			ahci_print("disableport: err=endcycle, ssts=%x\n",port->ssts);
+			return;
+		}
+
 	}
 
 	//clear port serial ata error register

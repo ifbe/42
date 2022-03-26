@@ -53,7 +53,7 @@ t0 = ogl->gl41list.gltime;
 	//0: context current
 	fw = ogl->gl41list.glwnd;
 	glfwMakeContextCurrent(fw);
-t1 = timeread();
+t1 = timeread_us();
 
 	//1: render everything
 	switch(ogl->hfmt){
@@ -63,11 +63,11 @@ t1 = timeread();
 		case _gl41list_:
 		default:fullwindow_take(ogl,foot, stack,sp, arg,idx, buf,len);break;
 	}
-t2 = timeread();
+t2 = timeread_us();
 
 	//2: swap buffer
 	glfwSwapBuffers(fw);
-t3 = timeread();
+t3 = timeread_us();
 
 	//3: title
 	char str[64];

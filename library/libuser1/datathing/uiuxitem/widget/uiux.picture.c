@@ -73,7 +73,7 @@ static void picture_draw_gl41(
 	float* vu = geom->fs.vt;
 	if(0 == act->CTXBUF)return;
 /*
-	act->whdf.fx0 = ((timeread()%5000000)/5000000.0)*tau;
+	act->whdf.fx0 = ((timeread_us()%5000000)/5000000.0)*tau;
 	//say("%f\n",act->whdf.fx0);
 */
 	struct mysrc* src = act->CTXBUF;

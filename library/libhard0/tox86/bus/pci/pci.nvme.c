@@ -1,6 +1,6 @@
 
 #include "libhard.h"
-#define nvme_print(fmt, ...) say("<%08lld,nvme>"fmt, timeread(), ##__VA_ARGS__)
+#define nvme_print(fmt, ...) say("<%08lld,nvme>"fmt, timeread_us(), ##__VA_ARGS__)
 u32 in32(u16 port);
 void out32(u16 port, u32 data);
 int nvme_mmioinit(struct item* dev, u8* nvmeaddr);

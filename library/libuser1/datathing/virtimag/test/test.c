@@ -84,7 +84,7 @@ void test_prepgl(struct gl41data* data)
 }
 void test_tickgl(_obj* ent,void* slot, _obj* wnd,void* area)
 {
-	float a = 2*PI*(timeread()%5000000)/5000000.0;
+	float a = 2*PI*(timeread_us()%5000000)/5000000.0;
 	float c = getcos(a);
 	float s = getsin(a);
 

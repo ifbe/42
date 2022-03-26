@@ -149,7 +149,7 @@ static void human_draw_gl41(
 	float* vu = geom->fs.vt;
 	gl41line_circle(ctx, 0xff00ff, vc, vr, vf);
 
-	j = (timeread()%1000000);
+	j = (timeread_us()%1000000);
 	if(j < 250*1000){
 		bonevert = boneverta;
 	}
@@ -270,7 +270,7 @@ static int human_event(
 	}
 	return 1;
 */
-/*	sec = timeread() / 1000000.0;
+/*	sec = timeread_us() / 1000000.0;
 
 	x = boneverta[0][0] - boneverta[1][0];
 	y = boneverta[0][1] - boneverta[1][1];

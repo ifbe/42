@@ -113,10 +113,11 @@ void* wndmgr_find_close(_obj* wnd, int x, int y)
 
 int wndmgr_rgba_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	u64 old = timeread_us();
+
 	//pixel_clearcolor(wnd);
 	int x = wnd->whdf.ix0;
 	int y = wnd->whdf.iy0;
-
 	struct relation* the = wndmgr_find_maxw(wnd);
 	struct relation* rel = wnd->orel0;
 	while(1){
@@ -174,10 +175,11 @@ next:
 	//button and time
 	int qx = wnd->whdf.width-64;
 	int qy = wnd->whdf.height-64;
-	u32 now = timeread();
+	u64 now = timeread_us();
 	drawsolid_rect((void*)wnd, now, qx-32, qy-32, qx+32, qy+32);
 	drawsolid_circle((void*)wnd, ~now, qx, qy, 32);
-	drawdecimal((void*)wnd, 0xff00ff, qx-32, qy-8, now-wnd->SAVETIME);
+	drawdecimal((void*)wnd, 0xff00ff, qx-32, qy-16, now-old);
+	drawdecimal((void*)wnd, 0xff00ff, qx-32, qy, now-wnd->SAVETIME);
 
 	//mouse
 	drawline((void*)wnd, 0xffff00, x-16, y, x+16, y);
