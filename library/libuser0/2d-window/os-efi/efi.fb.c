@@ -60,10 +60,18 @@ void window_update(_obj* wnd,void* test, int x0,int y0, int xn,int yn)
 void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == lfb)return;
+	u64 t0 = timeread_us();
+
 	wndmgr_take(wnd,foot, stack,sp, arg,key, buf,len);
+
+	u64 t1 = timeread_us();
+	wnd->whdf.iw0 = t1 - t0;
 
 	//10fps? update whole window
 	window_update(wnd,0, 0,0, w,h);
+
+	u64 t2 = timeread_us();
+	wnd->whdf.iwn = t2 - t1;
 }
 void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {

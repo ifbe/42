@@ -384,8 +384,8 @@ int ahci_readblock(struct HBA_PORT* port, u64 from, u8* buf, u64 count)
 
 	//make the table
 	u32 temp=0;
-	volatile int endcycle = 0xffffff;
-	volatile u64 endtime = timeread_us() + 3000*1000;
+	int endcycle = 0xffffff;
+	u64 endtime = timeread_us() + 10*1000*1000;
 	while(1){
 		if(timeread_us() > endtime){
 			ahci_print("ahci_readblock: err=endtime, tfd=%x\n",(u64)port->tfd);
@@ -411,7 +411,7 @@ int ahci_readblock(struct HBA_PORT* port, u64 from, u8* buf, u64 count)
 	//issue
 	port->ci = 1<<cmdslot;    //Issue command
 	endcycle = 0xffffff;
-	endtime = timeread_us() + 3000*1000;
+	endtime = timeread_us() + 10*1000*1000;
 	while (1){
 		if(timeread_us() > endtime){
 			ahci_print("ahci_readblock: err=endtime, is=%x,ci=%x\n", port->is, port->ci);
@@ -487,8 +487,8 @@ static int ahci_identify(volatile struct HBA_PORT* port, struct SATA_ident* rdi)
 	fis->device = 0;		//LBA mode
 
 	//wait until the port is no longer busy
-	volatile int endcycle = 0xffffff;
-	volatile u64 endtime = timeread_us() + 3000*1000;
+	int endcycle = 0xffffff;
+	u64 endtime = timeread_us() + 10*1000*1000;
 	while(1){
 		if(timeread_us() > endtime){
 			ahci_print("ahci_identify: err=endtime, port->tfd=%x\n",(u64)port->tfd);

@@ -1,5 +1,6 @@
 #include "libuser.h"
-#define SAVETIME whdf.iw0
+#define LASTDRAWTIME whdf.iw0
+#define LASTCOPYTIME whdf.iwn
 int gl41cmdq_clear(void*);
 
 
@@ -178,14 +179,12 @@ next:
 	u64 now = timeread_us();
 	drawsolid_rect((void*)wnd, now, qx-32, qy-32, qx+32, qy+32);
 	drawsolid_circle((void*)wnd, ~now, qx, qy, 32);
-	drawdecimal((void*)wnd, 0xff00ff, qx-32, qy-16, now-old);
-	drawdecimal((void*)wnd, 0xff00ff, qx-32, qy, now-wnd->SAVETIME);
+	drawdecimal((void*)wnd, 0xff00ff, qx-32, qy-16, wnd->LASTDRAWTIME);
+	drawdecimal((void*)wnd, 0xff00ff, qx-32, qy+00, wnd->LASTCOPYTIME);
 
 	//mouse
 	drawline((void*)wnd, 0xffff00, x-16, y, x+16, y);
 	drawline((void*)wnd, 0xffff00, x, y-16, x, y+16);
-
-	wnd->SAVETIME = now;
 	return 0;
 }
 int wndmgr_rgba_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
