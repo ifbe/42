@@ -180,6 +180,9 @@ int fileauto_attach(struct halfrel* self, struct halfrel* peer)
 		gptclient_create(ele,0,0,0);
 		gptclient_attach(self,peer);
 		break;
+	case _fat_:
+		fatclient_create(ele,0,0,0);
+		fatclient_attach(self,peer);
 	}
 	return 0;
 }

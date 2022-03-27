@@ -10,12 +10,14 @@
 #define Globalpage 0x100
 #define Noexecute (1<<63)
 //
-#define PML4OFFS 0x00000
-#define PDPTOFFS 0x01000
+#define PML4OFFS 0x0000
+#define PDPTOFFS 0x1000
 #define GIGACOUNT 1024			//1 terabyte
 //
-#define PDPTUSER 0x40000
-#define PDIRUSER 0x41000
+#define PML4USER 0x0000
+#define PDPTUSER 0x1000
+#define PDIRUSER 0x2000
+#define PTABUSER 0x3000
 
 
 
@@ -100,9 +102,10 @@ void pagetable_makekern(u8* buf, int len, u8* tmp, int plen)
 }
 void pagetable_makeuser(u8* buf, int len, u64 pa, int plen, u64 va, int vlen)
 {
-	//pagetable_makekern(buf, 0x40000);
+	//clear memory
+	u64 j;
+	for(j=0;j<len;j++)buf[j] = 0;
 
-	//copy kern
 	//whereis va, *where = pa | Allowuser | Writable | Present;
 	//u64 bit47_63 = (va>>47)&0x1ffff;		//must 0 or 0x1ffff
 	u64 bit39_47 = (va>>39)&0x1ff;
@@ -121,7 +124,9 @@ void pagetable_makeuser(u8* buf, int len, u64 pa, int plen, u64 va, int vlen)
 
 	//page map level 4: waste 0x1000 B, actually 8B
 	//pdptaddr8B_per_item, 512item_per_table, 1table_cant_less
-	u64* pml4 = (u64*)(buf+PML4OFFS);
+	u64* pml4 = (u64*)(buf+PML4USER);
+	u8* kpage = (u8*)0x40000;
+	for(j=0;j<0x1000;j++)pml4[j] = kpage[j];
 	pml4[bit39_47] = (u64)pdpt | Allowuser | Writable | Present;
 }
 

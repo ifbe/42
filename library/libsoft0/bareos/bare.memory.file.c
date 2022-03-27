@@ -14,9 +14,9 @@ static void* disknode[16];
 static void* diskfoot[16];
 static int diskcount = 0;
 //part
-static void* partnode[16];
-static void* partfoot[16];
-static int partcount = 0;
+static void* ptblnode[16];
+static void* ptblfoot[16];
+static int ptblcount = 0;
 //fsys
 static void* fsysnode[16];
 static void* fsysfoot[16];
@@ -41,9 +41,9 @@ int filemanager_registerpart(_obj* node, void* foot)
 	say("type=%llx\n", node->type);
 
 	//1.remember
-	partnode[partcount] = node;
-	partfoot[partcount] = foot;
-	partcount += 1;
+	ptblnode[ptblcount] = node;
+	ptblfoot[ptblcount] = foot;
+	ptblcount += 1;
 
 	//2.find first fat16 or fat32
 	if(0 == node->ontaking)return 0;
@@ -90,8 +90,14 @@ int filemanager_registersupplier(void* node, void* foot)
 	artery_attach((void*)&rel->dst, (void*)&rel->src);
 
 	//4.next
-	if( (_mbr_ == tmp->type) | (_gpt_ == tmp->type) ){
+	switch(tmp->type){
+	case _mbr_:
+	case _gpt_:
 		filemanager_registerpart(tmp, 0);
+		break;
+	case _fat_:
+		filemanager_registerfsys(tmp, 0);
+		break;
 	}
 	return 0;
 }
@@ -115,10 +121,26 @@ int file_give(void* obj, int fd, void* arg, int off, u8* buf, int len)
 {
 	return 0;
 }
+int file_attach()
+{
+	return 0;
+}
+int file_detach()
+{
+	return 0;
+}
 
 
 
 
+int file_reader()
+{
+	return 0;
+}
+int file_writer()
+{
+	return 0;
+}
 int file_create(char* path)
 {
 	return 0;
@@ -127,6 +149,10 @@ int file_delete()
 {
 	return 0;
 }
+
+
+
+
 int file_search(void* buf, int len)
 {
 	int j,ret;
@@ -149,12 +175,14 @@ int file_search(void* buf, int len)
 		}
 		say("\n");
 	}
-	for(j=0;j<partcount;j++){
-		say("part[%d]@%p:\n", j, partnode[j]);
+	if(0 == j)say("no disk\n");
 
-		p = partnode[j];
+	for(j=0;j<ptblcount;j++){
+		say("ptbl[%d]@%p:\n", j, ptblnode[j]);
+
+		p = ptblnode[j];
 		if(p->ontaking){
-			q = partfoot[j];
+			q = ptblfoot[j];
 			ret = p->ontaking(p,q, 0,0, "info",0, tmp,512);
 			//say("ret=%d\n",ret);
 		}
@@ -163,6 +191,8 @@ int file_search(void* buf, int len)
 		}
 		say("\n");
 	}
+	if(0 == j)say("no ptbl\n");
+
 	for(j=0;j<fsyscount;j++){
 		say("fsys[%d]@%p:\n", j, fsysnode[j]);
 
@@ -177,6 +207,8 @@ int file_search(void* buf, int len)
 		}
 		say("\n");
 	}
+	if(0 == j)say("no fsys\n");
+
 	return 0;
 }
 int file_modify(void* buf, int len)

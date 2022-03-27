@@ -512,6 +512,20 @@ int fat_parse(_obj* art, u8* addr)
 	}
 	return 0;
 }
+int fat_showinfo(_obj* art)
+{
+	struct perfs* per = art->priv_ptr;
+	if(0 == per)return 0;
+
+	say("version=%d\n", per->version);
+	say("byte_per_sec=%x\n", per->byte_per_sec);
+	say("sec_per_fat=%x\n", per->sec_per_fat);
+	say("sec_per_clus=%x\n", per->sec_per_clus);
+	say("sec_of_fat0=%x\n", per->sec_of_fat0);
+	say("sec_of_clus2=%x\n", per->sec_of_clus2);
+
+	return 0;
+}
 
 
 
@@ -553,9 +567,15 @@ int fatclient_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int fatclient_ontake(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int fatclient_ontake(_obj* art,void* foot, _syn* stack,int sp, u8* arg, int idx, u8* buf, int len)
 {
 	say("@fatclient_ontake\n");
+	say("%p,%p, %p,%x, %p,%x, %p,%x\n",art,foot, stack,sp, arg,idx, buf,len);
+	if(arg){
+		//info
+		if('i' == arg[0])return fat_showinfo(art);
+	}
+
 	if(0 == foot){
 		fat_cd(art, 0);
 		return 0;
