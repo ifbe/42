@@ -159,8 +159,8 @@ void tardis_register(_obj* p)
 
 	p->oncreate = (void*)tardis_create;
 	p->ondelete = (void*)tardis_delete;
-	p->onsearch = (void*)tardis_search;
-	p->onmodify = (void*)tardis_modify;
+	p->onreader = (void*)tardis_search;
+	p->onwriter = (void*)tardis_modify;
 
 	p->onattach = (void*)tardis_attach;
 	p->ondetach = (void*)tardis_detach;

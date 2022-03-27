@@ -207,8 +207,8 @@ void planet_register(_obj* p)
 
 	p->oncreate = (void*)planet_create;
 	p->ondelete = (void*)planet_delete;
-	p->onsearch = (void*)planet_search;
-	p->onmodify = (void*)planet_modify;
+	p->onreader = (void*)planet_search;
+	p->onwriter = (void*)planet_modify;
 
 	p->onattach = (void*)planet_attach;
 	p->ondetach = (void*)planet_detach;

@@ -144,8 +144,8 @@ void button_register(_obj* p)
 
 	p->oncreate = (void*)button_create;
 	p->ondelete = (void*)button_delete;
-	p->onsearch = (void*)button_search;
-	p->onmodify = (void*)button_modify;
+	p->onreader = (void*)button_search;
+	p->onwriter = (void*)button_modify;
 
 	p->onattach = (void*)button_attach;
 	p->ondetach = (void*)button_detach;

@@ -160,6 +160,7 @@ void term_memory(int argc, u8** argv)
 void term_file(int argc, u8** argv)
 {
 	if(argc <= 1)file_search(0, 0);
+	else file_search(argv[1], 0);
 }
 void term_thread(int argc, u8** argv)
 {

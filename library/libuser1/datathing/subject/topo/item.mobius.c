@@ -180,8 +180,8 @@ void mobius_register(_obj* p)
 
 	p->oncreate = (void*)mobius_create;
 	p->ondelete = (void*)mobius_delete;
-	p->onsearch = (void*)mobius_search;
-	p->onmodify = (void*)mobius_modify;
+	p->onreader = (void*)mobius_search;
+	p->onwriter = (void*)mobius_modify;
 
 	p->onattach = (void*)mobius_attach;
 	p->ondetach = (void*)mobius_detach;

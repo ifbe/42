@@ -240,8 +240,8 @@ void skydome_register(_obj* p)
 
 	p->oncreate = (void*)skydome_create;
 	p->ondelete = (void*)skydome_delete;
-	p->onsearch = (void*)skydome_search;
-	p->onmodify = (void*)skydome_modify;
+	p->onreader = (void*)skydome_search;
+	p->onwriter = (void*)skydome_modify;
 
 	p->onattach = (void*)skydome_attach;
 	p->ondetach = (void*)skydome_detach;

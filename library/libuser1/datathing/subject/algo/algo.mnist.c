@@ -315,8 +315,8 @@ void mnist_register(_obj* p)
 
 	p->oncreate = (void*)mnist_create;
 	p->ondelete = (void*)mnist_delete;
-	p->onsearch = (void*)mnist_search;
-	p->onmodify = (void*)mnist_modify;
+	p->onreader = (void*)mnist_search;
+	p->onwriter = (void*)mnist_modify;
 
 	p->onattach = (void*)mnist_attach;
 	p->ondetach = (void*)mnist_detach;

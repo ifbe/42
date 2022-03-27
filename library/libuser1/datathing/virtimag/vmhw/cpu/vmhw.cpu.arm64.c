@@ -97,8 +97,8 @@ void arm64_register(_obj* p)
 
 	p->oncreate = (void*)arm64_create;
 	p->ondelete = (void*)arm64_delete;
-	p->onsearch = (void*)arm64_search;
-	p->onmodify = (void*)arm64_modify;
+	p->onreader = (void*)arm64_search;
+	p->onwriter = (void*)arm64_modify;
 
 	p->onattach = (void*)arm64_attach;
 	p->ondetach = (void*)arm64_detach;

@@ -201,8 +201,8 @@ void stick_register(_obj* p)
 
 	p->oncreate = (void*)stick_create;
 	p->ondelete = (void*)stick_delete;
-	p->onsearch = (void*)stick_search;
-	p->onmodify = (void*)stick_modify;
+	p->onreader = (void*)stick_search;
+	p->onwriter = (void*)stick_modify;
 
 	p->onattach = (void*)stick_attach;
 	p->ondetach = (void*)stick_detach;

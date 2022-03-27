@@ -320,8 +320,8 @@ void tetris_register(_obj* p)
 
 	p->oncreate = (void*)tetris_create;
 	p->ondelete = (void*)tetris_delete;
-	p->onsearch = (void*)tetris_search;
-	p->onmodify = (void*)tetris_modify;
+	p->onreader = (void*)tetris_search;
+	p->onwriter = (void*)tetris_modify;
 
 	p->onattach = (void*)tetris_attach;
 	p->ondetach = (void*)tetris_detach;

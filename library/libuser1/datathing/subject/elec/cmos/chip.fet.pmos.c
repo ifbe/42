@@ -334,8 +334,8 @@ void pmos_register(_obj* p)
 
 	p->oncreate = (void*)pmos_create;
 	p->ondelete = (void*)pmos_delete;
-	p->onsearch = (void*)pmos_search;
-	p->onmodify = (void*)pmos_modify;
+	p->onreader = (void*)pmos_search;
+	p->onwriter = (void*)pmos_modify;
 
 	p->onattach = (void*)pmos_attach;
 	p->ondetach = (void*)pmos_detach;

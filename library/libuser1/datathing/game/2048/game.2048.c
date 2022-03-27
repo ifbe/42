@@ -507,8 +507,8 @@ void the2048_register(_obj* p)
 
 	p->oncreate = (void*)the2048_create;
 	p->ondelete = (void*)the2048_delete;
-	p->onsearch = (void*)the2048_search;
-	p->onmodify = (void*)the2048_modify;
+	p->onreader = (void*)the2048_search;
+	p->onwriter = (void*)the2048_modify;
 
 	p->onattach = (void*)the2048_attach;
 	p->ondetach = (void*)the2048_detach;

@@ -412,8 +412,8 @@ void projector_register(_obj* p)
 
 	p->oncreate = (void*)projector_create;
 	p->ondelete = (void*)projector_delete;
-	p->onsearch = (void*)projector_search;
-	p->onmodify = (void*)projector_modify;
+	p->onreader = (void*)projector_search;
+	p->onwriter = (void*)projector_modify;
 
 	p->onattach = (void*)projector_attach;
 	p->ondetach = (void*)projector_detach;

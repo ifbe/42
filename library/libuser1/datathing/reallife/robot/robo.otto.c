@@ -206,8 +206,8 @@ void otto_register(_obj* p)
 
 	p->oncreate = (void*)otto_create;
 	p->ondelete = (void*)otto_delete;
-	p->onsearch = (void*)otto_search;
-	p->onmodify = (void*)otto_modify;
+	p->onreader = (void*)otto_search;
+	p->onwriter = (void*)otto_modify;
 
 	p->onattach = (void*)otto_attach;
 	p->ondetach = (void*)otto_detach;

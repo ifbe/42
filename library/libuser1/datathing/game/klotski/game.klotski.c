@@ -202,8 +202,8 @@ void klotski_register(_obj* p)
 
 	p->oncreate = (void*)klotski_create;
 	p->ondelete = (void*)klotski_delete;
-	p->onsearch = (void*)klotski_search;
-	p->onmodify = (void*)klotski_modify;
+	p->onreader = (void*)klotski_search;
+	p->onwriter = (void*)klotski_modify;
 
 	p->onattach = (void*)klotski_attach;
 	p->ondetach = (void*)klotski_detach;

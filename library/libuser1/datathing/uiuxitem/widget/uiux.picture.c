@@ -218,8 +218,8 @@ void picture_register(_obj* p)
 
 	p->oncreate = (void*)picture_create;
 	p->ondelete = (void*)picture_delete;
-	p->onsearch = (void*)picture_search;
-	p->onmodify = (void*)picture_modify;
+	p->onreader = (void*)picture_search;
+	p->onwriter = (void*)picture_modify;
 
 	p->onattach = (void*)picture_attach;
 	p->ondetach = (void*)picture_detach;

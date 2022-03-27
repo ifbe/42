@@ -440,8 +440,8 @@ void obj3d_register(_obj* p)
 
 	p->oncreate = (void*)obj3d_create;
 	p->ondelete = (void*)obj3d_delete;
-	p->onsearch = (void*)obj3d_search;
-	p->onmodify = (void*)obj3d_modify;
+	p->onreader = (void*)obj3d_search;
+	p->onwriter = (void*)obj3d_modify;
 
 	p->onattach = (void*)obj3d_attach;
 	p->ondetach = (void*)obj3d_detach;

@@ -171,8 +171,8 @@ void dna_register(_obj* p)
 
 	p->oncreate = (void*)dna_create;
 	p->ondelete = (void*)dna_delete;
-	p->onsearch = (void*)dna_search;
-	p->onmodify = (void*)dna_modify;
+	p->onreader = (void*)dna_search;
+	p->onwriter = (void*)dna_modify;
 
 	p->onattach = (void*)dna_attach;
 	p->ondetach = (void*)dna_detach;

@@ -386,8 +386,8 @@ void human_register(_obj* p)
 
 	p->oncreate = (void*)human_create;
 	p->ondelete = (void*)human_delete;
-	p->onsearch = (void*)human_search;
-	p->onmodify = (void*)human_modify;
+	p->onreader = (void*)human_search;
+	p->onwriter = (void*)human_modify;
 
 	p->onattach = (void*)human_attach;
 	p->ondetach = (void*)human_detach;

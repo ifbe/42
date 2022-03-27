@@ -278,8 +278,8 @@ void calib3d_register(_obj* p)
 
 	p->oncreate = (void*)calib3d_create;
 	p->ondelete = (void*)calib3d_delete;
-	p->onsearch = (void*)calib3d_search;
-	p->onmodify = (void*)calib3d_modify;
+	p->onreader = (void*)calib3d_search;
+	p->onwriter = (void*)calib3d_modify;
 
 	p->onattach = (void*)calib3d_attach;
 	p->ondetach = (void*)calib3d_detach;

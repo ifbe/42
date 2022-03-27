@@ -441,8 +441,8 @@ void piano_register(_obj* p)
 
 	p->oncreate = (void*)piano_create;
 	p->ondelete = (void*)piano_delete;
-	p->onsearch = (void*)piano_search;
-	p->onmodify = (void*)piano_modify;
+	p->onreader = (void*)piano_search;
+	p->onwriter = (void*)piano_modify;
 
 	p->onattach = (void*)piano_attach;
 	p->ondetach = (void*)piano_detach;

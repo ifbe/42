@@ -192,8 +192,8 @@ void vsrc_register(_obj* p)
 
 	p->oncreate = (void*)vsrc_create;
 	p->ondelete = (void*)vsrc_delete;
-	p->onsearch = (void*)vsrc_search;
-	p->onmodify = (void*)vsrc_modify;
+	p->onreader = (void*)vsrc_search;
+	p->onwriter = (void*)vsrc_modify;
 
 	p->onattach = (void*)vsrc_attach;
 	p->ondetach = (void*)vsrc_detach;

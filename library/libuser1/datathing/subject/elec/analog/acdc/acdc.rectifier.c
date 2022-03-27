@@ -254,8 +254,8 @@ void rectify_register(_obj* p)
 
 	p->oncreate = (void*)rectify_create;
 	p->ondelete = (void*)rectify_delete;
-	p->onsearch = (void*)rectify_search;
-	p->onmodify = (void*)rectify_modify;
+	p->onreader = (void*)rectify_search;
+	p->onwriter = (void*)rectify_modify;
 
 	p->onattach = (void*)rectify_attach;
 	p->ondetach = (void*)rectify_detach;

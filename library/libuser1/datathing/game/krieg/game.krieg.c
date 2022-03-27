@@ -51,8 +51,8 @@ void kriegspiel_register(_obj* p)
 
 	p->oncreate = (void*)kriegspiel_create;
 	p->ondelete = (void*)kriegspiel_delete;
-	p->onsearch = (void*)kriegspiel_search;
-	p->onmodify = (void*)kriegspiel_modify;
+	p->onreader = (void*)kriegspiel_search;
+	p->onwriter = (void*)kriegspiel_modify;
 
 	p->onattach = (void*)kriegspiel_attach;
 	p->ondetach = (void*)kriegspiel_detach;

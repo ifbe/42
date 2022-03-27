@@ -189,8 +189,8 @@ void example_register(_obj* p)
 
 	p->oncreate = (void*)example_create;
 	p->ondelete = (void*)example_delete;
-	p->onsearch = (void*)example_search;
-	p->onmodify = (void*)example_modify;
+	p->onreader = (void*)example_search;
+	p->onwriter = (void*)example_modify;
 
 	p->onattach = (void*)example_attach;
 	p->ondetach = (void*)example_detach;

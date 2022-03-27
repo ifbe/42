@@ -139,8 +139,8 @@ void h2o_register(_obj* p)
 
 	p->oncreate = (void*)h2o_create;
 	p->ondelete = (void*)h2o_delete;
-	p->onsearch = (void*)h2o_search;
-	p->onmodify = (void*)h2o_modify;
+	p->onreader = (void*)h2o_search;
+	p->onwriter = (void*)h2o_modify;
 
 	p->onattach = (void*)h2o_attach;
 	p->ondetach = (void*)h2o_detach;

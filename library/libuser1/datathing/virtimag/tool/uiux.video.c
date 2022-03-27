@@ -596,8 +596,8 @@ void video_register(_obj* p)
 
 	p->oncreate = (void*)video_create;
 	p->ondelete = (void*)video_delete;
-	p->onsearch = (void*)video_search;
-	p->onmodify = (void*)video_modify;
+	p->onreader = (void*)video_search;
+	p->onwriter = (void*)video_modify;
 
 	p->onattach = (void*)video_attach;
 	p->ondetach = (void*)video_detach;

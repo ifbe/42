@@ -359,8 +359,8 @@ void sudoku_register(_obj* p)
 
 	p->oncreate = (void*)sudoku_create;
 	p->ondelete = (void*)sudoku_delete;
-	p->onsearch = (void*)sudoku_search;
-	p->onmodify = (void*)sudoku_modify;
+	p->onreader = (void*)sudoku_search;
+	p->onwriter = (void*)sudoku_modify;
 
 	p->onattach = (void*)sudoku_attach;
 	p->ondetach = (void*)sudoku_detach;

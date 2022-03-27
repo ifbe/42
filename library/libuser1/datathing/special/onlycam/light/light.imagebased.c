@@ -275,8 +275,8 @@ void imagelight_register(_obj* p)
 
 	p->oncreate = (void*)imagelight_create;
 	p->ondelete = (void*)imagelight_delete;
-	p->onsearch = (void*)imagelight_search;
-	p->onmodify = (void*)imagelight_modify;
+	p->onreader = (void*)imagelight_search;
+	p->onwriter = (void*)imagelight_modify;
 
 	p->onattach = (void*)imagelight_attach;
 	p->ondetach = (void*)imagelight_detach;

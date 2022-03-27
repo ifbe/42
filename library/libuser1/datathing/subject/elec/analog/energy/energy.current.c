@@ -77,8 +77,8 @@ void isrc_register(_obj* p)
 
 	p->oncreate = (void*)isrc_create;
 	p->ondelete = (void*)isrc_delete;
-	p->onsearch = (void*)isrc_search;
-	p->onmodify = (void*)isrc_modify;
+	p->onreader = (void*)isrc_search;
+	p->onwriter = (void*)isrc_modify;
 
 	p->onattach = (void*)isrc_attach;
 	p->ondetach = (void*)isrc_detach;

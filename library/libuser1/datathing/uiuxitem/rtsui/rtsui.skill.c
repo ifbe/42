@@ -148,8 +148,8 @@ void skill_register(_obj* p)
 
 	p->oncreate = (void*)skill_create;
 	p->ondelete = (void*)skill_delete;
-	p->onsearch = (void*)skill_search;
-	p->onmodify = (void*)skill_modify;
+	p->onreader = (void*)skill_search;
+	p->onwriter = (void*)skill_modify;
 
 	p->onattach = (void*)skill_attach;
 	p->ondetach = (void*)skill_detach;

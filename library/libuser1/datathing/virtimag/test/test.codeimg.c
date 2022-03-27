@@ -409,8 +409,8 @@ void codeimg_register(_obj* p)
 
 	p->oncreate = (void*)codeimg_create;
 	p->ondelete = (void*)codeimg_delete;
-	p->onsearch = (void*)codeimg_search;
-	p->onmodify = (void*)codeimg_modify;
+	p->onreader = (void*)codeimg_search;
+	p->onwriter = (void*)codeimg_modify;
 
 	p->onattach = (void*)codeimg_attach;
 	p->ondetach = (void*)codeimg_detach;

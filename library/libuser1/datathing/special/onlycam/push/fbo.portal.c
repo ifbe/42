@@ -514,8 +514,8 @@ void portal_register(_obj* p)
 
 	p->oncreate = (void*)portal_create;
 	p->ondelete = (void*)portal_delete;
-	p->onsearch = (void*)portal_search;
-	p->onmodify = (void*)portal_modify;
+	p->onreader = (void*)portal_search;
+	p->onwriter = (void*)portal_modify;
 
 	p->onattach = (void*)portal_attach;
 	p->ondetach = (void*)portal_detach;

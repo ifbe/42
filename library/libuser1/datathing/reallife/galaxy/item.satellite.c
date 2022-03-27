@@ -245,8 +245,8 @@ void satellite_register(_obj* p)
 
 	p->oncreate = (void*)satellite_create;
 	p->ondelete = (void*)satellite_delete;
-	p->onsearch = (void*)satellite_search;
-	p->onmodify = (void*)satellite_modify;
+	p->onreader = (void*)satellite_search;
+	p->onwriter = (void*)satellite_modify;
 
 	p->onattach = (void*)satellite_attach;
 	p->ondetach = (void*)satellite_detach;

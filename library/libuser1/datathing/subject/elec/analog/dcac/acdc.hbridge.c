@@ -187,8 +187,8 @@ void hbridge_register(_obj* p)
 
 	p->oncreate = (void*)hbridge_create;
 	p->ondelete = (void*)hbridge_delete;
-	p->onsearch = (void*)hbridge_search;
-	p->onmodify = (void*)hbridge_modify;
+	p->onreader = (void*)hbridge_search;
+	p->onwriter = (void*)hbridge_modify;
 
 	p->onattach = (void*)hbridge_attach;
 	p->ondetach = (void*)hbridge_detach;

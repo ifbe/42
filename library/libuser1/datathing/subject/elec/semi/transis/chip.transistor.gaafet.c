@@ -130,8 +130,8 @@ void gaafet_register(_obj* p)
 
 	p->oncreate = (void*)gaafet_create;
 	p->ondelete = (void*)gaafet_delete;
-	p->onsearch = (void*)gaafet_search;
-	p->onmodify = (void*)gaafet_modify;
+	p->onreader = (void*)gaafet_search;
+	p->onwriter = (void*)gaafet_modify;
 
 	p->onattach = (void*)gaafet_attach;
 	p->ondetach = (void*)gaafet_detach;

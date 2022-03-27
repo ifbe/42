@@ -153,21 +153,20 @@ int file_delete()
 
 
 
-int file_search(void* buf, int len)
+int file_search_disk()
 {
 	int j,ret;
-	u8 tmp[512];
-	struct item* p;
-	void* q;
-	say("@filesearch\n");
+	struct item* node;
+	void* slot;
+	say("--------disk--------\n");
 
 	for(j=0;j<diskcount;j++){
 		say("disk[%d]@%p:\n", j, disknode[j]);
 
-		p = disknode[j];
-		if(p->ontaking){
-			q = diskfoot[j];
-			ret = p->ontaking(p,q, 0,0, "info",0, tmp,512);
+		node = disknode[j];
+		if(node->ontaking){
+			slot = diskfoot[j];
+			ret = node->ontaking(node,slot, 0,0, "info",0, 0,0);
 			//say("ret=%d\n",ret);
 		}
 		else{
@@ -175,15 +174,22 @@ int file_search(void* buf, int len)
 		}
 		say("\n");
 	}
-	if(0 == j)say("no disk\n");
+	if(0 == j)say("no disk\n\n");
+}
+int file_search_ptbl()
+{
+	int j,ret;
+	struct item* node;
+	void* slot;
+	say("--------ptbl--------\n");
 
 	for(j=0;j<ptblcount;j++){
 		say("ptbl[%d]@%p:\n", j, ptblnode[j]);
 
-		p = ptblnode[j];
-		if(p->ontaking){
-			q = ptblfoot[j];
-			ret = p->ontaking(p,q, 0,0, "info",0, tmp,512);
+		node = ptblnode[j];
+		if(node->ontaking){
+			slot = ptblfoot[j];
+			ret = node->ontaking(node,slot, 0,0, "info",0, 0,0);
 			//say("ret=%d\n",ret);
 		}
 		else{
@@ -191,15 +197,22 @@ int file_search(void* buf, int len)
 		}
 		say("\n");
 	}
-	if(0 == j)say("no ptbl\n");
+	if(0 == j)say("no ptbl\n\n");
+}
+int file_search_fsys()
+{
+	int j,ret;
+	struct item* node;
+	void* slot;
+	say("--------fsys--------\n");
 
 	for(j=0;j<fsyscount;j++){
 		say("fsys[%d]@%p:\n", j, fsysnode[j]);
 
-		p = fsysnode[j];
-		if(p->ontaking){
-			q = fsysfoot[j];
-			ret = p->ontaking(p,q, 0,0, "info",0, tmp,512);
+		node = fsysnode[j];
+		if(node->ontaking){
+			slot = fsysfoot[j];
+			ret = node->ontaking(node,slot, 0,0, "info",0, 0,0);
 			//say("ret=%d\n",ret);
 		}
 		else{
@@ -207,8 +220,44 @@ int file_search(void* buf, int len)
 		}
 		say("\n");
 	}
-	if(0 == j)say("no fsys\n");
+	if(0 == j)say("no fsys\n\n");
+}
+int file_search_fsys_x(int id, u8* path)
+{
+	if(id < 0)return 0;
+	if(id > fsyscount)return 0;
 
+	struct item* node = fsysnode[id];
+	void* slot = fsysfoot[id];
+	if(node->ontaking){
+		node->ontaking(node,slot, 0,0, path,0, 0,0);
+	}
+}
+int file_search(u8* buf, int len)
+{
+	say("@filesearch:buf=%p,len=%x\n", buf,len);
+	if(buf){
+		say("arg={%s}\n", buf);
+		if(0 == ncmp(buf, "/disk", 5)){
+			file_search_disk();
+		}
+		else if(0 == ncmp(buf, "/ptbl", 5)){
+			file_search_ptbl();
+		}
+		else if(0 == ncmp(buf, "/fsys", 5)){
+			if('/' == buf[5]){
+				file_search_fsys_x(buf[6]-'0', buf+7);
+			}
+			else{
+				file_search_fsys();
+			}
+		}
+	}
+	else{
+		file_search_disk();
+		file_search_ptbl();
+		file_search_fsys();
+	}
 	return 0;
 }
 int file_modify(void* buf, int len)

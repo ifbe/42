@@ -438,8 +438,8 @@ void xor_register(_obj* p)
 
 	p->oncreate = (void*)xor_create;
 	p->ondelete = (void*)xor_delete;
-	p->onsearch = (void*)xor_search;
-	p->onmodify = (void*)xor_modify;
+	p->onreader = (void*)xor_search;
+	p->onwriter = (void*)xor_modify;
 
 	p->onattach = (void*)xor_attach;
 	p->ondetach = (void*)xor_detach;

@@ -8,6 +8,10 @@ int gptclient_create(_obj* ele, void* url, int argc, u8** argv);
 int gptclient_delete(_obj* ele, void* url);
 int gptclient_attach(struct halfrel* self, struct halfrel* peer);
 int gptclient_detach(struct halfrel* self, struct halfrel* peer);
+int fatclient_create(_obj* ele, void* url, int argc, u8** argv);
+int fatclient_delete(_obj* ele, void* url);
+int fatclient_attach(struct halfrel* self, struct halfrel* peer);
+int fatclient_detach(struct halfrel* self, struct halfrel* peer);
 
 
 

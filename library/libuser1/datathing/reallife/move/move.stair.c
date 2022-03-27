@@ -151,8 +151,8 @@ void stair_register(_obj* p)
 
 	p->oncreate = (void*)stair_create;
 	p->ondelete = (void*)stair_delete;
-	p->onsearch = (void*)stair_search;
-	p->onmodify = (void*)stair_modify;
+	p->onreader = (void*)stair_search;
+	p->onwriter = (void*)stair_modify;
 
 	p->onattach = (void*)stair_attach;
 	p->ondetach = (void*)stair_detach;

@@ -354,8 +354,8 @@ void nmos_register(_obj* p)
 
 	p->oncreate = (void*)nmos_create;
 	p->ondelete = (void*)nmos_delete;
-	p->onsearch = (void*)nmos_search;
-	p->onmodify = (void*)nmos_modify;
+	p->onreader = (void*)nmos_search;
+	p->onwriter = (void*)nmos_modify;
 
 	p->onattach = (void*)nmos_attach;
 	p->ondetach = (void*)nmos_detach;

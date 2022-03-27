@@ -212,8 +212,8 @@ void curtain_register(_obj* p)
 
 	p->oncreate = (void*)curtain_create;
 	p->ondelete = (void*)curtain_delete;
-	p->onsearch = (void*)curtain_search;
-	p->onmodify = (void*)curtain_modify;
+	p->onreader = (void*)curtain_search;
+	p->onwriter = (void*)curtain_modify;
 
 	p->onattach = (void*)curtain_attach;
 	p->ondetach = (void*)curtain_detach;

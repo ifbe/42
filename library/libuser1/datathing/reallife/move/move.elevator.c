@@ -118,8 +118,8 @@ void elevator_register(_obj* p)
 
 	p->oncreate = (void*)elevator_create;
 	p->ondelete = (void*)elevator_delete;
-	p->onsearch = (void*)elevator_search;
-	p->onmodify = (void*)elevator_modify;
+	p->onreader = (void*)elevator_search;
+	p->onwriter = (void*)elevator_modify;
 
 	p->onattach = (void*)elevator_attach;
 	p->ondetach = (void*)elevator_detach;

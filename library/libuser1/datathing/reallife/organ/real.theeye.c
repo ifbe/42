@@ -43,8 +43,8 @@ void theeye_register(_obj* p)
 
 	p->oncreate = (void*)theeye_create;
 	p->ondelete = (void*)theeye_delete;
-	p->onsearch = (void*)theeye_search;
-	p->onmodify = (void*)theeye_modify;
+	p->onreader = (void*)theeye_search;
+	p->onwriter = (void*)theeye_modify;
 
 	p->onattach = (void*)theeye_attach;
 	p->ondetach = (void*)theeye_detach;

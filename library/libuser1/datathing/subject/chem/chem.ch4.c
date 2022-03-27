@@ -132,8 +132,8 @@ void ch4_register(_obj* p)
 
 	p->oncreate = (void*)ch4_create;
 	p->ondelete = (void*)ch4_delete;
-	p->onsearch = (void*)ch4_search;
-	p->onmodify = (void*)ch4_modify;
+	p->onreader = (void*)ch4_search;
+	p->onwriter = (void*)ch4_modify;
 
 	p->onattach = (void*)ch4_attach;
 	p->ondetach = (void*)ch4_detach;

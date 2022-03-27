@@ -439,8 +439,8 @@ void xnor_register(_obj* p)
 
 	p->oncreate = (void*)xnor_create;
 	p->ondelete = (void*)xnor_delete;
-	p->onsearch = (void*)xnor_search;
-	p->onmodify = (void*)xnor_modify;
+	p->onreader = (void*)xnor_search;
+	p->onwriter = (void*)xnor_modify;
 
 	p->onattach = (void*)xnor_attach;
 	p->ondetach = (void*)xnor_detach;

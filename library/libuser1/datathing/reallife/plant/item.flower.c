@@ -145,8 +145,8 @@ void flower_register(_obj* p)
 
 	p->oncreate = (void*)flower_create;
 	p->ondelete = (void*)flower_delete;
-	p->onsearch = (void*)flower_search;
-	p->onmodify = (void*)flower_modify;
+	p->onreader = (void*)flower_search;
+	p->onwriter = (void*)flower_modify;
 
 	p->onattach = (void*)flower_attach;
 	p->ondetach = (void*)flower_detach;

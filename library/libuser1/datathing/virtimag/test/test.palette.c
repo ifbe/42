@@ -227,8 +227,8 @@ void palette_register(_obj* p)
 
 	p->oncreate = (void*)palette_create;
 	p->ondelete = (void*)palette_delete;
-	p->onsearch = (void*)palette_search;
-	p->onmodify = (void*)palette_modify;
+	p->onreader = (void*)palette_search;
+	p->onwriter = (void*)palette_modify;
 
 	p->onattach = (void*)palette_attach;
 	p->ondetach = (void*)palette_detach;

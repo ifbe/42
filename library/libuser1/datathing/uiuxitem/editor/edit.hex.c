@@ -320,8 +320,8 @@ void hexedit_register(_obj* p)
 
 	p->oncreate = (void*)hexedit_create;
 	p->ondelete = (void*)hexedit_delete;
-	p->onsearch = (void*)hexedit_search;
-	p->onmodify = (void*)hexedit_modify;
+	p->onreader = (void*)hexedit_search;
+	p->onwriter = (void*)hexedit_modify;
 
 	p->onattach = (void*)hexedit_attach;
 	p->ondetach = (void*)hexedit_detach;

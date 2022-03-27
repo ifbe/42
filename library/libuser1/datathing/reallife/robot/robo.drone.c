@@ -373,8 +373,8 @@ void drone_register(_obj* p)
 
 	p->oncreate = (void*)drone_create;
 	p->ondelete = (void*)drone_delete;
-	p->onsearch = (void*)drone_search;
-	p->onmodify = (void*)drone_modify;
+	p->onreader = (void*)drone_search;
+	p->onwriter = (void*)drone_modify;
 
 	p->onattach = (void*)drone_attach;
 	p->ondetach = (void*)drone_detach;

@@ -254,8 +254,8 @@ void skillbar_register(_obj* p)
 
 	p->oncreate = (void*)skillbar_create;
 	p->ondelete = (void*)skillbar_delete;
-	p->onsearch = (void*)skillbar_search;
-	p->onmodify = (void*)skillbar_modify;
+	p->onreader = (void*)skillbar_search;
+	p->onwriter = (void*)skillbar_modify;
 
 	p->onattach = (void*)skillbar_attach;
 	p->ondetach = (void*)skillbar_detach;

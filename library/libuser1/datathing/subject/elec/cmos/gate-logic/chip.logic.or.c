@@ -130,8 +130,8 @@ void or_register(_obj* p)
 
 	p->oncreate = (void*)or_create;
 	p->ondelete = (void*)or_delete;
-	p->onsearch = (void*)or_search;
-	p->onmodify = (void*)or_modify;
+	p->onreader = (void*)or_search;
+	p->onwriter = (void*)or_modify;
 
 	p->onattach = (void*)or_attach;
 	p->ondetach = (void*)or_detach;

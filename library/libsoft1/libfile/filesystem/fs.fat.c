@@ -421,12 +421,21 @@ u32 fat_name2clus(_obj* art, char* name)
 
 	for(j=0;j<256;j++){
 		if(0xd >= name[j]){
-			ret = fat_searchfolder(per->dirhome, name+k);
-			break;
+			if(j==k){
+				break;
+			}
+			else{
+				ret = fat_searchfolder(per->dirhome, name+k);
+				break;
+			}
 		}
 		if('/' == name[j]){
-			if(j==k)fat_cd(art, 0);
-			else fat_cd(art, name+k);
+			if(j==k){
+				fat_cd(art, 0);
+			}
+			else{
+				fat_cd(art, name+k);
+			}
 			k = j+1;
 			depth++;
 		}
@@ -530,6 +539,53 @@ int fat_showinfo(_obj* art)
 
 
 
+static int fatclient_ontake(_obj* art,void* foot, _syn* stack,int sp, u8* arg, int idx, u8* buf, int len)
+{
+	say("@fatclient_ontake\n");
+	say("%p,%p, %p,%x, %p,%x, %p,%x\n",art,foot, stack,sp, arg,idx, buf,len);
+	if(0 == arg){
+		return fat_showinfo(art);
+	}
+
+	struct perfs* per = art->priv_ptr;
+	if(0 == per)return 0;
+
+	u32 clus = fat_name2clus(art, arg);
+	say("name=%s,fat=%x\n", arg, clus);
+	if(0 == clus){
+		say("wrong file\n");
+		return 0;
+	}
+
+	int debug = 0;
+	if(1){		//debug
+		if(0 == buf){
+			debug = 1;
+			buf = per->datahome;
+			if(len < 0x1000)len = 0x1000;
+			if(len > 0x100000)len = 0x100000;
+		}
+	}
+	else{
+		if(0 == buf)return 0;
+		if(0 == len)return 0;
+	}
+
+	int ret = 0;
+	switch(per->version){
+	case 32:
+		ret = fat32_read(art,0, clus,0, buf,len);
+	case 16:
+		ret = fat16_read(art,0, clus,0, buf,len);
+	}
+
+	if(debug&&(ret > 0))printmemory(buf, 0x200);
+	return ret;
+}
+static int fatclient_ongive(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+{
+	return 0;
+}
 int fatclient_attach(struct halfrel* self, struct halfrel* peer)
 {
 	say("@fatclient_attach\n");
@@ -567,37 +623,18 @@ int fatclient_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int fatclient_ontake(_obj* art,void* foot, _syn* stack,int sp, u8* arg, int idx, u8* buf, int len)
-{
-	say("@fatclient_ontake\n");
-	say("%p,%p, %p,%x, %p,%x, %p,%x\n",art,foot, stack,sp, arg,idx, buf,len);
-	if(arg){
-		//info
-		if('i' == arg[0])return fat_showinfo(art);
-	}
 
-	if(0 == foot){
-		fat_cd(art, 0);
-		return 0;
-	}
 
-	u32 clus = fat_name2clus(art,foot);
-	say("name=%s,fat=%x\n",foot, clus);
-	if(0 == clus){
-		say("wrong file\n");
-		return 0;
-	}
 
-	return fat32_read(art,0, clus,0, buf,len);
-}
-int fatclient_ongive(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+
+static int fatclient_reader(_obj* art,int xxx, void* arg,int cmd, void* buf,int len)
 {
 	return 0;
 }
-
-
-
-
+static int fatclient_writer(_obj* art,int xxx, void* arg,int cmd, void* buf,int len)
+{
+	return 0;
+}
 int fatclient_create(_obj* art)
 {
 	say("@fatclient_create\n");
@@ -605,6 +642,8 @@ int fatclient_create(_obj* art)
 	struct perfs* per = memorycreate(0x200000, 0);
 	art->priv_ptr = per;
 
+	art->onreader = (void*)fatclient_reader;
+	art->onwriter = (void*)fatclient_writer;
 	art->ongiving = (void*)fatclient_ongive;
 	art->ontaking = (void*)fatclient_ontake;
 	return 0;

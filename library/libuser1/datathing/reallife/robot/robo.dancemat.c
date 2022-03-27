@@ -343,8 +343,8 @@ void dancemat_register(_obj* p)
 
 	p->oncreate = (void*)dancemat_create;
 	p->ondelete = (void*)dancemat_delete;
-	p->onsearch = (void*)dancemat_search;
-	p->onmodify = (void*)dancemat_modify;
+	p->onreader = (void*)dancemat_search;
+	p->onwriter = (void*)dancemat_modify;
 
 	p->onattach = (void*)dancemat_attach;
 	p->ondetach = (void*)dancemat_detach;

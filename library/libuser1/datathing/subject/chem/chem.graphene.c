@@ -100,8 +100,8 @@ void graphene_register(_obj* p)
 
 	p->oncreate = (void*)graphene_create;
 	p->ondelete = (void*)graphene_delete;
-	p->onsearch = (void*)graphene_search;
-	p->onmodify = (void*)graphene_modify;
+	p->onreader = (void*)graphene_search;
+	p->onwriter = (void*)graphene_modify;
 
 	p->onattach = (void*)graphene_attach;
 	p->ondetach = (void*)graphene_detach;

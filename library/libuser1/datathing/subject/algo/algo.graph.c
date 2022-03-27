@@ -408,8 +408,8 @@ void graph_register(_obj* p)
 
 	p->oncreate = (void*)graph_create;
 	p->ondelete = (void*)graph_delete;
-	p->onsearch = (void*)graph_search;
-	p->onmodify = (void*)graph_modify;
+	p->onreader = (void*)graph_search;
+	p->onwriter = (void*)graph_modify;
 
 	p->onattach = (void*)graph_attach;
 	p->ondetach = (void*)graph_detach;

@@ -919,8 +919,8 @@ void freecam_register(_obj* p)
 
 	p->oncreate = (void*)freecam_create;
 	p->ondelete = (void*)freecam_delete;
-	p->onsearch = (void*)freecam_search;
-	p->onmodify = (void*)freecam_modify;
+	p->onreader = (void*)freecam_search;
+	p->onwriter = (void*)freecam_modify;
 
 	p->onattach = (void*)freecam_attach;
 	p->ondetach = (void*)freecam_detach;

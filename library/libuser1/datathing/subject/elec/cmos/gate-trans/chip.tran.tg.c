@@ -130,8 +130,8 @@ void tg_register(_obj* p)
 
 	p->oncreate = (void*)tg_create;
 	p->ondelete = (void*)tg_delete;
-	p->onsearch = (void*)tg_search;
-	p->onmodify = (void*)tg_modify;
+	p->onreader = (void*)tg_search;
+	p->onwriter = (void*)tg_modify;
 
 	p->onattach = (void*)tg_attach;
 	p->ondetach = (void*)tg_detach;

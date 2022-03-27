@@ -130,8 +130,8 @@ void tristate_register(_obj* p)
 
 	p->oncreate = (void*)tristate_create;
 	p->ondelete = (void*)tristate_delete;
-	p->onsearch = (void*)tristate_search;
-	p->onmodify = (void*)tristate_modify;
+	p->onreader = (void*)tristate_search;
+	p->onwriter = (void*)tristate_modify;
 
 	p->onattach = (void*)tristate_attach;
 	p->ondetach = (void*)tristate_detach;

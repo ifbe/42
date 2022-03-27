@@ -434,8 +434,8 @@ void maze_register(_obj* p)
 
 	p->oncreate = (void*)maze_create;
 	p->ondelete = (void*)maze_delete;
-	p->onsearch = (void*)maze_search;
-	p->onmodify = (void*)maze_modify;
+	p->onreader = (void*)maze_search;
+	p->onwriter = (void*)maze_modify;
 
 	p->onattach = (void*)maze_attach;
 	p->ondetach = (void*)maze_detach;

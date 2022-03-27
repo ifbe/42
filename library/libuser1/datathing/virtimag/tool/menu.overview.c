@@ -1306,8 +1306,8 @@ void overview_register(_obj* p)
 
 	p->oncreate = (void*)overview_create;
 	p->ondelete = (void*)overview_delete;
-	p->onsearch = (void*)overview_search;
-	p->onmodify = (void*)overview_modify;
+	p->onreader = (void*)overview_search;
+	p->onwriter = (void*)overview_modify;
 
 	p->onattach = (void*)overview_attach;
 	p->ondetach = (void*)overview_detach;

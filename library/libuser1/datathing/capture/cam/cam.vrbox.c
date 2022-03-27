@@ -402,8 +402,8 @@ void vrbox_register(_obj* p)
 
 	p->oncreate = (void*)vrbox_create;
 	p->ondelete = (void*)vrbox_delete;
-	p->onsearch = (void*)vrbox_search;
-	p->onmodify = (void*)vrbox_modify;
+	p->onreader = (void*)vrbox_search;
+	p->onwriter = (void*)vrbox_modify;
 
 	p->onattach = (void*)vrbox_attach;
 	p->ondetach = (void*)vrbox_detach;

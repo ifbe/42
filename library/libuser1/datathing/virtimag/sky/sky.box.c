@@ -207,8 +207,8 @@ void texbox_register(_obj* p)
 
 	p->oncreate = (void*)texbox_create;
 	p->ondelete = (void*)texbox_delete;
-	p->onsearch = (void*)texbox_search;
-	p->onmodify = (void*)texbox_modify;
+	p->onreader = (void*)texbox_search;
+	p->onwriter = (void*)texbox_modify;
 
 	p->onattach = (void*)texbox_attach;
 	p->ondetach = (void*)texbox_detach;

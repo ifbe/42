@@ -357,8 +357,8 @@ void vkbd_register(_obj* p)
 
 	p->oncreate = (void*)vkbd_create;
 	p->ondelete = (void*)vkbd_delete;
-	p->onsearch = (void*)vkbd_search;
-	p->onmodify = (void*)vkbd_modify;
+	p->onreader = (void*)vkbd_search;
+	p->onwriter = (void*)vkbd_modify;
 
 	p->onattach = (void*)vkbd_attach;
 	p->ondetach = (void*)vkbd_detach;

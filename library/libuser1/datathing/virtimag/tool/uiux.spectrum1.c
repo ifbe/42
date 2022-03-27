@@ -205,8 +205,8 @@ void spectrum_register(_obj* p)
 
 	p->oncreate = (void*)spectrum_create;
 	p->ondelete = (void*)spectrum_delete;
-	p->onsearch = (void*)spectrum_search;
-	p->onmodify = (void*)spectrum_modify;
+	p->onreader = (void*)spectrum_search;
+	p->onwriter = (void*)spectrum_modify;
 
 	p->onattach = (void*)spectrum_attach;
 	p->ondetach = (void*)spectrum_detach;

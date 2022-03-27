@@ -390,8 +390,8 @@ void tabbar_register(_obj* p)
 
 	p->oncreate = (void*)tabbar_create;
 	p->ondelete = (void*)tabbar_delete;
-	p->onsearch = (void*)tabbar_search;
-	p->onmodify = (void*)tabbar_modify;
+	p->onreader = (void*)tabbar_search;
+	p->onwriter = (void*)tabbar_modify;
 
 	p->onattach = (void*)tabbar_attach;
 	p->ondetach = (void*)tabbar_detach;

@@ -120,8 +120,8 @@ void wrl3d_register(_obj* p)
 
 	p->oncreate = (void*)wrl3d_create;
 	p->ondelete = (void*)wrl3d_delete;
-	p->onsearch = (void*)wrl3d_search;
-	p->onmodify = (void*)wrl3d_modify;
+	p->onreader = (void*)wrl3d_search;
+	p->onwriter = (void*)wrl3d_modify;
 
 	p->onattach = (void*)wrl3d_attach;
 	p->ondetach = (void*)wrl3d_detach;

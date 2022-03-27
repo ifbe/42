@@ -198,8 +198,8 @@ void mmioedit_register(_obj* p)
 
 	p->oncreate = (void*)mmioedit_create;
 	p->ondelete = (void*)mmioedit_delete;
-	p->onsearch = (void*)mmioedit_search;
-	p->onmodify = (void*)mmioedit_modify;
+	p->onreader = (void*)mmioedit_search;
+	p->onwriter = (void*)mmioedit_modify;
 
 	p->onattach = (void*)mmioedit_attach;
 	p->ondetach = (void*)mmioedit_detach;

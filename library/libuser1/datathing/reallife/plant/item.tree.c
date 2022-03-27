@@ -277,8 +277,8 @@ void tree_register(_obj* p)
 
 	p->oncreate = (void*)tree_create;
 	p->ondelete = (void*)tree_delete;
-	p->onsearch = (void*)tree_search;
-	p->onmodify = (void*)tree_modify;
+	p->onreader = (void*)tree_search;
+	p->onwriter = (void*)tree_modify;
 
 	p->onattach = (void*)tree_attach;
 	p->ondetach = (void*)tree_detach;

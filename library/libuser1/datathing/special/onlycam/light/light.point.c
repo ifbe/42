@@ -178,8 +178,8 @@ void pointlight_register(_obj* p)
 
 	p->oncreate = (void*)pointlight_create;
 	p->ondelete = (void*)pointlight_delete;
-	p->onsearch = (void*)pointlight_search;
-	p->onmodify = (void*)pointlight_modify;
+	p->onreader = (void*)pointlight_search;
+	p->onwriter = (void*)pointlight_modify;
 
 	p->onattach = (void*)pointlight_attach;
 	p->ondetach = (void*)pointlight_detach;

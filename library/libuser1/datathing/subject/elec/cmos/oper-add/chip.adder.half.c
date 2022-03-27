@@ -134,8 +134,8 @@ void halfadd_register(_obj* p)
 
 	p->oncreate = (void*)halfadd_create;
 	p->ondelete = (void*)halfadd_delete;
-	p->onsearch = (void*)halfadd_search;
-	p->onmodify = (void*)halfadd_modify;
+	p->onreader = (void*)halfadd_search;
+	p->onwriter = (void*)halfadd_modify;
 
 	p->onattach = (void*)halfadd_attach;
 	p->ondetach = (void*)halfadd_detach;

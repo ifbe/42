@@ -130,8 +130,8 @@ void sram_register(_obj* p)
 
 	p->oncreate = (void*)sram_create;
 	p->ondelete = (void*)sram_delete;
-	p->onsearch = (void*)sram_search;
-	p->onmodify = (void*)sram_modify;
+	p->onreader = (void*)sram_search;
+	p->onwriter = (void*)sram_modify;
 
 	p->onattach = (void*)sram_attach;
 	p->ondetach = (void*)sram_detach;

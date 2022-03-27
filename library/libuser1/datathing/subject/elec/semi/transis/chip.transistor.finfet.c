@@ -199,8 +199,8 @@ void finfet_register(_obj* p)
 
 	p->oncreate = (void*)finfet_create;
 	p->ondelete = (void*)finfet_delete;
-	p->onsearch = (void*)finfet_search;
-	p->onmodify = (void*)finfet_modify;
+	p->onreader = (void*)finfet_search;
+	p->onwriter = (void*)finfet_modify;
 
 	p->onattach = (void*)finfet_attach;
 	p->ondetach = (void*)finfet_detach;

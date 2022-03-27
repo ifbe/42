@@ -416,8 +416,8 @@ void dirlight_register(_obj* p)
 
 	p->oncreate = (void*)dirlight_create;
 	p->ondelete = (void*)dirlight_delete;
-	p->onsearch = (void*)dirlight_search;
-	p->onmodify = (void*)dirlight_modify;
+	p->onreader = (void*)dirlight_search;
+	p->onwriter = (void*)dirlight_modify;
 
 	p->onattach = (void*)dirlight_attach;
 	p->ondetach = (void*)dirlight_detach;

@@ -51,8 +51,8 @@ void gobang_register(_obj* p)
 
 	p->oncreate = (void*)gobang_create;
 	p->ondelete = (void*)gobang_delete;
-	p->onsearch = (void*)gobang_search;
-	p->onmodify = (void*)gobang_modify;
+	p->onreader = (void*)gobang_search;
+	p->onwriter = (void*)gobang_modify;
 
 	p->onattach = (void*)gobang_attach;
 	p->ondetach = (void*)gobang_detach;

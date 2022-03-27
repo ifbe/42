@@ -115,8 +115,8 @@ void spider_register(_obj* p)
 
 	p->oncreate = (void*)spider_create;
 	p->ondelete = (void*)spider_delete;
-	p->onsearch = (void*)spider_search;
-	p->onmodify = (void*)spider_modify;
+	p->onreader = (void*)spider_search;
+	p->onwriter = (void*)spider_modify;
 
 	p->onattach = (void*)spider_attach;
 	p->ondetach = (void*)spider_detach;

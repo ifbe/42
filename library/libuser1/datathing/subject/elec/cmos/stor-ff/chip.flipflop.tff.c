@@ -130,8 +130,8 @@ void tff_register(_obj* p)
 
 	p->oncreate = (void*)tff_create;
 	p->ondelete = (void*)tff_delete;
-	p->onsearch = (void*)tff_search;
-	p->onmodify = (void*)tff_modify;
+	p->onreader = (void*)tff_search;
+	p->onwriter = (void*)tff_modify;
 
 	p->onattach = (void*)tff_attach;
 	p->ondetach = (void*)tff_detach;

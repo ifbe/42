@@ -54,8 +54,8 @@ void puzzle_register(_obj* p)
 
 	p->oncreate = (void*)puzzle_create;
 	p->ondelete = (void*)puzzle_delete;
-	p->onsearch = (void*)puzzle_search;
-	p->onmodify = (void*)puzzle_modify;
+	p->onreader = (void*)puzzle_search;
+	p->onwriter = (void*)puzzle_modify;
 
 	p->onattach = (void*)puzzle_attach;
 	p->ondetach = (void*)puzzle_detach;

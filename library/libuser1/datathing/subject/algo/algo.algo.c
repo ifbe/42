@@ -195,8 +195,8 @@ void algorithm_register(_obj* p)
 
 	p->oncreate = (void*)algorithm_create;
 	p->ondelete = (void*)algorithm_delete;
-	p->onsearch = (void*)algorithm_search;
-	p->onmodify = (void*)algorithm_modify;
+	p->onreader = (void*)algorithm_search;
+	p->onwriter = (void*)algorithm_modify;
 
 	p->onattach = (void*)algorithm_attach;
 	p->ondetach = (void*)algorithm_detach;

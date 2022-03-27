@@ -212,8 +212,8 @@ void autocmos_register(_obj* p)
 
 	p->oncreate = (void*)autocmos_create;
 	p->ondelete = (void*)autocmos_delete;
-	p->onsearch = (void*)autocmos_search;
-	p->onmodify = (void*)autocmos_modify;
+	p->onreader = (void*)autocmos_search;
+	p->onwriter = (void*)autocmos_modify;
 
 	p->onattach = (void*)autocmos_attach;
 	p->ondetach = (void*)autocmos_detach;

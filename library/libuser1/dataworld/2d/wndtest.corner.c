@@ -650,8 +650,8 @@ void corner_register(_obj* p)
 
 	p->oncreate = (void*)corner_create;
 	p->ondelete = (void*)corner_delete;
-	p->onsearch = (void*)corner_search;
-	p->onmodify = (void*)corner_modify;
+	p->onreader = (void*)corner_search;
+	p->onwriter = (void*)corner_modify;
 
 	p->onattach = (void*)corner_attach;
 	p->ondetach = (void*)corner_detach;

@@ -434,8 +434,8 @@ void terminal_register(_obj* p)
 
 	p->oncreate = (void*)terminal_create;
 	p->ondelete = (void*)terminal_delete;
-	p->onsearch = (void*)terminal_search;
-	p->onmodify = (void*)terminal_modify;
+	p->onreader = (void*)terminal_search;
+	p->onwriter = (void*)terminal_modify;
 
 	p->onattach = (void*)terminal_attach;
 	p->ondetach = (void*)terminal_detach;

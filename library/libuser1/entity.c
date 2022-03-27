@@ -391,8 +391,8 @@ found:
 
 	ent->oncreate = tmp->oncreate;
 	ent->ondelete = tmp->ondelete;
-	ent->onsearch = tmp->onsearch;
-	ent->onmodify = tmp->onmodify;
+	ent->onreader = tmp->onreader;
+	ent->onwriter = tmp->onwriter;
 
 	ent->onattach = tmp->onattach;
 	ent->ondetach = tmp->ondetach;

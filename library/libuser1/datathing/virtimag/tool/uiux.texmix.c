@@ -264,8 +264,8 @@ void texmix_register(_obj* p)
 
 	p->oncreate = (void*)texmix_create;
 	p->ondelete = (void*)texmix_delete;
-	p->onsearch = (void*)texmix_search;
-	p->onmodify = (void*)texmix_modify;
+	p->onreader = (void*)texmix_search;
+	p->onwriter = (void*)texmix_modify;
 
 	p->onattach = (void*)texmix_attach;
 	p->ondetach = (void*)texmix_detach;

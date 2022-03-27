@@ -267,8 +267,8 @@ void browser_register(_obj* p)
 
 	p->oncreate = (void*)browser_create;
 	p->ondelete = (void*)browser_delete;
-	p->onsearch = (void*)browser_search;
-	p->onmodify = (void*)browser_modify;
+	p->onreader = (void*)browser_search;
+	p->onwriter = (void*)browser_modify;
 
 	p->onattach = (void*)browser_attach;
 	p->ondetach = (void*)browser_detach;

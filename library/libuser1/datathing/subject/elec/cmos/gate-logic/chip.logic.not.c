@@ -206,8 +206,8 @@ void not_register(_obj* p)
 
 	p->oncreate = (void*)not_create;
 	p->ondelete = (void*)not_delete;
-	p->onsearch = (void*)not_search;
-	p->onmodify = (void*)not_modify;
+	p->onreader = (void*)not_search;
+	p->onwriter = (void*)not_modify;
 
 	p->onattach = (void*)not_attach;
 	p->ondetach = (void*)not_detach;

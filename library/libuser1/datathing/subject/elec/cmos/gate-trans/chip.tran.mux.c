@@ -130,8 +130,8 @@ void mux_register(_obj* p)
 
 	p->oncreate = (void*)mux_create;
 	p->ondelete = (void*)mux_delete;
-	p->onsearch = (void*)mux_search;
-	p->onmodify = (void*)mux_modify;
+	p->onreader = (void*)mux_search;
+	p->onwriter = (void*)mux_modify;
 
 	p->onattach = (void*)mux_attach;
 	p->ondetach = (void*)mux_detach;

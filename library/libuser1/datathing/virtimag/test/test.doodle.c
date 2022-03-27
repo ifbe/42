@@ -199,8 +199,8 @@ void doodle_register(_obj* p)
 
 	p->oncreate = (void*)doodle_create;
 	p->ondelete = (void*)doodle_delete;
-	p->onsearch = (void*)doodle_search;
-	p->onmodify = (void*)doodle_modify;
+	p->onreader = (void*)doodle_search;
+	p->onwriter = (void*)doodle_modify;
 
 	p->onattach = (void*)doodle_attach;
 	p->ondetach = (void*)doodle_detach;

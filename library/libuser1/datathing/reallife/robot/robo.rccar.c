@@ -263,8 +263,8 @@ void rccar_register(_obj* p)
 
 	p->oncreate = (void*)rccar_create;
 	p->ondelete = (void*)rccar_delete;
-	p->onsearch = (void*)rccar_search;
-	p->onmodify = (void*)rccar_modify;
+	p->onreader = (void*)rccar_search;
+	p->onwriter = (void*)rccar_modify;
 
 	p->onattach = (void*)rccar_attach;
 	p->ondetach = (void*)rccar_detach;

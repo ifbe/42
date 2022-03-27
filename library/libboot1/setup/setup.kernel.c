@@ -163,29 +163,23 @@ static int kernel_failloop(struct item* wrk)
 	struct halfrel stack[0x80];
 	stack[0].pchip = wrk;
 	stack[1].pchip = wnd;
-	say("failloop: waiting 3s for drawloop&pollloop\n");
-
-	struct event* ev;
-	u64 curr;
-	u64 time = timeread_us();
-	//sleep_us(1000*1000);
+	say("failloop: badthing happened\n");
 
 	//loop
+	struct event* ev;
+	u64 time;
 	while(1){
-		if((0 != heartbeat_draw)&&(0 != heartbeat_poll))break;
-
-		curr = timeread_us();
-		curr = (curr-time)/1000/1000;
+		time = timeread_us();
 
 		//drawloop fail, i have to draw
-		if(0 == heartbeat_draw){
-			if(curr <= STALL_SEC)say("drawloop fail after %d sec\n", curr);
+		if( (0 == heartbeat_draw) | (time > heartbeat_draw + 1000*1000*STALL_SEC) ){
+			//if(curr <= STALL_SEC)say("drawloop fail after %d sec\n", curr);
 			supply_takeby(wnd,0, stack,2, 0,0, 0,0);
-		}
+		}//draw
 
 		//pollloop fail, i have to poll
-		if(0 == heartbeat_poll){
-			if(curr <= STALL_SEC)say("pollloop fail after %d sec\n", curr);
+		if( (0 == heartbeat_poll) | (time > heartbeat_poll + 1000*1000*STALL_SEC) ){
+			//if(curr <= STALL_SEC)say("pollloop fail after %d sec\n", curr);
 
 			//poll all
 			for(j=0;j<10;j++){
@@ -199,11 +193,11 @@ static int kernel_failloop(struct item* wrk)
 			while(1){
 				ev = eventread();
 				if(0 == ev)break;
-				if(0 == ev->what)return 0;
+				if(0 == ev->what)break;
 
 				supply_giveby(wnd,0, stack,2, 0,0, ev,0);
 			}
-		}
+		}//poll
 	}
 	return 0;
 }
@@ -215,12 +209,31 @@ static int kernel_idleloop(struct item* wrk)
 	while(1){
 		time = timeread_us();
 		if(time > heartbeat_draw + 1000*1000*STALL_SEC){
-			say("drawloop: stall >%ds\n",STALL_SEC);
+			say("drawloop: stall %ds\n", (time-heartbeat_draw)/1000/1000);
 		}
 		if(time > heartbeat_poll + 1000*1000*STALL_SEC){
-			say("pollloop: stall >%ds\n",STALL_SEC);
-			break;
+			say("pollloop: stall %ds\n", (time-heartbeat_poll)/1000/1000);
+			//break;
 		}
+		//
+		haltwaitforint();
+		haltwaitforint();
+		haltwaitforint();
+		haltwaitforint();
+		//
+		haltwaitforint();
+		haltwaitforint();
+		haltwaitforint();
+		haltwaitforint();
+		//
+		haltwaitforint();
+		haltwaitforint();
+		haltwaitforint();
+		haltwaitforint();
+		//
+		haltwaitforint();
+		haltwaitforint();
+		haltwaitforint();
 		haltwaitforint();
 	}
 	return 0;
@@ -244,6 +257,7 @@ int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 	kernel_wndctx(wnd);
 
 	//start work
+	int success = 1;
 	if(1){
 		//kernel thread
 		threadcreate(kernel_drawloop, wrk);
@@ -251,13 +265,14 @@ int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 
 		//wait 1s
 		sleep_us(1000*1000);
+		if( (0 == heartbeat_draw) | (0 == heartbeat_poll) )success = 0;
 	}
 	else{
 		//processcreate("/init");
 	}
 
-	//check fail
-	if(heartbeat_draw && heartbeat_poll)kernel_idleloop(wrk);
+	//become idlethread, or faildebug
+	if(success)kernel_idleloop(wrk);
 	kernel_failloop(wrk);
 
 	return 0;

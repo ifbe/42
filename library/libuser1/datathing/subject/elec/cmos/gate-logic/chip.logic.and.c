@@ -130,8 +130,8 @@ void and_register(_obj* p)
 
 	p->oncreate = (void*)and_create;
 	p->ondelete = (void*)and_delete;
-	p->onsearch = (void*)and_search;
-	p->onmodify = (void*)and_modify;
+	p->onreader = (void*)and_search;
+	p->onwriter = (void*)and_modify;
 
 	p->onattach = (void*)and_attach;
 	p->ondetach = (void*)and_detach;

@@ -111,8 +111,8 @@ void pointer_register(_obj* p)
 
 	p->oncreate = (void*)pointer_create;
 	p->ondelete = (void*)pointer_delete;
-	p->onsearch = (void*)pointer_search;
-	p->onmodify = (void*)pointer_modify;
+	p->onreader = (void*)pointer_search;
+	p->onwriter = (void*)pointer_modify;
 
 	p->onattach = (void*)pointer_attach;
 	p->ondetach = (void*)pointer_detach;

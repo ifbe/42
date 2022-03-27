@@ -157,8 +157,8 @@ void pwmtool_register(_obj* p)
 
 	p->oncreate = (void*)pwmtool_create;
 	p->ondelete = (void*)pwmtool_delete;
-	p->onsearch = (void*)pwmtool_search;
-	p->onmodify = (void*)pwmtool_modify;
+	p->onreader = (void*)pwmtool_search;
+	p->onwriter = (void*)pwmtool_modify;
 
 	p->onattach = (void*)pwmtool_attach;
 	p->ondetach = (void*)pwmtool_detach;

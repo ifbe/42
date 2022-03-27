@@ -42,8 +42,8 @@ void speaker_register(_obj* p)
 
 	p->oncreate = (void*)speaker_create;
 	p->ondelete = (void*)speaker_delete;
-	p->onsearch = (void*)speaker_search;
-	p->onmodify = (void*)speaker_modify;
+	p->onreader = (void*)speaker_search;
+	p->onwriter = (void*)speaker_modify;
 
 	p->onattach = (void*)speaker_attach;
 	p->ondetach = (void*)speaker_detach;

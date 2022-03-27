@@ -115,8 +115,8 @@ void rawdump_register(_obj* p)
 
 	p->oncreate = (void*)rawdump_create;
 	p->ondelete = (void*)rawdump_delete;
-	p->onsearch = (void*)rawdump_search;
-	p->onmodify = (void*)rawdump_modify;
+	p->onreader = (void*)rawdump_search;
+	p->onwriter = (void*)rawdump_modify;
 
 	p->onattach = (void*)rawdump_attach;
 	p->ondetach = (void*)rawdump_detach;

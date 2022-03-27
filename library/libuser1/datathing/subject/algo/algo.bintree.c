@@ -288,8 +288,8 @@ void bintree_register(_obj* p)
 
 	p->oncreate = (void*)bintree_create;
 	p->ondelete = (void*)bintree_delete;
-	p->onsearch = (void*)bintree_search;
-	p->onmodify = (void*)bintree_modify;
+	p->onreader = (void*)bintree_search;
+	p->onwriter = (void*)bintree_modify;
 
 	p->onattach = (void*)bintree_attach;
 	p->ondetach = (void*)bintree_detach;

@@ -42,8 +42,8 @@ void monomic_register(_obj* p)
 
 	p->oncreate = (void*)monomic_create;
 	p->ondelete = (void*)monomic_delete;
-	p->onsearch = (void*)monomic_search;
-	p->onmodify = (void*)monomic_modify;
+	p->onreader = (void*)monomic_search;
+	p->onwriter = (void*)monomic_modify;
 
 	p->onattach = (void*)monomic_attach;
 	p->ondetach = (void*)monomic_detach;

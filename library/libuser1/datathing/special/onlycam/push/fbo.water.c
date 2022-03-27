@@ -412,8 +412,8 @@ void water_register(_obj* p)
 
 	p->oncreate = (void*)water_create;
 	p->ondelete = (void*)water_delete;
-	p->onsearch = (void*)water_search;
-	p->onmodify = (void*)water_modify;
+	p->onreader = (void*)water_search;
+	p->onwriter = (void*)water_modify;
 
 	p->onattach = (void*)water_attach;
 	p->ondetach = (void*)water_detach;

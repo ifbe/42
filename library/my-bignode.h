@@ -385,11 +385,11 @@ struct item
 		char padding1[8];
 	};
 	union{
-		int (*onsearch)(struct item* node, int flag, struct halfrel** self, struct halfrel** peer);
+		int (*onreader)(struct item* node,void* foot, void* arg,int cmd, void* buf,int len);
 		char padding2[8];
 	};
 	union{
-		int (*onmodify)(struct item* node, void* buf);
+		int (*onwriter)(struct item* node,void* foot, void* arg,int cmd, void* buf,int len);
 		char padding3[8];
 	};
 	union{

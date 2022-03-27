@@ -332,8 +332,8 @@ void fractal_register(_obj* p)
 
 	p->oncreate = (void*)fractal_create;
 	p->ondelete = (void*)fractal_delete;
-	p->onsearch = (void*)fractal_search;
-	p->onmodify = (void*)fractal_modify;
+	p->onreader = (void*)fractal_search;
+	p->onwriter = (void*)fractal_modify;
 
 	p->onattach = (void*)fractal_attach;
 	p->ondetach = (void*)fractal_detach;

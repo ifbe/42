@@ -114,8 +114,8 @@ void telpher_register(_obj* p)
 
 	p->oncreate = (void*)telpher_create;
 	p->ondelete = (void*)telpher_delete;
-	p->onsearch = (void*)telpher_search;
-	p->onmodify = (void*)telpher_modify;
+	p->onreader = (void*)telpher_search;
+	p->onwriter = (void*)telpher_modify;
 
 	p->onattach = (void*)telpher_attach;
 	p->ondetach = (void*)telpher_detach;

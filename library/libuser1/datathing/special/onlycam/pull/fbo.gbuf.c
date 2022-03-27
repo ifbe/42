@@ -316,8 +316,8 @@ void gbuffer_register(_obj* p)
 
 	p->oncreate = (void*)gbuffer_create;
 	p->ondelete = (void*)gbuffer_delete;
-	p->onsearch = (void*)gbuffer_search;
-	p->onmodify = (void*)gbuffer_modify;
+	p->onreader = (void*)gbuffer_search;
+	p->onwriter = (void*)gbuffer_modify;
 
 	p->onattach = (void*)gbuffer_attach;
 	p->ondetach = (void*)gbuffer_detach;

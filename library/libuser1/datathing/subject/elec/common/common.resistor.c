@@ -187,8 +187,8 @@ void resistor_register(_obj* p)
 
 	p->oncreate = (void*)resistor_create;
 	p->ondelete = (void*)resistor_delete;
-	p->onsearch = (void*)resistor_search;
-	p->onmodify = (void*)resistor_modify;
+	p->onreader = (void*)resistor_search;
+	p->onwriter = (void*)resistor_modify;
 
 	p->onattach = (void*)resistor_attach;
 	p->ondetach = (void*)resistor_detach;

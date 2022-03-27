@@ -280,8 +280,8 @@ void camman_register(_obj* p)
 
 	p->oncreate = (void*)camman_create;
 	p->ondelete = (void*)camman_delete;
-	p->onsearch = (void*)camman_search;
-	p->onmodify = (void*)camman_modify;
+	p->onreader = (void*)camman_search;
+	p->onwriter = (void*)camman_modify;
 
 	p->onattach = (void*)camman_attach;
 	p->ondetach = (void*)camman_detach;

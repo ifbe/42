@@ -43,8 +43,8 @@ void theear_register(_obj* p)
 
 	p->oncreate = (void*)theear_create;
 	p->ondelete = (void*)theear_delete;
-	p->onsearch = (void*)theear_search;
-	p->onmodify = (void*)theear_modify;
+	p->onreader = (void*)theear_search;
+	p->onwriter = (void*)theear_modify;
 
 	p->onattach = (void*)theear_attach;
 	p->ondetach = (void*)theear_detach;

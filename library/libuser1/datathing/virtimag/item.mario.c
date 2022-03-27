@@ -454,8 +454,8 @@ void mario_register(_obj* p)
 
 	p->oncreate = (void*)mario_create;
 	p->ondelete = (void*)mario_delete;
-	p->onsearch = (void*)mario_search;
-	p->onmodify = (void*)mario_modify;
+	p->onreader = (void*)mario_search;
+	p->onwriter = (void*)mario_modify;
 
 	p->onattach = (void*)mario_attach;
 	p->ondetach = (void*)mario_detach;

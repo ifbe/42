@@ -348,8 +348,8 @@ void vrglass_register(_obj* p)
 
 	p->oncreate = (void*)vrglass_create;
 	p->ondelete = (void*)vrglass_delete;
-	p->onsearch = (void*)vrglass_search;
-	p->onmodify = (void*)vrglass_modify;
+	p->onreader = (void*)vrglass_search;
+	p->onwriter = (void*)vrglass_modify;
 
 	p->onattach = (void*)vrglass_attach;
 	p->ondetach = (void*)vrglass_detach;

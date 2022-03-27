@@ -693,8 +693,8 @@ void stl3d_register(_obj* p)
 
 	p->oncreate = (void*)stl3d_create;
 	p->ondelete = (void*)stl3d_delete;
-	p->onsearch = (void*)stl3d_search;
-	p->onmodify = (void*)stl3d_modify;
+	p->onreader = (void*)stl3d_search;
+	p->onwriter = (void*)stl3d_modify;
 
 	p->onattach = (void*)stl3d_attach;
 	p->ondetach = (void*)stl3d_detach;

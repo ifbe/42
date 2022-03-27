@@ -235,8 +235,8 @@ void house_register(_obj* p)
 
 	p->oncreate = (void*)house_create;
 	p->ondelete = (void*)house_delete;
-	p->onsearch = (void*)house_search;
-	p->onmodify = (void*)house_modify;
+	p->onreader = (void*)house_search;
+	p->onwriter = (void*)house_modify;
 
 	p->onattach = (void*)house_attach;
 	p->ondetach = (void*)house_detach;

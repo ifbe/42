@@ -610,8 +610,8 @@ void sketchpad_register(_obj* p)
 
 	p->oncreate = (void*)sketchpad_create;
 	p->ondelete = (void*)sketchpad_delete;
-	p->onsearch = (void*)sketchpad_search;
-	p->onmodify = (void*)sketchpad_modify;
+	p->onreader = (void*)sketchpad_search;
+	p->onwriter = (void*)sketchpad_modify;
 
 	p->onattach = (void*)sketchpad_attach;
 	p->ondetach = (void*)sketchpad_detach;

@@ -280,8 +280,8 @@ void cbuffer_register(_obj* p)
 
 	p->oncreate = (void*)cbuffer_create;
 	p->ondelete = (void*)cbuffer_delete;
-	p->onsearch = (void*)cbuffer_search;
-	p->onmodify = (void*)cbuffer_modify;
+	p->onreader = (void*)cbuffer_search;
+	p->onwriter = (void*)cbuffer_modify;
 
 	p->onattach = (void*)cbuffer_attach;
 	p->ondetach = (void*)cbuffer_detach;

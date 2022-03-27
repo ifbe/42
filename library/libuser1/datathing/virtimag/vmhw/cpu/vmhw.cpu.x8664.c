@@ -50,8 +50,8 @@ void x8664_register(_obj* p)
 
 	p->oncreate = (void*)x8664_create;
 	p->ondelete = (void*)x8664_delete;
-	p->onsearch = (void*)x8664_search;
-	p->onmodify = (void*)x8664_modify;
+	p->onreader = (void*)x8664_search;
+	p->onwriter = (void*)x8664_modify;
 
 	p->onattach = (void*)x8664_attach;
 	p->ondetach = (void*)x8664_detach;

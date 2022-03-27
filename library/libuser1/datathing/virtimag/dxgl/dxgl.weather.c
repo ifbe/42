@@ -185,8 +185,8 @@ void weather_register(_obj* p)
 
 	p->oncreate = (void*)weather_create;
 	p->ondelete = (void*)weather_delete;
-	p->onsearch = (void*)weather_search;
-	p->onmodify = (void*)weather_modify;
+	p->onreader = (void*)weather_search;
+	p->onwriter = (void*)weather_modify;
 
 	p->onattach = (void*)weather_attach;
 	p->ondetach = (void*)weather_detach;

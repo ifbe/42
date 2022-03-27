@@ -203,8 +203,8 @@ void qrcode_register(_obj* p)
 
 	p->oncreate = (void*)qrcode_create;
 	p->ondelete = (void*)qrcode_delete;
-	p->onsearch = (void*)qrcode_search;
-	p->onmodify = (void*)qrcode_modify;
+	p->onreader = (void*)qrcode_search;
+	p->onwriter = (void*)qrcode_modify;
 
 	p->onattach = (void*)qrcode_attach;
 	p->ondetach = (void*)qrcode_detach;

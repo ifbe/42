@@ -267,8 +267,8 @@ void vjoy_register(_obj* p)
 
 	p->oncreate = (void*)vjoy_create;
 	p->ondelete = (void*)vjoy_delete;
-	p->onsearch = (void*)vjoy_search;
-	p->onmodify = (void*)vjoy_modify;
+	p->onreader = (void*)vjoy_search;
+	p->onwriter = (void*)vjoy_modify;
 
 	p->onattach = (void*)vjoy_attach;
 	p->ondetach = (void*)vjoy_detach;

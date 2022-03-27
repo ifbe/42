@@ -393,8 +393,8 @@ void texball_register(_obj* p)
 
 	p->oncreate = (void*)texball_create;
 	p->ondelete = (void*)texball_delete;
-	p->onsearch = (void*)texball_search;
-	p->onmodify = (void*)texball_modify;
+	p->onreader = (void*)texball_search;
+	p->onwriter = (void*)texball_modify;
 
 	p->onattach = (void*)texball_attach;
 	p->ondetach = (void*)texball_detach;

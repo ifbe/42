@@ -208,8 +208,8 @@ void clock_register(_obj* p)
 
 	p->oncreate = (void*)clock_create;
 	p->ondelete = (void*)clock_delete;
-	p->onsearch = (void*)clock_search;
-	p->onmodify = (void*)clock_modify;
+	p->onreader = (void*)clock_search;
+	p->onwriter = (void*)clock_modify;
 
 	p->onattach = (void*)clock_attach;
 	p->ondetach = (void*)clock_detach;

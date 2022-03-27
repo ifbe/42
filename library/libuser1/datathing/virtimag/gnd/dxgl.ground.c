@@ -403,8 +403,8 @@ void ground_register(_obj* p)
 
 	p->oncreate = (void*)ground_create;
 	p->ondelete = (void*)ground_delete;
-	p->onsearch = (void*)ground_search;
-	p->onmodify = (void*)ground_modify;
+	p->onreader = (void*)ground_search;
+	p->onwriter = (void*)ground_modify;
 
 	p->onattach = (void*)ground_attach;
 	p->ondetach = (void*)ground_detach;

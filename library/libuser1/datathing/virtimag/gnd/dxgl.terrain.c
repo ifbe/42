@@ -614,8 +614,8 @@ void terrain_register(_obj* p)
 
 	p->oncreate = (void*)terrain_create;
 	p->ondelete = (void*)terrain_delete;
-	p->onsearch = (void*)terrain_search;
-	p->onmodify = (void*)terrain_modify;
+	p->onreader = (void*)terrain_search;
+	p->onwriter = (void*)terrain_modify;
 
 	p->onattach = (void*)terrain_attach;
 	p->ondetach = (void*)terrain_detach;

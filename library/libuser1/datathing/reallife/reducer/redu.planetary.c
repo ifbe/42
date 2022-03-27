@@ -147,8 +147,8 @@ void planetary_register(_obj* p)
 
 	p->oncreate = (void*)planetary_create;
 	p->ondelete = (void*)planetary_delete;
-	p->onsearch = (void*)planetary_search;
-	p->onmodify = (void*)planetary_modify;
+	p->onreader = (void*)planetary_search;
+	p->onwriter = (void*)planetary_modify;
 
 	p->onattach = (void*)planetary_attach;
 	p->ondetach = (void*)planetary_detach;

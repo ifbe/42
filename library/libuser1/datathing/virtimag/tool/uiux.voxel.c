@@ -196,8 +196,8 @@ void voxel_register(_obj* p)
 
 	p->oncreate = (void*)voxel_create;
 	p->ondelete = (void*)voxel_delete;
-	p->onsearch = (void*)voxel_search;
-	p->onmodify = (void*)voxel_modify;
+	p->onreader = (void*)voxel_search;
+	p->onwriter = (void*)voxel_modify;
 
 	p->onattach = (void*)voxel_attach;
 	p->ondetach = (void*)voxel_detach;

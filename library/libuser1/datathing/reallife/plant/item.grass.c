@@ -158,8 +158,8 @@ void grass_register(_obj* p)
 
 	p->oncreate = (void*)grass_create;
 	p->ondelete = (void*)grass_delete;
-	p->onsearch = (void*)grass_search;
-	p->onmodify = (void*)grass_modify;
+	p->onreader = (void*)grass_search;
+	p->onwriter = (void*)grass_modify;
 
 	p->onattach = (void*)grass_attach;
 	p->ondetach = (void*)grass_detach;

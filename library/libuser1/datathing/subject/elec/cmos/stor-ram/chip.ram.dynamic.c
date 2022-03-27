@@ -130,8 +130,8 @@ void dram_register(_obj* p)
 
 	p->oncreate = (void*)dram_create;
 	p->ondelete = (void*)dram_delete;
-	p->onsearch = (void*)dram_search;
-	p->onmodify = (void*)dram_modify;
+	p->onreader = (void*)dram_search;
+	p->onwriter = (void*)dram_modify;
 
 	p->onattach = (void*)dram_attach;
 	p->ondetach = (void*)dram_detach;

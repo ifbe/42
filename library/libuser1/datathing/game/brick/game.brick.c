@@ -54,8 +54,8 @@ void brick_register(_obj* p)
 
 	p->oncreate = (void*)brick_create;
 	p->ondelete = (void*)brick_delete;
-	p->onsearch = (void*)brick_search;
-	p->onmodify = (void*)brick_modify;
+	p->onreader = (void*)brick_search;
+	p->onwriter = (void*)brick_modify;
 
 	p->onattach = (void*)brick_attach;
 	p->ondetach = (void*)brick_detach;

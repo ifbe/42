@@ -288,8 +288,8 @@ void fslist_register(_obj* p)
 
 	p->oncreate = (void*)fslist_create;
 	p->ondelete = (void*)fslist_delete;
-	p->onsearch = (void*)fslist_search;
-	p->onmodify = (void*)fslist_modify;
+	p->onreader = (void*)fslist_search;
+	p->onwriter = (void*)fslist_modify;
 
 	p->onattach = (void*)fslist_attach;
 	p->ondetach = (void*)fslist_detach;

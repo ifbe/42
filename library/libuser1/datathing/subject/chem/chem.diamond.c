@@ -123,8 +123,8 @@ void diamond_register(_obj* p)
 
 	p->oncreate = (void*)diamond_create;
 	p->ondelete = (void*)diamond_delete;
-	p->onsearch = (void*)diamond_search;
-	p->onmodify = (void*)diamond_modify;
+	p->onreader = (void*)diamond_search;
+	p->onwriter = (void*)diamond_modify;
 
 	p->onattach = (void*)diamond_attach;
 	p->ondetach = (void*)diamond_detach;

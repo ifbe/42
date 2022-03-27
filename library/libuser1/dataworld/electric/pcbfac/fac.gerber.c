@@ -279,8 +279,8 @@ void gerber_register(_obj* p)
 
 	p->oncreate = (void*)gerber_create;
 	p->ondelete = (void*)gerber_delete;
-	p->onsearch = (void*)gerber_search;
-	p->onmodify = (void*)gerber_modify;
+	p->onreader = (void*)gerber_search;
+	p->onwriter = (void*)gerber_modify;
 
 	p->onattach = (void*)gerber_attach;
 	p->ondetach = (void*)gerber_detach;

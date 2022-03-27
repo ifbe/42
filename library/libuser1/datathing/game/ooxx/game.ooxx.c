@@ -258,8 +258,8 @@ void ooxx_register(_obj* p)
 
 	p->oncreate = (void*)ooxx_create;
 	p->ondelete = (void*)ooxx_delete;
-	p->onsearch = (void*)ooxx_search;
-	p->onmodify = (void*)ooxx_modify;
+	p->onreader = (void*)ooxx_search;
+	p->onwriter = (void*)ooxx_modify;
 
 	p->onattach = (void*)ooxx_attach;
 	p->ondetach = (void*)ooxx_detach;

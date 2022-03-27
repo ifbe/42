@@ -130,8 +130,8 @@ void jkff_register(_obj* p)
 
 	p->oncreate = (void*)jkff_create;
 	p->ondelete = (void*)jkff_delete;
-	p->onsearch = (void*)jkff_search;
-	p->onmodify = (void*)jkff_modify;
+	p->onreader = (void*)jkff_search;
+	p->onwriter = (void*)jkff_modify;
 
 	p->onattach = (void*)jkff_attach;
 	p->ondetach = (void*)jkff_detach;

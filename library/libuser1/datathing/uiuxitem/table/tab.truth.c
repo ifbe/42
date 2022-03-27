@@ -208,8 +208,8 @@ void truth_register(_obj* p)
 
 	p->oncreate = (void*)truth_create;
 	p->ondelete = (void*)truth_delete;
-	p->onsearch = (void*)truth_search;
-	p->onmodify = (void*)truth_modify;
+	p->onreader = (void*)truth_search;
+	p->onwriter = (void*)truth_modify;
 
 	p->onattach = (void*)truth_attach;
 	p->ondetach = (void*)truth_detach;

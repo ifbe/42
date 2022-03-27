@@ -224,8 +224,8 @@ void pegged_register(_obj* p)
 
 	p->oncreate = (void*)pegged_create;
 	p->ondelete = (void*)pegged_delete;
-	p->onsearch = (void*)pegged_search;
-	p->onmodify = (void*)pegged_modify;
+	p->onreader = (void*)pegged_search;
+	p->onwriter = (void*)pegged_modify;
 
 	p->onattach = (void*)pegged_attach;
 	p->ondetach = (void*)pegged_detach;

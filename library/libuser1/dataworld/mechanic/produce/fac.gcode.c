@@ -178,8 +178,8 @@ void gcode_register(_obj* p)
 
 	p->oncreate = (void*)gcode_create;
 	p->ondelete = (void*)gcode_delete;
-	p->onsearch = (void*)gcode_search;
-	p->onmodify = (void*)gcode_modify;
+	p->onreader = (void*)gcode_search;
+	p->onwriter = (void*)gcode_modify;
 
 	p->onattach = (void*)gcode_attach;
 	p->ondetach = (void*)gcode_detach;

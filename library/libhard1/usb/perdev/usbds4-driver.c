@@ -193,6 +193,8 @@ static int dsfivehid_ongive(struct item* usb,int xxx, struct item* xhci,int endp
 	if((xx[1] < -8)|(xx[1] > 8))xx[1] /= 16;
 	else xx[1] = 0;
 	if(xx[0] | xx[1])eventwrite(*(u64*)xx, point_dlt, 0, 0);
+
+	return 0;
 }
 static int dswhat_ongive(struct item* usb,int xxx, struct item* xhci,int endp, void* sbuf,int slen, void* rbuf,int rlen)
 {
@@ -203,6 +205,8 @@ static int dswhat_ongive(struct item* usb,int xxx, struct item* xhci,int endp, v
 	u8* tmp = *(void**)sbuf;
 	u8* debug = (void*)0;
 	for(j=0;j<0x40;j++)debug[j] = tmp[j];
+
+	return 0;
 }
 int dsfourhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct descnode* intfnode, struct InterfaceDescriptor* intfdesc)
 {

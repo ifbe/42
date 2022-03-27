@@ -392,8 +392,8 @@ void mirror_register(_obj* p)
 
 	p->oncreate = (void*)mirror_create;
 	p->ondelete = (void*)mirror_delete;
-	p->onsearch = (void*)mirror_search;
-	p->onmodify = (void*)mirror_modify;
+	p->onreader = (void*)mirror_search;
+	p->onwriter = (void*)mirror_modify;
 
 	p->onattach = (void*)mirror_attach;
 	p->ondetach = (void*)mirror_detach;

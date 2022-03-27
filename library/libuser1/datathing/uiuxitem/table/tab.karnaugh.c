@@ -256,8 +256,8 @@ void karnaugh_register(_obj* p)
 
 	p->oncreate = (void*)karnaugh_create;
 	p->ondelete = (void*)karnaugh_delete;
-	p->onsearch = (void*)karnaugh_search;
-	p->onmodify = (void*)karnaugh_modify;
+	p->onreader = (void*)karnaugh_search;
+	p->onwriter = (void*)karnaugh_modify;
 
 	p->onattach = (void*)karnaugh_attach;
 	p->ondetach = (void*)karnaugh_detach;

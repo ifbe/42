@@ -277,8 +277,8 @@ void particle_register(_obj* p)
 
 	p->oncreate = (void*)particle_create;
 	p->ondelete = (void*)particle_delete;
-	p->onsearch = (void*)particle_search;
-	p->onmodify = (void*)particle_modify;
+	p->onreader = (void*)particle_search;
+	p->onwriter = (void*)particle_modify;
 
 	p->onattach = (void*)particle_attach;
 	p->ondetach = (void*)particle_detach;

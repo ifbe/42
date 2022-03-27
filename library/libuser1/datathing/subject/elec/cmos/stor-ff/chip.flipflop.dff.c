@@ -266,8 +266,8 @@ void dff_register(_obj* p)
 
 	p->oncreate = (void*)dff_create;
 	p->ondelete = (void*)dff_delete;
-	p->onsearch = (void*)dff_search;
-	p->onmodify = (void*)dff_modify;
+	p->onreader = (void*)dff_search;
+	p->onwriter = (void*)dff_modify;
 
 	p->onattach = (void*)dff_attach;
 	p->ondetach = (void*)dff_detach;

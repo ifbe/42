@@ -10,7 +10,66 @@ void out8(u16 port, u8 data);
 
 
 
+
 static int enablepolling = 1;
+//0x01,0x1b,      //esc
+//0x47,0x47,      //home
+//0x4f,0x4f,      //end
+//0x49,0x49,      //page up
+//0x51,0x51,      //page down
+//0x48,0x48,      //up
+//0x50,0x50,      //down
+//0x4b,0x4b,      //left
+//0x4d,0x4d       //right
+static u8 kbdmap[0x80] = {
+   0,0x1b,   0,   0,   0,   0,   0,   0,	//[00,07]
+   0,   0,   0,   0,   0,   0,   0,   0,	//[08,0f]
+   0,   0,   0,   0,   0,   0,   0,   0,	//[10,17]
+   0,   0,   0,   0,   0,   0,   0,   0,	//[18,1f]
+   0,   0,   0,   0,   0,   0,   0,   0,	//[20,27]
+   0,   0,   0,   0,   0,   0,   0,   0,	//[28,2f]
+   0,   0,   0,   0,   0,   0,   0,   0,	//[30,37]
+   0,   0,   0,   0,   0,   0,   0,   0,	//[38,3f]
+   0,   0,   0,   0,   0,   0,   0,0x47,	//[40,47]
+0x48,0x49,   0,0x4b,   0,0x4d,   0,0x4f,	//[48,4f]
+0x50,0x51,   0,   0,   0,   0,   0,   0,	//[50,57]
+};
+//0x0e,0x7f,      //backspace: 0x8 or 0x7f
+//0x1c,0xd,       //enter: 0xa or 0xd
+static u8 chrmap[0x80] = {
+0x1b,   0, '1', '2', '3', '4', '5', '6',	//[00,07]
+ '7', '8', '9', '0', '-', '=',0x7f, 0x9,	//[08,0f]
+ 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i',	//[10,17]
+ 'o', 'p', '[', ']', 0xd,   0, 'a', 's',	//[18,1f]
+ 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',	//[20,27]
+'\'', '`',   0,'\\', 'z', 'x', 'c', 'v',	//[28,2f]
+ 'b', 'n', 'm', ',', '.', '/',   0,   0,	//[30,37]
+   0, ' '
+};
+int convert8042(u8* buf, struct event* ev)
+{
+	int key = buf[0];
+
+	//kbd
+	if(kbdmap[key]){
+		ev->what = _kbd_;
+		ev->why = kbdmap[key];
+		return 1;
+	}
+
+	//char
+	if(chrmap[key]){
+		ev->what = _char_;
+		ev->why = chrmap[key];
+		return 2;
+	}
+
+	return 0;
+}
+
+
+
+
 int kbdled(u8 on)
 {
 	//bit0=scrolllock, bit1=numlock, bit2=capslock
@@ -44,105 +103,20 @@ int readkbd(u8* buf, int len)
 
 
 
-static u8 kbd[9*2] =
-{
-	0x01,0x1b,      //esc
-	0x47,0x47,      //home
-	0x4f,0x4f,      //end
-	0x49,0x49,      //page up
-	0x51,0x51,      //page down
-	0x48,0x48,      //up
-	0x50,0x50,      //down
-	0x4b,0x4b,      //left
-	0x4d,0x4d       //right
-};
-static u8 ch[41*2] =
-{
-0x02,'1',
-0x03,'2',
-0x04,'3',
-0x05,'4',
-0x06,'5',
-0x07,'6',
-0x08,'7',
-0x09,'8',
-0x0a,'9',
-0x0b,'0',
-0x1e,'a',
-0x30,'b',
-0x2e,'c',
-0x20,'d',
-0x12,'e',
-0x21,'f',
-0x22,'g',
-0x23,'h',
-0x17,'i',
-0x24,'j',
-0x25,'k',
-0x26,'l',
-0x32,'m',
-0x31,'n',
-0x18,'o',
-0x19,'p',
-0x10,'q',
-0x13,'r',
-0x1f,'s',
-0x14,'t',
-0x16,'u',
-0x2f,'v',
-0x11,'w',
-0x2d,'x',
-0x15,'y',
-0x2c,'z',
-0x34,'.',
-0x0e,0x7f,      //backspace
-0x1c,0xd,       //enter
-0x39,0x20,      //space
-0x00,0x00
-};
-int convert8042(u8* buf, struct event* ev)
-{
-	int j;
-	//kbd
-	for(j=0;j<9;j++)
-	{
-		if(buf[0] == kbd[j*2])
-		{
-			ev->what = _kbd_;
-			ev->why = kbd[(j*2) + 1];
-			return 1;
-		}
-	}
-
-	//char
-	for(j=0;j<41;j++)
-	{
-		if(buf[0] == ch[j*2])
-		{
-			ev->what = _char_;
-			ev->why = ch[(j*2) + 1];
-			return 2;
-		}
-	}
-	return 0;
-}
-
-
-
-
 void* read8042(struct event* ev)
 {
-	int j;
-	u8 buf[1];
 	if(0 == enablepolling)return 0;
 
-	j = readkbd(buf, 1);
+	u8 buf[1];
+	int j = readkbd(buf, 1);
 	if(j == 0)return 0;
 	if(buf[0] >= 0x80)return 0;
 
-	convert8042(buf, ev);
+	if(convert8042(buf, ev)){
+		return ev;
+	}
 
-	return ev;
+	return 0;
 }
 void init8042()
 {
@@ -154,16 +128,6 @@ void init8042()
 
 
 
-static u8 keymap[0x80] = {
-0x1b,   0, '1', '2', '3', '4', '5', '6',	//[00,07]
- '7', '8', '9', '0', '-', '=', 0x8, 0x9,	//[08,0f]
- 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i',	//[10,17]
- 'o', 'p', '[', ']', 0xd,   0, 'a', 's',	//[18,1f]
- 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',	//[20,27]
-'\'', '`',   0,'\\', 'z', 'x', 'c', 'v',	//[28,2f]
- 'b', 'n', 'm', ',', '.', '/',   0,   0,	//[30,37]
-   0, ' '
-};
 __attribute__((interrupt)) static void ps2kbd_isr(void* p)
 {
 	int j;
@@ -173,9 +137,9 @@ __attribute__((interrupt)) static void ps2kbd_isr(void* p)
 	if(buf[0] >= 0x80)goto byebye;
 
 	struct event ev;
-	convert8042(buf, &ev);
-
-	eventwrite(ev.why, ev.what, 0, 0);
+	if(convert8042(buf, &ev)){
+		eventwrite(ev.why, ev.what, 0, 0);
+	}
 
 byebye:
 	endofextirq(1);

@@ -281,8 +281,8 @@ void font_register(_obj* p)
 
 	p->oncreate = (void*)font_create;
 	p->ondelete = (void*)font_delete;
-	p->onsearch = (void*)font_search;
-	p->onmodify = (void*)font_modify;
+	p->onreader = (void*)font_search;
+	p->onwriter = (void*)font_modify;
 
 	p->onattach = (void*)font_attach;
 	p->ondetach = (void*)font_detach;

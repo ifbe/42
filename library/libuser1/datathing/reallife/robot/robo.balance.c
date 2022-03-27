@@ -179,8 +179,8 @@ void balance_register(_obj* p)
 
 	p->oncreate = (void*)balance_create;
 	p->ondelete = (void*)balance_delete;
-	p->onsearch = (void*)balance_search;
-	p->onmodify = (void*)balance_modify;
+	p->onreader = (void*)balance_search;
+	p->onwriter = (void*)balance_modify;
 
 	p->onattach = (void*)balance_attach;
 	p->ondetach = (void*)balance_detach;

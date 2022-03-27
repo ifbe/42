@@ -126,8 +126,8 @@ void mosfet_register(_obj* p)
 
 	p->oncreate = (void*)mosfet_create;
 	p->ondelete = (void*)mosfet_delete;
-	p->onsearch = (void*)mosfet_search;
-	p->onmodify = (void*)mosfet_modify;
+	p->onreader = (void*)mosfet_search;
+	p->onwriter = (void*)mosfet_modify;
 
 	p->onattach = (void*)mosfet_attach;
 	p->ondetach = (void*)mosfet_detach;

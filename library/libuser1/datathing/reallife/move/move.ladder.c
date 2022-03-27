@@ -118,8 +118,8 @@ void ladder_register(_obj* p)
 
 	p->oncreate = (void*)ladder_create;
 	p->ondelete = (void*)ladder_delete;
-	p->onsearch = (void*)ladder_search;
-	p->onmodify = (void*)ladder_modify;
+	p->onreader = (void*)ladder_search;
+	p->onwriter = (void*)ladder_modify;
 
 	p->onattach = (void*)ladder_attach;
 	p->ondetach = (void*)ladder_detach;

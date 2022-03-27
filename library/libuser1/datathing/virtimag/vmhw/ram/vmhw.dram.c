@@ -82,8 +82,8 @@ void vmddr_register(_obj* p)
 
 	p->oncreate = (void*)vmddr_create;
 	p->ondelete = (void*)vmddr_delete;
-	p->onsearch = (void*)vmddr_search;
-	p->onmodify = (void*)vmddr_modify;
+	p->onreader = (void*)vmddr_search;
+	p->onwriter = (void*)vmddr_modify;
 
 	p->onattach = (void*)vmddr_attach;
 	p->ondetach = (void*)vmddr_detach;

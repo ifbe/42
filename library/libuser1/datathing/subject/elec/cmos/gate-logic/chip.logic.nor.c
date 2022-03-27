@@ -262,8 +262,8 @@ void nor_register(_obj* p)
 
 	p->oncreate = (void*)nor_create;
 	p->ondelete = (void*)nor_delete;
-	p->onsearch = (void*)nor_search;
-	p->onmodify = (void*)nor_modify;
+	p->onreader = (void*)nor_search;
+	p->onwriter = (void*)nor_modify;
 
 	p->onattach = (void*)nor_attach;
 	p->ondetach = (void*)nor_detach;

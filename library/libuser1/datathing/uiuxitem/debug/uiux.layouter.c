@@ -713,8 +713,8 @@ void picker_register(_obj* p)
 
 	p->oncreate = (void*)picker_create;
 	p->ondelete = (void*)picker_delete;
-	p->onsearch = (void*)picker_search;
-	p->onmodify = (void*)picker_modify;
+	p->onreader = (void*)picker_search;
+	p->onwriter = (void*)picker_modify;
 
 	p->onattach = (void*)picker_attach;
 	p->ondetach = (void*)picker_detach;

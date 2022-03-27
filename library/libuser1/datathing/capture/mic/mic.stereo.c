@@ -42,8 +42,8 @@ void stereo_register(_obj* p)
 
 	p->oncreate = (void*)stereo_create;
 	p->ondelete = (void*)stereo_delete;
-	p->onsearch = (void*)stereo_search;
-	p->onmodify = (void*)stereo_modify;
+	p->onreader = (void*)stereo_search;
+	p->onwriter = (void*)stereo_modify;
 
 	p->onattach = (void*)stereo_attach;
 	p->ondetach = (void*)stereo_detach;

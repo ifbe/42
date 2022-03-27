@@ -322,8 +322,8 @@ void calculator_register(_obj* p)
 
 	p->oncreate = (void*)calculator_create;
 	p->ondelete = (void*)calculator_delete;
-	p->onsearch = (void*)calculator_search;
-	p->onmodify = (void*)calculator_modify;
+	p->onreader = (void*)calculator_search;
+	p->onwriter = (void*)calculator_modify;
 
 	p->onattach = (void*)calculator_attach;
 	p->ondetach = (void*)calculator_detach;

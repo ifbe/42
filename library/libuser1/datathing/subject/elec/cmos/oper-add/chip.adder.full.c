@@ -416,8 +416,8 @@ void fulladd_register(_obj* p)
 
 	p->oncreate = (void*)fulladd_create;
 	p->ondelete = (void*)fulladd_delete;
-	p->onsearch = (void*)fulladd_search;
-	p->onmodify = (void*)fulladd_modify;
+	p->onreader = (void*)fulladd_search;
+	p->onwriter = (void*)fulladd_modify;
 
 	p->onattach = (void*)fulladd_attach;
 	p->ondetach = (void*)fulladd_detach;

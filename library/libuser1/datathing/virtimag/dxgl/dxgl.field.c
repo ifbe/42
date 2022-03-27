@@ -264,8 +264,8 @@ void field_register(_obj* p)
 
 	p->oncreate = (void*)field_create;
 	p->ondelete = (void*)field_delete;
-	p->onsearch = (void*)field_search;
-	p->onmodify = (void*)field_modify;
+	p->onreader = (void*)field_search;
+	p->onwriter = (void*)field_modify;
 
 	p->onattach = (void*)field_attach;
 	p->ondetach = (void*)field_detach;

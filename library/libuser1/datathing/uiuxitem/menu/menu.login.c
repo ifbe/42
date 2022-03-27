@@ -143,8 +143,8 @@ void login_register(_obj* p)
 
 	p->oncreate = (void*)login_create;
 	p->ondelete = (void*)login_delete;
-	p->onsearch = (void*)login_search;
-	p->onmodify = (void*)login_modify;
+	p->onreader = (void*)login_search;
+	p->onwriter = (void*)login_modify;
 
 	p->onattach = (void*)login_attach;
 	p->ondetach = (void*)login_detach;

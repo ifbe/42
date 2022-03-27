@@ -125,8 +125,8 @@ void poker_register(_obj* p)
 
 	p->oncreate = (void*)poker_create;
 	p->ondelete = (void*)poker_delete;
-	p->onsearch = (void*)poker_search;
-	p->onmodify = (void*)poker_modify;
+	p->onreader = (void*)poker_search;
+	p->onwriter = (void*)poker_modify;
 
 	p->onattach = (void*)poker_attach;
 	p->ondetach = (void*)poker_detach;

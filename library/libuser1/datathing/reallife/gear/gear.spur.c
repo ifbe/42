@@ -240,8 +240,8 @@ void spurgear_register(_obj* p)
 
 	p->oncreate = (void*)spurgear_create;
 	p->ondelete = (void*)spurgear_delete;
-	p->onsearch = (void*)spurgear_search;
-	p->onmodify = (void*)spurgear_modify;
+	p->onreader = (void*)spurgear_search;
+	p->onwriter = (void*)spurgear_modify;
 
 	p->onattach = (void*)spurgear_attach;
 	p->ondetach = (void*)spurgear_detach;

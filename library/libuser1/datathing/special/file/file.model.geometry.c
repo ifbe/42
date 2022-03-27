@@ -239,8 +239,8 @@ void geometry_register(_obj* p)
 
 	p->oncreate = (void*)geometry_create;
 	p->ondelete = (void*)geometry_delete;
-	p->onsearch = (void*)geometry_search;
-	p->onmodify = (void*)geometry_modify;
+	p->onreader = (void*)geometry_search;
+	p->onwriter = (void*)geometry_modify;
 
 	p->onattach = (void*)geometry_attach;
 	p->ondetach = (void*)geometry_detach;

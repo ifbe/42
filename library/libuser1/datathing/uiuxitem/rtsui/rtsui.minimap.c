@@ -135,8 +135,8 @@ void minimap_register(_obj* p)
 
 	p->oncreate = (void*)minimap_create;
 	p->ondelete = (void*)minimap_delete;
-	p->onsearch = (void*)minimap_search;
-	p->onmodify = (void*)minimap_modify;
+	p->onreader = (void*)minimap_search;
+	p->onwriter = (void*)minimap_modify;
 
 	p->onattach = (void*)minimap_attach;
 	p->ondetach = (void*)minimap_detach;

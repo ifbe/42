@@ -245,8 +245,8 @@ void mem_register(_obj* p)
 
 	p->oncreate = (void*)mem_create;
 	p->ondelete = (void*)mem_delete;
-	p->onsearch = (void*)mem_search;
-	p->onmodify = (void*)mem_modify;
+	p->onreader = (void*)mem_search;
+	p->onwriter = (void*)mem_modify;
 
 	p->onattach = (void*)mem_attach;
 	p->ondetach = (void*)mem_detach;

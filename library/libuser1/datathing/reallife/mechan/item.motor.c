@@ -199,8 +199,8 @@ void motor_register(_obj* p)
 
 	p->oncreate = (void*)motor_create;
 	p->ondelete = (void*)motor_delete;
-	p->onsearch = (void*)motor_search;
-	p->onmodify = (void*)motor_modify;
+	p->onreader = (void*)motor_search;
+	p->onwriter = (void*)motor_modify;
 
 	p->onattach = (void*)motor_attach;
 	p->ondetach = (void*)motor_detach;

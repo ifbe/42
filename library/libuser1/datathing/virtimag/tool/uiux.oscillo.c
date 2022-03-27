@@ -345,8 +345,8 @@ void oscillo_register(_obj* p)
 
 	p->oncreate = (void*)oscillo_create;
 	p->ondelete = (void*)oscillo_delete;
-	p->onsearch = (void*)oscillo_search;
-	p->onmodify = (void*)oscillo_modify;
+	p->onreader = (void*)oscillo_search;
+	p->onwriter = (void*)oscillo_modify;
 
 	p->onattach = (void*)oscillo_attach;
 	p->ondetach = (void*)oscillo_detach;

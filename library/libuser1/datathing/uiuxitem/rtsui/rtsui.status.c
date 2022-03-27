@@ -134,8 +134,8 @@ void status_register(_obj* p)
 
 	p->oncreate = (void*)status_create;
 	p->ondelete = (void*)status_delete;
-	p->onsearch = (void*)status_search;
-	p->onmodify = (void*)status_modify;
+	p->onreader = (void*)status_search;
+	p->onwriter = (void*)status_modify;
 
 	p->onattach = (void*)status_attach;
 	p->ondetach = (void*)status_detach;

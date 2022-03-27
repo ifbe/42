@@ -413,8 +413,8 @@ void spotlight_register(_obj* p)
 
 	p->oncreate = (void*)spotlight_create;
 	p->ondelete = (void*)spotlight_delete;
-	p->onsearch = (void*)spotlight_search;
-	p->onmodify = (void*)spotlight_modify;
+	p->onreader = (void*)spotlight_search;
+	p->onwriter = (void*)spotlight_modify;
 
 	p->onattach = (void*)spotlight_attach;
 	p->ondetach = (void*)spotlight_detach;

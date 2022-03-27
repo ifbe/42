@@ -214,8 +214,8 @@ void spring_register(_obj* p)
 
 	p->oncreate = (void*)spring_create;
 	p->ondelete = (void*)spring_delete;
-	p->onsearch = (void*)spring_search;
-	p->onmodify = (void*)spring_modify;
+	p->onreader = (void*)spring_search;
+	p->onwriter = (void*)spring_modify;
 
 	p->onattach = (void*)spring_attach;
 	p->ondetach = (void*)spring_detach;

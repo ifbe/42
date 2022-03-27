@@ -272,8 +272,8 @@ void robodog_register(_obj* p)
 
 	p->oncreate = (void*)robodog_create;
 	p->ondelete = (void*)robodog_delete;
-	p->onsearch = (void*)robodog_search;
-	p->onmodify = (void*)robodog_modify;
+	p->onreader = (void*)robodog_search;
+	p->onwriter = (void*)robodog_modify;
 
 	p->onattach = (void*)robodog_attach;
 	p->ondetach = (void*)robodog_detach;

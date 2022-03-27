@@ -163,8 +163,8 @@ void slider_register(_obj* p)
 
 	p->oncreate = (void*)slider_create;
 	p->ondelete = (void*)slider_delete;
-	p->onsearch = (void*)slider_search;
-	p->onmodify = (void*)slider_modify;
+	p->onreader = (void*)slider_search;
+	p->onwriter = (void*)slider_modify;
 
 	p->onattach = (void*)slider_attach;
 	p->ondetach = (void*)slider_detach;

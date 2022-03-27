@@ -476,8 +476,8 @@ void weiqi_register(_obj* p)
 
 	p->oncreate = (void*)weiqi_create;
 	p->ondelete = (void*)weiqi_delete;
-	p->onsearch = (void*)weiqi_search;
-	p->onmodify = (void*)weiqi_modify;
+	p->onreader = (void*)weiqi_search;
+	p->onwriter = (void*)weiqi_modify;
 
 	p->onattach = (void*)weiqi_attach;
 	p->ondetach = (void*)weiqi_detach;

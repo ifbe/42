@@ -83,8 +83,8 @@ void sokoban_register(_obj* p)
 
 	p->oncreate = (void*)sokoban_create;
 	p->ondelete = (void*)sokoban_delete;
-	p->onsearch = (void*)sokoban_search;
-	p->onmodify = (void*)sokoban_modify;
+	p->onreader = (void*)sokoban_search;
+	p->onwriter = (void*)sokoban_modify;
 
 	p->onattach = (void*)sokoban_attach;
 	p->ondetach = (void*)sokoban_detach;

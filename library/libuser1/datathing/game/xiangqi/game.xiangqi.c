@@ -735,8 +735,8 @@ void xiangqi_register(_obj* p)
 
 	p->oncreate = (void*)xiangqi_create;
 	p->ondelete = (void*)xiangqi_delete;
-	p->onsearch = (void*)xiangqi_search;
-	p->onmodify = (void*)xiangqi_modify;
+	p->onreader = (void*)xiangqi_search;
+	p->onwriter = (void*)xiangqi_modify;
 
 	p->onattach = (void*)xiangqi_attach;
 	p->ondetach = (void*)xiangqi_detach;

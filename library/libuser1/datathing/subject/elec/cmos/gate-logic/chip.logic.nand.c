@@ -270,8 +270,8 @@ void nand_register(_obj* p)
 
 	p->oncreate = (void*)nand_create;
 	p->ondelete = (void*)nand_delete;
-	p->onsearch = (void*)nand_search;
-	p->onmodify = (void*)nand_modify;
+	p->onreader = (void*)nand_search;
+	p->onwriter = (void*)nand_modify;
 
 	p->onattach = (void*)nand_attach;
 	p->ondetach = (void*)nand_detach;

@@ -265,8 +265,8 @@ void detail_register(_obj* p)
 
 	p->oncreate = (void*)detail_create;
 	p->ondelete = (void*)detail_delete;
-	p->onsearch = (void*)detail_search;
-	p->onmodify = (void*)detail_modify;
+	p->onreader = (void*)detail_search;
+	p->onwriter = (void*)detail_modify;
 
 	p->onattach = (void*)detail_attach;
 	p->ondetach = (void*)detail_detach;

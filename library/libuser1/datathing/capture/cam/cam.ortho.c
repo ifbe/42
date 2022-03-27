@@ -291,8 +291,8 @@ void orthcam_register(_obj* p)
 
 	p->oncreate = (void*)orthcam_create;
 	p->ondelete = (void*)orthcam_delete;
-	p->onsearch = (void*)orthcam_search;
-	p->onmodify = (void*)orthcam_modify;
+	p->onreader = (void*)orthcam_search;
+	p->onwriter = (void*)orthcam_modify;
 
 	p->onattach = (void*)orthcam_attach;
 	p->ondetach = (void*)orthcam_detach;

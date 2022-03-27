@@ -263,8 +263,8 @@ void chess_register(_obj* p)
 
 	p->oncreate = (void*)chess_create;
 	p->ondelete = (void*)chess_delete;
-	p->onsearch = (void*)chess_search;
-	p->onmodify = (void*)chess_modify;
+	p->onreader = (void*)chess_search;
+	p->onwriter = (void*)chess_modify;
 
 	p->onattach = (void*)chess_attach;
 	p->ondetach = (void*)chess_detach;

@@ -233,8 +233,8 @@ void snake_register(_obj* p)
 
 	p->oncreate = (void*)snake_create;
 	p->ondelete = (void*)snake_delete;
-	p->onsearch = (void*)snake_search;
-	p->onmodify = (void*)snake_modify;
+	p->onreader = (void*)snake_search;
+	p->onwriter = (void*)snake_modify;
 
 	p->onattach = (void*)snake_attach;
 	p->ondetach = (void*)snake_detach;

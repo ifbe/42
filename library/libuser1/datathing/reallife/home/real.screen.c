@@ -42,8 +42,8 @@ void screen_register(_obj* p)
 
 	p->oncreate = (void*)screen_create;
 	p->ondelete = (void*)screen_delete;
-	p->onsearch = (void*)screen_search;
-	p->onmodify = (void*)screen_modify;
+	p->onreader = (void*)screen_search;
+	p->onwriter = (void*)screen_modify;
 
 	p->onattach = (void*)screen_attach;
 	p->ondetach = (void*)screen_detach;

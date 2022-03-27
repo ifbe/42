@@ -54,8 +54,8 @@ void mahjong_register(_obj* p)
 
 	p->oncreate = (void*)mahjong_create;
 	p->ondelete = (void*)mahjong_delete;
-	p->onsearch = (void*)mahjong_search;
-	p->onmodify = (void*)mahjong_modify;
+	p->onreader = (void*)mahjong_search;
+	p->onwriter = (void*)mahjong_modify;
 
 	p->onattach = (void*)mahjong_attach;
 	p->ondetach = (void*)mahjong_detach;

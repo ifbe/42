@@ -1007,8 +1007,8 @@ void rubikscube_register(_obj* p)
 
 	p->oncreate = (void*)rubikscube_create;
 	p->ondelete = (void*)rubikscube_delete;
-	p->onsearch = (void*)rubikscube_search;
-	p->onmodify = (void*)rubikscube_modify;
+	p->onreader = (void*)rubikscube_search;
+	p->onwriter = (void*)rubikscube_modify;
 
 	p->onattach = (void*)rubikscube_attach;
 	p->ondetach = (void*)rubikscube_detach;

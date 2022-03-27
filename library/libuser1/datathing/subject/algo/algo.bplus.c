@@ -220,8 +220,8 @@ void bplus_register(_obj* p)
 
 	p->oncreate = (void*)bplus_create;
 	p->ondelete = (void*)bplus_delete;
-	p->onsearch = (void*)bplus_search;
-	p->onmodify = (void*)bplus_modify;
+	p->onreader = (void*)bplus_search;
+	p->onwriter = (void*)bplus_modify;
 
 	p->onattach = (void*)bplus_attach;
 	p->ondetach = (void*)bplus_detach;

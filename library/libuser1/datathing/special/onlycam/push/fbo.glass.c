@@ -424,8 +424,8 @@ void glass_register(_obj* p)
 
 	p->oncreate = (void*)glass_create;
 	p->ondelete = (void*)glass_delete;
-	p->onsearch = (void*)glass_search;
-	p->onmodify = (void*)glass_modify;
+	p->onreader = (void*)glass_search;
+	p->onwriter = (void*)glass_modify;
 
 	p->onattach = (void*)glass_attach;
 	p->ondetach = (void*)glass_detach;
