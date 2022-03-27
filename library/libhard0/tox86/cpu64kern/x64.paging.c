@@ -10,6 +10,7 @@
 #define Globalpage 0x100
 #define Noexecute (1<<63)
 //
+#define CR3BUF 0x40000
 #define PML4OFFS 0x0000
 #define PDPTOFFS 0x1000
 #define GIGACOUNT 1024			//1 terabyte
@@ -122,11 +123,13 @@ void pagetable_makeuser(u8* buf, int len, u64 pa, int plen, u64 va, int vlen)
 	u64* pdpt = (u64*)(buf+PDPTUSER);
 	pdpt[bit30_38] = (u64)pdir | Allowuser | Writable | Present;
 
+	//copy kernel page table
+	u8* kcr3 = (u8*)CR3BUF;
+	for(j=0;j<0x1000;j++)buf[j] = kcr3[j];
+
 	//page map level 4: waste 0x1000 B, actually 8B
 	//pdptaddr8B_per_item, 512item_per_table, 1table_cant_less
 	u64* pml4 = (u64*)(buf+PML4USER);
-	u8* kpage = (u8*)0x40000;
-	for(j=0;j<0x1000;j++)pml4[j] = kpage[j];
 	pml4[bit39_47] = (u64)pdpt | Allowuser | Writable | Present;
 }
 
@@ -147,8 +150,9 @@ void pagetable_readcr3()
 }
 void pagetable_use(u8* cr3)
 {
-	say("@pagetable_writecr3+++\n");
-	printmemory(cr3, 0x20);
+	//printmemory(cr3, 0x80);
+
+	//say("@pagetable_writecr3+++\n");
 
 	//write cr3
 	asm __volatile__(
@@ -158,7 +162,7 @@ void pagetable_use(u8* cr3)
 		:"m"(cr3)
 	);
 
-	say("@pagetable_writecr3---\n");
+	//say("@pagetable_writecr3---\n");
 }
 void initpaging(u8* pagehome, int len, void* pdir, int plen)
 {

@@ -1,4 +1,7 @@
 #include "libhard.h"
+#define debug_bulktransfer 0
+#define debug_transfer 0
+#define debug_waitevent 0
 #define xhci_print(fmt, ...) say("<%08lld,xhci>"fmt, timeread_us(), ##__VA_ARGS__)
 int usbany_linkup(void*,int,void*,int);
 
@@ -705,7 +708,7 @@ int xhci_parseevent(struct item* xhci, u32* ev)
 			}
 		}
 
-		xhci_print("%d@Transfer: cmd=%p, len=%x, slot=%x, ep=%x\n", stat, *(u8**)ev, ev[2]&0xffffff, slot, endp);
+		if(debug_transfer)xhci_print("%d@Transfer: cmd=%p, len=%x, slot=%x, ep=%x\n", stat, *(u8**)ev, ev[2]&0xffffff, slot, endp);
 		break;
 
 	case TRB_event_CommandCompletion:		//33
@@ -735,13 +738,13 @@ int xhci_waitevent(struct item* xhci, u32 wanttype, u32 wantarg)
 	u32 type,arg;
 	u32* ev;
 
-	u64 deadline = timeread_us() + 0x1000000;
+	u64 endtime = timeread_us() + 5000*1000;
 	u32 endcycle = 0xffffff;
 	while(1){
 		ev = xhci_takeevent(xhci);
 		if(ev){
 			//print
-			printmemory(ev, 16);
+			if(debug_waitevent)printmemory(ev, 16);
 
 			//parse
 			xhci_parseevent(xhci, ev);
@@ -779,10 +782,10 @@ int xhci_waitevent(struct item* xhci, u32 wanttype, u32 wantarg)
 				break;
 			}
 
-			xhci_print("event unwanted: wanttype=%x,thistype=%x,wantarg=%x,thisarg=%x\n", wanttype, type, wantarg, arg);
+			if(debug_waitevent)xhci_print("event unwanted: wanttype=%x,thistype=%x,wantarg=%x,thisarg=%x\n", wanttype, type, wantarg, arg);
 		}//if(ev)
 
-		if(timeread_us() > deadline)break;
+		if(timeread_us() > endtime)break;
 
 		endcycle -= 1;
 		if(0 == endcycle)break;
@@ -1223,8 +1226,8 @@ int xhci_BulkTransfer(struct item* xhci, int slotendp, void* sendbuf, int sendle
 {
 	int slot = slotendp & 0xff;
 	int DCI = (slotendp>>8)&0xff;
-	xhci_print("--------------------------------\n");
-	xhci_print("BulkTransfer slot=%x,dci=%x\n", slot, DCI);
+	if(debug_bulktransfer)xhci_print("--------------------------------\n");
+	if(debug_bulktransfer)xhci_print("BulkTransfer slot=%x,dci=%x\n", slot, DCI);
 
 	struct perxhci* xhcidata = (void*)(xhci->priv_256b);
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
@@ -1239,7 +1242,7 @@ int xhci_BulkTransfer(struct item* xhci, int slotendp, void* sendbuf, int sendle
 
 		u32 slotstate = (*(u32*)(slotdata->hcctx+0xc))>>27;
 		u32 epstate = (*(u32*)(slotdata->hcctx+contextsize*DCI))&0x3;
-		xhci_print("slotstate=%x, epstate=%x\n", slotstate, epstate);
+		if(debug_bulktransfer)xhci_print("slotstate=%x, epstate=%x\n", slotstate, epstate);
 		return 0;
 	}
 	return 0;

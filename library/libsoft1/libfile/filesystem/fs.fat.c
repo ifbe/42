@@ -575,8 +575,10 @@ static int fatclient_ontake(_obj* art,void* foot, _syn* stack,int sp, u8* arg, i
 	switch(per->version){
 	case 32:
 		ret = fat32_read(art,0, clus,0, buf,len);
+		break;
 	case 16:
 		ret = fat16_read(art,0, clus,0, buf,len);
+		break;
 	}
 
 	if(debug&&(ret > 0))printmemory(buf, 0x200);

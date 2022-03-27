@@ -107,15 +107,12 @@ int filemanager_registersupplier(void* node, void* foot)
 
 int file_take(void* obj, int fd, void* arg, int off, u8* buf, int len)
 {
-	_obj* p;
-	//void* q;
+	_obj* node = fsysnode[0];
+	if(0 == node)return 0;
+	if(0 == node->ontaking)return 0;
 
-	p = fsysnode[0];
-	if(0 == p)return 0;
-	if(0 == p->ontaking)return 0;
-
-	//q = fsysfoot[0];
-	return p->ontaking((void*)p,obj, 0,0, 0,0, buf,len);
+	void* slot = fsysfoot[0];
+	return node->ontaking((void*)node,slot, 0,0, obj,0, buf,len);
 }
 int file_give(void* obj, int fd, void* arg, int off, u8* buf, int len)
 {
@@ -166,7 +163,7 @@ int file_search_disk()
 		node = disknode[j];
 		if(node->ontaking){
 			slot = diskfoot[j];
-			ret = node->ontaking(node,slot, 0,0, "info",0, 0,0);
+			ret = node->ontaking(node,slot, 0,0, 0,0, 0,0);
 			//say("ret=%d\n",ret);
 		}
 		else{
@@ -189,7 +186,7 @@ int file_search_ptbl()
 		node = ptblnode[j];
 		if(node->ontaking){
 			slot = ptblfoot[j];
-			ret = node->ontaking(node,slot, 0,0, "info",0, 0,0);
+			ret = node->ontaking(node,slot, 0,0, 0,0, 0,0);
 			//say("ret=%d\n",ret);
 		}
 		else{
@@ -212,7 +209,7 @@ int file_search_fsys()
 		node = fsysnode[j];
 		if(node->ontaking){
 			slot = fsysfoot[j];
-			ret = node->ontaking(node,slot, 0,0, "info",0, 0,0);
+			ret = node->ontaking(node,slot, 0,0, 0,0, 0,0);
 			//say("ret=%d\n",ret);
 		}
 		else{

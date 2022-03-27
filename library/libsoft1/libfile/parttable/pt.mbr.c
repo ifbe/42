@@ -186,7 +186,7 @@ static int mbrclient_showpart(_obj* art,void* foot, void* buf,int len)
 static int mbrclient_ontake(_obj* art,void* foot, _syn* stack,int sp, u8* arg, int off, u8* buf, int len)
 {
 	u64 offs;
-	//say("@mbrclient_ontake\n");
+	say("@mbrclient_ontake:obj=%p,slot=%p,arg=%p,off=%x,buf=%p,len=%x\n", art,foot, arg,off, buf,len);
 
 	if(arg){
 		//info
