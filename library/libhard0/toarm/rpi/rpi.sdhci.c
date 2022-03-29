@@ -11,7 +11,6 @@ void gpio_prepsdhci();
 void wait_msec(int);
 void wait_cycles(int);
 //
-void printmmio(void*, int);
 void filemanager_registersupplier(void*,void*);
 
 

@@ -1,6 +1,5 @@
 #include "libhard.h"
 void* mmiobase();
-void printmmio(void*, int);
 
 
 #define SDHOST_OFFS 0x202000

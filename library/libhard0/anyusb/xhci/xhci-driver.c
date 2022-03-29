@@ -731,14 +731,14 @@ int xhci_parseevent(struct item* xhci, u32* ev)
 
 	return 0;
 }
-int xhci_waitevent(struct item* xhci, u32 wanttype, u32 wantarg)
+int xhci_waitevent(struct item* xhci, int maxwaitus, u32 wanttype, u32 wantarg)
 {
 	u32 stat,port;
 	u32 slot,endp;
 	u32 type,arg;
 	u32* ev;
 
-	u64 endtime = timeread_us() + 5000*1000;
+	u64 endtime = timeread_us() + maxwaitus;
 	u32 endcycle = 0xffffff;
 	while(1){
 		ev = xhci_takeevent(xhci);
@@ -836,37 +836,51 @@ void xhci_hostorder(struct item* xhci, int slot, u32 d0,u32 d1,u32 d2,u32 d3)
 
 
 
+int xhci_NoOp(struct item* xhci)
+{
+	xhci_print("NoOp{\n");
+
+	xhci_hostorder(xhci,0, 0,0,0,(TRB_command_NoOp<<10));
+	int ret = xhci_waitevent(xhci, 5*1000*1000, TRB_event_CommandCompletion, 0);
+	xhci_print("}NoOp\n");
+}
 int xhci_EnableSlot(struct item* xhci)
 {
-	xhci_print("--------------------------------\n");
-	xhci_print("EnableSlot\n");
+	xhci_print("EnableSlot{\n");
 
 	xhci_hostorder(xhci,0, 0,0,0,(TRB_command_EnableSlot<<10));
-	int slot = xhci_waitevent(xhci, TRB_event_CommandCompletion, 0);
+	int slot = xhci_waitevent(xhci, 5*1000*1000, TRB_event_CommandCompletion, 0);
 	if(slot <= 0){
 		xhci_print("error=%d\n", slot);
-		return -1;
+		slot = -1;
+		goto byebye;
 	}
+
 	xhci_print("slot:allocated=%d\n", slot);
-	if(slot >= 16)return -1;
+	if(slot >= 16){
+		slot = -1;
+		goto byebye;
+	}
 
 	struct perxhci* xhcidata = (void*)(xhci->priv_256b);
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
 	u64* dcbatable = (u64*)(xhcidata->dcba);
 	dcbatable[slot] = (u64)(slotdata->hcctx);
+
+byebye:
+	xhci_print("}EnableSlot\n");
 	return slot;
 }
 int xhci_DisableSlot(struct item* xhci, int slot)
 {
-	xhci_print("--------------------------------\n");
-	xhci_print("DisableSlot\n");
+	xhci_print("DisableSlot{\n");
 
+	xhci_print("}DisableSlot\n");
 	return 0;
 }
 int xhci_AddressDevice(struct item* xhci, int slot)
 {
-	xhci_print("--------------------------------\n");
-	xhci_print("AddressDevice\n");
+	xhci_print("AddressDevice{\n");
 	struct perxhci* xhcidata = (void*)(xhci->priv_256b);
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
 
@@ -928,7 +942,7 @@ int xhci_AddressDevice(struct item* xhci, int slot)
 	lo = ((u64)incon) & 0xffffffff;
 	hi = ((u64)incon) >> 32;
 	xhci_hostorder(xhci,0, lo,hi,0,(slot<<24)+(TRB_command_AddressDevice<<10) );
-	if(xhci_waitevent(xhci, TRB_event_CommandCompletion, 0) != slot){
+	if(xhci_waitevent(xhci, 5*1000*1000, TRB_event_CommandCompletion, 0) != slot){
 		xhci_print("error@address device\n");
 		return -1;
 	}
@@ -951,19 +965,20 @@ int xhci_AddressDevice(struct item* xhci, int slot)
 	slotdata->myctx.epnctx[EP0DCI].cycle = 1;
 	slotdata->myctx.epnctx[EP0DCI].myenq = 0;
 	slotdata->myctx.epnctx[EP0DCI].hcdeq = 0;
+
+	xhci_print("}AddressDevice\n");
 	return 1;
 }
 int xhci_ResetDevice(struct item* xhci, int slot)
 {
-	xhci_print("--------------------------------\n");
-	xhci_print("ResetDevice\n");
+	xhci_print("}ResetDevice\n");
+	xhci_print("ResetDevice{\n");
 	return 0;
 }
 int xhci_EvaluateContext(struct item* xhci, int slot, u8* devdesc, int len)
 {
 	//Evaluate Context Command
-	xhci_print("--------------------------------\n");
-	xhci_print("EvaluateContext\n");
+	xhci_print("EvaluateContext{\n");
 
 	struct perxhci* xhcidata = (void*)(xhci->priv_256b);
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
@@ -1024,7 +1039,7 @@ int xhci_EvaluateContext(struct item* xhci, int slot, u8* devdesc, int len)
 	lo = ((u64)incon) & 0xffffffff;
 	hi = ((u64)incon) >> 32;
 	xhci_hostorder(xhci,0, lo,hi,0,(slot<<24)+(TRB_command_EvaluateContext<<10) );
-	if(xhci_waitevent(xhci, TRB_event_CommandCompletion, 0) != slot){
+	if(xhci_waitevent(xhci, 5*1000*1000, TRB_event_CommandCompletion, 0) != slot){
 		xhci_print("error@evaluate context\n");
 		return -1;
 	}
@@ -1041,12 +1056,13 @@ int xhci_EvaluateContext(struct item* xhci, int slot, u8* devdesc, int len)
 		xhci_print("ep0 wrong\n");
 		return -2;
 	}
+
+	xhci_print("}EvaluateContext\n");
 	return 0;
 }
 int xhci_ConfigureEndpoint(struct item* xhci, int slot, struct EndpointDescriptor* epdesc, int len)
 {
-	xhci_print("--------------------------------\n");
-	xhci_print("ConfigureEndpoint\n");
+	xhci_print("ConfigureEndpoint{\n");
 
 	struct perxhci* xhcidata = (void*)(xhci->priv_256b);
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
@@ -1166,7 +1182,7 @@ int xhci_ConfigureEndpoint(struct item* xhci, int slot, struct EndpointDescripto
 	u32 lo = ((u64)incon) & 0xffffffff;
 	u32 hi = ((u64)incon) >> 32;
 	xhci_hostorder(xhci,0, lo,hi,0,(slot<<24)+(TRB_command_ConfigureEndpoint<<10) );
-	if(xhci_waitevent(xhci, TRB_event_CommandCompletion, 0) != slot){
+	if(xhci_waitevent(xhci, 5*1000*1000, TRB_event_CommandCompletion, 0) != slot){
 		xhci_print("error@configure endpoint\n");
 		return -1;
 	}
@@ -1190,6 +1206,7 @@ int xhci_ConfigureEndpoint(struct item* xhci, int slot, struct EndpointDescripto
 		return -2;
 	}
 */
+	xhci_print("}ConfigureEndpoint\n");
 	return 0;
 }
 int xhci_ControlTransfer(struct item* xhci, int slot, struct UsbRequest* req, int slen, void* recvbuf, int recvlen)
@@ -1197,8 +1214,7 @@ int xhci_ControlTransfer(struct item* xhci, int slot, struct UsbRequest* req, in
 	int DCI = 1;
 	slot &= 0xff;
 
-	xhci_print("--------------------------------\n");
-	xhci_print("ControlTransfer slot=%x,dci=%x: (bm=%x,br=%x,val=%x,idx=%x,len=%x)\n",
+	xhci_print("ControlTransfer slot=%x,dci=%x: (bm=%x,br=%x,val=%x,idx=%x,len=%x){\n",
 		slot, DCI,
 		req->bmRequestType,req->bRequest,req->wValue,req->wIndex,req->wLength
 	);
@@ -1210,7 +1226,7 @@ int xhci_ControlTransfer(struct item* xhci, int slot, struct UsbRequest* req, in
 
 	//
 	xhci_giveorder(xhci, slot | (DCI<<8));
-	if(xhci_waitevent(xhci, TRB_event_Transfer, slot|0x100) != (slot|0x100)){	//return slot|(endp<<8)
+	if(xhci_waitevent(xhci, 5*1000*1000, TRB_event_Transfer, slot|0x100) != (slot|0x100)){	//return slot|(endp<<8)
 		u32 contextsize = 0x20;
 		if(0x4 == (xhcidata->capreg->CAPPARAMS1 & 0x4))contextsize = 0x40;
 
@@ -1220,14 +1236,14 @@ int xhci_ControlTransfer(struct item* xhci, int slot, struct UsbRequest* req, in
 		return 0;
 	}
 	//printmemory(recvbuf, recvlen);
+	xhci_print("}ControlTransfer\n");
 	return recvlen;
 }
 int xhci_BulkTransfer(struct item* xhci, int slotendp, void* sendbuf, int sendlen, void* recvbuf, int recvlen)
 {
 	int slot = slotendp & 0xff;
 	int DCI = (slotendp>>8)&0xff;
-	if(debug_bulktransfer)xhci_print("--------------------------------\n");
-	if(debug_bulktransfer)xhci_print("BulkTransfer slot=%x,dci=%x\n", slot, DCI);
+	if(debug_bulktransfer)xhci_print("BulkTransfer slot=%x,dci=%x{\n", slot, DCI);
 
 	struct perxhci* xhcidata = (void*)(xhci->priv_256b);
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
@@ -1236,7 +1252,7 @@ int xhci_BulkTransfer(struct item* xhci, int slotendp, void* sendbuf, int sendle
 	if(slotdata->myctx.epnctx[DCI].myenq >= 0x1000)slotdata->myctx.epnctx[DCI].myenq = 0;
 
 	xhci_giveorder(xhci, slot | (DCI<<8));
-	if(xhci_waitevent(xhci, TRB_event_Transfer, slotendp) != slotendp){
+	if(xhci_waitevent(xhci, 10*1000*1000, TRB_event_Transfer, slotendp) != slotendp){
 		u32 contextsize = 0x20;
 		if(0x4 == (xhcidata->capreg->CAPPARAMS1 & 0x4))contextsize = 0x40;
 
@@ -1245,14 +1261,15 @@ int xhci_BulkTransfer(struct item* xhci, int slotendp, void* sendbuf, int sendle
 		if(debug_bulktransfer)xhci_print("slotstate=%x, epstate=%x\n", slotstate, epstate);
 		return 0;
 	}
+
+	if(debug_bulktransfer)xhci_print("}BulkTransfer\n");
 	return 0;
 }
 int xhci_InterruptTransferOut(struct item* xhci, int slotendp, void* sendbuf, int sendlen, void* recvbuf, int recvlen)
 {
 	int slot = slotendp & 0xff;
 	int DCI = (slotendp>>8)&0xff;
-	xhci_print("--------------------------------\n");
-	xhci_print("InterruptTransferOut slot=%x,dci=%x\n", slot, DCI);
+	xhci_print("InterruptTransferOut slot=%x,dci=%x{\n", slot, DCI);
 
 	struct perxhci* xhcidata = (void*)(xhci->priv_256b);
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
@@ -1263,7 +1280,7 @@ int xhci_InterruptTransferOut(struct item* xhci, int slotendp, void* sendbuf, in
 
 	//
 	xhci_giveorder(xhci, slot | (DCI<<8));
-	if(xhci_waitevent(xhci, TRB_event_Transfer, slotendp) != slotendp){
+	if(xhci_waitevent(xhci, 5*1000*1000, TRB_event_Transfer, slotendp) != slotendp){
 		u32 contextsize = 0x20;
 		if(0x4 == (xhcidata->capreg->CAPPARAMS1 & 0x4))contextsize = 0x40;
 
@@ -1273,14 +1290,15 @@ int xhci_InterruptTransferOut(struct item* xhci, int slotendp, void* sendbuf, in
 		return 0;
 	}
 	//printmemory(recvbuf, recvlen);
+
+	xhci_print("}InterruptTransferOut\n");
 	return recvlen;
 }
 int xhci_InterruptTransferIn(struct item* xhci, int slotendp, void* sendbuf, int sendlen, void* recvbuf, int recvlen)
 {
 	int slot = slotendp & 0xff;
 	int DCI = (slotendp>>8)&0xff;
-	xhci_print("--------------------------------\n");
-	xhci_print("InterruptTransferIn slot=%x,dci=%x\n", slot, DCI);
+	xhci_print("InterruptTransferIn slot=%x,dci=%x{\n", slot, DCI);
 
 	struct perxhci* xhcidata = (void*)(xhci->priv_256b);
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
@@ -1292,7 +1310,7 @@ int xhci_InterruptTransferIn(struct item* xhci, int slotendp, void* sendbuf, int
 
 	//
 	xhci_giveorder(xhci, slot | (DCI<<8));
-/*	if(xhci_waitevent(xhci, TRB_event_Transfer, slotendp) != slotendp){
+/*	if(xhci_waitevent(xhci, 5*1000*1000, TRB_event_Transfer, slotendp) != slotendp){
 		u32 contextsize = 0x20;
 		if(0x4 == (xhcidata->capreg->CAPPARAMS1 & 0x4))contextsize = 0x40;
 
@@ -1303,6 +1321,8 @@ int xhci_InterruptTransferIn(struct item* xhci, int slotendp, void* sendbuf, int
 	}
 	//
 	printmemory(recvbuf, recvlen);*/
+
+	xhci_print("}InterruptTransferIn\n");
 	return recvlen;
 }
 
@@ -1398,7 +1418,7 @@ int resetport(struct item* xhci, int countfrom0)
 	xhci_print("port enabled, wait changed...\n");
 
 	//wait for portchange event
-	if(xhci_waitevent(xhci, TRB_event_PortStatusChange, countfrom0+1) < 0){
+	if(xhci_waitevent(xhci, 5*1000*1000, TRB_event_PortStatusChange, countfrom0+1) < 0){
 		xhci_print("portstatus unchanged: USBSTS=%x\n", optreg->USBSTS);
 		return -3;
 	}
@@ -1416,8 +1436,7 @@ void xhci_listall(struct item* xhci, int count)
 	struct PortRegisters* port = optreg->port;
 	for(j=0;j<count;j++){
 		tmp = port[j].PORTSC;
-		xhci_print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
-		xhci_print("%02x@%p:psi=%x,portsc=%x\n", j, &port[j], pp[j].protocol, tmp);
+		xhci_print("listport: %02x@%p:psi=%x,portsc=%x{\n", j, &port[j], pp[j].protocol, tmp);
 		if(0 == (tmp & 0x1))continue;
 
 		//if(0 == PORTSC.bit1)ver <= 2.0, have to reset
@@ -1461,6 +1480,8 @@ void xhci_listall(struct item* xhci, int count)
 		//let usb do rest
 		struct item* usb = device_create(_usb_, 0, 0, 0);
 		if(usb)usbany_linkup(usb, 0, xhci, slot);
+
+		xhci_print("}listport: %02x@%p\n", j, &port[j]);
 	}
 }
 
@@ -1820,6 +1841,8 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 			break;
 		}
 	}
+
+	xhci_NoOp(dev);
 
 	//callback functions
 	dev->ontaking = (void*)xhci_take;
