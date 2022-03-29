@@ -2,6 +2,7 @@
 //
 void ehci_portinit(struct item* dev, u32 addr);
 void xhci_portinit(struct item* dev, u32 addr);
+void usb4hia_portinit(struct item* dev, u32 addr);
 //
 void ide_portinit(struct item* dev, u32 addr);
 void ahci_portinit(struct item* dev, u32 addr);
@@ -60,7 +61,7 @@ void initpci_port()
 
 		out32(0xcf8, addr+8);
 		type = in32(0xcfc);
-		say("@%08x(%d,%d,%d): idid=%08x, type=%08x\n", addr,bus,dev,fun, idid,type);
+		say("@%08x(%x,%x,%x): idid=%08x, type=%08x\n", addr,bus,dev,fun, idid,type);
 
 		switch(type >> 16){
 		case 0x0101:
@@ -96,10 +97,17 @@ void initpci_port()
 			switch((type>>8)&0xff){
 			//case 0x00:uhci_portinit(addr);break;
 			//case 0x10:ohci_portinit(addr);break;
-			//case 0x20:ehci_portinit(addr);break;
+			case 0x20:
+				//ehci_portinit(addr);
+				say("ehci?\n");
+				break;
 			case 0x30:
 				xx = device_create(_xhci_, 0, 0, 0);
 				xhci_portinit(xx, addr);
+				break;
+			case 0x40:
+				xx = device_create(_usb4_, 0, 0, 0);
+				usb4hia_portinit(xx, addr);
 				break;
 			}//usbver
 			break;

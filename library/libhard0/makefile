@@ -177,11 +177,12 @@ tox86/cpu64virt/vt/x64.vt.c \
 tox86/cpu64virt/svm/x64.svm.c \
 tox86/bus/input/8042.c \
 tox86/bus/ethernet/e1000.c \
-tox86/bus/pci/pci-port.c \
-tox86/bus/pci/pci-mmio.c \
-tox86/bus/pci/pci.ahci.c \
-tox86/bus/pci/pci.xhci.c \
-tox86/bus/pci/pci.nvme.c \
+tox86/bus/pciport/pciport.c \
+tox86/bus/pciport/pciport.ahci.c \
+tox86/bus/pciport/pciport.nvme.c \
+tox86/bus/pciport/pciport.xhci.c \
+tox86/bus/pciport/pciport.usb4hia.c \
+tox86/bus/pcimmio/pcimmio.c \
 tox86/irq/irq.c \
 tox86/irq/8259/8259.c \
 tox86/irq/apic/apic.io.c \

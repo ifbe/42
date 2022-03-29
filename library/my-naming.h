@@ -62,6 +62,7 @@
 #define _nvme_ hex32('n','v','m','e')
 #define _ehci_ hex32('e','h','c','i')
 #define _xhci_ hex32('x','h','c','i')
+#define _usb4_ hex32('u','s','b','4')
 //
 #define _dbg_ hex32('d','b','g',0)
 #define _i2c_ hex32('i','2','c',0)
