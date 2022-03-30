@@ -61,7 +61,7 @@ void initpci_port()
 
 		out32(0xcf8, addr+8);
 		type = in32(0xcfc);
-		say("@%08x(%x,%x,%x): idid=%08x, type=%08x\n", addr,bus,dev,fun, idid,type);
+		say("(%x,%x,%x)@%08x: idid=%08x, type=%08x\n",bus,dev,fun, addr, idid,type);
 
 		switch(type >> 16){
 		case 0x0101:
@@ -95,11 +95,14 @@ void initpci_port()
 
 		case 0x0c03:
 			switch((type>>8)&0xff){
-			//case 0x00:uhci_portinit(addr);break;
-			//case 0x10:ohci_portinit(addr);break;
+			case 0x00:
+				say("uhci\n");
+				break;
+			case 0x10:
+				say("ohci\n");
+				break;
 			case 0x20:
-				//ehci_portinit(addr);
-				say("ehci?\n");
+				say("ehci\n");
 				break;
 			case 0x30:
 				xx = device_create(_xhci_, 0, 0, 0);

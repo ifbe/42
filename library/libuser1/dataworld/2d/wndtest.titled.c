@@ -33,7 +33,7 @@ void* wndmgr_find_maxw(_obj* wnd)
 	float max = -1.0;
 	struct style* sty = 0;
 	struct relation* rel = wnd->oreln;
-	struct relation* the = rel;
+	struct relation* tar = rel;
 
 	//find max_w
 	while(1){
@@ -44,7 +44,7 @@ void* wndmgr_find_maxw(_obj* wnd)
 			if(sty){
 				//say("%f\n", sty->fs.vc[3]);
 				if(max < sty->fs.vc[3]){
-					the = rel;
+					tar = rel;
 					max = sty->fs.vc[3];
 				}
 			}
@@ -52,7 +52,7 @@ void* wndmgr_find_maxw(_obj* wnd)
 
 		rel = samesrcprevdst(rel);
 	}
-	return the;
+	return tar;
 }
 void* wndmgr_find_hit(_obj* wnd, int x, int y)
 {
@@ -119,7 +119,7 @@ int wndmgr_rgba_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key
 	//pixel_clearcolor(wnd);
 	int x = wnd->whdf.ix0;
 	int y = wnd->whdf.iy0;
-	struct relation* the = wndmgr_find_maxw(wnd);
+	struct relation* tar = wndmgr_find_maxw(wnd);
 	struct relation* rel = wnd->orel0;
 	while(1){
 		if(0 == rel)break;
@@ -152,7 +152,7 @@ int wndmgr_rgba_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key
 			}
 
 			//title.rect
-			if(the == rel){
+			if(tar == rel){
 				drawopaque_rect((void*)wnd, 0xc0ff0000, tx0,ty0, txn,tyn);
 
 				drawsolid_rect((void*)wnd, 0xffff00, tx0+0,ty0+0, tx0+15+0,tyn+0);
@@ -193,7 +193,7 @@ int wndmgr_rgba_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key
 	//printmemory(buf,16);
 
 	struct relation* hit = 0;
-	struct relation* the = wndmgr_find_maxw(wnd);
+	struct relation* tar = wndmgr_find_maxw(wnd);
 
 	struct event* ev = buf;
 	if(point_type == (ev->what&point_mask)){
@@ -220,46 +220,47 @@ int wndmgr_rgba_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key
 			if(wnd->whdf.iy0 < 0)wnd->whdf.iy0 = 0;
 			if(wnd->whdf.iy0 >= wnd->whdf.height)wnd->whdf.iy0 = wnd->whdf.height-1;
 			break;
-		}
 
-		//other work
-		if(0x2b70 == ev->what){
+		case 0x2b70:
 			say("mouse dn: %d,%d\n",tx,ty);
+
+			//check close
 			hit = wndmgr_find_close(wnd, wnd->whdf.ix0, wnd->whdf.iy0);
-			//say("the=%p,hit=%p\n",the,hit);
+			//say("tar=%p,hit=%p\n",tar,hit);
 			if(hit){
 				struct style* tmp = (void*)(hit->srcfoot);
 				tmp->fs.vr[0] /= 2;
 				tmp->fs.vr[1] /= 2;
 				tmp->fs.vf[0] /= 2;
 				tmp->fs.vf[1] /= 2;
+				return 0;
 			}
-			return 0;
-		}
-		if(0x2d70 == ev->what){
-			say("mouse up: %d,%d\n",tx,ty);
-			return 0;
-		}
-		if(0x4070 == ev->what){
-			hit = wndmgr_find_hit(wnd, wnd->whdf.ix0, wnd->whdf.iy0);
-			//say("the=%p,hit=%p\n",the,hit);
-			if(hit && the && (hit != the)){
-				struct style* hitsty = (void*)(hit->srcfoot);
-				struct style* thesty = (void*)(the->srcfoot);
-				hitsty->fs.vc[3] = thesty->fs.vc[3]+1.0;
-				the = hit;
-			}
-		}
-	}
 
-//say("max=%f,the=%p\n",max,the);
-	if(the){
-		stack[sp+0].pchip = the->psrcchip;
-		stack[sp+0].pfoot = the->psrcfoot;
-		stack[sp+0].foottype = the->srcfoottype;
-		stack[sp+1].pchip = the->pdstchip;
-		stack[sp+1].pfoot = the->pdstfoot;
-		stack[sp+1].foottype = the->dstfoottype;
+			//check choose
+			hit = wndmgr_find_hit(wnd, wnd->whdf.ix0, wnd->whdf.iy0);
+			//say("tar=%p,hit=%p\n",tar,hit);
+			if(hit && tar && (hit != tar)){
+				struct style* hitsty = (void*)(hit->srcfoot);
+				struct style* tarsty = (void*)(tar->srcfoot);
+				hitsty->fs.vc[3] = tarsty->fs.vc[3]+1.0;
+				return 0;
+			}
+			break;
+
+		case 0x2d70:
+			say("mouse up: %d,%d\n",tx,ty);
+			break;
+		}
+	}//mouse event
+
+//say("max=%f,tar=%p\n",max,tar);
+	if(tar){
+		stack[sp+0].pchip = tar->psrcchip;
+		stack[sp+0].pfoot = tar->psrcfoot;
+		stack[sp+0].foottype = tar->srcfoottype;
+		stack[sp+1].pchip = tar->pdstchip;
+		stack[sp+1].pfoot = tar->pdstfoot;
+		stack[sp+1].foottype = tar->dstfoottype;
 		entity_giveby(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, arg,key, buf,len);
 	}
 

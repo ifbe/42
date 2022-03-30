@@ -209,17 +209,26 @@ int acpi_cmosrtc()
 }
 
 
-static u64 knowncores = 0;
+static u64 knowncores[4] = {0};
 u64 acpi_getknowncores()
 {
-	return knowncores;
+	return knowncores[0];
 }
 
 
-static void* pcieaddr = 0;
-void* acpi_getpcieaddr()
+static void* pcietable_addr = 0;
+int pcietable_size = 0;
+int acpi_getpcie(void** addr, int* size)
 {
-	return pcieaddr;
+	if(0 == pcietable_addr)return 0;
+	if(0 == pcietable_size)return 0;
+	if(addr){
+		*addr = pcietable_addr;
+	}
+	if(size){
+		*size = pcietable_size;
+	}
+	return 1;
 }
 
 
@@ -318,29 +327,29 @@ void acpi_MADT(void* p)
 		switch(madt->entry[j]){
 		case 0:
 			t0 = (void*)(madt->entry+j);
-			say("%x: cpu=%x,apic=%x,flag=%x\n", j, t0->cpuID,t0->apicID,t0->flag);
-			if(0 != (t0->flag&3))knowncores |= 1<<(t0->apicID);
+			say("%x-type0: cpu=%x,apic=%x,flag=%x\n", j, t0->cpuID,t0->apicID,t0->flag);
+			if(0 != (t0->flag&3))knowncores[t0->apicID>>6] |= 1<<(t0->apicID&0x3f);
 			break;
 		case 1:
 			t1 = (void*)(madt->entry+j);
-			say("%x: ioapicid=%x,ioapicaddr=%x,gsib=%x\n", j, t1->ioapicID,t1->ioapicaddr,t1->GlobalSystemInterruptBase);
+			say("%x-type1: ioapicid=%x,ioapicaddr=%x,gsib=%x\n", j, t1->ioapicID,t1->ioapicaddr,t1->GlobalSystemInterruptBase);
 			if(0 == t1->GlobalSystemInterruptBase)addr_irqioaddr = (void*)(u64)(t1->ioapicaddr);
 			break;
 		case 2:
 			t2 = (void*)(madt->entry+j);
-			say("%x: bus=%x,irq=%x,gsi=%x,flag=%x\n", j, t2->bus,t2->irq,t2->GlobalSystemInterrupt,t2->flag);
+			say("%x-type2: bus=%x,irq=%x,gsi=%x,flag=%x\n", j, t2->bus,t2->irq,t2->GlobalSystemInterrupt,t2->flag);
 			if(t2->irq < 16)isa2gsi[t2->irq] = t2->GlobalSystemInterrupt;
 			break;
 		case 4:
 			t4 = (void*)(madt->entry+j);
-			say("%x: cpu=%x,flag=%x,LINT=%x\n", j, t4->cpuID,t4->flag,t4->LINT);
+			say("%x-type4: cpu=%x,flag=%x,LINT=%x\n", j, t4->cpuID,t4->flag,t4->LINT);
 			break;
 		case 5:
 			t5 = (void*)(madt->entry+j);
-			say("%x: localapic=%llx\n", j, t5->apicaddr);
+			say("%x-type5: localapic=%llx\n", j, t5->apicaddr);
 			break;
 		default:
-			say("%x: type=%x,len=%x\n", j, madt->entry[j], madt->entry[j+1]);
+			say("%x-type%x,len=%x\n", j, madt->entry[j], madt->entry[j+1]);
 		}
 		if(0 == madt->entry[j+1])break;
 
@@ -352,11 +361,15 @@ void acpi_MCFG(void* p)
 {
 	int j;
 	struct MCFG_CONFSPACE* c = p+0x2c;
-	for(j=0;j<1;j++){
-		say("%02x: basebase=%llx,group=%x,start=%x,end=%x\n", j,
-		c[j].BaseAddr, c[j].GroupNum, c[j].BusNum_start, c[j].BusNum_end);
+	int len = *(u32*)(p+4);
+	int sz = (len-0x2c) / 16;
 
-		pcieaddr = (void*)c[j].BaseAddr;
+	pcietable_addr = c;
+	pcietable_size = sz;
+
+	for(j=0;j<sz;j++){
+		say("%02x: base=%llx,group=%x,start=%x,end=%x\n", j,
+		c[j].BaseAddr, c[j].GroupNum, c[j].BusNum_start, c[j].BusNum_end);
 	}
 }
 void acpitable(void* p)

@@ -248,7 +248,7 @@ void ioapic_enableirq(u32 irq)
 	//redirect table
 	u8* redirtbl = acpi_getredirtbl();
 	u8 gsi = redirtbl[irq];
-	say("redirtbl: isa %d -> gsi %d\n", irq, gsi);
+	say("@enableirq: isa %d -> gsi %d\n", irq, gsi);
 
 	int off = 0x10 + gsi*2;
 	u32 lo32 = ioapic_read(off);
