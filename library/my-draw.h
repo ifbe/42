@@ -30,6 +30,7 @@ void drawfloat(         _obj* ctx, u32 rgb, int cx, int cy, float z);
 void drawdouble(        _obj* ctx, u32 rgb, int cx, int cy, double z);
 void drawhex8(          _obj* ctx, u32 rgb, int cx, int cy, u8 data);
 void drawhex32(         _obj* ctx, u32 rgb, int cx, int cy, u32 data);
+void drawhexdump(       _obj* ctx, u32 rgb, int cx, int cy, u8* buf, int len);
 void drawhexadecimal(   _obj* ctx, u32 rgb, int cx, int cy, u64 data);
 void drawdec8(          _obj* ctx, u32 rgb, int cx, int cy, u8 data);
 void drawdecimal(       _obj* ctx, u32 rgb, int cx, int cy, int data);

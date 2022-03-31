@@ -152,6 +152,7 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 			int y = ev.button.y;
 			msg.why = x+(y<<16)+((u64)'l'<<48);
 			msg.what = 0x4070;
+			msg.when = timeread_us();
 			rgbanode_give(wnd,0, stack,sp, 0,0, &msg,0);
 		}
 	}

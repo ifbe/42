@@ -251,6 +251,16 @@ void drawhex32(_obj* win, u32 rgb, int x, int y, u32 ch)
 	drawhex8(win, rgb, x+32, y, (ch>>16)&0xff);
 	drawhex8(win, rgb, x+48, y, (ch>>24)&0xff);
 }
+void drawhexdump(_obj* win, u32 rgb, int x, int y, u8* buf, int len)
+{
+	if(0 == buf)return;
+	if(0x100 < len)len = 0x100;
+
+	int j;
+	for(j=0;j<len;j++){
+		drawhex8(win, rgb, x+j*16, y, buf[j]);
+	}
+}
 void drawhexadecimal(_obj* win, u32 rgb, int x, int y, u64 hex)
 {
 	char ch;

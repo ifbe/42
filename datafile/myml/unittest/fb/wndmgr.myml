@@ -1,0 +1,39 @@
+<entity>
+wndmgr{
+fmt:wndmgr
+}
+2048{
+fmt:2048
+}
+xxxx{
+fmt:2048
+}
+</entity>
+
+
+<supply>
+wnd{
+fmt:wnd
+}
+</supply>
+
+
+<style>
+g0{
+c:128,256,0
+r:128,0,0
+f:0,128,0
+}
+g1{
+c:512,256,0
+r:128,0,0
+f:0,128,0
+}
+</style>
+
+
+<relation>
+(wnd, 0, 0) -> (wndmgr, 0, 0)
+(wndmgr, g0, 0) -> (2048, 0, 0)
+(wndmgr, g1, 0) -> (xxxx, 0, 0)
+</relation>

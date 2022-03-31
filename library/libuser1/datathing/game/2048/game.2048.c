@@ -427,20 +427,24 @@ static void the2048_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, void* a
 		break;
 	}
 }
-static void the2048_wrl_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void the2048_wrl_wnd(_obj* ent,void* slot, _obj* mgr,struct style* geom, _syn* stack,int sp)
 {
-	_obj* mgr;struct style* geom;
 	_obj* wnd;struct style* area;
-	mgr = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-4].pchip;area = stack[sp-4].pfoot;
 
 	int j;
 	struct fstyle fs;
-	for(j=0;j<3;j++)fs.vc[j] = fs.vr[j] = fs.vf[j] = fs.vt[j] = 0.0;
-	fs.vr[0] = area->fs.vq[0] * wnd->whdf.fbwidth / 4.0;
-	fs.vf[1] = area->fs.vq[1] * wnd->whdf.fbheight/ 4.0;
-	fs.vt[2] = 1.0;
-	the2048_draw_gl41(ent,slot, mgr,(void*)&fs, wnd,area);
+	switch(wnd->hfmt){
+	case _rgba_:
+		the2048_draw_pixel(ent,slot, wnd,geom);
+		break;
+	default:
+		for(j=0;j<3;j++)fs.vc[j] = fs.vr[j] = fs.vf[j] = fs.vt[j] = 0.0;
+		fs.vr[0] = area->fs.vq[0] * wnd->whdf.fbwidth / 4.0;
+		fs.vf[1] = area->fs.vq[1] * wnd->whdf.fbheight/ 4.0;
+		fs.vt[2] = 1.0;
+		the2048_draw_gl41(ent,slot, mgr,(void*)&fs, wnd,area);
+	}
 }
 
 
@@ -475,7 +479,7 @@ static void the2048_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 		break;
 	case _corner_:
 	case _wndmgr_:
-		the2048_wrl_wnd(ent,slot, stack,sp);
+		the2048_wrl_wnd(ent,slot, caller,area, stack,sp);
 		break;
 	default:
 		the2048_read_bycam(ent,slot, stack,sp, arg,key);

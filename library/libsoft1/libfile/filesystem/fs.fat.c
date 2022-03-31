@@ -338,7 +338,7 @@ int fat_buildcache(_obj* art)
 	per->cache_count = 0x10000;
 	return take_data_from_peer(art,_src_, 0,0, "",per->sec_of_fat0 * per->byte_per_sec, per->fatbuffer,0x40000);
 }
-int fat_checkname(char* name, u8* fatname)
+int fat_checkname(u8* name, u8* fatname)
 {
 	int j;
 	u8 a,b;
@@ -356,7 +356,7 @@ int fat_checkname(char* name, u8* fatname)
 	}
 	return 0;
 }
-u32 fat_searchfolder(u8* ptr, char* name)
+u32 fat_searchfolder(u8* ptr, u8* name)
 {
 	int j,k;
 	struct folder* dir;
@@ -379,7 +379,7 @@ u32 fat_searchfolder(u8* ptr, char* name)
 	}
 	return 0;
 }
-int fat_cd(_obj* art, char* name)
+int fat_cd(_obj* art, u8* name)
 {
 	struct perfs* per = art->priv_ptr;
 	if(0 == per)return 0;
@@ -411,7 +411,7 @@ int fat_cd(_obj* art, char* name)
 
 	return 0;
 }
-u32 fat_name2clus(_obj* art, char* name)
+u32 fat_name2clus(_obj* art, u8* name)
 {
 	u32 ret = 0;
 	int j,k=0,depth=0;

@@ -4,6 +4,18 @@
 int gl41cmdq_clear(void*);
 
 
+struct permgr{
+	//normal
+	void* mouse;
+	void* chosen;
+
+	//special node
+	void* ball;
+	void* edge;
+
+	//event debug
+	void* evdbg;
+};
 
 
 int wndmgr_mouseat_title(int x,int y, int x0,int y0, int xn,int yn)
@@ -112,15 +124,17 @@ void* wndmgr_find_close(_obj* wnd, int x, int y)
 
 
 
-int wndmgr_rgba_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int wndmgr_rgba_take(_obj* mgr,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	u64 old = timeread_us();
-
+	_obj* wnd = mgr;
+	if(_rgba_ != mgr->hfmt)wnd = stack[sp-2].pchip;
+	if(_rgba_ != wnd->hfmt)return 0;
 	//pixel_clearcolor(wnd);
-	int x = wnd->whdf.ix0;
-	int y = wnd->whdf.iy0;
-	struct relation* tar = wndmgr_find_maxw(wnd);
-	struct relation* rel = wnd->orel0;
+
+	int mx = mgr->whdf.ix0;
+	int my = mgr->whdf.iy0;
+	struct relation* tar = wndmgr_find_maxw(mgr);
+	struct relation* rel = mgr->orel0;
 	while(1){
 		if(0 == rel)break;
 
@@ -145,8 +159,8 @@ int wndmgr_rgba_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key
 
 			//border
 			if(
-				wndmgr_mouseat_border(x,y, x0,y0, xn,yn) |
-				wndmgr_mouseat_title(x,y, tx0,ty0, txn,tyn)
+				wndmgr_mouseat_border(mx,my, x0,y0, xn,yn) |
+				wndmgr_mouseat_title(mx,my, tx0,ty0, txn,tyn)
 			){
 				drawline_choose((void*)wnd,0xffff00, x0,y0,xn,yn);
 			}
@@ -173,6 +187,13 @@ next:
 		rel = samesrcnextdst(rel);
 	}
 
+	//previous event
+	struct permgr* pw = (void*)mgr->priv_256b;
+	if(pw->evdbg){
+		drawsolid_rect((void*)wnd, 0, wnd->whdf.width/4, wnd->whdf.height-32, wnd->whdf.width*3/4, wnd->whdf.height-16);
+		drawhexdump(wnd, 0xff00ff, wnd->whdf.width/4, wnd->whdf.height-32, pw->evdbg, 16);
+	}
+
 	//button and time
 	int qx = wnd->whdf.width-64;
 	int qy = wnd->whdf.height-64;
@@ -183,19 +204,26 @@ next:
 	drawdecimal((void*)wnd, 0xff00ff, qx-32, qy+00, wnd->LASTCOPYTIME);
 
 	//mouse
-	drawline((void*)wnd, 0xffff00, x-16, y, x+16, y);
-	drawline((void*)wnd, 0xffff00, x, y-16, x, y+16);
+	drawline((void*)wnd, 0xffff00, mx-16, my, mx+16, my);
+	drawline((void*)wnd, 0xffff00, mx, my-16, mx, my+16);
 	return 0;
 }
-int wndmgr_rgba_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int wndmgr_rgba_give(_obj* mgr,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//say("@rgbanode_write:%p,%x\n", wnd,foot);
+	//say("@rgbanode_write:%p,%x\n", mgr,foot);
 	//printmemory(buf,16);
 
-	struct relation* hit = 0;
-	struct relation* tar = wndmgr_find_maxw(wnd);
+	_obj* wnd = mgr;
+	if(_rgba_ != mgr->hfmt)wnd = stack[sp-2].pchip;
+	if(_rgba_ != wnd->hfmt)return 0;
 
 	struct event* ev = buf;
+	struct permgr* pw = (void*)mgr->priv_256b;
+	pw->evdbg = ev;
+
+	struct relation* hit = 0;
+	struct relation* tar = wndmgr_find_maxw(mgr);
+
 	if(point_type == (ev->what&point_mask)){
 		short* pp = (short*)ev;
 		int tx = pp[0];
@@ -204,28 +232,28 @@ int wndmgr_rgba_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key
 		//mouse position
 		switch(ev->what){
 		case point_abs:
-			wnd->whdf.ix0 = tx;
-			wnd->whdf.iy0 = ty;
+			mgr->whdf.ix0 = tx;
+			mgr->whdf.iy0 = ty;
 			break;
 		case point_per:
-			wnd->whdf.ix0 = (wnd->whdf.width * tx)>>15;
-			wnd->whdf.iy0 = (wnd->whdf.height * ty)>>15;
+			mgr->whdf.ix0 = (wnd->whdf.width * tx)>>15;
+			mgr->whdf.iy0 = (wnd->whdf.height * ty)>>15;
 			break;
 		case point_dlt:
-			wnd->whdf.ix0 += tx;
-			if(wnd->whdf.ix0 < 0)wnd->whdf.ix0 = 0;
-			if(wnd->whdf.ix0 >= wnd->whdf.width)wnd->whdf.ix0 = wnd->whdf.width-1;
+			mgr->whdf.ix0 += tx;
+			if(mgr->whdf.ix0 < 0)mgr->whdf.ix0 = 0;
+			if(mgr->whdf.ix0 >= wnd->whdf.width)mgr->whdf.ix0 = wnd->whdf.width-1;
 
-			wnd->whdf.iy0 += ty;
-			if(wnd->whdf.iy0 < 0)wnd->whdf.iy0 = 0;
-			if(wnd->whdf.iy0 >= wnd->whdf.height)wnd->whdf.iy0 = wnd->whdf.height-1;
+			mgr->whdf.iy0 += ty;
+			if(mgr->whdf.iy0 < 0)mgr->whdf.iy0 = 0;
+			if(mgr->whdf.iy0 >= mgr->whdf.height)mgr->whdf.iy0 = wnd->whdf.height-1;
 			break;
 
 		case 0x2b70:
 			say("mouse dn: %d,%d\n",tx,ty);
 
 			//check close
-			hit = wndmgr_find_close(wnd, wnd->whdf.ix0, wnd->whdf.iy0);
+			hit = wndmgr_find_close(mgr, mgr->whdf.ix0, mgr->whdf.iy0);
 			//say("tar=%p,hit=%p\n",tar,hit);
 			if(hit){
 				struct style* tmp = (void*)(hit->srcfoot);
@@ -237,7 +265,7 @@ int wndmgr_rgba_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key
 			}
 
 			//check choose
-			hit = wndmgr_find_hit(wnd, wnd->whdf.ix0, wnd->whdf.iy0);
+			hit = wndmgr_find_hit(mgr, mgr->whdf.ix0, mgr->whdf.iy0);
 			//say("tar=%p,hit=%p\n",tar,hit);
 			if(hit && tar && (hit != tar)){
 				struct style* hitsty = (void*)(hit->srcfoot);
@@ -264,8 +292,8 @@ int wndmgr_rgba_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key
 		entity_giveby(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, arg,key, buf,len);
 	}
 
-	int x = wnd->whdf.ix0;
-	int y = wnd->whdf.iy0;
+	int x = mgr->whdf.ix0;
+	int y = mgr->whdf.iy0;
 	drawline((void*)wnd, 0xffff00, x-16, y, x+16, y);
 	drawline((void*)wnd, 0xffff00, x, y-16, x, y+16);
 	return 0;
@@ -282,11 +310,13 @@ int wndmgr_gl41cmdq_take(_obj* mgr,void* foot, _obj* wnd,void* sty)
 
 int wndmgr_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	//both window and manager
 	if(_rgba_ == wnd->hfmt){
 		wndmgr_rgba_take(wnd,foot, stack,sp, arg,key, buf,len);
 		return 0;
 	}
 
+	//manager called by window
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
@@ -306,14 +336,28 @@ int wndmgr_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, voi
 {
 	return wndmgr_rgba_give(wnd,foot, stack,sp, arg,key, buf,len);
 }
+int wndmgr_attach(_obj* wnd,void* foot)
+{
+	return 0;
+}
+int wndmgr_detach(_obj* wnd,void* foot)
+{
+	return 0;
+}
 
 
 
 
 
-void wndmgr_delete(_obj* act, u8* buf)
+void wndmgr_reader(_obj* act, u8* xxx, void* arg,int key, void* buf,int len)
 {
 }
-void wndmgr_create(_obj* act, u8* buf)
+void wndmgr_writer(_obj* act, u8* xxx, void* arg,int key, void* buf,int len)
+{
+}
+void wndmgr_delete(_obj* act, u8* xxx)
+{
+}
+void wndmgr_create(_obj* act, u8* xxx)
 {
 }
