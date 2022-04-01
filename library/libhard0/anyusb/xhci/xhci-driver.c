@@ -399,11 +399,11 @@ struct perdev{
 struct perendp{
 	u32 eptype;
 	u32 packetsize;
-	u32 cycle;
-	u32 rsvd;
 	u32 myenq;
 	u32 hcdeq;
-	u64 contractor;
+
+	u64 cbnode;
+	u64 cbslot;
 }__attribute__((packed));
 struct myctx{
 	//[000,7ff]: hc can write, me read only
@@ -691,7 +691,8 @@ int xhci_parseevent(struct item* xhci, u32* ev)
 	struct perxhci* xhcidata;
 	struct perslot* slotdata;
 	struct perendp* endpdata;
-	struct item* usb;
+	struct item* cbnode;
+	u64 cbslot;
 	switch(type){
 	case TRB_event_Transfer: 	 			//32
 		endp = (ev[3]>>16)&0x1f;
@@ -700,10 +701,11 @@ int xhci_parseevent(struct item* xhci, u32* ev)
 		xhcidata = (void*)(xhci->priv_256b);
 		slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
 		endpdata = &slotdata->myctx.epnctx[endp];
-		usb = (void*)endpdata->contractor;
-		if(usb){
-			if(usb->ongiving){
-				usb->ongiving(usb,0, xhci,endp, *(u8**)ev,0, 0,0);
+		cbnode = (void*)endpdata->cbnode;
+		cbslot = endpdata->cbslot;
+		if(cbnode){
+			if(cbnode->ongiving){
+				cbnode->ongiving(cbnode,cbslot, xhci,endp, *(u8**)ev,0, 0,0);
 				break;
 			}
 		}
@@ -842,7 +844,9 @@ int xhci_NoOp(struct item* xhci)
 
 	xhci_hostorder(xhci,0, 0,0,0,(TRB_command_NoOp<<10));
 	int ret = xhci_waitevent(xhci, 5*1000*1000, TRB_event_CommandCompletion, 0);
+
 	xhci_print("}NoOp\n");
+	return 0;
 }
 int xhci_EnableSlot(struct item* xhci)
 {
@@ -962,7 +966,6 @@ int xhci_AddressDevice(struct item* xhci, int slot)
 
 	slotdata->myctx.epnctx[EP0DCI].eptype = EPType_ControlBidir;
 	slotdata->myctx.epnctx[EP0DCI].packetsize = packetsize;
-	slotdata->myctx.epnctx[EP0DCI].cycle = 1;
 	slotdata->myctx.epnctx[EP0DCI].myenq = 0;
 	slotdata->myctx.epnctx[EP0DCI].hcdeq = 0;
 
@@ -1194,7 +1197,6 @@ int xhci_ConfigureEndpoint(struct item* xhci, int slot, struct EndpointDescripto
 
 	slotdata->myctx.epnctx[DCI].eptype = eptype;
 	slotdata->myctx.epnctx[DCI].packetsize = packetsize;
-	slotdata->myctx.epnctx[DCI].cycle = 1;
 	slotdata->myctx.epnctx[DCI].myenq = 0;
 	slotdata->myctx.epnctx[DCI].hcdeq = 0;
 /*	if(2 != slotstate){
@@ -1306,7 +1308,9 @@ int xhci_InterruptTransferIn(struct item* xhci, int slotendp, void* sendbuf, int
 	void* cmdenq = slotdata->cmdring[DCI] + endpdata->myenq;
 	endpdata->myenq += maketrb_interruptin(cmdenq, 0, sendbuf, sendlen);
 	if(endpdata->myenq >= 0x1000)endpdata->myenq = 0;
-	endpdata->contractor = (u64)recvbuf;
+
+	endpdata->cbnode = (u64)recvbuf;
+	endpdata->cbslot = (u64)recvlen;
 
 	//
 	xhci_giveorder(xhci, slot | (DCI<<8));

@@ -63,4 +63,5 @@ int usb4hia_portinit(struct item* dev, u32 addr)
 	//usb4hia mmio
 	u8* mmio = (u8*)((temp&0xfffffff0) | (high<<32));
     printmmio(mmio, 0x40);
+	return 0;
 }

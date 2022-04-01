@@ -5,8 +5,6 @@
 //0=2g, 1=4g, 2=8g, 3=16g
 #define acc_cfg 0
 #define acc_max 2*9.8
-//
-int sleep_us();
 
 
 

@@ -347,7 +347,14 @@ static int usbstor_ontake(struct item* usb,void* foot,struct halfrel* stack,int 
 		if('i' == arg[0])return usbstor_readinfo(usb,foot, stack,sp, arg,off, buf,len);
 	}
 
-takedata:
+	if(0 == buf){
+		say("error: buf=0\n");
+		return 0;
+	}
+	if(0 == len){
+		say("error: len=0\n");
+		return 0;
+	}
 	return usbstor_readdata(usb,foot, stack,sp, arg,off, buf,len);
 }
 static int usbstor_ongive(struct item* usb,void* foot,struct halfrel* stack,int sp, u8* arg,int off, void* buf,int len)

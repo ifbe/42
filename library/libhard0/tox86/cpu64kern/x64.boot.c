@@ -51,7 +51,6 @@ void localapic_sendinit(u32 apic_id);
 void localapic_sendstart(u32 apic_id, u32 vector);
 //
 void apictimer_init();
-void sleep_us();
 //
 void* get_trampoline16_start();
 void* get_trampoline16_end();

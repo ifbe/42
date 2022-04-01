@@ -2,7 +2,6 @@
 #define Gscale 3
 #define Ascale 0
 #define Mscale 0
-void sleep_us(int);
 
 
 

@@ -1,5 +1,4 @@
 #include "libhard.h"
-int acpi_getpcie(void** addr, int* size);
 
 
 
@@ -11,6 +10,7 @@ struct MCFG_CONFSPACE{
 	u8   BusNum_end;	//b
 	u32        Rsvd;	//[c,f]
 }__attribute__((packed));
+int acpi_getpcie(struct MCFG_CONFSPACE** addr, int* size);
 
 
 
