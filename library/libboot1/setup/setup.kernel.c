@@ -163,7 +163,7 @@ static int kernel_failloop(struct item* wrk)
 	struct halfrel stack[0x80];
 	stack[0].pchip = wrk;
 	stack[1].pchip = wnd;
-	say("failloop: badthing happened\n");
+	say("failloop: (one core,poll mode)\n");
 
 	//loop
 	struct event* ev;
