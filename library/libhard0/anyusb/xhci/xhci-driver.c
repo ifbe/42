@@ -1440,14 +1440,14 @@ void xhci_listall(struct item* xhci, int count)
 	struct PortRegisters* port = optreg->port;
 	for(j=0;j<count;j++){
 		tmp = port[j].PORTSC;
-		xhci_print("listport: %02x@%p:psi=%x,portsc=%x{\n", j, &port[j], pp[j].protocol, tmp);
-		if(0 == (tmp & 0x1))continue;
+		xhci_print("xhciport: %02x@%p:psi=%x,portsc=%x{\n", j, &port[j], pp[j].protocol, tmp);
+		if(0 == (tmp & 0x1))goto thisdone;
 
 		//if(0 == PORTSC.bit1)ver <= 2.0, have to reset
 		if(0 == (tmp & 0x2)){
 			if(resetport(xhci, j) <= 0){
 				xhci_print("reset failed: portsc=%x\n", port[j].PORTSC);
-				continue;
+				goto thisdone;
 			}
 		}
 		//todo:检查错误
@@ -1473,7 +1473,7 @@ void xhci_listall(struct item* xhci, int count)
 
 		//alloc slot
 		int slot = xhci_EnableSlot(xhci);
-		if(slot <= 0 | slot >= 16)continue;
+		if(slot <= 0 | slot >= 16)goto thisdone;
 
 		struct perxhci* xhcidata = (void*)(xhci->priv_256b);
 		struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
@@ -1485,7 +1485,8 @@ void xhci_listall(struct item* xhci, int count)
 		struct item* usb = device_create(_usb_, 0, 0, 0);
 		if(usb)usbany_linkup(usb, 0, xhci, slot);
 
-		xhci_print("}listport: %02x@%p\n", j, &port[j]);
+thisdone:
+		xhci_print("}#xhciport: %02x@%p\n", j, &port[j]);
 	}
 }
 

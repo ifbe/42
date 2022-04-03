@@ -1,0 +1,21 @@
+<artery>
+dbghex{
+fmt:dbghex
+}
+</artery>
+
+
+<supply>
+usbcam{
+fmt:cam
+format:BG10
+width:1920
+height:1080
+url:/dev/video0
+}
+</supply>
+
+
+<relation>
+(usbcam, 0, dst) -> (dbghex, 0, src)
+</relation>

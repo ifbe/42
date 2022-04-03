@@ -229,6 +229,7 @@ struct appleaudioqueue{
 //text
 struct tuitext{
 	void* buf;
+	void* conv;
 };
 //html
 struct htmltext{

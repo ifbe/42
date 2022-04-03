@@ -52,7 +52,7 @@ static void attr(u8 bg, u8 fg)
 	if(fg >= 8)str[2] = '1';
 	str[5] = '0' + (bg&7);
 	str[8] = '0' + (fg&7);
-	printf("%s",str);
+	printf("%.16s",str);
 }
 void windowdraw(_obj* wnd)
 {
@@ -60,18 +60,27 @@ void windowdraw(_obj* wnd)
 	u8 ch,bg=0,fg=0;
 	u8* p;
 	u8* buf;
-	printf("\033[H\033[J");
-/*
-	printf("%s",wnd->tuitext.buf);
-	fflush(stdout);
-*/
+
 	w = wnd->whdf.width;
 	h = wnd->whdf.height;
 	buf = wnd->tuitext.buf;
-	for(y=0;y<h;y++)
-	{
-		for(x=0;x<w;x++)
-		{
+	p   = wnd->tuitext.conv;
+/*
+	write(1, "\033[H\033[J", 6);
+	for(y=0;y<h;y++){
+		for(x=0;x<w;x++){
+			ch = buf[(w*y + x)<<2];
+			if( (ch<0x20) | (ch>0x7e) )ch = 0x20;
+			p[w*y+x] = ch;
+		}
+	}
+	write(1, p, w*y);
+	write(1, "\033[0m", 4);
+	return;
+*/
+	printf("\033[H\033[J");
+	for(y=0;y<h;y++){
+		for(x=0;x<w;x++){
 			p = buf + ((w*y + x)<<2);
 			if(p[0] > 0x80)
 			{
@@ -84,7 +93,7 @@ void windowdraw(_obj* wnd)
 				}
 
 				//这是汉字
-				printf("%s",p);
+				printf("%.6s",p);
 				x++;
 			}
 			else
@@ -104,6 +113,7 @@ void windowdraw(_obj* wnd)
 			}
 		}
 	}
+
 	printf("\033[0m");
 }
 
@@ -123,7 +133,7 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 	//update screen
 	windowdraw(wnd);
 
-	usleep(100*1000);
+	usleep(20*1000);
 }
 void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
@@ -159,6 +169,7 @@ void windowcreate(_obj* w)
 	//w->fbheight= 25*16;
 
 	w->tuitext.buf = malloc(0x100000);
+	w->tuitext.conv= malloc(0x100000);
 	//threadcreate(textuithread, w);
 }
 
