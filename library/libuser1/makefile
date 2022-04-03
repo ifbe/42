@@ -327,16 +327,6 @@ datathing/virtimag/sky/sky.box.c \
 datathing/virtimag/sky/sky.dome.c \
 datathing/virtimag/sky/sky.equiangu.c \
 datathing/virtimag/sky/sky.equirect.c \
-datathing/virtimag/test/test.palette.c \
-datathing/virtimag/test/test.codeimg.c \
-datathing/virtimag/test/test.example.c \
-datathing/virtimag/test/test.font.c \
-datathing/virtimag/test/test.fractal.c \
-datathing/virtimag/test/test.doodle.c \
-datathing/virtimag/test/test.c \
-datathing/virtimag/test/test.calib3d.c \
-datathing/virtimag/term/tool.terminal.c \
-datathing/virtimag/term/tool.terminal.helper.c \
 datathing/virtimag/tool/tool.calculator.c \
 datathing/virtimag/tool/tool.browser.c \
 datathing/virtimag/tool/menu.detail.c \
@@ -350,13 +340,6 @@ datathing/virtimag/tool/uiux.video.c \
 datathing/virtimag/tool/menu.overview.c \
 datathing/virtimag/tool/tool.wireshark.c \
 datathing/virtimag/tool/uiux.oscillo.c \
-datathing/virtimag/vmhw/ram/vmhw.sram.c \
-datathing/virtimag/vmhw/ram/vmhw.dram.c \
-datathing/virtimag/vmhw/cpu/vmhw.cpu.x8664.c \
-datathing/virtimag/vmhw/cpu/vmhw.cpu.arm64.c \
-datathing/virtimag/vmhw/rpi/vmhw.rpi.uart.c \
-datathing/virtimag/vmhw/rpi/vmhw.rpi.gpio.c \
-datathing/virtimag/vmhw/vmhw.gpu.c \
 datathing/virtimag/item.tardis.c \
 datathing/virtimag/item.mario.c \
 datathing/thing.c \
@@ -383,6 +366,25 @@ dataworld/neural/nn.rnn.c \
 dataworld/uispace/ui.html.c \
 dataworld/uispace/ui.xaml.c \
 dataworld/world.c \
+testthing/example/test.palette.c \
+testthing/example/test.codeimg.c \
+testthing/example/test.example.c \
+testthing/example/test.font.c \
+testthing/example/test.fractal.c \
+testthing/example/test.doodle.c \
+testthing/example/test.calib3d.c \
+testthing/example/test.c \
+testthing/term/tool.terminal.c \
+testthing/term/tool.terminal.helper.c \
+testworld/testworld.c \
+vmhwthing/ram/vmhw.sram.c \
+vmhwthing/ram/vmhw.dram.c \
+vmhwthing/cpu/vmhw.cpu.x8664.c \
+vmhwthing/cpu/vmhw.cpu.arm64.c \
+vmhwthing/rpi/vmhw.rpi.uart.c \
+vmhwthing/rpi/vmhw.rpi.gpio.c \
+vmhwthing/gpu/vmhw.gpu.c \
+vmhwworld/vmhwworld.c \
 entity.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 
