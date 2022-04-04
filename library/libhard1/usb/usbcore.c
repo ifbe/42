@@ -1,10 +1,11 @@
 #include "libhard.h"
 #include "drv-usb.h"
 //device driver
+int usbvmware_driver(struct item* usb, int xxx, struct item* xhci, int slot);
 int usbdualshock_driver(struct item* usb, int xxx, struct item* xhci, int slot);
 int usbxbox_driver(struct item* usb, int xxx, struct item* xhci, int slot);
-int usbvmware_driver(struct item* usb, int xxx, struct item* xhci, int slot);
 //interface driver
+int usbhub_driver(struct item* usb, int xxx, struct item* xhci, int slot, void*, void*);
 int usbhid_driver(struct item* usb, int xxx, struct item* xhci, int slot, void*, void*);
 int usbstor_driver(struct item* usb, int xxx, struct item* xhci, int slot, void*, void*);
 int usbuvc_driver(struct item* usb, int xxx, struct item* xhci, int slot, void*, void*);
@@ -702,7 +703,8 @@ int usbany_FirstConfig(struct item* usb, int xxx, struct item* xhci, int slot)
 			usbstor_driver(usb,xxx, xhci,slot, intfnode, intfdesc);
 			break;
 		case class_hub:
-			say("[usbcore]usb hub\n");
+			//say("[usbcore]usb hub\n");
+			usbhub_driver(usb,xxx, xhci,slot, intfnode, intfdesc);
 			break;
 		}
 		return 0;

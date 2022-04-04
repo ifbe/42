@@ -62,5 +62,5 @@ exe:
 	-framework AVFoundation -framework Foundation -framework CoreVideo -framework CoreMedia \
 	-lm -framework AudioToolbox
 clean:
+	rm -f */*.o
 	rm -f *.exe *.out *.o *.a *.dylib
-	make -C $(library) clean

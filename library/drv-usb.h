@@ -218,6 +218,28 @@ struct CS_ENDPOINT{
 	u8    bDescriptorType;		//1: 0x25, for audio?
 }__attribute__((packed));
 
+struct hubcharacter{
+	u16 LogPwrSwitchMode : 2;
+	u16 CompoundDevice : 1;
+	u16 OverCurrentProtectMode : 2;
+	u16 TTThinkTime : 2;
+	u16 PortIndicatorsSupported : 1;
+	u16 Reserved : 8;
+}__attribute__((packed));
+struct HubDescriptor{
+	u8          bDescLength;
+	u8      bDescriptorType;	//1: 0x29
+	u8            bNbrPorts;
+
+	union{
+		u16 wHubCharacteristics;
+		struct hubcharacter character;
+	};
+
+	u8       bPwrOn2PwrGood;
+	u8     bHubContrCurrent;
+}__attribute__((packed));
+
 
 
 

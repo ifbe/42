@@ -88,7 +88,11 @@ void windowdraw(_obj* wnd)
 				}
 
 				//这是汉字
-				printf("%s",p);
+				//printf("%s",p);
+				while(p[0]>0x80){
+					write(1, p, 1);
+					p++;
+				}
 				x++;
 			}
 			else
