@@ -65,4 +65,5 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	say("  PortIndicatorsSupported=%x\n", hubdesc->character.PortIndicatorsSupported);
 	say("bPwrOn2PwrGood=%x\n",      hubdesc->bPwrOn2PwrGood);
 	say("bHubContrCurrent=%x\n",    hubdesc->bHubContrCurrent);
+	return 0;
 }

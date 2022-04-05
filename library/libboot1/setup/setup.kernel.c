@@ -92,8 +92,8 @@ static int kernel_pollloop(struct item* wrk)
 	stack[1].pchip = wnd;
 	say("pollloop: stack@%p,window@%p\n", stack, wnd);
 
-	t0 = timeread_us();
 	while(1){
+		t0 = timeread_us();
 		heartbeat_poll = t0+1;
 
 		for(j=0;j<10;j++){
@@ -114,9 +114,12 @@ static int kernel_pollloop(struct item* wrk)
 			supply_giveby(wnd,0, stack,2, 0,0, ev,0);
 		}
 
-		t1 = timeread_us();
-		//say("dt=%d\n",t1-t0);
-		t0 = t1;
+		//60fps
+		while(1){
+			t1 = timeread_us();
+			if(t0+16000 < t1)break;
+			haltwaitforint();
+		}
 	}
 	return 0;
 }
@@ -132,8 +135,8 @@ static int kernel_drawloop(struct item* wrk)
 	say("drawloop: stack@%p,window@%p\n", stack, wnd);
 
 	//loop
-	t0 = timeread_us();
 	while(1){
+		t0 = timeread_us();
 		heartbeat_draw = t0+1;
 
 		if(stack[0].pchip != wrk){
@@ -144,9 +147,12 @@ static int kernel_drawloop(struct item* wrk)
 		//draw frame
 		supply_takeby(wnd,0, stack,2, 0,0, 0,0);
 
-		t1 = timeread_us();
-		//say("dt=%d\n",t1-t0);
-		t0 = t1;
+		//60fps
+		while(1){
+			t1 = timeread_us();
+			if(t0+16000 < t1)break;
+			haltwaitforint();
+		}
 	}
 	return 0;
 }
