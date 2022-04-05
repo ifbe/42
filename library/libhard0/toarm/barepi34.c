@@ -38,6 +38,86 @@ void initdevmap()
 
 
 
+/*
+bcm2835(1b, 2b, zerow)
+sd/mmc  sdhci
+wifi    -
+bt      -
+*/
+void initbcm2835()
+{
+}
+
+
+
+/*
+bcm2837(3b, 3cm, zero2w)
+sd/mmc  sdhost
+wifi    sdhci
+bt      uart0   uart1
+usbA    xhci
+*/
+void initbcm2837()
+{
+	struct item* p;
+
+	//sdhost: it's sdcard on pi3, it's none on qemu
+	p = device_create(_mmc_, 0, 0, 0);
+	initsdhost(p);
+
+	//sdhci_old: it's wifi on pi3, it's sdcard on qemu
+	p = device_create(_mmc_, 0, 0, 0);
+	initsdhci(p, SDHCI_OFFS_OLD);
+}
+
+
+
+/*
+bcm2711(4b, 4cm)
+sd/mmc  sdhci2@ sdhost
+wifi    sdhci@
+bt      uart0   uart1
+typec   xhci    dwc2
+usbA    vl805
+
+#sd/mmc:
+#0x72e000d0.bit1 controls if the uSD slot goes to EMMC2(the ddr capable sdhci) or EMMC (the old sdhci), this bypasses the normal gpio altfunctions, and the uSD isnt on gpio pins
+
+#dwc2:
+-otg_mode=1
++dtoverlay=dwc2
+
+#xhci:
++otg_mode=1
+-dtoverlay=dwc2
+*/
+void initbcm2711()
+{
+	struct item* p;
+
+	//sdhost: can be confiured to use on gpio 22-26(sd0)
+	p = device_create(_mmc_, 0, 0, 0);
+	initsdhost(p);
+
+	//sdhci_new: pi4.sdcard or cm4.emmc
+	p = device_create(_mmc_, 0, 0, 0);
+	initsdhci(p, SDHCI_OFFS_NEW);
+
+	//sdhci_old: wifi		//todo
+	//p = device_create(_mmc_, 0, 0, 0);
+	//initsdhci(p, SDHCI_OFFS_OLD);
+
+	//typec: dwc2 or internal_xhci
+	brcmxhci_init();
+	brcmdwc2_init();
+
+	//pcie: a lot of things
+	brcmpcie_init();
+	//rpiextxhci_init();
+}
+
+
+
 
 void freehardware()
 {
@@ -71,66 +151,14 @@ void inithardware()
 
 	//soc, board
 	switch(raspi_version() ){
-/*
-bcm2711(4b, 4cm)
-sd/mmc  sdhci2@ sdhost
-wifi    sdhci@
-bt      uart0   uart1
-typec   xhci    dwc2
-usbA    vl805
-
-(dwc2)=
--otg_mode=1
-+dtoverlay=dwc2
-(xhci)=
-+otg_mode=1
--dtoverlay=dwc2
-*/
 	case 4:
-		//sdhost: can be confiured to use on gpio 22-26(sd0)
-		p = device_create(_mmc_, 0, 0, 0);
-		initsdhost(p);
-
-		//sdhci_new: pi4.sdcard or cm4.emmc
-		p = device_create(_mmc_, 0, 0, 0);
-		initsdhci(p, SDHCI_OFFS_NEW);
-
-		//sdhci_old: wifi		//todo
-		//p = device_create(_mmc_, 0, 0, 0);
-		//initsdhci(p, SDHCI_OFFS_OLD);
-
-		//typec: dwc2 or internal_xhci
-		brcmxhci_init();
-		brcmdwc2_init();
-
-		//pcie: a lot of things
-		brcmpcie_init();
-		//rpiextxhci_init();
+		initbcm2711();
 		break;
-/*
-bcm2837(3b, 3cm, zero2w)
-sd/mmc  sdhost
-wifi    sdhci
-bt      uart0   uart1
-usbA    xhci
-*/
 	case 3:
-		//sdhost: it's sdcard on pi3, it's none on qemu
-		p = device_create(_mmc_, 0, 0, 0);
-		initsdhost(p);
-
-		//sdhci_old: it's wifi on pi3, it's sdcard on qemu
-		p = device_create(_mmc_, 0, 0, 0);
-		initsdhci(p, SDHCI_OFFS_OLD);
-
+		initbcm2837();
 		break;
-/*
-bcm2835(1b, 2b, zerow)
-sd/mmc  sdhci
-wifi    -
-bt      -
-*/
 	default:
+		initbcm2835();
 		break;
 	}
 }

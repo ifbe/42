@@ -1,3 +1,4 @@
+//GPIO40-41: headphone jack (PWM) muxed with internal boot ROM SPI?
 #define PWM0 0x20c000
 #define PWM1 0x20c800
 //

@@ -69,12 +69,14 @@ int parse_gpt_one(struct gptpart* part, struct parsed* out)
 	else if(0 == ncmp(part->guid_type, guid_ext4,16))type = _ext_;
 	else type = hex32('?','?','?','?');
 
-	say("[%016llx,%016llx]:	type=%.8s, name=%s\n", part->lba_start, part->lba_end, &type, part->name);
 	if(out){
 		out->type = type;
 		out->name = 0;
 		out->start = part->lba_start;
 		out->count = part->lba_end - part->lba_start+1;
+	}
+	else{
+		say("[%016llx,%016llx]:	type=%.8s, name=%s\n", part->lba_start, part->lba_end, &type, part->name);
 	}
 	return 1;
 }
@@ -84,6 +86,7 @@ int parse_gpt(u8* src, struct parsed* out)
 	int ret,cnt;
 	u32 hcrc,bcrc;
 	u8* tmp;
+	say("@parse_gpt\n");
 
 	j = src[0x20c];
 	if(j >= 0x14)j -= 0x14;
@@ -104,7 +107,7 @@ int parse_gpt(u8* src, struct parsed* out)
 
 
 
-
+/*
 void mount_gpt_one(_obj* art, struct gptpart* part)
 {
 	if(0 == part->lba_start)return;
@@ -124,8 +127,7 @@ void mount_gpt_one(_obj* art, struct gptpart* part)
 	char* name = part->name;
 	for(j=0;j<0x40;j++)name[j] = part->name[j*2];
 
-	say("[%016llx,%016llx]:	type=%.8s, name=%s\n", part->lba_start, part->lba_end, &type, name);
-
+	//say("[%016llx,%016llx]:	type=%.8s, name=%s\n", part->lba_start, part->lba_end, &type, name);
 	if((_efi_ == type)|(_fat_ == type)){
 		_obj* tmp = artery_create(_fat_,0,0,0);
 		if(0 == tmp)return;
@@ -138,6 +140,7 @@ void mount_gpt(_obj* art, u8* src)
 {
 	int j,k;
 	u32 crc;
+	say("@mount_gpt\n");
 
 	j = src[0x20c];
 	if(j >= 0x14)j -= 0x14;
@@ -150,7 +153,7 @@ void mount_gpt(_obj* art, u8* src)
 	for(j=0;j<0x80;j++){
 		mount_gpt_one(art, (void*)(src + 0x400 + 0x80*j));
 	}
-}
+}*/
 
 
 

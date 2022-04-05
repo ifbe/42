@@ -1,0 +1,1 @@
+//GPIO30-33: bluetooth (using UART)
