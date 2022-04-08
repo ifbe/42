@@ -2,11 +2,12 @@
 void* mmiobase();
 int raspi_version();
 //
+void pinmgr_gpio3439_sdhciold();
+void pinmgr_gpio4653_sdhcinew();
+//
 int mbox_poweron();
 int mbox_poweroff();
 u32 mbox_getbaseclock();
-//
-void gpio_prepsdhci();
 //
 void wait_msec(int);
 void wait_cycles(int);
@@ -461,21 +462,6 @@ int initsdhci(struct item* dev, int offs)
 	per->sdhci = sdhci;
 
 
-	//prep gpio
-	say("EMMC: GPIO ??\n");
-	gpio_prepsdhci();
-	say("EMMC: GPIO ok\n");
-
-
-	//power off and on
-	say("EMMC: power ??\n");
-	mbox_poweroff();
-	wait_msec(2);
-	mbox_poweron();
-	wait_msec(200);
-	say("EMMC: power ok\n");
-
-
 	//read information
 	u32 tmp = EMMC_SLOTISR_VER;
 	per->vendor = tmp >> 24;
@@ -699,4 +685,35 @@ int initsdhci(struct item* dev, int offs)
 	dev->ongiving = (void*)sdhci_ongive;
 	filemanager_registersupplier(dev, 0);
 	return SD_OK;
+}
+
+
+
+
+int initsdhci_wifi(struct item* dev, int offs)
+{
+	say("@initsdhci_wifi@%x\n", offs);
+	pinmgr_gpio3439_sdhciold();
+	return 0;
+}
+int initsdhci_sdcard(struct item* dev, int offs)
+{
+	say("@initsdhci_sdcard@%x\n", offs);
+
+	//gpio
+	say("EMMC: gpio[46,53]\n");
+	pinmgr_gpio4653_sdhcinew();
+	say("EMMC: gpio ok\n");
+
+	//power
+	say("EMMC: power ??\n");
+	mbox_poweroff();
+	wait_msec(2);
+	mbox_poweron();
+	wait_msec(200);
+	say("EMMC: power ok\n");
+
+	//sdhci
+	initsdhci(dev, offs);
+	return 0;
 }

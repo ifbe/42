@@ -66,6 +66,7 @@ toarm/rpi/rpi.gpio.c \
 toarm/rpi/rpi.i2c.c \
 toarm/rpi/rpi.spi.c \
 toarm/rpi/rpi.uart.c \
+toarm/rpi/rpi.bt.c \
 toarm/rpi/rpi.pcie.c \
 toarm/rpi/rpi.usb.innerxhci.c \
 toarm/rpi/rpi.usb.dwc2.c \

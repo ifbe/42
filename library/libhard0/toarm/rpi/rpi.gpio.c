@@ -8,20 +8,24 @@ void wait_cycles(int);
 //
 #define GPIOACCESS(x) (*(volatile unsigned int*)(gpio+x))
 #define GPIO_OFFS 0x00200000
+//altfunc
 #define GPFSEL0   0x00
 #define GPFSEL1   0x04
 #define GPFSEL2   0x08
 #define GPFSEL3   0x0C
 #define GPFSEL4   0x10
 #define GPFSEL5   0x14
+//output
 #define GPSET0    0x1C
 #define GPSET1    0x20
 #define GPCLR0    0x28
 #define GPCLR1    0x2c
+//input.value
 #define GPLEV0    0x34
 #define GPLEV1    0x38
 #define GPEDS0    0x40
 #define GPEDS1    0x44
+//input.enable
 #define GPREN0    0x4c
 #define GPREN1    0x50
 #define GPFEN0    0x58
@@ -34,6 +38,7 @@ void wait_cycles(int);
 #define GPAREN1   0x80
 #define GPAFEN0   0x88
 #define GPAFEN1   0x8c
+//pull
 #define GPPUD     0x94
 #define GPPUDCLK0 0x98
 #define GPPUDCLK1 0x9C
@@ -150,6 +155,14 @@ gpio    pull    alt0        alt1        alt2        alt3          alt4          
 43      Low     GPCLK2      SD7         -           SD1_DAT7      SPI0_CE0_N      CTS1
 44      -       GPCLK1      SDA0        SDA1        -             SPI0_CE1_N      SD_CARD_VOLT
 45      -       PWM0_1      SCL0        SCL1        -             SPI0_CE2_N      SD_CARD_PWR0
+46      -       -           -           -           -             -               ??
+47      -       -           -           -           -             -               cd
+48      -       -           -           -           -             -               clk
+49      -       -           -           -           -             -               cmd
+50      -       -           -           -           -             -               dat0
+51      -       -           -           -           -             -               dat1
+52      -       -           -           -           -             -               dat2
+53      -       -           -           -           -             -               dat3
 */
 
 
@@ -159,27 +172,103 @@ char* val2str[8] = {
 	"input","output","alt5","alt4",
 	"alt0", "alt1",  "alt2","alt3"
 };
+int pinmgr_setfunc(int pin, int func)
+{
+	if(pin < 0)return 0;
+	if(pin > 45)return 0;
+
+	volatile void* mmio = mmiobase();
+	volatile void* gpio = mmio + GPIO_OFFS;
+
+	int hh = pin/10;
+	int ll = pin%10;
+
+	u32 val = GPIOACCESS(GPFSEL0 + hh*4);
+	val &= ~(3 << (ll*3));
+	val |= func << (ll*3);
+	GPIOACCESS(GPFSEL0 + hh*4) = val;
+	return 1;
+}
+int pinmgr_setfunc_many(int pin, int func)
+{
+	return 1;
+}
 
 
 
 
-void gpio_prepsdhci()
+int pinmgr_setpull(int pin, int pull)
+{
+	return 1;
+}
+int pinmgr_setpull_many(int pin, int func)
+{
+	return 1;
+}
+
+
+
+
+//input detect: rise, fall, high, low, asyncrise, asyncfall
+int pinmgr_setdetect(int pin, int detect)
+{
+	return 1;
+}
+int pinmgr_setdetect_many(int pin, int func)
+{
+	return 1;
+}
+
+
+
+
+void pinmgr_gpio2227_sdhost()
+{
+}
+void pinmgr_gpio2227_sdhciold()
+{
+}
+void pinmgr_gpio3439_sdhciold()
+{
+}
+void pinmgr_gpio4653_sdhcinew()
 {
 	long r;
 	volatile void* mmio = mmiobase();
 	volatile void* gpio = mmio + GPIO_OFFS;
+/*
+	gpio_setfunc(47, 0);
+	gpio_setpull(47, up);
+	wait_cycles(150);
+	gpio_setpull(47, none);
+	gpio_setdetect(47, high);
 
+	gpio_setfunc(48, 7);
+	gpio_setfunc(49, 7);
+	gpio_setpull_many((1<<48)|(1<<49), up);
+	wait_cycles(150);
+	gpio_setpull_many((1<<48)|(1<<49), none);
+
+	gpio_setfunc(50, 7);
+	gpio_setfunc(51, 7);
+	gpio_setfunc(52, 7);
+	gpio_setfunc(53, 7);
+	gpio_setpull_many((1<<50)|(1<<51)|(1<<52)|(1<<53), up);
+	wait_cycles(150);
+	gpio_setpull_many((1<<50)|(1<<51)|(1<<52)|(1<<53), none);
+*/
 	// GPIO_CD
 	r = GPIOACCESS(GPFSEL4);
 	r &= ~(7<<(7*3));
 	GPIOACCESS(GPFSEL4) = r;
+
 	GPIOACCESS(GPPUD) = 2;
 	wait_cycles(150);
-
 	GPIOACCESS(GPPUDCLK1) = (1<<15);
 	wait_cycles(150);
 	GPIOACCESS(GPPUD) = 0;
 	GPIOACCESS(GPPUDCLK1) = 0;
+
 	r = GPIOACCESS(GPHEN1);
 	r |= 1<<15;
 	GPIOACCESS(GPHEN1) = r;
@@ -188,9 +277,9 @@ void gpio_prepsdhci()
 	r = GPIOACCESS(GPFSEL4);
 	r |= (7<<(8*3))|(7<<(9*3));
 	GPIOACCESS(GPFSEL4) = r;
+
 	GPIOACCESS(GPPUD) = 2;
 	wait_cycles(150);
-
 	GPIOACCESS(GPPUDCLK1) = (1<<16)|(1<<17);
 	wait_cycles(150);
 	GPIOACCESS(GPPUD) = 0;
@@ -200,9 +289,9 @@ void gpio_prepsdhci()
 	r = GPIOACCESS(GPFSEL5);
 	r |= (7<<(0*3)) | (7<<(1*3)) | (7<<(2*3)) | (7<<(3*3));
 	GPIOACCESS(GPFSEL5) = r;
+
 	GPIOACCESS(GPPUD) = 2;
 	wait_cycles(150);
-
 	GPIOACCESS(GPPUDCLK1) = (1<<18) | (1<<19) | (1<<20) | (1<<21);
 	wait_cycles(150);
 	GPIOACCESS(GPPUD) = 0;
@@ -232,22 +321,6 @@ int gpiostart()
 
 
 
-int pinmgr_setfunc(int pin, int func)
-{
-	if(pin < 0)return 0;
-	if(pin > 45)return 0;
-
-	volatile void* mmio = mmiobase();
-	volatile void* gpio = mmio + GPIO_OFFS;
-
-	int hh = pin/10;
-	int ll = pin%10;
-
-	u32 val = GPIOACCESS(GPFSEL0 + hh*4);
-	val &= ~(3 << (ll*3));
-	val |= func << (ll*3);
-	GPIOACCESS(GPFSEL0 + hh*4) = val;
-}
 void initpinmgr()
 {
 	volatile void* mmio = mmiobase();

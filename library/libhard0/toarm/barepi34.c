@@ -13,8 +13,11 @@ void initsystmr(void*);
 //
 void initpinmgr();
 //sd
-void initsdhci(void*, int offs);
 void initsdhost(void*);
+void initsdhci_wifi(void*, int offs);
+void initsdhci_sdcard(void*, int offs);
+//bt
+void initrpibt();
 //typec
 void brcmxhci_init();
 void brcmdwc2_init();
@@ -67,7 +70,7 @@ void initbcm2837()
 
 	//sdhci_old: it's wifi on pi3, it's sdcard on qemu
 	p = device_create(_mmc_, 0, 0, 0);
-	initsdhci(p, SDHCI_OFFS_OLD);
+	initsdhci_sdcard(p, SDHCI_OFFS_OLD);
 }
 
 
@@ -101,11 +104,15 @@ void initbcm2711()
 
 	//sdhci_new: pi4.sdcard or cm4.emmc
 	p = device_create(_mmc_, 0, 0, 0);
-	initsdhci(p, SDHCI_OFFS_NEW);
+	initsdhci_sdcard(p, SDHCI_OFFS_NEW);
 
 	//sdhci_old: wifi		//todo
-	//p = device_create(_mmc_, 0, 0, 0);
-	//initsdhci(p, SDHCI_OFFS_OLD);
+	p = device_create(_wifi_, 0, 0, 0);
+	initsdhci_wifi(p, SDHCI_OFFS_OLD);
+
+	//uart0: bt
+	p = device_create(_bt_, 0, 0, 0);
+	initrpibt();
 
 	//typec: dwc2 or internal_xhci
 	brcmxhci_init();
