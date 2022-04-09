@@ -11,11 +11,14 @@ void initcpu_ap();
 //
 void initsystmr(void*);
 //
+void initmbox();
+//
 void initpinmgr();
 //sd
 void initsdhost(void*);
 void initsdhci_wifi(void*, int offs);
-void initsdhci_sdcard(void*, int offs);
+void initsdhci_bcm283xsdcard(void*, int offs);
+void initsdhci_bcm2711sdcard(void*, int offs);
 //bt
 void initrpibt();
 //typec
@@ -70,7 +73,7 @@ void initbcm2837()
 
 	//sdhci_old: it's wifi on pi3, it's sdcard on qemu
 	p = device_create(_mmc_, 0, 0, 0);
-	initsdhci_sdcard(p, SDHCI_OFFS_OLD);
+	initsdhci_bcm283xsdcard(p, SDHCI_OFFS_OLD);
 }
 
 
@@ -86,11 +89,11 @@ usbA    vl805
 #sd/mmc:
 #0x72e000d0.bit1 controls if the uSD slot goes to EMMC2(the ddr capable sdhci) or EMMC (the old sdhci), this bypasses the normal gpio altfunctions, and the uSD isnt on gpio pins
 
-#dwc2:
+#typec dwc2:
 -otg_mode=1
 +dtoverlay=dwc2
 
-#xhci:
+#typec xhci:		//must set below, otherwise stuck
 +otg_mode=1
 -dtoverlay=dwc2
 */
@@ -104,7 +107,7 @@ void initbcm2711()
 
 	//sdhci_new: pi4.sdcard or cm4.emmc
 	p = device_create(_mmc_, 0, 0, 0);
-	initsdhci_sdcard(p, SDHCI_OFFS_NEW);
+	initsdhci_bcm2711sdcard(p, SDHCI_OFFS_NEW);
 
 	//sdhci_old: wifi		//todo
 	p = device_create(_wifi_, 0, 0, 0);
@@ -152,6 +155,9 @@ void inithardware()
 	p = device_create(_cpu_, 0, 0, 0);
 	initcpu_bsp(p);
 	initcpu_ap(p);
+
+	//mbox
+	initmbox();
 
 	//pinctrl
 	initpinmgr();

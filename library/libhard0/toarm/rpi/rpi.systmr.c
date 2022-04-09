@@ -57,4 +57,5 @@ void initsystmr()
 {
 	say("@initsystmr\n");
 	mmio = mmiobase() + SYSTMR;
+	say("\n");
 }

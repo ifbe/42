@@ -86,11 +86,14 @@ int initsdhost(struct item* dev)
 	long r,cnt,ccs=0;
 	say("@initsdhost\n");
 
-	//get addr
-	struct persdhost* per = (void*)dev->priv_256b;
-	void* sdhost = mmiobase() + SDHOST_OFFS;
-	per->sdhost = sdhost;
+	void* mmio = mmiobase();
+	void* sdhost = mmio + SDHOST_OFFS;
 	printmmio(sdhost, 0x40);
 
+	//get addr
+	struct persdhost* per = (void*)dev->priv_256b;
+	per->sdhost = sdhost;
+
+	say("\n");
 	return 0;
 }

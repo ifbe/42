@@ -587,14 +587,14 @@ int initsdhci(struct item* dev, int offs)
 	per->sd_rca = 0;
 	per->sd_err = 0;
 
-	//CMD0: reset to idle state
-	say("CMD0 ??\n");
+	//CMD0: reset to idle state, wifi module fail here
+	say("CMD0:reset to idle\n");
 	sd_cmd(per, CMD_GO_IDLE, 0);
 	if(per->sd_err) return per->sd_err;
 	say("CMD0 ok\n");
 
 	//CMD8: check if it is SD V2
-	say("CMD8 ??\n");
+	say("CMD8:check if SD V2\n");
 	sd_cmd(per, CMD_SEND_IF_COND, 0x000001AA);
 	if(per->sd_err) return per->sd_err;
 	say("CMD8 ok: rsp0=%x\n", EMMC_RESP0);
@@ -681,9 +681,6 @@ int initsdhci(struct item* dev, int offs)
 	per->sd_scr[0] &= ~SCR_SUPP_CCS;
 	per->sd_scr[0] |= ccs;
 
-	dev->ontaking = (void*)sdhci_ontake;
-	dev->ongiving = (void*)sdhci_ongive;
-	filemanager_registersupplier(dev, 0);
 	return SD_OK;
 }
 
@@ -694,11 +691,15 @@ int initsdhci_wifi(struct item* dev, int offs)
 {
 	say("@initsdhci_wifi@%x\n", offs);
 	pinmgr_gpio3439_sdhciold();
+
+	initsdhci(dev, offs);
+
+	say("\n");
 	return 0;
 }
-int initsdhci_sdcard(struct item* dev, int offs)
+int initsdhci_bcm283xsdcard(struct item* dev, int offs)
 {
-	say("@initsdhci_sdcard@%x\n", offs);
+	say("@initsdhci_bcm283xsdcard@%x\n", offs);
 
 	//gpio
 	say("EMMC: gpio[46,53]\n");
@@ -715,5 +716,30 @@ int initsdhci_sdcard(struct item* dev, int offs)
 
 	//sdhci
 	initsdhci(dev, offs);
+
+	//file
+	dev->ontaking = (void*)sdhci_ontake;
+	dev->ongiving = (void*)sdhci_ongive;
+	filemanager_registersupplier(dev, 0);
+
+	say("\n");
+	return 0;
+}
+int initsdhci_bcm2711sdcard(struct item* dev, int offs)
+{
+	say("@initsdhci_bcm2711sdcard@%x\n", offs);
+
+	//gpio
+	say("sdcard: on hidden bcm2711 gpio, not gpio46-53\n");
+
+	//sdhci
+	initsdhci(dev, offs);
+
+	//file
+	dev->ontaking = (void*)sdhci_ontake;
+	dev->ongiving = (void*)sdhci_ongive;
+	filemanager_registersupplier(dev, 0);
+
+	say("\n");
 	return 0;
 }

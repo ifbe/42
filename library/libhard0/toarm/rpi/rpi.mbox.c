@@ -160,3 +160,12 @@ int mbox_poweron()
 
 	return 0;
 }
+
+
+
+
+void initmbox()
+{
+	say("@initmbox\n");
+	say("\n");
+}

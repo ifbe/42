@@ -114,10 +114,10 @@ static int kernel_pollloop(struct item* wrk)
 			supply_giveby(wnd,0, stack,2, 0,0, ev,0);
 		}
 
-		//60fps
+		//200 time per sec
 		while(1){
 			t1 = timeread_us();
-			if(t0+16000 < t1)break;
+			if(t0+5000 < t1)break;
 			haltwaitforint();
 		}
 	}
@@ -147,10 +147,10 @@ static int kernel_drawloop(struct item* wrk)
 		//draw frame
 		supply_takeby(wnd,0, stack,2, 0,0, 0,0);
 
-		//60fps
+		//30 frame per sec
 		while(1){
 			t1 = timeread_us();
-			if(t0+16000 < t1)break;
+			if(t0+30000 < t1)break;
 			haltwaitforint();
 		}
 	}

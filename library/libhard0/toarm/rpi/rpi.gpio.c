@@ -59,6 +59,7 @@ void wait_cycles(int);
 /*
 --------bcm2835 gpio--------
 gpio    pull    alt0        alt1        alt2        alt3          alt4            alt5
+[0-27]: on 40 pin header
 0       High    SDA0        SA5         -           -             -               -
 1       High    SCL0        SA4         -           -             -               -
 2       High    SDA1        SA3         -           -             -               -
@@ -87,28 +88,41 @@ gpio    pull    alt0        alt1        alt2        alt3          alt4          
 25      Low     SD0_DAT1    SD17        -           SD1_DAT1      ARM_TCK         -
 26      Low     SD0_DAT2    -           -           SD1_DAT2      ARM_TDI         -
 27      Low     SD0_DAT3    -           -           SD1_DAT3      ARM_TMS         -
+[28,29]:??
 28      -       SDA0        SA5         PCM_CLK     -             -               -
 29      -       SCL0        SA4         PCM_FS      -             -               -
+[30,33]:bt
 30      Low     -           SA3         PCM_DIN     CTS0          -               CTS1
 31      Low     -           SA2         PCM_DOUT    RTS0          -               RTS1
 32      Low     GPCLK0      SA1         -           TXD0          -               TXD1
 33      Low     -           SA0         -           RXD0          -               RXD1
+[34,39]:wifi
 34      High    GPCLK0      SOE_N/SE    -           -             -               -
 35      High    SPI0_CE1_N  SWE_N/SRW_N -           -             -               -
 36      High    SPI0_CE0_N  SD0         TXD0        -             -               -
 37      Low     SPI0_MISO   SD1         RXD0        -             -               -
 38      Low     SPI0_MOSI   SD2         RTS0        -             -               -
 39      Low     SPI0_SCLK   SD3         CTS0        -             -               -
-40      Low     PWM1_0      SD4         -           -             SPI0_MISO       TXD1
-41      Low     PWM1_1      SD5         -           -             SPI0_MOSI       RXD1
+[40,41]:audio
+40      Low     PWM0_0      SD4         -           -             SPI0_MISO       TXD1
+41      Low     PWM0_1      SD5         -           -             SPI0_MOSI       RXD1
 42      Low     GPCLK1      SD6         -           -             SPI0_SCLK       RTS1
 43      Low     GPCLK2      SD7         -           -             SPI0_CE0_N      CTS1
 44      -       GPCLK1      SDA0        SDA1        -             SPI0_CE1_N      -
 45      -       PWM0_1      SCL0        SCL1        -             SPI0_CE2_N      -
+46      -       -           -           -           -             -               -
+47      -       sdcd        -           -           -             -               -
+48      -       sdclk       -           -           -             -               -
+49      -       sdcmd       -           -           -             -               -
+50      -       sddat0      -           -           -             -               -
+51      -       sddat1      -           -           -             -               -
+52      -       sddat2      -           -           -             -               -
+53      -       sddat3      -           -           -             -               -
 */
 /*
 --------bcm2711 gpio--------
 gpio    pull    alt0        alt1        alt2        alt3          alt4            alt5
+[0-27]: on 40 pin header
 0       High    SDA0        SA5         PCLK        SPI3_CE0_N    TXD2            SDA6
 1       High    SCL0        SA4         DE          SPI3_MISO     RXD2            SCL6
 2       High    SDA1        SA3         LCD_VSYNC   SPI3_MOSI     CTS2            SDA3
@@ -137,32 +151,42 @@ gpio    pull    alt0        alt1        alt2        alt3          alt4          
 25      Low     SD0_DAT1    SD17        DPI_D21     SD1_DAT1      ARM_TCK         SPI4_CE1_N
 26      Low     SD0_DAT2    -           DPI_D22     SD1_DAT2      ARM_TDI         SPI5_CE1_N
 27      Low     SD0_DAT3    -           DPI_D23     SD1_DAT3      ARM_TMS         SPI6_CE1_N
+[28,29]:rgmii
 28      -       SDA0        SA5         PCM_CLK     -             MII_A_RX_ERR    RGMII_MDIO
 29      -       SCL0        SA4         PCM_FS      -             MII_A_TX_ERR    RGMII_MDC
+[30,33]:bt
 30      Low     -           SA3         PCM_DIN     CTS0          MII_A_CRS       CTS1
 31      Low     -           SA2         PCM_DOUT    RTS0          MII_A_COL       RTS1
 32      Low     GPCLK0      SA1         -           TXD0          SD_CARD_PRES    TXD1
 33      Low     -           SA0         -           RXD0          SD_CARD_WRPROT  RXD1
+[34,39]:wifi
 34      High    GPCLK0      SOE_N/SE    -           SD1_CLK       SD_CARD_LED     RGMII_IRQ
 35      High    SPI0_CE1_N  SWE_N/SRW_N -           SD1_CMD       RGMII_START_STOP -
 36      High    SPI0_CE0_N  SD0         TXD0        SD1_DAT0      RGMII_RX_OK     MII_A_RX_ERR
 37      Low     SPI0_MISO   SD1         RXD0        SD1_DAT1      RGMII_MDIO      MII_A_TX_ERR
 38      Low     SPI0_MOSI   SD2         RTS0        SD1_DAT2      RGMII_MDC       MII_A_CRS
 39      Low     SPI0_SCLK   SD3         CTS0        SD1_DAT3      RGMII_IRQ       MII_A_COL
+[40,41]:audio
 40      Low     PWM1_0      SD4         -           SD1_DAT4      SPI0_MISO       TXD1
 41      Low     PWM1_1      SD5         -           SD1_DAT5      SPI0_MOSI       RXD1
 42      Low     GPCLK1      SD6         -           SD1_DAT6      SPI0_SCLK       RTS1
 43      Low     GPCLK2      SD7         -           SD1_DAT7      SPI0_CE0_N      CTS1
 44      -       GPCLK1      SDA0        SDA1        -             SPI0_CE1_N      SD_CARD_VOLT
 45      -       PWM0_1      SCL0        SCL1        -             SPI0_CE2_N      SD_CARD_PWR0
-46      -       -           -           -           -             -               ??
-47      -       -           -           -           -             -               cd
-48      -       -           -           -           -             -               clk
-49      -       -           -           -           -             -               cmd
-50      -       -           -           -           -             -               dat0
-51      -       -           -           -           -             -               dat1
-52      -       -           -           -           -             -               dat2
-53      -       -           -           -           -             -               dat3
+46      -       -           -           -           -             -               -
+47      -       -           -           -           -             -               -
+48      -       -           -           -           -             -               -
+49      -       -           -           -           -             -               -
+50      -       -           -           -           -             -               -
+51      -       -           -           -           -             -               -
+52      -       -           -           -           -             -               -
+53      -       -           -           -           -             -               -
+hide0   sdclk
+hide1   sdcmd
+hide2   sddat0
+hide3   sddat1
+hide4   sddat2
+hide5   sddat3
 */
 
 
@@ -337,4 +361,5 @@ void initpinmgr()
 			val >>= 3;
 		}
 	}
+	say("\n");
 }
