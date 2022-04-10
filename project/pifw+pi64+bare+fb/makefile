@@ -53,4 +53,3 @@ rpi4b:
 clean:
 	rm -f */*.o
 	rm -f *.o *.out *.bin *.img
-	make -C $(library) clean

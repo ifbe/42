@@ -16,7 +16,43 @@ int epoll_add(int);
 
 
 
-static struct sysobj* obj;
+static struct item* obj;
+void freeshell()
+{
+}
+void initshell(void* addr)
+{
+	signal(SIGCHLD, SIG_IGN);
+	obj = addr;
+}
+void ptmxalloc()
+{
+}
+
+
+
+
+int shell_insert()
+{
+	return 0;
+}
+int shell_remove()
+{
+	return 0;
+}
+int shell_search(char* p)
+{
+	int ret = system("ls /dev/pts/");
+	return 0;
+}
+int shell_modify(char* p, int speed)
+{
+	return 0;
+}
+
+
+
+
 void systemshell_child(char* p)
 {
 	int ret;
@@ -39,33 +75,7 @@ void systemshell_child(char* p)
 
 
 
-int shell_take(int fd, int off, char* buf, int len)
-{
-	int ret;
-	ret = read(fd, buf, len);
-	return ret;
-}
-int shell_give(int fd, int off, char* buf, int len)
-{
-	int ret;
-	ret = write(fd, buf, len);
-	return ret;
-}
-int shell_search(char* p)
-{
-	int ret = system("ls /dev/pts/");
-	return 0;
-}
-int shell_modify(char* p, int speed)
-{
-	return 0;
-}
-int shell_delete(int fd)
-{
-	close(fd);
-	return 0;
-}
-int shell_create(char* p)
+_obj* shell_create(char* p)
 {
 	int fd;
 	int ret;
@@ -75,47 +85,85 @@ int shell_create(char* p)
 	if(fd <= 0)
 	{
 		printf("error@open:%d\n",errno);
-		return -1;
+		return 0;
 	}
+
+	//obj
+	struct item* oo = &obj[fd];
+	oo->sockinfo.fd = fd;
+	say("fd=%d,obj=%p\n", fd, oo);
 
 	ret = grantpt(fd);
 	if(ret < 0)
 	{
 		printf("error@grantpt:%d\n",errno);
-		return -2;
+		return 0;
 	}
 
 	ret = unlockpt(fd);
 	if(ret < 0)
 	{
 		printf("error@unlockpt:%d\n",errno);
-		return -3;
+		return 0;
 	}
 
 	name = ptsname(fd);
 	if(name == 0)
 	{
 		printf("error@ptsname:%d\n",errno);
-		return -4;
+		return 0;
 	}
 	printf("%.*s\n", 16, name);
 
 	ret = fork();
-	if(ret < 0)return -5;
+	if(ret < 0)return 0;
 	else if(ret == 0)systemshell_child(name);
 
 	epoll_add(fd);
-	return fd;
+
+	return oo;
+}
+int shell_delete(_obj* oo)
+{
+	int fd = oo->sockinfo.fd;
+	if(fd < 0)return 0;
+
+	close(fd);
+	return 0;
+}
+int shell_reader(_obj* oo,int xx, void* arg,int cmd, void* buf, int len)
+{
+	int fd = oo->sockinfo.fd;
+	if(fd < 0)return 0;
+
+	int ret = read(fd, buf, len);
+	return ret;
+}
+int shell_writer(_obj* oo,int xx, void* arg,int cmd, void* buf, int len)
+{
+	int fd = oo->sockinfo.fd;
+	if(fd < 0)return 0;
+
+	int ret = write(fd, buf, len);
+	return ret;
 }
 
 
 
 
-void freeshell()
+int shell_attach()
 {
+	return 0;
 }
-void initshell(void* addr)
+int shell_detach()
 {
-	signal(SIGCHLD, SIG_IGN);
-	obj = addr;
+	return 0;
+}
+int shell_takeby(_obj* oo,int xx, void* arg,int cmd, void* buf, int len)
+{
+	return 0;
+}
+int shell_giveby(_obj* oo,int xx, void* arg,int cmd, void* buf, int len)
+{
+	return 0;
 }

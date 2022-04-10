@@ -7,45 +7,19 @@ void say(char*,...);
 
 
 
-int uart_take(int fd, char* buf, int off, int len)
+int efiuart_create()
 {
 	return 0;
 }
-int uart_give(int fd, char* buf, int off, int len)
+int efiuart_delete()
 {
 	return 0;
 }
-int uart_list()
+int efiuart_reader(int fd, char* buf, int off, int len)
 {
 	return 0;
 }
-int uart_choose(char* p, int speed)
+int efiuart_writer(int fd, char* buf, int off, int len)
 {
 	return 0;
-}
-int uart_discon()
-{
-	return 0;
-}
-int uart_linkup(char* p)
-{
-	return 0;
-}
-int uart_delete()
-{
-	return 0;
-}
-int uart_create()
-{
-	return 0;
-}
-
-
-
-
-void freeuart()
-{
-}
-void inituart()
-{
 }

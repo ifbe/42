@@ -4,7 +4,9 @@ CF:=-c -O2 -fPIC -I..
 
 
 baresrc = \
+bareos/bare.flow.shell.c \
 bareos/bare.flow.socket.c \
+bareos/bare.flow.uart.c \
 bareos/bare.flow.watcher.c \
 bareos/bare.lock.semaphore.c \
 bareos/bare.lock.mutex.c \
@@ -20,7 +22,6 @@ bareos/bare.syscall.unix.c \
 bareos/bare.system.power.c \
 bareos/bare.system.random.c \
 bareos/bare.system.signal.c \
-bareos/bare.system.shell.c \
 bareos/bare.system.time.c \
 system.c
 bareobj = $(patsubst %.c,%.o,$(baresrc))

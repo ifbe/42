@@ -23,15 +23,15 @@ int initshell(void*);
 int freeshell();
 void* shell_create(void*, int);
 int shell_delete(void*);
-int shell_take(void*,void*, void*,int, void*,int);
-int shell_give(void*,void*, void*,int, void*,int);
+int shell_reader(void*,void*, void*,int, void*,int);
+int shell_writer(void*,void*, void*,int, void*,int);
 //uart
 int inituart(void*);
 int freeuart();
 void* uart_create(void*, int);
 int uart_delete(void*);
-int uart_take(void*,void*, void*,int, void*,int);
-int uart_give(void*,void*, void*,int, void*,int);
+int uart_reader(void*,void*, void*,int, void*,int);
+int uart_writer(void*,void*, void*,int, void*,int);
 //socket
 int initsocket(void*);
 int freesocket();
@@ -117,16 +117,13 @@ void* system_create(u64 type, void* argstr, int argc, u8** argv)
 	int j,k,ret;
 	u8 host[0x100];	//127.0.0.1
 	int port;	//2222
-	u8* url;	//dir/file.html
-	u8* t;		//http
 
+	u8* t;		//http
 	u8* name = argstr;
-	if(0 == type)
-	{
-		for(j=0;j<0x1000;j++)
-		{
-			if(0 == ncmp(name+j, "://", 3))
-			{
+	if(0 == type){
+		for(j=0;j<16;j++){
+			if(name[j] <= 0x20)break;
+			if( (':'==name[j]) && ('/'==name[j+1]) && ('/'==name[j+2]) ){
 				t = (u8*)&type;
 				for(k=0;k<j;k++)
 				{
@@ -138,7 +135,11 @@ void* system_create(u64 type, void* argstr, int argc, u8** argv)
 			}
 		}
 	}
-	if(0 == type)return 0;
+	//say("type=%llx,name=%.16s\n", type, name);
+	if(0 == type){
+		say("@system_create:unknown path:%s\n", name);
+		return 0;
+	}
 
 	//file family
 	struct item* per = 0;
@@ -314,9 +315,9 @@ int system_giveby(_obj* sys,void* foot, _syn* stack,int sp, void* arg,int cmd, v
 	case _file_:
 		return file_give(sys,0, arg,cmd, buf,len);
 	case _ptmx_:
-		return shell_give(sys,0, arg,cmd, buf,len);
+		return shell_writer(sys,0, arg,cmd, buf,len);
 	case _uart_:
-		return uart_give(sys,0, arg,cmd, buf,len);
+		return uart_writer(sys,0, arg,cmd, buf,len);
 	case _TCP_:
 		sys = sys->sockinfo.child;
 		if(0 == sys)return -1;

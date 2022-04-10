@@ -7,29 +7,19 @@ void say(char*,...);
 
 
 
-int uart_take(int fd, char* buf, int off, int len)
+int x86uart_create(char* p)
 {
 	return 0;
 }
-int uart_give(int fd, char* buf, int off, int len)
+int x86uart_delete()
 {
 	return 0;
 }
-int uart_delete()
+int x86uart_reader(int fd, char* buf, int off, int len)
 {
 	return 0;
 }
-int uart_create(char* p)
+int x86uart_writer(int fd, char* buf, int off, int len)
 {
 	return 0;
-}
-
-
-
-
-void freeuart()
-{
-}
-void inituart()
-{
 }

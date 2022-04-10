@@ -3,8 +3,10 @@
 
 
 
-void initshell()
+static _obj* g_obj = 0;
+int inituart(void* addr)
 {
+	g_obj = addr;
 }
 void freeshell()
 {
@@ -13,13 +15,12 @@ void freeshell()
 
 
 
-_obj* shell_create(char* p)
+int shell_insert()
 {
 	return 0;
 }
-int shell_delete(_obj* fd)
+int shell_remove()
 {
-	say("!!!this func is wrong!!!\n");
 	return 0;
 }
 int shell_search(char* p)
@@ -34,11 +35,40 @@ int shell_modify(char* p)
 
 
 
-int shell_take(int fd, char* buf, int off, int len)
+_obj* shell_create(char* p)
 {
 	return 0;
 }
-int shell_give(int fd, char* buf, int off, int len)
+int shell_delete(_obj* fd)
+{
+	say("!!!this func is wrong!!!\n");
+	return 0;
+}
+int shell_reader(_obj* oo,int xx, void* arg,int off, void* buf,int len)
+{
+	return 0;
+}
+int shell_writer(_obj* oo,int xx, void* arg,int off, void* buf,int len)
+{
+	return 0;
+}
+
+
+
+
+int shell_attach()
+{
+	return 0;
+}
+int shell_detach()
+{
+	return 0;
+}
+int shell_takeby(_obj* oo,int xx, void* arg,int off, void* buf,int len)
+{
+	return 0;
+}
+int shell_giveby(_obj* oo,int xx, void* arg,int off, void* buf,int len)
 {
 	return 0;
 }

@@ -102,12 +102,14 @@ int parse_mbr_one(struct mbrpart* part, struct parsed* out)
 	}
 	}//switch
 
-	say("[%08x,%08x]:type=%02x(%s)\n", start, start+count-1, part->parttype, str);
 	if(out){
 		out->type = type;
 		out->name = 0;
 		out->start = start;
 		out->count = count;
+	}
+	else{
+		say("[%08x,%08x]:type=%02x(%s)\n", start, start+count-1, part->parttype, str);
 	}
 	return 1;
 }

@@ -24,27 +24,19 @@
 #define TDR    0x8c	//Test Data reg
 
 
-int uart_take()
+int rpiuart_create()
 {
 	return 0;
 }
-int uart_give()
+int rpiuart_delete()
 {
 	return 0;
 }
-int uart_delete()
+int rpiuart_reader()
 {
 	return 0;
 }
-int uart_create()
-{
-	return 0;
-}
-int freeuart()
-{
-	return 0;
-}
-int inituart()
+int rpiuart_writer()
 {
 	return 0;
 }

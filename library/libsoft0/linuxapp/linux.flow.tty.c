@@ -14,44 +14,43 @@ int listfolder(char*, int, char*, char*);
 
 
 
-static struct device* dev;
-
-
-
-
-int uart_take(int fd, int off, void* buf, int len)
+static struct item* obj;
+void inituart(void* addr)
 {
-	int ret;
-	ret = read(fd, buf, len);
-	return ret;
+	obj = addr;
 }
-int uart_give(int fd, int off, void* buf, int len)
+void freeuart()
 {
-	int ret;
-	//printf("@uart_give:%.*s\n", len, buf);
+}
+void uartalloc()
+{
+}
 
-	ret = write(fd, buf, len);
-	if(ret != len){
-		printf("err@write:%d,%d\n", ret, errno);
-	}
-	return ret;
-}
-int uart_list(char* buf, int len)
-{
-	int ret = listfolder(buf, len, "/dev", "tty");
-	if(ret < 0)ret = 0;
-	return ret;
-}
-int uart_change()
+
+
+
+int uart_insert()
 {
 	return 0;
 }
-int uart_delete(int fd)
+int uart_remove()
 {
-	close(fd);
 	return 0;
 }
-int uart_create(char* p, int speed)
+int uart_search(char* p)
+{
+	int ret = system("ls /dev/tty*");
+	return 0;
+}
+int uart_modify(char* p, int speed)
+{
+	return 0;
+}
+
+
+
+
+_obj* uart_create(char* p, int speed)
 {
 	int fd = open(p , O_RDWR|O_NOCTTY|O_NDELAY);
 	if(fd <= 0)
@@ -59,6 +58,11 @@ int uart_create(char* p, int speed)
 		say("error:%d@open:%s\n",errno,p);
 		return -1;
 	}
+
+	//obj
+	struct item* oo = &obj[fd];
+	oo->sockinfo.fd = fd;
+	say("fd=%d,obj=%p\n", fd, oo);
 
 	struct termios2 options;
 	ioctl(fd, TCGETS2, &options);
@@ -100,16 +104,53 @@ int uart_create(char* p, int speed)
 	//dev[fd].buf = (void*)malloc(0x100000);
 	epoll_add(fd);
 
-	return fd;
+	return oo;
+}
+int uart_delete(_obj* oo)
+{
+	int fd = oo->sockinfo.fd;
+	if(fd < 0)return 0;
+
+	close(fd);
+	return 0;
+}
+int uart_reader(_obj* oo,int xx, void* arg,int off, void* buf,int len)
+{
+	int fd = oo->sockinfo.fd;
+	//say("fd=%d,obj=%p\n", fd, oo);
+
+	int ret;
+	ret = read(fd, buf, len);
+	return ret;
+}
+int uart_writer(_obj* oo,int xx, void* arg,int off, void* buf,int len)
+{
+	int fd = oo->sockinfo.fd;
+	//say("fd=%d,obj=%p\n", fd, oo);
+
+	int ret = write(fd, buf, len);
+	if(ret != len){
+		printf("err@write:%d,%d\n", ret, errno);
+	}
+	return ret;
 }
 
 
 
 
-void freeuart()
+int uart_attach()
 {
+	return 0;
 }
-void inituart(void* addr)
+int uart_detach()
 {
-	dev = addr;
+	return 0;
+}
+int uart_takeby(_obj* oo,int xx, void* arg,int off, void* buf,int len)
+{
+	return 0;
+}
+int uart_giveby(_obj* oo,int xx, void* arg,int off, void* buf,int len)
+{
+	return 0;
 }

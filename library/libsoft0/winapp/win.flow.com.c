@@ -10,24 +10,85 @@ void sleep_us(int);
 
 //
 static _obj* g_obj = 0;
-static HANDLE hcom = 0;
-//
 static int curid = 0;
-static int alive = 0;
+//
+struct percom{
+	HANDLE hcom;
+
+	u64 thread;
+	int alive;
+};
+
+
+
+
+int inituart(void* addr)
+{
+	g_obj = addr;
+}
+int freeuart()
+{
+}
+void uartalloc()
+{
+}
+
+
+
+
+int uart_insert()
+{
+	return 0;
+}
+int uart_remove()
+{
+	return 0;
+}
+int uart_search(u8* p)
+{
+	int j,k=0;
+	HANDLE h;
+
+	for(j=0;j<50;j++)
+	{
+		snprintf(p+k, 20, "\\\\.\\COM%d", j);
+		h = CreateFile(
+			p+k,
+			GENERIC_READ | GENERIC_WRITE,
+			0,
+			NULL,
+			OPEN_EXISTING,
+			FILE_ATTRIBUTE_NORMAL|FILE_FLAG_OVERLAPPED,
+			NULL
+		);
+		if(h != INVALID_HANDLE_VALUE)
+		{
+			CloseHandle(h);
+			k += snprintf(p+k, 20, "COM%d\n", j);
+		}
+	}
+	return k;
+}
+int uart_modify()
+{
+	return 0;
+}
 
 
 
 
 DWORD WINAPI uart_thread(_obj* oo)
 {
+	if(0 == oo)return 0;
+
 	int ret;
 	int enq;
 	int cnt=0;
 	u8 buf[0x10000];
 	struct halfrel stack[0x80];
-	if(0 == oo)return 0;
 
-	while(alive == 1)
+	struct percom* per = (void*)oo->priv_256b;
+	while(per->alive)
 	{
 		ret = 0x10000 - enq;
 		if(ret > 0x1000)ret = 0x1000;
@@ -55,78 +116,16 @@ static int uart_designate()
 
 
 
-int uart_take(int fd, int off, void* buf, int len)
-{
-	return 0;
-}
-int uart_give(int fd, int off, void* buf, int len)
-{
-	u32 cnt=0;
-	int ret;
-
-	ret = WriteFile(
-		hcom,
-		buf,
-		len,
-		(void*)&cnt,
-		0
-	);
-	//say("write:ret=%d,cnt=%d,errno=%d\n", ret, cnt, GetLastError());
-	return ret;
-}
-int uart_list(u8* p)
-{
-	int j,k=0;
-	HANDLE h;
-
-	for(j=0;j<50;j++)
-	{
-		snprintf(p+k, 20, "\\\\.\\COM%d", j);
-		h = CreateFile(
-			p+k,
-			GENERIC_READ | GENERIC_WRITE,
-			0,
-			NULL,
-			OPEN_EXISTING,
-			FILE_ATTRIBUTE_NORMAL|FILE_FLAG_OVERLAPPED,
-			NULL
-		);
-		if(h != INVALID_HANDLE_VALUE)
-		{
-			CloseHandle(h);
-			k += snprintf(p+k, 20, "COM%d\n", j);
-		}
-	}
-	return k;
-}
-int uart_choose()
-{
-	return 0;
-}
-int uart_delete(int hcom)
-{
-	say("!!!this func is wrong!!!\n");
-}
-int uart_create(char* p, int speed)
+_obj* uart_create(char* p, int speed)
 {
 	//
 	int ret;
 	char buf[20];
-
-	//
-	if(hcom != 0)
-	{
-		alive = 0;
-
-		CloseHandle(hcom);
-		hcom = 0;
-	}
-	if(p == 0)return 0;
-
-	//
 	for(ret=0;ret<20;ret++)if(p[ret] < 0x20)break;
 	snprintf(buf, 20, "\\\\.\\%.*s", ret, p);
-	hcom = CreateFile(
+
+	//
+	HANDLE hcom = CreateFile(
 		buf,
 		GENERIC_READ | GENERIC_WRITE,
 		0,
@@ -141,6 +140,13 @@ int uart_create(char* p, int speed)
 		return -1;
 	}
 	else say("name=%s, hcom=%llx\n", buf, hcom);
+
+	//
+	ret = uart_designate();
+	struct item* oo = &obj[ret];
+	say("hcom=%p,obj=%p\n", hcom, oo);
+	struct percom* per = (void*)oo->priv_256b;
+	per->hcom = hcom;
 
 	//
 	COMMTIMEOUTS timeouts;
@@ -177,21 +183,38 @@ int uart_create(char* p, int speed)
 	say("PurgeComm:%d\n", ret);
 
 	//
-	alive = 1;
-	ret = uart_designate();
-	threadcreate(uart_thread, &g_obj[ret]);
+	per->alive = 1;
+	per->thread = threadcreate(uart_thread, oo);
 
 	//success
+	return oo;
+}
+int uart_delete(_obj* oo)
+{
+	struct percom* per = (void*)oo->priv_256b;
+	HANDLE hcom = per->hcom;
+
+	per->alive = 0;
+	//wait for thread exit
+
+	CloseHandle(hcom);
+}
+int uart_reader(_obj* oo,int xx, void* arg,int off, void* buf,int len)
+{
+	struct percom* per = (void*)oo->priv_256b;
+	HANDLE hcom = per->hcom;
+
+	u32 cnt = 0;
+	int ret = ReadFile(hcom, buf, len, (void*)&cnt, 0);
 	return ret;
 }
-
-
-
-
-int freeuart()
+int uart_writer(_obj* oo,int xx, void* arg,int off, void* buf,int len)
 {
-}
-int inituart(void* addr)
-{
-	g_obj = addr;
+	struct percom* per = (void*)oo->priv_256b;
+	HANDLE hcom = per->hcom;
+
+	u32 cnt = 0;
+	int ret = WriteFile(hcom, buf,  len, (void*)&cnt, 0);
+	//say("write:ret=%d,cnt=%d,errno=%d\n", ret, cnt, GetLastError());
+	return ret;
 }
