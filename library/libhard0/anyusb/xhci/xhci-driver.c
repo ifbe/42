@@ -9,6 +9,7 @@ int usbany_linkup(void*,int,void*,int);
 
 
 #define _addr_ hex32('a','d','d','r')	//prepare slotctx+ep0ctx
+#define _hub_  hex32('h','u','b', 0 )	//notify it is hub
 #define _eval_ hex32('e','v','a','l')	//modify epctx
 #define _conf_ hex32('c','o','n','f')	//prepare ep*ctx
 struct UsbRequest{
@@ -390,7 +391,7 @@ struct perdev{
 	u32 rootport;
 	u32 routestring;
 	u32 usbspeed;
-	u32 rsvd;
+	u32 ishub;
 	u32 aa;
 	u32 bb;
 	u32 cc;
@@ -978,6 +979,79 @@ int xhci_ResetDevice(struct item* xhci, int slot)
 	xhci_print("ResetDevice{\n");
 	return 0;
 }
+int xhci_EvaluateContext_hub(struct item* xhci, int slot)
+{
+	xhci_print("EvaluateContext.ishub{\n");
+	struct perxhci* xhcidata = (void*)(xhci->priv_256b);
+	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
+	slotdata->myctx.devctx.ishub = 1;
+
+//-------------from myown get something------------
+	u32 rootport = slotdata->myctx.devctx.rootport;
+	u32 routestring = slotdata->myctx.devctx.routestring;
+	u32 usbspeed = slotdata->myctx.devctx.usbspeed;
+	u32 ishub = 1;
+	xhci_print("port=%x,route=%x,speed=%x,ishub=1\n",rootport,routestring,usbspeed,ishub);
+
+//-------------from speed know maxpacksz-------------
+	u32 packetsize;
+	switch(usbspeed){
+	case 1:
+	case 2:packetsize = 8;break;
+	case 3:packetsize = 0x40;break;
+	default:packetsize = 0x200;
+	}
+	xhci_print("packetsize=0x%x\n", packetsize);
+
+//-------------from xhci known slotctxsz------------
+	u32 contextsize = 0x20;
+	if(0x4 == (xhcidata->capreg->CAPPARAMS1 & 0x4))contextsize = 0x40;
+	xhci_print("contextsize=0x%x\n", contextsize);
+
+//---------------------------------------------------
+	//some buffer
+	int j;
+	u8* buf = xhcidata->freebuf;
+	for(j=0;j<0x800;j++)buf[j] = 0;
+
+	u32* incon  = (void*)(buf + 0);
+	u32* devctx = (void*)(buf + contextsize);
+	u32* ep0ctx = (void*)(buf + contextsize*2);
+
+	u32 EP0DCI = 1;		//ep0 bidir
+	u64 EP0CMD = (u64)(slotdata->cmdring[EP0DCI]);
+	u32 lo = EP0CMD & 0xffffffff;
+	u32 hi = EP0CMD >> 32;
+	xhci_print("ep0cmd@%llx\n", EP0CMD);
+
+	//fill buffer
+	incon[0] = 0;
+	incon[1] = 1;
+	for(j=2;j<8;j++)incon[j] = 0;
+
+	devctx[0] = (EP0DCI<<27) + (ishub<<26) + (usbspeed<<20) + routestring;
+	devctx[1] = rootport << 16;
+	devctx[2] = 0;
+	devctx[3] = 0;
+
+	//send command
+	lo = ((u64)incon) & 0xffffffff;
+	hi = ((u64)incon) >> 32;
+	xhci_hostorder(xhci,0, lo,hi,0,(slot<<24)+(TRB_command_EvaluateContext<<10) );
+	if(xhci_waitevent(xhci, 5*1000*1000, TRB_event_CommandCompletion, 0) != slot){
+		xhci_print("error@eval ctx\n");
+		return -1;
+	}
+
+	u32 slotstate = (*(u32*)(slotdata->hcctx+0xc))>>27;
+	if(2 != slotstate){
+		xhci_print("slot state:%x\n",slotstate);
+		return -2;
+	}
+
+	xhci_print("}EvaluateContext.ishub\n");
+	return 0;
+}
 int xhci_EvaluateContext(struct item* xhci, int slot, u8* devdesc, int len)
 {
 	//Evaluate Context Command
@@ -1352,6 +1426,8 @@ static int xhci_give(struct item* xhci,u32 SlotEndp, void* stack,int sp, void* a
 		switch(cmd&0x7fffffff){
 		case _addr_:     //prepare slotctx+ep0ctx
 			return xhci_AddressDevice(xhci, SlotEndp);
+		case _hub_:     //modify ep0ctx
+			return xhci_EvaluateContext_hub(xhci, SlotEndp);
 		case _eval_:     //modify ep0ctx
 			return xhci_EvaluateContext(xhci, SlotEndp, buf, len);
 		case _conf_:     //prepare ep*ctx
@@ -1430,63 +1506,67 @@ int resetport(struct item* xhci, int countfrom0)
 
 	return 1;
 }
-void xhci_listall(struct item* xhci, int count)
+void xhci_checkport(struct item* xhci, int id)
 {
-	int j;
 	u32 tmp,speed;
 	struct perxhci* my = (void*)(xhci->priv_256b);
 	struct perport* pp = my->perport;
 	struct OperationalRegisters* optreg = my->optreg;
 	struct PortRegisters* port = optreg->port;
-	for(j=0;j<count;j++){
-		tmp = port[j].PORTSC;
-		xhci_print("xhciport: %02x@%p:psi=%x,portsc=%x{\n", j, &port[j], pp[j].protocol, tmp);
-		if(0 == (tmp & 0x1))goto thisdone;
 
-		//if(0 == PORTSC.bit1)ver <= 2.0, have to reset
-		if(0 == (tmp & 0x2)){
-			if(resetport(xhci, j) <= 0){
-				xhci_print("reset failed: portsc=%x\n", port[j].PORTSC);
-				goto thisdone;
-			}
+	tmp = port[id].PORTSC;
+	xhci_print("xhciport: %02x@%p:psi=%x,portsc=%x{\n", id, &port[id], pp[id].protocol, tmp);
+	if(0 == (tmp & 0x1))goto thisdone;
+
+	//if(0 == PORTSC.bit1)ver <= 2.0, have to reset
+	if(0 == (tmp & 0x2)){
+		if(resetport(xhci, id) <= 0){
+			xhci_print("reset failed: portsc=%x\n", port[id].PORTSC);
+			goto thisdone;
 		}
-		//todo:检查错误
+	}
+	//todo:检查错误
 
-		//link state
-		tmp = port[j].PORTSC;
-		xhci_print("portsc=%08x,linkstate=%x\n", tmp, (tmp >> 5) & 0xf);
+	//link state
+	tmp = port[id].PORTSC;
+	xhci_print("portsc=%08x,linkstate=%x\n", tmp, (tmp >> 5) & 0xf);
 
-		//usb speed
-		speed = (port[j].PORTSC >> 10) & 0xf;
-		switch(speed){
-		case 7:xhci_print("10Gb,x2\n");break;
-		case 6:xhci_print("5Gb,x2\n");break;
-		case 5:xhci_print("10Gb,x1\n");break;
-		case 4:xhci_print("5Gb,x1\n");break;
-		case 3:xhci_print("480Mb\n");break;
-		case 2:xhci_print("1.5Mb\n");break;	//yes, 2=low speed
-		case 1:xhci_print("12Mb\n");break;	//yes, 1=full speed
-		default:xhci_print("speed=%x\n", speed);
-		}
+	//usb speed
+	speed = (port[id].PORTSC >> 10) & 0xf;
+	switch(speed){
+	case 7:xhci_print("10Gb,x2\n");break;
+	case 6:xhci_print("5Gb,x2\n");break;
+	case 5:xhci_print("10Gb,x1\n");break;
+	case 4:xhci_print("5Gb,x1\n");break;
+	case 3:xhci_print("480Mb\n");break;
+	case 2:xhci_print("1.5Mb\n");break;	//yes, 2=low speed
+	case 1:xhci_print("12Mb\n");break;	//yes, 1=full speed
+	default:xhci_print("speed=%x\n", speed);
+	}
 
-		//probedevice(xhci, speed, j+1, 0);
+	//alloc slot
+	int slot = xhci_EnableSlot(xhci);
+	if(slot <= 0 | slot >= 16)goto thisdone;
 
-		//alloc slot
-		int slot = xhci_EnableSlot(xhci);
-		if(slot <= 0 | slot >= 16)goto thisdone;
+	struct perslot* slotdata = (void*)(my->perslot) + slot*0x10000;
+	slotdata->myctx.devctx.rootport = id+1;
+	slotdata->myctx.devctx.routestring = 0;
+	slotdata->myctx.devctx.usbspeed = speed;
+	slotdata->myctx.devctx.ishub = 0;
 
-		struct perxhci* xhcidata = (void*)(xhci->priv_256b);
-		struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
-		slotdata->myctx.devctx.usbspeed = speed;
-		slotdata->myctx.devctx.rootport = j+1;
-		slotdata->myctx.devctx.routestring = 0;
-
-		//let usb do rest
-		struct item* usb = device_create(_usb_, 0, 0, 0);
-		if(usb)usbany_linkup(usb, 0, xhci, slot);
+	//let usb do rest
+	struct item* usb = device_create(_usb_, 0, 0, 0);
+	if(usb)usbany_linkup(usb, 0, xhci, slot);
 
 thisdone:
-		xhci_print("}#xhciport: %02x@%p\n", j, &port[j]);
+	xhci_print("}#xhciport: %02x@%p\n", id, &port[id]);
+}
+void xhci_listall(struct item* xhci, int count)
+{
+	int j;
+	for(j=0;j<count;j++){
+		xhci_checkport(xhci, j);
+		say("...\n");
 	}
 }
 

@@ -56,7 +56,7 @@ _obj* uart_create(char* p, int speed)
 	if(fd <= 0)
 	{
 		say("error:%d@open:%s\n",errno,p);
-		return -1;
+		return 0;
 	}
 
 	//obj
