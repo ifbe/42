@@ -5,9 +5,10 @@
 
 #define _tohc_ 0x80000000
 #define _tohc_addr_ (_tohc_|hex32('a','d','d','r'))	//prepare slotctx+ep0ctx
-#define _tohc_hub_ (_tohc_|hex32('h','u','b', 0))	//notify it is hub
 #define _tohc_eval_ (_tohc_|hex32('e','v','a','l'))	//modify epctx
 #define _tohc_conf_ (_tohc_|hex32('c','o','n','f'))	//prepare ep*ctx
+#define _tohc_hub_ (_tohc_|hex32('h','u','b', 0))	//notify it is hub
+#define _tohc_new_ (_tohc_|hex32('n','e','w', 0))	//notify it is hub
 //usb bRequest
 #define GET_STATUS        0
 #define CLEAR_FEATURE     1

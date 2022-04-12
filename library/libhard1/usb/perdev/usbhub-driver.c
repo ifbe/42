@@ -13,6 +13,16 @@
 #define HUB_STATUS_CNCTSTSCHG	(1<<24)
 #define HUB_STATUS_PECHANGE		(1<<25)
 #define HUB_STATUS_RESET		(1<<28)
+#define bmHUB_PORT_STATUS_PORT_CONNECTION       0x0001
+#define bmHUB_PORT_STATUS_PORT_ENABLE           0x0002
+#define bmHUB_PORT_STATUS_PORT_SUSPEND          0x0004
+#define bmHUB_PORT_STATUS_PORT_OVER_CURRENT     0x0008
+#define bmHUB_PORT_STATUS_PORT_RESET            0x0010
+#define bmHUB_PORT_STATUS_PORT_POWER            0x0100
+#define bmHUB_PORT_STATUS_PORT_LOW_SPEED        0x0200
+#define bmHUB_PORT_STATUS_PORT_HIGH_SPEED       0x0400
+#define bmHUB_PORT_STATUS_PORT_TEST             0x0800
+#define bmHUB_PORT_STATUS_PORT_INDICATOR        0x1000
 //
 int usbdesc_addr2offs(struct perusb* perusb, void* desc);
 void* usbdesc_offs2addr(struct perusb* perusb, int offs);
@@ -98,6 +108,18 @@ int usbhub_enumone(struct item* usb, int id)
 	int ret;
 	struct UsbRequest req;
 
+	usbhub_print("%d:get stat\n", id);
+	USB_HUB_PORT_GETSTATUS(&req, id+1);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot,
+		0,0,
+		&req,8,
+		&perfunc->portstat[id],4
+	);
+	if(ret < 0)return -10;
+	say("stat=%x\n",perfunc->portstat[id]);
+
+
 	usbhub_print("%d:power on\n", id);
 	USB_HUB_PORT_POWERON(&req, id+1);
 	ret = xhci->give_pxpxpxpx(
@@ -111,15 +133,6 @@ int usbhub_enumone(struct item* usb, int id)
 	//power stable
 	sleep_ms(100);
 
-	usbhub_print("%d:clear cnctn\n", id);
-	USB_HUB_PORT_CLEARCNCTN(&req, id+1);
-	ret = xhci->give_pxpxpxpx(
-		xhci,slot,
-		0,0,
-		&req,8,
-		0,0
-	);
-	if(ret < 0)return -10;
 
 	usbhub_print("%d:get stat\n", id);
 	USB_HUB_PORT_GETSTATUS(&req, id+1);
@@ -131,7 +144,32 @@ int usbhub_enumone(struct item* usb, int id)
 	);
 	if(ret < 0)return -10;
 	say("stat=%x\n",perfunc->portstat[id]);
+
+
+	usbhub_print("%d:clear cnctn\n", id);
+	USB_HUB_PORT_CLEARCNCTN(&req, id+1);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot,
+		0,0,
+		&req,8,
+		0,0
+	);
+	if(ret < 0)return -10;
+
+
+	usbhub_print("%d:get stat\n", id);
+	USB_HUB_PORT_GETSTATUS(&req, id+1);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot,
+		0,0,
+		&req,8,
+		&perfunc->portstat[id],4
+	);
+	if(ret < 0)return -10;
+	say("stat=%x\n",perfunc->portstat[id]);
+
 	if(0 == (perfunc->portstat[id]&HUB_STATUS_CONNECTION))return 0;
+
 
 	usbhub_print("%d:reset\n", id);
 	USB_HUB_PORT_RESET(&req, id+1);
@@ -146,6 +184,7 @@ int usbhub_enumone(struct item* usb, int id)
 	//reset wait
 	sleep_ms(50);
 
+
 	usbhub_print("%d:get stat\n", id);
 	USB_HUB_PORT_GETSTATUS(&req, id+1);
 	ret = xhci->give_pxpxpxpx(
@@ -158,6 +197,7 @@ int usbhub_enumone(struct item* usb, int id)
 	say("stat=%x\n",perfunc->portstat[id]);
 	if(0 == (perfunc->portstat[id]&HUB_STATUS_CONNECTION))return 0;
 
+
 	usbhub_print("%d:clear reset\n", id);
 	USB_HUB_PORT_CLEARRESET(&req, id+1);
 	ret = xhci->give_pxpxpxpx(
@@ -168,7 +208,27 @@ int usbhub_enumone(struct item* usb, int id)
 	);
 	if(ret < 0)return -10;
 
-	usbhub_print("%d:device present\n", id);
+
+	usbhub_print("%d:get stat\n", id);
+	USB_HUB_PORT_GETSTATUS(&req, id+1);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot,
+		0,0,
+		&req,8,
+		&perfunc->portstat[id],4
+	);
+	if(ret < 0)return -10;
+	say("stat=%x\n",perfunc->portstat[id]);
+
+
+	usbhub_print("%d:notify xhci enable device\n", id);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot,
+		0,0,
+		0,_tohc_new_,
+		0,id+1
+	);
+	if(ret < 0)return -9;
 /*
 	struct item* ccc = device_create(_usb_, 0, 0, 0);
 	if(ccc)usbany_linkup(ccc, 0, xhci, slot);
@@ -222,16 +282,6 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	);
 	if(ret < 0)return -10;
 
-	//notify xhci its hub
-	usbhub_print("notify ishub\n");
-	ret = xhci->give_pxpxpxpx(
-		xhci,slot,
-		0,0,
-		0,_tohc_hub_,
-		0,0
-	);
-	if(ret < 0)return -9;
-
 	//hub desc
 	usbhub_print("get_hubdesc\n");
 	struct HubDescriptor* hubdesc = (void*)perfunc->buf;
@@ -253,6 +303,16 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	say("  PortIndicatorsSupported=%x\n", hubdesc->character.PortIndicatorsSupported);
 	say("bPwrOn2PwrGood=%x\n",      hubdesc->bPwrOn2PwrGood);
 	say("bHubContrCurrent=%x\n",    hubdesc->bHubContrCurrent);
+
+	//notify xhci its hub, and send hub desc
+	usbhub_print("notify ishub\n");
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot,
+		0,0,
+		0,_tohc_hub_,
+		hubdesc,0
+	);
+	if(ret < 0)return -9;
 
 	perfunc->hostnode = xhci;
 	perfunc->hostslot = slot;

@@ -9,9 +9,10 @@ int usbany_linkup(void*,int,void*,int);
 
 
 #define _addr_ hex32('a','d','d','r')	//prepare slotctx+ep0ctx
-#define _hub_  hex32('h','u','b', 0 )	//notify it is hub
 #define _eval_ hex32('e','v','a','l')	//modify epctx
 #define _conf_ hex32('c','o','n','f')	//prepare ep*ctx
+#define _hub_  hex32('h','u','b', 0 )	//notify it is hub
+#define _new_  hex32('n','e','w', 0 )	//notify it is hub
 struct UsbRequest{
 	//[0,3]
 	u8 bmRequestType;
@@ -37,6 +38,29 @@ struct UsbRequest{
 		//if(GET_DESCRIPTOR_string)wIndex = LANGID
 	u16 wLength;
 }__attribute__((packed));
+
+struct hubcharacter{
+	u16 LogPwrSwitchMode : 2;
+	u16 CompoundDevice : 1;
+	u16 OverCurrentProtectMode : 2;
+	u16 TTThinkTime : 2;
+	u16 PortIndicatorsSupported : 1;
+	u16 Reserved : 8;
+}__attribute__((packed));
+struct HubDescriptor{
+	u8          bDescLength;
+	u8      bDescriptorType;	//1: 0x29
+	u8            bNbrPorts;
+
+	union{
+		u16 wHubCharacteristics;
+		struct hubcharacter ch;
+	};
+
+	u8       bPwrOn2PwrGood;
+	u8     bHubContrCurrent;
+}__attribute__((packed));
+
 struct EndpointDescriptor{
 	u8          bLength;		//0: 0x09
 	u8  bDescriptorType;		//1: 0x05
@@ -388,12 +412,15 @@ struct StatusStage{
 
 
 struct perdev{
+	//where am i
 	u32 rootport;
 	u32 routestring;
+	//my status
 	u32 usbspeed;
-	u32 ishub;
-	u32 aa;
-	u32 bb;
+	u32 maxdci;
+	//hub
+	u32 hub_portcount;
+	u32 hub_tt_think_time;
 	u32 cc;
 	u32 dd;
 }__attribute__((packed));
@@ -839,6 +866,63 @@ void xhci_hostorder(struct item* xhci, int slot, u32 d0,u32 d1,u32 d2,u32 d3)
 
 
 
+int xhci_fillslotctx(struct item* xhci, int slot, struct SlotContext* devctx)
+{
+	struct perxhci* xhcidata = (void*)(xhci->priv_256b);
+	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
+	struct perdev* myctx = &slotdata->myctx.devctx;
+
+	//[0,3]
+	devctx->RouteString = myctx->routestring;
+	devctx->Speed = myctx->usbspeed;
+	devctx->ContextEntries = myctx->maxdci;
+	//[4,7]
+	devctx->MaxExitLatency = 0;
+	devctx->RootHubPortNumber = myctx->rootport;
+	//[8,b]
+	devctx->ParentHubSlotID = 0;
+	devctx->ParentPortNumber = 0;
+	devctx->TTThinkTime = 0;
+	devctx->InterrupterTarget = 0;
+	//[c,f]
+	devctx->USBDeviceAddress = 0;
+	devctx->SlotState = 0;
+
+	int ishub = !(!myctx->hub_portcount);
+	if(ishub){
+		devctx->Hub = ishub;
+		devctx->NumberofPorts = myctx->hub_portcount;
+
+		if(SPEED_HS == myctx->usbspeed){
+			devctx->TTThinkTime = myctx->hub_tt_think_time;
+
+			if(0){	//multi-tt enabled
+				devctx->MultiTT = 1;
+			}
+		}
+	}
+/*
+	//LS or FS device, under HS hub
+	if(){
+		int parentslot;
+		int parentport;
+		struct perslot* parentslotdata = (void*)(xhcidata->perslot) + parentslot*0x10000;
+		struct SlotContext* parentctx = &parentslotdata->myctx.devctx;
+		devctx->MultiTT = parentctx->MultiTT;
+		devctx->ParentHubSlotID = parentslot;
+		devctx->ParentPortNumber = parentport;
+	}
+*/
+	return 0;
+}
+int xhci_fillepctx(struct item* xhci, int slot, struct EndpointContext* epctx)
+{
+	return 0;
+}
+
+
+
+
 int xhci_NoOp(struct item* xhci)
 {
 	xhci_print("NoOp{\n");
@@ -979,29 +1063,11 @@ int xhci_ResetDevice(struct item* xhci, int slot)
 	xhci_print("ResetDevice{\n");
 	return 0;
 }
-int xhci_EvaluateContext_hub(struct item* xhci, int slot)
+int xhci_EvaluateContext_hub(struct item* xhci, int slot, struct HubDescriptor* hubdesc, int xxx)
 {
 	xhci_print("EvaluateContext.ishub{\n");
 	struct perxhci* xhcidata = (void*)(xhci->priv_256b);
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
-	slotdata->myctx.devctx.ishub = 1;
-
-//-------------from myown get something------------
-	u32 rootport = slotdata->myctx.devctx.rootport;
-	u32 routestring = slotdata->myctx.devctx.routestring;
-	u32 usbspeed = slotdata->myctx.devctx.usbspeed;
-	u32 ishub = 1;
-	xhci_print("port=%x,route=%x,speed=%x,ishub=1\n",rootport,routestring,usbspeed,ishub);
-
-//-------------from speed know maxpacksz-------------
-	u32 packetsize;
-	switch(usbspeed){
-	case 1:
-	case 2:packetsize = 8;break;
-	case 3:packetsize = 0x40;break;
-	default:packetsize = 0x200;
-	}
-	xhci_print("packetsize=0x%x\n", packetsize);
 
 //-------------from xhci known slotctxsz------------
 	u32 contextsize = 0x20;
@@ -1016,7 +1082,6 @@ int xhci_EvaluateContext_hub(struct item* xhci, int slot)
 
 	u32* incon  = (void*)(buf + 0);
 	u32* devctx = (void*)(buf + contextsize);
-	u32* ep0ctx = (void*)(buf + contextsize*2);
 
 	u32 EP0DCI = 1;		//ep0 bidir
 	u64 EP0CMD = (u64)(slotdata->cmdring[EP0DCI]);
@@ -1029,10 +1094,10 @@ int xhci_EvaluateContext_hub(struct item* xhci, int slot)
 	incon[1] = 1;
 	for(j=2;j<8;j++)incon[j] = 0;
 
-	devctx[0] = (EP0DCI<<27) + (ishub<<26) + (usbspeed<<20) + routestring;
-	devctx[1] = rootport << 16;
-	devctx[2] = 0;
-	devctx[3] = 0;
+	slotdata->myctx.devctx.maxdci = 1;
+	slotdata->myctx.devctx.hub_portcount = hubdesc->bNbrPorts;
+	slotdata->myctx.devctx.hub_tt_think_time = hubdesc->ch.TTThinkTime;
+	xhci_fillslotctx(xhci, slot, (void*)devctx);
 
 	//send command
 	lo = ((u64)incon) & 0xffffffff;
@@ -1285,6 +1350,36 @@ int xhci_ConfigureEndpoint(struct item* xhci, int slot, struct EndpointDescripto
 	xhci_print("}ConfigureEndpoint\n");
 	return 0;
 }
+int xhci_newdevunderhub(struct item* xhci, int parentslot, u8* buf, int hubport_countfrom1)
+{
+	int childslot = xhci_EnableSlot(xhci);
+	if(childslot <= 0 | childslot >= 16)goto thisdone;
+
+	struct perxhci* my = (void*)(xhci->priv_256b);
+
+	struct perslot* childslotdata = (void*)(my->perslot) + childslot*0x10000;
+	struct perdev* childctx = &childslotdata->myctx.devctx;
+
+	struct perslot* parentslotdata = (void*)(my->perslot) + parentslot*0x10000;
+	struct perdev* parentctx = &parentslotdata->myctx.devctx;
+
+	childctx->rootport = parentctx->rootport;
+	childctx->routestring = hubport_countfrom1;
+	childctx->usbspeed = SPEED_HS;
+	childctx->hub_portcount = 0;
+
+	//let usb do rest
+	struct item* usb = device_create(_usb_, 0, 0, 0);
+	if(usb)usbany_linkup(usb, 0, xhci, childslot);
+
+thisdone:
+	xhci_print("\n");
+	return 0;
+}
+
+
+
+
 int xhci_ControlTransfer(struct item* xhci, int slot, struct UsbRequest* req, int slen, void* recvbuf, int recvlen)
 {
 	int DCI = 1;
@@ -1407,60 +1502,6 @@ int xhci_InterruptTransferIn(struct item* xhci, int slotendp, void* sendbuf, int
 
 
 
-static int xhci_take(struct item* xhci,void* foot, void* stack,int sp, void* arg,int cmd, void* buf,int len)
-{
-	if(0 == xhci)return 0;
-
-	void* ev;
-	while(1){
-		ev = xhci_takeevent(xhci);
-		if(0 == ev)break;
-
-		xhci_parseevent(xhci, ev);
-	}
-	return 0;
-}
-static int xhci_give(struct item* xhci,u32 SlotEndp, void* stack,int sp, void* arg,int cmd, void* buf,int len)
-{
-	if(cmd & 0x80000000){	//to xhci
-		switch(cmd&0x7fffffff){
-		case _addr_:     //prepare slotctx+ep0ctx
-			return xhci_AddressDevice(xhci, SlotEndp);
-		case _hub_:     //modify ep0ctx
-			return xhci_EvaluateContext_hub(xhci, SlotEndp);
-		case _eval_:     //modify ep0ctx
-			return xhci_EvaluateContext(xhci, SlotEndp, buf, len);
-		case _conf_:     //prepare ep*ctx
-			return xhci_ConfigureEndpoint(xhci, SlotEndp, buf, len);
-		}
-	}//to host
-
-	else{	//to device
-		int slot = SlotEndp & 0xff;
-		int DCI =(SlotEndp>>8) & 0xff;
-		if(DCI <= 1){		//to ep0
-			return xhci_ControlTransfer(xhci, SlotEndp, arg, cmd, buf, len);
-		}
-
-		struct perxhci* xhcidata = (void*)(xhci->priv_256b);
-		struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
-		switch(slotdata->myctx.epnctx[DCI].eptype){
-		case EPType_InterruptOut:
-			return xhci_InterruptTransferOut(xhci, SlotEndp, arg, cmd, buf, len);
-		case EPType_InterruptIn:
-			return xhci_InterruptTransferIn(xhci, SlotEndp, arg, cmd, buf, len);
-		case EPType_BulkOut:
-		case EPType_BulkIn:
-			return xhci_BulkTransfer(xhci, SlotEndp, arg, cmd, buf, len);
-		}
-	}//to device
-
-	return 0;
-}
-
-
-
-
 int resetport(struct item* xhci, int countfrom0)
 {
 	struct perxhci* my = (void*)(xhci->priv_256b);
@@ -1552,7 +1593,7 @@ void xhci_checkport(struct item* xhci, int id)
 	slotdata->myctx.devctx.rootport = id+1;
 	slotdata->myctx.devctx.routestring = 0;
 	slotdata->myctx.devctx.usbspeed = speed;
-	slotdata->myctx.devctx.ishub = 0;
+	slotdata->myctx.devctx.hub_portcount = 0;
 
 	//let usb do rest
 	struct item* usb = device_create(_usb_, 0, 0, 0);
@@ -1568,6 +1609,62 @@ void xhci_listall(struct item* xhci, int count)
 		xhci_checkport(xhci, j);
 		say("...\n");
 	}
+}
+
+
+
+
+static int xhci_take(struct item* xhci,void* foot, void* stack,int sp, void* arg,int cmd, void* buf,int len)
+{
+	if(0 == xhci)return 0;
+
+	void* ev;
+	while(1){
+		ev = xhci_takeevent(xhci);
+		if(0 == ev)break;
+
+		xhci_parseevent(xhci, ev);
+	}
+	return 0;
+}
+static int xhci_give(struct item* xhci,u32 SlotEndp, void* stack,int sp, void* arg,int cmd, void* buf,int len)
+{
+	if(cmd & 0x80000000){	//to xhci
+		switch(cmd&0x7fffffff){
+		case _addr_:     //prepare slotctx+ep0ctx
+			return xhci_AddressDevice(xhci, SlotEndp);
+		case _eval_:     //modify ep0ctx
+			return xhci_EvaluateContext(xhci, SlotEndp, buf, len);
+		case _conf_:     //prepare ep*ctx
+			return xhci_ConfigureEndpoint(xhci, SlotEndp, buf, len);
+		case _hub_:     //device is hub
+			return xhci_EvaluateContext_hub(xhci, SlotEndp, buf, len);
+		case _new_:     //device under hub
+			return xhci_newdevunderhub(xhci, SlotEndp, buf, len);
+		}
+	}//to host
+
+	else{	//to device
+		int slot = SlotEndp & 0xff;
+		int DCI =(SlotEndp>>8) & 0xff;
+		if(DCI <= 1){		//to ep0
+			return xhci_ControlTransfer(xhci, SlotEndp, arg, cmd, buf, len);
+		}
+
+		struct perxhci* xhcidata = (void*)(xhci->priv_256b);
+		struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
+		switch(slotdata->myctx.epnctx[DCI].eptype){
+		case EPType_InterruptOut:
+			return xhci_InterruptTransferOut(xhci, SlotEndp, arg, cmd, buf, len);
+		case EPType_InterruptIn:
+			return xhci_InterruptTransferIn(xhci, SlotEndp, arg, cmd, buf, len);
+		case EPType_BulkOut:
+		case EPType_BulkIn:
+			return xhci_BulkTransfer(xhci, SlotEndp, arg, cmd, buf, len);
+		}
+	}//to device
+
+	return 0;
 }
 
 
