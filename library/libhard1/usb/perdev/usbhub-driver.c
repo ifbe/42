@@ -221,12 +221,21 @@ int usbhub_enumone(struct item* usb, int id)
 	say("stat=%x\n",perfunc->portstat[id]);
 
 
+	if(perfunc->portstat[id]&bmHUB_PORT_STATUS_PORT_LOW_SPEED){
+		usbhub_print("speed=ls(1.5mbps)\n");
+	}
+	else if(perfunc->portstat[id]&bmHUB_PORT_STATUS_PORT_HIGH_SPEED){
+		usbhub_print("speed=hs(480mbps)\n");
+	}
+	else{
+		usbhub_print("speed=fs(12mbsp)\n");
+	}
 	usbhub_print("%d:notify xhci enable device\n", id);
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
 		0,_tohc_new_,
-		0,id+1
+		&perfunc->portstat[id],id+1
 	);
 	if(ret < 0)return -9;
 /*

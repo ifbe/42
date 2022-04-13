@@ -73,6 +73,8 @@ struct EndpointDescriptor{
 
 
 
+#define bmHUB_PORT_STATUS_PORT_LOW_SPEED        0x0200
+#define bmHUB_PORT_STATUS_PORT_HIGH_SPEED       0x0400
 //speed
 #define SPEED_FS 1
 #define SPEED_LS 2
@@ -418,11 +420,12 @@ struct perdev{
 	//my status
 	u32 usbspeed;
 	u32 maxdci;
-	//hub
+	//i am hub
 	u32 hub_portcount;
 	u32 hub_tt_think_time;
-	u32 cc;
-	u32 dd;
+	//parent info
+	u32 parent_slot;
+	u32 parent_port;
 }__attribute__((packed));
 struct perendp{
 	u32 eptype;
@@ -901,22 +904,47 @@ int xhci_fillslotctx(struct item* xhci, int slot, struct SlotContext* devctx)
 			}
 		}
 	}
-/*
+
 	//LS or FS device, under HS hub
-	if(){
-		int parentslot;
-		int parentport;
-		struct perslot* parentslotdata = (void*)(xhcidata->perslot) + parentslot*0x10000;
-		struct SlotContext* parentctx = &parentslotdata->myctx.devctx;
-		devctx->MultiTT = parentctx->MultiTT;
-		devctx->ParentHubSlotID = parentslot;
-		devctx->ParentPortNumber = parentport;
-	}
-*/
+	if( (SPEED_LS != myctx->usbspeed) && (SPEED_FS != myctx->usbspeed) )goto skipthis;
+
+	int parentslot = myctx->parent_slot;
+	if(0 == parentslot)goto skipthis;
+
+	struct perslot* parentslotdata = (void*)(xhcidata->perslot) + parentslot*0x10000;
+	struct perdev* parentctx = &parentslotdata->myctx.devctx;
+	if(SPEED_HS != parentctx->usbspeed)goto skipthis;
+
+	xhci_print("LS or FS under HS hub: hubslot=%d,hubport=%d\n", parentslot, myctx->parent_port);
+	devctx->MultiTT = 0;
+	devctx->ParentHubSlotID = parentslot;
+	devctx->ParentPortNumber = myctx->parent_port;
+
+skipthis:
 	return 0;
 }
 int xhci_fillepctx(struct item* xhci, int slot, struct EndpointContext* epctx)
 {
+/*
+	//[0,3]
+	epctx->EndpointState = 0;
+	epctx->Mult = mult;
+	epctx->MaxPrimaryStreams = 0;
+	epctx->LinerStreamArray = 0;
+	epctx->Interval = interval;
+	epctx->MaxESITPayloadHi = (esitpayload >> 16) & 0xff;
+	//[4,7]
+	epctx->ErrorCount = CErr;
+	epctx->EndpointType = eptype;
+	epctx->HostInitiateDisable = 0;
+	epctx->MaxBurstSize = burstsize;
+	epctx->MaxPacketSize = packetsize;
+	//[8,b]
+	epctx->DequeueCycleAndPointer = ((u64)slotdata + 0x1000*DCI) | 1;
+	//[c,f]
+	epctx->AverageTRBLength = avgtrblen;
+	epctx->MaxESITPayloadLo = esitpayload & 0xffff;
+*/
 	return 0;
 }
 
@@ -1015,11 +1043,14 @@ int xhci_AddressDevice(struct item* xhci, int slot)
 	incon[1] = 3;
 	for(j=2;j<8;j++)incon[j] = 0;
 
+	slotdata->myctx.devctx.maxdci = 1;
+	xhci_fillslotctx(xhci, slot, (void*)devctx);
+/*
 	devctx[0] = (EP0DCI<<27) + (usbspeed<<20) + routestring;
 	devctx[1] = rootport << 16;
 	devctx[2] = 0;
 	devctx[3] = 0;
-
+*/
 	ep0ctx[0] = 0;
 	ep0ctx[1] = (packetsize<<16) + (4<<3) + 6;
 	ep0ctx[2] = lo | 1;
@@ -1350,7 +1381,7 @@ int xhci_ConfigureEndpoint(struct item* xhci, int slot, struct EndpointDescripto
 	xhci_print("}ConfigureEndpoint\n");
 	return 0;
 }
-int xhci_newdevunderhub(struct item* xhci, int parentslot, u8* buf, int hubport_countfrom1)
+int xhci_newdevunderhub(struct item* xhci, int parentslot, u32* portstatus, int hubport_countfrom1)
 {
 	int childslot = xhci_EnableSlot(xhci);
 	if(childslot <= 0 | childslot >= 16)goto thisdone;
@@ -1363,10 +1394,15 @@ int xhci_newdevunderhub(struct item* xhci, int parentslot, u8* buf, int hubport_
 	struct perslot* parentslotdata = (void*)(my->perslot) + parentslot*0x10000;
 	struct perdev* parentctx = &parentslotdata->myctx.devctx;
 
+	int speed = SPEED_FS;
+	if(portstatus[0]&bmHUB_PORT_STATUS_PORT_LOW_SPEED)speed = SPEED_LS;
+	if(portstatus[0]&bmHUB_PORT_STATUS_PORT_HIGH_SPEED)speed = SPEED_HS;
 	childctx->rootport = parentctx->rootport;
 	childctx->routestring = hubport_countfrom1;
-	childctx->usbspeed = SPEED_HS;
+	childctx->usbspeed = speed;
 	childctx->hub_portcount = 0;
+	childctx->parent_slot = parentslot;
+	childctx->parent_port = hubport_countfrom1;
 
 	//let usb do rest
 	struct item* usb = device_create(_usb_, 0, 0, 0);
@@ -1594,6 +1630,8 @@ void xhci_checkport(struct item* xhci, int id)
 	slotdata->myctx.devctx.routestring = 0;
 	slotdata->myctx.devctx.usbspeed = speed;
 	slotdata->myctx.devctx.hub_portcount = 0;
+	slotdata->myctx.devctx.parent_slot = 0;
+	slotdata->myctx.devctx.parent_port = 0;
 
 	//let usb do rest
 	struct item* usb = device_create(_usb_, 0, 0, 0);
