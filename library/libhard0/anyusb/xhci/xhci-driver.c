@@ -73,16 +73,38 @@ struct EndpointDescriptor{
 
 
 
-#define bmHUB_PORT_STATUS_PORT_LOW_SPEED        0x0200
-#define bmHUB_PORT_STATUS_PORT_HIGH_SPEED       0x0400
-//speed
+#define HSHUB_PORTSTATUS_LOWSPEED  (1<<9)
+#define HSHUB_PORTSTATUS_HIGHSPEED (1<<10)
+
+
+
+
+//root hub device speed
 #define SPEED_FS 1
 #define SPEED_LS 2
 #define SPEED_HS 3
-#define SPEED_SS_1x1 4
+#define SPEED_SS 4
 #define SPEED_SSP_2x1 5
 #define SPEED_SSP_1x2 6
 #define SPEED_SSP_2x2 7
+char* speed2string[] = {
+"unknown",			//0
+
+"usb1 12mbps",		//1
+"usb1 1.5mbps",		//2
+
+"usb2 480mbps",		//3
+
+"usb3 5gbps",		//4
+"usb3 10gbps",		//5
+"usb3 5gbps 2lane",	//6
+"usb3 10gbps 2lane"	//7
+
+//"usb4 10gbps"
+//"usb4 10gbps 2lane"
+//"usb4 20gbps"
+//"usb4 20gbps 2lane"
+};
 //eptype
 #define EPType_NotValid     0
 #define EPType_IsochOut     1
@@ -875,6 +897,16 @@ int xhci_fillslotctx(struct item* xhci, int slot, struct SlotContext* devctx)
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
 	struct perdev* myctx = &slotdata->myctx.devctx;
 
+	u32* devbuf = (void*)devctx;
+	devbuf[0] = 0;
+	devbuf[1] = 0;
+	devbuf[2] = 0;
+	devbuf[3] = 0;
+	devbuf[4] = 0;
+	devbuf[5] = 0;
+	devbuf[6] = 0;
+	devbuf[7] = 0;
+
 	//[0,3]
 	devctx->RouteString = myctx->routestring;
 	devctx->Speed = myctx->usbspeed;
@@ -923,8 +955,21 @@ int xhci_fillslotctx(struct item* xhci, int slot, struct SlotContext* devctx)
 skipthis:
 	return 0;
 }
-int xhci_fillepctx(struct item* xhci, int slot, struct EndpointContext* epctx)
+int xhci_fillepctx(struct item* xhci, int slot, struct EndpointContext* epctx, int dci)
 {
+	struct perxhci* xhcidata = (void*)(xhci->priv_256b);
+	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
+	struct perendp* myep = &slotdata->myctx.epnctx[dci];
+
+	u32* epbuf = (void*)epctx;
+	epbuf[0] = 0;
+	epbuf[1] = 0;
+	epbuf[2] = 0;
+	epbuf[3] = 0;
+	epbuf[4] = 0;
+	epbuf[5] = 0;
+	epbuf[6] = 0;
+	epbuf[7] = 0;
 /*
 	//[0,3]
 	epctx->EndpointState = 0;
@@ -1002,10 +1047,12 @@ int xhci_AddressDevice(struct item* xhci, int slot)
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
 
 //-------------from myown get something------------
-	u32 usbspeed = slotdata->myctx.devctx.usbspeed;
 	u32 rootport = slotdata->myctx.devctx.rootport;
 	u32 routestring = slotdata->myctx.devctx.routestring;
-	xhci_print("speed=%x,port=%x,route=%x\n",usbspeed,rootport,routestring);
+	xhci_print("rootport=%x,routestring=%x\n",rootport,routestring);
+
+	u32 usbspeed = slotdata->myctx.devctx.usbspeed;
+	xhci_print("speed=%s\n", speed2string[usbspeed&7]);
 
 //-------------from speed know maxpacksz-------------
 	u32 packetsize;
@@ -1315,22 +1362,8 @@ int xhci_ConfigureEndpoint(struct item* xhci, int slot, struct EndpointDescripto
 	for(j=2;j<8;j++)incon[j] = 0;
 
 	struct SlotContext* devctx = (void*)(buf + contextsize);
-	//[0,3]
-	devctx->RouteString = slotdata->myctx.devctx.routestring;
-	devctx->Speed = slotdata->myctx.devctx.usbspeed;
-	devctx->ContextEntries = maxdci;
-	//[4,7]
-	devctx->MaxExitLatency = 0;
-	devctx->RootHubPortNumber = slotdata->myctx.devctx.rootport;
-	devctx->NumberofPorts = 0;
-	//[8,b]
-	devctx->ParentHubSlotID = 0;
-	devctx->ParentPortNumber = 0;
-	devctx->TTThinkTime = 0;
-	devctx->InterrupterTarget = 0;
-	//[c,f]
-	devctx->USBDeviceAddress = 0;
-	devctx->SlotState = 0;
+	slotdata->myctx.devctx.maxdci = maxdci;
+	xhci_fillslotctx(xhci, slot, (void*)devctx);
 
 	struct EndpointContext* epctx = (void*)(buf + contextsize * (DCI+1));
 	//[0,3]
@@ -1394,9 +1427,15 @@ int xhci_newdevunderhub(struct item* xhci, int parentslot, u32* portstatus, int 
 	struct perslot* parentslotdata = (void*)(my->perslot) + parentslot*0x10000;
 	struct perdev* parentctx = &parentslotdata->myctx.devctx;
 
-	int speed = SPEED_FS;
-	if(portstatus[0]&bmHUB_PORT_STATUS_PORT_LOW_SPEED)speed = SPEED_LS;
-	if(portstatus[0]&bmHUB_PORT_STATUS_PORT_HIGH_SPEED)speed = SPEED_HS;
+	int speed;
+	if(parentctx->usbspeed >= SPEED_SS){
+		speed = parentctx->usbspeed;
+	}
+	else{
+		speed = SPEED_FS;
+		if(portstatus[0] & HSHUB_PORTSTATUS_LOWSPEED)speed = SPEED_LS;
+		if(portstatus[0] & HSHUB_PORTSTATUS_LOWSPEED)speed = SPEED_HS;
+	}
 	childctx->rootport = parentctx->rootport;
 	childctx->routestring = hubport_countfrom1;
 	childctx->usbspeed = speed;
@@ -1610,16 +1649,7 @@ void xhci_checkport(struct item* xhci, int id)
 
 	//usb speed
 	speed = (port[id].PORTSC >> 10) & 0xf;
-	switch(speed){
-	case 7:xhci_print("10Gb,x2\n");break;
-	case 6:xhci_print("5Gb,x2\n");break;
-	case 5:xhci_print("10Gb,x1\n");break;
-	case 4:xhci_print("5Gb,x1\n");break;
-	case 3:xhci_print("480Mb\n");break;
-	case 2:xhci_print("1.5Mb\n");break;	//yes, 2=low speed
-	case 1:xhci_print("12Mb\n");break;	//yes, 1=full speed
-	default:xhci_print("speed=%x\n", speed);
-	}
+	xhci_print("speed=%s\n", speed2string[speed&7]);
 
 	//alloc slot
 	int slot = xhci_EnableSlot(xhci);
@@ -1652,20 +1682,11 @@ void xhci_listall(struct item* xhci, int count)
 
 
 
-static int xhci_take(struct item* xhci,void* foot, void* stack,int sp, void* arg,int cmd, void* buf,int len)
+static int xhci_reader(struct item* xhci,u32 SlotEndp, void* arg,int cmd, void* buf,int len)
 {
-	if(0 == xhci)return 0;
-
-	void* ev;
-	while(1){
-		ev = xhci_takeevent(xhci);
-		if(0 == ev)break;
-
-		xhci_parseevent(xhci, ev);
-	}
 	return 0;
 }
-static int xhci_give(struct item* xhci,u32 SlotEndp, void* stack,int sp, void* arg,int cmd, void* buf,int len)
+static int xhci_writer(struct item* xhci,u32 SlotEndp, void* arg,int cmd, void* buf,int len)
 {
 	if(cmd & 0x80000000){	//to xhci
 		switch(cmd&0x7fffffff){
@@ -1703,6 +1724,23 @@ static int xhci_give(struct item* xhci,u32 SlotEndp, void* stack,int sp, void* a
 	}//to device
 
 	return 0;
+}
+static int xhci_takeby(struct item* xhci,void* foot, void* stack,int sp, void* arg,int cmd, void* buf,int len)
+{
+	if(0 == xhci)return 0;
+
+	void* ev;
+	while(1){
+		ev = xhci_takeevent(xhci);
+		if(0 == ev)break;
+
+		xhci_parseevent(xhci, ev);
+	}
+	return 0;
+}
+static int xhci_giveby(struct item* xhci,u32 SlotEndp, void* stack,int sp, void* arg,int cmd, void* buf,int len)
+{
+	return xhci_writer(xhci,SlotEndp, arg,cmd, buf,len);
 }
 
 
@@ -2065,8 +2103,10 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 	xhci_NoOp(dev);
 
 	//callback functions
-	dev->ontaking = (void*)xhci_take;
-	dev->ongiving = (void*)xhci_give;
+	dev->onreader = (void*)xhci_reader;
+	dev->onwriter = (void*)xhci_writer;
+	dev->ontaking = (void*)xhci_takeby;
+	dev->ongiving = (void*)xhci_giveby;
 	xhci_listall(dev, capreg->HCSPARAMS1>>24);
 	return 0;
 }

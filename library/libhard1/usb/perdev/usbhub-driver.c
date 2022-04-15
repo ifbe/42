@@ -1,33 +1,58 @@
 #include "libhard.h"
 #include "drv-usb.h"
 #define usbhub_print(fmt, ...) say("<%08lld,usbhub>" fmt, timeread_us(), ##__VA_ARGS__)
-//
+//any hub feature
 #define HUB_FEATURE_PORTPOWER	8
 #define HUB_FEATURE_PORTCNCTN	0x10
 #define HUB_FEATURE_RESET		4
 #define HUB_FEATURE_CRESET		0x14
-//
+//any hub port status(byte0,1)
 #define HUB_STATUS_CONNECTION	1
 #define HUB_STATUS_ENABLE		(1<<1)
-#define HUB_STATUS_LS			(1<<8)
-#define HUB_STATUS_CNCTSTSCHG	(1<<24)
-#define HUB_STATUS_PECHANGE		(1<<25)
-#define HUB_STATUS_RESET		(1<<28)
-#define bmHUB_PORT_STATUS_PORT_CONNECTION       0x0001
-#define bmHUB_PORT_STATUS_PORT_ENABLE           0x0002
-#define bmHUB_PORT_STATUS_PORT_SUSPEND          0x0004
-#define bmHUB_PORT_STATUS_PORT_OVER_CURRENT     0x0008
-#define bmHUB_PORT_STATUS_PORT_RESET            0x0010
-#define bmHUB_PORT_STATUS_PORT_POWER            0x0100
-#define bmHUB_PORT_STATUS_PORT_LOW_SPEED        0x0200
-#define bmHUB_PORT_STATUS_PORT_HIGH_SPEED       0x0400
-#define bmHUB_PORT_STATUS_PORT_TEST             0x0800
-#define bmHUB_PORT_STATUS_PORT_INDICATOR        0x1000
+//2.0 hub port status(byte0,1)
+#define HSHUB_PORTSTATUS_CONNECTION	 1
+#define HSHUB_PORTSTATUS_ENABLED     (1<<1)
+#define HSHUB_PORTSTATUS_SUSPEND     (1<<2)
+#define HSHUB_PORTSTATUS_OVERCURRENT (1<<3)
+#define HSHUB_PORTSTATUS_RESETSIGNAL (1<<4)
+#define HSHUB_PORTSTATUS_POWERSTATE	 (1<<8)
+#define HSHUB_PORTSTATUS_LOWSPEED    (1<<9)
+#define HSHUB_PORTSTATUS_HIGHSPEED   (1<<10)
+#define HSHUB_PORTSTATUS_TESTMODE    (1<<11)
+#define HSHUB_PORTSTATUS_INDICATOR    (1<<12)
+#define HSHUB_STATUS_CNCTSTSCHG	(1<<24)
+#define HSHUB_STATUS_PECHANGE		(1<<25)
+#define HSHUB_STATUS_RESET		(1<<28)
+//2.0 hub port change(byte2,3)
+#define SSHUB_PORTSTATUS_CONNECTION  1
+#define SSHUB_PORTSTATUS_ERRORCOND   (1<<1)
+#define SSHUB_PORTSTATUS_RESUMED     (1<<2)
+#define SSHUB_PORTSTATUS_OVERCURRENT (1<<3)
+#define SSHUB_PORTSTATUS_RESETDONE   (1<<4)
+//3.0 hub command
+#define SSHUB_SET_DEPTH		12
+#define SSHUB_GET_PORT_ERR_COUNT	13
+//3.0 hub port status(byte0,1)
+#define SSHUB_PORTSTATUS_CONNECTION  1
+#define SSHUB_PORTSTATUS_ENABLED     (1<<1)
+#define SSHUB_PORTSTATUS_OVERCURRENT (1<<3)
+#define SSHUB_PORTSTATUS_RESETSIGNAL (1<<4)
+#define SSHUB_PORTSTATUS_LINKSTATE    0x1e0
+#define SSHUB_PORTSTATUS_POWERSTATE  (1<<9)
+#define SSHUB_PORTSTATUS_SPEED        0x1c00
+//3.0 hub port change(byte2,3)
+#define SSHUB_PORTCHANGE_CONNECTION 1
+#define SSHUB_PORTCHANGE_OVERCURRENT (1<<3)
+#define SSHUB_PORTCHANGE_ANYRESETDONE (1<<4)
+#define SSHUB_PORTCHANGE_WARMRESETDONE (1<<5)
+#define SSHUB_PORTCHANGE_LINKSTATE (1<<6)
+#define SSHUB_PORTCHANGE_CONFIGERROR (1<<7)
 //
 int usbdesc_addr2offs(struct perusb* perusb, void* desc);
 void* usbdesc_offs2addr(struct perusb* perusb, int offs);
 //
 void DEVICE_REQUEST_SET_CONFIGURATION(void* req, u16 conf);
+void INTERFACE_REQUEST_SET_INTERFACE(void* req, u16 intf, u16 alt);
 //
 void GET_DESC_HUB(struct UsbRequest* req, u16 type, u16 len)
 {
@@ -36,6 +61,14 @@ void GET_DESC_HUB(struct UsbRequest* req, u16 type, u16 len)
 	req->wValue = type;
 	req->wIndex = 0;
 	req->wLength = len;
+}
+void SET_DEPTH(struct UsbRequest* req, u16 depth)
+{
+	req->bmRequestType = 0x23;
+	req->bRequest = SSHUB_SET_DEPTH;
+	req->wValue = depth;
+	req->wIndex = 0;
+	req->wLength = 0;
 }
 void USB_HUB_PORT_POWERON(struct UsbRequest* req, int countfrom1)
 {
@@ -86,6 +119,7 @@ struct perfunc{		//0x10000 byte per func
 	void* hostnode;
 	int hostslot;
 
+	int hubtype;	//0=FS, 1=HS.singleTT, 2=HS.multiTT, 3=SS
 	int portcount;
 	u32 portstat[16];
 
@@ -131,7 +165,7 @@ int usbhub_enumone(struct item* usb, int id)
 	if(ret < 0)return -10;
 
 	//power stable
-	sleep_ms(100);
+	sleep_ms(1000);
 
 
 	usbhub_print("%d:get stat\n", id);
@@ -182,7 +216,7 @@ int usbhub_enumone(struct item* usb, int id)
 	if(ret < 0)return -10;
 
 	//reset wait
-	sleep_ms(50);
+	sleep_ms(1000);
 
 
 	usbhub_print("%d:get stat\n", id);
@@ -221,15 +255,25 @@ int usbhub_enumone(struct item* usb, int id)
 	say("stat=%x\n",perfunc->portstat[id]);
 
 
-	if(perfunc->portstat[id]&bmHUB_PORT_STATUS_PORT_LOW_SPEED){
-		usbhub_print("speed=ls(1.5mbps)\n");
-	}
-	else if(perfunc->portstat[id]&bmHUB_PORT_STATUS_PORT_HIGH_SPEED){
-		usbhub_print("speed=hs(480mbps)\n");
+	if(perfunc->hubtype >= 3){
+		if(0){		//(bcdUSB >= 0x0310 && bos->ssp_cap);
+		}
+		else{
+			usbhub_print("speed=ss(5gbps)\n");
+		}
 	}
 	else{
-		usbhub_print("speed=fs(12mbsp)\n");
+		if(perfunc->portstat[id] & HSHUB_PORTSTATUS_LOWSPEED){
+			usbhub_print("speed=ls(1.5mbps)\n");
+		}
+		else if(perfunc->portstat[id] & HSHUB_PORTSTATUS_LOWSPEED){
+			usbhub_print("speed=hs(480mbps)\n");
+		}
+		else{
+			usbhub_print("speed=fs(12mbsp)\n");
+		}
 	}
+
 	usbhub_print("%d:notify xhci enable device\n", id);
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
@@ -276,20 +320,26 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	usbhub_print("bmAttributes=%x,bMaxPower=%x\n", confdesc->bmAttributes, confdesc->bMaxPower);
 
 	//interface
-	usbhub_print("bInterfaceClass=%x\n", intfdesc->bInterfaceClass);
+	int proto0_altset = 0;
+	int proto1_altset = 0;
+	int proto2_altset = 0;
+	while(1){
+		if(4 != intfnode->type)break;
+		usbhub_print("interface%d.%d: Protocol=%x\n", intfdesc->bInterfaceNumber, intfdesc->bAlternateSetting, intfdesc->bInterfaceProtocol);
+		if(0 == intfdesc->bInterfaceProtocol)proto0_altset = intfdesc->bAlternateSetting;
+		if(1 == intfdesc->bInterfaceProtocol)proto1_altset = intfdesc->bAlternateSetting;
+		if(2 == intfdesc->bInterfaceProtocol)proto2_altset = intfdesc->bAlternateSetting;
 
-	//set config
+		if(0 == intfnode->rfellow)break;
+		intfnode = usbdesc_offs2addr(perusb, intfnode->rfellow);
+		intfdesc = usbdesc_offs2addr(perusb, intfnode->real);
+	}
+
+
+
+
 	int ret;
 	struct UsbRequest req;
-	usbhub_print("set_config\n");
-	DEVICE_REQUEST_SET_CONFIGURATION(&req, confdesc->bConfigurationValue);
-	ret = xhci->give_pxpxpxpx(
-		xhci,slot,
-		0,0,
-		&req,8,
-		0,0
-	);
-	if(ret < 0)return -10;
 
 	//hub desc
 	usbhub_print("get_hubdesc\n");
@@ -323,9 +373,48 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	);
 	if(ret < 0)return -9;
 
+	//information
+	perfunc->hubtype = devdesc->bDeviceProtocol;
+	perfunc->portcount = hubdesc->bNbrPorts;
+
+	//set config
+	usbhub_print("set config\n");
+	DEVICE_REQUEST_SET_CONFIGURATION(&req, confdesc->bConfigurationValue);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot,
+		0,0,
+		&req,8,
+		0,0
+	);
+	if(ret < 0)return -10;
+
+	//2.0-multiTT hub: set interface
+	if(2 == perfunc->hubtype){
+	usbhub_print("set interface\n");
+		INTERFACE_REQUEST_SET_INTERFACE(&req, intfdesc->bInterfaceNumber, proto1_altset);
+		ret = xhci->give_pxpxpxpx(
+			xhci,slot,
+			0,0,
+			&req,8,
+			0,0
+		);
+	}
+
+	//3.0 hub: set depth
+	if(perfunc->hubtype >= 3){		//superspeed hub
+		usbhub_print("set depth\n");
+		SET_DEPTH(&req, 0);
+		ret = xhci->give_pxpxpxpx(
+			xhci,slot,
+			0,0,
+			&req,8,
+			0,0
+		);
+		if(ret < 0)return -10;
+	}
+
 	perfunc->hostnode = xhci;
 	perfunc->hostslot = slot;
-	perfunc->portcount = hubdesc->bNbrPorts;
 	usbhub_enumall(usb);
 	return 0;
 }

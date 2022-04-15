@@ -21,6 +21,17 @@
 #define GET_INTERFACE     10
 #define SET_INTERFACE     11
 #define SYNCH_FRAME       12
+#define DESCTYPE_DEVICE 1
+#define DESCTYPE_CONFIG 2
+#define DESCTYPE_STRING 3
+#define DESCTYPE_INTFERFACE 4
+#define DESCTYPE_ENDPOINT 5
+#define DESCTYPE_QUALIFIER 6
+#define DESCTYPE_OTHERSPEED 7
+#define DESCTYPE_INTFPOWER 8
+#define DESCTYPE_BOS 0xf
+#define DESCTYPE_HUB2 0x29
+#define DESCTYPE_HUB3 0x2a
 //usb class
 #define class_reserve       0x00	//去看interface descriptor
 #define class_audio         0x01	//音频类
@@ -167,6 +178,21 @@ struct OtherSpeedConfiguration{
 	u8           bMaxPower;		//8: 50=100mA, 250=500mA
 }__attribute__((packed));
 
+struct INTERFACE_POWER{
+	u8             bLength;		//0:
+	u8     bDescriptorType;		//1: 0x08
+}__attribute__((packed));
+
+struct USB_DT_OTG{
+	u8             bLength;		//0:
+	u8     bDescriptorType;		//1: 0x09
+}__attribute__((packed));
+
+struct USB_DT_DEBUG{
+	u8             bLength;		//0:
+	u8     bDescriptorType;		//1: 0x0a
+}__attribute__((packed));
+
 struct InterfaceAssociation{
 	u8           bLength;		//0: 0x08
 	u8   bDescriptorType;		//1: 0x0b
@@ -176,6 +202,21 @@ struct InterfaceAssociation{
 	u8 bFunctionSubclass;		//5
 	u8 bFunctionProtocol;		//6
 	u8         iFunction;		//7
+}__attribute__((packed));
+
+struct USB_DT_SECURITY{
+	u8           bLength;		//0: 0x08
+	u8   bDescriptorType;		//1: 0x0c
+}__attribute__((packed));
+
+struct USB_DT_KEY{
+	u8           bLength;		//0: 0x08
+	u8   bDescriptorType;		//1: 0x0d
+}__attribute__((packed));
+
+struct USB_DT_ENCRYPTION_TYPE{
+	u8           bLength;		//0: 0x08
+	u8   bDescriptorType;		//1: 0x0e
 }__attribute__((packed));
 
 struct BOSDescriptor{
@@ -240,6 +281,16 @@ struct HubDescriptor{
 
 	u8       bPwrOn2PwrGood;
 	u8     bHubContrCurrent;
+}__attribute__((packed));
+
+struct USB_DT_SS_ENDPOINT_COMP{
+	u8            bLength;		//0: 0x09
+	u8    bDescriptorType;		//1: 0x30
+}__attribute__((packed));
+
+struct USB_DT_SSP_ISOC_ENDPOINT_COMP{
+	u8            bLength;		//0: 0x09
+	u8    bDescriptorType;		//1: 0x31
 }__attribute__((packed));
 
 
