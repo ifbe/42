@@ -105,6 +105,36 @@ char* speed2string[] = {
 //"usb4 20gbps"
 //"usb4 20gbps 2lane"
 };
+
+
+//
+#define SLOTSTATE_XXABLED 0
+#define SLOTSTATE_DEFAULT 1
+#define SLOTSTATE_ADDRESSED 2
+#define SLOTSTATE_CONFIGURED 3
+char* slotstate2string[] = {
+"disabled/enabled",		//0
+"default",				//1
+"addressed",			//2
+"configured"			//3
+};
+
+
+//
+#define EPSTATE_DISABLED 0
+#define EPSTATE_RUNNING 1
+#define EPSTATE_HALTED 2
+#define EPSTATE_STOPPED 3
+#define EPSTATE_ERROR 4
+char* epstate2string[] = {
+"disabled",		//0
+"running",		//1
+"halted",		//2
+"stopped",		//3
+"error",		//4
+};
+
+
 //eptype
 #define EPType_NotValid     0
 #define EPType_IsochOut     1
@@ -114,6 +144,18 @@ char* speed2string[] = {
 #define EPType_IsochIn      5
 #define EPType_BulkIn       6
 #define EPType_InterruptIn  7
+char* eptype2string[] = {
+"invalid",		//0
+"isoch,out",	//1
+"bulk,out",		//2
+"interrupt,out",	//3
+"control,bidir",	//4
+"isoch,in",		//5
+"bulk,in",		//6
+"interrupt,in",	//7
+};
+
+
 //commmon
 #define TRB_common_Normal      1
 #define TRB_common_SetupStage  2
@@ -437,17 +479,19 @@ struct StatusStage{
 
 struct perdev{
 	//where am i
-	u32 rootport;
-	u32 routestring;
+	u8 special;
+	u8 rootport;		//1
+	u8 parent_slot;		//2
+	u8 parent_port;		//3
+	u32 routestring;	//[4,7]
 	//my status
 	u32 usbspeed;
 	u32 maxdci;
 	//i am hub
 	u32 hub_portcount;
 	u32 hub_tt_think_time;
-	//parent info
-	u32 parent_slot;
-	u32 parent_port;
+	u32 aa;
+	u32 bb;
 }__attribute__((packed));
 struct perendp{
 	u32 eptype;
@@ -763,7 +807,7 @@ int xhci_parseevent(struct item* xhci, u32* ev)
 			}
 		}
 
-		if(debug_transfer)xhci_print("%d@Transfer: cmd=%p, len=%x, slot=%x, ep=%x\n", stat, *(u8**)ev, ev[2]&0xffffff, slot, endp);
+		if(debug_transfer | (1 != stat))xhci_print("%d@Transfer: cmd=%p, len=%x, slot=%x, ep=%x\n", stat, *(u8**)ev, ev[2]&0xffffff, slot, endp);
 		break;
 
 	case TRB_event_CommandCompletion:		//33
@@ -1040,6 +1084,13 @@ int xhci_DisableSlot(struct item* xhci, int slot)
 	xhci_print("}DisableSlot\n");
 	return 0;
 }
+int xhci_ResetDevice(struct item* xhci, int slot)
+{
+	xhci_print("ResetDevice{\n");
+
+	xhci_print("}ResetDevice\n");
+	return 0;
+}
 int xhci_AddressDevice(struct item* xhci, int slot)
 {
 	xhci_print("AddressDevice{\n");
@@ -1069,6 +1120,12 @@ int xhci_AddressDevice(struct item* xhci, int slot)
 	if(0x4 == (xhcidata->capreg->CAPPARAMS1 & 0x4))contextsize = 0x40;
 	xhci_print("contextsize=0x%x\n", contextsize);
 
+	u32 EP0DCI = 1;		//ep0 bidir
+	slotdata->myctx.epnctx[EP0DCI].eptype = EPType_ControlBidir;
+	slotdata->myctx.epnctx[EP0DCI].packetsize = packetsize;
+	slotdata->myctx.epnctx[EP0DCI].myenq = 0;
+	slotdata->myctx.epnctx[EP0DCI].hcdeq = 0;
+
 //---------------------------------------------------
 	//some buffer
 	int j;
@@ -1079,7 +1136,6 @@ int xhci_AddressDevice(struct item* xhci, int slot)
 	u32* devctx = (void*)(buf + contextsize);
 	u32* ep0ctx = (void*)(buf + contextsize*2);
 
-	u32 EP0DCI = 1;		//ep0 bidir
 	u64 EP0CMD = (u64)(slotdata->cmdring[EP0DCI]);
 	u32 lo = EP0CMD & 0xffffffff;
 	u32 hi = EP0CMD >> 32;
@@ -1105,7 +1161,13 @@ int xhci_AddressDevice(struct item* xhci, int slot)
 	ep0ctx[4] = 0x8;
 	//printmemory(devctx, contextsize*2);
 
-	//send command
+	//before
+	u32 slotstate,ep0state;
+	slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
+	ep0state = (*(u32*)(slotdata->hcctx + contextsize))&0x3;
+	xhci_print("slotstate=%s, epstate=%s\n", slotstate2string[slotstate%4], epstate2string[ep0state%5]);
+
+	//command
 	lo = ((u64)incon) & 0xffffffff;
 	hi = ((u64)incon) >> 32;
 	xhci_hostorder(xhci,0, lo,hi,0,(slot<<24)+(TRB_command_AddressDevice<<10) );
@@ -1115,31 +1177,13 @@ int xhci_AddressDevice(struct item* xhci, int slot)
 	}
 	xhci_print("slot:addressed device\n");
 
-	u32 slotstate = (*(u32*)(slotdata->hcctx+0xc))>>27;
-	u32 ep0state = (*(u32*)(slotdata->hcctx+contextsize))&0x3;
-	xhci_print("slotstate=%x, ep0state=%x\n", slotstate, ep0state);
-	if(2 != slotstate){
-		xhci_print("slot state:%x\n",slotstate);
-		return -2;
-	}
-	if(0 == ep0state){
-		xhci_print("ep0 wrong\n");
-		return -3;
-	}
-
-	slotdata->myctx.epnctx[EP0DCI].eptype = EPType_ControlBidir;
-	slotdata->myctx.epnctx[EP0DCI].packetsize = packetsize;
-	slotdata->myctx.epnctx[EP0DCI].myenq = 0;
-	slotdata->myctx.epnctx[EP0DCI].hcdeq = 0;
+	//after
+	slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
+	ep0state = (*(u32*)(slotdata->hcctx + contextsize))&0x3;
+	xhci_print("slotstate=%s, epstate=%s\n", slotstate2string[slotstate%4], epstate2string[ep0state%5]);
 
 	xhci_print("}AddressDevice\n");
 	return 1;
-}
-int xhci_ResetDevice(struct item* xhci, int slot)
-{
-	xhci_print("}ResetDevice\n");
-	xhci_print("ResetDevice{\n");
-	return 0;
 }
 int xhci_EvaluateContext_hub(struct item* xhci, int slot, struct HubDescriptor* hubdesc, int xxx)
 {
@@ -1177,7 +1221,13 @@ int xhci_EvaluateContext_hub(struct item* xhci, int slot, struct HubDescriptor* 
 	slotdata->myctx.devctx.hub_tt_think_time = hubdesc->ch.TTThinkTime;
 	xhci_fillslotctx(xhci, slot, (void*)devctx);
 
-	//send command
+	//before
+	u32 slotstate,ep0state;
+	slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
+	ep0state = (*(u32*)(slotdata->hcctx + contextsize))&0x3;
+	xhci_print("slotstate=%s, epstate=%s\n", slotstate2string[slotstate%4], epstate2string[ep0state%5]);
+
+	//command
 	lo = ((u64)incon) & 0xffffffff;
 	hi = ((u64)incon) >> 32;
 	xhci_hostorder(xhci,0, lo,hi,0,(slot<<24)+(TRB_command_EvaluateContext<<10) );
@@ -1186,11 +1236,10 @@ int xhci_EvaluateContext_hub(struct item* xhci, int slot, struct HubDescriptor* 
 		return -1;
 	}
 
-	u32 slotstate = (*(u32*)(slotdata->hcctx+0xc))>>27;
-	if(2 != slotstate){
-		xhci_print("slot state:%x\n",slotstate);
-		return -2;
-	}
+	//after
+	slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
+	ep0state = (*(u32*)(slotdata->hcctx + contextsize))&0x3;
+	xhci_print("slotstate=%s, epstate=%s\n", slotstate2string[slotstate%4], epstate2string[ep0state%5]);
 
 	xhci_print("}EvaluateContext.ishub\n");
 	return 0;
@@ -1204,7 +1253,7 @@ int xhci_EvaluateContext(struct item* xhci, int slot, u8* devdesc, int len)
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
 	if(1 != slotdata->myctx.devctx.usbspeed){
 		xhci_print("not fullspeed, dont change\n");
-		return 0;
+		goto byebye;
 	}
 
 	u32 EP0DCI = 1;
@@ -1213,7 +1262,7 @@ int xhci_EvaluateContext(struct item* xhci, int slot, u8* devdesc, int len)
 	u32 newsize = (usbspeed>=4) ? (1<<devdesc[7]) : devdesc[7];
 	if(newsize == oldsize){
 		xhci_print("same bMaxPacketSize0, nothing change\n");
-		return 0;
+		goto byebye;
 	}
 
 //-------------from packet known maxpacksz------------
@@ -1255,7 +1304,13 @@ int xhci_EvaluateContext(struct item* xhci, int slot, u8* devdesc, int len)
 	ep0ctx[4] = 0x8;
 	//printmemory(devctx, contextsize*2);
 
-	//send command
+	//before
+	u32 slotstate,ep0state;
+	slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
+	ep0state = (*(u32*)(slotdata->hcctx + contextsize))&0x3;
+	xhci_print("slotstate=%s, epstate=%s\n", slotstate2string[slotstate%4], epstate2string[ep0state%5]);
+
+	//command
 	lo = ((u64)incon) & 0xffffffff;
 	hi = ((u64)incon) >> 32;
 	xhci_hostorder(xhci,0, lo,hi,0,(slot<<24)+(TRB_command_EvaluateContext<<10) );
@@ -1265,18 +1320,12 @@ int xhci_EvaluateContext(struct item* xhci, int slot, u8* devdesc, int len)
 	}
 	xhci_print("evaluated\n");
 
-	u32 slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
-	u32 ep0state = (*(u32*)(slotdata->hcctx + contextsize))&0x3;
-	xhci_print("slotstate=%x, ep0state=%x\n", slotstate, ep0state);
-	if(2 != slotstate){
-		xhci_print("slot state:%x\n",slotstate);
-		return -3;
-	}
-	if(0 == ep0state){
-		xhci_print("ep0 wrong\n");
-		return -2;
-	}
+	//after
+	slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
+	ep0state = (*(u32*)(slotdata->hcctx + contextsize))&0x3;
+	xhci_print("slotstate=%s, epstate=%s\n", slotstate2string[slotstate%4], epstate2string[ep0state%5]);
 
+byebye:
 	xhci_print("}EvaluateContext\n");
 	return 0;
 }
@@ -1344,12 +1393,17 @@ int xhci_ConfigureEndpoint(struct item* xhci, int slot, struct EndpointDescripto
 	}
 	xhci_print("DCI=%x, eptype=%x, packetsize=%x, interval=%x\n", DCI, eptype, packetsize, interval);
 
+	slotdata->myctx.epnctx[DCI].eptype = eptype;
+	slotdata->myctx.epnctx[DCI].packetsize = packetsize;
+	slotdata->myctx.epnctx[DCI].myenq = 0;
+	slotdata->myctx.epnctx[DCI].hcdeq = 0;
+
+
 //----------------store in my ctx----------------
 	struct SlotContext* hcslotctx = (void*)(slotdata->hcctx);
 	u32 maxdci = hcslotctx->ContextEntries;
 	if(maxdci < DCI)maxdci = DCI;
 	xhci_print("maxdci=%x now\n", maxdci);
-
 
 	//some buffer
 	int j;
@@ -1385,6 +1439,13 @@ int xhci_ConfigureEndpoint(struct item* xhci, int slot, struct EndpointDescripto
 	epctx->AverageTRBLength = avgtrblen;
 	epctx->MaxESITPayloadLo = esitpayload & 0xffff;
 
+	//before
+	u32 slotstate,epstate;
+	slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
+	epstate = (*(u32*)(slotdata->hcctx + contextsize*DCI))&0x3;
+	xhci_print("slotstate=%s, epstate=%s\n", slotstate2string[slotstate%4], epstate2string[epstate%5]);
+
+	//command
 	u32 lo = ((u64)incon) & 0xffffffff;
 	u32 hi = ((u64)incon) >> 32;
 	xhci_hostorder(xhci,0, lo,hi,0,(slot<<24)+(TRB_command_ConfigureEndpoint<<10) );
@@ -1394,24 +1455,22 @@ int xhci_ConfigureEndpoint(struct item* xhci, int slot, struct EndpointDescripto
 	}
 	xhci_print("configured\n");
 
-	u32 slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
-	u32 epstate = (*(u32*)(slotdata->hcctx + contextsize*DCI))&0x3;
-	xhci_print("slotstate=%x, epstate=%x\n", slotstate, epstate);
+	//after
+	slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
+	epstate = (*(u32*)(slotdata->hcctx + contextsize*DCI))&0x3;
+	xhci_print("slotstate=%s, epstate=%s\n", slotstate2string[slotstate%4], epstate2string[epstate%5]);
 
-	slotdata->myctx.epnctx[DCI].eptype = eptype;
-	slotdata->myctx.epnctx[DCI].packetsize = packetsize;
-	slotdata->myctx.epnctx[DCI].myenq = 0;
-	slotdata->myctx.epnctx[DCI].hcdeq = 0;
-/*	if(2 != slotstate){
-		xhci_print("slot state:%x\n",slotstate);
-		return -3;
-	}
-	if(0 == epstate){
-		xhci_print("ep wrong\n");
-		return -2;
-	}
-*/
 	xhci_print("}ConfigureEndpoint\n");
+	return 0;
+}
+int xhci_ResetEndpoint(struct item* xhci, int slot, int endp)
+{
+	xhci_print("ResetEndPoint{\n");
+	xhci_hostorder(xhci,0, 0,0,0,(slot<<24)|(endp<<16)|(TRB_command_ResetEndpoint<<10)|(1<<9) );
+	if(xhci_waitevent(xhci, 5*1000*1000, TRB_event_CommandCompletion, 0) != slot){
+		xhci_print("error@reset endpoint\n");
+	}
+	xhci_print("}ResetEndPoint\n");
 	return 0;
 }
 int xhci_newdevunderhub(struct item* xhci, int parentslot, u32* portstatus, int hubport_countfrom1)
@@ -1470,18 +1529,31 @@ int xhci_ControlTransfer(struct item* xhci, int slot, struct UsbRequest* req, in
 	u8* cmdenq = slotdata->cmdring[DCI] + slotdata->myctx.epnctx[DCI].myenq;
 	slotdata->myctx.epnctx[DCI].myenq += maketrb_controltransfer(cmdenq, req, recvbuf, recvlen);
 
+	u32 contextsize = 0x20;
+	if(0x4 == (xhcidata->capreg->CAPPARAMS1 & 0x4))contextsize = 0x40;
+
+	//before
+	u32 slotstate,epstate;
+	slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
+	epstate = (*(u32*)(slotdata->hcctx + contextsize*DCI))&0x3;
+	xhci_print("slotstate=%s, epstate=%s\n", slotstate2string[slotstate%4], epstate2string[epstate%5]);
+
 	//
 	xhci_giveorder(xhci, slot | (DCI<<8));
 	if(xhci_waitevent(xhci, 5*1000*1000, TRB_event_Transfer, slot|0x100) != (slot|0x100)){	//return slot|(endp<<8)
-		u32 contextsize = 0x20;
-		if(0x4 == (xhcidata->capreg->CAPPARAMS1 & 0x4))contextsize = 0x40;
-
-		u32 slotstate = (*(u32*)(slotdata->hcctx+0xc))>>27;
-		u32 ep0state = (*(u32*)(slotdata->hcctx+contextsize))&0x3;
-		xhci_print("slotstate=%x, ep0state=%x\n", slotstate, ep0state);
-		return 0;
+		say("timeout!!\n");
+		recvlen = 0;
+		goto byebye;
 	}
-	//printmemory(recvbuf, recvlen);
+
+byebye:
+	slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
+	epstate = (*(u32*)(slotdata->hcctx + contextsize*DCI))&0x3;
+	xhci_print("slotstate=%s, epstate=%s\n", slotstate2string[slotstate%4], epstate2string[epstate%5]);
+	if(EPSTATE_HALTED == epstate){
+		xhci_ResetEndpoint(xhci, slot, 1);
+	}
+
 	xhci_print("}ControlTransfer\n");
 	return recvlen;
 }
