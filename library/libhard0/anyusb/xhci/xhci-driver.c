@@ -1081,6 +1081,12 @@ int xhci_DisableSlot(struct item* xhci, int slot)
 {
 	xhci_print("DisableSlot{\n");
 
+	xhci_hostorder(xhci,0, 0,0,0,(TRB_command_DisableSlot<<10) | (slot<<24));
+	int ret = xhci_waitevent(xhci, 5*1000*1000, TRB_event_CommandCompletion, 0);
+	if(ret < 0){
+		xhci_print("error=%d\n", ret);
+	}
+
 	xhci_print("}DisableSlot\n");
 	return 0;
 }
@@ -1649,6 +1655,34 @@ int xhci_InterruptTransferIn(struct item* xhci, int slotendp, void* sendbuf, int
 
 
 
+#define PORTSC_CCS          1
+#define PORTSC_PED          2
+//rsvdzero                  4
+#define PORTSC_OCA          8
+#define PORTSC_RESET     0x10
+	#define PORTSC_PLS_MASK 0x1e0
+	#define PORTSC_PLS_SHIFT 5
+#define PORTSC_POWER    0x200
+	#define PORTSC_SPEED_MASK 0x3c00
+	#define PORTSC_SPEED_SHIFT 10
+	#define PORTSC_INDICATOR_MASK 0xc000
+	#define PORTSC_INDICATOR_SHIFT 14
+#define PORTSC_LWS    0x10000
+#define PORTSC_CSC    0x20000
+#define PORTSC_PEC    0x40000
+#define PORTSC_WRC    0x80000
+#define PORTSC_OCC   0x100000
+#define PORTSC_PRC   0x200000
+#define PORTSC_PLC   0x400000
+#define PORTSC_CEC   0x800000
+#define PORTSC_CAS  0x1000000
+#define PORTSC_WCE  0x2000000
+#define PORTSC_WDE  0x4000000
+#define PORTSC_WOE  0x8000000
+//rsvdzero         0x10000000
+//rsvdzero         0x20000000
+#define PORTSC_DR  0x40000000
+#define PORTSC_WPR 0x80000000
 int resetport(struct item* xhci, int countfrom0)
 {
 	struct perxhci* my = (void*)(xhci->priv_256b);
@@ -1676,7 +1710,7 @@ int resetport(struct item* xhci, int countfrom0)
 	endcycle = 0xffffff;
 	endtime = timeread_us() + 3000*1000;
 	while(1){
-		if(2 == (port->PORTSC & 2))break;
+		if(port->PORTSC & 2)break;
 
 		if(timeread_us() > endtime)return -2;
 
@@ -1694,61 +1728,111 @@ int resetport(struct item* xhci, int countfrom0)
 
 	return 1;
 }
-void xhci_checkport(struct item* xhci, int id)
+void xhci_acceptport(struct item* xhci, int from0)
 {
-	u32 tmp,speed;
 	struct perxhci* my = (void*)(xhci->priv_256b);
 	struct perport* pp = my->perport;
 	struct OperationalRegisters* optreg = my->optreg;
 	struct PortRegisters* port = optreg->port;
 
-	tmp = port[id].PORTSC;
-	xhci_print("xhciport: %02x@%p:psi=%x,portsc=%x{\n", id, &port[id], pp[id].protocol, tmp);
+	u32 tmp = port[from0].PORTSC;
+	xhci_print("xhciport: %02x@%p:psi=%x,portsc=%x{\n", from0, &port[from0], pp[from0].protocol, tmp);
 	if(0 == (tmp & 0x1))goto thisdone;
 
 	//if(0 == PORTSC.bit1)ver <= 2.0, have to reset
 	if(0 == (tmp & 0x2)){
-		if(resetport(xhci, id) <= 0){
-			xhci_print("reset failed: portsc=%x\n", port[id].PORTSC);
+		if(resetport(xhci, from0) <= 0){
+			xhci_print("reset failed: portsc=%x\n", port[from0].PORTSC);
 			goto thisdone;
 		}
 	}
-	//todo:检查错误
+
+	//clear change
+	port[from0].PORTSC = tmp & (PORTSC_POWER | PORTSC_CSC | PORTSC_PRC);
 
 	//link state
-	tmp = port[id].PORTSC;
-	xhci_print("portsc=%08x,linkstate=%x\n", tmp, (tmp >> 5) & 0xf);
-
-	//usb speed
-	speed = (port[id].PORTSC >> 10) & 0xf;
-	xhci_print("speed=%s\n", speed2string[speed&7]);
+	tmp = port[from0].PORTSC;
+	u32 state = (tmp >> 5) & 0xf;
+	u32 speed = (tmp >> 10) & 0xf;
+	xhci_print("portsc=%08x,linkstate=%x,speed=%s\n", tmp, state, speed2string[speed&7]);
 
 	//alloc slot
 	int slot = xhci_EnableSlot(xhci);
 	if(slot <= 0 | slot >= 16)goto thisdone;
 
+	pp[from0].slot = slot;
+
 	struct perslot* slotdata = (void*)(my->perslot) + slot*0x10000;
-	slotdata->myctx.devctx.rootport = id+1;
+	slotdata->myctx.devctx.special = 0;
+	slotdata->myctx.devctx.rootport = from0+1;
+	slotdata->myctx.devctx.parent_slot = 0;
+	slotdata->myctx.devctx.parent_port = 0;
 	slotdata->myctx.devctx.routestring = 0;
 	slotdata->myctx.devctx.usbspeed = speed;
 	slotdata->myctx.devctx.hub_portcount = 0;
-	slotdata->myctx.devctx.parent_slot = 0;
-	slotdata->myctx.devctx.parent_port = 0;
 
 	//let usb do rest
 	struct item* usb = device_create(_usb_, 0, 0, 0);
 	if(usb)usbany_linkup(usb, 0, xhci, slot);
 
 thisdone:
-	xhci_print("}#xhciport: %02x@%p\n", id, &port[id]);
+	xhci_print("}#xhciport: %02x@%p\n", from0, &port[from0]);
+}
+void xhci_ejectport(struct item* xhci, int from0)
+{
+	//from port find slot
+	struct perxhci* my = (void*)(xhci->priv_256b);
+	struct perport* pp = my->perport;
+	int slot = pp[from0].slot;
+
+	//find all child slot
+
+	//disable slot
+	xhci_DisableSlot(xhci, slot);
 }
 void xhci_listall(struct item* xhci, int count)
 {
 	int j;
 	for(j=0;j<count;j++){
-		xhci_checkport(xhci, j);
+		xhci_acceptport(xhci, j);
 		say("...\n");
 	}
+}
+void xhci_freeall(struct item* xhci, int count)
+{
+}
+
+
+
+
+int xhci_portstatuschange(struct item* xhci, u32* ev)
+{
+	u32 type = (ev[3]>>10)&0x3f;
+	if(TRB_event_PortStatusChange != type)return 0;
+
+	u32 stat = ev[2]>>24;
+	u32 cntfrom1 = ev[0]>>24;
+	xhci_print("%d@PortStatusChange: port=%x(Count from 1)\n", stat, cntfrom1);
+
+	struct perxhci* my = (void*)(xhci->priv_256b);
+	struct OperationalRegisters* optreg = my->optreg;
+	struct PortRegisters* xhciport = optreg->port;
+
+	u32 usbsts = optreg->USBSTS;
+	u32 portsc = xhciport[cntfrom1-1].PORTSC;
+	if(portsc & PORTSC_CSC){
+		if(portsc & PORTSC_CCS){
+			xhci_print("connect: usbsts=%x, portsc=%x\n", usbsts, portsc);
+			xhci_acceptport(xhci, cntfrom1-1);
+		}
+		else{
+			xhci_print("disconnect: usbsts=%x, portsc=%x\n", usbsts, portsc);
+			xhci_ejectport(xhci, cntfrom1-1);
+		}
+	}
+	xhciport[cntfrom1-1].PORTSC = portsc & (PORTSC_POWER | PORTSC_CSC);
+	optreg->USBSTS = 0x10;	//bit4=PCD
+	return 1;
 }
 
 
@@ -1806,6 +1890,7 @@ static int xhci_takeby(struct item* xhci,void* foot, void* stack,int sp, void* a
 		ev = xhci_takeevent(xhci);
 		if(0 == ev)break;
 
+		if(xhci_portstatuschange(xhci, ev))continue;
 		xhci_parseevent(xhci, ev);
 	}
 	return 0;
