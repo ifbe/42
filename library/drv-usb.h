@@ -3,35 +3,6 @@
 
 
 
-#define _tohc_ 0x80000000
-#define _tohc_addr_ (_tohc_|hex32('a','d','d','r'))	//prepare slotctx+ep0ctx
-#define _tohc_eval_ (_tohc_|hex32('e','v','a','l'))	//modify epctx
-#define _tohc_conf_ (_tohc_|hex32('c','o','n','f'))	//prepare ep*ctx
-#define _tohc_hub_ (_tohc_|hex32('h','u','b', 0))	//notify it is hub
-#define _tohc_new_ (_tohc_|hex32('n','e','w', 0))	//notify it is hub
-//usb bRequest
-#define GET_STATUS        0
-#define CLEAR_FEATURE     1
-#define SET_FEATURE       3
-#define SET_ADDRESS       5
-#define GET_DESCRIPTOR    6
-#define SET_DESCRIPTOR    7
-#define GET_CONFIGURATION 8
-#define SET_CONFIGURATION 9
-#define GET_INTERFACE     10
-#define SET_INTERFACE     11
-#define SYNCH_FRAME       12
-#define DESCTYPE_DEVICE 1
-#define DESCTYPE_CONFIG 2
-#define DESCTYPE_STRING 3
-#define DESCTYPE_INTFERFACE 4
-#define DESCTYPE_ENDPOINT 5
-#define DESCTYPE_QUALIFIER 6
-#define DESCTYPE_OTHERSPEED 7
-#define DESCTYPE_INTFPOWER 8
-#define DESCTYPE_BOS 0xf
-#define DESCTYPE_HUB2 0x29
-#define DESCTYPE_HUB3 0x2a
 //usb class
 #define class_reserve       0x00	//去看interface descriptor
 #define class_audio         0x01	//音频类
@@ -65,35 +36,67 @@
 
 
 
+#define _tohc_ 0x80000000
+#define _tohc_addr_ (_tohc_|hex32('a','d','d','r'))	//prepare slotctx+ep0ctx
+#define _tohc_eval_ (_tohc_|hex32('e','v','a','l'))	//modify epctx
+#define _tohc_conf_ (_tohc_|hex32('c','o','n','f'))	//prepare ep*ctx
+#define _tohc_hub_  (_tohc_|hex32('h','u','b', 0))	//notify it is hub
+#define _tohc_new_  (_tohc_|hex32('n','e','w', 0))	//notify device under hub
+
+
+
+
+//bit[0,4]: 0=device, 1=interface, 2=endpoint
+#define bmreqdest_device 0x0
+#define bmreqdest_interface 0x1
+#define bmreqdest_endpoint 0x2
+//bit[5,6]: 0=normal, 1=class, 2=vendor
+#define bmreqtype_normal 0x0
+#define bmreqtype_class 0x20
+#define bmreqtype_vendor 0x40
+#define bmreqtype_unknow 0x80
+//bit7: 0=host to device, 1=device to host
+#define bmreqdir_h2d 0x0
+#define bmreqdir_d2h 0x80
+//bRequest
+#define GET_STATUS        0
+#define CLEAR_FEATURE     1
+#define SET_FEATURE       3
+#define SET_ADDRESS       5
+#define GET_DESCRIPTOR    6
+#define SET_DESCRIPTOR    7
+#define GET_CONFIGURATION 8
+#define SET_CONFIGURATION 9
+#define GET_INTERFACE     10
+#define SET_INTERFACE     11
+#define SYNCH_FRAME       12
 struct UsbRequest{
-	//[0,3]
+	//0
 	u8 bmRequestType;
-		//bit[0,4]: 0=device, 1=interface, 2=endpoint
-		//bit[5,6]: 0=normal, 1=class, 2=vendor
-		//bit7: 0=host to device, 1=device to host
+	//1
 	u8 bRequest;
-		//0: GET_STATUS
-		//1: CLEAR_FEATURE
-		//3: SET_FEATURE
-		//5: SET_ADDRESS
-		//6: GET_DESCRIPTOR
-		//7: SET_DESCRIPTOR
-		//8: GET_CONFIGURATION
-		//9: SET_CONFIGURATION
-		//a: GET_INTERFACE
-		//b: SET_INTERFACE
-		//c: SYNCH_FRAME
-	u16 wValue;
-		//if(GET_DESCRIPTOR)hi = type, lo = index
-	//[4,7]
-	u16 wIndex;
-		//if(GET_DESCRIPTOR_string)wIndex = LANGID
+	//[2,3]
+	u16 wValue;		//if(GET_DESCRIPTOR)hi = type, lo = index
+	//[4,5]
+	u16 wIndex;		//if(GET_DESCRIPTOR_string)wIndex = LANGID
+	//[6,7]
 	u16 wLength;
 }__attribute__((packed));
 
 
 
 
+#define DESCTYPE_DEVICE 1
+#define DESCTYPE_CONFIG 2
+#define DESCTYPE_STRING 3
+#define DESCTYPE_INTFERFACE 4
+#define DESCTYPE_ENDPOINT 5
+#define DESCTYPE_QUALIFIER 6
+#define DESCTYPE_OTHERSPEED 7
+#define DESCTYPE_INTFPOWER 8
+#define DESCTYPE_BOS 0xf
+#define DESCTYPE_HUB2 0x29
+#define DESCTYPE_HUB3 0x2a
 struct DeviceDescriptor{
 	u8            bLength;		//0: 0x12
 	u8    bDescriptorType;		//1: 0x01
