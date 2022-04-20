@@ -538,6 +538,7 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	if(ret < 0)return -9;
 
 	//set config
+	int set_config_error = 0;
 	usbhub_print("set config %d\n", confdesc->bConfigurationValue);
 	DEVICE_REQUEST_SET_CONFIGURATION(&req, confdesc->bConfigurationValue);
 	ret = xhci->give_pxpxpxpx(
@@ -546,7 +547,10 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		&req,8,
 		0,0
 	);
-	if(ret < 0)return -10;
+	if(ret < 0){
+		set_config_error = 1;
+		//return -10;
+	}
 
 	//2.0-multiTT hub: set interface
 	if(2 == perfunc->hubtype){
@@ -588,6 +592,17 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 			&req,8,
 			0,0
 		);
+		if(ret < 0){
+			if(set_config_error){
+				usbhub_print("setconfig and setinterface error\n");
+				return -1;
+			}
+		}
+	}
+
+	if(set_config_error){
+		usbhub_print("set config error\n");
+		return -9;
 	}
 
 	//3.0 hub: set depth

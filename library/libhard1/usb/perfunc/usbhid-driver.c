@@ -704,7 +704,8 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 			&req,8,
 			0,0
 		);
-		if(ret < 0)return -10;
+		//ignore if not stall error
+		//if(ret < 0)return -10;
 	}
 
 //------------------------callback------------------------
