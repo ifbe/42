@@ -4,7 +4,7 @@
 
 
 static _obj* g_obj = 0;
-int inituart(void* addr)
+int initshell(void* addr)
 {
 	g_obj = addr;
 }

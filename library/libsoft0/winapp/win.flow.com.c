@@ -93,7 +93,7 @@ DWORD WINAPI uart_thread(_obj* oo)
 		ret = 0x10000 - enq;
 		if(ret > 0x1000)ret = 0x1000;
 
-		ret = ReadFile(hcom, buf+enq, ret, (void*)&cnt, 0);
+		ret = ReadFile(per->hcom, buf+enq, ret, (void*)&cnt, 0);
 		if( (ret > 0) && (cnt > 0) )
 		{
 			give_data_into_peer(oo,_dst_, stack,0, 0,0, buf+enq,cnt);
@@ -137,13 +137,13 @@ _obj* uart_create(char* p, int speed)
 	if(hcom == INVALID_HANDLE_VALUE)
 	{
 		say("err:%d@open\n",GetLastError());
-		return -1;
+		return 0;
 	}
 	else say("name=%s, hcom=%llx\n", buf, hcom);
 
 	//
 	ret = uart_designate();
-	struct item* oo = &obj[ret];
+	struct item* oo = &g_obj[ret];
 	say("hcom=%p,obj=%p\n", hcom, oo);
 	struct percom* per = (void*)oo->priv_256b;
 	per->hcom = hcom;

@@ -27,6 +27,18 @@ android {
             path 'src/main/cpp/CMakeLists.txt'
         }
     }
+    sourceSets {
+        main {
+            res.srcDirs(
+                'src/main/res',
+                '../../../../datafile/androidicon',
+            )
+            assets.srcDirs(
+                'src/main/assets',
+                '../../../../datafile',
+            )
+        }
+    }
 }
 
 dependencies {

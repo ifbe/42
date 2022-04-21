@@ -188,6 +188,8 @@ int usbhub_powerone(struct item* usb, int id)
 		0,0
 	);
 	if(ret < 0)return -10;
+
+	return 0;
 }
 int usbhub_powerall(struct item* usb)
 {
@@ -267,6 +269,8 @@ int usbhub_resetone(struct item* usb, int id)
 		0,0
 	);
 	if(ret < 0)return -10;
+
+	return 0;
 }
 int usbhub_resetall(struct item* usb)
 {
