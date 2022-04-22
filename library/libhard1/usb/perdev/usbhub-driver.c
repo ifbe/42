@@ -189,21 +189,17 @@ int usbhub_powerone(struct item* usb, int id)
 	);
 	if(ret < 0)return -10;
 
-	return 0;
-}
-int usbhub_powerall(struct item* usb)
-{
-	usbhub_print("usbhub_powerall\n");
-	struct perusb* perusb = usb->priv_ptr;
-	if(0 == perusb)return 0;
-	struct perfunc* perfunc = (void*)perusb->perfunc;
-	//if(0 == perfunc)return 0;
+	usbhub_print("%d:get stat\n", id);
+	HUB_PORT_GETSTATUS(&req, id+1);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot,
+		0,0,
+		&req,8,
+		&perfunc->portstat[id],4
+	);
+	if(ret < 0)return -10;
+	say("stat=%x\n",perfunc->portstat[id]);
 
-	int j;
-	for(j=0;j<perfunc->portcount;j++){
-		usbhub_powerone(usb, j);
-		say("......\n");
-	}
 	return 0;
 }
 
@@ -257,7 +253,7 @@ int usbhub_resetone(struct item* usb, int id)
 	if(ret < 0)return -10;
 	say("stat=%x\n",perfunc->portstat[id]);
 
-	if(0 == (perfunc->portstat[id]&HUB_STATUS_CONNECTION))return 0;
+	if(0 == (perfunc->portstat[id]&HUB_STATUS_CONNECTION))return -11;
 
 
 	usbhub_print("%d:reset\n", id);
@@ -270,21 +266,18 @@ int usbhub_resetone(struct item* usb, int id)
 	);
 	if(ret < 0)return -10;
 
-	return 0;
-}
-int usbhub_resetall(struct item* usb)
-{
-	usbhub_print("usbhub_resetall\n");
-	struct perusb* perusb = usb->priv_ptr;
-	if(0 == perusb)return 0;
-	struct perfunc* perfunc = (void*)perusb->perfunc;
-	//if(0 == perfunc)return 0;
 
-	int j;
-	for(j=0;j<perfunc->portcount;j++){
-		usbhub_resetone(usb, j);
-		say("......\n");
-	}
+	usbhub_print("%d:get stat\n", id);
+	HUB_PORT_GETSTATUS(&req, id+1);
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot,
+		0,0,
+		&req,8,
+		&perfunc->portstat[id],4
+	);
+	if(ret < 0)return -10;
+	say("stat=%x\n",perfunc->portstat[id]);
+
 	return 0;
 }
 
@@ -352,11 +345,11 @@ int usbhub_checkone(struct item* usb, int id)
 		if(perfunc->portstat[id] & HSHUB_PORTSTATUS_LOWSPEED){
 			usbhub_print("speed=ls(1.5mbps)\n");
 		}
-		else if(perfunc->portstat[id] & HSHUB_PORTSTATUS_LOWSPEED){
+		else if(perfunc->portstat[id] & HSHUB_PORTSTATUS_HIGHSPEED){
 			usbhub_print("speed=hs(480mbps)\n");
 		}
 		else{
-			usbhub_print("speed=fs(12mbsp)\n");
+			usbhub_print("speed=fs(12mbps)\n");
 		}
 	}
 
@@ -374,6 +367,10 @@ int usbhub_checkone(struct item* usb, int id)
 */
 	return 0;
 }
+
+
+
+
 int usbhub_checkall(struct item* usb)
 {
 	usbhub_print("usbhub_checkall\n");
@@ -382,17 +379,61 @@ int usbhub_checkall(struct item* usb)
 	struct perfunc* perfunc = (void*)perusb->perfunc;
 	//if(0 == perfunc)return 0;
 
-	int j;
+	int j,ret;
 	for(j=0;j<perfunc->portcount;j++){
-		usbhub_checkone(usb, j);
-		say("......\n");
+		ret = usbhub_powerone(usb, j);
+		if(ret < 0)continue;
+
 	}
+
+	sleep_ms(200);
+
+	for(j=0;j<perfunc->portcount;j++){
+
+		ret = usbhub_resetone(usb, j);
+		if(ret < 0)goto thisdone;
+
+		sleep_ms(100);
+
+		ret = usbhub_checkone(usb, j);
+thisdone:
+		say("----------------\n");
+	}
+	return 0;
+}
+int usbhub_stopall(struct item* usb)
+{
+	usbhub_print("usbhub_checkall\n");
+	struct perusb* perusb = usb->priv_ptr;
+	if(0 == perusb)return 0;
+	struct perfunc* perfunc = (void*)perusb->perfunc;
+	//if(0 == perfunc)return 0;
+
 	return 0;
 }
 
 
 
 
+
+static int usbhub_ongive(struct item* usb,int xxx, struct item* xhci,int endp, void* sbuf,int slen, void* rbuf,int rlen)
+{
+	usbhub_print("usb port status change:\n");
+	void* data = *(void**)sbuf;
+	//printmemory(data, 16);
+
+	u8 bitmap = *(u8*)data;
+	if(bitmap&1)usbhub_print("hub status change!\n");
+
+	int j;
+	for(j=1;j<8;j++){
+		if(bitmap & (1<<j)){
+			usbhub_print("port %d(count from 1) status change!\n", j);
+			//usbhub_check();
+		}
+	}
+	return 0;
+}
 int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct descnode* intfnode, struct InterfaceDescriptor* intfdesc)
 {
 	usbhub_print("@usbhub_driver\n");
@@ -524,23 +565,6 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		return 0;
 	}
 
-	//configure endpoint
-	struct descnode* endpnode;
-	struct EndpointDescriptor* endpdesc;
-	endpnode = usbdesc_offs2addr(perusb, intfnode->lchild);
-	endpdesc = usbdesc_offs2addr(perusb, endpnode->real);
-	if(5 != endpdesc->bDescriptorType){
-		usbhub_print("wrong endpdesc\n");
-		return 0;
-	}
-	ret = xhci->give_pxpxpxpx(
-		xhci,slot,
-		0,0,
-		0,_tohc_conf_,
-		endpdesc,sizeof(struct EndpointDescriptor)
-	);
-	if(ret < 0)return -9;
-
 	//set config
 	int set_config_error = 0;
 	usbhub_print("set config %d\n", confdesc->bConfigurationValue);
@@ -624,11 +648,50 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 
 	perfunc->hostnode = xhci;
 	perfunc->hostslot = slot;
-	sleep_ms(1000);
-	usbhub_powerall(usb);
-	sleep_ms(1000);
-	usbhub_resetall(usb);
-	sleep_ms(1000);
 	usbhub_checkall(usb);
+
+
+//------------------------ep-----------------------------
+	usbhub_print("ep check...\n");
+	struct descnode* endpnode;
+	struct EndpointDescriptor* endpdesc;
+	endpnode = usbdesc_offs2addr(perusb, intfnode->lchild);
+	endpdesc = usbdesc_offs2addr(perusb, endpnode->real);
+	if(5 != endpdesc->bDescriptorType){
+		usbhub_print("wrong endpdesc\n");
+		return 0;
+	}
+
+	if(0 == (endpdesc->bEndpointAddress & 0x80)){
+		usbhub_print("error:epdir=host to device\n");
+		return -20;
+	}
+	int inaddr = (endpdesc->bEndpointAddress & 0xf) << 1;
+	inaddr += 1;
+
+	int pktlen = endpdesc->wMaxPacketSize;
+	if(pktlen > 0x40)pktlen = 0x40;
+
+	//configure endpoint
+	usbhub_print("configure endpoint\n");
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot,
+		0,0,
+		0,_tohc_conf_,
+		endpdesc,sizeof(struct EndpointDescriptor)
+	);
+	if(ret < 0)return -9;
+
+//------------------------callback------------------------
+	usb->ongiving = (void*)usbhub_ongive;
+
+//------------------------transfer ring------------------------
+	usbhub_print("making trb@%p\n", perfunc->buf);
+	ret = xhci->give_pxpxpxpx(
+		xhci, slot|(inaddr<<8),
+		0, 0,
+		perfunc->buf, pktlen,
+		usb, 0
+	);
 	return 0;
 }

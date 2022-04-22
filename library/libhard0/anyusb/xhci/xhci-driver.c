@@ -1499,7 +1499,8 @@ int xhci_newdevunderhub(struct item* xhci, int parentslot, u32* portstatus, int 
 	else{
 		speed = SPEED_FS;
 		if(portstatus[0] & HSHUB_PORTSTATUS_LOWSPEED)speed = SPEED_LS;
-		if(portstatus[0] & HSHUB_PORTSTATUS_LOWSPEED)speed = SPEED_HS;
+		if(portstatus[0] & HSHUB_PORTSTATUS_HIGHSPEED)speed = SPEED_HS;
+		xhci_print("newdevunderhub: speed=%s\n", speed2string[speed&7]);
 	}
 	childctx->rootport = parentctx->rootport;
 	childctx->routestring = hubport_countfrom1;
