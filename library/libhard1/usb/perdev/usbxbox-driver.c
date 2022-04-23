@@ -1,9 +1,9 @@
 #include "libhard.h"
 #include "libuser.h"
 #include "drv-usb.h"
-void DEVICE_REQUEST_SET_CONFIGURATION(void* req, u16 conf);
-void INTERFACE_REQUEST_GET_REPORT_DESC(void* req, u16 intf, u16 typeindex, u16 len);
-void INTERFACE_REQUEST_SET_IDLE(struct UsbRequest* req, u16 intf, u16 val);
+void H2D_STD_DEV_SETCONF(void* req, u16 conf);
+void D2H_STD_INTF_GETDESC(void* req, u16 intf, u16 typeindex, u16 len);
+void H2D_CLASS_INTF_SETIDLE(struct UsbRequest* req, u16 intf, u16 val);
 
 int usbdesc_addr2offs(struct perusb* perusb, void* desc);
 void* usbdesc_offs2addr(struct perusb* perusb, int offs);
@@ -241,7 +241,7 @@ int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 
 //------------------------device side------------------------
 	say("[xboxhid]set_config\n");
-	DEVICE_REQUEST_SET_CONFIGURATION(&req, confdesc->bConfigurationValue);
+	H2D_STD_DEV_SETCONF(&req, confdesc->bConfigurationValue);
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,

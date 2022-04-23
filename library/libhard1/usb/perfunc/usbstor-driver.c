@@ -1,6 +1,6 @@
 #include "libhard.h"
 #include "drv-usb.h"
-void DEVICE_REQUEST_SET_CONFIGURATION(void* req, u16 conf);
+void H2D_STD_DEV_SETCONF(void* req, u16 conf);
 void filemanager_registersupplier(void*, void*);
 
 int usbdesc_addr2offs(struct perusb* perusb, void* desc);
@@ -455,7 +455,7 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 
 //------------------------set configuration------------------------
 	say("[usbdisk]set_config\n");
-	DEVICE_REQUEST_SET_CONFIGURATION(&req, confdesc->bConfigurationValue);
+	H2D_STD_DEV_SETCONF(&req, confdesc->bConfigurationValue);
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,

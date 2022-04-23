@@ -5,10 +5,10 @@
 int usbdesc_addr2offs(struct perusb* perusb, void* desc);
 void* usbdesc_offs2addr(struct perusb* perusb, int offs);
 //
-void DEVICE_REQUEST_GET_STATUS(struct UsbRequest* req);
-void DEVICE_REQUEST_SET_CONFIGURATION(void* req, u16 conf);
-void INTERFACE_REQUEST_GET_STATUS(struct UsbRequest* req, u16 intf);
-void INTERFACE_REQUEST_SET_INTERFACE(void* req, u16 intf, u16 alt);
+void D2H_STD_DEV_GETSTAT(struct UsbRequest* req);
+void D2H_STD_INTF_GETSTAT(struct UsbRequest* req, u16 intf);
+void H2D_STD_DEV_SETCONF(void* req, u16 conf);
+void H2D_STD_INTF_SETINTF(void* req, u16 intf, u16 alt);
 
 
 
@@ -19,11 +19,11 @@ void INTERFACE_REQUEST_SET_INTERFACE(void* req, u16 intf, u16 alt);
 #define HUB_FEATURE_RESET		4
 #define HUB_FEATURE_CRESET		0x14
 //3.0 hub command
-#define SSHUB_SET_DEPTH		12
-#define SSHUB_GET_PORT_ERR_COUNT	13
+#define SSHUB_SET_DEPTH          12
+#define SSHUB_GET_PORT_ERR_COUNT 13
 
 
-void HUB_GETSTATUS(struct UsbRequest* req, int len)
+void D2H_CLASS_DEV_GETSTAT(struct UsbRequest* req, int len)
 {
 	req->bmRequestType = 0xa0;
 	req->bRequest = GET_STATUS;
@@ -31,7 +31,7 @@ void HUB_GETSTATUS(struct UsbRequest* req, int len)
 	req->wIndex = 0;
 	req->wLength = len;
 }
-void GET_DESC_HUB(struct UsbRequest* req, u16 type, u16 len)
+void D2H_CLASS_DEV_GETDESC(struct UsbRequest* req, u16 type, u16 len)
 {
 	req->bmRequestType = 0xa0;  //USB_SETUP_DEVICE_TO_HOST|USB_SETUP_TYPE_CLASS|USB_SETUP_RECIPIENT_DEVICE
 	req->bRequest = GET_DESCRIPTOR;
@@ -39,7 +39,7 @@ void GET_DESC_HUB(struct UsbRequest* req, u16 type, u16 len)
 	req->wIndex = 0;
 	req->wLength = len;
 }
-void HUB_SET_DEPTH(struct UsbRequest* req, u16 depth)
+void H2D_CLASS_HUB_SETDEPTH(struct UsbRequest* req, u16 depth)
 {
 	req->bmRequestType = 0x23;
 	req->bRequest = SSHUB_SET_DEPTH;
@@ -459,7 +459,7 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	//hub desc
 	usbhub_print("get_hubdesc\n");
 	struct HubDescriptor* hubdesc = (void*)perfunc->buf;
-	GET_DESC_HUB(&req, (0x29<<8) | 0, 8);
+	D2H_CLASS_DEV_GETDESC(&req, (0x29<<8) | 0, 8);
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
@@ -496,7 +496,7 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	u32 status;
 	if(2 == perfunc->hubtype){
 		usbhub_print("get devicestatus\n");
-		DEVICE_REQUEST_GET_STATUS(&req);
+		D2H_STD_DEV_GETSTAT(&req);
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
@@ -506,7 +506,7 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		usbhub_print("devicestatus=%x\n",status);
 
 		usbhub_print("get interfacestatus\n");
-		INTERFACE_REQUEST_GET_STATUS(&req, intfdesc->bInterfaceNumber);
+		D2H_STD_INTF_GETSTAT(&req, intfdesc->bInterfaceNumber);
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
@@ -516,7 +516,7 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		usbhub_print("interfacestatus=%x\n",status);
 
 		usbhub_print("get hubstatus\n");
-		HUB_GETSTATUS(&req, 4);
+		D2H_CLASS_DEV_GETSTAT(&req, 4);
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
@@ -568,7 +568,7 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	//set config
 	int set_config_error = 0;
 	usbhub_print("set config %d\n", confdesc->bConfigurationValue);
-	DEVICE_REQUEST_SET_CONFIGURATION(&req, confdesc->bConfigurationValue);
+	H2D_STD_DEV_SETCONF(&req, confdesc->bConfigurationValue);
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
@@ -583,7 +583,7 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	//2.0-multiTT hub: set interface
 	if(2 == perfunc->hubtype){
 		usbhub_print("get devicestatus\n");
-		DEVICE_REQUEST_GET_STATUS(&req);
+		D2H_STD_DEV_GETSTAT(&req);
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
@@ -593,7 +593,7 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		usbhub_print("devicestatus=%x\n",status);
 
 		usbhub_print("get interfacestatus\n");
-		INTERFACE_REQUEST_GET_STATUS(&req, intfdesc->bInterfaceNumber);
+		D2H_STD_INTF_GETSTAT(&req, intfdesc->bInterfaceNumber);
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
@@ -603,7 +603,7 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		usbhub_print("interfacestatus=%x\n",status);
 
 		usbhub_print("get hubstatus\n");
-		HUB_GETSTATUS(&req, 4);
+		D2H_CLASS_DEV_GETSTAT(&req, 4);
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
@@ -613,7 +613,7 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		usbhub_print("hubstatus=%x\n",status);
 
 		usbhub_print("set interface\n");
-		INTERFACE_REQUEST_SET_INTERFACE(&req, intfdesc->bInterfaceNumber, intfdesc->bAlternateSetting);
+		H2D_STD_INTF_SETINTF(&req, intfdesc->bInterfaceNumber, intfdesc->bAlternateSetting);
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
@@ -636,7 +636,7 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	//3.0 hub: set depth
 	if(perfunc->hubtype >= 3){		//superspeed hub
 		usbhub_print("set depth\n");
-		HUB_SET_DEPTH(&req, 0);
+		H2D_CLASS_HUB_SETDEPTH(&req, 0);
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,

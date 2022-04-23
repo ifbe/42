@@ -1,9 +1,8 @@
 #include "libhard.h"
 #include "libuser.h"
 #include "drv-usb.h"
-void DEVICE_REQUEST_SET_CONFIGURATION(void* req, u16 conf);
-void INTERFACE_REQUEST_SET_INTERFACE(struct UsbRequest* req, u16 intf, u16 alt);
-void INTERFACE_REQUEST_CLEAR_FEATURE(struct UsbRequest* req, u16 intf, u16 feature);
+void H2D_STD_DEV_SETCONF(void* req, u16 conf);
+void D2H_STD_INTF_GETDESC(struct UsbRequest* req, u16 intf, u16 typeindex, u16 len);
 
 int usbdesc_addr2offs(struct perusb* perusb, void* desc);
 void* usbdesc_offs2addr(struct perusb* perusb, int offs);
@@ -197,23 +196,7 @@ struct perfunc{		//0x10000 byte per func
 
 
 
-void INTERFACE_REQUEST_GET_REPORT_DESC(struct UsbRequest* req, u16 intf, u16 typeindex, u16 len)
-{
-	req->bmRequestType = 0x81;
-	req->bRequest = 6;
-	req->wValue = typeindex;
-	req->wIndex = intf;
-	req->wLength = len;
-}
-void INTERFACE_REQUEST_GET_REPORT(struct UsbRequest* req, u16 intf, u16 len)
-{
-	req->bmRequestType = 0xa1;
-	req->bRequest = bRequest_GET_REPORT;
-	req->wValue = 0;	//report type and report id: 1=input, 2=output, 3=feature
-	req->wIndex = intf;
-	req->wLength = len;	//report length
-}
-void INTERFACE_REQUEST_SET_REPORT(struct UsbRequest* req, u16 intf, u16 len)
+void H2D_CLASS_INTF_SETREPORT(struct UsbRequest* req, u16 intf, u16 len)
 {
 	req->bmRequestType = 0x21;
 	req->bRequest = bRequest_SET_REPORT;
@@ -221,15 +204,7 @@ void INTERFACE_REQUEST_SET_REPORT(struct UsbRequest* req, u16 intf, u16 len)
 	req->wIndex = intf;
 	req->wLength = len;
 }
-void INTERFACE_REQUEST_GET_IDLE(struct UsbRequest* req, u16 intf)
-{
-	req->bmRequestType = 0xa1;
-	req->bRequest = bRequest_GET_IDLE;
-	req->wValue = 0;	//0 and report id
-	req->wIndex = intf;
-	req->wLength = 1;
-}
-void INTERFACE_REQUEST_SET_IDLE(struct UsbRequest* req, u16 intf, u16 val)
+void H2D_CLASS_INTF_SETIDLE(struct UsbRequest* req, u16 intf, u16 val)
 {
 	req->bmRequestType = 0x21;
 	req->bRequest = bRequest_SET_IDLE;
@@ -237,21 +212,37 @@ void INTERFACE_REQUEST_SET_IDLE(struct UsbRequest* req, u16 intf, u16 val)
 	req->wIndex = intf;
 	req->wLength = 0;
 }
-void INTERFACE_REQUEST_GET_PROTOCOL(struct UsbRequest* req, u16 intf)
-{
-	req->bmRequestType = 0xa1;
-	req->bRequest = bRequest_GET_PROTOCOL;
-	req->wValue = 0;	//0 and report id
-	req->wIndex = intf;
-	req->wLength = 1;
-}
-void INTERFACE_REQUEST_SET_PROTOCOL(struct UsbRequest* req, u16 intf, u16 val)
+void H2D_CLASS_INTF_SETPROTOCOL(struct UsbRequest* req, u16 intf, u16 val)
 {
 	req->bmRequestType = 0x21;
 	req->bRequest = bRequest_SET_PROTOCOL;
 	req->wValue = val;	//duration and report id
 	req->wIndex = intf;
 	req->wLength = 0;
+}
+void D2H_CLASS_INTF_GETREPORT(struct UsbRequest* req, u16 intf, u16 len)
+{
+	req->bmRequestType = 0xa1;
+	req->bRequest = bRequest_GET_REPORT;
+	req->wValue = 0;	//report type and report id: 1=input, 2=output, 3=feature
+	req->wIndex = intf;
+	req->wLength = len;	//report length
+}
+void D2H_CLASS_INTF_GETIDLE(struct UsbRequest* req, u16 intf)
+{
+	req->bmRequestType = 0xa1;
+	req->bRequest = bRequest_GET_IDLE;
+	req->wValue = 0;	//0 and report id
+	req->wIndex = intf;
+	req->wLength = 1;
+}
+void D2H_CLASS_INTF_GETPROTOCOL(struct UsbRequest* req, u16 intf)
+{
+	req->bmRequestType = 0xa1;
+	req->bRequest = bRequest_GET_PROTOCOL;
+	req->wValue = 0;	//0 and report id
+	req->wIndex = intf;
+	req->wLength = 1;
 }
 
 
@@ -636,7 +627,7 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 
 			say("get reportdesc\n");
 			void* temp = usbdesc_offs2addr(perusb, perusb->origin.byteused);
-			INTERFACE_REQUEST_GET_REPORT_DESC(&req,
+			D2H_STD_INTF_GETDESC(&req,
 				intfdesc->bInterfaceNumber,
 				0 | (hiddesc->bReportDescType<<8),
 				hiddesc->wReportDescLength
@@ -684,7 +675,7 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	}
 	if(need_to_set_protocol){
 		say("[usbhid]set_protocol\n");
-		INTERFACE_REQUEST_SET_PROTOCOL(&req, intfdesc->bInterfaceNumber, 0);
+		H2D_CLASS_INTF_SETPROTOCOL(&req, intfdesc->bInterfaceNumber, 0);
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
@@ -697,7 +688,7 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	int need_to_set_configuration = 1;
 	if(need_to_set_configuration){
 		say("[usbhid]set_config\n");
-		DEVICE_REQUEST_SET_CONFIGURATION(&req, confdesc->bConfigurationValue);
+		H2D_STD_DEV_SETCONF(&req, confdesc->bConfigurationValue);
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,

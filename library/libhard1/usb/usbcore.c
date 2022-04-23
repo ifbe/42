@@ -13,154 +13,6 @@ int usbuvc_driver(struct item* usb, int xxx, struct item* xhci, int slot, void*,
 
 
 
-void DEVICE_REQUEST_GET_STATUS(struct UsbRequest* req)
-{
-	req->bmRequestType = 0x80;
-	req->bRequest = GET_STATUS;
-	req->wValue = 0;
-	req->wIndex = 0;
-	req->wLength = 2;
-}
-void DEVICE_REQUEST_CLEAR_FEATURE(struct UsbRequest* req, u16 feature)
-{
-	req->bmRequestType = 0;
-	req->bRequest = CLEAR_FEATURE;
-	req->wValue = feature;
-	req->wIndex = 0;
-	req->wLength = 0;
-}
-void DEVICE_REQUEST_SET_FEATURE(struct UsbRequest* req, u16 feature)
-{
-	req->bmRequestType = 0;
-	req->bRequest = SET_FEATURE;
-	req->wValue = feature;
-	req->wIndex = 0;
-	req->wLength = 0;
-}
-void DEVICE_REQUEST_SET_ADDRESS(struct UsbRequest* req, u16 addr)
-{
-	req->bmRequestType = 0;
-	req->bRequest = SET_ADDRESS;
-	req->wValue = addr;
-	req->wIndex = 0;
-	req->wLength = 0;
-}
-void DEVICE_REQUEST_GET_DESCRIPTOR(struct UsbRequest* req, u16 type, u16 lang, u16 len)
-{
-	req->bmRequestType = 0x80;
-	req->bRequest = GET_DESCRIPTOR;
-	req->wValue = type;
-	req->wIndex = lang;
-	req->wLength = len;
-}
-void DEVICE_REQUEST_SET_DESCRIPTOR(struct UsbRequest* req, u16 type, u16 lang, u16 len)
-{
-	req->bmRequestType = 0;
-	req->bRequest = SET_DESCRIPTOR;
-	req->wValue = type;
-	req->wIndex = lang;
-	req->wLength = len;
-}
-void DEVICE_REQUEST_GET_CONFIGURATION(struct UsbRequest* req)
-{
-	req->bmRequestType = 0x80;
-	req->bRequest = GET_CONFIGURATION;
-	req->wValue = 0;
-	req->wIndex = 0;
-	req->wLength = 1;
-}
-void DEVICE_REQUEST_SET_CONFIGURATION(struct UsbRequest* req, u16 conf)
-{
-	req->bmRequestType = 0;
-	req->bRequest = SET_CONFIGURATION;
-	req->wValue = conf;
-	req->wIndex = 0;
-	req->wLength = 0;
-}
-
-
-
-
-void INTERFACE_REQUEST_GET_STATUS(struct UsbRequest* req, u16 intf)
-{
-	req->bmRequestType = 0x81;
-	req->bRequest = GET_STATUS;
-	req->wValue = 0;
-	req->wIndex = intf;
-	req->wLength = 2;
-}
-void INTERFACE_REQUEST_CLEAR_FEATURE(struct UsbRequest* req, u16 intf, u16 feature)
-{
-	req->bmRequestType = 0x01;
-	req->bRequest = CLEAR_FEATURE;
-	req->wValue = feature;
-	req->wIndex = intf;
-	req->wLength = 0;
-}
-void INTERFACE_REQUEST_SET_FEATURE(struct UsbRequest* req, u16 intf, u16 feature)
-{
-	req->bmRequestType = 0x01;
-	req->bRequest = SET_FEATURE;
-	req->wValue = feature;
-	req->wIndex = intf;
-	req->wLength = 0;
-}
-void INTERFACE_REQUEST_GET_INTERFACE(struct UsbRequest* req, u16 intf)
-{
-	req->bmRequestType = 0x81;
-	req->bRequest = GET_INTERFACE;
-	req->wValue = 0;
-	req->wIndex = intf;
-	req->wLength = 1;
-}
-void INTERFACE_REQUEST_SET_INTERFACE(struct UsbRequest* req, u16 intf, u16 alt)
-{
-	req->bmRequestType = 0x01;
-	req->bRequest = SET_INTERFACE;
-	req->wValue = alt;
-	req->wIndex = intf;
-	req->wLength = 0;
-}
-
-
-
-
-void ENDPOINT_REQUEST_GET_STATUS(struct UsbRequest* req, u16 endp)
-{
-	req->bmRequestType = 0x82;
-	req->bRequest = GET_STATUS;
-	req->wValue = 0;
-	req->wIndex = endp;
-	req->wLength = 2;
-}
-void ENDPOINT_REQUEST_CLEAR_FEATURE(struct UsbRequest* req, u16 endp, u16 feature)
-{
-	req->bmRequestType = 2;
-	req->bRequest = CLEAR_FEATURE;
-	req->wValue = feature;
-	req->wIndex = endp;
-	req->wLength = 0;
-}
-void ENDPOINT_REQUEST_SET_FEATURE(struct UsbRequest* req, u16 endp, u16 feature)
-{
-	req->bmRequestType = 2;
-	req->bRequest = SET_FEATURE;
-	req->wValue = feature;
-	req->wIndex = endp;
-	req->wLength = 0;
-}
-void ENDPOINT_REQUEST_SYNCH_FRAME(struct UsbRequest* req, u16 endp)
-{
-	req->bmRequestType = 0x82;
-	req->bRequest = SYNCH_FRAME;
-	req->wValue = 0;
-	req->wIndex = endp;
-	req->wLength = 2;
-}
-
-
-
-
 int usbdesc_addr2offs(struct perusb* perusb, void* desc)
 {
 	return desc - (void*)perusb;
@@ -168,6 +20,162 @@ int usbdesc_addr2offs(struct perusb* perusb, void* desc)
 void* usbdesc_offs2addr(struct perusb* perusb, int offs)
 {
 	return (void*)perusb + offs;
+}
+
+
+
+
+void H2D_STD_DEV_CLRFEATURE(struct UsbRequest* req, u16 feature)
+{
+	req->bmRequestType = 0;
+	req->bRequest = CLEAR_FEATURE;
+	req->wValue = feature;
+	req->wIndex = 0;
+	req->wLength = 0;
+}
+void H2D_STD_DEV_SETFEATURE(struct UsbRequest* req, u16 feature)
+{
+	req->bmRequestType = 0;
+	req->bRequest = SET_FEATURE;
+	req->wValue = feature;
+	req->wIndex = 0;
+	req->wLength = 0;
+}
+void H2D_STD_DEV_SETADDR(struct UsbRequest* req, u16 addr)
+{
+	req->bmRequestType = 0;
+	req->bRequest = SET_ADDRESS;
+	req->wValue = addr;
+	req->wIndex = 0;
+	req->wLength = 0;
+}
+void H2D_STD_DEV_SETDESC(struct UsbRequest* req, u16 type, u16 lang, u16 len)
+{
+	req->bmRequestType = 0;
+	req->bRequest = SET_DESCRIPTOR;
+	req->wValue = type;
+	req->wIndex = lang;
+	req->wLength = len;
+}
+void H2D_STD_DEV_SETCONF(struct UsbRequest* req, u16 conf)
+{
+	req->bmRequestType = 0;
+	req->bRequest = SET_CONFIGURATION;
+	req->wValue = conf;
+	req->wIndex = 0;
+	req->wLength = 0;
+}
+void D2H_STD_DEV_GETSTAT(struct UsbRequest* req)
+{
+	req->bmRequestType = 0x80;
+	req->bRequest = GET_STATUS;
+	req->wValue = 0;
+	req->wIndex = 0;
+	req->wLength = 2;
+}
+void D2H_STD_DEV_GETDESC(struct UsbRequest* req, u16 type, u16 lang, u16 len)
+{
+	req->bmRequestType = 0x80;
+	req->bRequest = GET_DESCRIPTOR;
+	req->wValue = type;
+	req->wIndex = lang;
+	req->wLength = len;
+}
+void D2H_STD_DEV_GETCONF(struct UsbRequest* req)
+{
+	req->bmRequestType = 0x80;
+	req->bRequest = GET_CONFIGURATION;
+	req->wValue = 0;
+	req->wIndex = 0;
+	req->wLength = 1;
+}
+
+
+
+
+void H2D_STD_INTF_CLRFEATURE(struct UsbRequest* req, u16 intf, u16 feature)
+{
+	req->bmRequestType = 0x01;
+	req->bRequest = CLEAR_FEATURE;
+	req->wValue = feature;
+	req->wIndex = intf;
+	req->wLength = 0;
+}
+void H2D_STD_INTF_SETFEATURE(struct UsbRequest* req, u16 intf, u16 feature)
+{
+	req->bmRequestType = 0x01;
+	req->bRequest = SET_FEATURE;
+	req->wValue = feature;
+	req->wIndex = intf;
+	req->wLength = 0;
+}
+void H2D_STD_INTF_SETINTF(struct UsbRequest* req, u16 intf, u16 alt)
+{
+	req->bmRequestType = 0x01;
+	req->bRequest = SET_INTERFACE;
+	req->wValue = alt;
+	req->wIndex = intf;
+	req->wLength = 0;
+}
+void D2H_STD_INTF_GETSTAT(struct UsbRequest* req, u16 intf)
+{
+	req->bmRequestType = 0x81;
+	req->bRequest = GET_STATUS;
+	req->wValue = 0;
+	req->wIndex = intf;
+	req->wLength = 2;
+}
+void D2H_STD_INTF_GETDESC(struct UsbRequest* req, u16 intf, u16 typeindex, u16 len)
+{
+	req->bmRequestType = 0x81;
+	req->bRequest = 6;
+	req->wValue = typeindex;
+	req->wIndex = intf;
+	req->wLength = len;
+}
+void D2H_STD_INTF_GETINTF(struct UsbRequest* req, u16 intf)
+{
+	req->bmRequestType = 0x81;
+	req->bRequest = GET_INTERFACE;
+	req->wValue = 0;
+	req->wIndex = intf;
+	req->wLength = 1;
+}
+
+
+
+
+void H2D_STD_ENDP_CLRFEATURE(struct UsbRequest* req, u16 endp, u16 feature)
+{
+	req->bmRequestType = 2;
+	req->bRequest = CLEAR_FEATURE;
+	req->wValue = feature;
+	req->wIndex = endp;
+	req->wLength = 0;
+}
+void H2D_STD_ENDP_SETFEATURE(struct UsbRequest* req, u16 endp, u16 feature)
+{
+	req->bmRequestType = 2;
+	req->bRequest = SET_FEATURE;
+	req->wValue = feature;
+	req->wIndex = endp;
+	req->wLength = 0;
+}
+void D2H_STD_ENDP_GETSTAT(struct UsbRequest* req, u16 endp)
+{
+	req->bmRequestType = 0x82;
+	req->bRequest = GET_STATUS;
+	req->wValue = 0;
+	req->wIndex = endp;
+	req->wLength = 2;
+}
+void D2H_STD_ENDP_SYNCHFRAME(struct UsbRequest* req, u16 endp)
+{
+	req->bmRequestType = 0x82;
+	req->bRequest = SYNCH_FRAME;
+	req->wValue = 0;
+	req->wIndex = endp;
+	req->wLength = 2;
 }
 
 
@@ -295,7 +303,7 @@ int usbany_handledevdesc(struct item* usb, int xxx, struct item* xhci, int slot)
 	//GET_DESCRIPTOR devdesc 8B (FS device only)
 	if(1){
 		//GET_DESCRIPTOR devdesc[0,7]
-		DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x100, 0, 8);
+		D2H_STD_DEV_GETDESC(&req, 0x100, 0, 8);
 		ret = xhci->give_pxpxpxpx(
 			xhci, slot,
 			0, 0,
@@ -316,7 +324,7 @@ int usbany_handledevdesc(struct item* usb, int xxx, struct item* xhci, int slot)
 	}
 
 	//GET_DESCRIPTOR devdesc all
-	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x100, 0, 0x12);
+	D2H_STD_DEV_GETDESC(&req, 0x100, 0, 0x12);
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
@@ -346,7 +354,7 @@ int usbany_handlestrdesc(struct item* usb, int xxx, struct item* xhci, int slot)
 	int ret;
 	struct UsbRequest req;
 	//GET_DESCRIPTOR stringdesc 4B
-	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300, 0, 4);
+	D2H_STD_DEV_GETDESC(&req, 0x300, 0, 4);
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
@@ -356,7 +364,7 @@ int usbany_handlestrdesc(struct item* usb, int xxx, struct item* xhci, int slot)
 	if(4 != ret)return -6;
 
 	//GET_DESCRIPTOR stringdesc all
-	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300, 0, strdesc->bLength);
+	D2H_STD_DEV_GETDESC(&req, 0x300, 0, strdesc->bLength);
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
@@ -382,7 +390,7 @@ int usbany_ReadAndHandleString(struct item* usb, int xxx, struct item* xhci, int
 
 	int j,ret;
 	struct UsbRequest req;
-	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300 + id, lang, 4);
+	D2H_STD_DEV_GETDESC(&req, 0x300 + id, lang, 4);
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
@@ -391,7 +399,7 @@ int usbany_ReadAndHandleString(struct item* usb, int xxx, struct item* xhci, int
 	);
 	if(4 != ret)return -7;
 
-	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300 + id, lang, strdesc->bLength);
+	D2H_STD_DEV_GETDESC(&req, 0x300 + id, lang, strdesc->bLength);
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
@@ -644,7 +652,7 @@ int usbany_ReadAndHandleConfigure(struct item* usb, int xxx, struct item* xhci, 
 	int ret;
 	struct UsbRequest req;
 	//GET_DESCRIPTOR confdesc 8B
-	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x200+value, 0, 8);
+	D2H_STD_DEV_GETDESC(&req, 0x200+value, 0, 8);
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
@@ -654,7 +662,7 @@ int usbany_ReadAndHandleConfigure(struct item* usb, int xxx, struct item* xhci, 
 	if(8 != ret)return -4;
 
 	//GET_DESCRIPTOR confdesc all
-	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x200+value, 0, confdesc->wTotalLength);
+	D2H_STD_DEV_GETDESC(&req, 0x200+value, 0, confdesc->wTotalLength);
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,

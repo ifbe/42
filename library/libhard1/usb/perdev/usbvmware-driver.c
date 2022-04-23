@@ -4,16 +4,10 @@ int usbdesc_addr2offs(struct perusb* perusb, void* desc);
 void* usbdesc_offs2addr(struct perusb* perusb, int offs);
 int printreport(void*,int);
 //
-void DEVICE_REQUEST_SET_CONFIGURATION(void* req, u16 conf);
-void INTERFACE_REQUEST_SET_INTERFACE(struct UsbRequest* req, u16 intf, u16 alt);
-void INTERFACE_REQUEST_CLEAR_FEATURE(struct UsbRequest* req, u16 intf, u16 feature);
-void INTERFACE_REQUEST_GET_REPORT_DESC(struct UsbRequest* req, u16 intf, u16 typeindex, u16 len);
-void INTERFACE_REQUEST_GET_REPORT(struct UsbRequest* req, u16 intf, u16 len);
-void INTERFACE_REQUEST_SET_REPORT(struct UsbRequest* req, u16 intf, u16 len);
-void INTERFACE_REQUEST_GET_IDLE(struct UsbRequest* req, u16 intf);
-void INTERFACE_REQUEST_SET_IDLE(struct UsbRequest* req, u16 intf, u16 val);
-void INTERFACE_REQUEST_GET_PROTOCOL(struct UsbRequest* req, u16 intf);
-void INTERFACE_REQUEST_SET_PROTOCOL(struct UsbRequest* req, u16 intf, u16 val);
+void H2D_STD_DEV_SETCONF(void* req, u16 conf);
+void D2H_STD_INTF_GETDESC(struct UsbRequest* req, u16 intf, u16 typeindex, u16 len);
+void D2H_CLASS_INTF_GETREPORT(struct UsbRequest* req, u16 intf, u16 len);
+void H2D_CLASS_INTF_SETIDLE(struct UsbRequest* req, u16 intf, u16 val);
 
 
 
@@ -53,7 +47,7 @@ int usbvmware_perintf(struct item* usb,int xxx, struct item* xhci,int slot, stru
 	int need_to_set_configuration = 1;
 	if(need_to_set_configuration){
 		say("[vmmouse]set_config\n");
-		DEVICE_REQUEST_SET_CONFIGURATION(&req, confdesc->bConfigurationValue);
+		H2D_STD_DEV_SETCONF(&req, confdesc->bConfigurationValue);
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
@@ -66,7 +60,7 @@ int usbvmware_perintf(struct item* usb,int xxx, struct item* xhci,int slot, stru
 	int need_to_set_idle = 1;
 	if(need_to_set_idle){
 		say("set idle\n");
-		INTERFACE_REQUEST_SET_IDLE(&req,
+		H2D_CLASS_INTF_SETIDLE(&req,
 			intfdesc->bInterfaceNumber,
 			0
 		);
@@ -136,7 +130,7 @@ int usbvmware_perintf(struct item* usb,int xxx, struct item* xhci,int slot, stru
 			if( (0x0e0f == devdesc->idVendor) && (0x0003 == devdesc->idProduct) ){
 				say("get reportdesc\n");
 				void* temp = usbdesc_offs2addr(perusb, perusb->origin.byteused);
-				INTERFACE_REQUEST_GET_REPORT_DESC(&req,
+				D2H_STD_INTF_GETDESC(&req,
 					intfdesc->bInterfaceNumber,
 					0 | (hiddesc->bReportDescType<<8),
 					hiddesc->wReportDescLength
@@ -169,7 +163,7 @@ int usbvmware_perintf(struct item* usb,int xxx, struct item* xhci,int slot, stru
 		void* rrrr = usbdesc_offs2addr(perusb, perusb->origin.byteused);
 
 		say("get report1\n");
-		INTERFACE_REQUEST_GET_REPORT(&req, intfdesc->bInterfaceNumber, 0x40);
+		D2H_CLASS_INTF_GETREPORT(&req, intfdesc->bInterfaceNumber, 0x40);
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
@@ -179,7 +173,7 @@ int usbvmware_perintf(struct item* usb,int xxx, struct item* xhci,int slot, stru
 		printmemory(rrrr, 0x40);
 
 		say("get report2\n");
-		INTERFACE_REQUEST_GET_REPORT(&req, intfdesc->bInterfaceNumber, 0x40);
+		D2H_CLASS_INTF_GETREPORT(&req, intfdesc->bInterfaceNumber, 0x40);
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
