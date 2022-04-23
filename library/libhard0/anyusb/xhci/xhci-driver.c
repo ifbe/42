@@ -414,6 +414,10 @@ struct IsochTRB{
 	u32                      FrameID:11;	//[20,30]
 	u32               StartIsochASAP: 1;	//31
 }__attribute__((packed));
+
+#define SETUPSTAGE_DATA_NO 0
+#define SETUPSTAGE_DATA_OUT 2
+#define SETUPSTAGE_DATA_IN 3
 struct SetupStage{
 	//[0,3]
 	u8 bmRequestType;
@@ -436,6 +440,9 @@ struct SetupStage{
 	u32          TransferType: 2;	//[16,17]
 	u32             Rsvd_c_18:14;	//[18,31]
 }__attribute__((packed));
+
+#define DATASTAGE_DIRECTION_OUT 0
+#define DATASTAGE_DIRECTION_IN 1
 struct DataStage{
 	//[0,7]
 	u64 buffer;
@@ -456,6 +463,9 @@ struct DataStage{
 	u32              Direction: 1;	//16
 	u32              Rsvd_c_17:15;	//[17,31]
 }__attribute__((packed));
+
+#define STATUSSTAGE_DIRECTION_OUT 0
+#define STATUSSTAGE_DIRECTION_IN 1
 struct StatusStage{
 	//[0,7]
 	u64 zero;
@@ -608,12 +618,30 @@ int xhci_ZeroMemory(void* buf, int len)
 
 
 
-int maketrb_controltransfer(u8* trb, struct UsbRequest* req, u8* buf, int len)
+int maketrb_controltransfer(u8* trb,int uselen, struct UsbRequest* req,int reqlen, u8* buf,int len)
 {
-	struct SetupStage* setup   = (void*)(trb+0x00);
+	if(0 == req)return 0;
+
+	int devicetohost = !(!(req->bmRequestType&0x80));
+	int datadir = devicetohost ? DATASTAGE_DIRECTION_IN : DATASTAGE_DIRECTION_OUT;
+	int statdir =(devicetohost && req->wLength) ? STATUSSTAGE_DIRECTION_OUT : STATUSSTAGE_DIRECTION_IN;
+
+	int setup_trantype;		//this = (0 == req->wLength) ? 0 : datadir+2
+	if(0 == req->wLength)setup_trantype = SETUPSTAGE_DATA_NO;
+	else{
+		if(devicetohost == datadir)setup_trantype = SETUPSTAGE_DATA_IN;
+		else setup_trantype = SETUPSTAGE_DATA_OUT;
+	}
+
+	//before build
+	uselen = 0;
+
+	//setup
+	struct SetupStage* setup = (void*)(trb+0x00);
 	xhci_ZeroMemory(setup, 0x10);
+
 	setup->TRBType = TRB_common_SetupStage;
-	setup->TransferType = 3;
+	setup->TransferType = setup_trantype;
 	setup->TRBTransferLength = 8;
 	setup->InterruptOnCompletion = 0;
 	setup->ImmediateData = 1;
@@ -622,44 +650,39 @@ int maketrb_controltransfer(u8* trb, struct UsbRequest* req, u8* buf, int len)
 	setup->wValue = req->wValue;
 	setup->wIndex = req->wIndex;
 	setup->wLength = req->wLength;
+	//cycle bit: set later, not here
+	uselen += 0x10;
 
-	if(0 == req->wLength){
-		struct StatusStage* status = (void*)(trb+0x10);
-		xhci_ZeroMemory(status, 0x10);
-
-		status->TRBType = TRB_common_StatusStage;
-		status->Direction = 0;
-		status->Chainbit = 0;
-		status->InterruptOnCompletion = 1;
-
-		setup->Cyclebit = 1;
-		status->Cyclebit = 1;
-		return 0x20;
-	}
-	else{
-		struct DataStage* data     = (void*)(trb+0x10);
-		struct StatusStage* status = (void*)(trb+0x20);
+	//data
+	if(req->wLength){
+		struct DataStage* data = (void*)(trb+uselen);
 		xhci_ZeroMemory(data, 0x20);
-		//
+
 		data->TRBType = TRB_common_DataStage;
-		data->Direction = 1;
+		data->Direction = datadir;
 		data->TRBTransferLength = len;
 		data->Chainbit = 0;
 		data->InterruptOnCompletion = 0;
 		data->ImmediateData = 0;
 		data->buffer = (u64)buf;
-		//
-		status->TRBType = TRB_common_StatusStage;
-		status->Direction = 0;
-		status->Chainbit = 0;
-		status->InterruptOnCompletion = 1;
 
-		setup->Cyclebit = 1;
 		data->Cyclebit = 1;
-		status->Cyclebit = 1;
-		return 0x30;
+		uselen += 0x10;
 	}
-	return 0;
+
+	//status
+	struct StatusStage* status = (void*)(trb+uselen);
+	status->TRBType = TRB_common_StatusStage;
+	status->Direction = statdir;
+	status->Chainbit = 0;
+	status->InterruptOnCompletion = 1;
+
+	status->Cyclebit = 1;
+	uselen += 0x10;
+
+	//cycle
+	setup->Cyclebit = 1;
+	return uselen;
 }
 int maketrb_bulktransfer(u8* ring, int xxx, u8* buf, int len)
 {
@@ -1534,7 +1557,7 @@ int xhci_ControlTransfer(struct item* xhci, int slot, struct UsbRequest* req, in
 	struct perxhci* xhcidata = (void*)(xhci->priv_256b);
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
 	u8* cmdenq = slotdata->cmdring[DCI] + slotdata->myctx.epnctx[DCI].myenq;
-	slotdata->myctx.epnctx[DCI].myenq += maketrb_controltransfer(cmdenq, req, recvbuf, recvlen);
+	slotdata->myctx.epnctx[DCI].myenq += maketrb_controltransfer(cmdenq,0, req,slen, recvbuf, recvlen);
 
 	u32 contextsize = 0x20;
 	if(0x4 == (xhcidata->capreg->CAPPARAMS1 & 0x4))contextsize = 0x40;
@@ -1557,9 +1580,9 @@ byebye:
 	slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
 	epstate = (*(u32*)(slotdata->hcctx + contextsize*DCI))&0x3;
 	if((slotstate<SLOTSTATE_ADDRESSED)|(epstate!=EPSTATE_RUNNING))xhci_print("slotstate=%s, epstate=%s\n", slotstate2string[slotstate%4], epstate2string[epstate%5]);
-	if(EPSTATE_HALTED == epstate){
+/*	if(EPSTATE_HALTED == epstate){
 		xhci_ResetEndpoint(xhci, slot, 1);
-	}
+	}*/
 
 	xhci_print("}ControlTransfer\n");
 	return recvlen;
