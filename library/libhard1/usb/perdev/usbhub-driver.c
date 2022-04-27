@@ -1,6 +1,6 @@
 #include "libhard.h"
 #include "drv-usb.h"
-#define usbhub_print(fmt, ...) say("<%08lld,usbhub>" fmt, timeread_us(), ##__VA_ARGS__)
+#define usbhub_print(fmt, ...) say("%08lld usbhub@%p "fmt, timeread_us(), usb, ##__VA_ARGS__)
 //
 int usbdesc_addr2offs(struct perusb* perusb, void* desc);
 void* usbdesc_offs2addr(struct perusb* perusb, int offs);
@@ -13,11 +13,24 @@ void H2D_STD_INTF_SETINTF(void* req, u16 intf, u16 alt);
 
 
 
-//any hub feature
-#define HUB_FEATURE_PORTPOWER	8
-#define HUB_FEATURE_PORTCNCTN	0x10
-#define HUB_FEATURE_RESET		4
-#define HUB_FEATURE_CRESET		0x14
+//hub feature
+#define FEATURE_C_HUB_LOCAL_POWER  0
+#define FEATURE_C_HUB_OVER_CURRENT 1
+//port feature
+#define FEATURE_PORT_CONNECTION     0
+#define FEATURE_PORT_ENABLE         1
+#define FEATURE_PORT_SUSPEND        2
+#define FEATURE_PORT_OVER_CURRENT   3
+#define FEATURE_PORT_RESET          4
+#define FEATURE_PORT_POWER          8
+#define FEATURE_PORT_LOW_SPEED      9
+#define FEATURE_C_PORT_CONNECTION   16
+#define FEATURE_C_PORT_ENABLE       17
+#define FEATURE_C_PORT_SUSPEND      18
+#define FEATURE_C_PORT_OVER_CURRENT	19
+#define FEATURE_C_PORT_RESET		20
+#define FEATURE_PORT_TEST           21
+#define FEATURE_PORT_INDICATOR      22
 //3.0 hub command
 #define SSHUB_SET_DEPTH          12
 #define SSHUB_GET_PORT_ERR_COUNT 13
@@ -99,15 +112,23 @@ void HUB_PORT_POWERON(struct UsbRequest* req, int countfrom1)
 {
 	req->bmRequestType = 0x23;
 	req->bRequest = SET_FEATURE;
-	req->wValue = HUB_FEATURE_PORTPOWER;
+	req->wValue = FEATURE_PORT_POWER;
 	req->wIndex = countfrom1;
 	req->wLength = 0;
 }
-void HUB_PORT_CLEARCNCTN(struct UsbRequest* req, int countfrom1)
+void H2D_CLASS_HUB_CLRFEATURE_PORTCHANGE_CONNECTION(struct UsbRequest* req, int countfrom1)
 {
 	req->bmRequestType = 0x23;
 	req->bRequest = CLEAR_FEATURE;
-	req->wValue = HUB_FEATURE_PORTCNCTN;
+	req->wValue = FEATURE_C_PORT_CONNECTION;
+	req->wIndex = countfrom1;
+	req->wLength = 0;
+}
+void H2D_CLASS_HUB_CLRFEATURE_PORTCHANGE_ENABLE(struct UsbRequest* req, int countfrom1)
+{
+	req->bmRequestType = 0x23;
+	req->bRequest = CLEAR_FEATURE;
+	req->wValue = FEATURE_C_PORT_ENABLE;
 	req->wIndex = countfrom1;
 	req->wLength = 0;
 }
@@ -123,7 +144,7 @@ void HUB_PORT_RESET(struct UsbRequest* req, int countfrom1)
 {
 	req->bmRequestType = 0x23;
 	req->bRequest = SET_FEATURE;
-	req->wValue = HUB_FEATURE_RESET;
+	req->wValue = FEATURE_PORT_RESET;
 	req->wIndex = countfrom1;
 	req->wLength = 0;
 }
@@ -131,7 +152,7 @@ void HUB_PORT_CLEARRESET(struct UsbRequest* req, int countfrom1)
 {
 	req->bmRequestType = 0x23;
 	req->bRequest = CLEAR_FEATURE;
-	req->wValue = HUB_FEATURE_CRESET;
+	req->wValue = FEATURE_C_PORT_RESET;
 	req->wIndex = countfrom1;
 	req->wLength = 0;
 }
@@ -231,8 +252,8 @@ int usbhub_resetone(struct item* usb, int id)
 	say("stat=%x\n",perfunc->portstat[id]);
 
 
-	usbhub_print("%d:clear cnctn\n", id);
-	HUB_PORT_CLEARCNCTN(&req, id+1);
+	usbhub_print("%d:clear change.conn\n", id);
+	H2D_CLASS_HUB_CLRFEATURE_PORTCHANGE_CONNECTION(&req, id+1);
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
@@ -418,18 +439,62 @@ int usbhub_stopall(struct item* usb)
 
 static int usbhub_ongive(struct item* usb,int xxx, struct item* xhci,int endp, void* sbuf,int slen, void* rbuf,int rlen)
 {
-	usbhub_print("usb port status change:\n");
+	//usbhub_print("usbhub_ongive\n");
 	void* data = *(void**)sbuf;
 	//printmemory(data, 16);
 
 	u8 bitmap = *(u8*)data;
 	if(bitmap&1)usbhub_print("hub status change!\n");
 
+	struct perusb* perusb = usb->priv_ptr;
+	if(0 == perusb)return 0;
+	struct perfunc* perfunc = (void*)perusb->perfunc;
+	//if(0 == perfunc)return 0;
+	int slot = perfunc->hostslot;
+
 	int j;
+	int ret;
+	struct UsbRequest req;
 	for(j=1;j<8;j++){
-		if(bitmap & (1<<j)){
-			usbhub_print("port %d(count from 1) status change!\n", j);
-			//usbhub_check();
+		if(0 == (bitmap & (1<<j)))continue;
+		usbhub_print("port %d(count from 1) status change!\n", j);
+
+		HUB_PORT_GETSTATUS(&req, j);
+		ret = xhci->give_pxpxpxpx(
+			xhci,slot,
+			0,0,
+			&req,8,
+			&perfunc->portstat[j],4
+		);
+		if(ret < 0)return -10;
+		usbhub_print("stat=%x\n",perfunc->portstat[j]);
+
+		if(perfunc->portstat[j]&0x10000){
+			if(perfunc->portstat[j] & HUB_STATUS_CONNECTION){
+				usbhub_print("plug in\n");
+			}
+			else{
+				usbhub_print("plug out\n");
+			}
+
+			usbhub_print("%d:clear change.con\n", j);
+			H2D_CLASS_HUB_CLRFEATURE_PORTCHANGE_CONNECTION(&req, j);
+			ret = xhci->give_pxpxpxpx(
+				xhci,slot,
+				0,0,
+				&req,8,
+				0,0
+			);
+		}
+		if(perfunc->portstat[j]&0x20000){
+			usbhub_print("%d:clear change.en\n", j);
+			H2D_CLASS_HUB_CLRFEATURE_PORTCHANGE_ENABLE(&req, j);
+			ret = xhci->give_pxpxpxpx(
+				xhci,slot,
+				0,0,
+				&req,8,
+				0,0
+			);
 		}
 	}
 	return 0;

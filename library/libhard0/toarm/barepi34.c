@@ -74,6 +74,8 @@ void initbcm2837()
 	//sdhci_old: it's wifi on pi3, it's sdcard on qemu
 	p = device_create(_mmc_, 0, 0, 0);
 	initsdhci_bcm283xsdcard(p, SDHCI_OFFS_OLD);
+
+	brcmdwc2_init();
 }
 
 

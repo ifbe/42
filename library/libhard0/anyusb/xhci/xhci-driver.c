@@ -2,7 +2,7 @@
 #define debug_bulktransfer 0
 #define debug_transfer 0
 #define debug_waitevent 0
-#define xhci_print(fmt, ...) say("<%08lld,xhci>"fmt, timeread_us(), ##__VA_ARGS__)
+#define xhci_print(fmt, ...) say("%08lld xhci@%p "fmt, timeread_us(), xhci, ##__VA_ARGS__)
 int usbany_linkup(void*,int,void*,int);
 
 
@@ -1941,7 +1941,7 @@ static int xhci_giveby(struct item* xhci,u32 SlotEndp, void* stack,int sp, void*
 
 
 
-int ownership(volatile u32* p)
+int ownership(struct item* xhci, volatile u32* p)
 {
 	//set hc os owned semaphore
 	xhci_print("before handoff:%08x,%08x\n", p[0],p[1]);
@@ -1968,7 +1968,7 @@ int ownership(volatile u32* p)
 		}
 	}
 }
-void supportedprotocol(struct item* dev, u32* p)
+void supportedprotocol(struct item* xhci, u32* p)
 {
 	u32 major = p[0] >> 24;
 	u32 minor =(p[0] >> 16) & 0xff;
@@ -1977,14 +1977,14 @@ void supportedprotocol(struct item* dev, u32* p)
 	xhci_print("[%x,%x]: usb%x.%x\n", port0, portn, major, minor);
 
 	int j;
-	struct perxhci* my = (void*)(dev->priv_256b);
+	struct perxhci* my = (void*)(xhci->priv_256b);
 	struct perport* pp = my->perport;
 	for(j=port0;j<=portn;j++){
 		pp[j].protocol = (major<<8) | minor;
 		pp[j].slot = 0;
 	}
 }
-void explainxecp(struct item* dev, u32* at)
+void explainxecp(struct item* xhci, u32* at)
 {
 	xhci_print("xecp parsing\n");
 	while(1){
@@ -1993,11 +1993,11 @@ void explainxecp(struct item* dev, u32* at)
 		u32 type = at[0] & 0xff;
 		switch(type){
 			case 1:{
-				ownership(at);
+				ownership(xhci, at);
 				break;
 			}
 			case 2:{
-				supportedprotocol(dev, at);
+				supportedprotocol(xhci, at);
 				break;
 			}
 			defualt:{
@@ -2015,7 +2015,7 @@ void explainxecp(struct item* dev, u32* at)
 
 
 
-int xhci_mmioinit(struct item* dev, u8* xhciaddr)
+int xhci_mmioinit(struct item* xhci, u8* xhciaddr)
 {
 	xhci_print("mmio@%p{\n", xhciaddr);
 	//printmmio(xhciaddr, 0x1000);
@@ -2102,7 +2102,7 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 
 
 //--------------grab ownership-----------------
-	struct perxhci* my = (void*)(dev->priv_256b);
+	struct perxhci* my = (void*)(xhci->priv_256b);
 	//mmio
 	my->capreg = capreg;
 	my->optreg = optreg;
@@ -2129,7 +2129,7 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 	my->event_mydeq = 0;
 
 	u32* xecp = (void*)xhciaddr + ((capreg->CAPPARAMS1 >> 16) << 2);
-	explainxecp(dev, xecp);
+	explainxecp(xhci, xecp);
 
 
 //------------operational registers----------------
@@ -2295,13 +2295,13 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 		}
 	}
 
-	xhci_NoOp(dev);
+	xhci_NoOp(xhci);
 
 	//callback functions
-	dev->onreader = (void*)xhci_reader;
-	dev->onwriter = (void*)xhci_writer;
-	dev->ontaking = (void*)xhci_takeby;
-	dev->ongiving = (void*)xhci_giveby;
-	xhci_listall(dev, capreg->HCSPARAMS1>>24);
+	xhci->onreader = (void*)xhci_reader;
+	xhci->onwriter = (void*)xhci_writer;
+	xhci->ontaking = (void*)xhci_takeby;
+	xhci->ongiving = (void*)xhci_giveby;
+	xhci_listall(xhci, capreg->HCSPARAMS1>>24);
 	return 0;
 }
