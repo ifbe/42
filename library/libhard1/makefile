@@ -17,7 +17,8 @@ usb/perdev/usbxbox-driver.c \
 usb/perdev/usbvmware-driver.c \
 usb/perfunc/usbhid-driver.c \
 usb/perfunc/usbstor-driver.c \
-usb/usbcore.c \
+usb/usbhost.c \
+usb/usbperi.c \
 eth/eth.c \
 driver.c
 OBJ = $(patsubst %.c,%.o,$(SRC))

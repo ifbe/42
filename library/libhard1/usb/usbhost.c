@@ -1,5 +1,6 @@
 #include "libhard.h"
 #include "drv-usb.h"
+#define usbhost_print(fmt, ...) say("%08lld usbhost@%p "fmt, timeread_us(), usb, ##__VA_ARGS__)
 //device driver
 int usbvmware_driver(struct item* usb, int xxx, struct item* xhci, int slot);
 int usbdualshock_driver(struct item* usb, int xxx, struct item* xhci, int slot);
@@ -378,12 +379,12 @@ int usbany_handlestrdesc(struct item* usb, int xxx, struct item* xhci, int slot)
 
 	//lang0
 	perusb->parsed.lang0 = perusb->origin.strdesc.wLANGID[0];
-	say("[usbcore]wLANGID=%04x\n", perusb->parsed.lang0);
+	usbhost_print("wLANGID=%04x\n", perusb->parsed.lang0);
 	return 0;
 }
 int usbany_ReadAndHandleString(struct item* usb, int xxx, struct item* xhci, int slot, u16 lang, u16 id)
 {
-	say("[usbcore]readstr: lang=%x,id=%x\n", lang, id);
+	usbhost_print("readstr: lang=%x,id=%x\n", lang, id);
 	struct perusb* perusb = usb->priv_ptr;
 
 	struct StringDescriptor* strdesc = usbdesc_offs2addr(perusb, perusb->origin.byteused);
@@ -503,7 +504,7 @@ void explainconfdesc_tomy(struct item* usb, int xxx, struct item* xhci, int slot
 	while(1){
 		if(j >= len)break;
 
-		//say("[usbcore]@[%x,%x]:%x\n", j, j+buf[j]-1, buf[j+1]);
+		//usbhost_print("@[%x,%x]:%x\n", j, j+buf[j]-1, buf[j+1]);
 		switch(buf[j+1]){
 		case 0x0b:		//association
 			assodesc = (void*)(buf+j);
@@ -701,7 +702,7 @@ int usbany_FirstConfig(struct item* usb, int xxx, struct item* xhci, int slot)
 	//if not composite device
 	struct DeviceDescriptor* devdesc = &perusb->origin.devdesc;
 	if( (0xef != devdesc->bDeviceClass) | (2 != devdesc->bDeviceSubClass) | (1 != devdesc->bDeviceProtocol) ){
-		say("[usbcore]class=%x,subclass=%x,protocol=%x\n", intfdesc->bInterfaceClass, intfdesc->bInterfaceSubClass, intfdesc->bInterfaceProtocol);
+		usbhost_print("class=%x,subclass=%x,protocol=%x\n", intfdesc->bInterfaceClass, intfdesc->bInterfaceSubClass, intfdesc->bInterfaceProtocol);
 
 		switch(intfdesc->bInterfaceClass){
 		case class_hid:
@@ -711,7 +712,7 @@ int usbany_FirstConfig(struct item* usb, int xxx, struct item* xhci, int slot)
 			usbstor_driver(usb,xxx, xhci,slot, intfnode, intfdesc);
 			break;
 		case class_hub:
-			//say("[usbcore]usb hub\n");
+			//usbhost_print("usb hub\n");
 			usbhub_driver(usb,xxx, xhci,slot, intfnode, intfdesc);
 			break;
 		}
@@ -725,12 +726,12 @@ int usbany_FirstConfig(struct item* usb, int xxx, struct item* xhci, int slot)
 		if(0xb == intfnode->type){
 			assonode = (void*)intfnode;
 			assodesc = usbdesc_offs2addr(perusb, assonode->real);
-			say("[usbcore]association: node=%p,desc=%p, first=%x,count=%x, c=%x,s=%x,p=%x\n",
+			usbhost_print("association: node=%p,desc=%p, first=%x,count=%x, c=%x,s=%x,p=%x\n",
 			intfnode,intfdesc, assodesc->bFirstInterface, assodesc->bInterfaceCount,
 			assodesc->bFunctionClass, assodesc->bFunctionSubclass, assodesc->bFunctionProtocol);
 		}
 		else{
-			say("[usbcore]interface: node=%p,desc=%p, num=%x, alt=%x, c=%x,s=%x,p=%x\n",
+			usbhost_print("interface: node=%p,desc=%p, num=%x, alt=%x, c=%x,s=%x,p=%x\n",
 				intfnode,intfdesc, intfdesc->bInterfaceNumber, intfdesc->bAlternateSetting,
 				intfdesc->bInterfaceClass, intfdesc->bInterfaceSubClass, intfdesc->bInterfaceProtocol);
 		}
@@ -751,7 +752,7 @@ int usbany_discon()
 }
 int usbany_linkup(struct item* usb, int xxx, struct item* xhci, int slot)
 {
-	say("[usbcore]@usblinkup: %p,%x,%p,%x\n",usb,xxx,xhci,slot);
+	usbhost_print("@usblinkup: %p,%x,%p,%x\n",usb,xxx,xhci,slot);
 
 	int j,num,ret;
 	struct perusb* perusb = usb->priv_ptr = memorycreate(0x100000, 0);
@@ -762,17 +763,17 @@ int usbany_linkup(struct item* usb, int xxx, struct item* xhci, int slot)
 
 
 //-------------let xhci prepare device-----------------
-	say("[usbcore]set_address\n");
+	usbhost_print("set_address\n");
 	usbany_handleaddress(xhci,slot);
 
 
 //-----------------device descroptor------------------
-	say("[usbcore]get_desc: device desc\n");
+	usbhost_print("get_desc: device desc\n");
 	usbany_handledevdesc(usb,xxx, xhci,slot);
 
 
 //----------------------string descriptor-----------------
-	say("[usbcore]get_desc: string desc\n");
+	usbhost_print("get_desc: string desc\n");
 	usbany_handlestrdesc(usb,xxx, xhci,slot);
 	if(perusb->parsed.iManufac)usbany_ReadAndHandleString(usb,xxx, xhci,slot, perusb->parsed.lang0,perusb->parsed.iManufac);
 	if(perusb->parsed.iProduct)usbany_ReadAndHandleString(usb,xxx, xhci,slot, perusb->parsed.lang0,perusb->parsed.iProduct);
@@ -782,7 +783,7 @@ int usbany_linkup(struct item* usb, int xxx, struct item* xhci, int slot)
 
 
 //---------------------configure descriptor--------------------
-	say("[usbcore]get_desc: config desc\n");
+	usbhost_print("get_desc: config desc\n");
 	num = perusb->origin.devdesc.bNumConfigurations;
 	for(j=0;j<num;j++){
 		usbany_ReadAndHandleConfigure(usb,xxx, xhci,slot, j);
