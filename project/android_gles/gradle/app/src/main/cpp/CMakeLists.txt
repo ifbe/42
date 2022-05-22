@@ -129,7 +129,8 @@ ${LIB42}/libhard1/sensor/gyro/gyro.l3gd20.c
 ${LIB42}/libhard1/sensor/pack/g_a_b.icm20789.c
 ${LIB42}/libhard1/sensor/pack/g_a_m.lsm9ds1.c
 ${LIB42}/libhard1/sensor/pack/g_a_m.mpu9250.c
-${LIB42}/libhard1/usb/usbcore.c
+${LIB42}/libhard1/usb/usbhost.c
+${LIB42}/libhard1/usb/usbperi.c
 ${LIB42}/libhard1/usb/perdev/usbhub-driver.c
 ${LIB42}/libhard1/usb/perdev/usbds4-driver.c
 ${LIB42}/libhard1/usb/perdev/usbxbox-driver.c
