@@ -2,10 +2,10 @@
 wndmgr{
 fmt:wndmgr
 }
-2048{
-fmt:2048
+term{
+fmt:term
 }
-xxxx{
+2048{
 fmt:2048
 }
 </entity>
@@ -19,21 +19,21 @@ fmt:wnd
 
 
 <style>
-g0{
-c:128,256,0
-r:128,0,0
-f:0,128,0
-}
-g1{
+top{
 c:512,256,0
 r:128,0,0
 f:0,128,0
+}
+bot{
+c:512,256,0
+r:512,0,0
+f:0,256,0
 }
 </style>
 
 
 <relation>
 (wnd, 0, 0) -> (wndmgr, 0, 0)
-(wndmgr, g0, 0) -> (2048, 0, 0)
-(wndmgr, g1, 0) -> (xxxx, 0, 0)
+(wndmgr, bot, 0) -> (term, 0, 0)
+(wndmgr, top, 0) -> (2048, 0, 0)
 </relation>

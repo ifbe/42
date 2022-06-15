@@ -547,6 +547,8 @@ int role_fromfile(u8* str, int len)
 	if(len <= 0)return 0;
 	//say("%s", buf);
 
+    say("----read done, now parse----\n");
+
 	role_test1(buf, len);
 	return 1;
 }
@@ -575,7 +577,8 @@ int myml_create(struct item* wrk, void* url, int argc, u8** argv)
 		}
 	}
 
-    //loop @ 1
+    say("----parse done, now loop or exit----\n");
+
 	poller(wrk);
 	return 0;
 }

@@ -131,8 +131,6 @@ static void terminal_draw_pixel(
 		drawterm(win, (void*)ent->priv_256b, cx-ww, cy-hh, cx+ww, cy+hh);
 	}
 	else{
-		drawsolid_rect(win, 0x202020, cx-ww, cy-hh, cx+ww, cy+hh);
-
 		u8* obuf = getstdout();
 		if(0 == obuf)return;
 		int ocur = getcurout();
@@ -151,11 +149,26 @@ static void terminal_draw_pixel(
 			}
 		}
 
+
+		//output bg color
+		drawsolid_rect(win, 0x202020, cx-ww, cy-hh, cx+ww, cy+hh);
+
+		//output text area
 		int last = here + drawtext(win, 0xffffff, cx-ww, cy-hh, cx+ww, cy+hh, obuf+here, ocur-here);
 	
+		//output scroll bar
 		int ytop = cy-hh + (2*hh*here)/ocur;
 		int ybot = cy-hh + (2*hh*last)/ocur;
 		drawopaque_rect(win, 0x80e0e0e0, cx+ww-16, ytop, cx+ww, ybot);
+
+
+		//input bg color
+		drawsolid_rect(win, 0x404040, cx, cy+hh-128, cx+ww-64, cy+hh);
+
+		//input text area
+		drawtext(win, 0xffffff, cx, cy+hh-128, cx+ww-64, cy+hh, "~~~input line1~~~\n@@@input line2@@@\n", 0);
+
+		//input scroll bar
 	}
 }
 static void terminal_draw_json(
@@ -282,14 +295,26 @@ static void terminal_wrl_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 	_obj* wnd;struct style* area;
 	mgr = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-4].pchip;area = stack[sp-4].pfoot;
+	//say("mgr=%p,geom=%p,wnd=%p,area=%p\n", mgr, geom, wnd, area);
 
+	//compute relative position from window
 	int j;
 	struct fstyle fs;
-	for(j=0;j<3;j++)fs.vc[j] = fs.vr[j] = fs.vf[j] = fs.vt[j] = 0.0;
-	fs.vr[0] = area->fs.vq[0] * wnd->whdf.fbwidth / 2.0;
-	fs.vf[1] = area->fs.vq[1] * wnd->whdf.fbheight/ 2.0;
-	fs.vt[2] = 1.0;
-	terminal_draw_gl41(ent,slot, mgr,(void*)&fs, wnd,area);
+	if(area){
+		for(j=0;j<3;j++)fs.vc[j] = fs.vr[j] = fs.vf[j] = fs.vt[j] = 0.0;
+		fs.vr[0] = area->fs.vq[0] * wnd->whdf.fbwidth / 2.0;
+		fs.vf[1] = area->fs.vq[1] * wnd->whdf.fbheight/ 2.0;
+		fs.vt[2] = 1.0;
+	}
+
+	//draw it
+	switch(wnd->hfmt){
+	case _rgba_:
+		terminal_draw_pixel(ent,slot, wnd,geom);
+		break;
+	default:
+		terminal_draw_gl41(ent,slot, mgr,(void*)&fs, wnd,area);
+	}
 }
 static void terminal_wnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
 {
