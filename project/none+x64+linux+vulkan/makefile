@@ -59,7 +59,7 @@ exe:
 	libhard0/*.o libhard1/*.o \
 	libsoft0/*.o libsoft1/*.o \
 	libuser0/*.o libuser1/*.o \
-	-L${SDK}/lib -lglfw3 -lvulkan \
+	-L${SDK}/lib -lglfw -lvulkan \
 	-lpulse -lpulse-simple \
 	-lpthread -lX11 -ldl -lm
 clean:

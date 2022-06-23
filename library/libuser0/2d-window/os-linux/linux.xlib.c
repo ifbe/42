@@ -81,20 +81,19 @@ static int fuckyou = 0;
 
 static void restorestackdeliverevent(_obj* wnd, struct event* ev)
 {
-	u64* save = wnd->spsave;
-	if(0 == save){
+	struct rgbaxlib* per = &wnd->rgbaxlib;
+	if(0 == per->save_stack){
 		eventwrite(ev->why, ev->what, ev->where, 0);
 		return;
 	}
 
-	struct halfrel* stack = (void*)save[0];
-	int depth = save[1];
-	rgbanode_write(wnd,0, stack,depth, 0,0, ev,0);
+	rgbanode_give(wnd,0, per->save_stack,per->save_sp, 0,0, ev,0);
 }
-void windowevent(_obj* win, XEvent xev)
+void windowevent(_obj* wnd, XEvent xev)
 {
 	u64 x,y,k;
 	struct event myev;
+	struct rgbaxlib* per = &wnd->rgbaxlib;
 
 	if(ClientMessage == xev.type)
 	{
@@ -110,16 +109,16 @@ void windowevent(_obj* win, XEvent xev)
 		int y = xev.xconfigure.height;
 		//printf("%d,%d\n",x,y);
 
-		if((x==win->width)&&(y==win->height))return;
-		win->width = x;
-		win->height = y;
+		if((x==wnd->whdf.width)&&(y==wnd->whdf.height))return;
+		wnd->whdf.width = x;
+		wnd->whdf.height = y;
 
-		win->fbwidth = x*4;
-		//win->fbheight = 0;
+		wnd->whdf.fbwidth = x*4;
+		//wnd->fbheight = 0;
 
-		win->ximage = XCreateImage(
+		per->ximage = XCreateImage(
 			dsp, visual, 24, ZPixmap,
-			0, win->rgbabuf,
+			0, per->buf,
 			x, y, 32, 0
 		);
 
@@ -130,15 +129,15 @@ void windowevent(_obj* win, XEvent xev)
 	else if(Expose == xev.type)
 	{
 		XImage* xi;
-		if(win == 0)return;
+		if(0 == wnd)return;
 
-		xi = win->ximage;
+		xi = per->ximage;
 		if(xi == 0)return;
 
 		XPutImage(
-			dsp, win->xlibfd, win->xlibgc, xi,
+			dsp, per->xlibfd, per->xlibgc, xi,
 			0, 0, 0, 0,
-			win->width, win->height
+			wnd->whdf.width, wnd->whdf.height
 		); 
 	}//Expose
 	else if(ButtonPress == xev.type)
@@ -154,8 +153,8 @@ void windowevent(_obj* win, XEvent xev)
 
 		myev.why = x + (y<<16) + (k<<48);
 		myev.what = hex32('p', '+', 0, 0);
-		myev.where = (u64)win;
-		restorestackdeliverevent(win, &myev);
+		myev.where = (u64)wnd;
+		restorestackdeliverevent(wnd, &myev);
 		//eventwrite(why, what, where, 0);
 	}//ButtonPress
 	else if(ButtonRelease == xev.type)
@@ -171,8 +170,8 @@ void windowevent(_obj* win, XEvent xev)
 
 		myev.why = x + (y<<16) + (k<<48);
 		myev.what = hex32('p', '-', 0, 0);
-		myev.where = (u64)win;
-		restorestackdeliverevent(win, &myev);
+		myev.where = (u64)wnd;
+		restorestackdeliverevent(wnd, &myev);
 		//eventwrite(why, what, where, 0);
 	}//ButtonRelease
 	else if(MotionNotify == xev.type)
@@ -183,8 +182,8 @@ void windowevent(_obj* win, XEvent xev)
 
 		myev.why = x + (y<<16) + (k<<48);
 		myev.what = hex32('p', '@', 0, 0);
-		myev.where = (u64)win;
-		restorestackdeliverevent(win, &myev);
+		myev.where = (u64)wnd;
+		restorestackdeliverevent(wnd, &myev);
 		//eventwrite(why, what, where, 0);
 	}//MotionNotify
 	else if(KeyPress == xev.type)
@@ -201,8 +200,8 @@ void windowevent(_obj* win, XEvent xev)
 			if(myev.why != 0)
 			{
 				//eventwrite(why, what, where, 0);
-				myev.where = (u64)win;
-				restorestackdeliverevent(win, &myev);
+				myev.where = (u64)wnd;
+				restorestackdeliverevent(wnd, &myev);
 				return;
 			}
 		}
@@ -212,8 +211,8 @@ void windowevent(_obj* win, XEvent xev)
 			if(myev.why != 0)
 			{
 				//eventwrite(why, what, where, 0);
-				myev.where = (u64)win;
-				restorestackdeliverevent(win, &myev);
+				myev.where = (u64)wnd;
+				restorestackdeliverevent(wnd, &myev);
 				return;
 			}
 		}
@@ -221,8 +220,8 @@ void windowevent(_obj* win, XEvent xev)
 		//控制按键
 		myev.why = xlib2kbd[xev.xkey.keycode];
 		myev.what = hex32('k','b','d',0);
-		myev.where = (u64)win;
-		restorestackdeliverevent(win, &myev);
+		myev.where = (u64)wnd;
+		restorestackdeliverevent(wnd, &myev);
 		//eventwrite(why, what, where, 0);
 	}//KeyPress
 }
@@ -232,19 +231,18 @@ void windowevent(_obj* win, XEvent xev)
 
 void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	struct rgbaxlib* per = &wnd->rgbaxlib;
 	//update screen
 	rgbanode_take(wnd,0, stack,sp, arg,key, buf,len);
 	XPutImage(
-		dsp, wnd->xlibfd, wnd->xlibgc, wnd->ximage,
+		dsp, per->xlibfd, per->xlibgc, per->ximage,
 		0, 0, 0, 0,
-		wnd->width, wnd->height
+		wnd->whdf.width, wnd->whdf.height
 	); 
 
 	//save stack to temp
-	u64 save[2];
-	save[0] = (u64)stack;
-	save[1] = sp;
-	wnd->spsave = save;
+	per->save_stack = stack;
+	per->save_sp = sp;
 
 	//handle event
 	XEvent xev;
@@ -255,17 +253,18 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 	}//while
 
 	//clear temp
-	wnd->spsave = 0;
+	per->save_stack = 0;
 }
 void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	struct rgbaxlib* per = &wnd->rgbaxlib;
 /*
 	XEvent xev;
 	memset(&xev,0,sizeof(XEvent));
 	xev.type = Expose;
 	xev.xexpose.display = dsp;
-	xev.xexpose.window = win->xlibfd;
-	XSendEvent(dsp, win->xlibfd, False, ExposureMask, &xev);
+	xev.xexpose.window = per->xlibfd;
+	XSendEvent(dsp, per->xlibfd, False, ExposureMask, &xev);
 	XFlush(dsp);	//must
 */
 }
@@ -281,9 +280,10 @@ void windowstop()
 void windowstart()
 {
 }
-void windowdelete(_obj* win)
+void windowdelete(_obj* wnd)
 {
-	XDestroyWindow(dsp, win->xlibfd);
+	struct rgbaxlib* per = &wnd->rgbaxlib;
+	XDestroyWindow(dsp, per->xlibfd);
 	fuckyou--;
 
 	if(0 == fuckyou)
@@ -292,40 +292,41 @@ void windowdelete(_obj* win)
 		eventwrite(0,0,0,0);
 	}
 }
-void windowcreate(_obj* win)
+void windowcreate(_obj* wnd)
 {
-	int j;
-	win->fmt = _rgba_;
-	win->vfmt = hex64('b','g','r','a','8','8','8','8');
+	struct rgbaxlib* per = &wnd->rgbaxlib;
 
-	win->width = 1024;
-	win->height = 768;
+	wnd->hfmt = _rgba_;
+	wnd->vfmt = hex64('b','g','r','a','8','8','8','8');
 
-	win->fbwidth = 1024*4;
-	//win->fbheight = 0;
+	wnd->whdf.width = 1024;
+	wnd->whdf.height = 768;
+
+	wnd->whdf.fbwidth = 1024*4;
+	//wnd->whdf.fbheight = 0;
 
 	//
-	win->rgbabuf = malloc(0x1000000);
-	win->ximage = XCreateImage(
+	per->buf = malloc(2048*2048*4);
+	per->ximage = XCreateImage(
 		dsp, visual, 24, ZPixmap, 0,
-		win->rgbabuf, 512, 512,
+		per->buf, 1024, 768,
 		32, 0
 	);
 
 	//window, gc
-	win->xlibfd = XCreateSimpleWindow(
+	per->xlibfd = XCreateSimpleWindow(
 		dsp, RootWindow(dsp,0), 0, 0,
-		win->width, win->height,
+		wnd->whdf.width, wnd->whdf.height,
 		1, 0, 0);
-	win->xlibgc = XCreateGC(dsp, win->xlibfd, 0, NULL);
+	per->xlibgc = XCreateGC(dsp, per->xlibfd, 0, NULL);
 
 	//intercept window delete event 
-	XSetWMProtocols(dsp, win->xlibfd, &wmDelete, 1);
+	XSetWMProtocols(dsp, per->xlibfd, &wmDelete, 1);
 
 	//
 	XSelectInput
 	(
-		dsp, win->xlibfd,
+		dsp, per->xlibfd,
 		PointerMotionMask|
 		KeyPressMask|KeyReleaseMask|
 		ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|
@@ -334,8 +335,8 @@ void windowcreate(_obj* win)
 	);
 
 	//
-	//fdmap[j] = win->xlibfd;
-	XMapWindow(dsp, win->xlibfd);
+	//fdmap[j] = per->xlibfd;
+	XMapWindow(dsp, per->xlibfd);
 	fuckyou++;
 }
 

@@ -261,6 +261,9 @@ struct rgbaxlib{
 	u64   xlibfd;
 	void* xlibgc;
 	void* ximage;
+
+	void* save_stack;
+	int save_sp;
 };
 struct rgbawinapi{
 	void* buf;

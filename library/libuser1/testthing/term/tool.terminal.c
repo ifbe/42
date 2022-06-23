@@ -385,6 +385,7 @@ static void terminal_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,
 	case _mt20list_:
 	case _gl41list_:
 	case _vk12list_:
+	case _wndmgr_:
 		terminal_write_bywnd(ent,foot, stack,sp, buf,len);
 		return;
 	}
@@ -409,13 +410,13 @@ static void terminal_attach(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void terminal_search(_obj* act)
+static void terminal_reader(_obj* ent,void* foot, void* arg,int cmd, void* buf,int len)
 {
 }
-static void terminal_modify(_obj* act)
+static void terminal_writer(_obj* ent,void* foot, void* arg,int cmd, void* buf,int len)
 {
 }
-static void terminal_delete(_obj* act)
+static void terminal_delete(_obj* act, void* arg, int argc, u8** argv)
 {
 	if(0 == act)return;
 }
@@ -459,8 +460,8 @@ void terminal_register(_obj* p)
 
 	p->oncreate = (void*)terminal_create;
 	p->ondelete = (void*)terminal_delete;
-	p->onreader = (void*)terminal_search;
-	p->onwriter = (void*)terminal_modify;
+	p->onreader = (void*)terminal_reader;
+	p->onwriter = (void*)terminal_writer;
 
 	p->onattach = (void*)terminal_attach;
 	p->ondetach = (void*)terminal_detach;
