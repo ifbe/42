@@ -47,7 +47,7 @@ libuser1:
 	mkdir -p $@
 	make -s -C $(library)/$@ DIR=$(project)/$@ AS=$(AS) CC=$(CC) CF=$(CF)
 rpi3b:
-	qemu-system-aarch64 -M raspi3b -serial null -serial stdio -drive file=../../../live/live.img,if=sd,format=raw -kernel kernel8.img
+	qemu-system-aarch64 -M raspi3b -serial null -serial stdio -drive file=../../../live/base/loader/live.img,if=sd,format=raw -kernel kernel8.img
 rpi4b:
 	echo "not yet"
 clean:

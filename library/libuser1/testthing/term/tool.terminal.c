@@ -166,7 +166,7 @@ static void terminal_draw_pixel(
 		drawsolid_rect(win, 0x404040, cx, cy+hh-128, cx+ww-64, cy+hh);
 
 		//input text area
-		drawtext(win, 0xffffff, cx, cy+hh-128, cx+ww-64, cy+hh, "~~~input line1~~~\n@@@input line2@@@\n", 0);
+		drawtext(win, 0xffffff, cx, cy+hh-128, cx+ww-64, cy+hh, (u8*)"~~~input line1~~~\n@@@input line2@@@\n", 0);
 
 		//input scroll bar
 	}

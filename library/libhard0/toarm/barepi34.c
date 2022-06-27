@@ -41,6 +41,31 @@ void initdevmap()
 
 	parsedevmap_dtb(dtb);
 }
+void initmap()
+{
+	initmemmap();
+	initdevmap();
+}
+
+
+
+void initarch()
+{
+	struct item* p;
+
+	//timer
+	p = device_create(_tmr_, 0, 0, 0);
+	initsystmr(p);
+
+	//cpu
+	p = device_create(_cpu_, 0, 0, 0);
+	initcpu_bsp(p);
+	initcpu_ap(p);
+
+	//mbox
+	initmbox();
+}
+
 
 
 
@@ -127,40 +152,8 @@ void initbcm2711()
 	brcmpcie_init();
 	//rpiextxhci_init();
 }
-
-
-
-
-void freehardware()
+void initsoc()
 {
-	//turnoff peripheral
-
-	//turnoff timer
-
-	//turnoff gic
-
-	//set cpu: no paging, no irq
-}
-void inithardware()
-{
-	struct item* p;
-
-	//map
-	initmemmap();
-	initdevmap();
-
-	//timer
-	p = device_create(_tmr_, 0, 0, 0);
-	initsystmr(p);
-
-	//cpu
-	p = device_create(_cpu_, 0, 0, 0);
-	initcpu_bsp(p);
-	initcpu_ap(p);
-
-	//mbox
-	initmbox();
-
 	//pinctrl
 	initpinmgr();
 
@@ -176,4 +169,24 @@ void inithardware()
 		initbcm2835();
 		break;
 	}
+}
+
+
+
+
+void freehardware()
+{
+	//turnoff soc
+
+	//turnoff arch
+
+	//set cpu: no paging, no irq
+}
+void inithardware()
+{
+	initmap();
+
+	initarch();
+
+	initsoc();
 }
