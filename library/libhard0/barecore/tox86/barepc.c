@@ -27,18 +27,43 @@ void initvmtool();
 
 
 
-void freehardware()
+void initdbg()
+{
+	//debug serial
+	//debug framebuffer
+}
+
+
+
+
+void exitmap()
 {
 }
-void inithardware()
+void initmap()
 {
-	struct item* p;
-
 	//mem
 	parsememmap_uefi(getmemmap());
 
 	//acpi
 	parsedevmap_acpi(getdevmap());
+}
+
+
+
+
+void initcpu0()
+{
+}
+
+
+
+
+void exitarch()
+{
+}
+void initarch()
+{
+	struct item* p;
 
 	//localapic check
 	localapic_check();
@@ -58,6 +83,27 @@ void inithardware()
 
 	//cpu_app: after cpu_bsp and pic and timer
 	initcpu_ap();
+}
+
+
+
+
+void exitsoc()
+{
+}
+void initsoc()
+{
+}
+
+
+
+
+void exitboard()
+{
+}
+void initboard()
+{
+	struct item* p;
 
 	//input
 	init8042();
@@ -69,4 +115,22 @@ void inithardware()
 
 	//vmware
 	initvmtool();
+}
+
+
+
+
+void freehardware()
+{
+}
+void inithardware()
+{
+	initdbg();
+	initmap();
+
+
+	initcpu0();
+	initarch();
+	initsoc();
+	initboard();
 }

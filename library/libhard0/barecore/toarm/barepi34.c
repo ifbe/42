@@ -31,6 +31,15 @@ void rpiextxhci_init();
 
 
 
+void initdbg()
+{
+	//debug serial
+	//debug framebuffer
+}
+
+
+
+
 void initmemmap()
 {
 }
@@ -46,6 +55,14 @@ void initmap()
 	initmemmap();
 	initdevmap();
 }
+
+
+
+
+void initcpu0()
+{
+}
+
 
 
 
@@ -174,6 +191,13 @@ void initsoc()
 
 
 
+void initboard()
+{
+}
+
+
+
+
 void freehardware()
 {
 	//turnoff soc
@@ -184,9 +208,12 @@ void freehardware()
 }
 void inithardware()
 {
+	initdbg();
 	initmap();
 
-	initarch();
 
+	initcpu0();
+	initarch();
 	initsoc();
+	initboard();
 }
