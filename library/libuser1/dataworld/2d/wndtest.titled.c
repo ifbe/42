@@ -308,33 +308,41 @@ int wndmgr_gl41cmdq_take(_obj* mgr,void* foot, _obj* wnd,void* sty)
 }
 
 
-int wndmgr_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int wndmgr_take(_obj* mgr,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//both window and manager
-	if(_rgba_ == wnd->hfmt){
-		wndmgr_rgba_take(wnd,foot, stack,sp, arg,key, buf,len);
-		return 0;
-	}
-
 	//manager called by window
 	_obj* caller;struct style* area;
-	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+	if(_rgba_ == mgr->hfmt){	//wnd=mgr
+		caller = mgr;
+		area = foot;
+	}
+	else{	//wnd=sys window, mgr=this obj
+		caller = stack[sp-2].pchip;
+		area = stack[sp-2].pfoot;
+	}
+
+	//t0
+	u64 t0 = timeread_us();
 
 	switch(caller->hfmt){
 	case _rgba_:
-		wndmgr_rgba_take(wnd,foot, stack,sp, arg,key, buf,len);
+		wndmgr_rgba_take(mgr,foot, stack,sp, arg,key, buf,len);
 		break;
 	case _gl41list_:
 		break;
 	case _gl41cmdq_:
-		wndmgr_gl41cmdq_take(wnd,foot, caller,area);
+		wndmgr_gl41cmdq_take(mgr,foot, caller,area);
 		break;
 	}
+
+	//t1
+	u64 t1 = timeread_us();
+	caller->LASTDRAWTIME = t1 - t0;
 	return 0;
 }
-int wndmgr_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int wndmgr_give(_obj* mgr,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	return wndmgr_rgba_give(wnd,foot, stack,sp, arg,key, buf,len);
+	return wndmgr_rgba_give(mgr,foot, stack,sp, arg,key, buf,len);
 }
 int wndmgr_attach(_obj* wnd,void* foot)
 {
