@@ -1,36 +1,46 @@
 42:
 	the answer to life,the universe and everything~
 
-howto:
-	make -C project/none+x64+linux+glfw  #origin+board+system+uiux
-	./a.out datafile/myml/window/item-skygndrab.myml
+
+buildandrun:
+	make -C project/none+x64+linux+cli && ./a.out term /dev/ttyS0
+	or
+	make -C project/none+x64+win+glfw && ./a.out datafile/myml/window/item-skygndrab.myml
+	or
+	cd project/efios+x64+bare+fb && make && cp BOOTX64.EFI /some/where/efi/boot/
+	or
+	cd project/pifw+pi64+bare+fb && make rpi3b
+	......
+
 
 explain:
-	libboot0: pwrclk(power, clock, debug)
-	libboot1: worker(kernel, drawer, ...)
-	libhard0: device
-	libhard1: driver
-	libsoft0: system
-	libsoft1: artery
-	libuser0: supply(mic, cam, spk, wnd, stdio, joystick, ...)
-	libuser1: entity(world/scene, flower/tree, physics, wisdom, ...)
+	libboot0: at least i can debug: uart/jtag/framebuffer...
+	libboot1: 20%: i have some idea!
+	--------
+	libhard0: make most hardware work: pcie/usb/net/sound/video...
+	libhard1: 40%: prepare all i have or accessable!
+	--------
+	libsoft0: soft core: lock/process/vfs...
+	libsoft1: 60%: barely working, make whole thing organized!
+	--------
+	libuser0: user interface: mic/cam/spk/wnd/stdio/joystick
+	libuser1: 80%: fully working, to do it better!
 
 
-
-
+architect:
 |===========================================================================|
-|       .  .                /\          ?"#$*~!~#$%$+_#@      /  \    / \   |
-|    .        .            /\/\         ">$%)(*&((^)-=&&    /  \ \ |  \  \  |
-|   .           .         /\/\/\        ..%^!#$%&^$&^^%(   | /  /    /  \ | |
-|  .            .        /\/\/\/\       ,,^*^%$##@%+<>$#   \   \   \  /   / |
-|  .           .        /\/\/\/\/\      ,.//        \\(&    \ \   |  \   /  |
-|    . birth  .   =>   /\ driver /\ =>  ^^|| system ||#^  => \  pretty  /   |
-|      stage.     =>   \/ stage  \/ =>  ))|| stage  ||%$  =>  | stage  |    |
-|         .             \/\/\/\/\/      *%\\        //$)      |        |    |
-|        .               \/\/\/\/       ^#$%*&%#$^*(|}~&      |        |    |
-|                         \/\/\/        &@$^#&$*E$&%:"~@      |        |    |
-|        .                 \/\/         ##|}(%$%^&**>{&*      |        |    |
-|                           \/          *&:}!@#$%^&^|<#^      |        |    |
+|       .  .         ?"~r*~!~s%q,+_W@          /\             /  \    / \   |
+|    .        .      "r5%)(*r((^)-=,b         /\/\          /  \ \ |  \  \  |
+|   .           .    ..%^!G0%d^1w^^%(        /\/\/\        | /  /    /  \ | |
+|  .            .    ,,^*^%/L;!:u``d)       /\/\/\/\       \   \   \  /   / |
+|  .           .     ,.//        \\(i      /\/\/\/\/\       \ \   |  \   /  |
+|    . birth  .   => ^*|| messy  ||n^  => /\/clean \/\  =>   \  pretty  /   |
+|      stage.     => )@|| stage  ||%|  => \/\stage /\/  =>    | stage  |    |
+|         .          *%\\        //\)      \/\/\/\/\/         |        |    |
+|        .           ^..%*g%ax^*(|}~z       \/\/\/\/          |        |    |
+|                    v@.^[ci*Eie%:"~@        \/\/\/           |        |    |
+|        .           }]|}(%f%^m**>{j*         \/\/            |        |    |
+|                    *t:}!@:h%^y^|h'^          \/             |        |    |
 |====|========|=========|========|=========|========|=========|========|====|
 |   /          \       /          \       /          \       /          \   |
 |  /  libboot0  \     /  libhard0  \     /  lbsoft0   \     /  libuser0  \  |
