@@ -1,4 +1,6 @@
 #include "libuser.h"
+void* supply_alloc();
+void* supply_recycle(void*);
 int wndmgr_take(void*,void*, void*,int, void*,int, void*,int);
 int wndmgr_give(void*,void*, void*,int, void*,int, void*,int);
 
@@ -22,6 +24,8 @@ struct fbinfo{
 };
 static u32* screen = 0;
 static u32 format = 4;
+//
+void* cachedwindow = 0;
 
 
 
@@ -45,22 +49,26 @@ void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 	//printmemory(buf, 0x20);
 	wndmgr_give(wnd,0, stack,sp, 0,0, buf,len);
 }
-void windowlist()
+void window_attach()
 {
 }
-void windowchoose()
+void window_detach()
 {
 }
-void windowstop()
+
+
+
+
+void window_read()
 {
 }
-void windowstart()
+void window_write()
 {
 }
-void windowdelete(_obj* w)
+void window_delete(_obj* w)
 {
 }
-void windowcreate(_obj* wnd)
+void window_create(_obj* wnd)
 {
 	wnd->fmt = _rgba_;
 	wnd->vfmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
@@ -77,8 +85,19 @@ void windowcreate(_obj* wnd)
 
 
 
+void* window_alloc()
+{
+	if(cachedwindow)return cachedwindow;
+	return supply_alloc();
+}
+
+
+
+
 void initwindow()
 {
+	cachedwindow = 0;
+
 #define screeninfo 0x2000
 	struct fbinfo* fb = (struct fbinfo*)0x2000;
 

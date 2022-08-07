@@ -1,5 +1,7 @@
 #include "libuser.h"
 int input(void* buf, int len);
+void* supply_alloc();
+void* supply_recycle(void*);
 
 
 
@@ -15,22 +17,26 @@ void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 	}
 	if(_char_ == ev->what)input(buf, 1);
 }
-void windowlist()
+void window_attach()
 {
 }
-void windowchoose()
+void window_detach()
 {
 }
-void windowstop()
+
+
+
+
+void window_read()
 {
 }
-void windowstart()
+void window_write()
 {
 }
-void windowdelete(_obj* wnd)
+void window_delete(_obj* wnd)
 {
 }
-void windowcreate(_obj* wnd)
+void window_create(_obj* wnd)
 {
 	wnd->fmt = _cli_;
 	wnd->vfmt = 0;
@@ -40,6 +46,14 @@ void windowcreate(_obj* wnd)
 
 	wnd->fbwidth = 80;
 	wnd->fbheight = 0;
+}
+
+
+
+
+void* window_alloc()
+{
+	return supply_alloc();
 }
 
 

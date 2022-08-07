@@ -250,16 +250,11 @@ static int kernel_idleloop(struct item* wrk)
 
 int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 {
-	//debug device
-	//_obj* tty = supply_create(_tty_, 0, 0, 0);
-	_obj* wnd = supply_create(_wnd_, 0, 0, 0);
-	wrk->priv_ptr = wnd;
-
 	//hardware prepare
 	inithardware();
 
 	//
-	//kernel_ttyctx(tty);
+	_obj* wnd = wrk->priv_ptr = supply_create(_wnd_, 0, 0, 0);
 	kernel_wndctx(wnd);
 
 	//start work

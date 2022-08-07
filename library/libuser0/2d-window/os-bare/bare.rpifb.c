@@ -1,4 +1,6 @@
 #include "libuser.h"
+void* supply_alloc();
+void* supply_recycle(void*);
 int wndmgr_take(void*,void*, void*,int, void*,int, void*,int);
 int wndmgr_give(void*,void*, void*,int, void*,int, void*,int);
 //
@@ -28,6 +30,9 @@ extern unsigned int maildata[36];
 
 
 
+//
+void* cachedwindow = 0;
+//
 static int width = 0;
 static int height = 0;
 static int pitch = 0;
@@ -56,22 +61,26 @@ void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 	//printmemory(buf, 0x20);
 	wndmgr_give(wnd,0, stack,sp, 0,0, buf,len);
 }
-void windowlist()
+void window_attach()
 {
 }
-void windowchoose()
+void window_detach()
 {
 }
-void windowstop()
+
+
+
+
+void window_read()
 {
 }
-void windowstart()
+void window_write()
 {
 }
-void windowdelete(_obj* w)
+void window_delete(_obj* w)
 {
 }
-void windowcreate(_obj* wnd)
+void window_create(_obj* wnd)
 {
 	wnd->hfmt = _rgba_;
 	wnd->vfmt = hex64('r', 'g', 'b', 'a', '8', '8', '8', '8');
@@ -88,11 +97,22 @@ void windowcreate(_obj* wnd)
 
 
 
+void* window_alloc()
+{
+	if(cachedwindow)return cachedwindow;
+	return supply_alloc();
+}
+
+
+
+
 void freewindow()
 {
 }
 void initwindow()
 {
+	cachedwindow = 0;
+
 	maildata[0] = 35*4;
 	maildata[1] = MBOX_REQUEST;
 

@@ -3,6 +3,8 @@
 #include<unistd.h>
 #include<gtk/gtk.h>
 #include"libuser.h"
+void* supply_alloc();
+void* supply_recycle(void*);
 
 
 
@@ -47,21 +49,35 @@ void window_take()
 void window_give()
 {
 }
-
-
-
-
-void windowchange()
+void window_attach()
 {
 }
-void windowlist()
+void window_detach()
 {
 }
-void windowcreate(_obj* w)
+
+
+
+
+void window_read()
 {
 }
-void windowdelete(_obj* w)
+void window_write()
 {
+}
+void window_create(_obj* w)
+{
+}
+void window_delete(_obj* w)
+{
+}
+
+
+
+
+void* window_alloc()
+{
+	return supply_alloc();
 }
 
 

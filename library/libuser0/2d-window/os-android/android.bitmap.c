@@ -112,23 +112,41 @@ JNIEXPORT void JNICALL JNI_OnUnLoad(JavaVM* vm, void* reserved)
 
 
 
-void windowread()
+void window_attach(_rel* foot)
 {
 }
-void windowwrite()
+void window_detach(_rel* foot)
 {
 }
-void windowstart()
+void window_take(_rel* foot)
 {
 }
-void windowstop()
+void window_give(_rel* foot)
 {
 }
-void windowcreate()
+
+
+
+
+void window_read(_obj* obj)
 {
 }
-void windowdelete()
+void window_write(_obj* obj)
 {
+}
+void window_create(_obj* obj)
+{
+}
+void window_delete(_obj* obj)
+{
+}
+
+
+
+
+void* window_alloc()
+{
+	return supply_alloc();
 }
 
 

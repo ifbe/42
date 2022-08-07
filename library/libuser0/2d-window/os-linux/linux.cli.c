@@ -1,4 +1,6 @@
 #include "libuser.h"
+void* supply_alloc();
+void* supply_recycle(void*);
 
 
 
@@ -9,14 +11,26 @@ void window_take(_obj* wnd)
 void window_give(_obj* wnd)
 {
 }
-
-
-
-
-void windowdelete(_obj* wnd)
+void window_attach()
 {
 }
-void windowcreate(_obj* wnd)
+void window_detach()
+{
+}
+
+
+
+
+void window_read()
+{
+}
+void window_write()
+{
+}
+void window_delete(_obj* wnd)
+{
+}
+void window_create(_obj* wnd)
 {
 	wnd->hfmt = _cli_;
 	wnd->vfmt = 0;
@@ -26,6 +40,14 @@ void windowcreate(_obj* wnd)
 
 	wnd->whdf.fbwidth = 80;
 	//wnd->whdf.fbheight = 0;
+}
+
+
+
+
+void* window_alloc()
+{
+	return supply_alloc();
 }
 
 

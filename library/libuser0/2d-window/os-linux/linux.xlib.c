@@ -5,6 +5,8 @@
 #include <errno.h>
 #include <X11/Xlib.h>
 #include "libuser.h"
+void* supply_alloc();
+void* supply_recycle(void*);
 int rgbanode_take(void*,void*, void*,int, void*,int, void*,int);
 int rgbanode_give(void*,void*, void*,int, void*,int, void*,int);
 
@@ -268,19 +270,23 @@ void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 	XFlush(dsp);	//must
 */
 }
-void windowlist()
+void window_attach()
 {
 }
-void windowchange()
+void window_detach()
 {
 }
-void windowstop()
+
+
+
+
+void window_read()
 {
 }
-void windowstart()
+void window_write()
 {
 }
-void windowdelete(_obj* wnd)
+void window_delete(_obj* wnd)
 {
 	struct rgbaxlib* per = &wnd->rgbaxlib;
 	XDestroyWindow(dsp, per->xlibfd);
@@ -292,7 +298,7 @@ void windowdelete(_obj* wnd)
 		eventwrite(0,0,0,0);
 	}
 }
-void windowcreate(_obj* wnd)
+void window_create(_obj* wnd)
 {
 	struct rgbaxlib* per = &wnd->rgbaxlib;
 
@@ -338,6 +344,14 @@ void windowcreate(_obj* wnd)
 	//fdmap[j] = per->xlibfd;
 	XMapWindow(dsp, per->xlibfd);
 	fuckyou++;
+}
+
+
+
+
+void* window_alloc()
+{
+	return supply_alloc();
 }
 
 

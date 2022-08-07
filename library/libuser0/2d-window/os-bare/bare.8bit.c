@@ -1,34 +1,40 @@
 #include "libuser.h"
+void* supply_alloc();
+void* supply_recycle(void*);
 
 
 
 
-void windowread()
+void window_attach()
 {
 }
-void windowwrite(_obj* src)
+void window_detach()
+{
+}
+void window_take()
+{
+}
+void window_give()
+{
+}
+
+
+
+
+void window_read()
+{
+}
+void window_write(_obj* src)
 {
 	int x,y;
 	u8* ibuf = src->buf;
 	u8* obuf = (void*)0xa0000;
 	for(x=0;x<320*200;x++)obuf[x] = ibuf[x];
 }
-void windowlist()
+void window_delete(_obj* win)
 {
 }
-void windowchoose()
-{
-}
-void windowstop()
-{
-}
-void windowstart()
-{
-}
-void windowdelete(_obj* win)
-{
-}
-void windowcreate(_obj* win)
+void window_create(_obj* win)
 {
 	win->fmt = hex32('8','b','i','t');
 	win->vfmt = 0;

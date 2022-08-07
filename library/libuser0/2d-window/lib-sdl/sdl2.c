@@ -4,6 +4,8 @@
 #include<SDL2/SDL_video.h>
 #include"libuser.h"
 #undef main
+void* supply_alloc();
+void* supply_recycle(void*);
 int rgbanode_take(void*,void*, void*,int, void*,int, void*,int);
 int rgbanode_give(void*,void*, void*,int, void*,int, void*,int);
 
@@ -163,11 +165,23 @@ void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 	//ev.type = SDL_USEREVENT;  
 	//SDL_PushEvent(&ev);
 }
+void window_attach()
+{
+}
+void window_detach()
+{
+}
 
 
 
 
-void windowdelete(_obj* wnd)
+void window_read()
+{
+}
+void window_write()
+{
+}
+void window_delete(_obj* wnd)
 {
 	//per sdlwnd
 	struct rgbasdl* per = &wnd->rgbasdl;
@@ -177,7 +191,7 @@ void windowdelete(_obj* wnd)
 	SDL_DestroyWindow(per->sdlwnd);
 	SDL_Quit(); 
 }
-void windowcreate(_obj* wnd)
+void window_create(_obj* wnd)
 {
 	//data
 	wnd->hfmt = _rgba_;
@@ -217,6 +231,14 @@ void windowcreate(_obj* wnd)
 		SDL_TEXTUREACCESS_STREAMING,
 		wnd->whdf.width, wnd->whdf.height
 	);
+}
+
+
+
+
+void* window_alloc()
+{
+	return supply_alloc();
 }
 
 

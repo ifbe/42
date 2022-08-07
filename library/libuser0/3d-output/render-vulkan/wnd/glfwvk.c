@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "libuser.h"
+void* supply_alloc();
+void* supply_recycle(void*);
 void* vulkan_init(int cnt, const char** ext);
 void vulkan_exit();
 void vulkan_device_create(int, void*);
@@ -143,7 +145,13 @@ void* glfw_surface_create(void* window, void* instance)
 
 
 
-void windowcreate(_obj* ogl, void* arg, int argc, char** argv)
+void window_read()
+{
+}
+void window_write()
+{
+}
+void window_create(_obj* ogl, void* arg, int argc, char** argv)
 {
 	struct perobj* per = (void*)ogl->priv_256b;
 
@@ -159,7 +167,7 @@ void windowcreate(_obj* ogl, void* arg, int argc, char** argv)
 	//vulkan: things
 	vulkan_myctx_create();
 }
-void windowdelete(_obj* ogl)
+void window_delete(_obj* ogl)
 {
 	struct perobj* per = (void*)ogl->priv_256b;
 
@@ -192,4 +200,19 @@ void window_take(_obj* ogl,void* foot, _syn* stack,int sp, void* arg,int idx, vo
 }
 void window_give(_obj* ogl,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
+}
+void window_attach()
+{
+}
+void window_detach()
+{
+}
+
+
+
+
+
+void* window_alloc()
+{
+	return supply_alloc();
 }

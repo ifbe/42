@@ -1,30 +1,36 @@
 #include "libuser.h"
+void* supply_alloc();
+void* supply_recycle(void*);
 
 
 
 
-void windowread()
+void window_attach()
 {
 }
-void windowwrite()
+void window_detach()
 {
 }
-void windowlist()
+void window_take()
 {
 }
-void windowchoose()
+void window_give()
 {
 }
-void windowstop()
+
+
+
+
+void window_read()
 {
 }
-void windowstart()
+void window_write()
 {
 }
-void windowdelete(_obj* w)
+void window_delete(_obj* w)
 {
 }
-void windowcreate(_obj* w)
+void window_create(_obj* w)
 {
 	w->fmt = _cli_;
 	w->vfmt = 0;

@@ -2,6 +2,12 @@
 #import <Metal/Metal.h>
 #import <MetalKit/MetalKit.h>
 #import "libuser.h"
+void* supply_alloc();
+void* supply_recycle(void*);
+
+
+
+
 enum VertexAttributes {
 	VertexAttributePosition = 0,
 	VertexAttributeColor = 1,
@@ -679,14 +685,26 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-
-
-
-
-void windowdelete(_obj* w)
+void window_attach()
 {
 }
-void windowcreate(_obj* wnd)
+void window_detach()
+{
+}
+
+
+
+
+void window_read()
+{
+}
+void window_write()
+{
+}
+void window_delete(_obj* w)
+{
+}
+void window_create(_obj* wnd)
 {
 	//wnd->tier
 	//wnd->type
@@ -733,6 +751,14 @@ void windowcreate(_obj* wnd)
 
 	wnd->mt20list.delegate = windowdelegate;
 	wnd->mt20list.view = myview;
+}
+
+
+
+
+void* window_alloc()
+{
+	return supply_alloc();
 }
 
 

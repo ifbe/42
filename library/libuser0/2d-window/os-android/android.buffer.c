@@ -198,14 +198,26 @@ JNIEXPORT void JNICALL JNI_OnUnLoad(JavaVM* vm, void* reserved)
 
 
 
-void windowlist()
+void window_read()
 {
 	say("@windowlist\n");
 }
-void windowchange()
+void window_write()
 {
 	say("@windowchange\n");
 }
+void window_attach()
+{
+	say("@windowstart\n");
+}
+void window_detach()
+{
+	say("@windowstop\n");
+}
+
+
+
+
 void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@windowread\n");
@@ -214,21 +226,21 @@ void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 {
 	say("@windowwrite\n");
 }
-void windowstart()
-{
-	say("@windowstart\n");
-}
-void windowstop()
-{
-	say("@windowstop\n");
-}
-void windowcreate()
+void window_create()
 {
 	say("@windowcreate\n");
 }
-void windowdelete()
+void window_delete()
 {
 	say("@windowdelete\n");
+}
+
+
+
+
+void* window_alloc()
+{
+	return supply_alloc();
 }
 
 

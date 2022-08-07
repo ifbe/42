@@ -12,6 +12,8 @@
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 void* getapp();
 void* pollenv();
+void* supply_alloc();
+void* supply_recycle(void*);
 
 
 
@@ -189,16 +191,26 @@ void windowread_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* a
 void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-void windowstop()
+void window_detach()
 {
 }
-void windowstart()
+void window_attach()
 {
 }
-void windowdelete(_obj* win)
+
+
+
+
+void window_read()
 {
 }
-void windowcreate(_obj* win)
+void window_write()
+{
+}
+void window_delete(_obj* win)
+{
+}
+void window_create(_obj* win)
 {
 	thewin = win;
 	win->fmt = hex64('r','g','b','a','8','8','8','8');

@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <termios.h>
 #include"libuser.h"
+void* supply_alloc();
+void* supply_recycle(void*);
 
 
 
@@ -28,18 +30,38 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 void window_give(_obj* win,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-
-
-
-
-void windowdelete(_obj* w)
+void window_attach()
 {
 }
-void windowcreate(_obj* w)
+void window_detach()
+{
+}
+
+
+
+
+void window_read()
+{
+}
+void window_write()
+{
+}
+void window_delete(_obj* w)
+{
+}
+void window_create(_obj* w)
 {
 	w->hfmt = _cli_;
 	w->vfmt = 0;
 
+}
+
+
+
+
+void* window_alloc()
+{
+	return supply_alloc();
 }
 
 

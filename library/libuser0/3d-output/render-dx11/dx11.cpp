@@ -5,6 +5,8 @@
 #include <d3dcompiler.h>
 #include "libuser.h"
 using namespace std;
+void* supply_alloc();
+void* supply_recycle(void*);
 int dx11easy_create();
 int dx11easy_delete();
 int dx11easy_upload(ID3D11DeviceContext* devctx);
@@ -1027,11 +1029,11 @@ int window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,in
 {
 	return 0;
 }
-int windowdiscon(struct halfrel* self, struct halfrel* peer)
+int window_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int windowlinkup(struct halfrel* self, struct halfrel* peer)
+int window_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -1039,15 +1041,15 @@ int windowlinkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int windowsearch(_obj* wnd)
+int window_read(_obj* wnd)
 {
 	return 0;
 }
-int windowmodify(_obj* wnd)
+int window_write(_obj* wnd)
 {
 	return 0;
 }
-int windowdelete(_obj* wnd)
+int window_delete(_obj* wnd)
 {
 	dx11easy_delete();
 	FreeTEXcd();
@@ -1055,7 +1057,7 @@ int windowdelete(_obj* wnd)
 	FreeWin32();
 	return 0;
 }
-int windowcreate(_obj* wnd)
+int window_create(_obj* wnd)
 {
 	//wnd->tier
 	//wnd->type
@@ -1075,6 +1077,14 @@ int windowcreate(_obj* wnd)
 	dx11easy_create();
 
 	return 0;
+}
+
+
+
+
+void* window_alloc()
+{
+	return supply_alloc();
 }
 
 

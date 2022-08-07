@@ -30,7 +30,9 @@ void initvmtool();
 void initdbg()
 {
 	//debug serial
+
 	//debug framebuffer
+	_obj* wnd = supply_create(_wnd_, 0, 0, 0);
 }
 
 
@@ -93,6 +95,15 @@ void exitsoc()
 }
 void initsoc()
 {
+	struct item* p;
+
+	//input
+	init8042();
+
+	//pci
+	p = device_create(_pci_, 0, 0, 0);
+	initpci_port(p);
+	initpci_mmio();
 }
 
 
@@ -103,16 +114,6 @@ void exitboard()
 }
 void initboard()
 {
-	struct item* p;
-
-	//input
-	init8042();
-
-	//pci
-	p = device_create(_pci_, 0, 0, 0);
-	initpci_port(p);
-	initpci_mmio();
-
 	//vmware
 	initvmtool();
 }

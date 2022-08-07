@@ -10,6 +10,8 @@
 #include <wayland-server-protocol.h>
 #include <wayland-egl.h>
 #include "libuser.h"
+void* supply_alloc();
+void* supply_recycle(void*);
 
 
 
@@ -320,22 +322,26 @@ void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 	wl_surface_attach(surface, wnd->rgbabuf, 0, 0);
 	wl_surface_commit(surface);
 }
-void windowlist()
+void window_attach()
 {
 }
-void windowchange()
+void window_detach()
 {
 }
-void windowstart()
+
+
+
+
+void window_read()
 {
 }
-void windowstop()
+void window_write()
 {
 }
-void windowdelete(_obj* w)
+void window_delete(_obj* w)
 {
 }
-void windowcreate(_obj* w)
+void window_create(_obj* w)
 {
 	u64 align;
 	w->rgbaalloc = malloc(2048*1024*4 + 0x100000);
@@ -353,6 +359,14 @@ void windowcreate(_obj* w)
 	//w->fbheight =
 
 	threadcreate(uievent, w);
+}
+
+
+
+
+void* window_alloc()
+{
+	return supply_alloc();
 }
 
 

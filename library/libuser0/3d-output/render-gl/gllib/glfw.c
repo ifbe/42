@@ -4,6 +4,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "libuser.h"
+void* supply_alloc();
+void* supply_recycle(void*);
 //
 void nonewindow_create(void*);
 void nonewindow_delete(void*);
@@ -100,10 +102,10 @@ void window_give(_obj* ogl,void* foot, _syn* stack,int sp, void* arg,int idx, vo
 		default:fullwindow_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
 	}
 }
-void windowdiscon(struct halfrel* self, struct halfrel* peer)
+void window_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
-void windowlinkup(struct halfrel* self, struct halfrel* peer)
+void window_detach(struct halfrel* self, struct halfrel* peer)
 {
 	say("@windowlinkup:%llx\n", self->pchip);
 }
@@ -362,13 +364,13 @@ void windowopen_coop(_obj* w, _obj* r)
 
 
 
-void windowsearch(_obj* ogl)
+void window_read(_obj* ogl)
 {
 }
-void windowmodify(_obj* ogl)
+void window_write(_obj* ogl)
 {
 }
-void windowdelete(_obj* ogl)
+void window_delete(_obj* ogl)
 {
 	switch(ogl->hfmt){
 		case _gl41none_:nonewindow_delete(ogl);glfwDestroyWindow(ogl->gl41list.glwnd);break;
@@ -377,7 +379,7 @@ void windowdelete(_obj* ogl)
 		default:        fullwindow_delete(ogl);glfwDestroyWindow(ogl->gl41list.glwnd);break;
 	}
 }
-void windowcreate(_obj* ogl, void* arg, int argc, char** argv)
+void window_create(_obj* ogl, void* arg, int argc, char** argv)
 {
 	struct relation* rel = 0;
 	_obj* share = 0;
@@ -423,6 +425,14 @@ void windowcreate(_obj* ogl, void* arg, int argc, char** argv)
 		break;
 	}
 	}
+}
+
+
+
+
+void* window_alloc()
+{
+	return supply_alloc();
 }
 
 

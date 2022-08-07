@@ -10,6 +10,8 @@
 #include <commctrl.h>
 #include "libuser.h"
 int arg2utf8(void*, void*);
+void* supply_alloc();
+void* supply_recycle(void*);
 int rgbanode_take(void*,void*, void*,int, void*,int, void*,int);
 int rgbanode_give(void*,void*, void*,int, void*,int, void*,int);
 
@@ -84,11 +86,11 @@ int window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,in
 {
 	return 0;
 }
-int windowstop(_obj* win)
+int window_detach(_obj* win)
 {
 	return 0;
 }
-int windowstart(_obj* win)
+int window_attach(_obj* win)
 {
 	return 0;
 }
@@ -96,11 +98,11 @@ int windowstart(_obj* win)
 
 
 
-int windowlist()
+int window_read()
 {
 	return 0;
 }
-int windowchange()
+int window_write()
 {
 	//RECT rc;
 	//GetWindowRect(win, &rc);
@@ -110,7 +112,7 @@ int windowchange()
 	//SetWindowText(win, "hahahaha");
 	return 0;
 }
-int windowdelete(_obj* wnd)
+int window_delete(_obj* wnd)
 {/*
 	PostThreadMessage(
 		uithread,
@@ -134,7 +136,7 @@ int windowdelete(_obj* wnd)
 	if(alivecount == 0)eventwrite(0,0,0,0);
 	return 0;
 }
-int windowcreate(_obj* wnd)
+int window_create(_obj* wnd)
 {
 	if(0 == wnd)return 0;
 
@@ -617,6 +619,14 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 theend:
 	return DefWindowProc(wnd, msg, wparam, lparam);
+}
+
+
+
+
+void* window_alloc()
+{
+	return supply_alloc();
 }
 
 

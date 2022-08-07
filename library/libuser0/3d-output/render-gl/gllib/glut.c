@@ -8,6 +8,8 @@
 
 
 
+void* supply_alloc();
+void* supply_recycle(void*);
 //
 void drawascii_alpha(void* buf, int w, int h, int x, int y, u8 c);
 void drawunicode_alpha(void* buf, int w, int h, int x, int y, u32 c);
@@ -944,6 +946,10 @@ void* uievent(_obj* p)
 	glutMotionFunc(callback_move);
 	glutMainLoop();
 }
+
+
+
+
 void window_take(_obj* wnd)
 {
 }
@@ -951,16 +957,26 @@ void window_give(_obj* wnd)
 {
 	queuehead++;
 }
-void windowchange(int what)
+void window_attach()
 {
 }
-void windowlist()
+void window_detach()
 {
 }
-void windowstop()
+
+
+
+
+void window_read()
 {
 }
-void windowstart(_obj* this)
+void window_write()
+{
+}
+void window_delete()
+{
+}
+void window_create(_obj* this)
 {
 	if(this->type == hex32('b','u','f',0))
 	{
@@ -977,11 +993,13 @@ void windowstart(_obj* this)
 	this->h = 512;
 	startthread(uievent, this);
 }
-void windowdelete()
+
+
+
+
+void* window_alloc()
 {
-}
-void windowcreate()
-{
+	return supply_alloc();
 }
 
 

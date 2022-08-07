@@ -18,6 +18,9 @@
 #define _madgwick_ hex64('m','a','d','g','w','i','c','k')
 void checkevent();
 //
+void* supply_alloc();
+void* supply_recycle(void*);
+//
 void easyag_modify(void*,int, void*,int, void*,int);
 void mahony_modify(void*,int, void*,int, void*,int);
 void madgwick_modify(void*,int, void*,int, void*,int);
@@ -73,16 +76,26 @@ int window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,in
 	}
 	return 0;
 }
-void windowstop()
+void window_detach()
 {
 }
-void windowstart()
+void window_attach()
 {
 }
-void windowdelete(_obj* wnd)
+
+
+
+
+void window_read()
 {
 }
-void windowcreate(_obj* wnd, void* arg)
+void window_write()
+{
+}
+void window_delete(_obj* wnd)
+{
+}
+void window_create(_obj* wnd, void* arg)
 {
 	say("@windowcreate\n");
 	switch(wnd->hfmt){
@@ -96,6 +109,14 @@ void windowcreate(_obj* wnd, void* arg)
 		break;
 	}//default
 	}//switch
+}
+
+
+
+
+void* window_alloc()
+{
+	return supply_alloc();
 }
 
 

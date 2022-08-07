@@ -5,6 +5,8 @@
 #include <termios.h>
 #include <sys/ioctl.h>
 #include "libuser.h"
+void* supply_alloc();
+void* supply_recycle(void*);
 int tuinode_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len);
 int tuinode_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len);
 
@@ -149,10 +151,10 @@ void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 
 
 
-void windowdelete(_obj* w)
+void window_delete(_obj* w)
 {
 }
-void windowcreate(_obj* w)
+void window_create(_obj* w)
 {
 	w->hfmt = _tui_;;
 	w->vfmt = 0;
@@ -171,6 +173,14 @@ void window_reader()
 }
 void window_writer()
 {
+}
+
+
+
+
+void* window_alloc()
+{
+	return supply_alloc();
 }
 
 

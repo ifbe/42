@@ -1,5 +1,7 @@
 #import "Cocoa/Cocoa.h"
 #import "libuser.h"
+void* supply_alloc();
+void* supply_recycle(void*);
 int rgbanode_take(void*,void*, void*,int, void*,int, void*,int);
 int rgbanode_give(void*,void*, void*,int, void*,int, void*,int);
 
@@ -252,22 +254,26 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-void windowlist()
+void window_attach()
 {
 }
-void windowchoose()
+void window_detach()
 {
 }
-void windowstart()
+
+
+
+
+void window_read()
 {
 }
-void windowstop()
+void window_write()
 {
 }
-void windowdelete(_obj* w)
+void window_delete(_obj* w)
 {
 }
-void windowcreate(_obj* wnd)
+void window_create(_obj* wnd)
 {
 	//value
 	wnd->hfmt = _rgba_;
@@ -308,6 +314,14 @@ void windowcreate(_obj* wnd)
 	//view
 	myview = [[[MyView alloc] initWithFrame:windowRect] autorelease];
 	[window setContentView:myview];
+}
+
+
+
+
+void* window_alloc()
+{
+	return supply_alloc();
 }
 
 

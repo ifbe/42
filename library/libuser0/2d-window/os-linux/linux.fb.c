@@ -8,6 +8,8 @@
 #include <sys/mman.h>		//mmap
 #include <linux/fb.h>		//framebuffer
 #include "libuser.h"
+void* supply_alloc();
+void* supply_recycle(void*);
 int rgbanode_take(void*,void*, void*,int, void*,int, void*,int);
 int rgbanode_give(void*,void*, void*,int, void*,int, void*,int);
 
@@ -106,11 +108,23 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 }
+void window_attach()
+{
+}
+void window_detach()
+{
+}
 
 
 
 
-void windowdelete(_obj* w)
+void window_read()
+{
+}
+void window_write()
+{
+}
+void window_delete(_obj* w)
 {
 	if(fbmem != 0){
 		munmap(fbmem, totalbyte);
@@ -121,7 +135,7 @@ void windowdelete(_obj* w)
 		fbfd = -1;
 	}
 }
-void windowcreate(_obj* sup, void* arg)
+void window_create(_obj* sup, void* arg)
 {
 	int j;
 	if(0 == arg)arg = "/dev/fb0";
@@ -176,6 +190,14 @@ void windowcreate(_obj* sup, void* arg)
 
 	sup->rgbanode.buf = malloc(2048*1024*4);
 	//for(j=0;j<16;j++)w->input[j].id = 0xffff;
+}
+
+
+
+
+void* window_alloc()
+{
+	return supply_alloc();
 }
 
 

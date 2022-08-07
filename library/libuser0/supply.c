@@ -50,8 +50,14 @@ int video_give(void*,void*, void*,int, void*,int, void*,int);
 //light.window
 void initwindow(void*);
 void freewindow();
-int windowcreate(void*, void*, int, u8**);
-int windowdelete(void*);
+void* window_alloc();
+void* window_recycle();
+int window_create(void*, void*, int, u8**);
+int window_delete(void*);
+int window_read(void*);
+int window_write(void*);
+int window_attach(void*);
+int window_detach(void*);
 int window_take(void*,void*, void*,int, void*,int, void*,int);
 int window_give(void*,void*, void*,int, void*,int, void*,int);
 
@@ -93,6 +99,10 @@ void supply_exit()
 
 	say("[c,e):supply exited\n");
 }
+
+
+
+
 void* supply_alloc()
 {
 	int j;
@@ -111,8 +121,6 @@ void* supply_alloc()
 void supply_recycle()
 {
 }
-
-
 void* pinid_alloc()
 {
 #define maxlen 0x200
@@ -231,11 +239,11 @@ void* supply_create(u64 type, void* arg, int argc, u8** argv)
 //---------------------window----------------
 	case _wnd_:
 	{
-		win = supply_alloc();
+		win = window_alloc();
 		if(0 == win)return 0;
 
 		win->type = _wnd_;
-		windowcreate(win, arg, argc, argv);
+		window_create(win, arg, argc, argv);
 		return win;
 	}
 
@@ -269,7 +277,7 @@ void* supply_create(u64 type, void* arg, int argc, u8** argv)
 
 		win->type = _wnd_;
 		win->hfmt = _gl41none_;
-		windowcreate(win, arg, argc, argv);
+		window_create(win, arg, argc, argv);
 		return win;
 	}
 	case _gl41easy_:
@@ -279,7 +287,7 @@ void* supply_create(u64 type, void* arg, int argc, u8** argv)
 
 		win->type = _wnd_;
 		win->hfmt = _gl41easy_;
-		windowcreate(win, arg, argc, argv);
+		window_create(win, arg, argc, argv);
 		return win;
 	}
 	case _gl41list_:
@@ -289,7 +297,7 @@ void* supply_create(u64 type, void* arg, int argc, u8** argv)
 
 		win->type = _wnd_;
 		win->hfmt = _gl41list_;
-		windowcreate(win, arg, argc, argv);
+		window_create(win, arg, argc, argv);
 		return win;
 	}
 	case _gl41cmdq_:
@@ -299,7 +307,7 @@ void* supply_create(u64 type, void* arg, int argc, u8** argv)
 
 		win->type = _wnd_;
 		win->hfmt = _gl41cmdq_;
-		windowcreate(win, arg, argc, argv);
+		window_create(win, arg, argc, argv);
 		return win;
 	}
 
@@ -311,7 +319,7 @@ int supply_delete(_obj* win)
 	if(0 == win)return 0;
 
 	//1.close
-	windowdelete(win);
+	window_delete(win);
 
 	//2.unlink
 	win->irel0 = 0;

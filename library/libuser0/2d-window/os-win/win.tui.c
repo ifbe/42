@@ -6,6 +6,8 @@
 #define MOUSE_HWHEELED 0x0008
 #endif
 int lowlevel_input();
+void* supply_alloc();
+void* supply_recycle(void*);
 void tuinode_take( void*,int, void*,int, void*,int, void*,int);
 void tuinode_give(void*,int, void*,int, void*,int, void*,int);
 
@@ -320,26 +322,26 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-void windowstop()
+void window_detach()
 {
 }
-void windowstart()
+void window_attach()
 {
 }
 
 
 
 
-void windowmodify()
+void window_read()
 {
 }
-void windowsearch()
+void window_write()
 {
 }
-void windowdelete(_obj* w)
+void window_delete(_obj* w)
 {
 }
-void windowcreate(_obj* w)
+void window_create(_obj* w)
 {
 	int width,height;
 	CONSOLE_SCREEN_BUFFER_INFO bInfo;
@@ -358,6 +360,14 @@ void windowcreate(_obj* w)
 
 	w->tuitext.buf = malloc(0x100000);
 	threadcreate(windowthread, w);
+}
+
+
+
+
+void* window_alloc()
+{
+	return supply_alloc();
 }
 
 

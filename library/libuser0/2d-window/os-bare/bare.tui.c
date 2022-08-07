@@ -1,9 +1,27 @@
 #include"libuser.h"
+void* supply_alloc();
+void* supply_recycle(void*);
 
 
 
 
-void windowwrite(_obj* src)
+void window_take()
+{
+}
+void window_give()
+{
+}
+void window_attach()
+{
+}
+void window_detach()
+{
+}
+
+
+
+
+void window_write(_obj* src)
 {
 	int x,y;
 	u8 bg=0,fg=0,c=0;
@@ -41,25 +59,13 @@ void windowwrite(_obj* src)
 		}
 	}
 }
-void windowread(char* addr)
+void window_read(char* addr)
 {
 }
-void windowlist()
+void window_delete(_obj* w)
 {
 }
-void windowchange()
-{
-}
-void windowstop()
-{
-}
-void windowstart()
-{
-}
-void windowdelete(_obj* w)
-{
-}
-void windowcreate(_obj* w)
+void window_create(_obj* w)
 {
 	w->fmt = _tui_;
 	w->vfmt = 0;
@@ -69,6 +75,14 @@ void windowcreate(_obj* w)
 
 	w->fbwidth = 80;
 	//w->fbheight = 0;
+}
+
+
+
+
+void* window_alloc()
+{
+	return supply_alloc();
 }
 
 

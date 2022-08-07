@@ -6,12 +6,18 @@
 void stdout_setwindow(void* node);
 void getscreen(void** _buf, u64* _fmt, int* _w, int* _h, int* _fbw, int* _fbh);
 //
+void* supply_alloc();
+void* supply_recycle(void*);
+//
 int wndmgr_take(void*,void*, void*,int, void*,int, void*,int);
 int wndmgr_give(void*,void*, void*,int, void*,int, void*,int);
 
 
 
 
+//
+void* cachedwindow = 0;
+//
 static void* lfb = 0;
 static u64 fmt;
 static int w = 0;
@@ -94,26 +100,26 @@ void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 		window_update(wnd,0, x-16,y-16, x+16,y+16);
 	}
 }
-void windowdiscon()
+void window_detach()
 {
 }
-void windowlinkup()
+void window_attach()
 {
 }
 
 
 
 
-void windowsearch()
+void window_read(_obj* wnd)
 {
 }
-void windowmodify()
+void window_write(_obj* wnd)
 {
 }
-void windowdelete(_obj* wnd)
+void window_delete(_obj* wnd)
 {
 }
-void windowcreate(_obj* wnd)
+void window_create(_obj* wnd)
 {
 	getscreen(&lfb, &fmt, &w, &h, &fbw, &fbh);
 	say("lfb=%p,fmt=%.8s, w=%d,h=%d, fbw=0x%x,fbh=0x%x\n", lfb,&fmt, w,h, fbw,fbh);
@@ -129,7 +135,20 @@ void windowcreate(_obj* wnd)
 	//wnd->fbheight = 0;
 
 	wnd->rgbanode.buf = (void*)0x4000000;
+
+	//early console
 	stdout_setwindow(wnd);
+
+	cachedwindow = wnd;
+}
+
+
+
+
+void* window_alloc()
+{
+	if(cachedwindow)return cachedwindow;
+	return supply_alloc();
 }
 
 
@@ -137,6 +156,7 @@ void windowcreate(_obj* wnd)
 
 void initwindow()
 {
+	cachedwindow = 0;
 }
 void freewindow()
 {
