@@ -1,7 +1,7 @@
 project=$(shell pwd)
 library=../../library
 CC=clang	#x86_64-w64-mingw32-gcc
-CF="--target=x86_64-unknown-windows -c -ffreestanding -fshort-wchar -nostdlib -fno-stack-check -fno-stack-protector -mno-stack-arg-probe -mno-red-zone -Wno-interrupt-service-routine -Wno-address-of-packed-member -I.. -I../gnu-efi/inc -I../gnu-efi/inc/x86_64 -I../gnu-efi/inc/protocol"
+CF="--target=x86_64-unknown-windows -c -ffreestanding -fshort-wchar -nostdlib -fno-stack-check -fno-stack-protector -mno-stack-arg-probe -mno-red-zone -Wno-interrupt-service-routine -Wno-address-of-packed-member -I../lib1 -I../gnu-efi/inc -I../gnu-efi/inc/x86_64 -I../gnu-efi/inc/protocol"
 LD=clang
 LF='--target=x86_64-unknown-windows -nostdlib -Wl,-entry:efi_main -Wl,-subsystem:efi_application -fuse-ld=lld-link'
 all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1 gnuefi

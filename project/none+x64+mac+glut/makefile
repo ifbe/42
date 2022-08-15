@@ -1,5 +1,5 @@
 library?=../../library
-CF="-c -O2 -fno-stack-protector -I.."
+CF="-c -O2 -fno-stack-protector -I../lib1"
 all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	make -s a
 	make -s dylib

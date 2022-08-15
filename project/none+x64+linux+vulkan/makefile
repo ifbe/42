@@ -2,7 +2,7 @@ SDK=/opt/vulkansdk/1.2.189.0/x86_64
 project?=$(shell pwd)
 library?=../../library
 CC=gcc
-CF="-c -O2 -fPIC -fno-stack-protector -Wno-address-of-packed-member -I.. -I${SDK}/include"
+CF="-c -O2 -fPIC -fno-stack-protector -Wno-address-of-packed-member -I../lib1 -I${SDK}/include"
 all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	+make -s exe
 	+make -s lib

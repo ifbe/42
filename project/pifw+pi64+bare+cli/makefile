@@ -2,7 +2,7 @@ library?=../../library
 AS=aarch64-elf-as
 AF="-c"
 CC=aarch64-elf-gcc
-CF="-c -O2 -I.. -fPIC -ffreestanding -fno-stack-protector"
+CF="-c -O2 -I../lib1 -fPIC -ffreestanding -fno-stack-protector"
 LD=aarch64-elf-ld
 LF=-T link.ld -o 42.elf
 

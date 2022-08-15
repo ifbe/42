@@ -1,7 +1,7 @@
 project=$(shell pwd)
 library=../../library
 CC=x86_64-w64-mingw32-gcc
-CF="-c -fPIC -ffreestanding -mno-red-zone -Wno-address-of-packed-member -I.. -I../gnu-efi/inc -I../gnu-efi/inc/x86_64 -I../gnu-efi/inc/protocol"
+CF="-c -fPIC -ffreestanding -mno-red-zone -Wno-address-of-packed-member -I../lib1 -I../lib0/gnu-efi/inc -I../lib0/gnu-efi/inc/x86_64 -I../lib0/gnu-efi/inc/protocol"
 LD=x86_64-w64-mingw32-gcc
 LF=-e efi_main -nostdlib -fno-use-linker-plugin -Wl,-dll -shared -Wl,--subsystem,10
 withclang:libboot0 libboot1 libhard1 libsoft0 libsoft1 libuser0 libuser1 gnuefi
@@ -45,10 +45,10 @@ libuser1:
 gnuefi:
 	$(CC) -o data.o \
 	-c -ffreestanding \
-	-I$(library)/gnu-efi/inc \
-	-I$(library)/gnu-efi/inc/x86_64 \
-	-I$(library)/gnu-efi/inc/protocol \
-	$(library)/gnu-efi/lib/data.c
+	-I$(library)/lib0/gnu-efi/inc \
+	-I$(library)/lib0/gnu-efi/inc/x86_64 \
+	-I$(library)/lib0/gnu-efi/inc/protocol \
+	$(library)/lib0/gnu-efi/lib/data.c
 link:
 	$(LD) $(LF) \
 	libboot0/*.o libboot1/*.o \

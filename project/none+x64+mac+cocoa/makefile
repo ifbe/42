@@ -1,7 +1,7 @@
 library?=../../library
 project?=$(shell pwd)
 CC=clang
-CF="-c -O2 -fno-stack-protector -Wno-address-of-packed-member -I.."
+CF="-c -O2 -fno-stack-protector -Wno-address-of-packed-member -I../lib1"
 all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	make -s exe
 	make -s lib

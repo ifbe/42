@@ -1,6 +1,6 @@
 library?=../../library
 datafile?=../../datafile
-CF="-c -O2 -I.."
+CF="-c -O2 -I../lib1"
 all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	make -s exe
 	make -s lib

@@ -1,7 +1,7 @@
 project?=$(shell pwd)
 library?=../../library
 CC=x86_64-elf-gcc
-CF=-c -O2 -fPIC -I..
+CF=-c -O2 -fPIC -I../lib1
 LD=x86_64-elf-ld
 LF=-T link.ld
 all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1

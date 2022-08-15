@@ -1,5 +1,5 @@
 library?=../../library
-flag?=-c -ffreestanding -I.. -I../gnu-efi/inc -I../gnu-efi/inc/x86_64 -I../gnu-efi/inc/protocol
+flag?=-c -ffreestanding -I../lib1 -I../lib0/gnu-efi/inc -I../lib0/gnu-efi/inc/x86_64 -I../lib0/gnu-efi/inc/protocol
 all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	make -s gnuefi
 	make -s link
@@ -30,10 +30,10 @@ libuser1:
 gnuefi:
 	x86_64-w64-mingw32-gcc -o data.o \
 	-c -ffreestanding \
-	-I$(library)/gnu-efi/inc \
-	-I$(library)/gnu-efi/inc/x86_64 \
-	-I$(library)/gnu-efi/inc/protocol \
-	$(library)/gnu-efi/lib/data.c
+	-I$(library)/lib0/gnu-efi/inc \
+	-I$(library)/lib0/gnu-efi/inc/x86_64 \
+	-I$(library)/lib0/gnu-efi/inc/protocol \
+	$(library)/lib0/gnu-efi/lib/data.c
 link:
 	x86_64-w64-mingw32-gcc -e efi_main \
 	-nostdlib -fno-use-linker-plugin \

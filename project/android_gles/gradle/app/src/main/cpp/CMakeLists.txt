@@ -804,7 +804,7 @@ ${libuser1}
 
 target_include_directories(native-activity PRIVATE
 ${ANDROID_NDK}/sources/android/native_app_glue
-${LIB42}
+${LIB42}/lib1
 )
 
 # add lib dependencies

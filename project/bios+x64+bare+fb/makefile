@@ -1,6 +1,6 @@
 library?=../../library
 linker?=ld
-CF="-c -O2 -I.. -fPIC -ffreestanding -fno-stack-protector -mno-red-zone -Wno-address-of-packed-member"
+CF="-c -O2 -I../lib1 -fPIC -ffreestanding -fno-stack-protector -mno-red-zone -Wno-address-of-packed-member"
 linux:
 	+make -s -C $(library)/libboot0 CF=$(CF) bare
 	+make -s -C $(library)/libboot1 CF=$(CF)
