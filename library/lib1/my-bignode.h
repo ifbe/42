@@ -317,7 +317,10 @@ struct gl41list{
 	struct gl41world world[2];
 
 	void* glwnd;
+	u32 ctxage;
+
 	u64   gltime;
+
 	void* glevto;
 	void* glsave;
 };

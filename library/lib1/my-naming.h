@@ -5,12 +5,6 @@
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
 #define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
 //
-#define PI 3.1415926535897932384626433832795028841971693993151
-#define tau PI*2
-//
-#define SQRT2 1.4142135623730951
-#define SQRT3 1.7320508075688772
-//
 #define _ok_ hex16('o','k')
 #define _no_ hex16('n','o')
 #define _good_ hex32('g','o','o','d')

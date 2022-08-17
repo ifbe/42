@@ -186,6 +186,7 @@ void openwindow(struct android_app* theapp)
 	say("GL Renderer = %s\n", glGetString(GL_RENDERER));
 	say("GL Extensions = %s\n", glGetString(GL_EXTENSIONS));
 
+	if(thewnd)thewnd->gl41list.ctxage += 1;
 	candraw = 1;
 }
 void closewindow(struct android_app* theapp)
@@ -204,7 +205,7 @@ void closewindow(struct android_app* theapp)
 	display = EGL_NO_DISPLAY;
 	context = EGL_NO_CONTEXT;
 	surface = EGL_NO_SURFACE;
-
+/*
 	//2. tell everyone who connected
 	int j;
 	_obj* wnd = thewnd;
@@ -231,7 +232,7 @@ void closewindow(struct android_app* theapp)
 	struct gl41data** opaque = world->opaque;
 	for(j=0;j<64;j++){
 		if(opaque[j])bzero(&opaque[j]->dst, sizeof(struct gldst));
-	}
+	}*/
 }
 void sendtowindow(int k, float* v)
 {

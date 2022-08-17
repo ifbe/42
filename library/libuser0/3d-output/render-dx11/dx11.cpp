@@ -5,8 +5,10 @@
 #include <d3dcompiler.h>
 #include "libuser.h"
 using namespace std;
+extern "C"{
 void* supply_alloc();
 void* supply_recycle(void*);
+}
 int dx11easy_create();
 int dx11easy_delete();
 int dx11easy_upload(ID3D11DeviceContext* devctx);

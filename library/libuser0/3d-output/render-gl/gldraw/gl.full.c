@@ -22,6 +22,71 @@ int gl41fbo_create(struct gl41data* tar);
 
 
 
+
+#ifdef __ANDROID__
+void gpudata_cleanup(u8* ss, u8* ee)
+{
+	while(ss < ee){
+		*ss = 0;
+		ss++;
+	}
+}
+void gpudata_validate(_obj* wnd)
+{
+	struct gl41world* world = &wnd->gl41list.world[0];
+	struct gl41data** cam = world->camera;
+	struct gl41data** lit = world->light;
+	struct gl41data** solid = world->solid;
+	struct gl41data** opaque = world->opaque;
+
+	//camera
+	int j;
+	for(j=0;j<16;j++){
+		if(0 == cam[j])break;
+		if(cam[j]->dst.ctxage != wnd->gl41list.ctxage){
+			say("cam %d\n",j);
+			gpudata_cleanup(cam[j]->dst.gpudata_head, cam[j]->dst.gpudata_tail);
+			cam[j]->dst.ctxage = wnd->gl41list.ctxage;
+		}
+	}
+
+	//light
+	for(j=0;j<1;j++){
+		if(0 == lit[j])break;
+		if(lit[j]->dst.ctxage != wnd->gl41list.ctxage){
+			say("lit %d\n",j);
+			gpudata_cleanup(lit[j]->dst.gpudata_head, lit[j]->dst.gpudata_tail);
+			lit[j]->dst.ctxage = wnd->gl41list.ctxage;
+		}
+	}
+
+	//solid
+	for(j=0;j<64;j++)
+	{
+		if(0 == solid[j])continue;
+		if(solid[j]->dst.ctxage != wnd->gl41list.ctxage){
+			say("solid %d\n",j);
+			gpudata_cleanup(solid[j]->dst.gpudata_head, solid[j]->dst.gpudata_tail);
+			solid[j]->dst.ctxage = wnd->gl41list.ctxage;
+		}
+	}
+
+	//opaque
+	for(j=0;j<64;j++)
+	{
+		if(0 == opaque[j])continue;
+		if(opaque[j]->dst.ctxage != wnd->gl41list.ctxage){
+			say("opaque %d\n",j);
+			gpudata_cleanup(opaque[j]->dst.gpudata_head, opaque[j]->dst.gpudata_tail);
+			opaque[j]->dst.ctxage = wnd->gl41list.ctxage;
+		}
+	}
+}
+#endif
+
+
+
+
 void update_onedraw(struct gldst* dst, struct mysrc* src)
 {
 	int j;
@@ -426,6 +491,10 @@ int fullwindow_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd,
 		//stack[sp+1].type = rel->dsttype;
 		stack[sp+1].foottype = rel->dstfoottype;
 		entity_takeby(rel->pdstchip,rel->pdstfoot, stack,sp+2, arg,cmd, 0,0);
+
+#ifdef __ANDROID__
+		gpudata_validate(wnd);
+#endif
 
 		//wnd = rel->psrcchip;		//double check
 		struct fstyle* area = rel->psrcfoot;

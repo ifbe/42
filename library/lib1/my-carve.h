@@ -217,13 +217,7 @@ struct dx11data
 
 struct gldst
 {
-	//owner of this data
-	void* owner;
-
-	//framebuffer
-	u32 fbo;
-	u32 rbo;
-
+/*
 	//crop
 	u32 x0;
 	u32 y0;
@@ -234,25 +228,31 @@ struct gldst
 	u32 clear;		//color,depth
 	u32 color;
 	u32 depth;
-
+*/
 	//shader
-	u32 shader;
 	char* routine_name;
 	char* routine_detail;
 
-	//texture
-	u32 tex[8];
-	char* texname[8];
-
 	//uniform
-	u32 ubo;
 	struct arg{
 		char* name;
 		void* data;
 		u32 fmt;
 	}arg[8];
 
-	//vertex
+	//texture
+	char* texname[8];
+
+	//state
+	u32 ctxage;
+
+	//
+	u8 gpudata_head[0];
+	u32 fbo;
+	u32 rbo;
+	u32 shader;
+	u32 ubo;
+	u32 tex[8];
 	u32 vbo;
 	u32 ibo;
 	u32 vao;
@@ -263,6 +263,7 @@ struct gldst
 	u8 tex_deq[8];
 	u8 vbo_deq;
 	u8 ibo_deq;
+	u8 gpudata_tail[0];
 };
 struct gl41data
 {
