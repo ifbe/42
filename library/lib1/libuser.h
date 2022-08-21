@@ -12,13 +12,23 @@
 
 
 //keyboard
+#define kbd_esc 0x1b
 #define kbd_up 0x48
 #define kbd_down 0x50
 #define kbd_left 0x4b
 #define kbd_right 0x4d
+#define kbd_f1 0xf1
+#define kbd_f2 0xf2
+#define kbd_f3 0xf3
+#define kbd_f4 0xf4
 
 
-//mouse
+//mouse(p @ c +)
+//#define mouse_eventtype 'p'        //what kind of event
+//#define mouse_eventsubtype '@'     //what kind of mouse
+//#define mouse_eventpart 'c'         //what part(connection, state, wheel)
+//#define mouse_eventsubpart '+'      //what detail(plugin, click, scrollup)
+//
 #define point_mask 0xff
 #define point_type 'p'
 #define point_onto hex16('p','+')
@@ -65,7 +75,9 @@
 #define joyr_bumper  0x0020
 #define joyr_thumb   0x0040
 #define joyr_start   0x0080
-//
+
+
+//audio
 #define pcm2      0x2
 #define pcm22     0x22
 #define pcm222    0x222

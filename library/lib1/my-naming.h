@@ -383,4 +383,5 @@
 #define _mjpg_ hex32('m','j','p','g')
 #define _h264_ hex32('h','2','6','4')
 //
+#define _skip_ hex32('s','k','i','p')
 #endif

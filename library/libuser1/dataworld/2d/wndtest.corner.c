@@ -4,6 +4,22 @@ void gl41data_whcam(_obj* wnd, struct style* area);
 
 
 
+struct privdata{
+	struct xyzwpair touch[7];
+	struct xyzwpair mouse[1];
+	u8 leftbot;
+	u8 rightbot;
+	u8 lefttop;
+	u8 righttop;
+};
+int corner_bestfit(int x, int y)
+{
+	if(x<y)return x/16;
+	else return y/16;
+}
+
+
+/*
 void corner_gl41_drag_lefttop(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty,
@@ -111,23 +127,24 @@ void corner_gl41_drag(
 	int j;
 	float w,h,c;
 	float x0,y0,xn,yn;
-/*
+
 	w = win->whdf.width;
 	h = win->whdf.height;
 	if(w<h)c = w / 32;
 	else c = h / 32;
 
-	if(win->mouse[0].z0){
-		x0 = win->mouse[0].x0;
-		y0 = win->mouse[0].y0;
-		xn = win->mouse[0].xn;
-		yn = win->mouse[0].yn;
+	struct privdata* priv = (void*)act->priv_256b;
+	if(priv->mouse[0].z0){
+		x0 = priv->mouse[0].x0;
+		y0 = priv->mouse[0].y0;
+		xn = priv->mouse[0].xn;
+		yn = priv->mouse[0].yn;
 	}
-	else if(win->touch[0].z0){
-		x0 = win->touch[0].x0;
-		y0 = win->touch[0].y0;
-		xn = win->touch[0].xn;
-		yn = win->touch[0].yn;
+	else if(priv->touch[0].z0){
+		x0 = priv->touch[0].x0;
+		y0 = priv->touch[0].y0;
+		xn = priv->touch[0].xn;
+		yn = priv->touch[0].yn;
 	}
 	else return;
 
@@ -164,13 +181,12 @@ void corner_gl41_drag(
 			);
 		}
 	}
-*/
 }
 
 
 
 
-void corver_gl41_hover(
+void corner_gl41_hover(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
@@ -178,16 +194,17 @@ void corver_gl41_hover(
 	float x0,y0,xn,yn;
 	vec3 vc, vr, vf;
 	vec3 ta, tb, tc;
-/*
+
 	w = win->whdf.width;
 	h = win->whdf.height;
 	if(w<h)c = w / 32;
 	else c = h / 32;
 
-	x0 = win->mouse[0].x0;
-	y0 = win->mouse[0].y0;
-	xn = win->mouse[0].xn;
-	yn = win->mouse[0].yn;
+	struct privdata* priv = (void*)act->priv_256b;
+	x0 = priv->mouse[0].x0;
+	y0 = priv->mouse[0].y0;
+	xn = priv->mouse[0].xn;
+	yn = priv->mouse[0].yn;
 
 	vr[0] = 2*(float)c / (float)w;
 	vr[1] = 0.0;
@@ -207,13 +224,13 @@ void corver_gl41_hover(
 		tc[0] = 1.0;
 		tc[1] = -1.0;
 		tc[2] = -0.9;
-		carveopaque2d_bezier(win, 0xff0000ff, ta, tb, tc);
+		gl41line_bezier(win, 0xff0000ff, ta, tb, tc);
 	}
 	else{
 		vc[0] = 1.0;
 		vc[1] = -1.0;
 		vc[2] = -0.99;
-		gl41solid2d_circle(win, 0x0000ff, vc, vr, vf);
+		gl41solid_circle(win, 0x0000ff, vc, vr, vf);
 	}
 
 	//left, bot
@@ -227,13 +244,13 @@ void corver_gl41_hover(
 		tc[0] = -1.0;
 		tc[1] = -1.0;
 		tc[2] = -0.9;
-		carveopaque2d_bezier(win, 0xffff0000, ta, tb, tc);
+		gl41line_bezier(win, 0xffff0000, ta, tb, tc);
 	}
 	else{
 		vc[0] = -1.0;
 		vc[1] = -1.0;
 		vc[2] = -0.99;
-		gl41solid2d_circle(win, 0xff0000, vc, vr, vf);
+		gl41solid_circle(win, 0xff0000, vc, vr, vf);
 	}
 
 	//left, top
@@ -247,13 +264,13 @@ void corver_gl41_hover(
 		tc[0] = -1.0;
 		tc[1] = 1.0;
 		tc[2] = -0.9;
-		carveopaque2d_bezier(win, 0xff00ffff, ta, tb, tc);
+		gl41line_bezier(win, 0xff00ffff, ta, tb, tc);
 	}
 	else{
 		vc[0] = -1.0;
 		vc[1] = 1.0;
 		vc[2] = -0.99;
-		gl41solid2d_circle(win, 0x00ffff, vc, vr, vf);
+		gl41solid_circle(win, 0x00ffff, vc, vr, vf);
 	}
 
 	//right, top
@@ -267,15 +284,14 @@ void corver_gl41_hover(
 		tc[0] = 1.0;
 		tc[1] = 1.0;
 		tc[2] = -0.9;
-		carveopaque2d_bezier(win, 0xffffff00, ta, tb, tc);
+		gl41line_bezier(win, 0xffffff00, ta, tb, tc);
 	}
 	else{
 		vc[0] = 1.0;
 		vc[1] = 1.0;
 		vc[2] = -0.99;
-		gl41solid2d_circle(win, 0xffff00, vc, vr, vf);
+		gl41solid_circle(win, 0xffff00, vc, vr, vf);
 	}
-*/
 }
 
 
@@ -315,6 +331,168 @@ void corner_gl41_popup(
 		tr[0] = 1.0/32;
 		gl41string_center(win, 0xffffff, tc, tr, tf, (void*)"test", 8);
 	}
+}*/
+
+
+
+
+void corner_gl41_inner(
+	_obj* ent, struct style* slot,
+	_obj* wnd, struct style* area,
+	_syn* stack,int sp)
+{
+	struct relation* rel = ent->orel0;
+	while(1){
+		if(0 == rel)break;
+
+		if(_ent_ == rel->dstnodetype){
+			stack[sp+0].pchip = rel->psrcchip;
+			stack[sp+0].pfoot = rel->psrcfoot;
+			stack[sp+0].foottype = rel->srcfoottype;
+			stack[sp+1].pchip = rel->pdstchip;
+			stack[sp+1].pfoot = rel->pdstfoot;
+			stack[sp+1].foottype = rel->dstfoottype;
+			entity_takeby(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, 0,0, 0,0);
+		}
+
+		rel = samesrcnextdst(rel);
+	}
+
+	//corver_gl41_hover(ent, slot, wnd, area);
+	//corner_gl41_drag(ent, slot, wnd, area);
+	//corner_gl41_popup(act, pin, wnd, sty);
+
+}
+void corner_gl41_lefttop(
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
+	_syn* stack,int sp)
+{
+	int w = win->whdf.fbwidth;
+	int h = win->whdf.fbheight;
+	int c = corner_bestfit(w,h);
+	//say("w=%d,h=%d,c=%d\n",w,h,c);
+
+	vec3 vc, vr, vf;
+	vc[0] =-w/2.0;
+	vc[1] = h/2.0;
+	vc[2] = 0;
+	vr[0] = c;
+	vr[1] = 0.0;
+	vr[2] = 0.0;
+	vf[0] = 0.0;
+	vf[1] = c;
+	vf[2] = 0.0;
+
+	struct privdata* priv = (void*)act->priv_256b;
+	if(priv->lefttop){
+		corner_gl41_inner(act,pin, win,sty, stack,sp);
+	}
+	else{
+		gl41solid_circle(win, 0xff0000, vc, vr, vf);
+	}
+}
+void corner_gl41_righttop(
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
+	_syn* stack,int sp)
+{
+	int w = win->whdf.fbwidth;
+	int h = win->whdf.fbheight;
+	int c = corner_bestfit(w,h);
+	//say("w=%d,h=%d,c=%d\n",w,h,c);
+
+	vec3 vc, vr, vf;
+	vc[0] = w/2.0;
+	vc[1] = h/2.0;
+	vc[2] = 0;
+	vr[0] = c;
+	vr[1] = 0.0;
+	vr[2] = 0.0;
+	vf[0] = 0.0;
+	vf[1] = c;
+	vf[2] = 0.0;
+
+	struct privdata* priv = (void*)act->priv_256b;
+	if(priv->righttop){
+		//corner_gl41_inner(act,pin, win,sty, stack,sp);
+	}
+	else{
+		gl41solid_circle(win, 0x0000ff, vc, vr, vf);
+	}
+}
+void corner_gl41_leftbot(
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
+	_syn* stack,int sp)
+{
+	int w = win->whdf.fbwidth;
+	int h = win->whdf.fbheight;
+	int c = corner_bestfit(w,h);
+	//say("w=%d,h=%d,c=%d\n",w,h,c);
+
+	vec3 vc, vr, vf;
+	vc[0] =-w/2.0;
+	vc[1] =-h/2.0;
+	vc[2] = 0;
+	vr[0] = c;
+	vr[1] = 0.0;
+	vr[2] = 0.0;
+	vf[0] = 0.0;
+	vf[1] = c;
+	vf[2] = 0.0;
+
+	struct privdata* priv = (void*)act->priv_256b;
+	if(priv->leftbot){
+		//corner_gl41_inner(act,pin, win,sty, stack,sp);
+	}
+	else{
+		gl41solid_circle(win, 0xffff00, vc, vr, vf);
+	}
+}
+void corner_gl41_rightbot(
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty,
+	_syn* stack,int sp)
+{
+	int w = win->whdf.fbwidth;
+	int h = win->whdf.fbheight;
+	int c = corner_bestfit(w,h);
+	//say("w=%d,h=%d,c=%d\n",w,h,c);
+
+	vec3 vc, vr, vf;
+	vc[0] = w/2.0;
+	vc[1] =-h/2.0;
+	vc[2] = 0;
+	vr[0] = c;
+	vr[1] = 0.0;
+	vr[2] = 0.0;
+	vf[0] = 0.0;
+	vf[1] = c;
+	vf[2] = 0.0;
+
+	struct privdata* priv = (void*)act->priv_256b;
+	if(priv->rightbot){
+		//corner_gl41_inner(act,pin, win,sty, stack,sp);
+	}
+	else{
+		gl41solid_circle(win, 0x00ffff, vc, vr, vf);
+	}
+}
+void corner_wnd(
+	_obj* ent, struct style* slot,
+	_obj* wnd, struct style* area,
+	_syn* stack,int sp)
+{
+	gl41data_before(wnd);
+	gl41data_whcam(wnd, area);
+
+	corner_gl41_leftbot(ent,slot, wnd,area, stack,sp);
+	corner_gl41_rightbot(ent,slot, wnd,area, stack,sp);
+	corner_gl41_lefttop(ent,slot, wnd,area, stack,sp);
+	corner_gl41_righttop(ent,slot, wnd,area, stack,sp);
+
+	gl41data_after(wnd);
 }
 
 
@@ -334,10 +512,10 @@ void corner_draw_pixel(
 /*
 
 //---------hover
-	x0 = win->mouse[0].x0;
-	y0 = win->mouse[0].y0;
-	xn = win->mouse[0].xn;
-	yn = win->mouse[0].yn;
+	x0 = priv->mouse[0].x0;
+	y0 = priv->mouse[0].y0;
+	xn = priv->mouse[0].xn;
+	yn = priv->mouse[0].yn;
 
 	if((xn < c)&&(yn+c > h))t = 4;
 	else t = 1;
@@ -357,17 +535,17 @@ void corner_draw_pixel(
 
 
 //--------------drag
-	if(win->mouse[0].z0){
-		x0 = win->mouse[0].x0;
-		y0 = win->mouse[0].y0;
-		xn = win->mouse[0].xn;
-		yn = win->mouse[0].yn;
+	if(priv->mouse[0].z0){
+		x0 = priv->mouse[0].x0;
+		y0 = priv->mouse[0].y0;
+		xn = priv->mouse[0].xn;
+		yn = priv->mouse[0].yn;
 	}
-	else if(win->touch[0].z0){
-		x0 = win->touch[0].x0;
-		y0 = win->touch[0].y0;
-		xn = win->touch[0].xn;
-		yn = win->touch[0].yn;
+	else if(priv->touch[0].z0){
+		x0 = priv->touch[0].x0;
+		y0 = priv->touch[0].y0;
+		xn = priv->touch[0].xn;
+		yn = priv->touch[0].yn;
 	}
 
 	if(y0 < c)
@@ -404,7 +582,7 @@ void corner_draw_pixel(
 
 
 
-
+/*
 static int corner_event_twig(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty,
@@ -535,56 +713,70 @@ static int corner_event_root(
 		}
 	}
 	return 0;
-}
+}*/
 static int corner_event(
-	_obj* act, struct style* pin,
-	_obj* win, struct style* sty,
-	struct event* ev, int len)
-{
-	int j;
-	if(0x2d70 == ev->what)
-	{
-		j = corner_event_root(act, pin, win, sty, ev, len);
-		if(j)return 1;
-
-		j = corner_event_twig(act, pin, win, sty, ev, len);
-		if(j)return 1;
-	}
-	return 0;
-}
-
-
-
-
-void corner_wnd(
 	_obj* ent, struct style* slot,
 	_obj* wnd, struct style* area,
-	_syn* stack,int sp)
+	struct event* ev)
 {
-	gl41data_before(wnd);
-	gl41data_whcam(wnd, area);
+	int w = wnd->whdf.fbwidth;
+	int h = wnd->whdf.fbheight;
+	int c = corner_bestfit(w,h);
 
-	struct relation* rel = ent->orel0;
-	while(1){
-		if(0 == rel)break;
-
-		if(_ent_ == rel->dstnodetype){
-			stack[sp+0].pchip = rel->psrcchip;
-			stack[sp+0].pfoot = rel->psrcfoot;
-			stack[sp+0].foottype = rel->srcfoottype;
-			stack[sp+1].pchip = rel->pdstchip;
-			stack[sp+1].pfoot = rel->pdstfoot;
-			stack[sp+1].foottype = rel->dstfoottype;
-			entity_takeby(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, 0,0, 0,0);
-		}
-
-		rel = samesrcnextdst(rel);
+	struct privdata* priv = (void*)ent->priv_256b;
+	u16* d = (u16*)&ev->why;
+	switch(ev->what){
+	case 0x2b70:
+		say("+(%d,%d), (%d,%d,%d)\n", d[0],d[1], w,h,c);
+		priv->mouse[0].x0 = d[0];
+		priv->mouse[0].y0 = d[1];
+		priv->mouse[0].z0 = 1;
+		break;
+	case 0x4070:
+		//say("@%d,%d\n", d[0], d[1]);
+		priv->mouse[0].xn = d[0];
+		priv->mouse[0].yn = d[1];
+		break;
+	case 0x2d70:
+		say("-%d,%d\n", d[0], d[1]);
+		priv->mouse[0].z0 = 1;
+		goto handlepointer;
+	case 0x2b74:
+		say("+(%d,%d), (%d,%d,%d)\n", d[0],d[1], w,h,c);
+		priv->mouse[0].x0 = d[0];
+		priv->mouse[0].y0 = d[1];
+		priv->mouse[0].z0 = 1;
+		break;
+	case 0x4074:
+		//say("@%d,%d\n", d[0], d[1]);
+		priv->mouse[0].xn = d[0];
+		priv->mouse[0].yn = d[1];
+		break;
+	case 0x2d74:
+		say("-%d,%d\n", d[0], d[1]);
+		priv->mouse[0].z0 = 1;
+		goto handlepointer;
 	}
-	//corver_gl41_hover(act, pin, wnd, sty);
-	//corner_gl41_drag(act, pin, wnd, sty);
-	//corner_gl41_popup(act, pin, wnd, sty);
+	return 0;
 
-	gl41data_after(wnd);
+handlepointer:
+	if( (d[0] < c) && (d[1] < c) ){
+		say("lefttop");
+		priv->lefttop = !priv->lefttop;
+	}
+	if( (d[0] > w-c) && (d[1] < c) ){
+		say("righttop");
+		priv->righttop = !priv->righttop;
+	}
+	if( (d[0] < c) && (d[1] > h-c) ){
+		say("leftbot");
+		priv->leftbot = !priv->leftbot;
+	}
+	if( (d[0] > w-c) && (d[1] > h-c) ){
+		say("rightbot");
+		priv->rightbot = !priv->rightbot;
+	}
+	return 0;
 }
 
 
@@ -606,9 +798,20 @@ static int corner_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int
 	}
 	return 0;
 }
-static int corner_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int corner_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	printmemory(buf,16);
+	//printmemory(buf,16);
+	_obj* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	struct event* ev = buf;
+	int type = ev->what&0xff;
+	if( ('p' == type) | ('t' == type)){
+		corner_event(ent,slot, caller,area, ev);
+	}
+	else{
+		return _skip_;
+	}
 	return 0;
 }
 static int corner_detach(struct halfrel* self, struct halfrel* peer)

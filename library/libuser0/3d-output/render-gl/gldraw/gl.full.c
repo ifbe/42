@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "libuser.h"
+#define _quat_ hex32('q','u','a','t')
 
 #ifdef __ANDROID__
 	#include <jni.h>
@@ -394,10 +395,6 @@ void fullwindow_render(struct gl41world* world, _obj* wnd, struct fstyle* area)
 		render_target(cam[0],lit, solid,opaque, wnd,area);
 	}
 }
-
-
-
-
 void fullwindow_uploadandrender(_obj* wnd, struct fstyle* area)
 {
 	//forward render: only one step
@@ -412,13 +409,29 @@ void fullwindow_uploadandrender(_obj* wnd, struct fstyle* area)
 		fullwindow_render(&wnd->gl41list.world[1], wnd, area);
 	}
 }
+
+
+
+
+int fullwindow_trytosend(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd, struct relation* rel, struct event* ev)
+{
+	stack[sp+0].pchip = rel->psrcchip;
+	stack[sp+0].pfoot = rel->psrcfoot;
+	stack[sp+0].foottype = rel->srcfoottype;
+
+	stack[sp+1].pchip = rel->pdstchip;
+	stack[sp+1].pfoot = rel->pdstfoot;
+	stack[sp+1].foottype = rel->dstfoottype;
+	return entity_giveby(rel->pdstchip, rel->pdstfoot, stack,sp+2, arg,cmd, ev,0);
+}
 int fullwindow_chooseandsend(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd, struct event* ev)
 {
+	int ret;
 	float x,y,x0,y0,xn,yn;
 	short* v;
 	struct relation* rel;
 	struct fstyle* sty;
-	//say("@gl41wnd0_write:%llx,%llx,%llx,%llx\n", ev->why, ev->what, ev->where, ev->when);
+	//say("@gl41wnd0_write:(%p,%x)(%llx,%llx,%llx,%llx)\n", arg,cmd, ev->why, ev->what, ev->where, ev->when);
 
 	if(0x4070 == ev->what){
 		rel = wnd->oreln;
@@ -434,8 +447,24 @@ int fullwindow_chooseandsend(_obj* wnd,void* foot, _syn* stack,int sp, void* arg
 				v = (short*)ev;
 				x = v[0];
 				y = (wnd->whdf.height-1) - v[1];
-				if( (x>x0) && (x<xn) && (y>y0) && (y<yn) )goto found;
+				if( (x>x0) && (x<xn) && (y>y0) && (y<yn) ){
+					wnd->gl41list.glevto = rel;
+					ret = fullwindow_trytosend(wnd,foot, stack,sp, arg,cmd, rel,ev);
+					if(_skip_ != ret)goto senddone;
+				}
 			}
+			rel = samesrcprevdst(rel);
+		}
+		return 0;
+	}
+	else if(_quat_ == cmd){
+		rel = wnd->oreln;
+		while(1){
+			if(0 == rel)return 0;
+
+			ret = fullwindow_trytosend(wnd,foot, stack,sp, arg,cmd, rel,ev);
+			if(_skip_ != ret)goto senddone;
+
 			rel = samesrcprevdst(rel);
 		}
 		return 0;
@@ -446,18 +475,11 @@ int fullwindow_chooseandsend(_obj* wnd,void* foot, _syn* stack,int sp, void* arg
 		if(0 == rel)return 0;
 	}
 
-found:
 	if(rel){
-		wnd->gl41list.glevto = rel;
-		stack[sp+0].pchip = rel->psrcchip;
-		stack[sp+0].pfoot = rel->psrcfoot;
-		stack[sp+0].foottype = rel->srcfoottype;
-
-		stack[sp+1].pchip = rel->pdstchip;
-		stack[sp+1].pfoot = rel->pdstfoot;
-		stack[sp+1].foottype = rel->dstfoottype;
-		entity_giveby(rel->pdstchip, rel->pdstfoot, stack,sp+2, arg,cmd, ev,0);
+		fullwindow_trytosend(wnd,foot, stack,sp, arg,cmd, rel,ev);
 	}
+
+senddone:
 	return 0;
 }
 

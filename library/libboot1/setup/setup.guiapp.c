@@ -114,9 +114,9 @@ static void guiapp_wnd_to_3d(_obj* wnd)
 	struct style* cam_to_wnd = style_alloc();
 	struct style* wnd_to_cam = style_alloc();
 	wnd_to_cam->fshape.vc[0] = 0.0;
-	wnd_to_cam->fshape.vc[1] = 0.1;
+	wnd_to_cam->fshape.vc[1] = 0.0;
 	wnd_to_cam->fshape.vq[0] = 1.0;
-	wnd_to_cam->fshape.vq[1] = 0.8;
+	wnd_to_cam->fshape.vq[1] = 1.0;
 	struct relation* rel1 = relationcreate(cam,cam_to_wnd, _ent_,0, wnd,wnd_to_cam, _sup_,0);
 	relationattach((void*)&rel1->srcchip, (void*)&rel1->dstchip);
 
@@ -133,8 +133,8 @@ int guiapp_create(struct item* wrk, u8* arg, int argc, u8** argv)
 	_obj* wnd = supply_create(_wnd_, 0, 0, 0);
 	wrk->priv_ptr = wnd;
 
-	guiapp_wnd_to_mgr(wnd);
 	guiapp_wnd_to_3d(wnd);
+	guiapp_wnd_to_mgr(wnd);
 
 	struct halfrel stack[0x80];
 	stack[0].pchip = wrk;
