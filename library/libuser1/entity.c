@@ -10,10 +10,6 @@ void thing_exit();
 void thing_init(void*);
 void world_exit();
 void world_init(void*);
-void mind_exit();
-void mind_init(void*);
-void rule_exit();
-void rule_init(void*);
 
 //
 int baby_create(void*, void*, int, u8**);
@@ -270,8 +266,6 @@ void entity_init(u8* addr)
 
 	world_init(addr);
 	thing_init(addr);
-	rule_init(addr);
-	mind_init(addr);
 
 	say("[e,f):entity inited\n");
 }
@@ -279,8 +273,6 @@ void entity_exit()
 {
 	say("[e,f):entity exiting\n");
 
-	mind_exit();
-	rule_exit();
 	thing_exit();
 	world_exit();
 
