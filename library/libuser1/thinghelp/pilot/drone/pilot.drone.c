@@ -36,19 +36,32 @@ void flycon_pidloop_position2velocity(_obj* ent, struct style* sty)
 #define VEL_p 1.0
 void flycon_pidloop_velocity2attitude(_obj* ent, struct style* sty, float* thrust)
 {
-	vec4 differ;
-	float* pidout = sty->desire.displace_a;
 	float* desire = sty->desire.displace_v;
 	float* actual = sty->actual.displace_v;
+	say("V_desire: %f,%f,%f\n", desire[0], desire[1], desire[2]);
+	say("V_actual: %f,%f,%f\n", actual[0], actual[1], actual[2]);
 
 	//differ = desire - actual
+	vec4 differ;
 	differ[0] = desire[0] - actual[0];
 	differ[1] = desire[1] - actual[1];
 	differ[2] = desire[2] - actual[2];
-	say("V_desire: %f,%f,%f\n", desire[0], desire[1], desire[2]);
-	say("V_actual: %f,%f,%f\n", actual[0], actual[1], actual[2]);
 	say("V_differ: %f,%f,%f\n", differ[0], differ[1], differ[2]);
 
+	if(differ[2] < 0.0)differ[2] = 0;
+
+	float len = vec3_getlen(differ);
+	if(len > 10)len = 10;
+
+	float c = getcos(len*PI/200);
+	float s = getcos(len*PI/200) / len;;
+
+	float* q = sty->desire.angular_x;
+	q[0] =-differ[1]*s;
+	q[1] = differ[0]*s;
+	q[2] = 0.0;
+	q[3] = c;
+/*
 	//world space output
 	pidout[0] = VEL_p*differ[0];
 	pidout[1] = VEL_p*differ[1];
@@ -95,6 +108,7 @@ void flycon_pidloop_velocity2attitude(_obj* ent, struct style* sty, float* thrus
 	v[1] += vr[1] * a;
 	v[2] += vr[2] * a;
 	axisangle2quaternion(v, sty->desire.angular_x);
+*/
 }
 #define ATT_p 5.0
 void flycon_pidloop_attitude2palstance(_obj* ent, struct style* sty)
@@ -103,7 +117,7 @@ void flycon_pidloop_attitude2palstance(_obj* ent, struct style* sty)
 	float* actual = sty->actual.angular_x;
 	say("x_desire: %f,%f,%f,%f\n", expect[0], expect[1], expect[2], expect[3]);
 	say("x_actual: %f,%f,%f,%f\n", actual[0], actual[1], actual[2], actual[3]);
-
+/*
 	//if ass to sky, keep speed
 	if(actual[0]*actual[0] + actual[1]*actual[1] > 0.5){
 		sty->desire.angular_v[0] = sty->actual.angular_v[0];
@@ -111,7 +125,7 @@ void flycon_pidloop_attitude2palstance(_obj* ent, struct style* sty)
 		sty->desire.angular_v[2] = sty->actual.angular_v[2];
 		return;
 	}
-
+*/
 	//expect = Q? * actual -> Q? = expect * actual.inverse
 	vec4 q;
 	vec4 inverse = {-actual[0],-actual[1],-actual[2],actual[3]};
