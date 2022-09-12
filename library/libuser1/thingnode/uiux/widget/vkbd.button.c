@@ -47,7 +47,7 @@ void button_draw_gl41(
 	gl41opaque_rect(ctx, 0x40ffd010, tc, vr, vf);
 	gl41string_center(ctx, 0xff0000, vc, vr ,vf, act->STRBUF, 0);
 }
-static void button_read_bycam(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+static void button_read_byworld_bycam_bywnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
 	struct style* slot;
 	_obj* wor;struct style* geom;
@@ -58,6 +58,28 @@ static void button_read_bycam(_obj* ent,void* foot, _syn* stack,int sp, void* ar
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	button_draw_gl41(ent,slot, wor,geom, wnd,area);
+}
+static void button_read_byworld_bywnd(_obj* ent,struct style* slot, _syn* stack,int sp)
+{
+	//say("@%s\n",__func__);
+	if(0 == stack)return;
+
+	_obj* wor = stack[sp-2].pchip;
+	struct style* geom = stack[sp-2].pfoot;
+	_obj* wnd = stack[sp-4].pchip;
+	struct style* area = stack[sp-4].pfoot;
+
+	float x = (geom->fs.vc[0] + geom->fs.vq[0])/2;
+	float y = (geom->fs.vc[1] + geom->fs.vq[1])/2;
+	float r = (geom->fs.vq[0] - geom->fs.vc[0])/2;
+	float f = (geom->fs.vq[1] - geom->fs.vc[1])/2;
+
+	struct fstyle fs;
+	fs.vc[0] =   x;fs.vc[1] =   y;fs.vc[2] = 0.0;
+	fs.vr[0] =   r;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+	fs.vf[0] = 0.0;fs.vf[1] =   f;fs.vf[2] = 0.0;
+	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 0.0;
+	button_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
 }
 static void button_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
 {
@@ -93,12 +115,16 @@ static void button_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 	case _vk12list_:
 		button_read_bywnd(ent,foot, (void*)wnd,area);
 		break;
+	case _virtual_:
+		button_read_byworld_bywnd(ent,foot, stack,sp);
+		break;
 	default:
-		button_read_bycam(ent,foot, stack,sp, arg,key);
+		button_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 	}
 }
 static void button_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	say("button:%s\n",__func__);
 	struct event* ev = buf;
 	if(0x2b70 == ev->what)give_data_into_peer(ent,_evto_, stack,sp, 0,0, "1",1);
 }

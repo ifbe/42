@@ -2,9 +2,6 @@
 drone{
 fmt:drone
 }
-rccar{
-fmt:rccar
-}
 scene{
 fmt:scene3d
 }
@@ -22,11 +19,15 @@ fmt:freecam
 world{
 fmt:virtual
 }
-slider{
-fmt:slider
-}
+
 button{
 fmt:button
+}
+status{
+fmt:button
+}
+uiroot{
+fmt:virtual
 }
 
 control{
@@ -120,18 +121,22 @@ T: 0.0, 0.0, 0.0, 0.01
 N: 0.0, 0.0, 0.0, 0.01
 F: 0.0, 0.0, 0.0, 1000000000.0
 }
+butnrect{
+c:0.0, 0.0
+q:0.1, 0.1
+}
+statrect{
+c:0.8, 0.0
+q:1.0, 0.2
+}
 
 aaaarect{
 c:0.0, 0.0
 q:1.0, 1.0
 }
-uiuxrect{
+bbbbrect{
 c:0.0, 0.0
-q:0.3, 0.3
-}
-butnrect{
-c:0.0, 0.3
-q:0.1, 0.1
+q:1.0, 1.0
 }
 </style>
 
@@ -143,12 +148,14 @@ q:0.1, 0.1
 (world, skygeom, 0) -> (sky, skypart, 0)
 (world, gndgeom, 0) -> (gnd, gndpart, 0)
 (world, aaaageom, 0) -> (cam0, aaaapart, 0)
+
+(uiroot, butnrect, 0) -> (button, 0, 0)
+(uiroot, statrect, 0) -> (status, 0, 0)
+
 (opengl, aaaarect, 0) -> (cam0, 0, a0)
-(opengl, uiuxrect, 0) -> (slider, 0, 0)
-(opengl, butnrect, 0) -> (button, 0, 0)
+(opengl, bbbbrect, 0) -> (uiroot, 0, a0)
 
 #
-(slider, 0, evto) -> (control, 0, evby)
 (button, 0, evto) -> (gravity, 0, ioby)
 
 #mouse: 3rd controller

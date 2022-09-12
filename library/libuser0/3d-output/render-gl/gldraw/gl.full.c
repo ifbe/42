@@ -450,7 +450,7 @@ int fullwindow_chooseandsend(_obj* wnd,void* foot, _syn* stack,int sp, void* arg
 				if( (x>x0) && (x<xn) && (y>y0) && (y<yn) ){
 					wnd->gl41list.glevto = rel;
 					ret = fullwindow_trytosend(wnd,foot, stack,sp, arg,cmd, rel,ev);
-					if(_skip_ != ret)goto senddone;
+					if(_thru_ != ret)goto senddone;
 				}
 			}
 			rel = samesrcprevdst(rel);
@@ -463,7 +463,7 @@ int fullwindow_chooseandsend(_obj* wnd,void* foot, _syn* stack,int sp, void* arg
 			if(0 == rel)return 0;
 
 			ret = fullwindow_trytosend(wnd,foot, stack,sp, arg,cmd, rel,ev);
-			if(_skip_ != ret)goto senddone;
+			if(_thru_ != ret)goto senddone;
 
 			rel = samesrcprevdst(rel);
 		}

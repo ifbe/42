@@ -810,7 +810,7 @@ static int corner_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int
 		corner_event(ent,slot, caller,area, ev);
 	}
 	else{
-		return _skip_;
+		return _thru_;
 	}
 	return 0;
 }

@@ -382,6 +382,10 @@
 //
 #define _mjpg_ hex32('m','j','p','g')
 #define _h264_ hex32('h','2','6','4')
-//
-#define _skip_ hex32('s','k','i','p')
+//event handle ret val
+#define _thru_ hex32('t','h','r','u')
+#define _done_ hex32('d','o','n','e')
+//camera type
+#define _01_ hex32('0','1', 0, 0)
+#define _wh_ hex32('w','h', 0, 0)
 #endif

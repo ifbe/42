@@ -391,6 +391,8 @@ static int freecam_gl41_mesh(
 	_obj* win, struct style* geom,
 	_obj* ctx, struct style* none)
 {
+	freecam_shape2frustum(&geom->fshape, &geom->frustum);
+
 	//frustum
 	gl41frustum(ctx, &geom->frus);
 
