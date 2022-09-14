@@ -1,11 +1,13 @@
 #include "libuser.h"
 #define REL_WORLD listptr.buf0
 #define REL_DRONE listptr.buf1
+#define ENT_DBGUI listptr.buf2
 void quaternion2axisangle(float* q, float* a);
 void axisangle2quaternion(float* a, float* q);
 void quaternion_multiplyfrom(float* o, float* l, float* r);
 
 
+#define dronelog if(0)say
 
 
 #define POS_p 1.0
@@ -24,25 +26,25 @@ void flycon_pos2att_position2velocity(_obj* ent, struct style* sty)
 	pidout[1] = POS_p * differ[1];
 	pidout[2] = POS_p * differ[2];
 
-	say("X_x_desire: %f,%f,%f\n", desire[0], desire[1], desire[2]);
-	say("X_x_actual: %f,%f,%f\n", actual[0], actual[1], actual[2]);
-	say("X_x_differ: %f,%f,%f\n", differ[0], differ[1], differ[2]);
-	say("X_x_pidout: %f,%f,%f\n", pidout[0], pidout[1], pidout[2]);
+	dronelog("X_x_desire: %f,%f,%f\n", desire[0], desire[1], desire[2]);
+	dronelog("X_x_actual: %f,%f,%f\n", actual[0], actual[1], actual[2]);
+	dronelog("X_x_differ: %f,%f,%f\n", differ[0], differ[1], differ[2]);
+	dronelog("X_x_pidout: %f,%f,%f\n", pidout[0], pidout[1], pidout[2]);
 }
 #define VEL_p 1.0
 void flycon_pos2att_velocity2attitude(_obj* ent, struct style* sty)
 {
 	float* desire = sty->desire.displace_v;
 	float* actual = sty->actual.displace_v;
-	say("X_v_desire: %f,%f,%f\n", desire[0], desire[1], desire[2]);
-	say("X_v_actual: %f,%f,%f\n", actual[0], actual[1], actual[2]);
+	dronelog("X_v_desire: %f,%f,%f\n", desire[0], desire[1], desire[2]);
+	dronelog("X_v_actual: %f,%f,%f\n", actual[0], actual[1], actual[2]);
 
 	//differ = desire - actual
 	vec4 differ;
 	differ[0] = desire[0] - actual[0];
 	differ[1] = desire[1] - actual[1];
 	differ[2] = desire[2] - actual[2];
-	say("X_v_differ: %f,%f,%f\n", differ[0], differ[1], differ[2]);
+	dronelog("X_v_differ: %f,%f,%f\n", differ[0], differ[1], differ[2]);
 
 	if(differ[2] < 0.0)differ[2] = 0;
 
@@ -51,7 +53,7 @@ void flycon_pos2att_velocity2attitude(_obj* ent, struct style* sty)
 	angle *= PI/120;
 
 	float c = getcos(angle);
-	float s = getsin(angle) / len;;
+	float s = getsin(angle) / len;
 
 	float* q = sty->desire.angular_x;
 	q[0] =-differ[1]*s;
@@ -64,8 +66,8 @@ void flycon_att2aacc_attitude2palstance(_obj* ent, struct style* sty)
 {
 	float* expect = sty->desire.angular_x;
 	float* actual = sty->actual.angular_x;
-	say("A_x_desire: %f,%f,%f,%f\n", expect[0], expect[1], expect[2], expect[3]);
-	say("A_x_actual: %f,%f,%f,%f\n", actual[0], actual[1], actual[2], actual[3]);
+	dronelog("A_x_desire: %f,%f,%f,%f\n", expect[0], expect[1], expect[2], expect[3]);
+	dronelog("A_x_actual: %f,%f,%f,%f\n", actual[0], actual[1], actual[2], actual[3]);
 /*
 	//if ass to sky, keep speed
 	if(actual[0]*actual[0] + actual[1]*actual[1] > 0.5){
@@ -79,7 +81,7 @@ void flycon_att2aacc_attitude2palstance(_obj* ent, struct style* sty)
 	vec4 q;
 	vec4 inverse = {-actual[0],-actual[1],-actual[2],actual[3]};
 	quaternion_multiplyfrom(q, expect, inverse);
-	say("A_x_differ: %f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
+	dronelog("A_x_differ: %f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
 
 	//only P, no I,D
 	float* v = sty->desire.angular_v;
@@ -87,7 +89,7 @@ void flycon_att2aacc_attitude2palstance(_obj* ent, struct style* sty)
 	v[0] *= ATT_p;
 	v[1] *= ATT_p;
 	v[2] *= ATT_p;
-	say("A_x_pidout: %f,%f,%f\n", v[0],v[1],v[2]);
+	dronelog("A_x_pidout: %f,%f,%f\n", v[0],v[1],v[2]);
 }
 #define Kp 0.5
 #define Ki 0.0001
@@ -118,9 +120,9 @@ void flycon_att2aacc_palstance2aacc(_obj* ent, struct style* sty)
 	e0[0] = dst[0] - src[0];
 	e0[1] = dst[1] - src[1];
 	e0[2] = dst[2] - src[2];
-	say("A_v_desire: %f,%f,%f,%f\n",dst[0],dst[1],dst[2],dst[3]);
-	say("A_v_actual: %f,%f,%f,%f\n",src[0],src[1],src[2],src[3]);
-	say("A_v_differ: %f,%f,%f\n",e0[0],e0[1],e0[2]);
+	dronelog("A_v_desire: %f,%f,%f,%f\n",dst[0],dst[1],dst[2],dst[3]);
+	dronelog("A_v_actual: %f,%f,%f,%f\n",src[0],src[1],src[2],src[3]);
+	dronelog("A_v_differ: %f,%f,%f\n",e0[0],e0[1],e0[2]);
 
 	//pidout: compute
 	float* e1 = &ent->whdf.fx0;
@@ -129,7 +131,7 @@ void flycon_att2aacc_palstance2aacc(_obj* ent, struct style* sty)
 	out[0] += Kp*(e0[0]-e1[0]) + Ki*e0[0] + Kd*(e0[0]+e2[0]-e1[0]*2);
 	out[1] += Kp*(e0[1]-e1[1]) + Ki*e0[1] + Kd*(e0[1]+e2[1]-e1[1]*2);
 	out[2] += Kp*(e0[2]-e1[2]) + Ki*e0[2] + Kd*(e0[2]+e2[2]-e1[2]*2);
-	say("A_v_pidout: %f,%f,%f\n",out[0],out[1],out[2]);
+	dronelog("A_v_pidout: %f,%f,%f\n",out[0],out[1],out[2]);
 
 	//pidval: update
 	e2[0] = e1[0];
@@ -172,7 +174,7 @@ void flycon_accel2force(float* ln, float* rn, float* lf, float* rf, struct style
 	*rn = thrust;
 	*lf = thrust;
 	*rf = thrust;
-	say("thrust = %f\n",thrust);
+	dronelog("thrust = %f\n",thrust);
 
 
 //------------rotate---------------
@@ -182,7 +184,7 @@ void flycon_accel2force(float* ln, float* rn, float* lf, float* rf, struct style
 	l_acc[0] = vr[0]*w_acc[0] + vr[1]*w_acc[1] + vr[2]*w_acc[2];
 	l_acc[1] = vf[0]*w_acc[0] + vf[1]*w_acc[1] + vf[2]*w_acc[2];
 	l_acc[2] = vt[0]*w_acc[0] + vt[1]*w_acc[1] + vt[2]*w_acc[2];	//ignore yaw_z
-	say("loc: %f,%f,%f\n",l_acc[0],l_acc[1],l_acc[2]);
+	dronelog("loc: %f,%f,%f\n",l_acc[0],l_acc[1],l_acc[2]);
 
 	//rotate
 	*rn +=-l_acc[0] - l_acc[1] + l_acc[2]*0.1;
@@ -246,7 +248,10 @@ void flycon_force2motor(float ln, float rn, float lf, float rf, struct style* st
 	sty->where[3][1] = vr[1] +vf[1];
 	sty->where[3][2] = vr[2] +vf[2];
 }
-void flycon_pidloop(_obj* ent)
+void flycon_observe(_obj* ent)
+{
+}
+void flycon_consider(_obj* ent)
 {
 	struct halfrel* rel = ent->REL_WORLD;
 	if(0 == rel)return;
@@ -263,7 +268,7 @@ void flycon_pidloop(_obj* ent)
 	//height loop
 	flycon_pos2xacc(ent, sty);
 }
-void flycon_acc2force(_obj* ent)
+void flycon_operate(_obj* ent)
 {
 	struct halfrel* rel = ent->REL_WORLD;
 	if(0 == rel)return;
@@ -289,7 +294,7 @@ void flycon_acc2force(_obj* ent)
 	if(lf < MIN)lf = MIN;
 	if(rf > MAX)rf = MAX;
 	if(rf < MIN)rf = MIN;
-	say("ln,rn,lf,rf = %f,%f,%f,%f\n",ln,rn,lf,rf);
+	dronelog("ln,rn,lf,rf = %f,%f,%f,%f\n",ln,rn,lf,rf);
 	flycon_force2motor(ln, rn, lf, rf, sty);
 }
 
@@ -318,6 +323,10 @@ void flycon_checkplace(_obj* ent)
 		rel = samedstnextsrc(rel);
 	}
 }
+
+
+
+
 void flycon_setdesire(_obj* ent)
 {
 	struct halfrel* rel = ent->REL_WORLD;
@@ -349,19 +358,41 @@ void flycon_changedesire(_obj* ent, float angle)
 
 
 
+void flycon_report(_obj* ent)
+{
+	struct halfrel* rel = ent->REL_WORLD;
+	if(0 == rel)return;
+
+	struct style* sty = rel->pfoot;
+	if(0 == sty)return;
+
+	_obj* dbg = ent->ENT_DBGUI;
+	if(0 == dbg)return;
+
+	//say("%s\n",__func__);
+	dbg->onwriter(dbg, 0, 0, 0, sty, 0);
+}
+
+
+
+
 int flycon_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	say("@flycon_read:%.4s\n",&foot);
+	dronelog("@flycon_read:%.4s\n",&foot);
 	return 0;
 }
 int flycon_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
-	//say("@flycon_write:%.4s\n",&foot);
+	//dronelog("@flycon_write:%.4s\n",&foot);
 	if(_clk_ == stack[sp-1].foottype){
 		flycon_checkplace(ent);
 		flycon_setdesire(ent);
-		flycon_pidloop(ent);
-		flycon_acc2force(ent);
+
+		flycon_observe(ent);
+		flycon_consider(ent);
+		flycon_operate(ent);
+
+		flycon_report(ent);
 	}
 	if(_evby_ == stack[sp-1].foottype){
 		flycon_checkplace(ent);
@@ -375,17 +406,26 @@ int flycon_detach(struct halfrel* self, struct halfrel* peer)
 }
 int flycon_attach(struct halfrel* self, struct halfrel* peer)
 {
+	_obj* ent = self->pchip;
+	_obj* dbg = peer->pchip;
+	say("%s: %.4s, %.8s\n", __func__, &self->foottype, &dbg->type);
+
+	switch(self->foottype){
+	case _dbg_:
+		ent->ENT_DBGUI = dbg;
+		break;
+	}
 	return 0;
 }
 
 
 
 
-int flycon_search()
+int flycon_reader()
 {
 	return 0;
 }
-int flycon_modify()
+int flycon_writer()
 {
 	return 0;
 }
@@ -395,9 +435,10 @@ int flycon_delete(_obj* ent)
 }
 int flycon_create(_obj* ent, void* str)
 {
-	say("@flycon_create\n");
+	dronelog("@flycon_create\n");
 	ent->REL_WORLD = 0;
 	ent->REL_DRONE = 0;
+	ent->ENT_DBGUI = 0;
 	ent->whdf.fx0 = ent->whdf.fy0 = ent->whdf.fz0 = 0.0;
 	ent->whdf.fxn = ent->whdf.fyn = ent->whdf.fzn = 0.0;
 	return 0;

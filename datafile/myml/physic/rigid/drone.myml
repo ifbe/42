@@ -24,7 +24,7 @@ button{
 fmt:button
 }
 status{
-fmt:button
+fmt:dbgpid
 }
 uiroot{
 fmt:virtual
@@ -126,8 +126,8 @@ c:0.0, 0.0
 q:0.1, 0.1
 }
 statrect{
-c:0.8, 0.0
-q:1.0, 0.2
+c:0.4, 0.0
+q:1.0, 0.4
 }
 
 aaaarect{
@@ -167,6 +167,7 @@ q:1.0, 1.0
 
 #control
 (control, 0, dst) -> (drone, 0, con)
+(control, 0, dbg) -> (status, 0, data)
 
 #
 (pulser, 0, clk) -> (control, 0, clk)

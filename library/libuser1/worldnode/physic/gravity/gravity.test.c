@@ -278,7 +278,7 @@ int gravtest_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key,
 }
 int gravtest_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
-	say("@gravtest_write:%.4s\n",&foot);
+	//say("@gravtest_write:%.4s\n",&foot);
 	switch(stack[sp-1].foottype){
 	case _clk_:
 		gravtest_foreach(ent);

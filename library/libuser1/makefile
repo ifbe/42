@@ -166,6 +166,7 @@ thingnode/uiux/bar/bar.list.c \
 thingnode/uiux/debug/uiux.layouter.c \
 thingnode/uiux/debug/uiux.cameraer.c \
 thingnode/uiux/debug/uiux.pointer.c \
+thingnode/uiux/debug/uiux.dbgpid.c \
 thingnode/uiux/editor/edit.hex.c \
 thingnode/uiux/editor/edit.mmio.c \
 thingnode/uiux/editor/edit.text.c \

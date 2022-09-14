@@ -180,6 +180,9 @@ void texmix_register(void*);
 void video_register(void*);
 void voxel_register(void*);
 
+//debug
+void dbgpid_register(void*);
+
 //edit
 void hexedit_register(void*);
 void mmioedit_register(void*);
@@ -647,6 +650,9 @@ void thing_init(void* addr)
 	tmp -= sizeof(_obj);
 
 	terminal_register(tmp);
+	tmp -= sizeof(_obj);
+
+	dbgpid_register(tmp);
 	tmp -= sizeof(_obj);
 
 
