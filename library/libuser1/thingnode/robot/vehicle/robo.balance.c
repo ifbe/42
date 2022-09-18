@@ -38,22 +38,36 @@ static void balance_draw_gl41(
 	gl41line_prism4(ctx, 0xffffff, vc, vr, vf, vt);
 
 	//board
+	float angle = getsin(act->whdf.fy0)*PI/6;
+	act->whdf.fy0 += 0.01;
+
 	for(j=0;j<3;j++){
-		tc[j] = vc[j] +vt[j]/2;
-		tr[j] = vr[j]*6/8;
+		tr[j] = vr[j]*4/8;
 		tf[j] = vf[j]/4;
-		tt[j] = vt[j]/16;
+		tt[j] = vt[j]*3/4;
 	}
-	quaternion_operation(tf, vr, -act->whdf.fy0);
-	quaternion_operation(tt, vr, -act->whdf.fy0);
+	quaternion_operation(tf, vr, angle);
+	quaternion_operation(tt, vr, angle);
+	for(j=0;j<3;j++){
+		tc[j] = vc[j]-vt[j]/2+tt[j];
+	}
 	gl41solid_prism4(ctx, 0x808080, tc,tr,tf,tt);
+
+	//shaft
+	for(j=0;j<3;j++){
+		tr[j] = vr[j];
+		tf[j] = vf[j]/16;
+		tt[j] = vt[j]/16;
+		tc[j] = vc[j]-vt[j]/2;
+	}
+	gl41solid_cylinder(ctx, 0x404040, tc, tf, tt, tr);
 
 	//left wheel
 	for(j=0;j<3;j++){
 		tf[j] = vf[j]/2;
 		tt[j] = vt[j]/2;
 		tr[j] = vr[j]/8;
-		tc[j] = vc[j] -vr[j]+tr[j] +tt[j];
+		tc[j] = vc[j] -vr[j]+tr[j] -vt[j]/2;
 	}
 	gl41solid_cylinder(ctx, 0x404040, tc, tf, tt, tr);
 
@@ -62,7 +76,7 @@ static void balance_draw_gl41(
 		tf[j] = vf[j]/2;
 		tt[j] = vt[j]/2;
 		tr[j] = vr[j]/8;
-		tc[j] = vc[j] +vr[j]-tr[j] +tt[j];
+		tc[j] = vc[j] +vr[j]-tr[j] -vt[j]/2;
 	}
 	gl41solid_cylinder(ctx, 0x404040, tc, tf, tt, tr);
 }

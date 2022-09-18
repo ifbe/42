@@ -52,10 +52,10 @@ r: 10000.0, 0.0, 0.0
 f: 0.0, 10000.0, 0.0
 t: 0.0, 0.0, 1000.0
 }
-skyhaha{
+itemhaha{
 }
-skygeom{
-c: 0.0, 0.0, 0.0
+itemgeom{
+c: 0.0, 0.0, 1000.0
 r: 1000.0, 0.0, 0.0, 1000
 f: 0.0, 1000.0, 0.0, 1000
 t: 0.0, 0.0, 1000.0, 1000
@@ -86,7 +86,7 @@ q:1.0, 1.0
 <relation>
 #virtual depends on inner objects
 (virtual, gndgeom, 0) -> (ground, gndhaha, 0)
-(virtual, skygeom, 0) -> (balance, skyhaha, 0)
+(virtual, itemgeom, 0) -> (balance, itemhaha, 0)
 (virtual, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam

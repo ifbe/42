@@ -255,10 +255,6 @@
 #define _jsonroot_ hex64('j','s','o','n','r','o','o','t')
 #define _xamlroot_ hex64('x','a','m','l','r','o','o','t')
 #define _uiuxroot_ hex64('u','i','u','x','r','o','o','t')
-//control
-#define _virtimu_ hex64('v','i','r','t','i','m','u', 0)
-#define _carcon_ hex64('c','a','r','c','o','n', 0, 0)
-#define _flycon_ hex64('f','l','y','c','o','n', 0, 0)
 //event
 #define _cam1rd_ hex64('c','a','m','1','r','d', 0, 0)
 #define _cam3rd_ hex64('c','a','m','3','r','d', 0, 0)
@@ -274,6 +270,12 @@
 #define _collide_ hex64('c','o','l','l','i','d','e',0)
 #define _graveasy_ hex64('g','r','a','v','e','a','s','y')
 #define _gravtest_ hex64('g','r','a','v','t','e','s','t')
+#define _rigidall_ hex64('r','i','g','i','d','a','l','l')
+//control
+#define _virtimu_ hex64('v','i','r','t','i','m','u', 0)
+#define _carcon_ hex64('c','a','r','c','o','n', 0, 0)
+#define _flycon_ hex64('f','l','y','c','o','n', 0, 0)
+#define _balancer_ hex64('b','a','l','a','n','c','e','r')
 //sensor
 #define _sensor_ hex64('s','e','n','s','o','r',0,0)
 #define _lidar_ hex64('l','i','d','a','r',0,0,0)

@@ -256,6 +256,7 @@ thinghelp/capture/sense/sense.virtimu.c \
 thinghelp/capture/sense/sense.temp.c \
 thinghelp/pilot/drone/pilot.drone.c \
 thinghelp/pilot/vehicle/pilot.vehicle.c \
+thinghelp/pilot/balance/pilot.balance.c \
 thinghelp/pilot/follow/pilot.follow.c \
 thinghelp/pilot/lookat/pilot.lookat.c \
 thinghelp/pilot/wander/pilot.wander.c \
@@ -295,12 +296,13 @@ worldnode/gameplay/mission/play.mission.c \
 worldnode/mechanic/produce/fac.gcode.c \
 worldnode/neural/nn.cnn.c \
 worldnode/neural/nn.rnn.c \
-worldnode/physic/phy.field.c \
-worldnode/physic/phy.fluid.c \
-worldnode/physic/phy.force.c \
 worldnode/physic/collide/collide.simple.c \
-worldnode/physic/gravity/gravity.easy.c \
-worldnode/physic/gravity/gravity.test.c \
+worldnode/physic/field/field.magnet.c \
+worldnode/physic/fluid/fluid.simple.c \
+worldnode/physic/rigid/rigid.tran.c \
+worldnode/physic/rigid/rigid.tran_rotate.c \
+worldnode/physic/rigid/rigid.tran_rotate_collide.c \
+worldnode/physic/soft/soft.spring.c \
 worldnode/program/vm.mmio.c \
 worldnode/program/vm.port.c \
 worldnode/visual/2d/uiux.border2d.c \

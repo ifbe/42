@@ -32,6 +32,26 @@ int virtimu_attach(void*, void*);
 int virtimu_detach(void*, void*);
 int virtimu_taking(void*,void*, void*,int, void*,int, void*,int);
 int virtimu_giving(void*,void*, void*,int, void*,int, void*,int);
+
+//
+int follow_create(void*, void*, int, u8**);
+int follow_delete(void*);
+int follow_attach(void*, void*);
+int follow_detach(void*, void*);
+int follow_taking(void*,void*, void*,int, void*,int, void*,int);
+int follow_giving(void*,void*, void*,int, void*,int, void*,int);
+int lookat_create(void*, void*, int, u8**);
+int lookat_delete(void*);
+int lookat_attach(void*, void*);
+int lookat_detach(void*, void*);
+int lookat_taking(void*,void*, void*,int, void*,int, void*,int);
+int lookat_giving(void*,void*, void*,int, void*,int, void*,int);
+int wander_create(void*, void*, int, u8**);
+int wander_delete(void*);
+int wander_attach(void*, void*);
+int wander_detach(void*, void*);
+int wander_taking(void*,void*, void*,int, void*,int, void*,int);
+int wander_giving(void*,void*, void*,int, void*,int, void*,int);
 int carcon_create(void*, void*, int, u8**);
 int carcon_delete(void*, void*);
 int carcon_attach(void*, void*);
@@ -44,6 +64,12 @@ int flycon_attach(void*, void*);
 int flycon_detach(void*, void*);
 int flycon_taking(void*,void*, void*,int, void*,int, void*,int);
 int flycon_giving(void*,void*, void*,int, void*,int, void*,int);
+int balancer_create(void*, void*, int, u8**);
+int balancer_delete(void*, void*);
+int balancer_attach(void*, void*);
+int balancer_detach(void*, void*);
+int balancer_taking(void*,void*, void*,int, void*,int, void*,int);
+int balancer_giving(void*,void*, void*,int, void*,int, void*,int);
 
 //
 int toycar_create(void*, void*, int, u8**);
@@ -105,6 +131,12 @@ int gravtest_attach(void*, void*);
 int gravtest_detach(void*, void*);
 int gravtest_giving(void*,void*, void*,int, void*,int, void*,int);
 int gravtest_taking(void*,void*, void*,int, void*,int, void*,int);
+int rigidsimu_create(void*, void*, int, u8**);
+int rigidsimu_delete(void*, void*);
+int rigidsimu_attach(void*, void*);
+int rigidsimu_detach(void*, void*);
+int rigidsimu_giving(void*,void*, void*,int, void*,int, void*,int);
+int rigidsimu_taking(void*,void*, void*,int, void*,int, void*,int);
 
 //scene
 int virtual_create(void*, void*, int, u8**);
@@ -223,24 +255,6 @@ int touchobj_attach(void*, void*);
 int touchobj_detach(void*, void*);
 int touchobj_taking(void*,void*, void*,int, void*,int, void*,int);
 int touchobj_giving(void*,void*, void*,int, void*,int, void*,int);
-int follow_create(void*, void*, int, u8**);
-int follow_delete(void*);
-int follow_attach(void*, void*);
-int follow_detach(void*, void*);
-int follow_taking(void*,void*, void*,int, void*,int, void*,int);
-int follow_giving(void*,void*, void*,int, void*,int, void*,int);
-int lookat_create(void*, void*, int, u8**);
-int lookat_delete(void*);
-int lookat_attach(void*, void*);
-int lookat_detach(void*, void*);
-int lookat_taking(void*,void*, void*,int, void*,int, void*,int);
-int lookat_giving(void*,void*, void*,int, void*,int, void*,int);
-int wander_create(void*, void*, int, u8**);
-int wander_delete(void*);
-int wander_attach(void*, void*);
-int wander_detach(void*, void*);
-int wander_taking(void*,void*, void*,int, void*,int, void*,int);
-int wander_giving(void*,void*, void*,int, void*,int, void*,int);
 
 
 
@@ -557,6 +571,31 @@ void* entity_create(u64 type, void* buf, int argc, u8** argv)
 		return act;
 	}
 
+	case _touchobj_:
+	{
+		act = entity_alloc();
+		act->hfmt = act->type = _touchobj_;
+		touchobj_create(act, buf, argc, argv);
+		return act;
+	}
+	case _clickray_:
+	{
+		act = entity_alloc();
+		act->hfmt = act->type = _clickray_;
+		clickray_create(act, buf, argc, argv);
+		return act;
+	}
+
+//---------------sensor----------------
+	case _virtimu_:
+	{
+		act = entity_alloc();
+		act->hfmt = act->type = _virtimu_;
+		virtimu_create(act, buf, argc, argv);
+		return act;
+	}
+
+//---------------robot----------------
 	case _follow_:
 	{
 		act = entity_alloc();
@@ -578,29 +617,7 @@ void* entity_create(u64 type, void* buf, int argc, u8** argv)
 		wander_create(act, buf, argc, argv);
 		return act;
 	}
-	case _touchobj_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _touchobj_;
-		touchobj_create(act, buf, argc, argv);
-		return act;
-	}
-	case _clickray_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _clickray_;
-		clickray_create(act, buf, argc, argv);
-		return act;
-	}
 
-//---------------robot----------------
-	case _virtimu_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _virtimu_;
-		virtimu_create(act, buf, argc, argv);
-		return act;
-	}
 	case _carcon_:
 	{
 		act = entity_alloc();
@@ -613,6 +630,13 @@ void* entity_create(u64 type, void* buf, int argc, u8** argv)
 		act = entity_alloc();
 		act->hfmt = act->type = _flycon_;
 		flycon_create(act, buf, argc, argv);
+		return act;
+	}
+	case _balancer_:
+	{
+		act = entity_alloc();
+		act->hfmt = act->type = _balancer_;
+		balancer_create(act, buf, argc, argv);
 		return act;
 	}
 
@@ -638,6 +662,13 @@ void* entity_create(u64 type, void* buf, int argc, u8** argv)
 		act = entity_alloc();
 		act->hfmt = act->type = _gravtest_;
 		gravtest_create(act, buf, argc, argv);
+		return act;
+	}
+	case _rigidall_:
+	{
+		act = entity_alloc();
+		act->hfmt = act->type = _rigidall_;
+		rigidsimu_create(act, buf, argc, argv);
 		return act;
 	}
 
@@ -706,9 +737,9 @@ int entity_writer(_obj* act,void* foot, void* arg,int key, void* buf,int len)
 
 int entity_attach(struct halfrel* self, struct halfrel* peer)
 {
-	_obj* act;
 	if(0 == self)return 0;
-	act = self->pchip;
+
+	_obj* act = self->pchip;
 	if(0 == act)return 0;
 
 	//say("@entity_attach\n");
@@ -717,9 +748,6 @@ int entity_attach(struct halfrel* self, struct halfrel* peer)
 	case _cam3rd_:return cam3rd_attach(self, peer);
 	case _camrts_:return camrts_attach(self, peer);
 
-	case _follow_:return follow_attach(self, peer);
-	case _lookat_:return lookat_attach(self, peer);
-	case _wander_:return wander_attach(self, peer);
 	case _touchobj_:return touchobj_attach(self, peer);
 	case _clickray_:return clickray_attach(self, peer);
 
@@ -731,6 +759,7 @@ int entity_attach(struct halfrel* self, struct halfrel* peer)
 	case _force_:return force_attach(self, peer);
 	case _graveasy_:return graveasy_attach(self, peer);
 	case _gravtest_:return gravtest_attach(self, peer);
+	case _rigidall_:return rigidsimu_attach(self, peer);
 
 	case _sch_:return schematic_attach(self, peer);
 	case _pcb_:return printboard_attach(self, peer);
@@ -738,8 +767,13 @@ int entity_attach(struct halfrel* self, struct halfrel* peer)
 	case _digital_:return digital_attach(self, peer);
 
 	case _virtimu_:return virtimu_attach(self, peer);
+
+	case _follow_:return follow_attach(self, peer);
+	case _lookat_:return lookat_attach(self, peer);
+	case _wander_:return wander_attach(self, peer);
 	case _carcon_:return carcon_attach(self, peer);
 	case _flycon_:return flycon_attach(self, peer);
+	case _balancer_:return balancer_attach(self, peer);
 
 	case _virtual_:return virtual_attach(self, peer);
 	case _scene3d_:return scene3d_attach(self, peer);
@@ -765,9 +799,9 @@ int entity_attach(struct halfrel* self, struct halfrel* peer)
 }
 int entity_detach(struct halfrel* self, struct halfrel* peer)
 {
-	_obj* act;
 	if(0 == self)return 0;
-	act = self->pchip;
+
+	_obj* act = self->pchip;
 	if(0 == act)return 0;
 
 	//say("@entity_detach\n");
@@ -776,9 +810,6 @@ int entity_detach(struct halfrel* self, struct halfrel* peer)
 	case _cam3rd_:return cam3rd_detach(self, peer);
 	case _camrts_:return camrts_detach(self, peer);
 
-	case _follow_:return follow_detach(self, peer);
-	case _lookat_:return lookat_detach(self, peer);
-	case _wander_:return wander_detach(self, peer);
 	case _touchobj_:return touchobj_detach(self, peer);
 	case _clickray_:return clickray_detach(self, peer);
 
@@ -790,6 +821,7 @@ int entity_detach(struct halfrel* self, struct halfrel* peer)
 	case _force_:return force_detach(self, peer);
 	case _graveasy_:return graveasy_detach(self, peer);
 	case _gravtest_:return gravtest_detach(self, peer);
+	case _rigidall_:return rigidsimu_detach(self, peer);
 
 	case _sch_:return schematic_detach(self, peer);
 	case _pcb_:return printboard_detach(self, peer);
@@ -797,8 +829,13 @@ int entity_detach(struct halfrel* self, struct halfrel* peer)
 	case _digital_:return digital_detach(self, peer);
 
 	case _virtimu_:return virtimu_detach(self, peer);
+
+	case _follow_:return follow_detach(self, peer);
+	case _lookat_:return lookat_detach(self, peer);
+	case _wander_:return wander_detach(self, peer);
 	case _carcon_:return carcon_detach(self, peer);
 	case _flycon_:return flycon_detach(self, peer);
+	case _balancer_:return balancer_detach(self, peer);
 
 	case _virtual_:return virtual_detach(self, peer);
 	case _scene3d_:return scene3d_detach(self, peer);
@@ -828,9 +865,6 @@ int entity_takeby(_obj* act,void* foot, _syn* stack,int sp, void* arg,int key, v
 	case _cam1rd_:return cam1rd_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _cam3rd_:return cam3rd_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _camrts_:return camrts_taking(act,foot, stack,sp, arg,key, buf,len);
-	case _follow_:return follow_taking(act,foot, stack,sp, arg,key, buf,len);
-	case _lookat_:return lookat_taking(act,foot, stack,sp, arg,key, buf,len);
-	case _wander_:return wander_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _touchobj_:return touchobj_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _clickray_:return clickray_taking(act,foot, stack,sp, arg,key, buf,len);
 
@@ -842,6 +876,7 @@ int entity_takeby(_obj* act,void* foot, _syn* stack,int sp, void* arg,int key, v
 	case _force_:return force_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _graveasy_:return graveasy_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _gravtest_:return gravtest_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _rigidall_:return rigidsimu_taking(act,foot, stack,sp, arg,key, buf,len);
 
 	case _sch_:return schematic_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _pcb_:return printboard_taking(act,foot, stack,sp, arg,key, buf,len);
@@ -849,8 +884,13 @@ int entity_takeby(_obj* act,void* foot, _syn* stack,int sp, void* arg,int key, v
 	case _digital_:return digital_taking(act,foot, stack,sp, arg,key, buf,len);
 
 	case _virtimu_:return virtimu_taking(act,foot, stack,sp, arg,key, buf,len);
+
+	case _follow_:return follow_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _lookat_:return lookat_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _wander_:return wander_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _carcon_:return carcon_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _flycon_:return flycon_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _balancer_:return balancer_taking(act,foot, stack,sp, arg,key, buf,len);
 
 	case _virtual_:return virtual_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _scene3d_:return scene3d_taking(act,foot, stack,sp, arg,key, buf,len);
@@ -882,9 +922,6 @@ int entity_giveby(_obj* act,void* foot, _syn* stack,int sp, void* arg,int key, v
 	case _cam3rd_:return cam3rd_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _camrts_:return camrts_giving(act,foot, stack,sp, arg,key, buf,len);
 
-	case _follow_:return follow_giving(act,foot, stack,sp, arg,key, buf,len);
-	case _lookat_:return lookat_giving(act,foot, stack,sp, arg,key, buf,len);
-	case _wander_:return wander_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _touchobj_:return touchobj_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _clickray_:return clickray_giving(act,foot, stack,sp, arg,key, buf,len);
 
@@ -896,6 +933,7 @@ int entity_giveby(_obj* act,void* foot, _syn* stack,int sp, void* arg,int key, v
 	case _force_:return force_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _graveasy_:return graveasy_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _gravtest_:return gravtest_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _rigidall_:return rigidsimu_giving(act,foot, stack,sp, arg,key, buf,len);
 
 	case _sch_:return schematic_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _pcb_:return printboard_giving(act,foot, stack,sp, arg,key, buf,len);
@@ -903,8 +941,13 @@ int entity_giveby(_obj* act,void* foot, _syn* stack,int sp, void* arg,int key, v
 	case _digital_:return digital_giving(act,foot, stack,sp, arg,key, buf,len);
 
 	case _virtimu_:return virtimu_giving(act,foot, stack,sp, arg,key, buf,len);
+
+	case _follow_:return follow_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _lookat_:return lookat_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _wander_:return wander_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _carcon_:return carcon_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _flycon_:return flycon_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _balancer_:return balancer_giving(act,foot, stack,sp, arg,key, buf,len);
 
 	case _virtual_:return virtual_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _scene3d_:return scene3d_giving(act,foot, stack,sp, arg,key, buf,len);
