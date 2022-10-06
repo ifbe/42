@@ -61,6 +61,8 @@ void* acpi_getlocalapic();
 void* acpi_getirqioapic();
 void* acpi_getredirtbl();
 //
+u64 timeread_us();
+//
 void printmmio(void*, int);
 void printmemory(void*, int);
 void say(void*, ...);
@@ -118,18 +120,45 @@ void localapic_write(u32 reg, u32 data)
     *addr = data;
 	say("write %x to %p\n", data, addr);
 }
-void localapic_sendinit(u32 apic_id)
+int localapic_sendinit(u32 apic_id)
 {
-	say("apic@%p\n",addr_localapic);
+	say("@localapic_sendinit: apic@%p, apicid=%x\n", addr_localapic, apic_id);
     localapic_write(LAPIC_ICRHI, apic_id << ICR_DESTINATION_SHIFT);
     localapic_write(LAPIC_ICRLO, ICR_INIT | ICR_PHYSICAL | ICR_ASSERT | ICR_EDGE | ICR_NO_SHORTHAND);
-    while(localapic_read(LAPIC_ICRLO) & ICR_SEND_PENDING);
+
+	say("waiting: ICRLO.ICR_SEND_PENDING\n",addr_localapic);
+	int endcycle = 0xfffff;
+	u64 endtime = timeread_us() + 3000*1000;
+	while(1){
+		//say("time=%llx,cycle=%llx\n",timeread_us(), endcycle);
+		if(0 == (localapic_read(LAPIC_ICRLO) & ICR_SEND_PENDING))break;
+
+		if(timeread_us() > endtime)return -1;
+
+		endcycle--;
+		if(0 == endcycle)return -2;
+	}
+	return 1;
 }
-void localapic_sendstart(u32 apic_id, u32 vector)
+int localapic_sendstart(u32 apic_id, u32 vector)
 {
+	say("@localapic_sendstart: apic@%p, apicid=%x, vector=%x\n", addr_localapic, apic_id, vector);
     localapic_write(LAPIC_ICRHI, apic_id << ICR_DESTINATION_SHIFT);
     localapic_write(LAPIC_ICRLO, vector | ICR_STARTUP | ICR_PHYSICAL | ICR_ASSERT | ICR_EDGE | ICR_NO_SHORTHAND);
-    while(localapic_read(LAPIC_ICRLO) & ICR_SEND_PENDING);
+
+	say("waiting: ICRLO.ICR_SEND_PENDING\n",addr_localapic);
+	int endcycle = 0xfffff;
+	u64 endtime = timeread_us() + 3000*1000;
+	while(1){
+		//say("time=%llx,cycle=%llx\n",timeread_us(), endcycle);
+		if(0 == (localapic_read(LAPIC_ICRLO) & ICR_SEND_PENDING))break;
+
+		if(timeread_us() > endtime)return -1;
+
+		endcycle--;
+		if(0 == endcycle)return -2;
+	}
+	return 1;
 }
 void localapic_init()
 {

@@ -47,8 +47,8 @@ void initidt_ap(int coreid);
 void localapic_init();
 int localapic_isenabled();
 int localapic_coreid();
-void localapic_sendinit(u32 apic_id);
-void localapic_sendstart(u32 apic_id, u32 vector);
+int localapic_sendinit(u32 apic_id);
+int localapic_sendstart(u32 apic_id, u32 vector);
 //
 void apictimer_init();
 //
@@ -455,11 +455,15 @@ void initcpu_onecore(int coreid)
 
 	say("sending INIT IPI\n");
 	//send INIT IPI
-	localapic_sendinit(coreid);
+	int ret = localapic_sendinit(coreid);
+	if(ret < 0)goto failreturn;
+
 	//wait 10ms
+	say("wait 10ms\n");
 	sleep_us(10*1000);
 
 	//prep flag
+	say("write flag=0\n");
 	volatile u8* flag = (u8*)ApToBsp_message;
 	*flag = 0;
 
@@ -477,8 +481,8 @@ void initcpu_onecore(int coreid)
 			goto givecmdtoap;
 		}
 	}
-	say("fail@AP silent\n");
-	say("\n\n");
+failreturn:
+	say("fail@AP silent\n\n");
 	return;
 
 givecmdtoap:
@@ -494,13 +498,11 @@ givecmdtoap:
 		say("ap in 64bit mode\n");
 		goto allgood;
 	}
-	say("fail@AP error\n");
-	say("\n\n");
+	say("fail@AP error\n\n");
 	return;
 
 allgood:
-	say("ap working: %x\n", shit);
-	say("\n\n");
+	say("ap working: %x\n\n", shit);
 }
 
 

@@ -102,17 +102,23 @@ struct FADT{
 	u64 X_FirmwareControl;
 	u64 X_Dsdt;
 }__attribute__((packed));
-struct HPET_BASEADDR{
-	u8  space;	//0
-	u8  width;	//1
-	u8 offset;	//2
-	u8   rsvd;	//3
-	u64  addr;	//[4,b]
-}__attribute__((packed));
 struct HPET{
 	struct ACPIHEAD         head;	//[00,23]
-	u32        EventTimerBlockID;	//[24,27]
-	struct HPET_BASEADDR    base;	//[28,33]
+
+	u8                 hw_rev_id;	//[24,24]
+	u8        comparator_count:5;	//[25,25]
+	u8            counter_size:1;
+	u8                reserved:1;
+	u8          legacy_replace:1;
+	u16                 vendorid;	//[26,27]
+
+	//struct HPET_BASEADDR    base;	//[28,33]
+	u8             addr_space_id;	//0
+	u8             reg_bit_width;	//1
+	u8              reg_bit_offs;	//2
+	u8                      rsvd;	//3
+	u64                     addr;	//[4,b]
+
 	u8                HPETNumber;	//34
 	u16 MinimumClockPeriodicMode;	//[35,36]
 	u8   PageProtectOEMAttribute;	//37
@@ -306,8 +312,8 @@ void acpi_FACP(void* p)
 }
 void acpi_HPET(void* p)
 {
-	struct HPET_BASEADDR* a = p+0x28;
-	say("00: hpet@%llx\n",a->addr);
+	struct HPET* a = p;
+	say("legacy_relpace=%x,addr=%llx\n", a->legacy_replace, a->addr);
 }
 void acpi_MADT(void* p)
 {

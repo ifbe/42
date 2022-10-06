@@ -12,7 +12,15 @@ void quaternion_multiplyfrom(float* o, float* l, float* r);
 
 void balancer_measure(_obj* ent)
 {
-	say("%s\n",__func__);
+	struct halfrel* rel = ent->REL_WORLD;
+	if(0 == rel)return;
+
+	struct style* sty = rel->pfoot;
+	if(0 == sty)return;
+
+	vec4 aa;
+	quaternion2axisangle(sty->actual.angular_x, aa);
+	say("%s: %f,%f,%f,%f\n",__func__, aa[0],aa[1],aa[2],aa[3]);
 }
 void balancer_compute(_obj* ent)
 {

@@ -60,6 +60,7 @@ void isr_rtc()
 }
 void initrtc()
 {
+	say("@initrtc\n");
 	u8 tmp;
 	out8(0x70, 0x8a);
 	out8(0x71, 0xaf);	//3=8192hz,6=1024hz,a=64hz,f=2hz
@@ -70,4 +71,5 @@ void initrtc()
 	out8(0x71, tmp|0x40);
 
 	enableirq(8);
+	say("initrtc end\n\n");
 }

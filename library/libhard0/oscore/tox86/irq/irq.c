@@ -46,6 +46,7 @@ void endofextirq(int irq)
 }
 void initirq(struct item* dev)
 {
+	say("@initirq\n");
 	if(0 != acpi_getirqioapic()){
 		ioapic_init();
 		chosen = 0;
@@ -60,4 +61,5 @@ void initirq(struct item* dev)
 		say("error: no irq chip found\n");
 		while(1)asm("hlt");
 	}
+	say("@initirq end\n\n");
 }

@@ -2,6 +2,7 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+u64 rdtsc();
 //
 u8 in8(u16 port);
 void out8(u16 port, u8 data);
@@ -39,6 +40,7 @@ u64 archtimer_ns()
 
 void init825x()
 {
+	say("@init825x, dt=%x, tsc=%llx\n", dt, rdtsc());
 	u32 t = 3579545 / 3 / 1000;
 	u16 lo = t & 0xff;
 	u16 hi = t >> 8;
@@ -48,4 +50,7 @@ void init825x()
 	out8(0x40, hi);
 
 	enableirq(0);
+
+	while(0 == dt);
+	say("8254 works, dt=%x, tsc=%llx\n\n", dt, rdtsc());
 }

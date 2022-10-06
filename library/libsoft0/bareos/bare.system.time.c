@@ -61,6 +61,7 @@ void sleep_ns(int t)
 void sleep_us(int t)
 {
 	u64 deadline = archtimer_us() + t;
+	if(deadline == t)say("warning: timer maybe failed\n");
 	while(archtimer_us() < deadline);
 }
 void sleep_ms(int t)

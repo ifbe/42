@@ -4,6 +4,25 @@
 
 
 
+void balance_quat2shape(struct style* sty, float* q)
+{
+	float l = sty->fshape.vr[3];
+	sty->fshape.vr[0] = l*(1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0);
+	sty->fshape.vr[1] = l*(2.0 * (q[0]*q[1] + q[2]*q[3]));
+	sty->fshape.vr[2] = l*(2.0 * (q[0]*q[2] - q[1]*q[3]));
+	l = sty->fshape.vf[3];
+	sty->fshape.vf[0] = l*(2.0 * (q[0]*q[1] - q[2]*q[3]));
+	sty->fshape.vf[1] = l*(1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0);
+	sty->fshape.vf[2] = l*(2.0 * (q[1]*q[2] + q[0]*q[3]));
+	l = sty->fshape.vt[3];
+	sty->fshape.vt[0] = l*(2.0 * (q[0]*q[2] + q[1]*q[3]));
+	sty->fshape.vt[1] = l*(2.0 * (q[1]*q[2] - q[0]*q[3]));
+	sty->fshape.vt[2] = l*(1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0);
+}
+
+
+
+
 static void balance_draw_pixel(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
@@ -35,19 +54,27 @@ static void balance_draw_gl41(
 	float* vr = geom->fshape.vr;
 	float* vf = geom->fshape.vf;
 	float* vt = geom->fshape.vt;
+
+	balance_quat2shape(geom, geom->actual.angular_x);
 	gl41line_prism4(ctx, 0xffffff, vc, vr, vf, vt);
 
-	//board
-	float angle = getsin(act->whdf.fy0)*PI/6;
-	act->whdf.fy0 += 0.01;
+	//counterweight
+	for(j=0;j<3;j++){
+		tr[j] = vr[j];
+		tf[j] = vf[j]/16;
+		tt[j] = vt[j]/16;
+		tc[j] = vc[j]+vt[j]/2;
+	}
+	gl41solid_cylinder(ctx, 0x00ff00, tc, tf, tt, tr);
 
+	//board
 	for(j=0;j<3;j++){
 		tr[j] = vr[j]*4/8;
 		tf[j] = vf[j]/4;
 		tt[j] = vt[j]*3/4;
 	}
-	quaternion_operation(tf, vr, angle);
-	quaternion_operation(tt, vr, angle);
+	//quaternion_operation(tf, vr, angle);
+	//quaternion_operation(tt, vr, angle);
 	for(j=0;j<3;j++){
 		tc[j] = vc[j]-vt[j]/2+tt[j];
 	}
@@ -104,19 +131,6 @@ static void balance_draw_cli(
 
 
 
-void balance_write_euler(_obj* act, float* f)
-{
-	act->whdf.fx0 = f[0];
-	act->whdf.fy0 = f[1];
-	act->whdf.fz0 = f[2];
-}
-void balance_write_quaternion(_obj* act, float* q)
-{
-}
-
-
-
-
 static void balance_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
@@ -154,7 +168,6 @@ static void balance_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 }
 static void balance_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	balance_write_euler(ent, buf);
 }
 static void balance_detach(struct halfrel* self, struct halfrel* peer)
 {
@@ -180,7 +193,6 @@ static void balance_delete(_obj* act)
 static void balance_create(_obj* act)
 {
 	if(0 == act)return;
-	act->whdf.fy0 = PI/4;
 }
 
 
