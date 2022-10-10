@@ -174,6 +174,8 @@ static void balance_detach(struct halfrel* self, struct halfrel* peer)
 }
 static void balance_attach(struct halfrel* self, struct halfrel* peer)
 {
+	_obj* tar = peer->pchip;
+	say("balance_attach:%.4s\n", &tar->hfmt);
 }
 
 

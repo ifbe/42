@@ -296,13 +296,6 @@ worldnode/gameplay/mission/play.mission.c \
 worldnode/mechanic/produce/fac.gcode.c \
 worldnode/neural/nn.cnn.c \
 worldnode/neural/nn.rnn.c \
-worldnode/physic/collide/collide.simple.c \
-worldnode/physic/field/field.magnet.c \
-worldnode/physic/fluid/fluid.simple.c \
-worldnode/physic/rigid/rigid.tran.c \
-worldnode/physic/rigid/rigid.tran_rotate.c \
-worldnode/physic/rigid/rigid.tran_rotate_collide.c \
-worldnode/physic/soft/soft.spring.c \
 worldnode/program/vm.mmio.c \
 worldnode/program/vm.port.c \
 worldnode/visual/2d/uiux.border2d.c \
@@ -368,10 +361,6 @@ worldhelp/gpu/gl41/gl41.data.c \
 worldhelp/gpu/gl41/gl41.mode.cmdq.c \
 worldhelp/gpu/gl41/gl41.mode.list.c \
 worldhelp/gpu/metal/metal.ctx.c \
-worldhelp/npu/npu.c \
-worldhelp/spu/al10/al10.c \
-worldhelp/spu/sl10/sl10.c \
-worldhelp/spu/spu.pcm.c \
 worldhelp/mem/elec/asset.circuit.c \
 worldhelp/mem/func/asset.function.c \
 worldhelp/mem/html/asset.html.c \
@@ -384,6 +373,17 @@ worldhelp/mem/sound/asset.sound.c \
 worldhelp/mem/xml/xml.c \
 worldhelp/mem/zimu/zimu.c \
 worldhelp/mem/formem.c \
+worldhelp/npu/npu.c \
+worldhelp/physic/collide/collide.simple.c \
+worldhelp/physic/field/field.magnet.c \
+worldhelp/physic/fluid/fluid.simple.c \
+worldhelp/physic/rigid/rigid.tran.c \
+worldhelp/physic/rigid/rigid.tran_rotate.c \
+worldhelp/physic/rigid/rigid.tran_rotate_collide.c \
+worldhelp/physic/soft/soft.spring.c \
+worldhelp/spu/al10/al10.c \
+worldhelp/spu/sl10/sl10.c \
+worldhelp/spu/spu.pcm.c \
 entity.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 

@@ -2,8 +2,8 @@
 #define REL_WORLD listptr.buf0
 #define REL_DRONE listptr.buf1
 #define ENT_DBGUI listptr.buf2
-void quaternion2axisangle(float* q, float* a);
-void axisangle2quaternion(float* a, float* q);
+void quaternion2axismulangle(float* q, float* a);
+void axismulangle2quaternion(float* a, float* q);
 void quaternion_multiplyfrom(float* o, float* l, float* r);
 
 
@@ -85,7 +85,7 @@ void flycon_att2aacc_attitude2palstance(_obj* ent, struct style* sty)
 
 	//only P, no I,D
 	float* v = sty->desire.angular_v;
-	quaternion2axisangle(q, v);
+	quaternion2axismulangle(q, v);
 	v[0] *= ATT_p;
 	v[1] *= ATT_p;
 	v[2] *= ATT_p;

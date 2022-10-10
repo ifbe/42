@@ -6,21 +6,7 @@ void inertia_tensor_of_block(mat3 Ival, mat3 Iinv, float M, float lx, float ly, 
 void mat3_transposefrom(void* o, void* i);
 void mat3_multiplyfrom(void* o, void* l, void* r);
 void quaternion_multiplyfrom(void* o, void* l, void* r);
-
-
-
-
-void rigidsimu_resistance(struct style* geom)
-{
-	float na = -geom->fm.angular_v[3];
-	geom->fm.angular_a[0] = geom->fm.angular_v[0] * na;
-	geom->fm.angular_a[1] = geom->fm.angular_v[1] * na;
-	geom->fm.angular_a[2] = geom->fm.angular_v[2] * na;
-
-	geom->fm.displace_a[0] = -geom->fm.displace_v[0] * 0.1;
-	geom->fm.displace_a[1] = -geom->fm.displace_v[1] * 0.1;
-	geom->fm.displace_a[2] = -geom->fm.displace_v[2] * 0.1 - 9.8;
-}
+void quaternion2eulerian(float* q, float* a);
 
 
 
@@ -118,11 +104,44 @@ void rigidsimu_realforce(struct style* geom)
 	totaltorque[2] = worldtorque[0][2] + worldtorque[1][2] + worldtorque[2][2] + worldtorque[3][2];
 	rigidsimu_inertiatensor_angularalpha(geom->fm.angular_a, totaltorque, worldinverse);
 }
+void rigidsimu_computeforce(_obj* ent, struct style* geom)
+{
+	say("%s\n",__func__);
+	if(0 == ent->TEST){
+		float na = -geom->fm.angular_v[3];
+		geom->fm.angular_a[0] = geom->fm.angular_v[0] * na;
+		geom->fm.angular_a[1] = geom->fm.angular_v[1] * na;
+		geom->fm.angular_a[2] = geom->fm.angular_v[2] * na;
+
+		geom->fm.displace_a[0] = -geom->fm.displace_v[0] * 0.1;
+		geom->fm.displace_a[1] = -geom->fm.displace_v[1] * 0.1;
+		geom->fm.displace_a[2] = -geom->fm.displace_v[2] * 0.1 - 9.8;
+	}
+
+	rigidsimu_realforce(geom);
+	if(ent->TEST < 0x80000000)ent->TEST--;
+}
 
 
 
 
-int rigidsimu_effect(struct style* geom, float dt)
+int rigidsimu_applydisplace(_obj* ent, struct style* geom, float dt)
+{
+	struct fmotion* final = &geom->actual;
+
+	final->displace_v[0] += final->displace_a[0] * dt;
+	final->displace_v[1] += final->displace_a[1] * dt;
+	final->displace_v[2] += final->displace_a[2] * dt;
+	final->displace_x[0] += final->displace_v[0] * dt;
+	final->displace_x[1] += final->displace_v[1] * dt;
+	final->displace_x[2] += final->displace_v[2] * dt;
+	return 0;
+}
+
+
+
+
+int rigidsimu_applyangular(_obj* ent, struct style* geom, float dt)
 {
 	vec4 v,ql,qr;
 	float a,invn,sbyn;
@@ -191,22 +210,32 @@ int rigidsimu_effect(struct style* geom, float dt)
 		geom->fshape.vt[2] = a * (1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0);
 	}
 //say("omega_new=%f,%f,%f,%f\n",final->angular_v[0],final->angular_v[1],final->angular_v[2],final->angular_v[3]);
+	return 0;
+}
 
 
-	//displacement
-	final->displace_v[0] += final->displace_a[0] * dt;
-	final->displace_v[1] += final->displace_a[1] * dt;
-	final->displace_v[2] += final->displace_a[2] * dt;
-	final->displace_x[0] += final->displace_v[0] * dt;
-	final->displace_x[1] += final->displace_v[1] * dt;
-	final->displace_x[2] += final->displace_v[2] * dt;
 
 
-	//collide
-	float wheelsize = geom->fshape.vt[3];
-	if(final->displace_x[2] < wheelsize){
-		final->displace_x[2] = wheelsize;
-		final->displace_v[2] = -0.5 * final->displace_v[2];
+int rigidsimu_solvecollide(_obj* ent, struct style* geom)
+{
+	say("%s\n",__func__);
+	struct fmotion* final = &geom->actual;
+
+	float* dx = final->displace_x;
+	float* ax = final->angular_x;
+
+	vec4 ve;
+	quaternion2eulerian(ax, ve);
+
+	float x_ang = ve[0]*PI/180;
+	float x_cos = getcos(x_ang);
+
+	float wheelsize = geom->fshape.vt[3]/2;
+	float massheight = wheelsize*(1+x_cos);
+
+	if(final->displace_x[2] < massheight){
+		final->displace_x[2] = massheight;
+		final->displace_v[2] = -0.3 * final->displace_v[2];
 	}
 	//say("%f,%f\n", final->displace_v[2], final->displace_x[2]);
 
@@ -216,6 +245,10 @@ int rigidsimu_effect(struct style* geom, float dt)
 	geom->fs.vc[2] = final->displace_x[2];
 	return 0;
 }
+
+
+
+
 int rigidsimu_foreach(_obj* ent)
 {
 	u64 now;
@@ -241,14 +274,13 @@ int rigidsimu_foreach(_obj* ent)
 		if(0 == rel)break;
 
 		geom = rel->psrcfoot;
-		if(ent->TEST){
-			rigidsimu_realforce(geom);
-			if(ent->TEST < 0x80000000)ent->TEST--;
-		}
-		else{
-			rigidsimu_resistance(geom);
-		}
-		rigidsimu_effect(geom, dt);
+		rigidsimu_computeforce(ent, geom);
+
+		rigidsimu_applydisplace(ent, geom, dt);
+
+		rigidsimu_applyangular(ent, geom, dt);
+
+		rigidsimu_solvecollide(ent, geom);
 
 		rel = samesrcnextdst(rel);
 	}

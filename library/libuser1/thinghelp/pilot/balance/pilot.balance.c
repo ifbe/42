@@ -2,8 +2,8 @@
 #define REL_WORLD listptr.buf0
 #define REL_DRONE listptr.buf1
 #define ENT_DBGUI listptr.buf2
-void quaternion2axisangle(float* q, float* a);
-void axisangle2quaternion(float* a, float* q);
+void quaternion2axisandangle(float* q, float* ax, float* ag);
+void quaternion2eulerian(float* q, float* a);
 void quaternion_multiplyfrom(float* o, float* l, float* r);
 
 
@@ -18,9 +18,35 @@ void balancer_measure(_obj* ent)
 	struct style* sty = rel->pfoot;
 	if(0 == sty)return;
 
-	vec4 aa;
-	quaternion2axisangle(sty->actual.angular_x, aa);
-	say("%s: %f,%f,%f,%f\n",__func__, aa[0],aa[1],aa[2],aa[3]);
+	float lr = sty->fshape.vr[3];
+	float lf = sty->fshape.vf[3];
+	float lt = sty->fshape.vt[3] / 2;		//wheel radius = height/4 = vt/2
+
+	float* dx = sty->actual.displace_x;
+	float* dv = sty->actual.displace_v;
+	float* da = sty->actual.displace_a;
+	float* ax = sty->actual.angular_x;
+	float* av = sty->actual.angular_v;
+	float* aa = sty->actual.angular_a;
+
+	vec4 vv;
+	quaternion2axisandangle(ax, vv, &vv[3]);
+	say("%s: axis,angle=%f,%f,%f,%f\n",__func__, vv[0],vv[1],vv[2],vv[3]);
+
+	vec4 ve;
+	quaternion2eulerian(ax, ve);
+	say("%s: eulerian=%f,%f,%f,%f\n",__func__, ve[0],ve[1],ve[2],ve[3]);
+
+	float x_ang = ve[0]*PI/180;
+	float x_cos = getcos(x_ang);
+	float x_sin = getsin(x_ang);
+	say("a=%f,cos=%f,sin=%f\n",x_ang,x_cos,x_sin);
+
+	//basis: {masscenter, bodyright, topXright, worldtop}
+	//vector: masscenter to touchdown point
+	vec3 pl = {-lr, lt*x_sin, lt+lt*x_cos};
+	vec3 pr = {lr, lt*x_sin, lt+lt*x_cos};
+	say("pl=(%f,%f,%f), pr=(%f,%f,%f)\n", pl[0],pl[1],pl[2], pr[0],pr[1],pr[2]);
 }
 void balancer_compute(_obj* ent)
 {
@@ -133,9 +159,9 @@ int balancer_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key,
 		balancer_checkplace(ent);
 		balancer_setdesire(ent);
 
-		balancer_measure(ent);
-		balancer_compute(ent);
-		balancer_operate(ent);
+		balancer_measure(ent);		//sensor data to nav data
+		balancer_compute(ent);		//pid calculate desire accel
+		balancer_operate(ent);		//accel to motor control
 
 		balancer_report(ent);
 	}

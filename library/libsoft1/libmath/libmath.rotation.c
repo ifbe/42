@@ -75,7 +75,7 @@ void quaternion_slerp(float* out,float* q0,float* q1,float t)
 
 
 //in(qx,qy,qz,qw) -> out(vx,vy,vz)
-void quaternion2axisangle(float* q, float* a)
+void quaternion2axismulangle(float* q, float* a)
 {
 	float l,t;
 
@@ -94,7 +94,7 @@ void quaternion2axisangle(float* q, float* a)
 	}
 }
 //out(qx,qy,qz,qw) <- in(vx,vy,vz)
-void quaternion4axisangle(float* q, float* a)
+void quaternion4axismulangle(float* q, float* a)
 {
 	float n2 = a[0]*a[0] + a[1]*a[1] * a[2]*a[2];
 	if(n2 < 1e-18){
@@ -235,12 +235,12 @@ void quaternion4matfour(float* q, float (*m)[4])
 
 
 //in(vx,vy,vz) -> out(matrix)
-void axisangle2matthree(float* a, float (*m)[3])
+void axismulangle2matthree(float* a, float (*m)[3])
 {
 	//Rodrigues
 }
 //out(vx,vy,vz) <- in(matrix)
-void axisangle4matthree(float* a, float (*m)[3])
+void axismulangle4matthree(float* a, float (*m)[3])
 {
 	float n;
 	a[0] = m[2][1] - m[1][2];
@@ -254,17 +254,17 @@ void axisangle4matthree(float* a, float (*m)[3])
 	a[2] *= n;
 }
 //in(vx,vy,vz) -> out(qx,qy,qz,qw)
-void axisangle2quaternion(float* a, float* q)
+void axismulangle2quaternion(float* a, float* q)
 {
-	quaternion4axisangle(q, a);
+	quaternion4axismulangle(q, a);
 }
 //out(vx,vy,vz) <- in(qx,qy,qz,qw)
-void axisangle4quaternion(float* a, float* q)
+void axismulangle4quaternion(float* a, float* q)
 {
-	quaternion2axisangle(q, a);
+	quaternion2axismulangle(q, a);
 }
 //in(vx,vy,vz) -> out((vx,vy,vz),angle)
-void axisangle2axisandangle(float* a, float* axis, float* angle)
+void axismulangle2axisandangle(float* a, float* axis, float* angle)
 {
 	float tmp = squareroot(a[0]*a[0] + a[1]*a[1] * a[2]*a[2]);
 	*angle = tmp;
@@ -275,7 +275,7 @@ void axisangle2axisandangle(float* a, float* axis, float* angle)
 	axis[2] = a[2] * tmp;
 }
 //out(vx,vy,vz) <- in((vx,vy,vz),angle)
-void axisangle4axisandangle(float* a, float* axis, float angle)
+void axismulangle4axisandangle(float* a, float* axis, float angle)
 {
 	float tmp = angle * squareroot(axis[0]*axis[0] + axis[1]*axis[1] * axis[2]*axis[2]);
 	a[0] = axis[0] * tmp;
@@ -285,7 +285,7 @@ void axisangle4axisandangle(float* a, float* axis, float angle)
 void quaternion_aa(float* v, float* aa)
 {
 	float q[4];
-	quaternion4axisangle(q, aa);
+	quaternion4axismulangle(q, aa);
 	quaternion_rotate(v, q);
 }
 
@@ -327,14 +327,14 @@ void eulerian4quaternion(float* e, float* q)
 
 
 //in(m3) -> out(vx,vy,vz)
-void matthree2axisangle(float (*m)[3], float* a)
+void matthree2axismulangle(float (*m)[3], float* a)
 {
-	axisangle4matthree(a, m);
+	axismulangle4matthree(a, m);
 }
 //out(m3) -> in(vx,vy,vz)
-void matthree4axisangle(float (*m)[3], float* a)
+void matthree4axismulangle(float (*m)[3], float* a)
 {
-	axisangle2matthree(a, m);
+	axismulangle2matthree(a, m);
 }
 //in(m3) -> out(qx,qy,qz,qw)
 void matthree2quaternion(float (*m)[3], float* q)
