@@ -269,6 +269,15 @@ void* acpi_getredirtbl()
 
 
 
+void* hpetaddr = 0;
+void* acpi_gethpet()
+{
+	return hpetaddr;
+}
+
+
+
+
 void parse_S5_(void* p)
 {
 	u16 data;
@@ -314,6 +323,8 @@ void acpi_HPET(void* p)
 {
 	struct HPET* a = p;
 	say("legacy_relpace=%x,addr=%llx\n", a->legacy_replace, a->addr);
+
+	hpetaddr = (void*)a->addr;
 }
 void acpi_MADT(void* p)
 {

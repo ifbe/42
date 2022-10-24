@@ -188,11 +188,12 @@ oscore/tox86/irq/irq.c \
 oscore/tox86/irq/8259/8259.c \
 oscore/tox86/irq/apic/apic.io.c \
 oscore/tox86/irq/apic/apic.local.c \
-oscore/tox86/irq/apic/apic.timer.c \
 oscore/tox86/pmic/power.c \
 oscore/tox86/stor/ide-driver.c \
-oscore/tox86/timer/825x.c \
-oscore/tox86/timer/rtc.c \
+oscore/tox86/timer/persoc/timer.hpet.c \
+oscore/tox86/timer/persoc/timer.pit.c \
+oscore/tox86/timer/persoc/timer.rtc.c \
+oscore/tox86/timer/timer.c \
 oscore/tox86/wire/bare.wire.bt.c \
 oscore/tox86/wire/bare.wire.gpio.c \
 oscore/tox86/wire/bare.wire.i2c.c \

@@ -17,8 +17,7 @@ void initcpu_ap();
 void initpci_port();
 void initpci_mmio();
 //
-void init825x();        //timer.pit
-void initrtc();         //timer.rtc
+void inittimer();
 //
 void init8042();
 //
@@ -80,8 +79,7 @@ void initarch()
 
 	//timer
 	p = device_create(_tmr_, 0, 0, 0);
-	initrtc();
-	init825x();
+	inittimer();
 
 	//cpu_app: after cpu_bsp and pic and timer
 	initcpu_ap();
