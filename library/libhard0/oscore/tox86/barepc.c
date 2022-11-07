@@ -54,6 +54,14 @@ void initmap()
 
 void initcpu0()
 {
+	struct item* p;
+
+	//localapic check
+	localapic_check();
+
+	//cpu_bsp: gdt,paging,idt,apic...
+	p = device_create(_cpu_, 0, 0, 0);
+	initcpu_bsp(p);
 }
 
 
@@ -65,13 +73,6 @@ void exitarch()
 void initarch()
 {
 	struct item* p;
-
-	//localapic check
-	localapic_check();
-
-	//cpu_bsp: gdt,paging,idt,apic...
-	p = device_create(_cpu_, 0, 0, 0);
-	initcpu_bsp(p);
 
 	//ioapic or dual8259
 	p = device_create(_irq_, 0, 0, 0);

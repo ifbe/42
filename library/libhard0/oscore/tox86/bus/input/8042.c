@@ -1,9 +1,11 @@
 #include "libhard.h"
 int acpi_have8042();
 //
-void interruptinstall_bsp(int num, u64 isr);
-void enableirq(int);
-void endofextirq(int);
+int percpu_enableint(int apicid, int intvec, void* isr, int flag);
+//
+void irqchip_enableirq(int chip, int pin, int apicid, int intvec);
+void irqchip_disableirq(int chip, int pin);
+void irqchip_endofirq(int irq);
 //
 u8 in8(u16 port);
 void out8(u16 port, u8 data);
@@ -142,15 +144,15 @@ __attribute__((interrupt)) static void ps2kbd_isr(void* p)
 	}
 
 byebye:
-	endofextirq(1);
+	irqchip_endofirq(1);
 }
 void initps2kbd()
 {
 	say("@initps2kbd\n");
 	enablepolling = 0;
 
-	interruptinstall_bsp(1, (u64)ps2kbd_isr);
-	enableirq(1);
+	percpu_enableint(0, 0x21, ps2kbd_isr, 0);
+	irqchip_enableirq(0,1, 0,0x21);
 }
 
 
@@ -179,7 +181,7 @@ __attribute__((interrupt)) static void ps2mouse_isr(void* p)
 	u8 data = in8(0x60);
 	say("data0=%x\n", data);
 
-	endofextirq(12);
+	irqchip_endofirq(12);
 }
 void initps2mouse()
 {
@@ -210,6 +212,6 @@ void initps2mouse()
 	mouse_read();	//Acknowledge
 
 	//Setup the mouse handler
-	interruptinstall_bsp(12, (u64)ps2mouse_isr);
-	enableirq(12);
+	percpu_enableint(0, 0x20+12, ps2mouse_isr, 0);
+	irqchip_enableirq(0,12, 0,0x20+12);
 }

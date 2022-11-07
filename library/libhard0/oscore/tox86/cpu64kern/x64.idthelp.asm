@@ -1,7 +1,7 @@
 %define XSAVESIZE 1024
 extern isr_rtc
 extern isr_825x
-extern endofextirq
+extern irqchip_endofirq
 extern percpu_schedule
 
 
@@ -54,7 +54,7 @@ isr20_825x:
 
 	mov rdi, 0x20	;for abi: di,si,dx,cx,r8,r9
 	mov rcx, rdi	;for abi: cx,dx,r8,r9
-	call endofextirq
+	call irqchip_endofirq
 
 	add rsp, 0x100
 	pop r8
@@ -97,7 +97,7 @@ isr40_apictimer:
 	sub rsp, 0x100	;mingw bug!!!: it breaks stack [rsp,rsp+?]
 	call percpu_schedule
 
-	call endofextirq
+	call irqchip_endofirq
 
 	add rsp, 0x100
 	pop r8

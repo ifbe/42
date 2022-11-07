@@ -25,9 +25,9 @@ void cpuid(u32 abcd[4])
 }
 u64 rdtsc()
 {
-	u64 ret;
-	asm volatile("rdtsc" : "=A"(ret) );
-	return ret;
+    u32 eax, edx;
+    asm volatile("rdtsc":"=a"(eax),"=d"(edx));
+    return ((u64)edx << 32) | eax;
 }
 u64 rdpmc()
 {

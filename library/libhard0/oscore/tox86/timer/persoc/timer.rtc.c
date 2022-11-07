@@ -4,8 +4,8 @@
 #define u64 unsigned long long
 void datewrite(u64);
 //
-void enableirq(int);
-void disableirq(int);
+void irqchip_enableirq(int chip, int pin, int apicid, int intvec);
+void irqchip_disableirq(int chip, int pin);
 //
 u8 in8(u16 port);
 void out8(u16 port, u8 data);
@@ -70,6 +70,6 @@ void initrtc()
 	out8(0x70, 0x8b);
 	out8(0x71, tmp|0x40);
 
-	enableirq(8);
+	irqchip_enableirq(0,8, 0,0x28);
 	say("initrtc end\n\n");
 }

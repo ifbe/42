@@ -6,9 +6,11 @@ void initps2kbd();
 void initps2mouse();
 u8 in8(u16 port);
 //
-void interruptinstall_bsp(int num, u64 isr);
-void enableirq(int);
-void endofextirq(int);
+int percpu_enableint(int apicid, int intvec, void* isr, int flag);
+//
+void irqchip_enableirq(int chip, int pin, int apicid, int intvec);
+void irqchip_disableirq(int chip, int pin);
+void irqchip_endofirq(int irq);
 
 
 struct _vmmouse_{
@@ -226,12 +228,12 @@ __attribute__((interrupt)) static void ps2mouse_vmware_isr(void* p)
 
 	vmware_handle_mouse();
 
-	endofextirq(12);
+	irqchip_endofirq(12);
 }
 void initps2mouse_vmware()
 {
-	interruptinstall_bsp(12, (u64)ps2mouse_vmware_isr);
-	enableirq(12);
+	percpu_enableint(0, 0x20+12, ps2mouse_vmware_isr, 0);
+	irqchip_enableirq(0,12, 0,0x20+12);
 }
 
 

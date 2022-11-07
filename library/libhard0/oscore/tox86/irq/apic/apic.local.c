@@ -59,7 +59,6 @@
 //
 void* acpi_getlocalapic();
 void* acpi_getirqioapic();
-void* acpi_getredirtbl();
 //
 u64 timeread_us();
 //
@@ -272,25 +271,20 @@ void ioapic_write(u8 reg, u32 val)
 	*addr = reg;
 	*data = val;
 }
-void ioapic_enableirq(u32 irq)
+void ioapic_enableirq(u32 gsi, u32 intvec)
 {
-	//redirect table
-	u8* redirtbl = acpi_getredirtbl();
-	u8 gsi = redirtbl[irq];
-	say("@enableirq: isa %d -> gsi %d\n", irq, gsi);
-
 	int off = 0x10 + gsi*2;
 	u32 lo32 = ioapic_read(off);
 	u32 hi32 = (0<<24);
 	lo32 &= ~REDIRTBL_DISABLE;
 	lo32 &= 0xffffff00;
-	lo32 |= 0x20 + irq;
+	lo32 |= intvec;
 	ioapic_write(off+0, lo32);
 	ioapic_write(off+1, hi32);
 }
-void ioapic_disableirq(u32 irq)
+void ioapic_disableirq(u32 gsi)
 {
-	int off = 0x10 + irq*2;
+	int off = 0x10 + gsi*2;
 	u32 lo32 = ioapic_read(off);
 	lo32 |= REDIRTBL_DISABLE;
 	ioapic_write(off, lo32);

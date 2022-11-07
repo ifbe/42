@@ -269,10 +269,15 @@ void* acpi_getredirtbl()
 
 
 
-void* hpetaddr = 0;
-void* acpi_gethpet()
+void* hpet_addr = 0;
+int hpet_replacepit = 0;
+void* acpi_hpet_addr()
 {
-	return hpetaddr;
+	return hpet_addr;
+}
+int acpi_hpet_replacepit()
+{
+	return hpet_replacepit;
 }
 
 
@@ -322,9 +327,10 @@ void acpi_FACP(void* p)
 void acpi_HPET(void* p)
 {
 	struct HPET* a = p;
-	say("legacy_relpace=%x,addr=%llx\n", a->legacy_replace, a->addr);
+	hpet_addr = (void*)a->addr;
+	hpet_replacepit = a->legacy_replace;
+	say("legacy_relpace=%x,addr=%p\n", hpet_replacepit, hpet_addr);
 
-	hpetaddr = (void*)a->addr;
 }
 void acpi_MADT(void* p)
 {

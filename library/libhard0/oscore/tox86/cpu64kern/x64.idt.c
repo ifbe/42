@@ -31,7 +31,8 @@ u64 getisr28();
 u64 getisr40();
 u64 getisr80();
 //
-void endofextirq(int);
+void irqchip_endofirq(int);
+//
 int localapic_coreid();
 //
 void setidt(void* buf, int len);
@@ -241,12 +242,12 @@ __attribute__((interrupt)) static void allcpu_isr1f(void* p){
 __attribute__((interrupt)) static void allcpu_isr20(void* p){
 	//say("825x!\n");
 	isr_825x();
-	endofextirq(0);
+	irqchip_endofirq(0);
 }
 __attribute__((interrupt)) static void allcpu_isr21(void* p){
 	say("ps2kbd!\n");
 	//isr_8042();
-	endofextirq(1);
+	irqchip_endofirq(1);
 }
 __attribute__((interrupt)) static void allcpu_isr27(struct int_frame* p){
 	//say("int27: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
@@ -255,17 +256,17 @@ __attribute__((interrupt)) static void allcpu_isr27(struct int_frame* p){
 	u8 irr = in8(0x20);
 	if(irr&0x80){		//only when this set, real irq
 		//isr_parallel();
-		endofextirq(7);
+		irqchip_endofirq(7);
 	}*/
 }
 __attribute__((interrupt)) static void allcpu_isr28(void* p){
 	//say("rtc!\n");
 	isr_rtc();
-	endofextirq(8);
+	irqchip_endofirq(8);
 }
 __attribute__((interrupt)) static void allcpu_isr2c(void* p){
 	say("ps2mouse!\n");
-	endofextirq(12);
+	irqchip_endofirq(12);
 }
 
 
@@ -302,13 +303,13 @@ void interruptinstall(void* idt, int num, u64 isr, int flag)
 	addr->byte47 = (isr>>32)&0xffffffff;
 	addr->what = 0;
 }
-void interruptinstall_bsp(int num, u64 isr)
+int percpu_enableint(int apicid, int intvec, void* isr, int flag)
 {
-	//external irq
-	num += 0x20;
+	if(intvec < 0x20)return 0;
 
 	u8* idt = (void*)BSPCPU_IDT;
-	interruptinstall(idt, num, isr, 0);
+	interruptinstall(idt, intvec, (u64)isr, 0);
+	return 1;
 }
 void initidt_bsp()
 {
