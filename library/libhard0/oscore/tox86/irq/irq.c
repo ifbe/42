@@ -39,8 +39,8 @@ void irqchip_enableirq(int chip, int pin, int apicid, int intvec)
 		if(_isa_ == chip){
 			u8* redirtbl = acpi_getredirtbl();
 			gsi = redirtbl[pin];
+			say("@enableirq: isa %d -> gsi %d\n", pin, gsi);
 		}
-		say("@enableirq: isa %d -> gsi %d\n", pin, gsi);
 		ioapic_enableirq(gsi, intvec);
 	}
 }

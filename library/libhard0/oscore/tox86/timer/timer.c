@@ -69,6 +69,7 @@ void inittimer()
 	}
 
 	if(0 == timer_type){
+		while(1)asm("hlt");		//no more way, timer must work
 		say("try tsc\n");
 	}
 

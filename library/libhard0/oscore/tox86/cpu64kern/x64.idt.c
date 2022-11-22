@@ -59,6 +59,11 @@ struct int_frame{
 	u64 sp;
 	u64 ss;
 }__attribute__((packed));
+
+
+
+
+static void (*isr20_later)(void*) = 0;
 static void anchorpoint()
 {
 }
@@ -240,8 +245,9 @@ __attribute__((interrupt)) static void allcpu_isr1f(void* p){
 
 
 __attribute__((interrupt)) static void allcpu_isr20(void* p){
-	//say("825x!\n");
-	isr_825x();
+	//say("timer!\n");
+	if(isr20_later)isr20_later(p);
+	else isr_825x();
 	irqchip_endofirq(0);
 }
 __attribute__((interrupt)) static void allcpu_isr21(void* p){
@@ -307,8 +313,13 @@ int percpu_enableint(int apicid, int intvec, void* isr, int flag)
 {
 	if(intvec < 0x20)return 0;
 
-	u8* idt = (void*)BSPCPU_IDT;
-	interruptinstall(idt, intvec, (u64)isr, 0);
+	if(0x20 == intvec){
+		isr20_later = isr;
+	}
+	else{
+		u8* idt = (void*)BSPCPU_IDT;
+		interruptinstall(idt, intvec, (u64)isr, 0);
+	}
 	return 1;
 }
 void initidt_bsp()
@@ -355,7 +366,7 @@ void initidt_bsp()
 	interruptinstall(idt, 0x1f, (u64)allcpu_isr1f, 0);
 
 	//interrupt
-	interruptinstall(idt, 0x20, getisr20(), 0);		//(u64)bspcpu_isr20
+	interruptinstall(idt, 0x20, (u64)allcpu_isr20, 0);		//(u64)bspcpu_isr20
 	interruptinstall(idt, 0x21, (u64)allcpu_isr21, 0);
 	interruptinstall(idt, 0x27, (u64)allcpu_isr27, 0);
 	interruptinstall(idt, 0x28, (u64)allcpu_isr28, 0);

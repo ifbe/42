@@ -36,7 +36,7 @@ u64 pit8254_ns()
 }
 
 
-void pit8254_check()
+int pit8254_check()
 {
 	//while(0 == cnt);
 	//say("8254 works, cnt=%x, tsc=%llx\n\n", cnt, rdtsc());
@@ -60,11 +60,21 @@ void pit8254_check()
 			say("pit=%lld,tsc=%lld\n", pit_now, tsc_now);
 			pit_tn += 10;
 		}
-		if(pit_now >= pit_t0 + 100)break;	//100ms
+		if(pit_now >= pit_t0 + 100){
+			say("time_delta=0.1s, tsc_delta=%lld, avgfreq=%lldmhz\n", tsc_now - tsc_t0, (tsc_now-tsc_t0)*10/1000/1000);
+			goto good;
+		}
+		if(tsc_now > tsc_t0 + (u64)3*10*1000*1000*1000){
+			say("pit fail\n");
+			goto fail;
+		}
 	}
-	say("time_delta=0.1s, tsc_delta=%lld, avgfreq=%lldmhz\n", tsc_now - tsc_t0, (tsc_now-tsc_t0)*10/1000/1000);
+good:
+	return 1;
+fail:
+	return 0;
 }
-void init825x()
+int init825x()
 {
 	say("@init825x, cnt=%x, tsc=%llx\n", cnt, rdtsc());
 	u32 t = 3579545 / 3 / 1000;
@@ -77,7 +87,8 @@ void init825x()
 
 	irqchip_enableirq(0,0, 0,0x20);
 
-	pit8254_check();
+	int ret = pit8254_check();
 
 	say("initpit end\n\n");
+	return ret;
 }
