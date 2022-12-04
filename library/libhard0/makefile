@@ -188,6 +188,7 @@ oscore/tox86/irq/irq.c \
 oscore/tox86/irq/8259/8259.c \
 oscore/tox86/irq/apic/apic.io.c \
 oscore/tox86/irq/apic/apic.local.c \
+oscore/tox86/irq/msi/msi.c \
 oscore/tox86/pmic/power.c \
 oscore/tox86/stor/ide-driver.c \
 oscore/tox86/timer/persoc/timer.hpet.c \

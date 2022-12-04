@@ -53,11 +53,11 @@ int pit8254_check()
 		tsc_now = rdtsc();
 
 		if(tsc_now > tsc_tn){
-			say("maybe noirq: irqsum=%lld,tsc=%lld\n", pit_now, tsc_now);
+			say("(maybe noirq)irqsum=%lld,tsc=%lld\n", pit_now, tsc_now);
 			tsc_tn += (u64)10*1000*1000*1000;
 		}
 		if(pit_now >= pit_tn){
-			say("pit=%lld,tsc=%lld\n", pit_now, tsc_now);
+			say("(look good)irqsum=%lld,tsc=%lld\n", pit_now, tsc_now);
 			pit_tn += 10;
 		}
 		if(pit_now >= pit_t0 + 100){

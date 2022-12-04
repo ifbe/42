@@ -49,7 +49,7 @@ void inittimer()
 {
 	say("inittimer\n");
 
-	int ret;
+	int ret = 0;
 	void* hpet_mmio = acpi_hpet_addr();
 	int hpet_prefer = acpi_hpet_replacepit();
 
@@ -64,11 +64,12 @@ void inittimer()
 	if(0 == timer_type){
 		say("try rtc+pit\n");
 		initrtc();
-		init825x();
-		timer_type = 'p';
+		ret = init825x();
+		if(ret)timer_type = 'p';
 	}
 
 	if(0 == timer_type){
+		say("no more to try, forever hlt\n");
 		while(1)asm("hlt");		//no more way, timer must work
 		say("try tsc\n");
 	}
