@@ -146,7 +146,7 @@ int v4l2cam_prepare(_obj* cam)
 	if(cap.capabilities&V4L2_CAP_READWRITE)           printf("		V4L2_CAP_READWRITE\n");
 	if(cap.capabilities&V4L2_CAP_ASYNCIO)             printf("		V4L2_CAP_ASYNCIO\n");
 	if(cap.capabilities&V4L2_CAP_STREAMING)           printf("		V4L2_CAP_STREAMING\n");
-	if(cap.capabilities&V4L2_CAP_TOUCH)               printf("		V4L2_CAP_TOUCH\n");
+	//if(cap.capabilities&V4L2_CAP_TOUCH)               printf("		V4L2_CAP_TOUCH\n");
 	if(cap.capabilities&V4L2_CAP_DEVICE_CAPS)         printf("		V4L2_CAP_DEVICE_CAPS\n");
 	if(0 == cap.capabilities&V4L2_CAP_VIDEO_CAPTURE)return 0;
 
