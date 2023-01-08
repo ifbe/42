@@ -1,6 +1,7 @@
 <entity>
 geom{
 fmt:geom
+url:4p
 }
 freecam{
 fmt:freecam

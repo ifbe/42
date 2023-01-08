@@ -1,0 +1,24 @@
+<system>
+tcphost{
+fmt:tcp
+url:127.0.0.1:8080
+}
+
+tap{
+fmt:tap
+url:/dev/net/tun
+}
+</system>
+
+
+<artery>
+vpn{
+fmt:vpn
+}
+</artery>
+
+
+<relation>
+(tap, 0, dst) -> (vpn, 0, card)
+(tcphost, 0, dst) -> (vpn, 0, peer)
+</relation>

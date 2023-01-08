@@ -150,6 +150,32 @@ void update_onedraw(struct gldst* dst, struct mysrc* src)
 	}
 //say("@update done\n");
 }
+void update_atomic(struct gldst* dst, struct mysrc* src)
+{
+	GLuint data[4] = {1,2,3,4};
+	if(0 == dst->atomic){
+		glGenBuffers(1, &dst->atomic);
+		glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, dst->atomic);
+		glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint)*4, data, GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
+	}
+
+	//read old value
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, dst->atomic);
+	GLuint* rbuf = glMapBuffer(GL_ATOMIC_COUNTER_BUFFER, GL_READ_ONLY);
+	if(rbuf)say("fd=%d,opaquecount=%d\n", dst->atomic, rbuf[0]);
+	else say("err@glMapBuffer:fd=%d,glGetError=%d\n", dst->atomic, glGetError());
+	glUnmapBuffer(GL_ATOMIC_COUNTER_BUFFER);
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
+
+	//write new value
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, dst->atomic);
+	GLuint* wbuf = glMapBuffer(GL_ATOMIC_COUNTER_BUFFER, GL_WRITE_ONLY);
+	if(wbuf)wbuf[0] = 0;
+	else say("err@glMapBuffer:fd=%d,glGetError=%d\n", dst->atomic, glGetError());
+	glUnmapBuffer(GL_ATOMIC_COUNTER_BUFFER);
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
+}
 void fullwindow_upload(struct gl41world* world)
 {
 	struct gl41data** cam = world->camera;
@@ -166,6 +192,10 @@ void fullwindow_upload(struct gl41world* world)
 			cam[j]->dst.target_deq = cam[j]->src.target_enq;
 		}
 	}
+
+#ifndef __APPLE__
+	update_atomic(&cam[0]->dst, &cam[0]->src);
+#endif
 
 	//light
 	for(j=0;j<1;j++){
@@ -248,6 +278,10 @@ void render_material(struct gl41data* cam, struct gl41data* lit, struct gl41data
 
 	//0.shader
 	glUseProgram(dst->shader);
+
+#ifndef __APPLE__
+	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, cam[0].dst.atomic);
+#endif
 
 	//1.argument
 	updatearg(dst->shader, data);

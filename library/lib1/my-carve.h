@@ -3,8 +3,11 @@
 #ifdef __ANDROID__
 	#define GLSL_VERSION "#version 320 es\n"
 	#define GLSL_PRECISION "precision highp float;\n"
-#else
+#elif __APPLE__
 	#define GLSL_VERSION "#version 410 core\n"
+	#define GLSL_PRECISION "precision mediump float;\n"
+#else
+	#define GLSL_VERSION "#version 420 compatibility\n"
 	#define GLSL_PRECISION "precision mediump float;\n"
 #endif
 
@@ -243,7 +246,7 @@ struct gldst
 	//texture
 	char* texname[8];
 
-	//state
+	//android will distroy context, need check and recreate
 	u32 ctxage;
 
 	//
@@ -252,6 +255,8 @@ struct gldst
 	u32 rbo;
 	u32 shader;
 	u32 ubo;
+	u32 atomic;		//per pixel link list: counter
+	u32 uimage;		//per pixel link list: databuffer
 	u32 tex[8];
 	u32 vbo;
 	u32 ibo;

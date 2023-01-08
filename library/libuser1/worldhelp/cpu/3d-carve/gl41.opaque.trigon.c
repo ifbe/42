@@ -62,6 +62,17 @@ GLSL_VERSION
 	"gl_Position = cammvp * vec4(v, 1.0);\n"
 "}\n";
 
+#ifndef __APPLE__
+static char gl41opaquetrigon_frag[] =
+GLSL_VERSION
+"in mediump vec4 colour;\n"
+"out mediump vec4 FragColor;\n"
+"layout(binding = 0, offset = 0) uniform atomic_uint ab;\n"
+"void main(){\n"
+	"uint count = atomicCounterIncrement(ab);\n"
+	"FragColor = colour;\n"
+"}\n";
+#else
 static char gl41opaquetrigon_frag[] =
 GLSL_VERSION
 "in mediump vec4 colour;\n"
@@ -69,6 +80,7 @@ GLSL_VERSION
 "void main(){\n"
 	"FragColor = colour;\n"
 "}\n";
+#endif
 
 
 
