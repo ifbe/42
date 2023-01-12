@@ -39,13 +39,13 @@ struct timermmio{
 
 
 struct hpetmmio{
+//63:32	COUNTER_CLK_PERIOD	//Main counter tick period in femtoseconds (10^-15 seconds). Must not be zero, must be less or equal to 0x05F5E100, or 100 nanoseconds.
 //31-16	         VENDOR_ID	//This field should be interpreted similarly to PCI's vendor ID.
 // . 15	        LEG_RT_CAP	//If this bit is 1, HPET is capable of using "legacy replacement" mapping.
 // . 14	          Reserved
 // . 13	    COUNT_SIZE_CAP	//If this bit is 1, HPET main counter is capable of operating in 64 bit mode.
 // 12:8	       NUM_TIM_CAP	//The amount of timers - 1.
 //  7:0	            REV_ID	//Indicates which revision of the function is implemented; must not be 0.
-//63:32	COUNTER_CLK_PERIOD	//Main counter tick period in femtoseconds (10^-15 seconds). Must not be zero, must be less or equal to 0x05F5E100, or 100 nanoseconds.
 	//0x00-0x0f
 	u32 cap_lo32;
 	u32 cap_hi32_COUNTER_CLK_PERIOD;
@@ -79,23 +79,43 @@ struct hpetmmio{
 
 
 
-static u64 cnt = 0;
+static struct hpetmmio* mhpet;
+static u64 irqcnt = 0;
+//first irq
+u64 firstirq_tsc = 0;
+u64 firstirq_isr = 0;
+u64 firstirq_counter = 0;
+u64 firstirq_compare = 0;
+
+
+
+
 static void isr_hpet(void* p)
 {
-	//if(0==(cnt%1000))say("cnt=%d\n",cnt);
-	cnt += 1;
+	if( (0 == irqcnt) && mhpet ){
+		struct timermmio* tmr = &mhpet->timer[0];
+		firstirq_tsc = rdtsc();
+		firstirq_isr = mhpet->isr_lo32;
+		firstirq_counter = mhpet->countervalue;
+		firstirq_compare = tmr->value;
+		//say("isr_hpet: tsc=%lld,isr=%x,counter=%lld,compare=%lld\n", rdtsc(), mhpet->isr_lo32, mhpet->countervalue, tmr->value);
+	}
+
+	//if(0==(irqcnt%1000))say("irqcnt=%d\n",irqcnt);
+
+	irqcnt += 1;
 }
 u64 hpet_gettime_ms()
 {
-	return cnt;
+	return irqcnt;
 }
 u64 hpet_gettime_us()
 {
-	return cnt*1000;
+	return irqcnt*1000;
 }
 u64 hpet_gettime_ns()
 {
-	return cnt*1000*1000;
+	return irqcnt*1000*1000;
 }
 
 
@@ -148,14 +168,14 @@ void hpet_print(struct hpetmmio* hpet)
 }
 void hpet_setup(struct hpetmmio* hpet)
 {
+	//stop
+	hpet->cfg_lo32 &= 0xfffffffe;
+
 	//0.prepare data
 	u64 interval_between_counter = hpet->cap_hi32_COUNTER_CLK_PERIOD;
 	u64 interval_between_interrupt = (u64)1000*1000*1000*1000;
 	u64 delta = interval_between_interrupt/interval_between_counter;
-	say("dc=%llx,di=%llx,delta=%llx\n", interval_between_counter, interval_between_interrupt, delta);
-
-	u64 curval = hpet->countervalue;
-	say("hpet_setup timer0, curval=%llx\n", curval);
+	say("%lld / %lld = %lld\n", interval_between_interrupt, interval_between_counter, delta);
 
 	struct timermmio* tmr = &hpet->timer[0];
 
@@ -165,6 +185,7 @@ void hpet_setup(struct hpetmmio* hpet)
 	int cpu_intvec = 0x20;	//target cpu intvec
 	percpu_enableint(cpu_apicid, cpu_intvec, isr_hpet, 0);
 
+	u64 cfgcap;
 	int fsb_cap = (tmr->cfgcap>>15)&1;
 	if(fsb_cap){
 		//2.irqchip
@@ -176,10 +197,9 @@ void hpet_setup(struct hpetmmio* hpet)
 		tmr->msi_data = msi_data;
 
 		//3.self
-		u64 cfgcap = tmr->cfgcap;
+		cfgcap = tmr->cfgcap;
 		cfgcap &= ~((u64)0x1f<<9);
 		cfgcap |= (1 << 2) | (1 << 3) | (1 << 6) | (1<<14);
-		tmr->cfgcap = cfgcap;
 	}
 	else{
 		u64 ioapic_input = firstnonezerobit(tmr->cfgcap>>32);
@@ -192,24 +212,30 @@ void hpet_setup(struct hpetmmio* hpet)
 		irqchip_enableirq(irqchip_type, irqchip_foot, cpu_apicid, cpu_intvec);
 
 		//3.self
-		u64 cfgcap = tmr->cfgcap;
+		cfgcap = tmr->cfgcap;
 		cfgcap &= ~((u64)0x1f<<9);
 		cfgcap |= (ioapic_input << 9) | (1 << 2) | (1 << 3) | (1 << 6);
-		tmr->cfgcap = cfgcap;
 	}
 
+	u64 curval = hpet->countervalue;
+	say("hpet_setup before: tsc=%lld, cfgcap=%llx, counter=%lld, compare=%lld\n", rdtsc(), cfgcap, curval, tmr->value);
+
+	tmr->cfgcap = cfgcap;
 	tmr->value = curval + delta;
 	tmr->value = delta;
 
 	hpet->cfg_lo32 |= 1;
+
+	say("hpet_setup after: tsc=%lld, counter=%lld, compare=%lld\n", rdtsc(), tmr->cfgcap, hpet->countervalue, tmr->value);
 }
 int hpet_check(struct hpetmmio* hpet)
 {
-	//while(0 == cnt);
-	//say("8254 works, cnt=%x, tsc=%llx\n\n", cnt, rdtsc());
-	struct timermmio* tmr = &hpet->timer[0];
+	if(irqcnt){
+		say("firstirq infomation: tsc=%lld, isr=%llx, counter=%lld, compare=%lld\n", firstirq_tsc, firstirq_isr, firstirq_counter, firstirq_compare);
+	}
 
-	u64 hpet_t0 = cnt;
+	struct timermmio* tmr = &hpet->timer[0];
+	u64 hpet_t0 = irqcnt;
 	u64 hpet_tn = hpet_t0 + 10;		//10ms
 	u64 hpet_now = 0;
 	u64 tsc_t0 = rdtsc();
@@ -217,15 +243,15 @@ int hpet_check(struct hpetmmio* hpet)
 	u64 tsc_now = 0;
 	say("waiting (irqsum>100) or (tsc>10g): irqsum=%lld,tsc=%lld\n", hpet_t0, tsc_t0);
 	while(1){
-		hpet_now = cnt;
+		hpet_now = irqcnt;
 		tsc_now = rdtsc();
 
 		if(tsc_now > tsc_tn){
-			say("(maybe noirq)irqsum=%lld,tscval=%lld,main=%llx,accu=%llx\n", hpet_now, tsc_now, hpet->countervalue, tmr->value);
+			say("(maybe noirq)irqsum=%lld,tscval=%lld,counter=%lld,compare=%lld\n", hpet_now, tsc_now, hpet->countervalue, tmr->value);
 			tsc_tn += (u64)10*1000*1000*1000;
 		}
 		if(hpet_now >= hpet_tn){
-			say("(look good)irqsum=%lld,tscval=%lld,main=%llx,accu=%llx\n", hpet_now, tsc_now, hpet->countervalue, tmr->value);
+			say("(look good)irqsum=%lld,tscval=%lld,counter=%lld,compare=%lld\n", hpet_now, tsc_now, hpet->countervalue, tmr->value);
 			hpet_tn += 10;
 		}
 		if(hpet_now >= hpet_t0 + 100){
@@ -246,6 +272,8 @@ int inithpet(struct hpetmmio* hpet)
 {
 	say("@inithpet, tsc=%llx\n", rdtsc());
 	if(0 == hpet)return 0;
+
+	mhpet = hpet;
 
 	hpet_print(hpet);
 	//say("hpet fail\n\n");return 0;			//debug
