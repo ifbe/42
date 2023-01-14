@@ -81,26 +81,39 @@ struct hpetmmio{
 
 static struct hpetmmio* mhpet;
 static u64 irqcnt = 0;
-//first irq
-u64 firstirq_tsc = 0;
-u64 firstirq_isr = 0;
-u64 firstirq_counter = 0;
-u64 firstirq_compare = 0;
 
+
+
+
+struct atthattime{
+u64 tsc;
+u64 isr;
+u64 counter;
+u64 compare;
+};
+static struct atthattime aftersetup;
+
+#define HPET_DEBUGIRQ
+#ifdef HPET_DEBUGIRQ
+static struct atthattime debugirq[3];
+#endif
 
 
 
 static void isr_hpet(void* p)
 {
-	if( (0 == irqcnt) && mhpet ){
+#ifdef HPET_DEBUGIRQ
+	if(irqcnt < 3){
+	if(mhpet && (0 == debugirq[irqcnt].compare)){
 		struct timermmio* tmr = &mhpet->timer[0];
-		firstirq_tsc = rdtsc();
-		firstirq_isr = mhpet->isr_lo32;
-		firstirq_counter = mhpet->countervalue;
-		firstirq_compare = tmr->value;
+		debugirq[irqcnt].tsc = rdtsc();
+		debugirq[irqcnt].isr = mhpet->isr_lo32;
+		debugirq[irqcnt].counter = mhpet->countervalue;
+		debugirq[irqcnt].compare = tmr->value;
 		//say("isr_hpet: tsc=%lld,isr=%x,counter=%lld,compare=%lld\n", rdtsc(), mhpet->isr_lo32, mhpet->countervalue, tmr->value);
 	}
-
+	}
+#endif
 	//if(0==(irqcnt%1000))say("irqcnt=%d\n",irqcnt);
 
 	irqcnt += 1;
@@ -191,7 +204,7 @@ void hpet_setup(struct hpetmmio* hpet)
 		//2.irqchip
 		u32 msi_addr = msi_help_addr(cpu_apicid);
 		u32 msi_data = msi_help_data(cpu_intvec, 0, 0);
-		say("msi: addr=%x,data=%x\n", msi_addr, msi_data);
+		say("hpet_setup msi: addr=%x,data=%x\n", msi_addr, msi_data);
 
 		tmr->msi_addr = msi_addr;
 		tmr->msi_data = msi_data;
@@ -199,14 +212,13 @@ void hpet_setup(struct hpetmmio* hpet)
 		//3.self
 		cfgcap = tmr->cfgcap;
 		cfgcap &= ~((u64)0x1f<<9);
-		cfgcap |= (1 << 2) | (1 << 3) | (1 << 6) | (1<<14);
+		cfgcap |= (1 << 3) | (1 << 6) | (1<<14);
 	}
 	else{
 		u64 ioapic_input = firstnonezerobit(tmr->cfgcap>>32);
-		say("firstnonzerobit=%llx\n",ioapic_input);
+		say("hpet_setup ioapic:%llx\n", ioapic_input);
 
 		//2.irqchip
-		say("hpet_setup irqchip\n");
 		int irqchip_type = hex16('i','o');
 		int irqchip_foot = ioapic_input;
 		irqchip_enableirq(irqchip_type, irqchip_foot, cpu_apicid, cpu_intvec);
@@ -214,59 +226,75 @@ void hpet_setup(struct hpetmmio* hpet)
 		//3.self
 		cfgcap = tmr->cfgcap;
 		cfgcap &= ~((u64)0x1f<<9);
-		cfgcap |= (ioapic_input << 9) | (1 << 2) | (1 << 3) | (1 << 6);
+		cfgcap |= (ioapic_input << 9) | (1 << 3) | (1 << 6);
 	}
 
 	u64 curval = hpet->countervalue;
-	say("hpet_setup before: tsc=%lld, cfgcap=%llx, counter=%lld, compare=%lld\n", rdtsc(), cfgcap, curval, tmr->value);
+	say("hpet_setup before setval: tsc=%lld, cfgcap=%llx, counter=%lld, compare=%lld\n", rdtsc(), cfgcap, curval, tmr->value);
 
-	tmr->cfgcap = cfgcap;
+	tmr->cfgcap = cfgcap;	//dont enable irq: otherwise receive {counter=0,compare=-1}
 	tmr->value = curval + delta;
 	tmr->value = delta;
-
+	tmr->cfgcap |= (1 << 2);	//enable irq after value set
 	hpet->cfg_lo32 |= 1;
+	say("hpet_setup after setval: tsc=%lld, cfgcap=%llx, counter=%lld, compare=%lld\n", rdtsc(), tmr->cfgcap, hpet->countervalue, tmr->value);
 
-	say("hpet_setup after: tsc=%lld, counter=%lld, compare=%lld\n", rdtsc(), tmr->cfgcap, hpet->countervalue, tmr->value);
+	aftersetup.tsc = rdtsc();
+	aftersetup.isr = hpet->isr_lo32;
+	aftersetup.counter = hpet->countervalue;
+	aftersetup.compare = tmr->value;
+	say("hpet_setup all done: tsc=%lld, isr=%llx, counter=%lld, compare=%lld\n", aftersetup.tsc, aftersetup.isr, aftersetup.counter, aftersetup.compare);
 }
 int hpet_check(struct hpetmmio* hpet)
 {
-	if(irqcnt){
-		say("firstirq infomation: tsc=%lld, isr=%llx, counter=%lld, compare=%lld\n", firstirq_tsc, firstirq_isr, firstirq_counter, firstirq_compare);
-	}
-
+	int ret;
 	struct timermmio* tmr = &hpet->timer[0];
-	u64 hpet_t0 = irqcnt;
-	u64 hpet_tn = hpet_t0 + 10;		//10ms
-	u64 hpet_now = 0;
+	u64 irq_c0 = irqcnt;		//before loop
 	u64 tsc_t0 = rdtsc();
+	u64 irq_cn = irq_c0 + 10;		//+10ms
 	u64 tsc_tn = tsc_t0 + (u64)10*1000*1000*1000;
+	u64 irq_chk = 0;		//check point
+	u64 tsc_chk = 0;
+	u64 irq_now = 0;		//now
 	u64 tsc_now = 0;
-	say("waiting (irqsum>100) or (tsc>10g): irqsum=%lld,tsc=%lld\n", hpet_t0, tsc_t0);
+	say("waiting for something change: irqsum=%lld,tsc=%lld\n", irq_c0, tsc_t0);
 	while(1){
-		hpet_now = irqcnt;
+		irq_now = irqcnt;
 		tsc_now = rdtsc();
+		if(irqcnt){				//irq come
+			if(0 == irq_chk){	//not yet set value
+				irq_chk = irq_now;
+				tsc_chk = tsc_now;
+			}
+		}
 
-		if(tsc_now > tsc_tn){
-			say("(maybe noirq)irqsum=%lld,tscval=%lld,counter=%lld,compare=%lld\n", hpet_now, tsc_now, hpet->countervalue, tmr->value);
+		if(tsc_now > tsc_tn){		//print every 10G tsc
+			say("(maybe noirq)irqsum=%lld,tscval=%lld,counter=%lld,compare=%lld\n", irq_now, tsc_now, hpet->countervalue, tmr->value);
 			tsc_tn += (u64)10*1000*1000*1000;
 		}
-		if(hpet_now >= hpet_tn){
-			say("(look good)irqsum=%lld,tscval=%lld,counter=%lld,compare=%lld\n", hpet_now, tsc_now, hpet->countervalue, tmr->value);
-			hpet_tn += 10;
+		if(irq_now >= irq_cn){		//print every 10 irq
+			say("(look good)irqsum=%lld,tscval=%lld,counter=%lld,compare=%lld\n", irq_now, tsc_now, hpet->countervalue, tmr->value);
+			irq_cn += 10;
 		}
-		if(hpet_now >= hpet_t0 + 100){
-			say("time_delta=0.1s, tsc_delta=%lld, avgfreq=%lldmhz\n", tsc_now - tsc_t0, (tsc_now-tsc_t0)*10/1000/1000);
-			goto good;
+		if(irq_now >= irq_c0 + 200){		//success: over 200 irq
+			say("tsc_delta=%lld, irq_delta=%lld, avgfreq=%lldmhz\n", tsc_now-tsc_chk, irq_now-irq_chk, (tsc_now-tsc_chk)/(irq_now-irq_chk)/1000);
+			ret = 1;
+			break;
 		}
-		if(tsc_now > tsc_t0 + (u64)3*10*1000*1000*1000){
+		if(tsc_now > tsc_t0 + (u64)3*10*1000*1000*1000){	//abnormal: over 30G tsc
 			say("hpet fail\n");
-			goto fail;
+			ret = 0;
+			break;
 		}
 	}
-good:
-	return 1;
-fail:
-	return 0;
+
+#ifdef HPET_DEBUGIRQ
+	say("debugtirq0: tsc=%lld,isr=%llx,counter=%lld,compare=%lld\n", debugirq[0].tsc, debugirq[0].isr, debugirq[0].counter, debugirq[0].compare);
+	say("debugtirq1: tsc=%lld,isr=%llx,counter=%lld,compare=%lld\n", debugirq[1].tsc, debugirq[1].isr, debugirq[1].counter, debugirq[1].compare);
+	say("debugtirq2: tsc=%lld,isr=%llx,counter=%lld,compare=%lld\n", debugirq[2].tsc, debugirq[2].isr, debugirq[2].counter, debugirq[2].compare);
+#endif
+
+	return ret;
 }
 int inithpet(struct hpetmmio* hpet)
 {
