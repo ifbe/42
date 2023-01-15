@@ -7,7 +7,7 @@
 	#define GLSL_VERSION "#version 410 core\n"
 	#define GLSL_PRECISION "precision mediump float;\n"
 #else
-	#define GLSL_VERSION "#version 420 compatibility\n"
+	#define GLSL_VERSION "#version 430 core\n"
 	#define GLSL_PRECISION "precision mediump float;\n"
 #endif
 

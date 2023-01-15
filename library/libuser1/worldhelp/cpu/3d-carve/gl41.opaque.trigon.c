@@ -50,6 +50,95 @@ static char dx11opaquetrigon_frag[] =
 
 
 
+#ifndef __APPLE__
+static char gl41opaquetrigon_vert[] =
+GLSL_VERSION
+GLSL_PRECISION
+"layout(location = 0)in vec3 v;\n"
+"layout(location = 1)in vec3 n;\n"
+"layout(location = 2)in vec4 c;\n"
+"out vec3 objxyz;\n"
+"out vec3 normal;\n"
+"out vec4 colour;\n"
+"uniform mat4 cammvp;\n"
+"void main(){\n"
+	"objxyz = v;\n"
+	"normal = n;\n"
+	"vec3 tmp = pow(vec3(c), vec3(2.2));\n"
+	"colour = vec4(tmp, c.w);\n"
+	"gl_Position = cammvp * vec4(objxyz,1.0);\n"
+"}\n";
+
+static char gl41opaquetrigon_frag[] =
+GLSL_VERSION
+GLSL_PRECISION
+"in vec3 objxyz;\n"
+"in vec3 normal;\n"
+"in vec4 colour;\n"
+//"in vec3 mtrfao;\n"
+"out vec4 FragColor;\n"
+"uniform vec3 camxyz;\n"
+"layout(binding = 0, offset = 0) uniform atomic_uint cur;\n"
+"layout(binding = 0, offset = 4) uniform atomic_uint cnt;\n"
+"const float PI = 3.1415926535897932384626433832795028841971693993151;\n"
+"float getD(float v, float r){\n"
+    "float a2 = r*r*r*r;\n"
+    "float de = (v*v * (a2 - 1.0) + 1.0);\n"
+    "return a2 / (PI * de * de);\n"
+"}\n"
+"float getG(float v, float r){\n"
+    "float k = (r+1.0) * (r+1.0) / 8.0;\n"
+    "return v / (v * (1.0 - k) + k);\n"
+"}\n"
+"void main(){\n"
+	"uint count = atomicCounterIncrement(cur);\n"
+	"vec3 mtrfao = vec3(0.0, 0.5, 1.0);\n"
+	"vec3 albedo = vec3(colour);\n"
+	"float metal = mtrfao.x;\n"
+	"float rough = mtrfao.y;\n"
+	"float amocc = mtrfao.z;\n"
+
+	"vec3 N = normalize(normal);\n"
+	"vec3 E = normalize(camxyz - objxyz);\n"
+	"vec3 F0 = mix(vec3(0.04), albedo, metal);\n"
+
+	"vec3 litrgb = vec3(1.0, 1.0, 1.0);\n"
+	"vec3 litdir[4];\n"
+	"litdir[0] = vec3(-1.0, 0.0, 1.0);\n"
+	"litdir[1] = vec3( 1.0, 0.0, 1.0);\n"
+	"litdir[2] = vec3( 0.0,-1.0, 1.0);\n"
+	"litdir[3] = vec3( 0.0, 1.0, 1.0);\n"
+
+	"vec3 ocolor = vec3(0.03) * albedo * amocc;\n"
+	"for(int j=0;j<4;j++){\n"
+		"vec3 L = litdir[j];\n"
+		//"float distance = length(L);\n"
+		//"float attenuation = 1.0 / (distance * distance);\n"
+		//"vec3 radiance = litrgb * attenuation;\n"
+		"vec3 radiance = litrgb;\n"
+
+		"L = normalize(L);\n"
+		"vec3 H = normalize(E + L);\n"
+		"float NdotL = max(dot(N, L), 0.0);\n"
+		"float NdotE = max(dot(N, E), 0.0);\n"
+		"float NdotH = max(dot(N, H), 0.0);\n"
+		"float HdotE = max(dot(H, E), 0.0);\n"
+
+		"float G = getG(NdotL, rough)*getG(NdotE, rough);\n"
+		"float D = getD(NdotH, rough);\n"
+		"vec3 F = F0 + (1.0 - F0) * pow(1.0 - HdotE, 5.0);\n"
+
+		"vec3 kS = F;\n"
+		"vec3 kD = (vec3(1.0) - kS) * (1.0 - metal);\n"
+		"vec3 specular = (D * G * F) / max(4.0 * NdotE * NdotL, 0.001);\n"
+		"ocolor += (kD * albedo / PI + specular) * radiance * NdotL;\n"
+	"}\n"
+
+	"ocolor = ocolor / (ocolor + vec3(1.0));\n"
+	"ocolor = pow(ocolor, vec3(1.0/2.2));\n"
+	"FragColor = vec4(ocolor, colour.w);\n"
+"}\n";
+#else
 static char gl41opaquetrigon_vert[] =
 GLSL_VERSION
 "layout(location = 0)in mediump vec3 v;\n"
@@ -62,17 +151,6 @@ GLSL_VERSION
 	"gl_Position = cammvp * vec4(v, 1.0);\n"
 "}\n";
 
-#ifndef __APPLE__
-static char gl41opaquetrigon_frag[] =
-GLSL_VERSION
-"in mediump vec4 colour;\n"
-"out mediump vec4 FragColor;\n"
-"layout(binding = 0, offset = 0) uniform atomic_uint ab;\n"
-"void main(){\n"
-	"uint count = atomicCounterIncrement(ab);\n"
-	"FragColor = colour;\n"
-"}\n";
-#else
 static char gl41opaquetrigon_frag[] =
 GLSL_VERSION
 "in mediump vec4 colour;\n"
