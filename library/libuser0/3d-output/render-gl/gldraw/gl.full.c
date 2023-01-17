@@ -150,33 +150,84 @@ void update_onedraw(struct gldst* dst, struct mysrc* src)
 	}
 //say("@update done\n");
 }
-void update_atomic(struct gldst* dst, struct mysrc* src)
+void update_ppll(struct gldst* dst, struct mysrc* src)
 {
 	GLuint data[4] = {1,2,3,4};
-	if(0 == dst->atomic){
-		glGenBuffers(1, &dst->atomic);
-		glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, dst->atomic);
+	if(0 == dst->ppll_atomic){
+		glGenBuffers(1, &dst->ppll_atomic);
+		glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, dst->ppll_atomic);
 		glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint)*4, data, GL_DYNAMIC_DRAW);
 		glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
 	}
+	if(0 == dst->ppll_head){
+		glGenBuffers(1, &dst->ppll_head);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, dst->ppll_head);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, (4*2)*(1024*768)*4, 0, GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	}
+	if(0 == dst->ppll_data){
+		glGenBuffers(1, &dst->ppll_data);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, dst->ppll_data);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, (4*4)*(1024*768)*4, 0, GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	}
 
-	//read old value
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, dst->atomic);
+	//ppll_atomic: read old value
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, dst->ppll_atomic);
 	GLuint* rbuf = glMapBuffer(GL_ATOMIC_COUNTER_BUFFER, GL_READ_ONLY);
-	if(rbuf)say("fd=%d,opaquecount=%d\n", dst->atomic, rbuf[0]);
-	else say("err@glMapBuffer:fd=%d,glGetError=%d\n", dst->atomic, glGetError());
+	if(rbuf)say("fd=%d,opaquecount=%d\n", dst->ppll_atomic, rbuf[0]);
+	else say("err@glMapBuffer:fd=%d,glGetError=%d\n", dst->ppll_atomic, glGetError());
 	glUnmapBuffer(GL_ATOMIC_COUNTER_BUFFER);
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
 
-	//write new value
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, dst->atomic);
+	//ppll_atomic: write new value
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, dst->ppll_atomic);
 	GLuint* wbuf = glMapBuffer(GL_ATOMIC_COUNTER_BUFFER, GL_WRITE_ONLY);
 	if(wbuf)wbuf[0] = 0;
-	else say("err@glMapBuffer:fd=%d,glGetError=%d\n", dst->atomic, glGetError());
+	else say("err@glMapBuffer:fd=%d,glGetError=%d\n", dst->ppll_atomic, glGetError());
 	glUnmapBuffer(GL_ATOMIC_COUNTER_BUFFER);
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
+
+	//ppll_head: read old value
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, dst->ppll_head);
+	int xxxx = 384*1024+512;		//screen center
+	int temp = 0;
+	GLuint* head_rbuf = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
+	if(head_rbuf){
+		temp = head_rbuf[xxxx*2+0];
+		say("head: prev=%d,count=%d\n", head_rbuf[xxxx*2+0], head_rbuf[xxxx*2+1]);
+	}
+	else say("err@glMapBuffer:fd=%d,glGetError=%d\n", dst->ppll_head, glGetError());
+	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+	//ppll_head: write new value
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, dst->ppll_head);
+	glClearBufferData(GL_SHADER_STORAGE_BUFFER, GL_R32UI, GL_RED_INTEGER, GL_UNSIGNED_INT, 0);
+	//say("glGetError=%d\n",glGetError());
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+	//ppll_data: read old value
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, dst->ppll_data);
+	GLuint* data_rbuf = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
+	if(data_rbuf){
+		while((temp > 0) && (temp < 1024*768*4)){
+			say("data[%x]: prev=%d,temp=%d,color=%x,depth=%f\n", temp,
+				data_rbuf[temp*4+0], data_rbuf[temp*4+1], data_rbuf[temp*4+2], *(float*)&data_rbuf[temp*4+3]);
+			temp = data_rbuf[temp*4+0];
+		}
+	}
+	else say("err@glMapBuffer:fd=%d,glGetError=%d\n", dst->ppll_data, glGetError());
+	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+	//ppll_data: write new value
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, dst->ppll_data);
+	glClearBufferData(GL_SHADER_STORAGE_BUFFER, GL_R32UI, GL_RED_INTEGER, GL_UNSIGNED_INT, 0);
+	//say("glGetError=%d\n",glGetError());
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
-void fullwindow_upload(struct gl41world* world)
+void fullwindow_upload(struct gl41world* world, int stage)
 {
 	struct gl41data** cam = world->camera;
 	struct gl41data** lit = world->light;
@@ -194,7 +245,9 @@ void fullwindow_upload(struct gl41world* world)
 	}
 
 #ifndef __APPLE__
-	update_atomic(&cam[0]->dst, &cam[0]->src);
+	if(0 == stage){
+		update_ppll(&cam[0]->dst, &cam[0]->src);
+	}
 #endif
 
 	//light
@@ -280,7 +333,11 @@ void render_material(struct gl41data* cam, struct gl41data* lit, struct gl41data
 	glUseProgram(dst->shader);
 
 #ifndef __APPLE__
-	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, cam[0].dst.atomic);
+	if(cam && cam[0].dst.ppll_data){
+		glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, cam[0].dst.ppll_atomic);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, cam[0].dst.ppll_head);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, cam[0].dst.ppll_data);
+	}
 #endif
 
 	//1.argument
@@ -305,7 +362,6 @@ void render_material(struct gl41data* cam, struct gl41data* lit, struct gl41data
 	{
 		if(0 == dst->tex[j])continue;
 		if(0 == dst->texname[j])continue;
-//say("tex=%x\n", dst->tex[j]);
 		glActiveTexture(GL_TEXTURE0 + k);
 		glBindTexture(GL_TEXTURE_2D, dst->tex[j]);
 		glUniform1i(glGetUniformLocation(dst->shader, dst->texname[j]), k);
@@ -433,13 +489,15 @@ void fullwindow_uploadandrender(_obj* wnd, struct fstyle* area)
 {
 	//forward render: only one step
 	//deferred render: step1
-	fullwindow_upload(&wnd->gl41list.world[0]);
+	//say("world0\n");
+	fullwindow_upload(&wnd->gl41list.world[0], 0);
 	fullwindow_render(&wnd->gl41list.world[0], wnd, area);
 
 	//forword render: no this step
-	//deferred render: step2
-	if(_gbuf_ == wnd->vfmt){
-		fullwindow_upload(&wnd->gl41list.world[1]);
+	//deferred_render or per_pixel_link_list: step2
+	if((_ppll_ == wnd->vfmt)|(_gbuf_ == wnd->vfmt)){
+		//say("world1\n");
+		fullwindow_upload(&wnd->gl41list.world[1], 1);
 		fullwindow_render(&wnd->gl41list.world[1], wnd, area);
 	}
 }
@@ -598,6 +656,7 @@ void fullwindow_create(_obj* ogl, void* arg, int argc, char** argv)
 	for(j=0;j<argc;j++){
 		say("arg%d:%.4s\n", j, argv[j]);
 		if(0 == ncmp(argv[j], "vfmt:gbuf", 9))ogl->vfmt = _gbuf_;
+		if(0 == ncmp(argv[j], "vfmt:ppll", 9))ogl->vfmt = _ppll_;
 	}
 
 	ogl->hfmt = _gl41list_;
@@ -609,7 +668,7 @@ void fullwindow_create(_obj* ogl, void* arg, int argc, char** argv)
 	world[0].solid  = memorycreate(0x10000, 0);
 	world[0].opaque = memorycreate(0x10000, 0);
 
-	if(_gbuf_ == ogl->vfmt){
+	if((_gbuf_ == ogl->vfmt)|(_ppll_ == ogl->vfmt)){
 		world[1].camera = memorycreate(0x10000, 0);
 		world[1].light  = memorycreate(0x10000, 0);
 		world[1].solid  = memorycreate(0x10000, 0);

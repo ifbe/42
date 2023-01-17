@@ -255,8 +255,9 @@ struct gldst
 	u32 rbo;
 	u32 shader;
 	u32 ubo;
-	u32 atomic;		//per pixel link list: counter
-	u32 uimage;		//per pixel link list: databuffer
+	u32 ppll_atomic;	//per pixel link list: counter
+	u32 ppll_head;		//per pixel link list: head
+	u32 ppll_data;		//per pixel link list: data
 	u32 tex[8];
 	u32 vbo;
 	u32 ibo;

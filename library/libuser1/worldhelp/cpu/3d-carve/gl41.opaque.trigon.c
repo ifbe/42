@@ -78,9 +78,45 @@ GLSL_PRECISION
 //"in vec3 mtrfao;\n"
 "out vec4 FragColor;\n"
 "uniform vec3 camxyz;\n"
+"const float PI = 3.1415926535897932384626433832795028841971693993151;\n"
+
 "layout(binding = 0, offset = 0) uniform atomic_uint cur;\n"
 "layout(binding = 0, offset = 4) uniform atomic_uint cnt;\n"
-"const float PI = 3.1415926535897932384626433832795028841971693993151;\n"
+"struct ppllheaddef{\n"
+    "uint prev;\n"
+    "uint count;\n"
+"};\n"
+"layout (std430, binding = 0) buffer ppllheadbuf{\n"
+    "ppllheaddef ppllhead[];\n"
+"};\n"
+"struct pplldatadef{\n"
+    "uint prev;\n"
+    "uint temp;\n"
+    "uint color;\n"
+    "float depth;\n"
+"};\n"
+"layout (std430, binding = 1) buffer pplldatabuf{\n"
+    "pplldatadef pplldata[];\n"
+"};\n"
+"void insert(vec4 color){\n"
+	"uint x = uint(gl_FragCoord.x);\n"
+	"uint y = uint(gl_FragCoord.y);\n"
+	"uint index = y*1024 + x;\n"
+
+	//if(cur+1 >= cnt)return
+	"uint datacur = atomicCounterIncrement(cur);\n"
+
+	//if(ppllhead[index].count >= 4)return;
+	"uint thiscnt = atomicAdd(ppllhead[index].count, 1);\n"
+
+	"uint prevone = atomicExchange(ppllhead[index].prev, datacur);\n"
+
+	"pplldata[datacur].prev = prevone;\n"
+	"pplldata[datacur].temp = x;\n"
+	"pplldata[datacur].color = packUnorm4x8(color);\n"
+	"pplldata[datacur].depth = (gl_FragCoord.z * 2.0 - 1.0) / gl_FragCoord.w;\n"
+"}\n"
+
 "float getD(float v, float r){\n"
     "float a2 = r*r*r*r;\n"
     "float de = (v*v * (a2 - 1.0) + 1.0);\n"
@@ -90,10 +126,10 @@ GLSL_PRECISION
     "float k = (r+1.0) * (r+1.0) / 8.0;\n"
     "return v / (v * (1.0 - k) + k);\n"
 "}\n"
-"void main(){\n"
-	"uint count = atomicCounterIncrement(cur);\n"
-	"vec3 mtrfao = vec3(0.0, 0.5, 1.0);\n"
+"vec3 pbr(){\n"
 	"vec3 albedo = vec3(colour);\n"
+
+	"vec3 mtrfao = vec3(0.0, 0.5, 1.0);\n"
 	"float metal = mtrfao.x;\n"
 	"float rough = mtrfao.y;\n"
 	"float amocc = mtrfao.z;\n"
@@ -133,10 +169,17 @@ GLSL_PRECISION
 		"vec3 specular = (D * G * F) / max(4.0 * NdotE * NdotL, 0.001);\n"
 		"ocolor += (kD * albedo / PI + specular) * radiance * NdotL;\n"
 	"}\n"
-
 	"ocolor = ocolor / (ocolor + vec3(1.0));\n"
 	"ocolor = pow(ocolor, vec3(1.0/2.2));\n"
-	"FragColor = vec4(ocolor, colour.w);\n"
+	"return ocolor;\n"
+"}\n"
+
+"void main(){\n"
+	"float alpha = colour.w;\n"
+	"vec3 pbrout = pbr();\n"
+	"insert(vec4(pbrout, alpha));\n"
+	"discard;"
+	//"FragColor = vec4(pbrout, alpha);\n"
 "}\n";
 #else
 static char gl41opaquetrigon_vert[] =

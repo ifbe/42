@@ -11,7 +11,7 @@ int joystick2style(_obj* win, struct fstyle* sty, int aaa, short* tmp)
 	float c,s;
 	float tx,ty,tz;
 	int x0,y0,sign = -1;
-	if(_vbo_ == win->hfmt)sign = 1;
+	//if(_vbo_ == win->hfmt)sign = 1;
 
 	x0 = tmp[0];
 	if(x0 < -8192)x0 = -1;
@@ -251,7 +251,7 @@ int joystick2style(_obj* win, struct fstyle* sty, int aaa, short* tmp)
 int keyboard2style(_obj* win, struct fstyle* sty, short* tmp)
 {
 	int sign = -1;
-	if(_vbo_ == win->hfmt)sign = 1;
+	//if(_vbo_ == win->hfmt)sign = 1;
 	if(0x4b == tmp[0])
 	{
 		//left
@@ -291,14 +291,14 @@ int entityinput_editor_target(_obj* win, struct event* ev)
 	float c,s,tx,ty,norm;
 	struct relation* orel;
 	struct fstyle* sty;
-	int ax, ay, aaa, bbb, sign;
+	int ax, ay, aaa, bbb;
 	int x = (ev->why)&0xffff;
 	int y = ((ev->why)>>16)&0xffff;
 	int z = ((ev->why)>>32)&0xffff;
 	int id = ((ev->why)>>48)&0xffff;
 
-	if(_vbo_ == win->hfmt)sign = 1;
-	else sign = -1;
+	int sign = -1;
+	//if(_vbo_ == win->hfmt)sign = 1;
 
 	orel = win->oreln;
 	if(0 == orel)return 1;

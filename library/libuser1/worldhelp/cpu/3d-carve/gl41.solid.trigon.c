@@ -105,6 +105,7 @@ GLSL_PRECISION
 "out vec4 FragColor;\n"
 "uniform vec3 camxyz;\n"
 "const float PI = 3.1415926535897932384626433832795028841971693993151;\n"
+
 "float getD(float v, float r){\n"
     "float a2 = r*r*r*r;\n"
     "float de = (v*v * (a2 - 1.0) + 1.0);\n"
@@ -114,7 +115,7 @@ GLSL_PRECISION
     "float k = (r+1.0) * (r+1.0) / 8.0;\n"
     "return v / (v * (1.0 - k) + k);\n"
 "}\n"
-"void main(){\n"
+"vec3 pbr(){\n"
 	"vec3 mtrfao = vec3(0.0, 0.5, 1.0);\n"
 	"float metal = mtrfao.x;\n"
 	"float rough = mtrfao.y;\n"
@@ -158,7 +159,12 @@ GLSL_PRECISION
 
 	"ocolor = ocolor / (ocolor + vec3(1.0));\n"
 	"ocolor = pow(ocolor, vec3(1.0/2.2));\n"
-	"FragColor = vec4(ocolor, 1.0);\n"
+	"return ocolor;\n"
+"}\n"
+
+"void main(){\n"
+	"vec3 pbrout = pbr();\n"
+	"FragColor = vec4(pbrout, 1.0);\n"
 "}\n";
 
 

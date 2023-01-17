@@ -27,10 +27,11 @@ static void geometry_draw_gl41(
 	float* vu = geom->fs.vt;
 	int dimen = act->whdf.iw0;
 	int shape = act->whdf.iwn;
+	u32 color = act->whdf.ix0;
 	//say("%d,%d\n",dimen,shape);
 
 	if('q' == shape){
-		gl41point(wnd, 0x808080, vc);
+		gl41point(wnd, color, vc);
 		return;
 	}
 
@@ -43,7 +44,7 @@ static void geometry_draw_gl41(
 		t2[2] = vc[2] + vr[2];
 		switch(dimen){
 			case '1':
-			case '2':gl41line(wnd, 0x808080, t1, t2);break;
+			case '2':gl41line(wnd, color, t1, t2);break;
 		}
 		return;
 	}
@@ -56,70 +57,70 @@ static void geometry_draw_gl41(
 		t2[1] = vc[1] + vf[1];
 		t2[2] = vc[2] + vf[2];
 		switch(dimen){
-			case '1':gl41point_triangle( wnd, 0x00808080, vc, t1, t2);break;
-			case '2':gl41line_triangle(  wnd, 0x00808080, vc, t1, t2);break;
-			case '3':gl41solid_triangle( wnd, 0x00808080, vc, t1, t2);break;
-			case '4':gl41opaque_triangle(wnd, 0x80808080, vc, t1, t2);break;
+			case '1':gl41point_triangle( wnd, color, vc, t1, t2);break;
+			case '2':gl41line_triangle(  wnd, color, vc, t1, t2);break;
+			case '3':gl41solid_triangle( wnd, color, vc, t1, t2);break;
+			case '4':gl41opaque_triangle(wnd, color, vc, t1, t2);break;
 		}
 		return;
 	}
 
 	if('r' == shape){
 		switch(dimen){
-			case '1':gl41point_rect( wnd, 0x00808080, vc, vr, vf);break;
-			case '2':gl41line_rect(  wnd, 0x00808080, vc, vr, vf);break;
-			case '3':gl41solid_rect( wnd, 0x00808080, vc, vr, vf);break;
-			case '4':gl41opaque_rect(wnd, 0x80808080, vc, vr, vf);break;
+			case '1':gl41point_rect( wnd, color, vc, vr, vf);break;
+			case '2':gl41line_rect(  wnd, color, vc, vr, vf);break;
+			case '3':gl41solid_rect( wnd, color, vc, vr, vf);break;
+			case '4':gl41opaque_rect(wnd, color, vc, vr, vf);break;
 		}
 		return;
 	}
 
 	if('p' == shape){
 		switch(dimen){
-			//case '1':gl41point_prism4( wnd, 0x808080, vc, vr, vf, vu);break;
-			case '2':gl41line_prism4(  wnd, 0x00808080, vc, vr, vf, vu);break;
-			case '3':gl41solid_prism4( wnd, 0x00808080, vc, vr, vf, vu);break;
-			case '4':gl41opaque_prism4(wnd, 0x80808080, vc, vr, vf, vu);break;
+			//case '1':gl41point_prism4( wnd, color, vc, vr, vf, vu);break;
+			case '2':gl41line_prism4(  wnd, color, vc, vr, vf, vu);break;
+			case '3':gl41solid_prism4( wnd, color, vc, vr, vf, vu);break;
+			case '4':gl41opaque_prism4(wnd, color, vc, vr, vf, vu);break;
 		}
 		return;
 	}
 
 	if('d' == shape){
 		switch(dimen){
-			case '1':gl41point_dodecahedron( wnd, 0x00808080, vc, vr, vf, vu);break;
-			case '2':gl41line_dodecahedron(  wnd, 0x00808080, vc, vr, vf, vu);break;
-			case '3':gl41solid_dodecahedron( wnd, 0x00808080, vc, vr, vf, vu);break;
-			case '4':gl41opaque_dodecahedron(wnd, 0x80808080, vc, vr, vf, vu);break;
+			case '1':gl41point_dodecahedron( wnd, color, vc, vr, vf, vu);break;
+			case '2':gl41line_dodecahedron(  wnd, color, vc, vr, vf, vu);break;
+			case '3':gl41solid_dodecahedron( wnd, color, vc, vr, vf, vu);break;
+			case '4':gl41opaque_dodecahedron(wnd, color, vc, vr, vf, vu);break;
 		}
 		return;
 	}
 
 	if('i' == shape){
 		switch(dimen){
-			case '1':gl41point_icosahedron( wnd, 0x00808080, vc, vr, vf, vu);break;
-			case '2':gl41line_icosahedron(  wnd, 0x00808080, vc, vr, vf, vu);break;
-			case '3':gl41solid_icosahedron( wnd, 0x00808080, vc, vr, vf, vu);break;
-			case '4':gl41opaque_icosahedron(wnd, 0x80808080, vc, vr, vf, vu);break;
+			case '1':gl41point_icosahedron( wnd, color, vc, vr, vf, vu);break;
+			case '2':gl41line_icosahedron(  wnd, color, vc, vr, vf, vu);break;
+			case '3':gl41solid_icosahedron( wnd, color, vc, vr, vf, vu);break;
+			case '4':gl41opaque_icosahedron(wnd, color, vc, vr, vf, vu);break;
 		}
 		return;
 	}
 
 	if('c' == shape){
 		switch(dimen){
-			//case '1':gl41point_cylinder( wnd, 0x808080, vc, vr, vf, vu);break;
-			//case '2':gl41line_cylinder(  wnd, 0x808080, vc, vr, vf, vu);break;
-			case '3':gl41solid_cylinder( wnd, 0x00808080, vc, vr, vf, vu);break;
-			case '4':gl41opaque_cylinder(wnd, 0x80808080, vc, vr, vf, vu);break;
+			//case '1':gl41point_cylinder( wnd, color, vc, vr, vf, vu);break;
+			//case '2':gl41line_cylinder(  wnd, color, vc, vr, vf, vu);break;
+			case '3':gl41solid_cylinder( wnd, color, vc, vr, vf, vu);break;
+			case '4':gl41opaque_cylinder(wnd, color, vc, vr, vf, vu);break;
 		}
 		return;
 	}
 
 	if('s' == shape){
 		switch(dimen){
-			case '1':gl41point_sphere( wnd, 0x00808080, vc, vr, vf, vu);break;
-			case '2':gl41line_sphere(  wnd, 0x00808080, vc, vr, vf, vu);break;
-			case '3':gl41solid_sphere( wnd, 0x00808080, vc, vr, vf, vu);break;
-			case '4':gl41opaque_sphere(wnd, 0x80808080, vc, vr, vf, vu);break;
+			case '1':gl41point_sphere( wnd, color, vc, vr, vf, vu);break;
+			case '2':gl41line_sphere(  wnd, color, vc, vr, vf, vu);break;
+			case '3':gl41solid_sphere( wnd, color, vc, vr, vf, vu);break;
+			case '4':gl41opaque_sphere(wnd, color, vc, vr, vf, vu);break;
 		}
 		return;
 	}
@@ -217,8 +218,16 @@ static void geometry_modify(_obj* act, u8* buf)
 static void geometry_delete(_obj* act, u8* buf)
 {
 }
-static void geometry_create(_obj* act, u8* buf)
+static void geometry_create(_obj* act, u8* buf, int argc, u8** argv)
 {
+	int j;
+	act->whdf.ix0 = 0xc0808080;
+	for(j=0;j<argc;j++){
+		if(0 == ncmp(argv[j], "color:", 6)){
+			hexstr2data(argv[j]+6, &act->whdf.ix0);
+		}
+	}
+
 	int dimen = '3';
 	int shape = 'p';
 	if(buf){
