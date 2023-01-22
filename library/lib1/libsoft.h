@@ -1,8 +1,9 @@
-#include "my-mathdata.h"
-#include "my-naming.h"
-#include "my-struct.h"
-
-#include "my-bignode.h"
+#include "const-math.h"
+#include "const-naming.h"
+#include "data-bitnode.h"
+#include "data-bitwire.h"
+#include "data-outnode.h"
+#include "data-outwire.h"
 
 
 
