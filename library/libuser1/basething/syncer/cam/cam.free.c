@@ -2,12 +2,10 @@
 #define _mind_ hex32('m','i','n','d')
 #define OWNBUF listptr.buf4
 //
-#define EVTOTYPE listu64.data0
 #define IOTO 1
 #define EVTO 2
 #define MIND 4
 //
-#define DRAWTYPE listu64.data1
 #define RASTER 0
 #define RAYTRACE 1
 //myown, directx, metal
@@ -36,18 +34,32 @@ struct unidata{
 struct privdata{
 	struct halfrel* self;
 	struct halfrel* peer;
+
+	u64 drawtype;
+	u64 evtype;
+
+	//common
 	mat4 world2view;	//world to view
 	mat4 world2clip;	//world to view to clip
 	mat4 clip2world;	//clip to view to world
 	struct unidata uni;
 
+	//dx11: forward
 	struct dx11data dx11;
 
-	struct gl41data gl41cam;
-	struct gl41data gl41gbuf;
-	struct gl41data gl41ppll;
-
+	//metal: forward
 	struct mt20data mt20;
+
+	//gl: forward, deferred, perpixellinklist
+	struct gl41data gl41cam;
+
+	u8 gbuf_vs[128];
+	u8 gbuf_fs[128];
+	struct gl41data gl41gbuf;
+
+	u8 ppll_vs[128];
+	u8 ppll_fs[128];
+	struct gl41data gl41ppll;
 };
 
 
@@ -437,13 +449,18 @@ static void freecam_gl41gbuf_world1_cam(
 
 	wnd->gl41list.world[0].camera[0] = data;
 }
-static void freecam_gl41gbuf_world2_prep(_obj* act, void* vs, void* fs)
+static void freecam_gl41gbuf_world2_prep(_obj* act)
 {
 	struct privdata* own = act->OWNBUF;
 	struct gl41data* data = &own->gl41gbuf;
 
-	//shader
+	void* vs = (void*)"datafile/shader/deferred/vert.glsl";
+	if(own->gbuf_vs[0])vs = own->gbuf_vs;
+	void* fs = (void*)"datafile/shader/deferred/debug.glsl";
+	if(own->gbuf_fs[0])fs = own->gbuf_fs;
 	say("vs=%s,fs=%s\n", vs, fs);
+
+	//shader
 	data->src.vs = memorycreate(0x1000, 0);
 	openreadclose(vs, 0, data->src.vs, 0x1000);
 	data->src.fs = memorycreate(0x1000, 0);
@@ -594,13 +611,18 @@ static void freecam_gl41ppll_world1_cam(
 
 	wnd->gl41list.world[0].camera[0] = data;
 }
-static void freecam_gl41ppll_world2_prep(_obj* act, void* vs, void* fs)
+static void freecam_gl41ppll_world2_prep(_obj* act)
 {
 	struct privdata* own = act->OWNBUF;
 	struct gl41data* data = &own->gl41ppll;
 
-	//shader
+	void* vs = (void*)"datafile/shader/deferred/vert.glsl";
+	if(own->ppll_vs[0])vs = own->ppll_vs;
+	void* fs = (void*)"datafile/shader/deferred/debug.glsl";
+	if(own->ppll_fs[0])fs = own->ppll_fs;
 	say("vs=%s,fs=%s\n", vs, fs);
+
+	//shader
 	data->src.vs = memorycreate(0x1000, 0);
 	openreadclose(vs, 0, data->src.vs, 0x1000);
 	data->src.fs = memorycreate(0x1000, 0);
@@ -771,6 +793,7 @@ static int freecam_byworld_bycam_bywnd_read(_obj* ent,void* slot, _syn* stack,in
 
 static int freecam_generate(_obj* ent,void* slot, _syn* stack,int sp, _obj* wor,struct style* geom, _obj* wnd,struct style* area)
 {
+	struct privdata* own = ent->OWNBUF;
 	switch(wnd->hfmt){
 
 	case _cli_:
@@ -791,7 +814,7 @@ static int freecam_generate(_obj* ent,void* slot, _syn* stack,int sp, _obj* wor,
 		//printmat4(m);
 
 		pixel_cleardepth(wnd);
-		entity_takeby(stack[sp+1].pchip, 0, stack, sp+2, m, ent->DRAWTYPE, 0, 0);
+		entity_takeby(stack[sp+1].pchip, 0, stack, sp+2, m, own->drawtype, 0, 0);
 		break;
 
 	case _dx11list_:
@@ -890,7 +913,7 @@ static int freecam_bywnd_write(_obj* ent,struct event* ev)
 
 	_obj* wor = rel->pchip;
 	struct style* geom = rel->pfoot;
-	switch(ent->EVTOTYPE){
+	switch(own->evtype){
 	case 'f':return freecam_event_frus(ent,0, wor,geom, ev,0);break;
 	default:return freecam_event_obb(ent,0, wor,geom, ev,0);break;
 	}
@@ -951,18 +974,19 @@ static int freecam_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 }
 static int freecam_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	struct privdata* own = ent->OWNBUF;
 	struct event* ev = buf;
-	if(ent->EVTOTYPE & MIND){
+	if(own->evtype & MIND){
 		give_data_into_peer(ent,_mind_, stack,sp, arg,key, buf,len);
 		return 0;
 	}
-	if(ent->EVTOTYPE & EVTO){
+	if(own->evtype & EVTO){
 		if(_char_ != ev->what){
 			give_data_into_peer(ent,_evto_, stack,sp, arg,key, buf,len);
 			return 0;
 		}
 	}
-	if(ent->EVTOTYPE & IOTO){
+	if(own->evtype & IOTO){
 		if(_char_ == ev->what){
 			give_data_into_peer(ent,_ioto_, stack,sp, arg,key, buf,len);
 			return 0;
@@ -978,25 +1002,33 @@ static void freecam_attach(struct halfrel* self, struct halfrel* peer)
 {
     say("@freecam_attach\n");
 
-	_obj* this = self->pchip;
+	_obj* ent = self->pchip;
+	struct privdata* own = ent->OWNBUF;
 	switch(self->foottype){
 	case _mind_:
-		this->EVTOTYPE |= MIND;
+		own->evtype |= MIND;
 		return;
 	case _ioto_:
-		this->EVTOTYPE |= IOTO;
+		own->evtype |= IOTO;
 		return;
 	case _evto_:
-		this->EVTOTYPE |= EVTO;
+		own->evtype |= EVTO;
 		return;
 	}
 
 	_obj* that = peer->pchip;
 	if( (_virtual_ == that->type) | (_scene3d_ == that->type) ){
-		struct privdata* own = this->OWNBUF;
 		own->self = self;
 		own->peer = peer;
 		return;
+	}
+	if(_gbuf_ == that->vfmt){
+		freecam_gl41gbuf_world1_prep();
+		freecam_gl41gbuf_world2_prep(ent);
+	}
+	if(_ppll_ == that->vfmt){
+		freecam_gl41ppll_world1_prep();
+		freecam_gl41ppll_world2_prep(ent);
 	}
 }
 
@@ -1014,47 +1046,44 @@ static void freecam_delete(_obj* act)
 }
 static void freecam_create(_obj* act, void* arg, int argc, u8** argv)
 {
-	int j;
     say("@freecam_create\n");
-
-	u8* glvs = (void*)"datafile/shader/deferred/vert.glsl";
-	u8* glfs = (void*)"datafile/shader/deferred/debug.glsl";
-	u8 glvsbuf[128];
-	u8 glfsbuf[128];
-
-	//script
-	act->EVTOTYPE = 0;
-	act->DRAWTYPE = getrandom()&1;
-	for(j=0;j<argc;j++){
-		if(0 == ncmp(argv[j], "render:", 7)){
-			if('0' == argv[j][7])act->DRAWTYPE = 0;
-			if('1' == argv[j][7])act->DRAWTYPE = 1;
-		}
-		if(0 == ncmp(argv[j], "script:", 7)){
-			if('f' == argv[j][7])act->EVTOTYPE = 'f';
-		}
-		if(0 == ncmp(argv[j], "glvs:", 5)){
-			copypath(glvsbuf, argv[j] + 5);
-			glvs = glvsbuf;
-		}
-		if(0 == ncmp(argv[j], "glfs:", 5)){
-			copypath(glfsbuf, argv[j] + 5);
-			glfs = glfsbuf;
-		}
-	}
 
 	act->whdf.fx0 = 0.0;
 	act->whdf.fy0 = 0.0;
 	act->whdf.fz0 = 0.0;
 
-	//matrix
-	act->OWNBUF = memorycreate(0x2000, 0);
+	//privdata
+	struct privdata* own = act->OWNBUF = memorycreate(0x2000, 0);
 
-	freecam_gl41gbuf_world1_prep();
-	freecam_gl41gbuf_world2_prep(act, glvs, glfs);
+	//script
+	own->evtype = 0;
+	own->drawtype = getrandom()&1;
 
-	freecam_gl41ppll_world1_prep();
-	freecam_gl41ppll_world2_prep(act, glvs, glfs);
+	own->gbuf_vs[0] = 0;
+	own->gbuf_fs[0] = 0;
+
+	int j;
+	for(j=0;j<argc;j++){
+		if(0 == ncmp(argv[j], "render:", 7)){
+			if('0' == argv[j][7])own->drawtype = 0;
+			if('1' == argv[j][7])own->drawtype = 1;
+		}
+		if(0 == ncmp(argv[j], "script:", 7)){
+			if('f' == argv[j][7])own->evtype = 'f';
+		}
+		if(0 == ncmp(argv[j], "gbuf.vs:", 8)){
+			copypath(own->gbuf_vs, argv[j] + 8);
+		}
+		if(0 == ncmp(argv[j], "gbuf.fs:", 8)){
+			copypath(own->gbuf_fs, argv[j] + 8);
+		}
+		if(0 == ncmp(argv[j], "ppll.vs:", 8)){
+			copypath(own->ppll_vs, argv[j] + 8);
+		}
+		if(0 == ncmp(argv[j], "ppll.fs:", 8)){
+			copypath(own->ppll_fs, argv[j] + 8);
+		}
+	}
 }
 
 

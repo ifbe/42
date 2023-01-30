@@ -1,7 +1,7 @@
 <entity>
 rabbit{
 fmt:obj3d
-glvs:datafile/shader/obj/forward-vertex-yflip.glsl
+gbuf.vs:datafile/shader/obj/forward-vertex-yflip.glsl
 url:datafile/obj/viking_room.obj
 albedo:datafile/obj/viking_room.png
 normal:datafile/obj/blue.jpg

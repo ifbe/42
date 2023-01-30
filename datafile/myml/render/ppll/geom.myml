@@ -11,8 +11,8 @@ color:4000f000
 }
 freecam{
 fmt:freecam
-glvs:datafile/shader/ppll/vert.glsl
-glfs:datafile/shader/ppll/frag.glsl
+ppll.vs:datafile/shader/ppll/vert.glsl
+ppll.fs:datafile/shader/ppll/frag.glsl
 }
 virtual{
 fmt:virtual

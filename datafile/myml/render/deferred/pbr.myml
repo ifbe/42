@@ -1,8 +1,8 @@
 <entity>
 cam0{
 fmt:freecam
-glvs:datafile/shader/deferred/vert.glsl
-glfs:datafile/shader/deferred/pbr.glsl
+gbuf.vs:datafile/shader/deferred/vert.glsl
+gbuf.fs:datafile/shader/deferred/pbr.glsl
 }
 item{
 fmt:obj3d
