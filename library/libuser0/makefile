@@ -17,19 +17,23 @@ else_o = $(patsubst %.c, %.o, $(else_c))
 
 
 ogl_c = \
-3d-output/render-gl/gldraw/gl.none.c \
-3d-output/render-gl/gldraw/gl.easy.c \
-3d-output/render-gl/gldraw/gl.full.c \
-3d-output/render-gl/gldraw/gl.cmdq.c \
-3d-output/render-gl/gltar/gl41.target.color.c \
-3d-output/render-gl/gltar/gl41.target.cube.c \
-3d-output/render-gl/gltar/gl41.target.depth.c \
-3d-output/render-gl/gltar/gl41.target.gbuffer.c \
-3d-output/render-gl/globj/globj.fbo.c \
-3d-output/render-gl/globj/globj.shader.c \
-3d-output/render-gl/globj/globj.texture.c \
-3d-output/render-gl/globj/globj.varray.c \
-3d-output/render-gl/globj/globj.vertex.c
+3d-render/gpugl/gldraw/00.none.c \
+3d-render/gpugl/gldraw/10.easy.c \
+3d-render/gpugl/gldraw/41.full.c \
+3d-render/gpugl/gldraw/41.full.gbuf.c \
+3d-render/gpugl/gldraw/43.full.ppll.c \
+3d-render/gpugl/gldraw/99.rtx.c \
+3d-render/gpugl/gldraw/99.rtx.fromeye.c \
+3d-render/gpugl/gldraw/99.rtx.fromlight.c \
+3d-render/gpugl/gltar/gl41.target.color.c \
+3d-render/gpugl/gltar/gl41.target.cube.c \
+3d-render/gpugl/gltar/gl41.target.depth.c \
+3d-render/gpugl/gltar/gl41.target.gbuffer.c \
+3d-render/gpugl/globj/globj.fbo.c \
+3d-render/gpugl/globj/globj.shader.c \
+3d-render/gpugl/globj/globj.texture.c \
+3d-render/gpugl/globj/globj.varray.c \
+3d-render/gpugl/globj/globj.vertex.c
 ogl_o = $(patsubst %.c, %.o, $(ogl_c))
 
 
@@ -146,19 +150,19 @@ control-gamepad/linux/linux.devjsn.c
 linuxxlib_o = $(patsubst %.c, %.o, $(linuxxlib_c))
 
 linuxglut_c = \
-3d-output/render-gl/glut.c \
+3d-render/gpugl/glut.c \
 control-gamepad/linux/linux.devjsn.c
 linuxglut_o = $(patsubst %.c, %.o, $(linuxglut_c))
 
 linuxglfw_c = \
-3d-output/render-gl/gllib/glfw.c \
+3d-render/gpugl/gllib/glfw.c \
 control-gamepad/glfw/glfw.gamepad.c
 linuxglfw_o = $(patsubst %.c, %.o, $(linuxglfw_c))
 
 linuxvulkan_c = \
-3d-output/render-vulkan/wnd/glfwvk.c \
-3d-output/render-vulkan/vk12/vk12.c \
-3d-output/render-vulkan/ctx/easy.c \
+3d-render/gpuvulkan/wnd/glfwvk.c \
+3d-render/gpuvulkan/vk12/vk12.c \
+3d-render/gpuvulkan/ctx/easy.c \
 control-gamepad/glfw/glfw.gamepad.c
 linuxvulkan_o = $(patsubst %.c, %.o, $(linuxvulkan_c))
 
@@ -240,7 +244,7 @@ control-gamepad/mac/mac.gamepad.c
 macmetal_o = $(patsubst %.c, %.o, $(macmetal_c))
 
 macmetal_m = \
-3d-output/render-metal/metal.m
+3d-render/gpumetal/metal.m
 macmetal_m_o = $(patsubst %.m, %.m.o, $(macmetal_m))
 
 macsdl_c = \
@@ -248,19 +252,19 @@ control-gamepad/sdl/sdl.gamepad.c
 macsdl_o = $(patsubst %.c, %.o, $(macsdl_c))
 
 macglut_c = \
-3d-output/render-gl/glut.c \
+3d-render/gpugl/glut.c \
 control-gamepad/mac/mac.gamepad.c
 macglut_o = $(patsubst %.c, %.o, $(macglut_c))
 
 macglfw_c = \
-3d-output/render-gl/gllib/glfw.c \
+3d-render/gpugl/gllib/glfw.c \
 control-gamepad/glfw/glfw.gamepad.c
 macglfw_o = $(patsubst %.c, %.o, $(macglfw_c))
 
 macvulkan_c = \
-3d-output/render-vulkan/wnd/glfwvk.c \
-3d-output/render-vulkan/vk12/vk12.c \
-3d-output/render-vulkan/ctx/easy.c \
+3d-render/gpuvulkan/wnd/glfwvk.c \
+3d-render/gpuvulkan/vk12/vk12.c \
+3d-render/gpuvulkan/ctx/easy.c \
 control-gamepad/glfw/glfw.gamepad.c
 macvulkan_o = $(patsubst %.c, %.o, $(macvulkan_c))
 
@@ -326,24 +330,24 @@ control-gamepad/win/win.xinput.c
 windx11_o = $(patsubst %.c, %.o, $(windx11_c))
 
 windx11_cpp = \
-3d-output/render-dx11/dx11.cpp \
-3d-output/render-dx11/dx11.easy.cpp
+3d-render/gpudx/dx11.cpp \
+3d-render/gpudx/dx11.easy.cpp
 windx11_cpp_o = $(patsubst %.cpp, %.cpp.o, $(windx11_cpp))
 
 winglut_c = \
-3d-output/render-gl/glut.c \
+3d-render/gpugl/glut.c \
 control-gamepad/win/win.xinput.c
 winglut_o = $(patsubst %.c, %.o, $(winglut_c))
 
 winglfw_c = \
-3d-output/render-gl/gllib/glfw.c \
+3d-render/gpugl/gllib/glfw.c \
 control-gamepad/glfw/glfw.gamepad.c
 winglfw_o = $(patsubst %.c, %.o, $(winglfw_c))
 
 winvulkan_c = \
-3d-output/render-vulkan/wnd/glfwvk.c \
-3d-output/render-vulkan/vk12/vk12.c \
-3d-output/render-vulkan/ctx/easy.c \
+3d-render/gpuvulkan/wnd/glfwvk.c \
+3d-render/gpuvulkan/vk12/vk12.c \
+3d-render/gpuvulkan/ctx/easy.c \
 control-gamepad/glfw/glfw.gamepad.c
 winvulkan_o = $(patsubst %.c, %.o, $(winvulkan_c))
 
