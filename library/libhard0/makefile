@@ -71,13 +71,11 @@ barepi64_c = \
 1arch/arm/rpi/rpi.usb.innerxhci.c \
 1arch/arm/rpi/rpi.usb.dwc2.c \
 2soc/bareusb/xhci/xhci-driver.c \
-1arch/arm/barepi34.c
+3board/pi/barepi34.c
 barepi64_o = $(patsubst %.c, %.o, $(barepi64_c))
 
 myospi64_c = \
-0cpu/arm/cpu64el0/arm64.abi.c \
-0cpu/arm/cpu64el0/arm64.syscall.caller.c \
-1arch/arm/barepi34.c
+0cpu/arm/cpu64el0/arm64.syscall.caller.c
 myospi64_o = $(patsubst %.c, %.o, $(myospi64_c))
 
 linuxarm64_c = \
@@ -202,7 +200,7 @@ barex64_c = \
 2soc/bareusb/xhci/xhci-driver.c \
 2soc/barestor/ahci/ahci-driver.c \
 2soc/barestor/nvme/nvme-driver.c \
-1arch/x86/barepc.c
+3board/pc/barepc.c
 barex64_o = $(patsubst %.c, %.o, $(barex64_c))
 
 efix64_c = \
@@ -216,8 +214,7 @@ efix64_c = \
 2soc/inefi/hardware.c
 efix64_o = $(patsubst %.c, %.o, $(efix64_c))
 
-myosx64_c = \
-0cpu/x86/cpu64user/x64.abi.c
+myosx64_c = 
 myosx64_o = $(patsubst %.c, %.o, $(myosx64_c))
 
 linuxx64_c = \

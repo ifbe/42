@@ -1,5 +1,5 @@
-void start_abi();
+void main();
 void start()
 {
-	start_abi();
+	main();
 }
