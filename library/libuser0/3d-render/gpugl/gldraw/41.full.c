@@ -22,6 +22,8 @@ GLuint shaderprogram(void* v, void* f, void* g, void* tc, void* te, void* c);
 int gl41fbo_create(struct gl41data* tar);
 
 
+#define DEBUG_PPLL
+#define DEBUG_READPIXEL
 
 
 #ifdef __ANDROID__
@@ -88,6 +90,10 @@ void gpudata_validate(_obj* wnd)
 
 
 
+#define UPLOADSTEP_PPLLWORLD0 0x10
+#define UPLOADSTEP_PPLLWORLD1 0x11
+#define UPLOADSTEP_GBUFWORLD0 0x20
+#define UPLOADSTEP_GBUFWORLD1 0x21
 void update_onedraw(struct gldst* dst, struct mysrc* src)
 {
 	int j;
@@ -162,23 +168,29 @@ void update_ppll(struct gldst* dst, struct mysrc* src)
 	if(0 == dst->ppll_head){
 		glGenBuffers(1, &dst->ppll_head);
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, dst->ppll_head);
-		glBufferData(GL_SHADER_STORAGE_BUFFER, (4*2)*(1024*768)*4, 0, GL_DYNAMIC_DRAW);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, (4*2)*(1024*768)*6, 0, GL_DYNAMIC_DRAW);
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	}
 	if(0 == dst->ppll_data){
 		glGenBuffers(1, &dst->ppll_data);
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, dst->ppll_data);
-		glBufferData(GL_SHADER_STORAGE_BUFFER, (4*4)*(1024*768)*4, 0, GL_DYNAMIC_DRAW);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, (4*4)*(1024*768)*6, 0, GL_DYNAMIC_DRAW);
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	}
 
+#ifdef DEBUG_PPLL
 	//ppll_atomic: read old value
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, dst->ppll_atomic);
 	GLuint* rbuf = glMapBuffer(GL_ATOMIC_COUNTER_BUFFER, GL_READ_ONLY);
-	if(rbuf)say("fd=%d,opaquecount=%d\n", dst->ppll_atomic, rbuf[0]);
-	else say("err@glMapBuffer:fd=%d,glGetError=%d\n", dst->ppll_atomic, glGetError());
+	if(rbuf){
+		say("fd=%d,opaquecount=%d\n", dst->ppll_atomic, rbuf[0]);
+	}
+	else{
+		say("err@glMapBuffer:fd=%d,glGetError=%d\n", dst->ppll_atomic, glGetError());
+	}
 	glUnmapBuffer(GL_ATOMIC_COUNTER_BUFFER);
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
+#endif
 
 	//ppll_atomic: write new value
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, dst->ppll_atomic);
@@ -188,6 +200,7 @@ void update_ppll(struct gldst* dst, struct mysrc* src)
 	glUnmapBuffer(GL_ATOMIC_COUNTER_BUFFER);
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
 
+#ifdef DEBUG_PPLL
 	//ppll_head: read old value
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, dst->ppll_head);
 	int xxxx = 384*1024+512;		//screen center
@@ -200,6 +213,7 @@ void update_ppll(struct gldst* dst, struct mysrc* src)
 	else say("err@glMapBuffer:fd=%d,glGetError=%d\n", dst->ppll_head, glGetError());
 	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+#endif
 
 	//ppll_head: write new value
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, dst->ppll_head);
@@ -207,6 +221,7 @@ void update_ppll(struct gldst* dst, struct mysrc* src)
 	//say("glGetError=%d\n",glGetError());
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
+#ifdef DEBUG_PPLL
 	//ppll_data: read old value
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, dst->ppll_data);
 	GLuint* data_rbuf = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
@@ -220,6 +235,7 @@ void update_ppll(struct gldst* dst, struct mysrc* src)
 	else say("err@glMapBuffer:fd=%d,glGetError=%d\n", dst->ppll_data, glGetError());
 	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+#endif
 
 	//ppll_data: write new value
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, dst->ppll_data);
@@ -227,12 +243,18 @@ void update_ppll(struct gldst* dst, struct mysrc* src)
 	//say("glGetError=%d\n",glGetError());
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
-void fullwindow_upload(struct gl41world* world, int stage)
+void fullwindow_upload(struct gl41world* world, int step)
 {
 	struct gl41data** cam = world->camera;
 	struct gl41data** lit = world->light;
 	struct gl41data** solid = world->solid;
 	struct gl41data** opaque = world->opaque;
+
+#ifndef __APPLE__
+	if(UPLOADSTEP_PPLLWORLD0 == step){
+		update_ppll(&cam[0]->dst, &cam[0]->src);
+	}
+#endif
 
 	//camera
 	int j;
@@ -243,12 +265,6 @@ void fullwindow_upload(struct gl41world* world, int stage)
 			cam[j]->dst.target_deq = cam[j]->src.target_enq;
 		}
 	}
-
-#ifndef __APPLE__
-	if(0 == stage){
-		update_ppll(&cam[0]->dst, &cam[0]->src);
-	}
-#endif
 
 	//light
 	for(j=0;j<1;j++){
@@ -278,6 +294,10 @@ void fullwindow_upload(struct gl41world* world, int stage)
 
 
 
+#define RENDERSTEP_PPLLWORLD0 0x10
+#define RENDERSTEP_PPLLWORLD1 0x11
+#define RENDERSTEP_GBUFWORLD0 0x20
+#define RENDERSTEP_GBUFWORLD1 0x21
 void updatearg(u32 shader, struct gl41data* data)
 {
 	int j;
@@ -399,44 +419,16 @@ void render_material(struct gl41data* cam, struct gl41data* lit, struct gl41data
 		else glDrawArrays(GL_TRIANGLES, 0, vtx->vbuf_h);
 	}
 }
-void render_target(struct gl41data* cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque, _obj* wnd, struct fstyle* area)
+void render_world(struct gl41data* cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque, int step)
 {
+	int j;
 	//say("fullwindow_render:%llx,%llx,%llx,%llx,%llx,%llx\n",cam,lit,solid,opaque,wnd,area);
-	int j,clear;
-	int x0,y0,ww,hh;
-	if(cam && cam->dst.fbo){
-		x0 = 0;
-		y0 = 0;
-		ww = cam->src.tex[0].w;
-		hh = cam->src.tex[0].h;
-		clear = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
-	}
-	else if(area){
-		x0 = area->vc[0] * wnd->whdf.fbwidth;
-		y0 = area->vc[1] * wnd->whdf.fbheight;
-		ww = area->vq[0] * wnd->whdf.fbwidth;
-		hh = area->vq[1] * wnd->whdf.fbheight;
-		clear = GL_DEPTH_BUFFER_BIT;
-	}
-	else{
-		x0 = 0;
-		y0 = 0;
-		ww = wnd->whdf.fbwidth;
-		hh = wnd->whdf.fbheight;
-		clear = GL_DEPTH_BUFFER_BIT;
-	}
-	glViewport(x0, y0, ww, hh);
-	glScissor(x0, y0, ww, hh);
-	glClearColor(0.1, 0.1, 0.1, 1.0);
-	glClear(clear);
 
-	glEnable(GL_SCISSOR_TEST);
-	glEnable(GL_DEPTH_TEST);
-
-#ifndef __ANDROID__
-	glPointSize(4.0*wnd->whdf.fbwidth/wnd->whdf.width);
-#endif
-	glLineWidth(4.0*wnd->whdf.fbwidth/wnd->whdf.width);
+	if(RENDERSTEP_PPLLWORLD1 == step){
+		glDepthMask(GL_FALSE);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_ONE, GL_SRC_ALPHA);
+	}
 
 	//solid
 	for(j=0;j<64;j++){
@@ -459,7 +451,56 @@ void render_target(struct gl41data* cam, struct gl41data** lit, struct gl41data*
 	glDisable(GL_BLEND);
 	glDepthMask(GL_TRUE);
 }
-void fullwindow_render(struct gl41world* world, _obj* wnd, struct fstyle* area)
+void render_target(_obj* wnd, struct fstyle* area, struct gl41data* cam, int step)
+{
+	int clear;
+	int x0,y0,ww,hh;
+	if(cam && cam->dst.fbo){		//draw fbo, default fullscreen
+		x0 = 0;
+		y0 = 0;
+		ww = cam->src.tex[0].w;
+		hh = cam->src.tex[0].h;
+		clear = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
+	}
+	else{	//draw backbuffer
+		if(area){	//setarea
+			x0 = area->vc[0] * wnd->whdf.fbwidth;
+			y0 = area->vc[1] * wnd->whdf.fbheight;
+			ww = area->vq[0] * wnd->whdf.fbwidth;
+			hh = area->vq[1] * wnd->whdf.fbheight;
+			clear = GL_DEPTH_BUFFER_BIT;
+		}
+		else{	//fullscreen
+			x0 = 0;
+			y0 = 0;
+			ww = wnd->whdf.fbwidth;
+			hh = wnd->whdf.fbheight;
+			clear = GL_DEPTH_BUFFER_BIT;
+		}
+	}
+
+	glViewport(x0, y0, ww, hh);
+	glScissor(x0, y0, ww, hh);
+
+	//ppll second overlay, dont clear depth
+	if(RENDERSTEP_PPLLWORLD1 == step){
+		glDisable(GL_DEPTH_TEST);
+	}
+	else{
+		//glDepthMask(GL_TRUE);
+		glClearColor(0.1, 0.1, 0.1, 1.0);
+		glClear(clear);
+
+		glEnable(GL_SCISSOR_TEST);
+		glEnable(GL_DEPTH_TEST);
+	}
+
+#ifndef __ANDROID__
+	glPointSize(4.0*wnd->whdf.fbwidth/wnd->whdf.width);
+#endif
+	glLineWidth(4.0*wnd->whdf.fbwidth/wnd->whdf.width);
+}
+void fullwindow_render(struct gl41world* world, int step, _obj* wnd, struct fstyle* area)
 {
 	struct gl41data** cam = world->camera;
 	struct gl41data** lit = world->light;
@@ -471,35 +512,57 @@ void fullwindow_render(struct gl41world* world, _obj* wnd, struct fstyle* area)
 		if(0 == cam[j])continue;
 		//say("%d\n",j);
 		glBindFramebuffer(GL_FRAMEBUFFER, cam[j]->dst.fbo);
-		render_target(cam[j],lit, solid,opaque, wnd,0);
+		render_target(wnd, 0, cam[j], step);
+		render_world(cam[j],lit, solid,opaque, step);
 		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 	if(cam[0] && cam[0]->dst.fbo){
 		glBindFramebuffer(GL_FRAMEBUFFER, cam[0]->dst.fbo);
-		render_target(cam[0],lit, solid,opaque, wnd,area);
+		render_target(wnd,area, cam[0], step);
+		render_world(cam[0],lit, solid,opaque, step);
 		//say("gbuf:fbo=%d,d=%d,c0=%d,c1=%d,c2=%d,c3=%d\n",cam[0]->dst.fbo,cam[0]->dst.rbo, cam[0]->dst.tex[0], cam[0]->dst.tex[1], cam[0]->dst.tex[2], cam[0]->dst.tex[3]);
 	}
 	else{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		render_target(cam[0],lit, solid,opaque, wnd,area);
+		render_target(wnd,area, cam[0], step);
+		render_world(cam[0],lit, solid,opaque, step);
 	}
 }
 void fullwindow_uploadandrender(_obj* wnd, struct fstyle* area)
 {
-	//forward render: only one step
-	//deferred render: step1
-	//say("world0\n");
-	fullwindow_upload(&wnd->gl41list.world[0], 0);
-	fullwindow_render(&wnd->gl41list.world[0], wnd, area);
+	switch(wnd->vfmt){
+	case _gbuf_:
+		//render to gbuf
+		fullwindow_upload(&wnd->gl41list.world[0], UPLOADSTEP_GBUFWORLD0);
+		fullwindow_render(&wnd->gl41list.world[0], RENDERSTEP_GBUFWORLD0, wnd, area);
 
-	//forword render: no this step
-	//deferred_render or per_pixel_link_list: step2
-	if((_ppll_ == wnd->vfmt)|(_gbuf_ == wnd->vfmt)){
-		//say("world1\n");
-		fullwindow_upload(&wnd->gl41list.world[1], 1);
-		fullwindow_render(&wnd->gl41list.world[1], wnd, area);
+		//gbuf to screen
+		fullwindow_upload(&wnd->gl41list.world[1], UPLOADSTEP_GBUFWORLD1);
+		fullwindow_render(&wnd->gl41list.world[1], RENDERSTEP_GBUFWORLD1, wnd, area);
+		break;
+	case _ppll_:
+		//render to screen and ssbo
+		fullwindow_upload(&wnd->gl41list.world[0], UPLOADSTEP_PPLLWORLD0);
+		fullwindow_render(&wnd->gl41list.world[0], RENDERSTEP_PPLLWORLD0, wnd, area);
+
+		//ssbo to screen
+		fullwindow_upload(&wnd->gl41list.world[1], UPLOADSTEP_PPLLWORLD1);
+		fullwindow_render(&wnd->gl41list.world[1], RENDERSTEP_PPLLWORLD1, wnd, area);
+		break;
+	default:
+		fullwindow_upload(&wnd->gl41list.world[0], 0);
+		fullwindow_render(&wnd->gl41list.world[0], 0, wnd, area);
+		break;
 	}
+
+#ifdef DEBUG_READPIXEL
+	u32 color[4];
+	float depth[4];
+	glReadPixels(512, 384, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, color);
+	glReadPixels(512, 384, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, depth);
+	say("c=%x,d=%f\n", color[0], depth[0]);
+#endif
 }
 
 
@@ -524,7 +587,18 @@ int fullwindow_chooseandsend(_obj* wnd,void* foot, _syn* stack,int sp, void* arg
 	struct relation* rel;
 	struct fstyle* sty;
 	//say("@gl41wnd0_write:(%p,%x)(%llx,%llx,%llx,%llx)\n", arg,cmd, ev->why, ev->what, ev->where, ev->when);
-
+/*
+	if(0x2b70 == ev->what){
+		float color[4];
+		float depth[4];
+		v = (short*)ev;
+		x = v[0];
+		y = (wnd->whdf.height-1) - v[1];
+		glReadPixels(x, y, 1, 1, GL_BLUE, GL_FLOAT, color);
+		glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, depth);
+		say("x=%f,y=%f,c=%f,d=%f\n", x, y, color[0], depth[0]);
+	}
+*/
 	if(0x4070 == ev->what){
 		rel = wnd->oreln;
 		while(1){

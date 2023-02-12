@@ -1,13 +1,18 @@
 <entity>
 geom{
 fmt:geom
-url:4p
-color:40f00000
+url:3p
+color:80f000f0
+}
+geom1{
+fmt:geom
+url:4s
+color:80f00000
 }
 geom2{
 fmt:geom
-url:4p
-color:4000f000
+url:4s
+color:8000f000
 }
 freecam{
 fmt:freecam
@@ -34,18 +39,26 @@ depth:1024
 
 
 <style>
-skyhaha{
+aahaha{
 }
-skygeom{
-c: 100.0, 100.0, 100.0
+aageom{
+c: 0.0, 1000.0, 0.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
 }
-abchaha{
+a1haha{
 }
-abcgeom{
-c: -100.0, 1000.0, -100.0
+a1geom{
+c: -250.0, -1000.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+a2haha{
+}
+a2geom{
+c: 250.0, -1000.0, 0.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
@@ -86,8 +99,9 @@ q:1.0, 1.0
 
 <relation>
 #virtual depends on inner objects
-(virtual, skygeom, 0) -> (geom, skyhaha, 0)
-(virtual, abcgeom, 0) -> (geom2, abchaha, 0)
+(virtual, aageom, 0) -> (geom, aahaha, 0)
+(virtual, a1geom, 0) -> (geom1, a1haha, 0)
+(virtual, a2geom, 0) -> (geom2, a2haha, 0)
 (virtual, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam

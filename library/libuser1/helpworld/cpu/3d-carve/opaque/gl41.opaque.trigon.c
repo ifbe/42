@@ -69,9 +69,11 @@ GLSL_PRECISION
 	"gl_Position = cammvp * vec4(objxyz,1.0);\n"
 "}\n";
 
+//early_fragment_tests: set this, depthtest before pixelshader
 static char gl41opaquetrigon_frag[] =
 GLSL_VERSION
 GLSL_PRECISION
+"layout(early_fragment_tests) in;\n"
 "in vec3 objxyz;\n"
 "in vec3 normal;\n"
 "in vec4 colour;\n"
@@ -98,11 +100,21 @@ GLSL_PRECISION
 "layout (std430, binding = 1) buffer pplldatabuf{\n"
     "pplldatadef pplldata[];\n"
 "};\n"
-"void insert(vec4 color){\n"
+"void insert(vec4 c){\n"
+	"uint color = packUnorm4x8(c);\n"
+	"float depth = (gl_FragCoord.z * 2.0 - 1.0) / gl_FragCoord.w;\n"
 	"uint x = uint(gl_FragCoord.x);\n"
 	"uint y = uint(gl_FragCoord.y);\n"
 	"uint index = y*1024 + x;\n"
-
+/*
+	//clear buffer
+    "uint datacount = ppllhead[index].count;\n"
+    "uint dataindex = ppllhead[index].prev;\n"
+    "for(uint j;j<datacount;j++){\n"
+        "if(abs(depth - pplldata[dataindex].depth) < 0.1)return;\n"
+        "dataindex = pplldata[dataindex].prev;\n"
+    "}\n"
+*/
 	//if(cur+1 >= cnt)return
 	"uint datacur = atomicCounterIncrement(cur);\n"
 
@@ -113,8 +125,8 @@ GLSL_PRECISION
 
 	"pplldata[datacur].prev = prevone;\n"
 	"pplldata[datacur].temp = x;\n"
-	"pplldata[datacur].color = packUnorm4x8(color);\n"
-	"pplldata[datacur].depth = (gl_FragCoord.z * 2.0 - 1.0) / gl_FragCoord.w;\n"
+	"pplldata[datacur].color = color;\n"
+	"pplldata[datacur].depth = depth;\n"
 "}\n"
 
 "float getD(float v, float r){\n"
@@ -178,7 +190,6 @@ GLSL_PRECISION
 	"float alpha = colour.w;\n"
 	"vec3 pbrout = pbr();\n"
 	"insert(vec4(pbrout, alpha));\n"
-	"discard;"
 	//"FragColor = vec4(pbrout, alpha);\n"
 "}\n";
 #else

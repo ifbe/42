@@ -39,14 +39,15 @@ void main(){
 	uint headindex = y*1024 + x;
     uint datacount = ppllhead[headindex].count;
     if(datacount < 1)discard;
-    if(datacount > 4)datacount = 4;
+    if(datacount > 6)datacount = 6;
     //FragColor = uinttocolor(datacount);
 
     uint dataindex = ppllhead[headindex].prev;
-    uint color[4] = {0,0,0,0};
-    float depth[4] = {1000000000.0,1000000000.0,1000000000.0,1000000000.0};
+    uint color[4] = {0, 0, 0, 0};
+    float depth[4] = {1000000000.0, 1000000000.0, 1000000000.0, 1000000000.0};
     for(uint j;j<datacount;j++){
         for(uint k=0;k<4;k++){
+            if(abs(depth[k]-pplldata[dataindex].depth) < 0.5)break;
             if(depth[k] > pplldata[dataindex].depth){
                 for(uint t=3;t>k;t--){
                     color[t] = color[t-1];
@@ -63,10 +64,10 @@ void main(){
     vec4 unpack1 = unpackUnorm4x8(color[1]);
     vec4 unpack2 = unpackUnorm4x8(color[2]);
     vec4 unpack3 = unpackUnorm4x8(color[3]);
-    vec3 c = vec3(0.0);
-    c = unpack3.xyz*unpack3.w + c*(1.0-unpack3.w);
+    vec3 c = unpack3.xyz*unpack3.w;
     c = unpack2.xyz*unpack2.w + c*(1.0-unpack2.w);
     c = unpack1.xyz*unpack1.w + c*(1.0-unpack1.w);
     c = unpack0.xyz*unpack0.w + c*(1.0-unpack0.w);
-    FragColor = vec4(c, 1.0);
+    float a_of_bg = (1.0-unpack3.w)*(1.0-unpack2.w)*(1.0-unpack1.w)*(1.0-unpack0.w);
+    FragColor = vec4(c, a_of_bg);
 }

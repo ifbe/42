@@ -219,8 +219,8 @@ static int freecam_event_obb(
 			case 'd':freecam_move(obb->vc, obb->vr, 1.0);break;
 			case 's':freecam_move(obb->vc, obb->vf,-1.0);break;
 			case 'w':freecam_move(obb->vc, obb->vf, 1.0);break;
-			case 'q':freecam_move(obb->vc, obb->vt,-1.0);break;
-			case 'e':freecam_move(obb->vc, obb->vt, 1.0);break;
+			case 'f':freecam_move(obb->vc, obb->vt,-1.0);break;
+			case 'r':freecam_move(obb->vc, obb->vt, 1.0);break;
 
 			case 'j':freecam_rotate(obb->vr, obb->vf, obb->vt, 0.05);break;
 			case 'l':freecam_rotate(obb->vr, obb->vf, obb->vt,-0.05);break;
