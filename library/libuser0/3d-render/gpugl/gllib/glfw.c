@@ -241,21 +241,21 @@ static void callback_move(GLFWwindow* fw, double xpos, double ypos)
 }
 static void callback_drop(GLFWwindow* fw, int count, const char** paths)
 {
-	char dragdata[0x1000];
+	//char dragdata[0x1000];
 	int j,ret=0;
-	struct event e;
-	_obj* ogl = glfwGetWindowUserPointer(fw);
-
 	for(j=0;j<count;j++)
 	{
-		ret += snprintf(dragdata+ret, 0x1000-ret, "%s\n", paths[j]);
-		//printf("%s\n", paths[j]);
+		//ret += snprintf(dragdata+ret, 0x1000-ret, "%s\n", paths[j]);
+		printf("%s\n", paths[j]);
 	}
 
-	e.why = (u64)dragdata;
-	e.what = _drag_;
-	e.where = (u64)ogl;
-	restorestackdeliverevent(ogl, &e);
+	_obj* ogl = glfwGetWindowUserPointer(fw);
+	struct event ev;
+	ev.why = paths;		//(u64)dragdata;
+	ev.what = _drag_;
+	ev.where = (u64)ogl;
+	ev.when = 0;
+	restorestackdeliverevent(ogl, &ev);
 }
 static void callback_reshape(GLFWwindow* fw, int w, int h)
 {

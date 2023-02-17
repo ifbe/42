@@ -22,8 +22,8 @@ GLuint shaderprogram(void* v, void* f, void* g, void* tc, void* te, void* c);
 int gl41fbo_create(struct gl41data* tar);
 
 
-#define DEBUG_PPLL
-#define DEBUG_READPIXEL
+//#define DEBUG_PPLL
+//#define DEBUG_READPIXEL
 
 
 #ifdef __ANDROID__
@@ -584,8 +584,8 @@ int fullwindow_chooseandsend(_obj* wnd,void* foot, _syn* stack,int sp, void* arg
 	int ret;
 	float x,y,x0,y0,xn,yn;
 	short* v;
-	struct relation* rel;
 	struct fstyle* sty;
+	struct relation* rel = 0;
 	//say("@gl41wnd0_write:(%p,%x)(%llx,%llx,%llx,%llx)\n", arg,cmd, ev->why, ev->what, ev->where, ev->when);
 /*
 	if(0x2b70 == ev->what){
@@ -641,6 +641,7 @@ int fullwindow_chooseandsend(_obj* wnd,void* foot, _syn* stack,int sp, void* arg
 		if(0 == rel)return 0;
 	}
 
+sendevent:
 	if(rel){
 		fullwindow_trytosend(wnd,foot, stack,sp, arg,cmd, rel,ev);
 	}
@@ -688,6 +689,7 @@ int fullwindow_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd,
 		struct fstyle* area = rel->psrcfoot;
 		if(area)fullwindow_uploadandrender(wnd, area);
 
+next:
 		rel = samesrcnextdst(rel);
 	}
 	return 0;
@@ -704,7 +706,7 @@ int fullwindow_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd,
 		caller = stack[sp-2].pchip;
 		if(caller)callertype = caller->hfmt;
 	}
-	if(_camrts_ == callertype)
+/*	if(_camrts_ == callertype)
 	{
 		say("@%s\n",__FUNCTION__);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -716,7 +718,7 @@ int fullwindow_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd,
 		fullwindow_uploadandrender(wnd, 0);
 		return 0;
 	}
-
+*/
 	fullwindow_chooseandsend(wnd,foot, stack,sp, arg,cmd, buf);
 	return 0;
 }

@@ -74,6 +74,8 @@ libalgo/transform/trfm.laplace.c \
 libalgo/tree/tree.binary.c \
 libalgo/tree/tree.redblack.c \
 libalgo/tree/tree.bplus.c \
+libauto/estimate/filter/filter.kalman.c \
+libauto/control/motor/motor.foc.c \
 libchem/chem.equation.c \
 libfile/certificate/cert.pem.c \
 libfile/certificate/cert.x509.c \

@@ -1,4 +1,4 @@
-#define sqrt3 1.7320508075689
+#include "libsoft.h"
 
 
 
@@ -23,6 +23,11 @@ void inverseclark(float* in, float* out)
 //Ix,Iy -> Id,Iq
 void computepark(float* in, float* out)
 {
+	float a = 0.0;
+	float c = getcos(a);
+	float s = getsin(a);
+	out[0] = in[0]*c - in[1]*s;
+	out[1] = in[0]*s + in[1]*c;
 }
 
 

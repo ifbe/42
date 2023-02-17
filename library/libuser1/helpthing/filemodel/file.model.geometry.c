@@ -224,7 +224,7 @@ static void geometry_create(_obj* act, u8* buf, int argc, u8** argv)
 	act->whdf.ix0 = 0xc0808080;
 	for(j=0;j<argc;j++){
 		if(0 == ncmp(argv[j], "color:", 6)){
-			hexstr2data(argv[j]+6, &act->whdf.ix0);
+			hexstr2data(argv[j]+6, (void*)&act->whdf.ix0);
 		}
 	}
 

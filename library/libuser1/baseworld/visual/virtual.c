@@ -49,6 +49,7 @@ int virtual_takeall(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 
 int virtual_ongive_bywnd(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	//say("@%s\n",__FUNCTION__);
 	struct event* ev = buf;
 	if('p' == (ev->what&0xff)){
 		_obj* wnd = stack[sp-2].pchip;
@@ -115,7 +116,8 @@ int virtual_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, 
 	//if(0 == per)
 
 	_obj* caller = stack[sp-2].pchip;
-	say("caller:%.8s\n", &caller->type);
+	if(0 == caller)return 0;
+	//say("caller:%.8s\n", &caller->type);
 
 	//default 2d: from window
 	int ret = 0;
