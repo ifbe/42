@@ -42,35 +42,35 @@ void* visionlistener(_obj* win)
 
 
 
-int videolist()
+int fakecam_attach()
 {
 	return 0;
 }
-int videochoose()
+int fakecam_detach()
 {
 	return 0;
 }
-int video_take(_obj* cam,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int fakecam_take(_obj* cam,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int video_give(_obj* cam,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int fakecam_give(_obj* cam,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int videostop()
+int fakecam_reader()
 {
 	return 0;
 }
-int videostart()
+int fakecam_writer()
 {
 	return 0;
 }
-int videodelete(_obj* win)
+int fakecam_delete(_obj* win)
 {
 	return 0;
 }
-int videocreate(_obj* win)
+int fakecam_create(_obj* win)
 {
 	ibuf = memorycreate(0x100000, 0);
 	for(icur=0;icur<640*48082;icur++)ibuf[icur] = 0x66;
@@ -80,14 +80,4 @@ int videocreate(_obj* win)
 	alive = 1;
 	thread = threadcreate(visionlistener, win);
 	return 0;
-}
-
-
-
-
-void initcam()
-{
-}
-void freecam()
-{
 }

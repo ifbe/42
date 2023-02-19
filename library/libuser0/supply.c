@@ -43,10 +43,10 @@ int speaker_give(void*,void*, void*,int, void*,int, void*,int);
 //light.usbcam
 void initcam(void*);
 void freecam();
-int videocreate(void*, void*, int, u8**);
-int videodelete(void*);
-int video_take(void*,void*, void*,int, void*,int, void*,int);
-int video_give(void*,void*, void*,int, void*,int, void*,int);
+int camera_create(void*, void*, int, u8**);
+int camera_delete(void*);
+int camera_take(void*,void*, void*,int, void*,int, void*,int);
+int camera_give(void*,void*, void*,int, void*,int, void*,int);
 //light.window
 void initwindow(void*);
 void freewindow();
@@ -232,7 +232,7 @@ void* supply_create(u64 type, void* arg, int argc, u8** argv)
 
 		win->type = _cam_;
 		win->hfmt = hex32('y','u','v',0);
-		videocreate(win, arg, argc, argv);
+		camera_create(win, arg, argc, argv);
 		return win;
 	}
 
@@ -368,7 +368,7 @@ int supply_takeby(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, v
 		case _mic_:break;
 		case _spk_:return speaker_take(sup,foot, stack,sp, arg, idx, buf, len);
 
-		case _cam_:return video_take(sup,foot, stack,sp, arg, idx, buf, len);
+		case _cam_:return camera_take(sup,foot, stack,sp, arg, idx, buf, len);
 		case _wnd_:return window_take(sup,foot, stack,sp, arg, idx, buf, len);
 	}
 	return 0;

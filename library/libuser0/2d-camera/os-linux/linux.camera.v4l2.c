@@ -383,7 +383,7 @@ void* cameraworker(_obj* cam)
 
 
 
-int video_take(_obj* cam,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int v4l2cam_take(_obj* cam,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	struct percam* pcam = cam->priv_ptr;
 	if(0 == pcam)return 0;
@@ -394,19 +394,19 @@ int video_take(_obj* cam,void* foot, _syn* stack,int sp, void* arg,int idx, u8* 
 	*(u64*)buf = addr;
 	return 0;
 }
-int video_give(_obj* cam,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int v4l2cam_give(_obj* cam,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int videostop()
+int v4l2cam_attach()
 {
 	return 0;
 }
-int videostart()
+int v4l2cam_detach()
 {
 	return 0;
 }
-int videodelete(_obj* cam)
+int v4l2cam_delete(_obj* cam)
 {
 	struct percam* pcam = cam->priv_ptr;
 	if(0 == pcam)return 0;
@@ -422,7 +422,7 @@ int videodelete(_obj* cam)
 	cam->priv_ptr = 0;
 	return 0;
 }
-int videocreate(_obj* cam, void* arg, int argc, u8** argv)
+int v4l2cam_create(_obj* cam, void* arg, int argc, u8** argv)
 {
 	//default value
 	u8* path = "/dev/video0";
@@ -494,14 +494,4 @@ int videocreate(_obj* cam, void* arg, int argc, u8** argv)
 	pcam->alive = 1;
 	pcam->thread = threadcreate(cameraworker, cam);
 	return 0;
-}
-
-
-
-
-void initcam()
-{
-}
-void freecam()
-{
 }

@@ -1,25 +1,25 @@
 #include "libuser.h"
-void video_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void camera_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 }
-void video_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void camera_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 }
-void videolist()
+void camera_attach()
 {
 }
-void videochoose()
+void camera_detach()
 {
 }
-void videostop()
+void camera_reader()
 {
 }
-void videostart()
+void camera_writer()
 {
 }
-void videodelete()
+void camera_delete()
 {
 }
-void videocreate()
+void camera_create()
 {
 }

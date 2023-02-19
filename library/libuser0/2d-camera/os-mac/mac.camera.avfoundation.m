@@ -141,37 +141,37 @@ int videodevice_enumfmt(AVCaptureDevice* dev)
 
 
 
-int videolist()
+int avfcam_attach()
 {
 	return 0;
 }
-int videochoose()
+int avfcam_detach()
 {
 	return 0;
 }
-int video_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int avfcam_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int video_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int avfcam_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int videostop()
+int avfcam_reader()
 {
 	return 0;
 }
-int videostart()
+int avfcam_writer()
 {
 	return 0;
 }
-int videodelete(_obj* win)
+int avfcam_delete(_obj* win)
 {
 	return 0;
 }
-int videocreate(_obj* win)
+int avfcam_create(_obj* win)
 {
-	say("videocreate\n");
+	say("avfcam_create\n");
 
 	//authorization
 	switch([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo]){
@@ -278,14 +278,4 @@ int videocreate(_obj* win)
 	//
 	thewin = win;
 	return 0;
-}
-
-
-
-
-void initcam()
-{
-}
-void freecam()
-{
 }

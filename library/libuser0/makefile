@@ -117,7 +117,9 @@ control-systray/linux/linux.tray.c \
 sound-micphone/os-linux/linux.pulsein.c \
 sound-speaker/os-linux/linux.pulseout.c \
 control-cmdline/linux/linux.stdio.c \
-2d-camera/os-linux/linux.v4l2.c
+2d-camera/os-linux/linux.camera.c \
+2d-camera/os-linux/linux.camera.libcamera.c \
+2d-camera/os-linux/linux.camera.v4l2.c
 linux_o = $(patsubst %.c, %.o, $(linux_c))
 
 linuxcli_c = \
@@ -209,11 +211,12 @@ macos_c = \
 control-cmdline/mac/mac.stdio.c \
 control-systray/mac/mac.tray.c \
 sound-micphone/os-mac/mac.aqin.c \
-sound-speaker/os-mac/mac.aqout.c
+sound-speaker/os-mac/mac.aqout.c \
+2d-camera/os-mac/mac.camera.c
 macos_o = $(patsubst %.c, %.o, $(macos_c))
 
 macos_m = \
-2d-camera/os-mac/mac.avfoundation.m
+2d-camera/os-mac/mac.camera.avfoundation.m
 macos_m_o = $(patsubst %.m, %.m.o, $(macos_m))
 
 maccli_c = \
@@ -307,7 +310,8 @@ sound-speaker/os-win/win.waveout.c
 win_o = $(patsubst %.c, %.o, $(win_c))
 
 win_cpp = \
-2d-camera/os-win/win.dshow.cpp
+2d-camera/os-win/win.camera.cpp \
+2d-camera/os-win/win.camera.dshow.cpp
 win_cpp_o = $(patsubst %.cpp, %.cpp.o, $(win_cpp))
 
 wincli_c = \

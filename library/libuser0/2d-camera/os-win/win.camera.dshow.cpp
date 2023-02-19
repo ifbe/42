@@ -424,7 +424,7 @@ fail:
 extern "C" {
 
 
-int video_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int dshowcam_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	u64 addr = obj[(enq+59)%60].addr;
 	printf("addr=%llx\n",addr);
@@ -432,23 +432,24 @@ int video_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void
 	*(u64*)buf = addr;
 	return 0;
 }
-int video_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int dshowcam_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int videodiscon(struct halfrel* self, struct halfrel* peer)
+int dshowcam_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int videolinkup(struct halfrel* self, struct halfrel* peer)
+int dshowcam_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-void videodelete(_obj* win)
+int dshowcam_delete(_obj* win)
 {
 	//shutupdie(win);
+	return 0;
 }
-void videocreate(_obj* win, void* arg, int argc, u8** argv)
+int dshowcam_create(_obj* win, void* arg, int argc, u8** argv)
 {
 	int j;
 	win->STRIDE = 640;
@@ -476,16 +477,8 @@ void videocreate(_obj* win, void* arg, int argc, u8** argv)
 	working = win;
 	letsgo(win);
 	//Sleep(5000);
+	return 0;
 }
 
 
-
-
-void initcam()
-{
-}
-void freecam()
-{
-}
-
-}
+}	//extern "C"
