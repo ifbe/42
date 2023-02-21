@@ -7,7 +7,6 @@ CF:=-c -O2 -fPIC -I..
 
 #---------------------arm32-------------------------
 arm_c = \
-0cpu/arm/cpu32/arm.fp.c \
 device.c
 arm_o = $(patsubst %.c, %.o, $(arm_c))
 
@@ -23,9 +22,9 @@ linuxarm_c = \
 linuxarm_o = $(patsubst %.c, %.o, $(linuxarm_c))
 
 linuxpi32_c = \
-2soc/libwiringpi/rpi.wiringpi.c \
 2soc/inlinux/linux.wire.bt.c \
 2soc/inlinux/linux.wire.i2c.c \
+2soc/inlinux/linux.wire.gpio.c \
 2soc/inlinux/linux.wire.pci.c \
 2soc/inlinux/linux.wire.spi.c \
 2soc/inlinux/linux.wire.usb.c \
@@ -45,6 +44,10 @@ linuxpi32:$(arm_o) $(linuxpi32_o)
 arm64_c = \
 device.c
 arm64_o = $(patsubst %.c, %.o, $(arm64_c))
+
+barepi32_c = \
+0cpu/arm/cpu32/arm.fp.c
+barepi32_o = $(patsubst %.c, %.o, $(barepi32_c))
 
 barepi64_c = \
 0cpu/arm/cpu64/arm64.fp.c \

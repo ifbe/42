@@ -1,7 +1,7 @@
 project?=$(shell pwd)
 library?=../../library
 CC=gcc
-CF="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast -I../lib1"
+CF="-c -O2 -fPIC -Wno-address-of-packed-member -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast -I../lib1"
 all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	+make -s a
 	+make -s so
