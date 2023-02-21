@@ -133,17 +133,17 @@ static void grass_create(_obj* act)
 	int j,k;
 	float* f = act->listptr.buf0 = memorycreate(4*6*0x10000, 0);
 	for(j=0;j<2048;j++){
-		f[j*24+0] = (getrandom()&0xffff)/32768.0 - 1.0;
-		f[j*24+1] = (getrandom()&0xffff)/32768.0 - 1.0;
+		f[j*24+0] = (random_read()&0xffff)/32768.0 - 1.0;
+		f[j*24+1] = (random_read()&0xffff)/32768.0 - 1.0;
 		for(k=1;k<4;k++){
 			f[(j*4+k)*6+0] = f[j*24+0];
 			f[(j*4+k)*6+1] = f[j*24+1];
 		}
 
 		for(k=0;k<4;k++){
-			f[(j*4+k)*6+3] = (getrandom()&0x7ff)/65536.0 - 0x400/65536.0;
-			f[(j*4+k)*6+4] = (getrandom()&0x7ff)/65536.0 - 0x400/65536.0;
-			f[(j*4+k)*6+5] = (getrandom()&0xffff)/65536.0;
+			f[(j*4+k)*6+3] = (random_read()&0x7ff)/65536.0 - 0x400/65536.0;
+			f[(j*4+k)*6+4] = (random_read()&0x7ff)/65536.0 - 0x400/65536.0;
+			f[(j*4+k)*6+5] = (random_read()&0xffff)/65536.0;
 		}
 	}
 }

@@ -34,7 +34,7 @@ void* memorycreate(int, int);
 void* eventread();
 void* eventwrite(u64,u64,u64,u64);
 //
-u32 getrandom();
+u32 random_read();
 u64 dateread();
 u64 timeread_us();
 //

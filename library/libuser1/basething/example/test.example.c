@@ -1,5 +1,5 @@
 #include "libuser.h"
-u32 getrandom();
+u32 random_read();
 
 
 
@@ -25,7 +25,7 @@ static void example_draw_pixel(
 		hh = win->whdf.height/2;
 	}
 
-	bg = getrandom()&0xffffff;
+	bg = random_read()&0xffffff;
 	fg = (~bg)&0xffffff;
 	drawsolid_rect(win, bg, cx-ww, cy-hh, cx+ww, cy+hh);
 	drawhexadecimal(win, fg, cx, cy, bg);

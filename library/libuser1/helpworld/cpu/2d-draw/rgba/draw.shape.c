@@ -1,5 +1,5 @@
 #include "libuser.h"
-u32 getrandom();
+u32 random_read();
 
 
 

@@ -7,7 +7,7 @@ int _dev_urandom=-1;
 
 
 
-unsigned int getrandom()
+unsigned int random_read()
 {
 	unsigned int value;
 	int ret=read(_dev_urandom,(char*)&value,4);

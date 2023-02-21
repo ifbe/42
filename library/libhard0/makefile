@@ -30,6 +30,7 @@ linuxpi32_c = \
 2soc/inlinux/linux.wire.spi.c \
 2soc/inlinux/linux.wire.usb.c \
 2soc/inlinux/linux.wire.wifi.c \
+2soc/inlinux/linux.math.c \
 2soc/inlinux/hardware.c
 linuxpi32_o = $(patsubst %.c, %.o, $(linuxpi32_c))
 
@@ -42,12 +43,12 @@ linuxpi32:$(arm_o) $(linuxpi32_o)
 
 #---------------------arm64-------------------------
 arm64_c = \
-0cpu/arm/cpu64/arm64.fp.c \
-0cpu/arm/cpu64/arm64.asm.c \
 device.c
 arm64_o = $(patsubst %.c, %.o, $(arm64_c))
 
 barepi64_c = \
+0cpu/arm/cpu64/arm64.fp.c \
+0cpu/arm/cpu64/arm64.asm.c \
 0cpu/arm/cpu64el0/arm64.syscall.caller.c \
 0cpu/arm/cpu64el1/arm64.boot.c \
 0cpu/arm/cpu64el1/arm64.paging.c \
@@ -75,6 +76,8 @@ barepi64_c = \
 barepi64_o = $(patsubst %.c, %.o, $(barepi64_c))
 
 myospi64_c = \
+0cpu/arm/cpu64/arm64.fp.c \
+0cpu/arm/cpu64/arm64.asm.c \
 0cpu/arm/cpu64el0/arm64.syscall.caller.c
 myospi64_o = $(patsubst %.c, %.o, $(myospi64_c))
 
@@ -86,6 +89,7 @@ linuxarm64_c = \
 2soc/inlinux/linux.wire.spi.c \
 2soc/inlinux/linux.wire.usb.c \
 2soc/inlinux/linux.wire.wifi.c \
+2soc/inlinux/linux.math.c \
 2soc/inlinux/hardware.c
 linuxarm64_o = $(patsubst %.c, %.o, $(linuxarm64_c))
 
@@ -97,6 +101,7 @@ linuxpi64_c = \
 2soc/inlinux/linux.wire.spi.c \
 2soc/inlinux/linux.wire.usb.c \
 2soc/inlinux/linux.wire.wifi.c \
+2soc/inlinux/linux.math.c \
 2soc/inlinux/hardware.c
 linuxpi64_o = $(patsubst %.c, %.o, $(linuxpi64_c))
 

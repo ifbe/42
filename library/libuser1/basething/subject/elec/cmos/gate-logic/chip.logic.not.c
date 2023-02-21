@@ -192,7 +192,7 @@ static void not_delete(_obj* act, u8* buf)
 }
 static void not_create(_obj* act, u8* buf)
 {
-	act->whdf.ix0 = getrandom()&1;
+	act->whdf.ix0 = random_read()&1;
 	act->whdf.iy0 = !act->whdf.ix0;
 }
 

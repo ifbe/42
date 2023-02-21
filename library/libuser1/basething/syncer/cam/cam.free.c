@@ -1057,7 +1057,7 @@ static void freecam_create(_obj* act, void* arg, int argc, u8** argv)
 
 	//script
 	own->evtype = 0;
-	own->drawtype = getrandom()&1;
+	own->drawtype = random_read()&1;
 
 	own->gbuf_vs[0] = 0;
 	own->gbuf_fs[0] = 0;

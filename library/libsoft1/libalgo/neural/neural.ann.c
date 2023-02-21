@@ -86,7 +86,7 @@ int ann_create(_obj* ele, u8* url)
 	say("@ann_create\n");
 
 	weight = ele->WEIGHT = memorycreate(4*28*28*10, 0);
-	for(j=0;j<28*28*10;j++)weight[j] = (getrandom()&0xfff)/1024.0;
+	for(j=0;j<28*28*10;j++)weight[j] = (random_read()&0xfff)/1024.0;
 
 	result = ele->RESULT = memorycreate(4*10, 0);
 	return 1;

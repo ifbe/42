@@ -300,9 +300,9 @@ static void graph_event(
 			perobj->ilen = perobj->wlen;
 			for(j=0;j<perobj->vlen;j++)
 			{
-				vbuf[j*3 + 0] = sty->fs.vc[0] + (getrandom() & 0xffff) / 16.0;
-				vbuf[j*3 + 1] = sty->fs.vc[1] + (getrandom() & 0xffff) / 16.0;
-				vbuf[j*3 + 2] = sty->fs.vc[2] + (getrandom() & 0xffff) / 16.0;
+				vbuf[j*3 + 0] = sty->fs.vc[0] + (random_read() & 0xffff) / 16.0;
+				vbuf[j*3 + 1] = sty->fs.vc[1] + (random_read() & 0xffff) / 16.0;
+				vbuf[j*3 + 2] = sty->fs.vc[2] + (random_read() & 0xffff) / 16.0;
 				say("%f,%f,%f\n", vbuf[j*3 + 0], vbuf[j*3 + 1], vbuf[j*3 + 2]);
 			}
 say("%d,%d,%d,%d\n",perobj->nlen, perobj->wlen, perobj->vlen, perobj->ilen);
@@ -341,9 +341,9 @@ static void graph_attach(struct halfrel* self, struct halfrel* peer)
 	perobj->ilen = perobj->wlen;
 	for(j=0;j<perobj->vlen;j++)
 	{
-		vbuf[j*3 + 0] = sty->fs.vc[0] + (getrandom() & 0xffff) / 16.0;
-		vbuf[j*3 + 1] = sty->fs.vc[1] + (getrandom() & 0xffff) / 16.0;
-		vbuf[j*3 + 2] = sty->fs.vc[2] + (getrandom() & 0xffff) / 16.0;
+		vbuf[j*3 + 0] = sty->fs.vc[0] + (random_read() & 0xffff) / 16.0;
+		vbuf[j*3 + 1] = sty->fs.vc[1] + (random_read() & 0xffff) / 16.0;
+		vbuf[j*3 + 2] = sty->fs.vc[2] + (random_read() & 0xffff) / 16.0;
 		say("%f,%f,%f\n", vbuf[j*3 + 0], vbuf[j*3 + 1], vbuf[j*3 + 2]);
 	}
 	say("%d,%d,%d,%d\n", perobj->nlen, perobj->wlen, perobj->vlen, perobj->ilen);

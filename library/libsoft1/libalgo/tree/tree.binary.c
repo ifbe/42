@@ -4,7 +4,7 @@
 #define u64 unsigned long long
 #define hex16(a,b) (a | (b<<8))
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
-u32 getrandom();
+u32 random_read();
 void printmemory(void*, int);
 void say(void*, ...);
 
@@ -95,7 +95,7 @@ void* bintree_recycle(struct bintree* root, struct bintree* this)
 			return this;
 		}
 
-		if((getrandom()&0x80) == 0x80)
+		if((random_read()&0x80) == 0x80)
 		{
 			temp = (void*)root + (temp->left);
 		}

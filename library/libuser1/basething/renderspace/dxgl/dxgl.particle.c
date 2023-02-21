@@ -248,19 +248,19 @@ static void particle_create(_obj* act)
 	for(j=0;j<COUNT;j++)
 	{
 		//vertex
-		vbuf[9*j + 0] = (getrandom()%8192)/4096.0 - 1.0;
-		vbuf[9*j + 1] = (getrandom()%8192)/4096.0 - 1.0;
-		vbuf[9*j + 2] = (getrandom()%8192)/4096.0 - 1.0;
+		vbuf[9*j + 0] = (random_read()%8192)/4096.0 - 1.0;
+		vbuf[9*j + 1] = (random_read()%8192)/4096.0 - 1.0;
+		vbuf[9*j + 2] = (random_read()%8192)/4096.0 - 1.0;
 
 		//speed
 		vbuf[9*j + 3] = 0.0;
-		vbuf[9*j + 4] = -0.01*(getrandom()%8192)/8192.0;
+		vbuf[9*j + 4] = -0.01*(random_read()%8192)/8192.0;
 		vbuf[9*j + 5] = 0.0;
 
 		//colour
-		vbuf[9*j + 6] = (getrandom()%8192)/8192.0;
-		vbuf[9*j + 7] = (getrandom()%8192)/8192.0;
-		vbuf[9*j + 8] = (getrandom()%8192)/8192.0;
+		vbuf[9*j + 6] = (random_read()%8192)/8192.0;
+		vbuf[9*j + 7] = (random_read()%8192)/8192.0;
+		vbuf[9*j + 8] = (random_read()%8192)/8192.0;
 	}
 
 	struct gl41data* data = act->CTXBUF = memorycreate(0x1000, 0);

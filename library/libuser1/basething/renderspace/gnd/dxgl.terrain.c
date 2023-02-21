@@ -75,9 +75,9 @@ static void terrain_texprep(struct privdata* own, char* rgb, char* dep)
 	u8* rgba = own->depth.data;
 	for(y=0;y<2048;y++){
 		for(x=0;x<2048;x++){
-			rgba[4*(y*2048 + x)+0] = getrandom()%256;
-			rgba[4*(y*2048 + x)+1] = getrandom()%256;
-			rgba[4*(y*2048 + x)+2] = getrandom()%256;
+			rgba[4*(y*2048 + x)+0] = random_read()%256;
+			rgba[4*(y*2048 + x)+1] = random_read()%256;
+			rgba[4*(y*2048 + x)+2] = random_read()%256;
 		}
 	}
 }

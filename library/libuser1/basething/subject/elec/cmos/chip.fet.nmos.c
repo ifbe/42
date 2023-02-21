@@ -337,7 +337,7 @@ static void nmos_delete(_obj* ent, u8* buf)
 static void nmos_create(_obj* ent, void* arg, int argc, u8** argv)
 {
 	ent->Dcount = ent->Scount = ent->Bcount = ent->Gcount = 0;
-	ent->Gvalue = (getrandom()&0x2) -1;
+	ent->Gvalue = (random_read()&0x2) -1;
 	ent->Bvalue = -1;
 	ent->Svalue = -1;
 	ent->Dvalue = 0;

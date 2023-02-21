@@ -77,7 +77,7 @@ char pshader[] =
 
 void dx11easy_upload(ID3D11DeviceContext* devctx)
 {
-	float a = PI/(getrandom()%180);
+	float a = PI/(random_read()%180);
 	float c = getcos(a);
 	float s = getsin(a);
 	g_mat[0][0] = c;

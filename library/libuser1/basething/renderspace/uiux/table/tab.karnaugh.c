@@ -38,7 +38,7 @@ static int karnaugh_create(_obj* act, u8* str)
 {
 	int j;
 	u8* out = (void*)&act->listu64.data0;
-	for(j=0;j<16;j++)out[j] = getrandom()&1;
+	for(j=0;j<16;j++)out[j] = random_read()&1;
 	return 0;
 }
 

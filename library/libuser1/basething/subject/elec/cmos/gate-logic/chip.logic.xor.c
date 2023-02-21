@@ -423,8 +423,8 @@ static void xor_delete(_obj* ent, u8* buf)
 }
 static void xor_create(_obj* ent, u8* buf)
 {
-	ent->whdf.ix0 = getrandom()&1;
-	ent->whdf.iy0 = getrandom()&1;
+	ent->whdf.ix0 = random_read()&1;
+	ent->whdf.iy0 = random_read()&1;
 	ent->whdf.iz0 = ent->whdf.ix0 ^ ent->whdf.iy0;
 }
 

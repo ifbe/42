@@ -566,10 +566,10 @@ static int tetris_down()
 	}
 
 	//
-	that.x=getrandom() %27+1;
+	that.x=random_read() %27+1;
 	that.y=1;
-	that.type=getrandom() % 7;
-	that.direction=getrandom() & 0x3;
+	that.type=random_read() % 7;
+	that.direction=random_read() & 0x3;
 	generate();
 	return 1;
 }

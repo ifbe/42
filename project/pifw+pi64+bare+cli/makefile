@@ -31,7 +31,7 @@ libsoft0:
 libsoft1:
 	make -s -C $(library)/libsoft1 AS=$(AS) CC=$(CC) CF=$(CF)
 libuser0:
-	make -s -C $(library)/libuser0 AS=$(AS) CC=$(CC) CF=$(CF) rpifb
+	make -s -C $(library)/libuser0 AS=$(AS) CC=$(CC) CF=$(CF) pibarecli
 libuser1:
 	make -s -C $(library)/libuser1 AS=$(AS) CC=$(CC) CF=$(CF)
 rpi3:

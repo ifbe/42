@@ -5,7 +5,7 @@
 
 
 
-unsigned int getrandom()
+unsigned int random_read()
 {
 	return rand();
 }

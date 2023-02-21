@@ -11,7 +11,7 @@ void scale_image(void* src, void* dst,
 
 #define DIM 1024
 #define _sq(x) ((x)*(x))
-#define r(n)(getrandom()%n)
+#define r(n)(random_read()%n)
 static float vbuf[6][5] = {
 	{0.0, 0.0, 0.0, 0.0, 0.0},
 	{0.0, 0.0, 0.0, 1.0, 0.0},

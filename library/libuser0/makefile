@@ -1,8 +1,8 @@
 DIR:=$(shell pwd)
 CC:=gcc
 CF:=-c -O2 -fPIC -I..
-CPPC:g++
-CPPF:-c -O2 -fPIC -I..
+CPPC:=g++
+CPPF:=-c -O2 -fPIC -I..
 
 
 else_c = \
@@ -63,9 +63,9 @@ barefb_c = \
 2d-window/os-bare/bare.fb.c
 barefb_o = $(patsubst %.c, %.o, $(barefb_c))
 
-rpifb_c = \
-2d-window/os-bare/bare.rpifb.c
-rpifb_o = $(patsubst %.c, %.o, $(rpifb_c))
+pibarefb_c = \
+2d-window/os-bare/bare.pibarefb.c
+pibarefb_o = $(patsubst %.c, %.o, $(pibarefb_c))
 
 .PHONY:barecli
 barecli:$(else_o) $(bare_o) $(barecli_o)
@@ -79,22 +79,22 @@ bare8bit:$(else_o) $(bare_o) $(bare8bit_o)
 .PHONY:barefb
 barefb:$(else_o) $(bare_o) $(barefb_o)
 
-.PHONY:rpifb
-rpifb:$(else_o) $(bare_o) $(rpifb_o)
+.PHONY:pibarefb
+pibarefb:$(else_o) $(bare_o) $(pibarefb_o)
 ##########################################################
 
 
 ############################efi#########################
-rpicli_c = \
+eficli_c = \
 2d-window/os-efi/efi.cli.c
-rpicli_o = $(patsubst %.c, %.o, $(rpicli_c))
+eficli_o = $(patsubst %.c, %.o, $(eficli_c))
 
 efifb_c = \
 2d-window/os-efi/efi.fb.c
 efifb_o = $(patsubst %.c, %.o, $(efifb_c))
 
 .PHONY:eficli
-eficli:$(else_o) $(bare_o) $(rpicli_o)
+eficli:$(else_o) $(bare_o) $(eficli_o)
 
 .PHONY:efifb
 efifb:$(else_o) $(bare_o) $(efifb_o)
@@ -116,11 +116,22 @@ linux_c = \
 control-systray/linux/linux.tray.c \
 sound-micphone/os-linux/linux.pulsein.c \
 sound-speaker/os-linux/linux.pulseout.c \
-control-cmdline/linux/linux.stdio.c \
-2d-camera/os-linux/linux.camera.c \
-2d-camera/os-linux/linux.camera.libcamera.c \
-2d-camera/os-linux/linux.camera.v4l2.c
+control-cmdline/linux/linux.stdio.c
 linux_o = $(patsubst %.c, %.o, $(linux_c))
+
+linuxcam_c = \
+2d-camera/os-linux/linux.camera.c \
+2d-camera/os-linux/linux.camera.v4l2.c
+linuxcam_o = $(patsubst %.c, %.o, $(linuxcam_c))
+
+pilinuxcam_c = \
+2d-camera/os-linux/linux.picam.c \
+2d-camera/os-linux/linux.camera.v4l2.c
+pilinuxcam_o = $(patsubst %.c, %.o, $(pilinuxcam_c))
+
+pilinuxcam_cpp = \
+2d-camera/os-linux/linux.camera.libcamera.cpp
+pilinuxcam_cpp_o = $(patsubst %.cpp, %.cpp.o, $(pilinuxcam_cpp))
 
 linuxcli_c = \
 2d-window/os-linux/linux.cli.c \
@@ -173,36 +184,39 @@ control-gamepad/sdl/sdl.gamepad.c
 linuxsdl_o = $(patsubst %.c, %.o, $(linuxsdl_c))
 
 .PHONY:linuxcli
-linuxcli:$(else_o) $(linux_o) $(linuxcli_o)
+linuxcli:$(else_o) $(linux_o) $(linuxcam_o) $(linuxcli_o)
 
 .PHONY:linuxtui
-linuxtui:$(else_o) $(linux_o) $(linuxtui_o)
+linuxtui:$(else_o) $(linux_o) $(linuxcam_o) $(linuxtui_o)
 
 .PHONY:linuxfb
-linuxfb:$(else_o) $(linux_o) $(linuxfb_o)
+linuxfb:$(else_o) $(linux_o) $(linuxcam_o) $(linuxfb_o)
 
 .PHONY:linuxgtk
-linuxgtk:$(else_o) $(linux_o) $(linuxgtk_o)
+linuxgtk:$(else_o) $(linux_o) $(linuxcam_o) $(linuxgtk_o)
 	$(CC) $(CF)  -o $(DIR)/linux.gtk.o `pkg-config --CFs gtk+-3.0` 2d-window/os-linux/linux.gtk.c
 
 .PHONY:linuxwayland
-linuxwayland:$(else_o) $(linux_o) $(linuxwayland_o)
+linuxwayland:$(else_o) $(linux_o) $(linuxcam_o) $(linuxwayland_o)
 
 .PHONY:linuxxlib
-linuxxlib:$(else_o) $(linux_o) $(linuxxlib_o)
+linuxxlib:$(else_o) $(linux_o) $(linuxcam_o) $(linuxxlib_o)
 
 .PHONY:linuxglut
-linuxglut:$(else_o) $(linux_o) $(linuxglut_o)
+linuxglut:$(else_o) $(linux_o) $(linuxcam_o) $(linuxglut_o)
 
 .PHONY:linuxglfw
-linuxglfw:$(else_o) $(linux_o) $(linuxglfw_o) $(ogl_o)
+linuxglfw:$(else_o) $(linux_o) $(linuxcam_o) $(linuxglfw_o) $(ogl_o)
 
 .PHONY:linuxvulkan
-linuxvulkan:$(else_o) $(linux_o) $(linuxvulkan_o)
+linuxvulkan:$(else_o) $(linux_o) $(linuxcam_o) $(linuxvulkan_o)
 
 .PHONY:linuxsdl
 linuxsdl:$(else_o) $(linux_o) $(linuxsdl_o)
 	$(CC) $(CF)  -o $(DIR)/sdl2.o 2d-window/lib-sdl/sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
+
+.PHONY:pilinuxcli
+pilinuxcli:$(else_o) $(linux_o) $(pilinuxcam_o) $(pilinuxcam_cpp_o) $(linuxcli_o)
 #########################################################
 
 
@@ -405,7 +419,7 @@ winsdl:$(else_o) $(win_o) $(win_cpp_o) $(winsdl_o)
 		true;\
 	else \
 		echo libuser0/$<;\
-		$(CC) $(CF) -o $(DIR)/$(notdir $@) $<;\
+		$(CPPC) $(CPPF) -o $(DIR)/$(notdir $@) $<;\
 	fi
 
 

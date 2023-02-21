@@ -41,7 +41,7 @@ libsoft1:
 .PHONY:libuser0
 libuser0:
 	mkdir -p $@
-	make -s -C $(library)/$@ DIR=$(project)/$@ AS=$(AS) CC=$(CC) CF=$(CF) rpifb
+	make -s -C $(library)/$@ DIR=$(project)/$@ AS=$(AS) CC=$(CC) CF=$(CF) pibarefb
 .PHONY:libuser1
 libuser1:
 	mkdir -p $@

@@ -78,7 +78,7 @@ int dns_write_query(u8* buf, int len, u8* domain, int count)
 	struct dnshead* h = (void*)buf;
 
 	//head
-	h->tran = getrandom()&0xffff;
+	h->tran = random_read()&0xffff;
 	h->flag = 1;
 	h->q = 0x100;
 	h->a = 0;

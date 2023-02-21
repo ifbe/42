@@ -1,5 +1,5 @@
 #define u8 unsigned char
-unsigned int getrandom();
+unsigned int random_read();
 
 
 
@@ -171,7 +171,7 @@ void new2048(u8 (*table)[4])
 	//say("count=%x\n", count);
 
 	//choose which empty cubie
-	count = getrandom() % count;
+	count = random_read() % count;
 	//say("choice=%x\n", count);
 	for(y=0;y<4;y++)
 	{
@@ -181,7 +181,7 @@ void new2048(u8 (*table)[4])
 			{
 				if(count == 0)
 				{
-					table[y][x] = (getrandom()&0x1) + 1;
+					table[y][x] = (random_read()&0x1) + 1;
 					return;
 				}
 				else count--;

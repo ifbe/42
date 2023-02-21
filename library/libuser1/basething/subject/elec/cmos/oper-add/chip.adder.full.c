@@ -398,9 +398,9 @@ static void fulladd_delete(_obj* act, u8* buf)
 }
 static void fulladd_create(_obj* act, u8* buf)
 {
-	int x = act->whdf.ix0 = getrandom()&1;
-	int y = act->whdf.iy0 = getrandom()&1;
-	int z = act->whdf.iz0 = getrandom()&1;
+	int x = act->whdf.ix0 = random_read()&1;
+	int y = act->whdf.iy0 = random_read()&1;
+	int z = act->whdf.iz0 = random_read()&1;
 
 	act->whdf.ixn = (x+y+z)&1;
 	act->whdf.iyn = (x+y+z)>>1;

@@ -1,7 +1,7 @@
 #define u8 unsigned char
 #define u16 unsigned short
 #define u32 unsigned int
-u32 getrandom();
+u32 random_read();
 struct snake
 {
 	u8 x;
@@ -16,8 +16,8 @@ struct snake
 
 int snake_newfood(struct snake* buf, int w, int h)
 {
-	buf[0].x = getrandom() % w;
-	buf[0].y = getrandom() % h;
+	buf[0].x = random_read() % w;
+	buf[0].y = random_read() % h;
 	return 0;
 }
 int snake_generate(struct snake* buf, int w, int h)

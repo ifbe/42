@@ -150,14 +150,14 @@ int tls1v2_write_server_hello(_obj* ele, int fd, u8* buf, int len)
 	p += 2;
 
 	//random
-	*(u32*)(p+0) = getrandom();
-	*(u32*)(p+4) = getrandom();
-	*(u32*)(p+8) = getrandom();
-	*(u32*)(p+12) = getrandom();
-	*(u32*)(p+16) = getrandom();
-	*(u32*)(p+20) = getrandom();
-	*(u32*)(p+24) = getrandom();
-	*(u32*)(p+28) = getrandom();
+	*(u32*)(p+0) = random_read();
+	*(u32*)(p+4) = random_read();
+	*(u32*)(p+8) = random_read();
+	*(u32*)(p+12) = random_read();
+	*(u32*)(p+16) = random_read();
+	*(u32*)(p+20) = random_read();
+	*(u32*)(p+24) = random_read();
+	*(u32*)(p+28) = random_read();
 	for(j=0;j<0x20;j++)ele->priv_256b[j+0x20] = p[j];
 	p += 0x20;
 
@@ -783,14 +783,14 @@ int tls1v2_clientwrite_clienthello(u8* dst, int cnt)
 
 	//random
 	r = (u32*)p;
-	r[0] = getrandom();
-	r[1] = getrandom();
-	r[2] = getrandom();
-	r[3] = getrandom();
-	r[4] = getrandom();
-	r[5] = getrandom();
-	r[6] = getrandom();
-	r[7] = getrandom();
+	r[0] = random_read();
+	r[1] = random_read();
+	r[2] = random_read();
+	r[3] = random_read();
+	r[4] = random_read();
+	r[5] = random_read();
+	r[6] = random_read();
+	r[7] = random_read();
 	p += 0x20;
 
 	//sessionid length

@@ -39,8 +39,8 @@ void wander_doit(struct privdata* own, struct fstyle* this)
 	float dz = own->z - this->vc[2];
 	float dist = squareroot(dx*dx + dy*dy + dz*dz);
 	if(dist < 20.0){
-		own->x = own->x0 + (float)(getrandom()&0xfff);
-		own->y = own->y0 + (float)(getrandom()&0xfff);
+		own->x = own->x0 + (float)(random_read()&0xfff);
+		own->y = own->y0 + (float)(random_read()&0xfff);
 		own->z = own->z0;
 
 		dx = own->x - this->vc[0];

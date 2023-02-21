@@ -6,7 +6,7 @@ typedef unsigned long long u64;
 #define right 0x2
 #define up 0x4
 #define down 0x8
-u32 getrandom();
+u32 random_read();
 
 
 
@@ -111,7 +111,7 @@ int maze_available(u8* data, int w, int h, int x, int y)
 	}
 	if(count == 0)return 0;
 
-	count = getrandom()%count;
+	count = random_read()%count;
 	count = asdf[count];
 	return count;
 }
@@ -150,7 +150,7 @@ void maze_generate(u8* data, int w, int h)
 	{
 		for(x=0;x<w;x++)
 		{
-			//data[y*w+x] = getrandom()&0xf;
+			//data[y*w+x] = random_read()&0xf;
 			data[y*w+x] = 0xf;
 		}
 	}

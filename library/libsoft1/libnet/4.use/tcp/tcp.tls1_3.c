@@ -277,7 +277,7 @@ int tls1v3_clienthello_extension_0033(u8* dst)
 
 	//entry: x25519
 	key = tmp+j+4;
-	for(t=0;t<0x20;t++)key[t] = getrandom()&0xff;
+	for(t=0;t<0x20;t++)key[t] = random_read()&0xff;
 
 	tmp[j+0] = 0x00;
 	tmp[j+1] = 0x1d;
@@ -342,13 +342,13 @@ int tls1v3_clienthello(u8* dst, int len)
 	k = 2;
 
 	//random
-	for(t=0;t<0x20;t++)ctx[k+t] = getrandom()&0xff;
+	for(t=0;t<0x20;t++)ctx[k+t] = random_read()&0xff;
 	k += 0x20;
 
 	//session id
 	ctx[k] = 0x20;
 	k += 1;
-	for(t=0;t<0x20;t++)ctx[k+t] = getrandom()&0xff;
+	for(t=0;t<0x20;t++)ctx[k+t] = random_read()&0xff;
 	k += 0x20;
 
 	//cipher suite

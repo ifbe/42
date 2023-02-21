@@ -271,7 +271,7 @@ static void dancemat_create(_obj* act, u8* arg, int argc, u8** argv)
 
 	nbuf = act->NBUF = memorycreate(0x1000, 0);
 	for(j=0;j<288;j++){
-		nbuf[j] = (getrandom() & 0xfff);
+		nbuf[j] = (random_read() & 0xfff);
 		//say("%d\n", nbuf[j]);
 	}
 

@@ -18,16 +18,16 @@ void* visionlistener(_obj* win)
 		for(y=0;y<480;y++){
 			for(x=0;x<640;x++){
 				if(x >= 480){
-					ibuf[2*(640*y+x)+0] = getrandom()&0xff;
-					ibuf[2*(640*y+x)+1] = getrandom()&0xff;
+					ibuf[2*(640*y+x)+0] = random_read()&0xff;
+					ibuf[2*(640*y+x)+1] = random_read()&0xff;
 				}
 				else{
 					if(y>x){
 						ibuf[2*(640*y+x)+0] = 0;
-						ibuf[2*(640*y+x)+1] = getrandom()&0xff;
+						ibuf[2*(640*y+x)+1] = random_read()&0xff;
 					}
 					else{
-						ibuf[2*(640*y+x)+0] = getrandom()&0xff;
+						ibuf[2*(640*y+x)+0] = random_read()&0xff;
 						ibuf[2*(640*y+x)+1] = 0;
 					}
 				}

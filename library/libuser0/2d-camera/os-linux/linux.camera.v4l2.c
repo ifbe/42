@@ -406,6 +406,18 @@ int v4l2cam_detach()
 {
 	return 0;
 }
+
+
+
+
+int v4l2cam_reader(_obj* cam,void* foot, void* arg,int idx, u8* buf,int len)
+{
+	return 0;
+}
+int v4l2cam_writer(_obj* cam,void* foot, void* arg,int idx, u8* buf,int len)
+{
+	return 0;
+}
 int v4l2cam_delete(_obj* cam)
 {
 	struct percam* pcam = cam->priv_ptr;

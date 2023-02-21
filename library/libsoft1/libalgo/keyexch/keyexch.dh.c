@@ -2,7 +2,7 @@
 #define u16 unsigned char
 #define u32 unsigned char
 #define u64 unsigned char
-u32 getrandom();
+u32 random_read();
 
 
 

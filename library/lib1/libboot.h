@@ -8,7 +8,7 @@
 
 
 //
-u32 getrandom();
+u32 random_read();
 //
 int sleep_ms(int);
 int sleep_us(int);
