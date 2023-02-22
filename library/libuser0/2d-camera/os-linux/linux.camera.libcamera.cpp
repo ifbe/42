@@ -1,6 +1,6 @@
 //https://github.com/kbingham/simple-cam/blob/master/simple-cam.cpp
 extern "C"{
-int printmemory(void*, int);
+#include "libuser.h"
 }
 #include <iomanip>
 #include <iostream>
@@ -11,13 +11,20 @@ int printmemory(void*, int);
 using namespace libcamera;
 
 struct mydata{
+	std::unique_ptr<CameraManager> cm;
 	std::shared_ptr<Camera> cam;
+	Stream* stream;
+	FrameBufferAllocator* allocator;
+	std::vector<std::unique_ptr<Request>> requests;
+
+	_obj* myobj;
 	uint8_t* mem[8];
 };
 
 
 static void requestComplete(Request *request)
 {
+	struct halfrel stack[0x80];
 	if (request->status() == Request::RequestCancelled)return;
 
 	uint64_t cookie = request->cookie();
@@ -53,8 +60,10 @@ static void requestComplete(Request *request)
 			int sz = planemeta[j].bytesused;
 			std::cout << "\tfd: " << fd.get() << " off: " << off << std::endl;
 			std::cout << "\tsz: " << sz << " in " << len << std::endl;
+
 			uint8_t* p = my->mem[idx];
-			printmemory(p, 0x20);
+			//printmemory(p, 0x20);
+			give_data_into_peer(my->myobj,_dst_, stack,0, 0,0, p, sz);
 		}
 	}
 
@@ -91,11 +100,11 @@ std::string cameraName(Camera *camera)
 }
 
 int createcamera(struct mydata* my){
-	std::unique_ptr<CameraManager> cm = std::make_unique<CameraManager>();
+	my->cm = std::make_unique<CameraManager>();
 
-	cm->start();
+	my->cm->start();
 
-	auto list = cm->cameras();
+	auto list = my->cm->cameras();
 	if(list.empty()){
 		std::cout << "no camera" << std::endl;
 		return 0;
@@ -106,7 +115,7 @@ int createcamera(struct mydata* my){
 	}
 
 	std::string id = list[0]->id();
-	my->cam = cm->get(id);
+	my->cam = my->cm->get(id);
 	my->cam->acquire();
 
 	//std::unique_ptr<CameraConfiguration> cfglist = cam->generateConfiguration({StreamRole::Viewfinder});
@@ -122,22 +131,22 @@ int createcamera(struct mydata* my){
 	cfglist->validate();
 	my->cam->configure(cfglist.get());
 
-	FrameBufferAllocator *allocator = new FrameBufferAllocator(my->cam);
+	my->allocator = new FrameBufferAllocator(my->cam);
 	for (StreamConfiguration &cfg : *cfglist) {
-		int ret = allocator->allocate(cfg.stream());
+		int ret = my->allocator->allocate(cfg.stream());
 		if (ret < 0) {
 			std::cerr << "Can't allocate buffers" << std::endl;
 			return EXIT_FAILURE;
 		}
 
-		size_t allocated = allocator->buffers(cfg.stream()).size();
+		size_t allocated = my->allocator->buffers(cfg.stream()).size();
 		std::cout << "Allocated " << allocated << " buffers for stream" << std::endl;
 	}
 
 	StreamConfiguration &streamConfig = cfglist->at(0);
-	Stream *stream = streamConfig.stream();
-	const std::vector<std::unique_ptr<FrameBuffer>> &buffers = allocator->buffers(stream);
-	std::vector<std::unique_ptr<Request>> requests;
+	my->stream = streamConfig.stream();
+	const std::vector<std::unique_ptr<FrameBuffer>> &buffers = my->allocator->buffers(my->stream);
+
 	for (unsigned int i = 0; i < buffers.size(); ++i) {
 		const std::unique_ptr<FrameBuffer> &buffer = buffers[i];
 		const FrameBuffer::Plane &plane = buffer->planes()[0];
@@ -155,7 +164,7 @@ int createcamera(struct mydata* my){
 			return EXIT_FAILURE;
 		}
 
-		int ret = request->addBuffer(stream, buffer.get());
+		int ret = request->addBuffer(my->stream, buffer.get());
 		if (ret < 0)
 		{
 			std::cerr << "Can't set buffer for request"
@@ -169,27 +178,28 @@ int createcamera(struct mydata* my){
 		ControlList &controls = request->controls();
 		controls.set(controls::Brightness, 0.5);
 
-		requests.push_back(std::move(request));
+		my->requests.push_back(std::move(request));
 	}
-	
+
 	my->cam->requestCompleted.connect(requestComplete);
 	my->cam->start();
-	for (std::unique_ptr<Request> &request : requests)
+	for (std::unique_ptr<Request> &request : my->requests)
 		my->cam->queueRequest(request.get());
-	usleep(10*1000*1000);
+	return 0;
+}
+int deletecamera(struct mydata* my){
 	my->cam->stop();
 
-	allocator->free(stream);
-	delete allocator;
+	my->allocator->free(my->stream);
+	delete my->allocator;
 
 	my->cam->release();
-	cm->stop();
+	my->cm->stop();
 	return 0;
 }
 
 
 extern "C" {
-#include "libuser.h"
 
 
 int libcam_take(_obj* cam,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
@@ -222,11 +232,17 @@ int libcam_writer(_obj* cam,void* foot, void* arg,int idx, u8* buf,int len)
 }
 int libcam_delete(_obj* cam)
 {
+	struct mydata* my = (struct mydata*)cam->priv_256b;
+	my->myobj = cam;
+
+	deletecamera(my);
 	return 0;
 }
 int libcam_create(_obj* cam, void* arg, int argc, u8** argv)
 {
 	struct mydata* my = (struct mydata*)cam->priv_256b;
+	my->myobj = cam;
+
 	createcamera(my);
 	return 0;
 }
