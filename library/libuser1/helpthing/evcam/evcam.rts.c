@@ -26,12 +26,12 @@ static void camrts_fixgeom(struct fstyle* geom)
 	geom->vr[2] = 0.0;
 
 	geom->vf[0] = 0.0;
-	geom->vf[1] = sin34;
-	geom->vf[2] =-cos34;
+	geom->vf[1] = _sin34_;
+	geom->vf[2] =-_cos34_;
 
 	geom->vt[0] = 0.0;
-	geom->vt[1] = cos34;
-	geom->vt[2] = sin34;
+	geom->vt[1] = _cos34_;
+	geom->vt[2] = _sin34_;
 }
 
 

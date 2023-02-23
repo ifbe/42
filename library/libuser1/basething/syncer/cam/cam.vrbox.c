@@ -121,7 +121,7 @@ static int vrbox_quaternion(_obj* act, struct fstyle* pin, float* q, int len)
 	if(0 == obb)return 0;
 
 	//fix quaternion: head west => heading north
-	vec4 fix = {0, 0, sqrt2/2, sqrt2/2};
+	vec4 fix = {0, 0, _sqrt2_/2, _sqrt2_/2};
 	quaternion_multiply(fix, q);
 
 	float* vr = obb->vr;

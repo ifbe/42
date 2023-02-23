@@ -7,7 +7,7 @@
 void computeclark(float* in, float* out)
 {
 	out[0] = in[0] - in[1]/2 - in[2]/2;
-	out[1] = (in[1] - in[2])*sqrt3/2;
+	out[1] = (in[1] - in[2])*_sqrt3_/2;
 }
 
 
@@ -15,8 +15,8 @@ void computeclark(float* in, float* out)
 void inverseclark(float* in, float* out)
 {
 	out[0] = in[0];
-	out[1] =-in[0]/2 + in[1]*sqrt3/2;
-	out[2] =-in[0]/2 - in[1]*sqrt3/2;
+	out[1] =-in[0]/2 + in[1]*_sqrt3_/2;
+	out[2] =-in[0]/2 - in[1]*_sqrt3_/2;
 }
 
 

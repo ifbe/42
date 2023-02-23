@@ -207,6 +207,8 @@ linuxglut:$(else_o) $(linux_o) $(linuxcam_o) $(linuxglut_o)
 
 .PHONY:linuxglfw
 linuxglfw:$(else_o) $(linux_o) $(linuxcam_o) $(linuxglfw_o) $(ogl_o)
+.PHONY:linuxglfwlibcam
+linuxglfwlibcam:$(else_o) $(linux_o) $(pilinuxcam_o) $(pilinuxcam_cpp_o) $(linuxglfw_o) $(ogl_o)
 
 .PHONY:linuxvulkan
 linuxvulkan:$(else_o) $(linux_o) $(linuxcam_o) $(linuxvulkan_o)

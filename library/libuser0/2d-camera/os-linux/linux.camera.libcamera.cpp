@@ -118,21 +118,41 @@ int createcamera(struct mydata* my){
 	my->cam = my->cm->get(id);
 	my->cam->acquire();
 
-	//std::unique_ptr<CameraConfiguration> cfglist = cam->generateConfiguration({StreamRole::Viewfinder});
-	std::unique_ptr<CameraConfiguration> cfglist = my->cam->generateConfiguration({StreamRole::Raw});
-	//std::unique_ptr<CameraConfiguration> cfglist = cam->generateConfiguration({StreamRole::VideoRecording});
-	//std::unique_ptr<CameraConfiguration> cfglist = cam->generateConfiguration({StreamRole::StillCapture});
-	//std::unique_ptr<CameraConfiguration> cfglist = cam->generateConfiguration({StreamRole::Raw, StreamRole::StillCapture,StreamRole::VideoRecording, StreamRole::Viewfinder});
+	//camera config
+	//std::unique_ptr<CameraConfiguration> camcfg = my->cam->generateConfiguration({StreamRole::Viewfinder});
+	std::unique_ptr<CameraConfiguration> camcfg = my->cam->generateConfiguration({StreamRole::Raw});
+	//std::unique_ptr<CameraConfiguration> camcfg = my->cam->generateConfiguration({StreamRole::VideoRecording});
+	//std::unique_ptr<CameraConfiguration> camcfg = my->cam->generateConfiguration({StreamRole::StillCapture});
 
-	for(StreamConfiguration& cfg : *cfglist){
+	//stream config
+	for(auto cfg : *camcfg){
 		std::cout << "config: " << cfg.toString() << std::endl;
 	}
+	StreamConfiguration &stmcfg = camcfg->at(0);
 
-	cfglist->validate();
-	my->cam->configure(cfglist.get());
+	//foramt
+	auto stcfmt = stmcfg.formats();
+	auto pixfmt = stcfmt.pixelformats();
+	for(auto& fmt: pixfmt){
+		std::cout << "format: " << fmt.toString() << std::endl;
+
+		auto pixsize= stcfmt.sizes(fmt);
+		for(auto& sz: pixsize){
+			std::cout << "size: " << sz.toString() << std::endl;
+		}
+	}
+
+	//stream config
+	stmcfg.size.width = 640;
+	stmcfg.size.height = 480;
+	stmcfg.pixelFormat = PixelFormat(hex32('Y','U','Y','V'));
+
+	//camera config
+	camcfg->validate();
+	my->cam->configure(camcfg.get());
 
 	my->allocator = new FrameBufferAllocator(my->cam);
-	for (StreamConfiguration &cfg : *cfglist) {
+	for (StreamConfiguration &cfg : *camcfg) {
 		int ret = my->allocator->allocate(cfg.stream());
 		if (ret < 0) {
 			std::cerr << "Can't allocate buffers" << std::endl;
@@ -143,7 +163,7 @@ int createcamera(struct mydata* my){
 		std::cout << "Allocated " << allocated << " buffers for stream" << std::endl;
 	}
 
-	StreamConfiguration &streamConfig = cfglist->at(0);
+	StreamConfiguration &streamConfig = camcfg->at(0);
 	my->stream = streamConfig.stream();
 	const std::vector<std::unique_ptr<FrameBuffer>> &buffers = my->allocator->buffers(my->stream);
 
