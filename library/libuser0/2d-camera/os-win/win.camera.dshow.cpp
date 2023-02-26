@@ -444,6 +444,14 @@ int dshowcam_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
+int dshowcam_reader(_obj* sup,void* foot, void* arg,int idx, void* buf,int len)
+{
+	return 0;
+}
+int dshowcam_writer(_obj* sup,void* foot, void* arg,int idx, void* buf,int len)
+{
+	return 0;
+}
 int dshowcam_delete(_obj* win)
 {
 	//shutupdie(win);

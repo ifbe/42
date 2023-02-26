@@ -322,11 +322,11 @@ win_c = \
 control-cmdline/win/win.stdio.c \
 control-systray/win/win.tray.c \
 sound-micphone/os-win/win.wavein.c \
-sound-speaker/os-win/win.waveout.c
+sound-speaker/os-win/win.waveout.c \
+2d-camera/os-win/win.camera.c
 win_o = $(patsubst %.c, %.o, $(win_c))
 
 win_cpp = \
-2d-camera/os-win/win.camera.cpp \
 2d-camera/os-win/win.camera.dshow.cpp
 win_cpp_o = $(patsubst %.cpp, %.cpp.o, $(win_cpp))
 

@@ -59,7 +59,7 @@ static int getsockbyobj(_obj* oo)
 
 
 
-u32 resolvehostname(char* addr)
+u32 resolvehostname4(char* addr)
 {
 	struct hostent* host;
 	char** ptr;
@@ -118,7 +118,7 @@ int socket_domain2ipstr(char* addr)
 	if(j==isv6)return 0;
 
 	u8 ip[4];
-	*(u32*)ip = resolvehostname(addr);
+	*(u32*)ip = resolvehostname4(addr);
 	return snprintf(addr, 16, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
 }
 int waitconnectwithselect(int sock)
@@ -472,7 +472,7 @@ if((0 != myaddr) && (0 != myport)){
 
 	//get the random port
 	self = (void*)oo->sockinfo.self;
-	socklen_t len = sizeof(struct sockaddr_in);
+	socklen_t len = socklen;
 	getsockname(fd, (void*)self, &len);
 	printf("myaddr=%s:%d\n", inet_ntoa(self->sin_addr), ntohs(self->sin_port));
 

@@ -1,5 +1,5 @@
 #include "libsoft.h"
-u32 resolvehostname(void*);
+u32 resolvehostname4(void*);
 
 
 
@@ -95,7 +95,7 @@ int udptravclient_create(_obj* art, u8* url)
 	u8* tmp = (void*)&art->listu64.data0;
 	tmp[2] = 9999>>8;
 	tmp[3] = 9999&0xff;
-	*(u32*)(tmp+4) = resolvehostname(url);
+	*(u32*)(tmp+4) = resolvehostname4(url);
 	printmemory(tmp, 8);
 
 	art->listu64.data1 = 0;

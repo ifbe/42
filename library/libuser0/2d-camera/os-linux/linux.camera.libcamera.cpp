@@ -145,7 +145,7 @@ int createcamera(struct mydata* my){
 	//stream config
 	stmcfg.size.width = 640;
 	stmcfg.size.height = 480;
-	stmcfg.pixelFormat = PixelFormat(hex32('Y','U','Y','V'));
+	//stmcfg.pixelFormat = PixelFormat(hex32('Y','U','Y','V'));
 
 	//camera config
 	camcfg->validate();

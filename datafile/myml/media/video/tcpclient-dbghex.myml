@@ -1,0 +1,19 @@
+<artery>
+dbghex{
+fmt:dbghex
+}
+</artery>
+
+
+<system>
+server{
+fmt:tcp
+#arg:192.168.5.147:9999
+arg:240e`3a1`ea4`8c0`eb0b`789c`ade8`70ad:9999
+}
+</system>
+
+
+<relation>
+(server, 0, dst) -> (dbghex, 0, src)
+</relation>

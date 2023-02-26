@@ -44,7 +44,7 @@ dsth:480
 server{
 fmt:tcp
 #arg:192.168.5.147:9999
-arg:240e`3a1`e84`9530`76d4`5039`b6c2`21ee:9999
+arg:pi0w.deepstack.tech:9999
 }
 </system>
 

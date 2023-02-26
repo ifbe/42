@@ -63,6 +63,7 @@ int parseipv6addr(u8* buf, u8* out)
 		}
 	}
 stage2:
+	//say("stage2:%d,%d,%d,%d\n",j,head,lcnt,rcnt);
 	for(;j<4*8+8;j++){
 		if(buf[j]<=0x20){
 			parseipv6addr_cell(buf+head, j-head, right+rcnt*2);
@@ -77,14 +78,16 @@ stage2:
 		}
 	}
 final:
+	//say("final:%d,%d,%d,%d\n",j,head,lcnt,rcnt);
+	//printmemory(right, 4);
 	while(lcnt+rcnt < 8){		//fill 0 for ::
 		out[lcnt*2+0] = 0;
 		out[lcnt*2+1] = 0;
 		lcnt++;
 	}
 	for(k=0;k<rcnt;k++){		//copy right to out
-		out[(lcnt+k)*2+0] = right[j*2+0];
-		out[(lcnt+k)*2+1] = right[j*2+0];
+		out[(lcnt+k)*2+0] = right[k*2+0];
+		out[(lcnt+k)*2+1] = right[k*2+1];
 	}
 	return j;		//input byte count;
 error:

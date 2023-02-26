@@ -79,7 +79,7 @@ int peername(u64 fd, u32* buf)
 	buf[1] = addr.sin_port;
 	return 1;
 }*/
-u32 resolvehostname(char* addr)
+u32 resolvehostname4(char* addr)
 {
 	struct hostent* host;
 	char** ptr;
@@ -124,7 +124,7 @@ int socket_fixaddr(char* addr)
 		break;
 	}
 
-	*(u32*)ip = resolvehostname(addr);
+	*(u32*)ip = resolvehostname4(addr);
 	return snprintf(addr, 16, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
 }
 int waitconnectwithselect(int sock)
