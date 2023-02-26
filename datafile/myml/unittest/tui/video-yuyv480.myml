@@ -9,7 +9,7 @@ outfmt:yuvx
 <supply>
 usbcam{
 fmt:cam
-url:/dev/video0
+arg:/dev/video0
 }
 wnd{
 fmt:wnd

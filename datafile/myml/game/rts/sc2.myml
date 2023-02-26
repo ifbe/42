@@ -7,7 +7,7 @@ fmt:rccar
 }
 rabbit{
 fmt:stl3d
-url:datafile/stl/bunny-lowpoly.stl
+arg:datafile/stl/bunny-lowpoly.stl
 }
 freecam{
 fmt:freecam

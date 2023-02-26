@@ -23,7 +23,7 @@ int ntpclient_delete(_obj* ele)
 {
 	return 0;
 }
-int ntpclient_create(_obj* ele, u8* url)
+int ntpclient_create(_obj* ele, u8* arg)
 {
 	return 0;
 }
@@ -51,7 +51,7 @@ int ntpserver_delete(_obj* ele)
 {
 	return 0;
 }
-int ntpserver_create(_obj* ele, u8* url)
+int ntpserver_create(_obj* ele, u8* arg)
 {
 	return 0;
 }

@@ -23,7 +23,7 @@ int bootpclient_delete(_obj* ele)
 {
 	return 0;
 }
-int bootpclient_create(_obj* ele, u8* url)
+int bootpclient_create(_obj* ele, u8* arg)
 {
 	return 0;
 }
@@ -51,7 +51,7 @@ int bootpserver_delete(_obj* ele)
 {
 	return 0;
 }
-int bootpserver_create(_obj* ele, u8* url)
+int bootpserver_create(_obj* ele, u8* arg)
 {
 	return 0;
 }

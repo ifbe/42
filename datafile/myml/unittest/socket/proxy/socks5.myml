@@ -1,7 +1,7 @@
 <system>
 tcphost{
 fmt:tcp
-url:127.0.0.1:8888
+arg:127.0.0.1:8888
 }
 </system>
 
@@ -9,11 +9,11 @@ url:127.0.0.1:8888
 <artery>
 socks{
 fmt:socks
-url:www.baidu.com:80
+arg:www.baidu.com:80
 }
 http{
 fmt:http
-url:www.baidu.com:80
+arg:www.baidu.com:80
 }
 dbghex{
 fmt:dbghex

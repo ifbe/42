@@ -17,7 +17,7 @@ fmt:button
 <supply>
 wnd{
 fmt:wnd
-url:/dev/fb0
+arg:/dev/fb0
 }
 std{
 fmt:std

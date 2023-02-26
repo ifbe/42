@@ -8,7 +8,7 @@ fmt:std
 <system>
 car{
 fmt:udp
-url:192.168.0.83:9999
+arg:192.168.0.83:9999
 }
 </system>
 

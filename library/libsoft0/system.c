@@ -35,7 +35,7 @@ int uart_writer(void*,void*, void*,int, void*,int);
 //socket
 int initsocket(void*);
 int freesocket();
-void* socket_create(int fmt, void* url);
+void* socket_create(int fmt, void* arg);
 int socket_delete(void*);
 int socket_search(int);
 int socket_modify(int);

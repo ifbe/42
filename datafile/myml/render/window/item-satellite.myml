@@ -1,7 +1,7 @@
 <entity>
 satellite{
 fmt:satelli
-url:datafile/jpg/texball-earth.jpg
+arg:datafile/jpg/texball-earth.jpg
 }
 freecam{
 fmt:freecam
@@ -36,7 +36,7 @@ fmt:str2vec
 <system>
 listen{
 fmt:UDP
-url:0.0.0.0:9999
+arg:0.0.0.0:9999
 }
 </system>
 

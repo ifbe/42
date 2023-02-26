@@ -14,7 +14,7 @@ fmt:virtual
 <supply>
 usbcam{
 fmt:cam
-url:/dev/video0
+arg:/dev/video0
 }
 opengl{
 fmt:wnd

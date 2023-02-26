@@ -59,12 +59,12 @@ static void funcaddr(_obj* art)
 }
 
 
-int pump_create(_obj* ele, u8* url)
+int pump_create(_obj* ele, u8* arg)
 {
-	say("@pump_create:%.16s\n", url);
+	say("@pump_create:%.16s\n", arg);
 
 	struct perobj* per = (void*)ele->priv_256b;
-	copypath(per->path, url);
+	copypath(per->path, arg);
 
 	threadcreate(funcaddr, ele);
 	return 1;

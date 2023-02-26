@@ -1,7 +1,7 @@
 <system>
 tcphost{
 fmt:TCP
-url:0.0.0.0:9999
+arg:0.0.0.0:9999
 }
 </system>
 
@@ -12,7 +12,7 @@ fmt:HTTP
 }
 control{
 fmt:control
-url:../web/html/control.html
+arg:../web/html/control.html
 }
 </artery>
 

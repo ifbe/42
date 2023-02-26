@@ -99,11 +99,11 @@ int mediamux_attach(struct halfrel* self, struct halfrel* peer)
 
 
 
-int mediamux_delete(_obj* ele, u8* url)
+int mediamux_delete(_obj* ele, u8* arg)
 {
 	return 0;
 }
-int mediamux_create(_obj* ele, u8* url)
+int mediamux_create(_obj* ele, u8* arg)
 {
 	say("@mediamux_create\n");
 	ele->SENDLOCK = 0;

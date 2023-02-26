@@ -22,7 +22,7 @@ depth:1024
 <system>
 ptmx{
 fmt:ptmx
-url:/dev/ptmx
+arg:/dev/ptmx
 }
 </system>
 

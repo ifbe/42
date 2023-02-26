@@ -21,7 +21,7 @@ fmt:dbghex
 <system>
 otto{
 fmt:uart
-url:/dev/tty.SLAB_USBtoUART,115200
+arg:/dev/tty.SLAB_USBtoUART,115200
 }
 </system>
 

@@ -1,7 +1,7 @@
 <system>
 tcp{
 fmt:TCP
-url:0.0.0.0:2222
+arg:0.0.0.0:2222
 }
 </system>
 

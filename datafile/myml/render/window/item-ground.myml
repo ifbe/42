@@ -7,14 +7,14 @@ normal:/Users/ifbe/Downloads/pbr/floor/normal.png
 }
 thebox{
 fmt:obj3d
-url:datafile/obj/cube.obj
+arg:datafile/obj/cube.obj
 albedo:/Users/ifbe/Downloads/pbr/rustiron/albedo.png
 matter:/Users/ifbe/Downloads/pbr/rustiron/matter.png
 normal:/Users/ifbe/Downloads/pbr/rustiron/normal.png
 }
 rabbit{
 fmt:stl3d
-url:datafile/stl/bunny-lowpoly.stl
+arg:datafile/stl/bunny-lowpoly.stl
 }
 freecam{
 fmt:freecam

@@ -1,7 +1,7 @@
 <device>
 spihost{
 fmt:spi
-url:/dev/spidev0.0
+arg:/dev/spidev0.0
 }
 </device>
 
@@ -16,7 +16,7 @@ fmt:mpu9250
 <system>
 clock{
 fmt:UDP
-url:0.0.0.0:9999
+arg:0.0.0.0:9999
 }
 </system>
 

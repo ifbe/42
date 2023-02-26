@@ -4,7 +4,7 @@ fmt:ground
 }
 test{
 fmt:stl3d
-url:datafile/stl/spider-lowpoly.stl
+arg:datafile/stl/spider-lowpoly.stl
 }
 tree{
 fmt:tree

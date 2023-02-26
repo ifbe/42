@@ -76,7 +76,7 @@ int fftpcm_delete(_obj* ele)
 {
 	return 0;
 }
-int fftpcm_create(_obj* ele, u8* url)
+int fftpcm_create(_obj* ele, u8* arg)
 {
 	say("@fftpcm_create\n");
 

@@ -1,7 +1,7 @@
 <entity>
 rs274x{
 fmt:gerber
-url:/Users/ifbe/Desktop/test.GTL
+arg:/Users/ifbe/Desktop/test.GTL
 }
 cam0{
 fmt:freecam

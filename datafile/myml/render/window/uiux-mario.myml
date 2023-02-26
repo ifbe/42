@@ -1,7 +1,7 @@
 <entity>
 mario{
 fmt:mario
-url:datafile/jpg/cartoon.jpg
+arg:datafile/jpg/cartoon.jpg
 }
 freecam{
 fmt:freecam

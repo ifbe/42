@@ -533,6 +533,27 @@ void yuyv_to_rgba(
 
 
 
+//yuv411
+void yyuyyv_to_rgba(
+	u8* src, int s1, int w0, int h0, int x0, int y0, int x1, int y1,
+	u8* dst, int s2, int w1, int h1, int x2, int y2, int x3, int y3)
+{
+}
+
+
+
+
+//yuv420
+void yx_to_rgba(
+	u8* src, int s1, int w0, int h0, int x0, int y0, int x1, int y1,
+	u8* dst, int s2, int w1, int h1, int x2, int y2, int x3, int y3)
+{
+}
+
+
+
+
+
 void yuyv_to_yuvx(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth)
@@ -624,19 +645,60 @@ void yyyyuv_to_yuvx(
 
 
 
-//yuv411
-void yyuyyv_to_rgba(
-	u8* src, int s1, int w0, int h0, int x0, int y0, int x1, int y1,
-	u8* dst, int s2, int w1, int h1, int x2, int y2, int x3, int y3)
+void bgbgxgrgrx_to_rgba(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth)
 {
-}
+	if(0 == srcbuf)return;
+	if(0 == dstbuf)return;
+say("bgbgxgrgrx_to_rgba\n");
+printmemory(srcbuf, 0x40);
+	int newx = 0;
+	int srcstride = srcw*5/4;
+	int x,y;
+	int r,g,b,t;
+	u8* dst;
+	u8* src = srcbuf;
+	for(y=2;y<dsth-2;y+=2)
+	{
+		if(y >= dsth)break;
 
+		dst = dstbuf + y*dstw*4;
+		for(x=2;x<dstw-2;x+=2)
+		{
+			if(x >= dstw)break;
 
+			newx = (x/4)*5 + (x%4);
+			g = src[srcstride*y + newx];
+			b = src[srcstride*y + newx+1];
+			r = src[srcstride*(y+1) + newx];
+			g+= src[srcstride*(y+1) + newx+1];
+			g/=2;
+			dst[4*x + 0] = r;//255-255*(4*r+1);
+			dst[4*x + 1] = g;//255-255*(4*g+1);
+			dst[4*x + 2] = b;//255-255*(4*b+1);
+			dst[4*x + 4] = r;//255-255*(4*r+1);
+			dst[4*x + 5] = g;//255-255*(4*g+1);
+			dst[4*x + 6] = b;//255-255*(4*b+1);
+		}
 
+		dst = dstbuf + (y+1)*dstw*4;
+		for(x=2;x<dstw-2;x+=2)
+		{
+			if(x >= dstw)break;
 
-//yuv420
-void yx_to_rgba(
-	u8* src, int s1, int w0, int h0, int x0, int y0, int x1, int y1,
-	u8* dst, int s2, int w1, int h1, int x2, int y2, int x3, int y3)
-{
+			newx = (x/4)*5 + (x%4);
+			g = src[srcstride*y + newx];
+			b = src[srcstride*y + newx+1];
+			r = src[srcstride*(y+1) + newx];
+			g+= src[srcstride*(y+1) + newx+1];
+			g/=2;
+			dst[4*x + 0] = r;//255-255*(4*r+1);
+			dst[4*x + 1] = g;//255-255*(4*g+1);
+			dst[4*x + 2] = b;//255-255*(4*b+1);
+			dst[4*x + 4] = r;//255-255*(4*r+1);
+			dst[4*x + 5] = g;//255-255*(4*g+1);
+			dst[4*x + 6] = b;//255-255*(4*b+1);
+		}
+	}
 }

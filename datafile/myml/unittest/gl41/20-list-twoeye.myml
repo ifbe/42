@@ -1,14 +1,14 @@
 <entity>
 sky{
 fmt:texball
-url:datafile/jpg/texball-skysphere.jpg
+arg:datafile/jpg/texball-skysphere.jpg
 }
 gnd{
 fmt:ground
 }
 dog{
 fmt:stl3d
-url:datafile/stl/dog-lowpoly.stl
+arg:datafile/stl/dog-lowpoly.stl
 }
 left{
 fmt:freecam

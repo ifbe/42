@@ -60,7 +60,7 @@ int mavlinkclient_delete(_obj* ele)
 {
 	return 0;
 }
-int mavlinkclient_create(_obj* ele, u8* url)
+int mavlinkclient_create(_obj* ele, u8* arg)
 {
 	say("@mavlinkclient_create\n");
 	return 0;
@@ -82,7 +82,7 @@ int mavlinkserver_delete(_obj* ele)
 {
 	return 0;
 }
-int mavlinkserver_create(_obj* ele, u8* url)
+int mavlinkserver_create(_obj* ele, u8* arg)
 {
 	say("@mavlinkserver_create\n");
 	return 0;

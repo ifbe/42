@@ -1,7 +1,7 @@
 <device>
 i2chost{
 fmt:i2c
-url:/dev/i2c-1
+arg:/dev/i2c-1
 }
 </device>
 
@@ -9,7 +9,7 @@ url:/dev/i2c-1
 <driver>
 mpu9250{
 fmt:mpu9250
-url:0x68,0xc
+arg:0x68,0xc
 }
 </driver>
 

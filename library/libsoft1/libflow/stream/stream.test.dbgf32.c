@@ -32,7 +32,7 @@ int dbgf32_attach(struct halfrel* self, struct halfrel* peer)
 
 
 
-int dbgf32_create(_obj* ele, u8* url)
+int dbgf32_create(_obj* ele, u8* arg)
 {
 	say("@dbgf32_create\n");
 	return 1;

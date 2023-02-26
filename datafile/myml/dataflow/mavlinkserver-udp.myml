@@ -1,7 +1,7 @@
 <system>
 broadcast{
 fmt:udp
-url:0.0.0.0:14555
+arg:0.0.0.0:14555
 }
 </system>
 

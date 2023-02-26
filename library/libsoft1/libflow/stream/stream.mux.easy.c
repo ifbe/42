@@ -36,11 +36,11 @@ int easymux_attach(struct halfrel* self, struct halfrel* peer)
 
 
 
-int easymux_delete(_obj* ele, u8* url)
+int easymux_delete(_obj* ele, u8* arg)
 {
 	return 0;
 }
-int easymux_create(_obj* ele, u8* url)
+int easymux_create(_obj* ele, u8* arg)
 {
 	say("@easymux_create\n");
 	return 1;

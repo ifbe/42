@@ -1,11 +1,11 @@
 <system>
 ptmx{
 fmt:ptmx
-url:/dev/ptmx
+arg:/dev/ptmx
 }
 uart{
 fmt:uart
-url:/dev/ttyACM0, 115200
+arg:/dev/ttyACM0, 115200
 }
 </system>
 

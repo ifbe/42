@@ -4,7 +4,7 @@ fmt:freecam
 }
 sky{
 fmt:texbox
-url:datafile/jpg/wall.jpg
+arg:datafile/jpg/wall.jpg
 }
 world{
 fmt:virtual

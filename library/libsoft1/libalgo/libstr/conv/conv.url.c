@@ -9,10 +9,96 @@ void say(char*, ...);
 
 
 
+int parseipv6addr_cell(u8* buf, int len, u8* out)
+{
+	if(0 == len)return 0;
+
+	int j;
+	u32 tmp = 0;
+	for(j=0;j<len;j++){
+		if( (buf[j]>='0')&&(buf[j]<='9') ){
+			tmp = (tmp<<4) | (buf[j]-'0');
+		}
+		else if( (buf[j]>='a')&&(buf[j]<='f') ){
+			tmp = (tmp<<4) | (buf[j]-'a') + 0xa;
+		}
+		else if( (buf[j]>='A')&&(buf[j]<='F') ){
+			tmp = (tmp<<4) | (buf[j]-'A') + 0xa;
+		}
+		else break;
+	}
+	out[0] = (tmp>>8)&0xff;
+	out[1] = tmp&0xff;
+	return j;
+}
+int parseipv6addr(u8* buf, u8* out)
+{
+	u8 right[16];
+	int j,k;
+	int head=0;
+	int lcnt=0;
+	int rcnt=0;
+	for(j=0;j<4*8+8;j++){
+		if(buf[j]<=0x20){
+			if(0 == j-head){		//		:\n
+				rcnt = 0;
+				goto error;
+			}
+
+			parseipv6addr_cell(buf+head, j-head, out+lcnt*2);
+			lcnt++;
+			if(lcnt != 8)goto error;		//fedc:ba98:7654\n
+			return j;		//input byte count
+		}
+		if('`' == buf[j]){
+			if(0 == j)goto error;	//		:abcd:1234
+			if(0 == j-head){		//		::
+				head = j+1;
+				j = j+1;
+				goto stage2;
+			}
+			parseipv6addr_cell(buf+head, j-head, out+lcnt*2);
+			lcnt++;
+			head = j+1;
+		}
+	}
+stage2:
+	for(;j<4*8+8;j++){
+		if(buf[j]<=0x20){
+			parseipv6addr_cell(buf+head, j-head, right+rcnt*2);
+			rcnt++;
+			break;
+		}
+		if('`' == buf[j]){
+			if(0 == j-head)goto error;		//right half no ::
+			parseipv6addr_cell(buf+head, j-head, right+rcnt*2);
+			rcnt++;
+			head = j+1;
+		}
+	}
+final:
+	while(lcnt+rcnt < 8){		//fill 0 for ::
+		out[lcnt*2+0] = 0;
+		out[lcnt*2+1] = 0;
+		lcnt++;
+	}
+	for(k=0;k<rcnt;k++){		//copy right to out
+		out[(lcnt+k)*2+0] = right[j*2+0];
+		out[(lcnt+k)*2+1] = right[j*2+0];
+	}
+	return j;		//input byte count;
+error:
+	say("parseipv6addr:wrong l=%d,r=%d\n", lcnt, rcnt);
+	return 0;
+}
+
+
+
+
 int parseurl(u8* buf, int len, u8* addr, int* port)
 {
 	int j,k;
-	for(j=0;j<16;j++)
+	for(j=0;j<40;j++)
 	{
 		if(0 == buf[j])break;
 		if('/' == buf[j])break;

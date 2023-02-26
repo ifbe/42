@@ -1,7 +1,7 @@
 <system>
 uart{
 fmt:uart
-url:/dev/ttyUSB0
+arg:/dev/ttyUSB0
 }
 </system>
 

@@ -1,15 +1,15 @@
 #include "libsoft.h"
 u64 file_check(u8* buf, int len);
-int mbrclient_create(_obj* ele, void* url, int argc, u8** argv);
-int mbrclient_delete(_obj* ele, void* url);
+int mbrclient_create(_obj* ele, void* arg, int argc, u8** argv);
+int mbrclient_delete(_obj* ele, void* arg);
 int mbrclient_attach(struct halfrel* self, struct halfrel* peer);
 int mbrclient_detach(struct halfrel* self, struct halfrel* peer);
-int gptclient_create(_obj* ele, void* url, int argc, u8** argv);
-int gptclient_delete(_obj* ele, void* url);
+int gptclient_create(_obj* ele, void* arg, int argc, u8** argv);
+int gptclient_delete(_obj* ele, void* arg);
 int gptclient_attach(struct halfrel* self, struct halfrel* peer);
 int gptclient_detach(struct halfrel* self, struct halfrel* peer);
-int fatclient_create(_obj* ele, void* url, int argc, u8** argv);
-int fatclient_delete(_obj* ele, void* url);
+int fatclient_create(_obj* ele, void* arg, int argc, u8** argv);
+int fatclient_delete(_obj* ele, void* arg);
 int fatclient_attach(struct halfrel* self, struct halfrel* peer);
 int fatclient_detach(struct halfrel* self, struct halfrel* peer);
 
@@ -134,7 +134,7 @@ int fileauto_delete(_obj* ele)
 	}
 	return 0;
 }
-int fileauto_create(_obj* ele, u8* url)
+int fileauto_create(_obj* ele, u8* arg)
 {
 	ele->listptr.buf0 = memorycreate(0x10000, 0);
 	return 0;

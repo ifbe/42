@@ -1,7 +1,7 @@
 <system>
 tcp{
 fmt:tcp
-url:www.baidu.com:80
+arg:www.baidu.com:80
 }
 </system>
 
@@ -9,7 +9,7 @@ url:www.baidu.com:80
 <artery>
 http{
 fmt:http
-url:www.baidu.com/
+arg:www.baidu.com/
 }
 crawler{
 fmt:crawler

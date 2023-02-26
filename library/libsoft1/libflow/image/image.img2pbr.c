@@ -24,7 +24,7 @@ int img2pbr_attach(struct halfrel* self, struct halfrel* peer)
 
 
 
-int img2pbr_create(_obj* ele, u8* url)
+int img2pbr_create(_obj* ele, u8* arg)
 {
 	say("@img2pbr_create\n");
 	//testing: merge albedo,normal,amocc into ppm

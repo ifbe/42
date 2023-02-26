@@ -1,7 +1,7 @@
 <entity>
 sky{
 fmt:texball
-url:datafile/jpg/texball-skysphere.jpg
+arg:datafile/jpg/texball-skysphere.jpg
 }
 gnd{
 fmt:ground
@@ -63,7 +63,7 @@ fmt:str2vec
 <system>
 udphost{
 fmt:UDP
-url:0.0.0.0:9999
+arg:0.0.0.0:9999
 }
 </system>
 

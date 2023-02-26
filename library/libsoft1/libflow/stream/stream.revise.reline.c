@@ -89,7 +89,7 @@ int reline_attach(struct halfrel* self, struct halfrel* peer)
 
 
 
-int reline_create(_obj* ele, u8* url)
+int reline_create(_obj* ele, u8* arg)
 {
 	say("@reline_create\n");
 

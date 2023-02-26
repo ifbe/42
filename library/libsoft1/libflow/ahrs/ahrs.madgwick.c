@@ -297,7 +297,7 @@ int madgwick_delete(_obj* ele)
 {
 	return 0;
 }
-int madgwick_create(_obj* ele, u8* url)
+int madgwick_create(_obj* ele, u8* arg)
 {
 	say("@madgwick_create\n");
 

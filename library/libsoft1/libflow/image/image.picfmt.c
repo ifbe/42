@@ -8,6 +8,9 @@ void bggr_to_rgba(
 void bggr10_to_rgba(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
+void bgbgxgrgrx_to_rgba(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth);
 //
 void rggb_to_rgba(
 	u8* srcbuf, int srclen, int srcw, int srch,
@@ -86,6 +89,10 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
 		bggr10_to_rgba(buf, len, per->srcw, per->srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
 		goto done;
 	}
+	if((_test_ == per->srcfmt)&&(_rgbx_ == per->dstfmt)){
+		bgbgxgrgrx_to_rgba(buf, len, per->srcw, per->srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
+		goto done;
+	}
 
 	if((_rggb_ == per->srcfmt)&&(_rgbx_ == per->dstfmt)){
 		rggb_to_rgba(buf, len, per->srcw, per->srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
@@ -124,7 +131,7 @@ int picfmt_delete(_obj* ele)
 {
 	return 0;
 }
-int picfmt_create(_obj* ele, u8* url, int argc, char** argv)
+int picfmt_create(_obj* ele, u8* arg, int argc, char** argv)
 {
 	int j;
 	say("@picfmt_create\n");

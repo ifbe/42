@@ -26,7 +26,7 @@ depth:1024
 <artery>
 pump{
 fmt:pump
-url:/Users/ifbe/Desktop/backup/1130/rg10/picture035.raw
+arg:/Users/ifbe/Desktop/backup/1130/rg10/picture035.raw
 }
 picfmt{
 fmt:picfmt

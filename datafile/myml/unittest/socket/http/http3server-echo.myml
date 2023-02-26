@@ -1,11 +1,11 @@
 <system>
 tcphost{
 fmt:TCP
-url:0.0.0.0:9999
+arg:0.0.0.0:9999
 }
 udphost{
 fmt:UDP
-url:0.0.0.0:443
+arg:0.0.0.0:443
 }
 </system>
 

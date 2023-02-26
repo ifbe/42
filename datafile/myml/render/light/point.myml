@@ -4,7 +4,7 @@ fmt:ground
 }
 tree{
 fmt:stl3d
-url:datafile/stl/spider-lowpoly.stl
+arg:datafile/stl/spider-lowpoly.stl
 }
 light{
 fmt:pointlit

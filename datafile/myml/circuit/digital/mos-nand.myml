@@ -13,7 +13,7 @@ fmt:nmos
 }
 simu{
 fmt:digital
-url:datafile/wiring/mos-nand.wire
+arg:datafile/wiring/mos-nand.wire
 }
 
 nand{

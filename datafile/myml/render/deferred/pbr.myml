@@ -6,7 +6,7 @@ gbuf.fs:datafile/shader/deferred/pbr.glsl
 }
 item{
 fmt:obj3d
-url:datafile/obj/cube.obj
+arg:datafile/obj/cube.obj
 glvs:datafile/shader/obj/glgv.glsl
 glfs:datafile/shader/obj/glgf.glsl
 #albedo:datafile/jpg/wall.jpg

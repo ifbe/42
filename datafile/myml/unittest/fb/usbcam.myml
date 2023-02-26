@@ -8,7 +8,7 @@ fmt:video
 <supply>
 usbcam{
 fmt:cam
-url:/dev/video0
+arg:/dev/video0
 }
 window{
 fmt:wnd

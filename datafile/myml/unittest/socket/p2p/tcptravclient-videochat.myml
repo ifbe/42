@@ -40,7 +40,7 @@ fmt:goslow
 }
 arecut{
 fmt:recut
-url:2048
+arg:2048
 }
 vrecut{
 fmt:recut
@@ -57,7 +57,7 @@ fmt:tcptrav
 <system>
 socket{
 fmt:tcp
-url:deepstack.tech:9999
+arg:deepstack.tech:9999
 }
 </system>
 

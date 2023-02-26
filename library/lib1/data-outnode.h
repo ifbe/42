@@ -384,7 +384,7 @@ struct item
 
 	//[40,7f]: func
 	union{
-		int (*oncreate)(struct item* node, void* url, int argc, u8** argv);
+		int (*oncreate)(struct item* node, void* arg, int argc, u8** argv);
 		char padding0[8];
 	};
 	union{

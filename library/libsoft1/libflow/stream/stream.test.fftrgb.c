@@ -83,7 +83,7 @@ int fftrgb_delete(_obj* ele)
 {
 	return 0;
 }
-int fftrgb_create(_obj* ele, u8* url)
+int fftrgb_create(_obj* ele, u8* arg)
 {
 	say("@fftrgb_create\n");
 

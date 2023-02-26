@@ -46,7 +46,7 @@ int search_delete(_obj* ele)
 {
 	return 0;
 }
-int search_create(_obj* ele, u8* url)
+int search_create(_obj* ele, u8* arg)
 {
 	say("@search_create\n");
 	return 1;

@@ -8,7 +8,7 @@ fmt:dns
 <system>
 socket{
 fmt:udp
-url:8.8.8.8:53
+arg:8.8.8.8:53
 }
 </system>
 

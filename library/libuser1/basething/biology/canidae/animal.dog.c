@@ -242,7 +242,7 @@ static void robodog_delete(_obj* act)
 	if(0 == act)return;
 	//if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void robodog_create(_obj* act, u8* url, int argc, u8** argv)
+static void robodog_create(_obj* act, u8* arg, int argc, u8** argv)
 {
 	float* f;
 	if(0 == act)return;

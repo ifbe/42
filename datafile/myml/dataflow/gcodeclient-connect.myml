@@ -1,7 +1,7 @@
 <system>
 peer{
 fmt:udp
-url:192.168.0.204:9999
+arg:192.168.0.204:9999
 }
 </system>
 

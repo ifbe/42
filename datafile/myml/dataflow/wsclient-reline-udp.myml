@@ -1,11 +1,11 @@
 <system>
 udp{
 fmt:UDP
-url:0.0.0.0:9999
+arg:0.0.0.0:9999
 }
 tcp{
 fmt:tcp
-url:127.0.0.1:2222
+arg:127.0.0.1:2222
 }
 </system>
 
@@ -16,7 +16,7 @@ fmt:reline
 }
 ws{
 fmt:ws
-url:127.0.0.1
+arg:127.0.0.1
 }
 </artery>
 

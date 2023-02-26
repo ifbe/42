@@ -47,7 +47,7 @@ int str2vec_delete(_obj* art)
 {
 	return 0;
 }
-int str2vec_create(_obj* art, u8* url)
+int str2vec_create(_obj* art, u8* arg)
 {
 	say("@str2vec_create\n");
 	return 1;

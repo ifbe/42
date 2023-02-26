@@ -1,11 +1,11 @@
 <system>
 uart{
 fmt:uart
-url:/dev/ttyAMA0,9600
+arg:/dev/ttyAMA0,9600
 }
 host{
 fmt:UDP
-url:0.0.0.0:9999
+arg:0.0.0.0:9999
 }
 </system>
 

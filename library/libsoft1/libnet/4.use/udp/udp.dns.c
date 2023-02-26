@@ -185,7 +185,7 @@ int dnsclient_delete(_obj* ele)
 {
 	return 0;
 }
-int dnsclient_create(_obj* ele, u8* url)
+int dnsclient_create(_obj* ele, u8* arg)
 {
 	return 0;
 }
@@ -215,7 +215,7 @@ int dnsserver_delete(_obj* ele)
 {
 	return 0;
 }
-int dnsserver_create(_obj* ele, u8* url)
+int dnsserver_create(_obj* ele, u8* arg)
 {
 	return 0;
 }

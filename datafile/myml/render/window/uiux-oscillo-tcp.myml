@@ -25,7 +25,7 @@ depth:1024
 <artery>
 recut{
 fmt:recut
-url:2048
+arg:2048
 }
 </artery>
 
@@ -33,7 +33,7 @@ url:2048
 <system>
 server{
 fmt:TCP
-url:0.0.0.0:9999
+arg:0.0.0.0:9999
 }
 </system>
 

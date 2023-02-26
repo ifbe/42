@@ -1,12 +1,12 @@
 <system>
 tcphost{
 fmt:TCP
-url:127.0.0.1:8080
+arg:127.0.0.1:8080
 }
 
 tap{
 fmt:tap
-url:/dev/net/tun
+arg:/dev/net/tun
 }
 </system>
 

@@ -22,7 +22,7 @@ depth:1024
 <system>
 uart{
 fmt:uart
-url:/dev/tty.usbmodem424242423
+arg:/dev/tty.usbmodem424242423
 }
 </system>
 

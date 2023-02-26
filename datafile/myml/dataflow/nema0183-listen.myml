@@ -1,7 +1,7 @@
 <system>
 recv{
 fmt:UDP
-url:0.0.0.0:9999
+arg:0.0.0.0:9999
 }
 </system>
 

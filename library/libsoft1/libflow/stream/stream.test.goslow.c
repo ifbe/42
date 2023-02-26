@@ -44,11 +44,11 @@ int goslow_attach(struct halfrel* self, struct halfrel* peer)
 
 
 
-int goslow_create(_obj* ele, u8* url)
+int goslow_create(_obj* ele, u8* arg)
 {
 	ele->CURNUM = 0;
 	ele->MAXNUM = 8;	//default
-	if(url)decstr2u32(url, &ele->MAXNUM);
+	if(arg)decstr2u32(arg, &ele->MAXNUM);
 
 	say("@goslow_create:%d\n",ele->MAXNUM);
 	return 1;

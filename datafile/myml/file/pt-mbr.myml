@@ -8,7 +8,7 @@ fmt:mbr
 <system>
 file{
 fmt:file
-url:/dev/mmcblk0
+arg:/dev/mmcblk0
 }
 </system>
 

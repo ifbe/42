@@ -14,7 +14,7 @@ fmt:tcptrav
 }
 goslow{
 fmt:goslow
-url:1
+arg:1
 }
 </artery>
 
@@ -22,7 +22,7 @@ url:1
 <system>
 socket{
 fmt:tcp
-url:deepstack.tech:9999
+arg:deepstack.tech:9999
 }
 </system>
 

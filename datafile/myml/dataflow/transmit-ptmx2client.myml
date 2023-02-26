@@ -1,11 +1,11 @@
 <system>
 ptmx{
 fmt:ptmx
-url:/dev/ptmx
+arg:/dev/ptmx
 }
 send{
 fmt:udp
-url:192.168.0.217:9999
+arg:192.168.0.217:9999
 }
 </system>
 

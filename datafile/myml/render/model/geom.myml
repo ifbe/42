@@ -1,11 +1,11 @@
 <entity>
 geom{
 fmt:geom
-url:4p
+arg:4p
 }
 geom2{
 fmt:geom
-url:3p
+arg:3p
 }
 freecam{
 fmt:freecam

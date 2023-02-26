@@ -11,7 +11,7 @@ fmt:cam
 format:BG10
 width:1920
 height:1080
-url:/dev/video0
+arg:/dev/video0
 }
 </supply>
 

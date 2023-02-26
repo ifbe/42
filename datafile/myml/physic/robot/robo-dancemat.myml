@@ -1,7 +1,7 @@
 <entity>
 sky{
 fmt:texball
-url:datafile/jpg/texball-warehouse.jpg
+arg:datafile/jpg/texball-warehouse.jpg
 }
 dancemat{
 fmt:dancemat
@@ -20,7 +20,7 @@ fmt:cam3rd
 
 button{
 fmt:picture
-url:datafile/png/portal.png
+arg:datafile/png/portal.png
 }
 orthcam{
 fmt:orthcam
@@ -52,11 +52,11 @@ fmt:reline
 <system>
 udpsrv{
 fmt:UDP
-url:0.0.0.0:3292
+arg:0.0.0.0:3292
 }
 tcpsrv{
 fmt:TCP
-url:0.0.0.0:3292
+arg:0.0.0.0:3292
 }
 </system>
 

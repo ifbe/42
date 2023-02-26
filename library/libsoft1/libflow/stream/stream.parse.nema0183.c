@@ -191,7 +191,7 @@ int nema0183client_delete(_obj* ele)
 {
 	return 0;
 }
-int nema0183client_create(_obj* ele, u8* url)
+int nema0183client_create(_obj* ele, u8* arg)
 {
 	struct str* tmp = ele->priv_ptr = memorycreate(0x1000, 0);
 	return 0;
@@ -208,11 +208,11 @@ int nema0183server_write(struct halfrel* self, struct halfrel* peer, void* arg, 
 {
 	return 0;
 }
-int nema0183server_delete(_obj* ele, u8* url)
+int nema0183server_delete(_obj* ele, u8* arg)
 {
 	return 0;
 }
-int nema0183server_create(_obj* ele, u8* url)
+int nema0183server_create(_obj* ele, u8* arg)
 {
 	return 0;
 }

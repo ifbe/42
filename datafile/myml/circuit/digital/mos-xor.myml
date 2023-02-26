@@ -19,7 +19,7 @@ fmt:pmos
 }
 simu{
 fmt:digital
-url:datafile/wiring/mos-xor.wire
+arg:datafile/wiring/mos-xor.wire
 }
 
 xor{

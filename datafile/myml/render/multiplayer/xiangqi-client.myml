@@ -25,7 +25,7 @@ depth:1024
 <system>
 socket{
 fmt:udp
-url:127.0.0.1:9999
+arg:127.0.0.1:9999
 }
 </system>
 

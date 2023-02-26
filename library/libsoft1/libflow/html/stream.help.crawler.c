@@ -31,7 +31,7 @@ int crawler_delete(_obj* ele)
 	say("@crawler_delete\n");
 	return 0;
 }
-int crawler_create(_obj* ele, u8* url)
+int crawler_create(_obj* ele, u8* arg)
 {
 	say("@crawler_create\n");
 	return 1;

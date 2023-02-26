@@ -20,6 +20,7 @@
 void kqueue_add(int);
 void kqueue_del(int);
 void kqueue_mod(int);
+int parseipv6addr(u8* buf, u8* out);
 int parsemyandto(void*,int, void*,int, char**,int*, char**,int*);
 
 
@@ -90,19 +91,33 @@ u32 resolvehostname(char* addr)
 	}
 	return *(u32*)ptr[0];
 }
-int socket_fixaddr(char* addr)
+int socket_domain2ipstr(char* addr)
 {
 	int j;
-	u8 ip[4];
+	int isv4=0,isv6=0;
 	for(j=0;j<128;j++){
-		if(addr[j] <= 0x20)return 0;
-		if(addr[j] == '.')continue;
-		if((addr[j] >= '0')&&(addr[j] <= '9'))continue;
-
-		//ifnot 0123456789.
-		break;
+		if(addr[j] <= 0x20)break;
+		else if(addr[j] == '.'){
+			isv4++;
+		}
+		else if(addr[j] == '`'){
+			isv6++;
+		}
+		else if((addr[j] >= '0')&&(addr[j] <= '9')){
+			isv4++;
+			isv6++;
+		}
+		else if((addr[j] >= 'a')&&(addr[j] <= 'f')){
+			isv6++;
+		}
+		else if((addr[j] >= 'A')&&(addr[j] <= 'F')){
+			isv6++;
+		}
 	}
+	if(j==isv4)return 0;
+	if(j==isv6)return 0;
 
+	u8 ip[4];
 	*(u32*)ip = resolvehostname(addr);
 	return snprintf(addr, 16, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
 }
@@ -372,8 +387,30 @@ _obj* createsocket_tcpclient(char* myaddr, int myport, char* toaddr, int toport)
 	struct sockaddr_in* self;
 	struct sockaddr_in* peer;
 
+	//peer
+	int sockfmt,socklen;
+	union addrv4v6 sockbuf;
+	memset(&sockbuf, 0, sizeof(sockbuf));
+	if(0){		//v4
+		sockfmt = AF_INET;
+		socklen = sizeof(struct sockaddr_in);
+		sockbuf.v4.sin_family = sockfmt;
+		sockbuf.v4.sin_port = htons(toport);
+		sockbuf.v4.sin_addr.s_addr = inet_addr(toaddr);
+	}
+	else{
+		sockfmt = AF_INET6;
+		socklen = sizeof(struct sockaddr_in6);
+		sockbuf.v6.sin6_family = sockfmt;
+		sockbuf.v6.sin6_port = htons(toport);
+		//sockbuf.v6.sin6_addr = in6addr_any;
+		printmemory(toaddr, 40);
+		parseipv6addr(toaddr, &sockbuf.v6.sin6_addr);
+		printmemory(&sockbuf.v6.sin6_addr, 16);
+	}
+
 	//create socket
-	fd = socket(AF_INET, SOCK_STREAM, 0);
+	fd = socket(sockfmt, SOCK_STREAM, 0);
 	if(-1 == fd){
 		printf("errno=%d@socket\n",errno);
 		return 0;
@@ -417,17 +454,10 @@ if((0 != myaddr) && (0 != myport)){
 	}
 }
 
-	//peer
-	peer = (void*)oo->sockinfo.peer;
-	memset(peer, 0, sizeof(struct sockaddr_in));
-	peer->sin_family = AF_INET;
-	peer->sin_port = htons(toport);
-	peer->sin_addr.s_addr = inet_addr(toaddr);
-
 	//connect
 	fcntl(fd, F_SETFL, O_NONBLOCK | fcntl(fd, F_GETFL, 0));
 	//printf("@@@@@@@@before connect\n");
-	ret = connect(fd, (void*)peer, sizeof(struct sockaddr_in));
+	ret = connect(fd, (void*)&sockbuf, socklen);
 	//printf("@@@@@@@@after connect\n");
 	if(ret < 0){
 		if(EINPROGRESS != errno){
@@ -447,6 +477,7 @@ if((0 != myaddr) && (0 != myport)){
 	printf("myaddr=%s:%d\n", inet_ntoa(self->sin_addr), ntohs(self->sin_port));
 
 	//done
+	memcpy(oo->sockinfo.peer, &sockbuf, socklen);
 	kqueue_add(fd);
 	return oo;
 }
@@ -470,9 +501,14 @@ _obj* socket_create(int fmt, char* arg)
 		if(arg[j] <= 0x20)break;
 		parsemyandto(arg, 256, tmp, 256, &myaddr, &myport, &toaddr, &toport);
 	}
-	if(myaddr)socket_fixaddr(myaddr);
-	if(toaddr)socket_fixaddr(toaddr);
-	//printmemory(tmp,256);
+	if(myaddr){
+		socket_domain2ipstr(myaddr);
+		printmemory(myaddr,40);
+	}
+	if(toaddr){
+		socket_domain2ipstr(toaddr);
+		printmemory(toaddr,40);
+	}
 
 skip:
 	//type
@@ -532,11 +568,11 @@ int socket_modify(_obj* oo,int xx, void* arg,int cmd, u8* addr,int port)
 
 
 
-int socket_link()
+int socket_attach()
 {
 	return 0;
 }
-int socket_gone()
+int socket_detach()
 {
 	return 0;
 }

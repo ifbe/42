@@ -1,11 +1,11 @@
 <entity>
 texball{
 fmt:texball
-url:datafile/jpg/texball-skysphere.jpg
+arg:datafile/jpg/texball-skysphere.jpg
 }
 tree{
 fmt:stl3d
-url:datafile/stl/spider-lowpoly.stl
+arg:datafile/stl/spider-lowpoly.stl
 }
 water{
 fmt:water

@@ -1,7 +1,7 @@
 <entity>
 texball{
 fmt:texball
-url:datafile/jpg/texball-skysphere.jpg
+arg:datafile/jpg/texball-skysphere.jpg
 }
 terrain{
 fmt:terrain
@@ -10,9 +10,9 @@ dep:datafile/jpg/cartoon.jpg
 }
 rabbit{
 fmt:stl3d
-url:datafile/stl/dog-lowpoly.stl
-#url:datafile/stl/bunny-lowpoly.stl
-#url:datafile/stl/gengar-lowpoly.stl
+arg:datafile/stl/dog-lowpoly.stl
+#arg:datafile/stl/bunny-lowpoly.stl
+#arg:datafile/stl/gengar-lowpoly.stl
 }
 
 light{

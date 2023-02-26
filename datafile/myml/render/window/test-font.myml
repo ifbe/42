@@ -8,7 +8,7 @@ fmt:font
 <supply>
 opengl{
 fmt:wnd
-url:/dev/fb1
+arg:/dev/fb1
 title:"42"
 width:1024
 height:1024

@@ -128,7 +128,7 @@ void easyag_modify(_obj* ele, int foot, float* f, int cmd, float* buf, int len)
 void easyag_delete(_obj* ele)
 {
 }
-void easyag_create(_obj* ele, u8* url)
+void easyag_create(_obj* ele, u8* arg)
 {
 	qw = 1.0;
 	qx = qy = qz = 0;

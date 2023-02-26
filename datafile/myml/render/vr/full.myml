@@ -11,7 +11,7 @@ fmt:scene3d
 
 sky{
 fmt:texball
-url:datafile/jpg/texball-warehouse.jpg
+arg:datafile/jpg/texball-warehouse.jpg
 }
 tree{
 fmt:tree

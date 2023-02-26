@@ -1,7 +1,7 @@
 <device>
 spihost{
 fmt:spi
-url:/dev/spidev0.0
+arg:/dev/spidev0.0
 }
 </device>
 

@@ -4,7 +4,7 @@
 
 
 
-int subcmd_create(struct item* wrk, void* url, int argc, u8** argv)
+int subcmd_create(struct item* wrk, void* arg, int argc, u8** argv)
 {
 	void* thr = 0;
 	if(argc <= 1){

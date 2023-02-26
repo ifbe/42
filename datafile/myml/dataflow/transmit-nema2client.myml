@@ -1,11 +1,11 @@
 <system>
 uart{
 fmt:uart
-url:/dev/ttyAMA0,9600
+arg:/dev/ttyAMA0,9600
 }
 send{
 fmt:udp
-url:192.168.0.217:9999
+arg:192.168.0.217:9999
 }
 </system>
 

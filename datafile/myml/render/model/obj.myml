@@ -2,7 +2,7 @@
 rabbit{
 fmt:obj3d
 gbuf.vs:datafile/shader/obj/forward-vertex-yflip.glsl
-url:datafile/obj/viking_room.obj
+arg:datafile/obj/viking_room.obj
 albedo:datafile/obj/viking_room.png
 normal:datafile/obj/blue.jpg
 matter:datafile/obj/green.jpg

@@ -200,7 +200,7 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 	int argc = 0;
 	u8* argv[16];
 
-	u8* url = 0;
+	u8* arg = 0;
 	u8 tmp[128];
 
 	u64 hash = 0;
@@ -245,9 +245,9 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 					parsefmt((void*)&fmt, buf+propdata);
 					//say("%llx\n", fmt);
 				}
-				if(0 == ncmp(buf+propname, "url", 3)){
+				if(0 == ncmp(buf+propname, "arg", 3)){
 					copypath(tmp, buf+propdata);
-					url = tmp;
+					arg = tmp;
 				}
 			}
 			continue;
@@ -264,26 +264,26 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 		}
 		if('}' == k) {
 			if(nodename >= 0){
-				//say("haha:%llx,%llx\n", fmt, url);
+				//say("haha:%llx,%llx\n", fmt, arg);
 
 				chip[clen].tier = tier;		//_ent_ _sup_ _art_ _sys_ _dri_ _dev_ _wrk_
 				chip[clen].type = fmt;
 				chip[clen].hash = hash;
 				switch(tier){
-					case _ent_:chip[clen].addr = entity_create(fmt, url, argc, argv);break;
-					case _sup_:chip[clen].addr = supply_create(fmt, url, argc, argv);break;
-					case _art_:chip[clen].addr = artery_create(fmt, url, argc, argv);break;
-					case _sys_:chip[clen].addr = system_create(fmt, url, argc, argv);break;
-					case _dri_:chip[clen].addr = driver_create(fmt, url, argc, argv);break;
-					case _dev_:chip[clen].addr = device_create(fmt, url, argc, argv);break;
-					case _wrk_:chip[clen].addr = bootup_create(fmt, url, argc, argv);break;
+					case _ent_:chip[clen].addr = entity_create(fmt, arg, argc, argv);break;
+					case _sup_:chip[clen].addr = supply_create(fmt, arg, argc, argv);break;
+					case _art_:chip[clen].addr = artery_create(fmt, arg, argc, argv);break;
+					case _sys_:chip[clen].addr = system_create(fmt, arg, argc, argv);break;
+					case _dri_:chip[clen].addr = driver_create(fmt, arg, argc, argv);break;
+					case _dev_:chip[clen].addr = device_create(fmt, arg, argc, argv);break;
+					case _wrk_:chip[clen].addr = bootup_create(fmt, arg, argc, argv);break;
 				}
 
 				nodename = -1;
 				clen += 1;
 
 				argc = 0;
-				url = 0;
+				arg = 0;
 			}//if innode
 
 			fmt = 0;
@@ -561,7 +561,7 @@ void pulser(void*);
 void poller(void*);
 void realer(void*);
 void waiter(void*);
-int myml_create(struct item* wrk, void* url, int argc, u8** argv)
+int myml_create(struct item* wrk, void* arg, int argc, u8** argv)
 {
 	int j;
 	if(0 == argv){

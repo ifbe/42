@@ -1,7 +1,7 @@
 <system>
 tcphost{
 fmt:TCP
-url:0.0.0.0:2222
+arg:0.0.0.0:2222
 }
 </system>
 
@@ -9,7 +9,7 @@ url:0.0.0.0:2222
 <artery>
 tlsd{
 fmt:TLS1_3
-url:/etc/letsencrypt/live/deepstack.tech/
+arg:/etc/letsencrypt/live/deepstack.tech/
 }
 </artery>
 

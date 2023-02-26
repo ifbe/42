@@ -1,7 +1,7 @@
 <entity>
 picture{
 fmt:picture
-url:datafile/jpg/earth.jpg
+arg:datafile/jpg/earth.jpg
 }
 freecam{
 fmt:freecam

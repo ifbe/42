@@ -1,7 +1,7 @@
 <entity>
 skill{
 fmt:skill
-url:datafile/jpg/cartoon.jpg
+arg:datafile/jpg/cartoon.jpg
 }
 freecam{
 fmt:freecam

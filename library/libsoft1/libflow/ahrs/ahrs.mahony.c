@@ -274,7 +274,7 @@ int mahony_delete(_obj* ele)
 {
 	return 0;
 }
-int mahony_create(_obj* ele, u8* url)
+int mahony_create(_obj* ele, u8* arg)
 {
 	say("@mahony_create\n");
 

@@ -94,7 +94,7 @@ void bootup_recycle()
 
 
 
-void* bootup_create(u64 type, void* url, int argc, u8** argv)
+void* bootup_create(u64 type, void* arg, int argc, u8** argv)
 {
 	struct item* tmp;
 
@@ -103,49 +103,49 @@ void* bootup_create(u64 type, void* url, int argc, u8** argv)
 		//self @ 0
 		tmp = bootup_alloc();
 		tmp->type = _subcmd_;
-		subcmd_create(tmp, url, argc, argv);
+		subcmd_create(tmp, arg, argc, argv);
 		return tmp;
 	}
 	if(_compiler_ == type){
 		//self @ 0
 		tmp = bootup_alloc();
 		tmp->type = _compiler_;
-		compiler_create(tmp, url, argc, argv);
+		compiler_create(tmp, arg, argc, argv);
 		return tmp;
 	}
 	if(_kernel_ == type){
 		//self @ 0
 		tmp = bootup_alloc();
 		tmp->type = _kernel_;
-		kernel_create(tmp, url, argc, argv);
+		kernel_create(tmp, arg, argc, argv);
 		return tmp;
 	}
 	if(_myml_ == type){
 		//self @ 0
 		tmp = bootup_alloc();
 		tmp->type = _myml_;
-		myml_create(tmp, url, argc, argv);
+		myml_create(tmp, arg, argc, argv);
 		return tmp;
 	}
 	if(_mython_ == type){
 		//self @ 0
 		tmp = bootup_alloc();
 		tmp->type = _mython_;
-		mython_create(tmp, url, argc, argv);
+		mython_create(tmp, arg, argc, argv);
 		return tmp;
 	}
 	if(_term_ == type){
 		//self @ 0
 		tmp = bootup_alloc();
 		tmp->type = _term_;
-		term_create(tmp, url, argc, argv);
+		term_create(tmp, arg, argc, argv);
 		return tmp;
 	}
 	if(_guiapp_ == type){
 		//self @ 0
 		tmp = bootup_alloc();
 		tmp->type = _guiapp_;
-		guiapp_create(tmp, url, argc, argv);
+		guiapp_create(tmp, arg, argc, argv);
 		return tmp;
 	}
 
@@ -155,7 +155,7 @@ void* bootup_create(u64 type, void* url, int argc, u8** argv)
 		tmp = bootup_alloc();
 		tmp->type = _exiter_;
 
-		exiter_create(tmp, url, argc, argv);
+		exiter_create(tmp, arg, argc, argv);
 		threadcreate(exiter, tmp);
 		return tmp;
 	}
@@ -164,7 +164,7 @@ void* bootup_create(u64 type, void* url, int argc, u8** argv)
 		tmp = bootup_alloc();
 		tmp->type = _pulser_;
 
-		pulser_create(tmp, url, argc, argv);
+		pulser_create(tmp, arg, argc, argv);
 		threadcreate(pulser, tmp);
 		return tmp;
 	}
@@ -172,7 +172,7 @@ void* bootup_create(u64 type, void* url, int argc, u8** argv)
 		tmp = bootup_alloc();
 		tmp->type = _poller_;
 
-		poller_create(tmp, url, argc, argv);
+		poller_create(tmp, arg, argc, argv);
 		threadcreate(poller, tmp);
 		return tmp;
 	}
@@ -181,7 +181,7 @@ void* bootup_create(u64 type, void* url, int argc, u8** argv)
 		tmp = bootup_alloc();
 		tmp->type = _waiter_;
 
-		waiter_create(tmp, url, argc, argv);
+		waiter_create(tmp, arg, argc, argv);
 		threadcreate(waiter, tmp);
 		return tmp;
 	}

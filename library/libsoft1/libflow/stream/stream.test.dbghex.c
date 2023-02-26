@@ -25,7 +25,7 @@ int dbghex_attach(struct halfrel* self, struct halfrel* peer)
 
 
 
-int dbghex_create(_obj* ele, u8* url)
+int dbghex_create(_obj* ele, u8* arg)
 {
 	say("@dbghex_create\n");
 	return 1;

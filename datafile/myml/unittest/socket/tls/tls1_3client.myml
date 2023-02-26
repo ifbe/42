@@ -1,7 +1,7 @@
 <system>
 tcphost{
 fmt:tcp
-url:deepstack.tech:443
+arg:deepstack.tech:443
 }
 </system>
 

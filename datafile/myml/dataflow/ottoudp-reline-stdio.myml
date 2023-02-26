@@ -18,7 +18,7 @@ fmt:dbghex
 <system>
 otto{
 fmt:udp
-url:192.168.0.112:1234
+arg:192.168.0.112:1234
 }
 </system>
 

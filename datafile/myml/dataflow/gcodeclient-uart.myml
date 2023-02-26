@@ -1,7 +1,7 @@
 <system>
 uart{
 fmt:uart
-url:/dev/ttyACM0,250000
+arg:/dev/ttyACM0,250000
 }
 </system>
 

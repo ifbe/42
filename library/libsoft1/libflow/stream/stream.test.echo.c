@@ -28,7 +28,7 @@ int echo_attach(struct halfrel* self, struct halfrel* peer)
 
 
 
-int echo_create(_obj* ele, u8* url)
+int echo_create(_obj* ele, u8* arg)
 {
 	say("@echo_create\n");
 	return 1;

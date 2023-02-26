@@ -10,7 +10,7 @@ by:term
 <system>
 socket{
 fmt:tcp
-url:127.0.0.1:9999
+arg:127.0.0.1:9999
 }
 </system>
 

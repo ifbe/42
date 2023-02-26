@@ -1,7 +1,7 @@
 <entity>
 gcode{
 fmt:gcode
-url:/Users/ifbe/Desktop/test.gcode
+arg:/Users/ifbe/Desktop/test.gcode
 }
 cam0{
 fmt:freecam

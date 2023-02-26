@@ -1,11 +1,11 @@
 <system>
 mav{
 fmt:uart
-url:/dev/ttyACM0,921600
+arg:/dev/ttyACM0,921600
 }
 udp{
 fmt:udp
-url:192.168.0.217:9999
+arg:192.168.0.217:9999
 }
 </system>
 

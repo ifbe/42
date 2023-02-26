@@ -1,7 +1,7 @@
 <entity>
 sky{
 fmt:texball
-url:datafile/jpg/texball-dessert.jpg
+arg:datafile/jpg/texball-dessert.jpg
 }
 tree{
 fmt:tree

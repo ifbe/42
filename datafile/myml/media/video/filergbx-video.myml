@@ -26,7 +26,7 @@ depth:1024
 <artery>
 pump{
 fmt:pump
-url:picture000.jpg
+arg:picture000.jpg
 }
 picfmt{
 fmt:picfmt

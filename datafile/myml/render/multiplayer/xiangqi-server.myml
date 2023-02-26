@@ -1,7 +1,7 @@
 <entity>
 xiangqi{
 fmt:xiangqi
-url:datafile/save/xiangqi.txt
+arg:datafile/save/xiangqi.txt
 }
 scene{
 fmt:scene3d
@@ -32,7 +32,7 @@ depth:1024
 <system>
 socket{
 fmt:UDP
-url:0.0.0.0:9999
+arg:0.0.0.0:9999
 }
 </system>
 

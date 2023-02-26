@@ -1,11 +1,11 @@
 <system>
 udphost{
 fmt:UDP
-url:0.0.0.0:9999
+arg:0.0.0.0:9999
 }
 file{
 fmt:file
-url:a.out
+arg:a.out
 }
 </system>
 

@@ -1,7 +1,7 @@
 <device>
 i2chost{
 fmt:i2c
-url:/dev/i2c-1
+arg:/dev/i2c-1
 }
 </device>
 
@@ -16,7 +16,7 @@ fmt:lsm9ds1
 <system>
 udphost{
 fmt:UDP
-url:0.0.0.0:9999
+arg:0.0.0.0:9999
 }
 </system>
 

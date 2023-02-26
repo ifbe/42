@@ -9,7 +9,7 @@ l:1414
 }
 scn{
 fmt:force
-url:datafile/xyz/stick.xyz
+arg:datafile/xyz/stick.xyz
 }
 cam{
 fmt:freecam

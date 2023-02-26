@@ -25,7 +25,7 @@ l:1000
 }
 scn{
 fmt:force
-url:datafile/xyz/complex.xyz
+arg:datafile/xyz/complex.xyz
 }
 cam{
 fmt:freecam

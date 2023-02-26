@@ -4,11 +4,11 @@ fmt:freecam
 }
 tree{
 fmt:stl3d
-url:datafile/stl/bunny-lowpoly.stl
+arg:datafile/stl/bunny-lowpoly.stl
 }
 grnd{
 fmt:ground
-url:datafile/jpg/wall.jpg
+arg:datafile/jpg/wall.jpg
 }
 world{
 fmt:virtual

@@ -8,7 +8,7 @@ fmt:spk
 <artery>
 recut{
 fmt:recut
-url:16384
+arg:16384
 }
 client{
 fmt:party
@@ -21,7 +21,7 @@ by:wnd
 <system>
 socket{
 fmt:tcp
-url:127.0.0.1:9999
+arg:127.0.0.1:9999
 }
 </system>
 

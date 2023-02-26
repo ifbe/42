@@ -15,7 +15,7 @@ fmt:drone
 }
 sky{
 fmt:texball
-url:datafile/jpg/texball-skysphere.jpg
+arg:datafile/jpg/texball-skysphere.jpg
 }
 world{
 fmt:virtual

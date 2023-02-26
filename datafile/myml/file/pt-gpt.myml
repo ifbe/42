@@ -8,7 +8,7 @@ fmt:gpt
 <system>
 file{
 fmt:file
-url:/dev/disk2
+arg:/dev/disk2
 }
 </system>
 

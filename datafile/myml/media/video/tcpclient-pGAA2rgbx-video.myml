@@ -1,6 +1,7 @@
 <entity>
 canvas{
 fmt:video
+outfmt:rgba
 }
 freecam{
 fmt:freecam
@@ -12,9 +13,6 @@ fmt:virtual
 
 
 <supply>
-stdio{
-fmt:std
-}
 opengl{
 fmt:wnd
 title:"42"
@@ -28,17 +26,25 @@ depth:1024
 <artery>
 recut{
 fmt:recut
+arg:384000
 }
-client{
-fmt:tcptrav
+picfmt{
+fmt:picfmt
+srcfmt:test
+srcw:640
+srch:480
+dstfmt:rgbx
+dstw:640
+dsth:480
 }
 </artery>
 
 
 <system>
-socket{
+server{
 fmt:tcp
-arg:deepstack.tech:9999
+#arg:192.168.5.147:9999
+arg:240e`3a1`e84`9530`76d4`5039`b6c2`21ee:9999
 }
 </system>
 
@@ -77,10 +83,9 @@ q:1.0, 1.0
 
 <relation>
 #canvas depends on usbcam
-(stdio, 0, dst) -> (client, 0, std)
-(socket, 0, dst) -> (client, 0, src)
-(client, 0, dst) -> (recut, 0, src)
-(recut, 0, dst) -> (canvas, 0, yuv)
+(server, 0, dst) -> (recut, 0, src)
+(recut, 0, dst) -> (picfmt, 0, src)
+(picfmt, 0, dst) -> (canvas, 0, rgb)
 
 #virtual depends on inner objects
 (virtual, skygeom, 0) -> (canvas, skyhaha, 0)

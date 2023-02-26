@@ -1,11 +1,11 @@
 <system>
 gcode{
 fmt:uart
-url:/dev/ttyACM0,250000
+arg:/dev/ttyACM0,250000
 }
 host{
 fmt:UDP
-url:0.0.0.0:9999
+arg:0.0.0.0:9999
 }
 </system>
 

@@ -1,7 +1,7 @@
 <entity>
 canvas{
 fmt:oscillo
-url:datafile/wav/cat.wav
+arg:datafile/wav/cat.wav
 }
 freecam{
 fmt:freecam

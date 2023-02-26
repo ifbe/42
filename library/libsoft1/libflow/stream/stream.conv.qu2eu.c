@@ -40,7 +40,7 @@ int qu2eu_attach(struct halfrel* self, struct halfrel* peer)
 
 
 
-int qu2eu_create(_obj* ele, u8* url)
+int qu2eu_create(_obj* ele, u8* arg)
 {
 	say("@qu2eu_create\n");
 	return 1;

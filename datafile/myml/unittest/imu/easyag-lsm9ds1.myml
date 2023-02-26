@@ -24,7 +24,7 @@ fmt:dbgf32
 <system>
 target{
 fmt:udp
-url:192.168.0.217:9999
+arg:192.168.0.217:9999
 }
 </system>
 
@@ -39,7 +39,7 @@ fmt:lsm9ds1
 <device>
 i2chost{
 fmt:i2c
-url:/dev/i2c-1
+arg:/dev/i2c-1
 }
 </device>
 

@@ -26,7 +26,7 @@ int gcodeclient_delete(_obj* ele)
 {
 	return 0;
 }
-int gcodeclient_create(_obj* ele, u8* url)
+int gcodeclient_create(_obj* ele, u8* arg)
 {
 	return 0;
 }
@@ -47,7 +47,7 @@ int gcodeserver_delete(_obj* ele)
 {
 	return 0;
 }
-int gcodeserver_create(_obj* ele, u8* url)
+int gcodeserver_create(_obj* ele, u8* arg)
 {
 	return 0;
 }

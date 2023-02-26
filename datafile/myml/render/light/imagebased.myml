@@ -1,11 +1,11 @@
 <entity>
 test{
 fmt:stl3d
-url:datafile/stl/spider-lowpoly.stl
+arg:datafile/stl/spider-lowpoly.stl
 }
 light{
 fmt:imagelit
-url:datafile/jpg/texball-grassland.jpg
+arg:datafile/jpg/texball-grassland.jpg
 }
 freecam{
 fmt:freecam

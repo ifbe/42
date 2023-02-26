@@ -16,7 +16,7 @@ l:50
 }
 scn{
 fmt:force
-url:datafile/xyz/spring.xyz
+arg:datafile/xyz/spring.xyz
 }
 cam{
 fmt:freecam

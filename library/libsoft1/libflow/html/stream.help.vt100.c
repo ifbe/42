@@ -42,7 +42,7 @@ int vt100_delete(_obj* ele)
 {
 	return 0;
 }
-int vt100_create(_obj* ele, u8* url)
+int vt100_create(_obj* ele, u8* arg)
 {
 	say("@vt100_create\n");
 	return 1;

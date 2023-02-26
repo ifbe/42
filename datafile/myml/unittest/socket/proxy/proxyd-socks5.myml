@@ -1,7 +1,7 @@
 <system>
 tcphost{
 fmt:TCP
-url:0.0.0.0:8118
+arg:0.0.0.0:8118
 }
 </system>
 
@@ -9,7 +9,7 @@ url:0.0.0.0:8118
 <artery>
 proxyd{
 fmt:PROXY
-url:socks5://127.0.0.1:8888
+arg:socks5://127.0.0.1:8888
 }
 </artery>
 

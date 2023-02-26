@@ -1,7 +1,7 @@
 <system>
 client{
 fmt:tcp
-url:192.168.2.112:9999
+arg:192.168.2.112:9999
 }
 </system>
 

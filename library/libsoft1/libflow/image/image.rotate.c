@@ -45,7 +45,7 @@ int rotate_delete(_obj* ele)
 {
 	return 0;
 }
-int rotate_create(_obj* ele, u8* url)
+int rotate_create(_obj* ele, u8* arg)
 {
 	say("@rotate_create\n");
 	ele->priv_ptr = memorycreate(0x100000, 0);

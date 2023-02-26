@@ -7,7 +7,7 @@ fmt:pmos
 }
 simu{
 fmt:digital
-url:datafile/wiring/mos-not.wire
+arg:datafile/wiring/mos-not.wire
 }
 
 not{

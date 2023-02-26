@@ -1,7 +1,7 @@
 <entity>
 texball{
 fmt:texball
-url:datafile/jpg/texball-skysphere.jpg
+arg:datafile/jpg/texball-skysphere.jpg
 }
 ground{
 fmt:ground

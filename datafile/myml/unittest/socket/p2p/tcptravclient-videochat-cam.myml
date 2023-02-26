@@ -24,7 +24,7 @@ fmt:tcptrav
 <system>
 socket{
 fmt:tcp
-url:deepstack.tech:9999
+arg:deepstack.tech:9999
 }
 </system>
 

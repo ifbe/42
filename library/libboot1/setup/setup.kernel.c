@@ -248,7 +248,7 @@ static int kernel_idleloop(struct item* wrk)
 
 
 
-int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
+int kernel_create(struct item* wrk, void* arg, int argc, u8** argv)
 {
 	//hardware prepare
 	inithardware();

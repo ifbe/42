@@ -30,7 +30,7 @@ int reorder_attach(struct halfrel* self, struct halfrel* peer)
 
 
 
-int reorder_create(_obj* ele, u8* url)
+int reorder_create(_obj* ele, u8* arg)
 {
 	say("@reorder_create\n");
 	return 1;
