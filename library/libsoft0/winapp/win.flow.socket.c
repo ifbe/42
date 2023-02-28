@@ -147,7 +147,7 @@ u32 resolvehostname6(char* addr, union addrv4v6* out)
 		printf("ai_protocol -> %x\n", res->ai_protocol) ;
 		printf("ai_addrlen -> %x\n", res->ai_addrlen) ;
 		if(tmp->ai_family == AF_INET6) {
-			union addrv4v6* xx = tmp->ai_addr;
+			union addrv4v6* xx = (void*)tmp->ai_addr;
 			printmemory(xx, 32);
 			out->v6.sin6_family = AF_INET6;
 			memcpy(&out->v6.sin6_addr, &xx->v6.sin6_addr, tmp->ai_addrlen);
@@ -191,7 +191,7 @@ int socket_str2sockaddr(char* addr, union addrv4v6* out)
 	}
 	if(j==isv6){
 		out->v4.sin_family = AF_INET6;
-		parseipv6addr(addr, (void*)&out->v6.sin6_addr);
+		parseipv6addr((u8*)addr, (void*)&out->v6.sin6_addr);
 		return 0;
 	}
 
@@ -291,10 +291,6 @@ _obj* createsocket_raw(char* addr, int port)
 }
 _obj* createsocket_udpserver(union addrv4v6* my)
 {
-	int ret;
-	SOCKET fd;
-
-	//
 	int sockfmt,socklen;
 	if(AF_INET6 == my->sa.sa_family){
 		sockfmt = AF_INET6;
@@ -306,7 +302,7 @@ _obj* createsocket_udpserver(union addrv4v6* my)
 	}
 
 	//
-	fd = WSASocket(
+	SOCKET fd = WSASocket(
 		AF_INET, SOCK_DGRAM, 0,
 		0, 0, WSA_FLAG_OVERLAPPED
 	);
@@ -323,26 +319,23 @@ _obj* createsocket_udpserver(union addrv4v6* my)
 	perfd->sock = fd;
 
 	//bind
-	ret = bind(fd, (void*)my, socklen);
+	int ret = bind(fd, (void*)my, socklen);
 	if(SOCKET_ERROR == ret){
 		printf("errno=%d@bind\n",GetLastError());
 		closesocket(fd);
 		return 0;
 	}
 
-	//
-	memcpy(oo->sockinfo.self, my, socklen);
-	//memcpy(oo->sockinfo.peer, to, socklen);
+	//self
+	union addrv4v6* self = (void*)oo->sockinfo.self;
+	memcpy((void*)self, my, socklen);
+
 	iocp_add(fd, _UDP_);
 	iocp_mod(fd, _UDP_);
 	return oo;
 }
 _obj* createsocket_udpclient(union addrv4v6* my, union addrv4v6* to)
 {
-	int ret;
-	SOCKET fd;
-
-	//
 	int sockfmt,socklen;
 	if(AF_INET6 == my->sa.sa_family){
 		sockfmt = AF_INET6;
@@ -354,7 +347,7 @@ _obj* createsocket_udpclient(union addrv4v6* my, union addrv4v6* to)
 	}
 
 	//
-	fd = WSASocket(
+	SOCKET fd = WSASocket(
 		AF_INET, SOCK_DGRAM, IPPROTO_UDP,
 		0, 0, WSA_FLAG_OVERLAPPED
 	);
@@ -370,6 +363,7 @@ _obj* createsocket_udpclient(union addrv4v6* my, union addrv4v6* to)
 	struct perfd* perfd = (void*)(oo->priv_256b);
 	perfd->sock = fd;
 
+	int ret;
 if(my){
 	ret = bind(fd, (void*)my, socklen);
 	if(SOCKET_ERROR == ret){
@@ -386,19 +380,22 @@ if(my){
 		return 0;
 	}
 
-	//
-	if(my)memcpy(oo->sockinfo.self, my, socklen);
-	memcpy(oo->sockinfo.peer, to, socklen);
+	//self
+	union addrv4v6* self = (void*)oo->sockinfo.self;
+	socklen_t len = socklen;
+	getsockname(fd, (void*)(oo->sockinfo.self), &len);
+	printmemory(self, 32);
+
+	//peer
+	union addrv4v6* peer = (void*)oo->sockinfo.self;
+	memcpy((void*)peer, to, socklen);
+
 	iocp_add(fd, _udp_);
 	iocp_mod(fd, _udp_);
 	return oo;
 }
 _obj* createsocket_tcpserver(union addrv4v6* my)
 {
-	int ret;
-	SOCKET fd;
-
-	//
 	int sockfmt,socklen;
 	if(AF_INET6 == my->sa.sa_family){
 		sockfmt = AF_INET6;
@@ -410,7 +407,7 @@ _obj* createsocket_tcpserver(union addrv4v6* my)
 	}
 
 	//new
-	fd = WSASocket(
+	SOCKET fd = WSASocket(
 		AF_INET, SOCK_STREAM, IPPROTO_TCP,
 		0, 0, WSA_FLAG_OVERLAPPED
 	);
@@ -428,7 +425,7 @@ _obj* createsocket_tcpserver(union addrv4v6* my)
 	parentperfd->sock = fd;
 
 	//bind
-	ret = bind(fd, (SOCKADDR*)my, socklen);
+	int ret = bind(fd, (SOCKADDR*)my, socklen);
 	if(SOCKET_ERROR == ret){
 		printf("errno=%d@bind\n",GetLastError());
 		closesocket(fd);
@@ -493,17 +490,15 @@ _obj* createsocket_tcpserver(union addrv4v6* my)
 		);
 	}
 
-	memcpy(oo->sockinfo.self, my, socklen);
-	//memcpy(oo->sockinfo.peer, to, socklen);
+	//self
+	union addrv4v6* self = (void*)oo->sockinfo.self;
+	memcpy((void*)self, my, socklen);
+
 	iocp_add(fd, _TCP_);
 	return oo;
 }
 _obj* createsocket_tcpclient(union addrv4v6* my, union addrv4v6* to)
 {
-	int ret;
-	SOCKET fd;
-
-	//
 	int sockfmt,socklen;
 	if(AF_INET6 == to->sa.sa_family){
 		sockfmt = AF_INET6;
@@ -515,7 +510,7 @@ _obj* createsocket_tcpclient(union addrv4v6* my, union addrv4v6* to)
 	}
 
 	//
-	fd = WSASocket(
+	SOCKET fd = WSASocket(
 		sockfmt, SOCK_STREAM, IPPROTO_TCP,
 		0, 0, WSA_FLAG_OVERLAPPED
 	);
@@ -532,7 +527,7 @@ _obj* createsocket_tcpclient(union addrv4v6* my, union addrv4v6* to)
 	perfd->sock = fd;
 
 	//reuse
-	ret = 1;
+	int ret = 1;
 	ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (void*)&ret, 4);
 	if(ret < 0){
 		printf("errno=%d@SO_REUSEADDR\n",GetLastError());
@@ -555,13 +550,17 @@ if(my){
 		return 0;
 	}
 
-	//get the random port
+	//self
+	union addrv4v6* self = (void*)oo->sockinfo.self;
 	socklen_t len = socklen;
 	getsockname(fd, (void*)(oo->sockinfo.self), &len);
+	printmemory(self, 32);
+
+	//peer
+	union addrv4v6* peer = (void*)oo->sockinfo.self;
+	memcpy((void*)peer, to, socklen);
 
 	//
-	//if(my)memcpy(oo->sockinfo.self, my, socklen);
-	memcpy(oo->sockinfo.peer, to, socklen);
 	iocp_add(fd, _tcp_);
 	iocp_mod(fd, _tcp_);
 	return oo;
@@ -580,8 +579,8 @@ _obj* socket_create(int fmt, char* arg)
 	int toport = 0;
 	char* toaddr = 0;
 
-	union addrv4v6 my;
-	union addrv4v6 to;
+	union addrv4v6 my = {};
+	union addrv4v6 to = {};
 	if(0 == arg)goto skip;
 
 	//my->to

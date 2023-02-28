@@ -51,7 +51,14 @@ int parseipv6addr(u8* buf, u8* out)
 			return j;		//input byte count
 		}
 		if('`' == buf[j]){
-			if(0 == j)goto error;	//		:abcd:1234
+			if('`' == buf[j+1]){
+				head = j+2;
+				j = j+2;
+				goto stage2;
+			}
+			if(0 == j){			//		:abcd:1234
+				goto error;
+			}
 			if(0 == j-head){		//		::
 				head = j+1;
 				j = j+1;
@@ -66,6 +73,9 @@ stage2:
 	//say("stage2:%d,%d,%d,%d\n",j,head,lcnt,rcnt);
 	for(;j<4*8+8;j++){
 		if(buf[j]<=0x20){
+			if(0 == j-head){		//		::\n
+				break;
+			}
 			parseipv6addr_cell(buf+head, j-head, right+rcnt*2);
 			rcnt++;
 			break;
