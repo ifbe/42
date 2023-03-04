@@ -1,0 +1,15 @@
+<supply>
+wndcap{
+fmt:wndcap
+}
+</supply>
+
+<artery>
+dbghex{
+fmt:dbghex
+}
+</artery>
+
+<relation>
+(wndcap, 0, dst) -> (dbghex, 0, src)
+</relation>

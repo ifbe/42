@@ -2,9 +2,9 @@ datafile?=../../datafile
 library?=../../library
 project?=$(shell pwd)
 CC=gcc
-CF="-c -O2 -I../lib1 -Wno-address-of-packed-member"
+CF="-c -O2 -Wno-address-of-packed-member -I../lib1"
 CPPC=g++
-CPPF="-c -O2 -fno-rtti -I../lib1"
+CPPF="-c -O2 -fno-rtti -Wno-address-of-packed-member -I../lib1"
 all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	make -s exe
 	make -s lib
@@ -55,6 +55,7 @@ dll:
 	libhard0/*.o libhard1/*.o \
 	libsoft0/*.o libsoft1/*.o \
 	libuser0/*.o libuser1/*.o \
+	-lmf -lmfplat -lmfreadwrite -lmfuuid \
 	-lglfw3 -lglew32 -lglu32 -lopengl32 \
 	-lole32 -lstrmiids -lxinput -lwinmm -lws2_32 -lgdi32
 exe:
@@ -64,6 +65,7 @@ exe:
 	libhard0/*.o libhard1/*.o \
 	libsoft0/*.o libsoft1/*.o \
 	libuser0/*.o libuser1/*.o \
+	-lmf -lmfplat -lmfreadwrite -lmfuuid \
 	-lglfw3 -lglew32 -lglu32 -lopengl32 \
 	-lole32 -lstrmiids -lxinput -lwinmm -lws2_32
 clean:

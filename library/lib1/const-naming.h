@@ -289,6 +289,7 @@
 #define _mic_ hex32('m','i','c',0)
 #define _spk_ hex32('s','p','k',0)
 //light
+#define _wndcap_ hex64('w','n','d','c','a','p',0,0)
 #define _cam_ hex32('c','a','m',0)
 #define _wnd_ hex32('w','n','d',0)
 //

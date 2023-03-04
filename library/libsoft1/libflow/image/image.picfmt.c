@@ -2,6 +2,9 @@
 int copyfourcc(void*,void*);
 int decstr2u32(void*,void*);
 //
+void rgb_to_rgba(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth);
 void bggr_to_rgba(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
@@ -81,6 +84,10 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
 		goto done;
 	}
 
+	if((_rgb_ == per->srcfmt)&&(_rgbx_ == per->dstfmt)){
+		rgb_to_rgba(buf, len, per->srcw, per->srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
+		goto done;
+	}
 	if((_bggr_ == per->srcfmt)&&(_rgbx_ == per->dstfmt)){
 		bggr_to_rgba(buf, len, per->srcw, per->srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
 		goto done;

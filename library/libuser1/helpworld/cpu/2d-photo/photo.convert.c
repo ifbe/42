@@ -1,6 +1,23 @@
 #include "libuser.h"
 
 
+void rgb_to_rgba(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth)
+{
+	int x,y;
+	u8* src;
+	u8* dst;
+	for(y=0;y<dsth;y++){
+		src = srcbuf + y*srcw*3;
+		dst = dstbuf + y*dstw*4;
+		for(x=0;x<dstw;x++){
+			dst[x*4+0] = src[x*3+0];
+			dst[x*4+1] = src[x*3+1];
+			dst[x*4+2] = src[x*3+2];
+		}
+	}
+}
 
 
 void bggr_to_rgba(
@@ -628,12 +645,12 @@ void yyyyuv_to_yuvx(
 	u8* dst;
 	u8* srcp0;
 	u8* srcp1;
-	for(y=0;y<srch;y++)
+	for(y=0;y<dsth;y++)
 	{
 		dst = dstbuf + (y*dstw*4);
 		srcp0 = srcbuf + (y*srcw);
 		srcp1 = srcbuf + srcw*srch + srcw*(y/2);
-		for(x=0;x<srcw;x++)
+		for(x=0;x<dstw;x++)
 		{
 			dst[4*x + 0] = srcp0[x];
 			dst[4*x + 1] = srcp1[(x&0xfffe)+0];

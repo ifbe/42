@@ -40,9 +40,10 @@ ogl_o = $(patsubst %.c, %.o, $(ogl_c))
 ############################bare#########################
 bare_c = \
 control-cmdline/bare/bare.stdio.c \
-2d-camera/os-bare/bare.cam.c \
 control-gamepad/bare/bare.joy.c \
 control-systray/bare/bare.tray.c \
+2d-camera/os-bare/bare.cam.c \
+2d-screencap/os-bare/screencap.c \
 sound-micphone/os-bare/bare.mic.c \
 sound-speaker/os-bare/bare.spk.c
 bare_o = $(patsubst %.c, %.o, $(bare_c))
@@ -113,10 +114,11 @@ myoscli:$(myoscli_o)
 
 ############################linux#########################
 linux_c = \
-control-systray/linux/linux.tray.c \
 sound-micphone/os-linux/linux.pulsein.c \
 sound-speaker/os-linux/linux.pulseout.c \
-control-cmdline/linux/linux.stdio.c
+control-systray/linux/linux.tray.c \
+control-cmdline/linux/linux.stdio.c \
+2d-screencap/os-linux/screencap.c
 linux_o = $(patsubst %.c, %.o, $(linux_c))
 
 linuxcam_c = \
@@ -228,6 +230,7 @@ control-cmdline/mac/mac.stdio.c \
 control-systray/mac/mac.tray.c \
 sound-micphone/os-mac/mac.aqin.c \
 sound-speaker/os-mac/mac.aqout.c \
+2d-screencap/os-mac/screencap.c \
 2d-camera/os-mac/mac.camera.c
 macos_o = $(patsubst %.c, %.o, $(macos_c))
 
@@ -323,11 +326,14 @@ control-cmdline/win/win.stdio.c \
 control-systray/win/win.tray.c \
 sound-micphone/os-win/win.wavein.c \
 sound-speaker/os-win/win.waveout.c \
+2d-screencap/os-win/screencap.c \
 2d-camera/os-win/win.camera.c
 win_o = $(patsubst %.c, %.o, $(win_c))
 
 win_cpp = \
-2d-camera/os-win/win.camera.dshow.cpp
+2d-screencap/os-win/screencap.gdigrab.cpp \
+2d-camera/os-win/win.camera.dshow.cpp \
+2d-camera/os-win/win.camera.mediafoundation.cpp
 win_cpp_o = $(patsubst %.cpp, %.cpp.o, $(win_cpp))
 
 wincli_c = \

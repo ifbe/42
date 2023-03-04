@@ -47,6 +47,11 @@ int camera_create(void*, void*, int, u8**);
 int camera_delete(void*);
 int camera_take(void*,void*, void*,int, void*,int, void*,int);
 int camera_give(void*,void*, void*,int, void*,int, void*,int);
+//
+int screencap_create(void*, void*, int, u8**);
+int screencap_delete(void*);
+int screencap_take(void*,void*, void*,int, void*,int, void*,int);
+int screencap_give(void*,void*, void*,int, void*,int, void*,int);
 //light.window
 void initwindow(void*);
 void freewindow();
@@ -235,6 +240,15 @@ void* supply_create(u64 type, void* arg, int argc, u8** argv)
 		camera_create(win, arg, argc, argv);
 		return win;
 	}
+	case _wndcap_:
+	{
+		win = supply_alloc();
+		if(0 == win)return 0;
+
+		win->type = _wndcap_;
+		screencap_create(win, arg, argc, argv);
+		return win;
+	}
 
 //---------------------window----------------
 	case _wnd_:
@@ -368,6 +382,7 @@ int supply_takeby(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, v
 		case _mic_:break;
 		case _spk_:return speaker_take(sup,foot, stack,sp, arg, idx, buf, len);
 
+		case _wndcap_:return screencap_take(sup,foot, stack,sp, arg, idx, buf, len);
 		case _cam_:return camera_take(sup,foot, stack,sp, arg, idx, buf, len);
 		case _wnd_:return window_take(sup,foot, stack,sp, arg, idx, buf, len);
 	}
@@ -381,7 +396,8 @@ int supply_giveby(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, v
 		case _mic_:break;
 		case _spk_:return speaker_give(sup,foot, stack,sp, arg, idx, buf, len);
 
-		case _cam_:break;
+		case _wndcap_:return screencap_take(sup,foot, stack,sp, arg, idx, buf, len);
+		case _cam_:return camera_give(sup,foot, stack,sp, arg, idx, buf, len);
 		case _wnd_:return window_give(sup,foot, stack,sp, arg, idx, buf, len);
 	}
 	switch(sup->hfmt){
