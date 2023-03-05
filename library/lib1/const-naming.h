@@ -370,6 +370,7 @@
 #define _kbd_ hex32('k','b','d',0)
 //
 #define _rgb_ hex32('r','g','b',0)
+#define _bgr_ hex32('b','g','r',0)
 #define _rgbx_ hex32('r','g','b','x')
 //
 #define _bggr_ hex32('b','g','g','r')

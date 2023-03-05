@@ -1,7 +1,7 @@
 <entity>
 canvas{
 fmt:video
-outfmt:rgba
+format:rgba
 }
 freecam{
 fmt:freecam

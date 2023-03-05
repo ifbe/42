@@ -35,20 +35,9 @@ struct own{
 	int inw;
 	int inh;
 
-	void* outbuf;
-	int outfmt;
-	int outw;
-	int outh;
-
 	struct dx11data dx11;
 	struct gl41data gl41;
 };
-void video_prep(struct own* my)
-{
-	my->outbuf = memorycreate(2048*1024*4, 0);
-	my->outw = 1024;
-	my->outh = 1024;
-}
 
 
 
@@ -108,14 +97,14 @@ static void video_dx11prep(struct own* my)
 {
 	struct mysrc* src = &my->dx11.src;
 
-	if(_yuvx_ == my->outfmt){
+	if(_yuvx_ == my->infmt){
 		//shader
 		src->vs = video_hlsl_vs;
 		src->fs = video_hlsl_yuvx;
 		src->shader_enq = 42;
 
 		//texture
-		src->tex[0].data = my->outbuf;
+		src->tex[0].data = my->inbuf;
 		src->tex[0].fmt = _rgba_;
 	}
 	else{
@@ -125,7 +114,7 @@ static void video_dx11prep(struct own* my)
 		src->shader_enq = 42;
 
 		//texture
-		src->tex[0].data = my->outbuf;
+		src->tex[0].data = my->inbuf;
 		src->tex[0].fmt = _rgba_;
 	}
 
@@ -267,14 +256,14 @@ static void video_gl41prep(struct own* my)
 		data->src.tex[1].fmt = _rgba_;
 	}
 */
-	if(_yuvx_ == my->outfmt){
+	if(_yuvx_ == my->infmt){
 		//shader
 		data->src.vs = video_glsl_vs;
 		data->src.fs = video_glsl_yuvx;
 		data->src.shader_enq = 42;
 
 		//texture
-		data->src.tex[0].data = my->outbuf;
+		data->src.tex[0].data = my->inbuf;
 		data->src.tex[0].fmt = _rgba_;
 	}
 	else{
@@ -284,7 +273,7 @@ static void video_gl41prep(struct own* my)
 		data->src.shader_enq = 42;
 
 		//texture
-		data->src.tex[0].data = my->outbuf;
+		data->src.tex[0].data = my->inbuf;
 		data->src.tex[0].fmt = _rgba_;
 	}
 
@@ -363,14 +352,9 @@ void video_gl41draw(
 
 	//yuvx4yuyv(data->tex[0].data, 1024*1024*4, srcbuf, 640*480*2);
 	//say("infmt=%.4s,outfmt=%.4s\n", &own->infmt, &own->outfmt);
-	if(own->infmt == own->outfmt){
-		data->tex[0].data = own->inbuf;
-	}
-	else{
-		data->tex[0].data = own->outbuf;
-	}
-	data->tex[0].w = 640;
-	data->tex[0].h = 480;
+	data->tex[0].data = own->inbuf;
+	data->tex[0].w = own->inw;
+	data->tex[0].h = own->inh;
 	data->tex_enq[0] += 1;
 
 	data->vbuf_enq += 1;
@@ -499,52 +483,7 @@ static void video_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 	struct own* own = ent->OWNBUF;
 	if(0 == own)return;
 
-	//inslot: if(not set)default value
-	int buffmt = stack[sp-1].foottype;
-	if(0 == buffmt){
-		if(_yuvx_ == own->outfmt)buffmt = _yuv_;
-		else buffmt = _rgb_;
-	}
-
-	if(_yuv_ == buffmt){
-		own->inbuf = buf;
-		switch(key){
-		case _uyvy_:
-			if(0 == own->outbuf)return;
-			uyvy_to_yuvx(buf, 640*480*2, 640, 480,    own->outbuf, 1024*1024*4, 640, 480);
-			own->infmt = _uyvy_;
-			break;
-		case _yuyv_:
-			if(0 == own->outbuf)return;
-			yuyv_to_yuvx(buf, 640*480*2, 640, 480,    own->outbuf, 1024*1024*4, 640, 480);
-			own->infmt = _yuyv_;
-			break;
-		default:		//yuvx
-			//say("@default_yuv:buf=%p,len=%x\n", buf, len);
-			own->infmt = _yuvx_;
-			break;
-		}
-	}
-
-	if(_rgb_ == buffmt){
-		own->inbuf = buf;
-		switch(key){
-		case _bggr_:
-			if(0 == own->outbuf)return;
-			bggr_to_rgba(buf, 640*480, 640, 480,    own->outbuf, 1024*1024*4, 640, 480);
-			own->infmt = _bggr_;
-			break;
-		case _rggb_:
-			if(0 == own->outbuf)return;
-			rggb_to_rgba(buf, 640*480, 640, 480,    own->outbuf, 1024*1024*4, 640, 480);
-			own->infmt = _rggb_;
-			break;
-		default:		//rgba
-			//say("@default_rgb:buf=%p,len=%x\n", buf, len);
-			own->infmt = _rgba_;
-			break;
-		}
-	}
+	own->inbuf = buf;
 }
 static void video_detach(struct halfrel* self, struct halfrel* peer)
 {
@@ -574,14 +513,26 @@ static void video_create(_obj* act, void* arg, int argc, u8** argv)
 	if(0 == own)return;
 
 	int j;
+	int width = 640;
+	int height = 480;
+	u64 fmt = _yuvx_;
 	for(j=0;j<argc;j++){
 		say("%d:%.4s\n", j, argv[j]);
-		if(0 == ncmp(argv[j], "outfmt:", 7)){
-			copyfourcc(&own->outfmt, argv[j]+7);
+		if(0 == ncmp(argv[j], "format:", 7)){
+			copyfourcc(&fmt, argv[j]+7);
+		}
+		if(0 == ncmp(argv[j], "width:", 6)){
+			decstr2u32(argv[j]+6, &width);
+		}
+		if(0 == ncmp(argv[j], "height:", 7)){
+			decstr2u32(argv[j]+7, &height);
 		}
 	}
+	own->inw = width;
+	own->inh = height;
+	own->infmt = fmt;
+	own->inbuf = 0;
 
-	video_prep(own);
 	video_dx11prep(own);
 	video_gl41prep(own);
 }

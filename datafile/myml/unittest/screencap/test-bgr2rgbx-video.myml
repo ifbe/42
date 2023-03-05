@@ -2,11 +2,11 @@
 picfmt{
 fmt:picfmt
 srcfmt:rgb
-srcw:1920
-srch:1080
+srcw:3840
+srch:2160
 dstfmt:rgbx
-dstw:1920
-dsth:1080
+dstw:3840
+dsth:2160
 }
 </artery>
 
@@ -14,8 +14,8 @@ dsth:1080
 canvas{
 fmt:video
 format:rgba
-width:1920
-height:1080
+width:3840
+height:2160
 }
 freecam{
 fmt:freecam
