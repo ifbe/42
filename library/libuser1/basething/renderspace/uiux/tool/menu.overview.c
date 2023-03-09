@@ -456,9 +456,9 @@ void overview_draw_gl41(
 		tf[1] = vf[1] / 33;
 		tf[2] = vf[2] / 33;
 		gl41solid_rect(ctx, bg, tc, tr, tf);
-		tc[0] += vt[0]*0.01;
-		tc[1] += vt[1]*0.01;
-		tc[2] += vt[2]*0.01;
+		tc[0] -= vt[0]*0.5;
+		tc[1] -= vt[1]*0.5;
+		tc[2] -= vt[2]*0.5;
 		gl41string_center(ctx, fg, tc, tr, tf, (u8*)&supply[j].hfmt, 8);
 	}
 
@@ -1203,20 +1203,18 @@ static void overview_read_bycam(_obj* ent,void* foot, _syn* stack,int sp, void* 
 	struct style* slot;
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
-	if(stack && ('v'==key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		overview_draw_gl41(ent,slot, wor,geom, wnd,area);
-	}
+	slot = stack[sp-1].pfoot;
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	overview_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
 static void overview_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
 {
 	struct fstyle fs;
-	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
-	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
-	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
-	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
+	fs.vc[0] = 0.5;fs.vc[1] = 0.5;fs.vc[2] =-0.5;
+	fs.vr[0] = 0.5;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+	fs.vf[0] = 0.0;fs.vf[1] = 0.5;fs.vf[2] = 0.0;
+	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 0.1;
 	gl41data_before(wnd);
 	overview_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
 	gl41data_after(wnd);

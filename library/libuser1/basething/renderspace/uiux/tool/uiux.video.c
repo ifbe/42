@@ -188,7 +188,6 @@ void video_dx11draw(
 	vbuf[5][4] = 1.0;
 	vbuf[5][5] = 0.0;
 
-	//yuyv_to_yuvx(data->tex[0].data, 1024*1024*4, srcbuf, 640*480*2);
 	data->tex[0].w = 640;
 	data->tex[0].h = 480;
 	data->tex_enq[0] += 1;
@@ -221,7 +220,10 @@ GLSL_VERSION
 	"mediump float r = yuv.r;\n"
 	"mediump float g = yuv.g;\n"
 	"mediump float b = yuv.b;\n"
-	"FragColor = vec4(r, g, b, 1.0);\n"
+	"mediump vec3 rgb = vec3(r,g,b);\n"
+	//"mat3 correct = mat3(1.831268, -0.453759, -0.377514, -0.451451, 1.634110, -0.182660, 0.026111, -0.919596, 1.893486);\n"
+	//"rgb = correct*rgb;\n"
+	"FragColor = vec4(rgb, 1.0);\n"
 "}\n";
 char* video_glsl_yuvx =
 GLSL_VERSION
@@ -513,8 +515,8 @@ static void video_create(_obj* act, void* arg, int argc, u8** argv)
 	if(0 == own)return;
 
 	int j;
-	int width = 640;
-	int height = 480;
+	u32 width = 640;
+	u32 height = 480;
 	u64 fmt = _yuvx_;
 	for(j=0;j<argc;j++){
 		say("%d:%.4s\n", j, argv[j]);

@@ -1,5 +1,4 @@
 #include "libhard.h"
-#include "libuser.h"
 #include "drv-usb.h"
 void H2D_STD_DEV_SETCONF(void* req, u16 conf);
 void D2H_STD_INTF_GETDESC(void* req, u16 intf, u16 typeindex, u16 len);

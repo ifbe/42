@@ -1,8 +1,10 @@
+#include "const-def.h"
 #include "const-math.h"
 #include "const-naming.h"
-#include "data-bitnode.h"
-#include "data-bitwire.h"
-#include "data-outnode.h"
+#include "data-node-inner.h"
+#include "data-node-outer.h"
+#include "data-wire-inner.h"
+#include "data-wire-outer.h"
 
 
 

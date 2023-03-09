@@ -1,23 +1,6 @@
 #ifndef _STRUCT_H 
 #define _STRUCT_H
-typedef float f32;
-typedef double f64;
-typedef char i8;
-typedef short i16;
-typedef int i32;
-typedef long long i64;
-typedef unsigned char u8;
-typedef unsigned short u16;
-typedef unsigned int u32;
-typedef unsigned long long u64;
-typedef float vec1[1];
-typedef float vec2[2];
-typedef float vec3[3];
-typedef float vec4[4];
-typedef float mat1[1][1];
-typedef float mat2[2][2];
-typedef float mat3[3][3];
-typedef float mat4[4][4];
+#include "const-def.h"
 
 
 
@@ -25,9 +8,14 @@ typedef float mat4[4][4];
 struct str
 {
 	int len;
+	int end;
 	u8 buf[0];
 };
 typedef struct str verylong;
+
+
+
+
 struct event
 {
 	u64 why;
@@ -60,6 +48,18 @@ struct xyzwpair
 	u16 yn;
 	u16 zn;
 	u16 wn;
+};
+
+
+
+
+struct kv44{
+	u32 key;
+	u32 val;
+};
+struct kv88{
+	u64 key;
+	u64 val;
 };
 
 

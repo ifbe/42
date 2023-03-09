@@ -119,27 +119,35 @@ void* relation_generate(
 
 
 
-void* samedstprevsrc(struct relation* rel)
+void* samedstprevsrc(void* p)
 {
+	struct relation* rel = p;
 	if(rel == 0)return 0;
+
 	if(rel->samedstprevsrc == 0)return 0;
 	return (void*)wirebuf + (rel->samedstprevsrc);
 }
-void* samedstnextsrc(struct relation* rel)
+void* samedstnextsrc(void* p)
 {
+	struct relation* rel = p;
 	if(rel == 0)return 0;
+
 	if(rel->samedstnextsrc == 0)return 0;
 	return (void*)wirebuf + (rel->samedstnextsrc);
 }
-void* samesrcprevdst(struct relation* rel)
+void* samesrcprevdst(void* p)
 {
+	struct relation* rel = p;
 	if(rel == 0)return 0;
+
 	if(rel->samesrcprevdst == 0)return 0;
 	return (void*)wirebuf + (rel->samesrcprevdst);
 }
-void* samesrcnextdst(struct relation* rel)
+void* samesrcnextdst(void* p)
 {
+	struct relation* rel = p;
 	if(rel == 0)return 0;
+
 	if(rel->samesrcnextdst == 0)return 0;
 	return (void*)wirebuf + (rel->samesrcnextdst);
 }

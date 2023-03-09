@@ -14,7 +14,7 @@ void bggr_to_rgba(
 void bggr10_to_rgba(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
-void bgbgxgrgrx_to_rgba(
+void gbgbxrgrgx_to_rgba(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
 //
@@ -104,7 +104,7 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
 		goto done;
 	}
 	if((_test_ == per->srcfmt)&&(_rgbx_ == per->dstfmt)){
-		bgbgxgrgrx_to_rgba(buf, len, per->srcw, per->srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
+		gbgbxrgrgx_to_rgba(buf, len, per->srcw, per->srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
 		goto done;
 	}
 

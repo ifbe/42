@@ -1,7 +1,10 @@
-#include "const-naming.h"
-#include "data-bitnode.h"
 #ifndef _BIGNODE_H
 #define _BIGNODE_H
+
+
+#include "const-def.h"
+#include "const-naming.h"
+
 
 #ifdef __cplusplus
 extern "C" {

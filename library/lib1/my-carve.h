@@ -1,4 +1,5 @@
-#include "data-outnode.h"
+#include "const-def.h"
+#include "data-node-outer.h"
 //
 #ifdef __ANDROID__
 	#define GLSL_VERSION "#version 320 es\n"
