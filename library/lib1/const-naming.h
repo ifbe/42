@@ -390,6 +390,9 @@
 //camera type
 #define _01_ hex32('0','1', 0, 0)
 #define _wh_ hex32('w','h', 0, 0)
+//
+#define _kv44_ hex32('k','v','4','4')
+#define _kv88_ hex32('k','v','8','8')
 
 //keyboard
 #define kbd_esc 0x1b

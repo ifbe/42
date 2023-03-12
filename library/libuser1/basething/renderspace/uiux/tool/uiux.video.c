@@ -486,6 +486,13 @@ static void video_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 	if(0 == own)return;
 
 	own->inbuf = buf;
+	if(_kv88_ == key){
+		int j;
+		struct kv88* kv = arg;
+		for(j=0;j<2;j++){
+			say("%llx=%llx\n", kv[j].key, kv[j].val);
+		}
+	}
 }
 static void video_detach(struct halfrel* self, struct halfrel* peer)
 {

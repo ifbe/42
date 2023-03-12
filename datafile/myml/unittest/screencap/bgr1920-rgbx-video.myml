@@ -1,7 +1,7 @@
 <artery>
 picfmt{
 fmt:picfmt
-srcfmt:rgb
+srcfmt:bgr
 srcw:1920
 srch:1080
 dstfmt:rgbx

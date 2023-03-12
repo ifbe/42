@@ -48,6 +48,8 @@ void yuyv_to_rgba(
 
 
 struct perobj{
+	struct kv88 kv[4];
+
 	void* srcbuf[1];
 	u32 srclen;
 	u32 srcfmt;
@@ -64,16 +66,52 @@ struct perobj{
 
 
 
-int picfmt_take(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int picfmt_take(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, void* buf, int len)
 {
 	return 0;
 }
-int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, void* buf, int len)
 {
 	struct perobj* per = (void*)art->priv_256b;
-	//printmemory(buf, 16);
-	//give_data_into_peer(art,_dst_, stack,sp, 0,0, buf,len);
 
+	//process metadata
+	int srcfmt = per->srcfmt;
+	int srcw = per->srcw;
+	int srch = per->srch;
+	if(_kv88_ == cmd){
+		int j;
+		struct kv88* kv = arg;
+		for(j=0;j<16;j++){
+			if(kv[j].key <= 0x20)break;
+			switch(kv[j].key){
+			case 'w':
+				srcw = kv[j].val;
+				break;
+			case 'h':
+				srch = kv[j].val;
+				break;
+			case 'f':
+				srcfmt = kv[j].val;
+				break;
+			}
+		}
+	}
+	if((0 == srcw)|(0 == srch)){
+		say("wrong srcw or srch\n");
+		return 0;
+	}
+
+	//convert prepare
+	if((0 == per->dstw)|(0 == per->dsth)){
+		per->dstw = srcw;
+		per->dsth = srch;
+	}
+	if(0 == per->dstbuf[0]){
+		per->dstlen = 4 * per->dstw * per->dsth;
+		per->dstbuf[0] = memorycreate(per->dstlen, 4);
+	}
+
+	//convert start
 	if((_yuyv_ == per->srcfmt)&&(_yuvx_ == per->dstfmt)){
 		yuyv_to_yuvx(buf, len, per->srcw, per->srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
 		goto done;
@@ -122,11 +160,16 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
 		goto done;
 	}
 
+unknown:
+	printmemory(buf, 16);
+
 done:
 /*	say("src(buf=%p,len=%x,w=%d,h=%d) -> dst(buf=%p,dstlen=%x,w=%d,h=%d)\n",
 		buf, len, per->srcw, per->srch,
 		per->dstbuf[0], per->dstlen, per->dstw, per->dsth);*/
-	give_data_into_peer(art,_dst_, stack,sp, 0,0, per->dstbuf[0],per->dstlen);
+	per->kv[0].key = 'w';per->kv[0].val = per->dstw;
+	per->kv[1].key = 'h';per->kv[1].val = per->dsth;
+	give_data_into_peer(art,_dst_, stack,sp, per->kv,_kv88_, per->dstbuf[0],per->dstlen);
 	return 0;
 }
 int picfmt_detach(struct halfrel* self, struct halfrel* peer)
@@ -180,15 +223,9 @@ int picfmt_create(_obj* ele, u8* arg, int argc, char** argv)
 			continue;
 		}
 	}
-	if(0 == per->dstw)per->dstw = per->srcw;
-	if(0 == per->dsth)per->dsth = per->srch;
-
-	per->dstlen = 4 * per->dstw * per->dsth;
-	per->dstbuf[0] = memorycreate(per->dstlen, 4);
 
 	say("src:fmt=%.4s,w=%d,h=%d\n", &per->srcfmt, per->srcw, per->srch);
 	say("dst:fmt=%.4s,w=%d,h=%d\n", &per->dstfmt, per->dstw, per->dsth);
-	say("buf:len=%x,ptr=%p\n", per->dstlen, per->dstbuf[0]);
 
 	return 1;
 }

@@ -1,0 +1,34 @@
+<system>
+client{
+fmt:TCP
+arg:``:9999
+}
+</system>
+
+
+<artery>
+goslow{
+fmt:goslow
+}
+dbghex{
+fmt:dbghex
+}
+</artery>
+
+
+<supply>
+usbcam{
+fmt:cam
+#format:pGAA
+width:1920
+height:1080
+}
+</supply>
+
+
+<relation>
+(usbcam, 0, dst) -> (goslow, 0, src)
+(goslow, 0, dst) -> (client, 0, src)
+
+(usbcam, 0, dst) -> (dbghex, 0, src)
+</relation>

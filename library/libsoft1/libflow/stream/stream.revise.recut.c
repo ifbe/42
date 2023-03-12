@@ -49,7 +49,7 @@ int recut_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8
 		len -= k;
 
 		deq += max;
-		if(deq > 0x100000/2)deq = 0;
+		if(deq > max/2)deq = 0;
 		enq = deq;
 	}
 
@@ -75,11 +75,11 @@ int recut_create(_obj* ele, void* arg, int argc, u8** argv)
 	say("@recut_create\n");
 
 	struct perobj* perobj = (void*)ele->priv_256b;
-	perobj->buf = memorycreate(0x100000, 0);
 
 	perobj->max = 640*480*2;
 	if(arg)decstr2u64(arg, &perobj->max);
 
+	perobj->buf = memorycreate(perobj->max*2, 0);
 	perobj->enq = 0;
 	perobj->deq = 0;
 	return 1;

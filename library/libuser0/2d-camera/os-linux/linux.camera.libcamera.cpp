@@ -1,4 +1,95 @@
 //https://github.com/kbingham/simple-cam/blob/master/simple-cam.cpp
+/*
+ constexpr PixelFormat R8{ __fourcc('R', '8', ' ', ' '), __mod(0, 0) };
+ constexpr PixelFormat R10{ __fourcc('R', '1', '0', ' '), __mod(0, 0) };
+ constexpr PixelFormat R12{ __fourcc('R', '1', '2', ' '), __mod(0, 0) };
+ constexpr PixelFormat RGB565{ __fourcc('R', 'G', '1', '6'), __mod(0, 0) };
+ constexpr PixelFormat RGB565_BE{ __fourcc('R', 'G', '1', '6'), __mod(0, 0) };
+ constexpr PixelFormat RGB888{ __fourcc('R', 'G', '2', '4'), __mod(0, 0) };
+ constexpr PixelFormat BGR888{ __fourcc('B', 'G', '2', '4'), __mod(0, 0) };
+ constexpr PixelFormat XRGB8888{ __fourcc('X', 'R', '2', '4'), __mod(0, 0) };
+ constexpr PixelFormat XBGR8888{ __fourcc('X', 'B', '2', '4'), __mod(0, 0) };
+ constexpr PixelFormat RGBX8888{ __fourcc('R', 'X', '2', '4'), __mod(0, 0) };
+ constexpr PixelFormat BGRX8888{ __fourcc('B', 'X', '2', '4'), __mod(0, 0) };
+ constexpr PixelFormat ARGB8888{ __fourcc('A', 'R', '2', '4'), __mod(0, 0) };
+ constexpr PixelFormat ABGR8888{ __fourcc('A', 'B', '2', '4'), __mod(0, 0) };
+ constexpr PixelFormat RGBA8888{ __fourcc('R', 'A', '2', '4'), __mod(0, 0) };
+ constexpr PixelFormat BGRA8888{ __fourcc('B', 'A', '2', '4'), __mod(0, 0) };
+ constexpr PixelFormat YUYV{ __fourcc('Y', 'U', 'Y', 'V'), __mod(0, 0) };
+ constexpr PixelFormat YVYU{ __fourcc('Y', 'V', 'Y', 'U'), __mod(0, 0) };
+ constexpr PixelFormat UYVY{ __fourcc('U', 'Y', 'V', 'Y'), __mod(0, 0) };
+ constexpr PixelFormat VYUY{ __fourcc('V', 'Y', 'U', 'Y'), __mod(0, 0) };
+ constexpr PixelFormat AVUY8888{ __fourcc('A', 'V', 'U', 'Y'), __mod(0, 0) };
+ constexpr PixelFormat XVUY8888{ __fourcc('X', 'V', 'U', 'Y'), __mod(0, 0) };
+ constexpr PixelFormat NV12{ __fourcc('N', 'V', '1', '2'), __mod(0, 0) };
+ constexpr PixelFormat NV21{ __fourcc('N', 'V', '2', '1'), __mod(0, 0) };
+ constexpr PixelFormat NV16{ __fourcc('N', 'V', '1', '6'), __mod(0, 0) };
+ constexpr PixelFormat NV61{ __fourcc('N', 'V', '6', '1'), __mod(0, 0) };
+ constexpr PixelFormat NV24{ __fourcc('N', 'V', '2', '4'), __mod(0, 0) };
+ constexpr PixelFormat NV42{ __fourcc('N', 'V', '4', '2'), __mod(0, 0) };
+ constexpr PixelFormat YUV420{ __fourcc('Y', 'U', '1', '2'), __mod(0, 0) };
+ constexpr PixelFormat YVU420{ __fourcc('Y', 'V', '1', '2'), __mod(0, 0) };
+ constexpr PixelFormat YUV422{ __fourcc('Y', 'U', '1', '6'), __mod(0, 0) };
+ constexpr PixelFormat YVU422{ __fourcc('Y', 'V', '1', '6'), __mod(0, 0) };
+ constexpr PixelFormat YUV444{ __fourcc('Y', 'U', '2', '4'), __mod(0, 0) };
+ constexpr PixelFormat YVU444{ __fourcc('Y', 'V', '2', '4'), __mod(0, 0) };
+ constexpr PixelFormat MJPEG{ __fourcc('M', 'J', 'P', 'G'), __mod(0, 0) };
+ constexpr PixelFormat SRGGB8{ __fourcc('R', 'G', 'G', 'B'), __mod(0, 0) };
+ constexpr PixelFormat SGRBG8{ __fourcc('G', 'R', 'B', 'G'), __mod(0, 0) };
+ constexpr PixelFormat SGBRG8{ __fourcc('G', 'B', 'R', 'G'), __mod(0, 0) };
+ constexpr PixelFormat SBGGR8{ __fourcc('B', 'A', '8', '1'), __mod(0, 0) };
+ constexpr PixelFormat SRGGB10{ __fourcc('R', 'G', '1', '0'), __mod(0, 0) };
+ constexpr PixelFormat SGRBG10{ __fourcc('B', 'A', '1', '0'), __mod(0, 0) };
+ constexpr PixelFormat SGBRG10{ __fourcc('G', 'B', '1', '0'), __mod(0, 0) };
+ constexpr PixelFormat SBGGR10{ __fourcc('B', 'G', '1', '0'), __mod(0, 0) };
+ constexpr PixelFormat SRGGB12{ __fourcc('R', 'G', '1', '2'), __mod(0, 0) };
+ constexpr PixelFormat SGRBG12{ __fourcc('B', 'A', '1', '2'), __mod(0, 0) };
+ constexpr PixelFormat SGBRG12{ __fourcc('G', 'B', '1', '2'), __mod(0, 0) };
+ constexpr PixelFormat SBGGR12{ __fourcc('B', 'G', '1', '2'), __mod(0, 0) };
+ constexpr PixelFormat SRGGB16{ __fourcc('R', 'G', 'B', '6'), __mod(0, 0) };
+ constexpr PixelFormat SGRBG16{ __fourcc('G', 'R', '1', '6'), __mod(0, 0) };
+ constexpr PixelFormat SGBRG16{ __fourcc('G', 'B', '1', '6'), __mod(0, 0) };
+ constexpr PixelFormat SBGGR16{ __fourcc('B', 'Y', 'R', '2'), __mod(0, 0) };
+ constexpr PixelFormat R10_CSI2P{ __fourcc('R', '1', '0', ' '), __mod(11, 1) };
+ constexpr PixelFormat SRGGB10_CSI2P{ __fourcc('R', 'G', '1', '0'), __mod(11, 1) };
+ constexpr PixelFormat SGRBG10_CSI2P{ __fourcc('B', 'A', '1', '0'), __mod(11, 1) };
+ constexpr PixelFormat SGBRG10_CSI2P{ __fourcc('G', 'B', '1', '0'), __mod(11, 1) };
+ constexpr PixelFormat SBGGR10_CSI2P{ __fourcc('B', 'G', '1', '0'), __mod(11, 1) };
+ constexpr PixelFormat SRGGB12_CSI2P{ __fourcc('R', 'G', '1', '2'), __mod(11, 1) };
+ constexpr PixelFormat SGRBG12_CSI2P{ __fourcc('B', 'A', '1', '2'), __mod(11, 1) };
+ constexpr PixelFormat SGBRG12_CSI2P{ __fourcc('G', 'B', '1', '2'), __mod(11, 1) };
+ constexpr PixelFormat SBGGR12_CSI2P{ __fourcc('B', 'G', '1', '2'), __mod(11, 1) };
+ constexpr PixelFormat SRGGB10_IPU3{ __fourcc('R', 'G', '1', '0'), __mod(1, 13) };
+ constexpr PixelFormat SGRBG10_IPU3{ __fourcc('B', 'A', '1', '0'), __mod(1, 13) };
+ constexpr PixelFormat SGBRG10_IPU3{ __fourcc('G', 'B', '1', '0'), __mod(1, 13) };
+ constexpr PixelFormat SBGGR10_IPU3{ __fourcc('B', 'G', '1', '0'), __mod(1, 13) };
+*/
+/*
+AE_ENABLE = 1, AE_LOCKED = 2, AE_METERING_MODE = 3, AE_CONSTRAINT_MODE = 4,
+AE_EXPOSURE_MODE = 5, EXPOSURE_VALUE = 6, EXPOSURE_TIME = 7, ANALOGUE_GAIN = 8,
+BRIGHTNESS = 9, CONTRAST = 10, LUX = 11, AWB_ENABLE = 12,
+AWB_MODE = 13, AWB_LOCKED = 14, COLOUR_GAINS = 15, COLOUR_TEMPERATURE = 16,
+SATURATION = 17, SENSOR_BLACK_LEVELS = 18, SHARPNESS = 19, FOCUS_FO_M = 20,
+COLOUR_CORRECTION_MATRIX = 21, SCALER_CROP = 22, DIGITAL_GAIN = 23, FRAME_DURATION = 24,
+FRAME_DURATION_LIMITS = 25, SENSOR_TEMPERATURE = 26, SENSOR_TIMESTAMP = 27, AF_MODE = 28,
+AF_RANGE = 29, AF_SPEED = 30, AF_METERING = 31, AF_WINDOWS = 32,
+AF_TRIGGER = 33, AF_PAUSE = 34, LENS_POSITION = 35, AF_STATE = 36,
+AF_PAUSE_STATE = 37, AE_PRECAPTURE_TRIGGER = 38, NOISE_REDUCTION_MODE = 39, COLOR_CORRECTION_ABERRATION_MODE = 40,
+AE_STATE = 41, AWB_STATE = 42, SENSOR_ROLLING_SHUTTER_SKEW = 43, LENS_SHADING_MAP_MODE = 44,
+SCENE_FLICKER = 45, PIPELINE_DEPTH = 46, MAX_LATENCY = 47, TEST_PATTERN_MODE = 48
+7-ExposureTime = 66638
+8-AnalogueGain = 8.000000
+15-ColourCorrectionMatrix = [ 1.838451, -0.458022, -0.380436, -0.447965, 1.651210, -0.203245, 0.030786, -0.897781, 1.866994 ]
+18-FrameDuration = 66773
+b-Lux = 72.904442
+2-AeLocked = true
+f-ColourGains = [ 1.447118, 1.521400 ]
+17-DigitalGain = 1.000415
+10-ColourTemperature = 4264
+12-SensorBlackLevels = [ 1024, 1024, 1024, 1024 ]
+16-ScalerCrop = (16, 0)/2560x1920
+1b-SensorTimestamp = 1725648992178000
+*/
 extern "C"{
 #include "libuser.h"
 }
@@ -11,20 +102,31 @@ extern "C"{
 using namespace libcamera;
 
 struct mydata{
+	_obj* myobj;
+	int fmt;
+	int fps;
+	int w;
+	int h;
+
 	std::unique_ptr<CameraManager> cm;
 	std::shared_ptr<Camera> cam;
 	Stream* stream;
-	FrameBufferAllocator* allocator;
-	std::vector<std::unique_ptr<Request>> requests;
 
-	_obj* myobj;
-	uint8_t* mem[8];
+	FrameBufferAllocator* allocator;	//const std::vector<std::unique_ptr<FrameBuffer>> &buffers = my->allocator->buffers(my->stream);
+	uint8_t* mem[8];	//void* mem = mmap(NULL, plane.length, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
+
+	std::vector<std::unique_ptr<Request>> requests;
 };
 
 
 static void requestComplete(Request *request)
 {
 	struct halfrel stack[0x80];
+	struct kv88 kv[4] = {
+		{'w', 0},
+		{'h', 0},
+		{'f', 0}
+	};
 	if (request->status() == Request::RequestCancelled)return;
 
 	uint64_t cookie = request->cookie();
@@ -34,10 +136,27 @@ static void requestComplete(Request *request)
 
 	const ControlList &requestMetadata = request->metadata();
 	for (const auto &ctrl : requestMetadata) {
-		const ControlId *id = controls::controls.at(ctrl.first);
+		const ControlId *cid = controls::controls.at(ctrl.first);
 		const ControlValue &value = ctrl.second;
-
-		std::cout << "\t" << id->name() << " = " << value.toString() << std::endl;
+		int id = cid->id();
+		Span<const uint8_t> sp = value.data();
+		u64 time;
+		switch(id){
+		case libcamera::controls::SENSOR_TIMESTAMP:
+			//auto time = value.get<ControlTypeInteger64>();
+			time = sp[7];
+			time = (time<<8) | sp[6];
+			time = (time<<8) | sp[5];
+			time = (time<<8) | sp[4];
+			time = (time<<8) | sp[3];
+			time = (time<<8) | sp[2];
+			time = (time<<8) | sp[1];
+			time = (time<<8) | sp[0];
+			std::cout << "\t" << id <<"-SENSOR_TIMESTAMP = " <<std::dec<< time << std::endl;
+			break;
+		default:
+			std::cout << "\t" << id <<"-"<< cid->name() << " = " << value.toString() << std::endl;
+		}
 	}
 
 	const Request::BufferMap &buffers = request->buffers();
@@ -63,7 +182,7 @@ static void requestComplete(Request *request)
 
 			uint8_t* p = my->mem[idx];
 			//printmemory(p, 0x20);
-			give_data_into_peer(my->myobj,_dst_, stack,0, 0,0, p, sz);
+			give_data_into_peer(my->myobj,_dst_, stack,0, kv,_kv88_, p, sz);
 		}
 	}
 
@@ -134,7 +253,7 @@ int createcamera(struct mydata* my){
 	auto stcfmt = stmcfg.formats();
 	auto pixfmt = stcfmt.pixelformats();
 	for(auto& fmt: pixfmt){
-		std::cout << "format: " << fmt.toString() << std::endl;
+		std::cout << "format: " << fmt.toString() <<std::hex<< " fourcc=" << fmt.fourcc() << std::endl;
 
 		auto pixsize= stcfmt.sizes(fmt);
 		for(auto& sz: pixsize){
@@ -143,9 +262,9 @@ int createcamera(struct mydata* my){
 	}
 
 	//stream config
-	stmcfg.size.width = 640;
-	stmcfg.size.height = 480;
-	//stmcfg.pixelFormat = PixelFormat(hex32('Y','U','Y','V'));
+	stmcfg.size.width = my->w;
+	stmcfg.size.height = my->h;
+	if(my->fmt)stmcfg.pixelFormat = PixelFormat(my->fmt);
 
 	//camera config
 	camcfg->validate();
@@ -260,8 +379,25 @@ int libcam_delete(_obj* cam)
 }
 int libcam_create(_obj* cam, void* arg, int argc, u8** argv)
 {
+	int j;
+	u32 w = 640;
+	u32 h = 480;
+	for(j=1;j<argc;j++){
+		if(0 == ncmp(argv[j], (void*)"width:", 6)){
+			decstr2u32(argv[j]+6, &w);
+		}
+		if(0 == ncmp(argv[j], (void*)"height:", 7)){
+			decstr2u32(argv[j]+7, &h);
+		}
+	}
+	say((void*)"libcam_create w=%d,h=%d\n",w,h);
+
 	struct mydata* my = (struct mydata*)cam->priv_256b;
 	my->myobj = cam;
+	my->fmt = 0;
+	my->fps = 60;
+	my->w = w;
+	my->h = h;
 
 	createcamera(my);
 	return 0;
