@@ -5,18 +5,14 @@
 
 
 
-int ann_read(_obj* art,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* image, int label)
+int ann_forward(u8* image, int label, float* weight, float* result)
 {
-	//say("@ann_read\n");
-
 	int x,y;
-	float* weight = art->WEIGHT;
-	float* result = art->RESULT;
-
+	float* bias = &weight[28*28*10];
 	for(y=0;y<10;y++){
 		result[y] = 0;
 		for(x=0;x<28*28;x++){
-			result[y] += weight[28*28*y + x] * image[x];
+			result[y] += weight[28*28*y + x] * image[x] + bias[28*28*y + x];
 		}
 		result[y] /= 28*28*255;
 		if(result[y] < 0.0)result[y] = 0.0;		//ReLU
@@ -24,33 +20,54 @@ int ann_read(_obj* art,void* foot, struct halfrel* stack,int sp, void* arg,int k
 
 	return 0;
 }
-int ann_write(_obj* art,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* image, int label)
+
+
+
+/*
+L = (result-real)*(result-real) = result*result - 2*result*real + real*real
+result = w * x + b
+Ltoresult = 2*result-2*real
+resulttow = x
+resulttob = 1
+Ltow = Ltoresult * resulttow
+Ltob = Ltoresult
+*/
+int ann_backward(u8* image, int label, float* weight, float* result)
 {
 	int x,y;
-	float* weight;
-	float* result;
-	float delta[10];
-	//say("@ann_read\n");
-
-	weight = art->WEIGHT;
-	result = art->RESULT;
-
+	float real, L_to_R, R_to_W, R_to_B, L_to_W, L_to_B;
+	float* bias = &weight[28*28*10];
 	for(y=0;y<10;y++){
-		result[y] = 0;
+		real = (y==label) ? 1.0 : 0.0;
+		L_to_R = result[y] - real;
 		for(x=0;x<28*28;x++){
-			result[y] += weight[28*28*y + x] * image[x];
+			L_to_W = L_to_R * (image[x]/255.0);
+			L_to_B = L_to_R;
+			weight[28*28*y + x] += -0.1 * L_to_W;
+			bias[28*28*y + x] += -0.1 * L_to_B;
 		}
-		result[y] /= 28*28*255;
-		if(result[y] < 0.0)result[y] = 0.0;		//ReLU
 	}
+	return 0;
+}
 
-	for(y=0;y<10;y++){
-		if(y != label)delta[y] = - result[y];
-		else delta[y] = 1.0 - result[y];
-		//say("%d:%f\n",y,delta[y]);
 
-		for(x=0;x<28*28;x++)weight[28*28*y + x] += delta[y]*image[x]/255.0/2.0;
-	}
+
+
+int ann_read(_obj* art,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* image, int label)
+{
+	//say("@ann_read\n");
+	float* weight = art->WEIGHT;
+	float* result = art->RESULT;
+	ann_forward(image, label, weight, result);
+	return 0;
+}
+int ann_write(_obj* art,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* image, int label)
+{
+	//say("@ann_read\n");
+	float* weight = art->WEIGHT;
+	float* result = art->RESULT;
+	ann_forward(image, label, weight, result);
+	ann_backward(image, label, weight, result);
 	return 0;
 }
 int ann_detach(struct halfrel* self, struct halfrel* peer)
@@ -85,8 +102,8 @@ int ann_create(_obj* ele, u8* url)
 	float* result;
 	say("@ann_create\n");
 
-	weight = ele->WEIGHT = memorycreate(4*28*28*10, 0);
-	for(j=0;j<28*28*10;j++)weight[j] = (random_read()&0xfff)/1024.0;
+	weight = ele->WEIGHT = memorycreate(sizeof(float)*28*28*10 * 2, 0);
+	for(j=0;j<28*28*10*2;j++)weight[j] = (random_read()&0xfff)/1024.0;
 
 	result = ele->RESULT = memorycreate(4*10, 0);
 	return 1;
