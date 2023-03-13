@@ -26,6 +26,7 @@
 #define _img2pbr_ hex64('i','m','g','2','p','b','r',0)
 #define _rotate_ hex64('r','o','t','a','t','e',0,0)
 #define _picfmt_ hex64('p','i','c','f','m','t',0,0)
+#define _sobel_ hex64('s','o','b','e','l',0,0,0)
 //
 #define _pump_ hex32('p','u','m','p')
 #define _stor_ hex32('s','t','o','r')
@@ -214,6 +215,12 @@ int picfmt_attach(struct halfrel* self, struct halfrel* peer);
 int picfmt_detach(struct halfrel* self, struct halfrel* peer);
 int picfmt_take(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
 int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+int sobel_create(_obj* ele, void* arg, int argc, u8** argv);
+int sobel_delete(_obj* ele, void* arg);
+int sobel_attach(struct halfrel* self, struct halfrel* peer);
+int sobel_detach(struct halfrel* self, struct halfrel* peer);
+int sobel_take(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+int sobel_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
 int rotate_create(_obj* ele, void* arg, int argc, u8** argv);
 int rotate_delete(_obj* ele, void* arg);
 int rotate_attach(struct halfrel* self, struct halfrel* peer);
@@ -1035,6 +1042,15 @@ void* artery_create(u64 type, void* arg, int argc, u8** argv)
 		picfmt_create(e, url, argc, argv);
 		return e;
 	}
+	if(_sobel_ == type)
+	{
+		e = artery_alloc();
+		if(0 == e)return 0;
+
+		e->type = _sobel_;
+		sobel_create(e, url, argc, argv);
+		return e;
+	}
 
 	//
 	if(_recut_ == type)
@@ -1799,6 +1815,7 @@ int artery_attach(struct halfrel* self, struct halfrel* peer)
 	case _hfs_:return hfsclient_attach(self, peer);break;
 
 	case _picfmt_:return picfmt_attach(self, peer);break;
+	case _sobel_:return sobel_attach(self, peer);break;
 
 	case _h264_:return h264_attach(self, peer);break;
 
@@ -1884,6 +1901,7 @@ int artery_detach(struct halfrel* self, struct halfrel* peer)
 	case _hfs_:return hfsclient_detach(self, peer);break;
 
 	case _picfmt_:return picfmt_detach(self, peer);break;
+	case _sobel_:return sobel_detach(self, peer);break;
 
 	case _h264_:return h264_detach(self, peer);break;
 
@@ -1984,6 +2002,7 @@ int artery_takeby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, 
 	case _img2pbr_:img2pbr_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _rotate_:rotate_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _picfmt_:picfmt_take(art,foot, stack,sp, arg,idx, buf,len);break;
+	case _sobel_:sobel_take(art,foot, stack,sp, arg,idx, buf,len);break;
 	//case _scale_: scale_read(art,foot, stack,sp, arg,idx, buf,len);break;
 
 	case _recut_:recut_read(art,foot, stack,sp, arg,idx, buf,len);break;
@@ -2106,6 +2125,7 @@ int artery_giveby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, 
 	case _img2pbr_:return img2pbr_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _rotate_:return rotate_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _picfmt_:return picfmt_give(art,foot, stack,sp, arg,idx, buf,len);break;
+	case _sobel_:return sobel_give(art,foot, stack,sp, arg,idx, buf,len);break;
 
 	case _recut_:return recut_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _reline_:return reline_write(art,foot, stack,sp, arg,idx, buf,len);break;
