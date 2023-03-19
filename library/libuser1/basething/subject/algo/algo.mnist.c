@@ -127,6 +127,10 @@ void mnist_draw_gl41_lb(_obj* wnd, int val, float* vc, float* vr, float* vf, flo
 		tc[j] = vc[j] -vr[j] -tf[j] +vt[j]/100.0;
 	}
 	gl41string(wnd, 0xffffff, tc, tr, tf, (void*)"label", 5);
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vr[j] -tf[j]*2 +vt[j]/100.0;
+	}
+	gl41decimal(wnd, 0xffffff, tc, tr, tf, val);
 }
 void mnist_draw_gl41_rt(_obj* wnd, _obj* act, float* vc, float* vr, float* vf, float* vt)
 {
@@ -136,9 +140,23 @@ void mnist_draw_gl41_rt(_obj* wnd, _obj* act, float* vc, float* vr, float* vf, f
 
 	struct privdata* priv = (void*)act->priv_256b;
 	int id = priv->draw_w_and_b;
+
+	for(x=0;x<10;x++){
+		for(j=0;j<3;j++){
+			tr[j] = vr[j]/20;
+			tf[j] = vf[j]/20/4;
+			tc[j] = vc[j] +vr[j]/2 +vf[j]*3/4+tf[j]*(2*x-9);
+		}
+		if(x == id){
+			gl41solid_rect(wnd, 0xff00ff, tc, tr, tf);
+		}
+		else{
+			gl41line_rect(wnd, 0xffffff, tc, tr, tf);
+		}
+	}
+
 	float* weight = priv->weight;
 	if(0 == weight)return;
-	float* bias = &weight[28*28*10];
 	for(y=0;y<28;y++){
 	for(x=0;x<28;x++){
 		for(j=0;j<3;j++){
@@ -158,6 +176,7 @@ void mnist_draw_gl41_rt(_obj* wnd, _obj* act, float* vc, float* vr, float* vf, f
 	}
 	}
 
+	float* bias = &weight[28*28*10];
 	for(y=0;y<28;y++){
 	for(x=0;x<28;x++){
 		for(j=0;j<3;j++){
@@ -182,17 +201,22 @@ void mnist_draw_gl41_rt(_obj* wnd, _obj* act, float* vc, float* vr, float* vf, f
 		tf[j] = vf[j]/16;
 		tc[j] = vc[j] +vf[j]-tf[j] +vt[j]/100.0;
 	}
-	gl41string(wnd, 0xffffff, tc, tr, tf, (void*)"weight", 6);
-
-	for(j=0;j<3;j++){
-		tc[j] = vc[j] +vr[j]/2 +vf[j]-tf[j] +vt[j]/100.0;
-	}
-	gl41string(wnd, 0xffffff, tc, tr, tf, (void*)"bias", 4);
+	gl41string(wnd, 0xffffff, tc, tr, tf, (void*)"ann", 3);
 
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] +vf[j]-tf[j]*2 +vt[j]/100.0;
 	}
 	gl41decimal(wnd, 0xffffff, tc, tr, tf, id);
+
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] +vf[j]/2 +vt[j]/100.0;
+	}
+	gl41string(wnd, 0xffffff, tc, tr, tf, (void*)"weight", 6);
+
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] +vr[j]/2 +vf[j]/2 +vt[j]/100.0;
+	}
+	gl41string(wnd, 0xffffff, tc, tr, tf, (void*)"bias", 4);
 }
 void mnist_draw_gl41_rb(_obj* wnd, float* result, float* vc, float* vr, float* vf, float* vt)
 {
@@ -222,6 +246,10 @@ void mnist_draw_gl41_rb(_obj* wnd, float* result, float* vc, float* vr, float* v
 		tc[j] = vc[j] -tf[j] +vt[j]/100.0;
 	}
 	gl41string(wnd, 0xffffff, tc, tr, tf, (void*)"result", 6);
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -tf[j]*2 +vt[j]/100.0;
+	}
+	gl41decimal(wnd, 0xffffff, tc, tr, tf, x);
 }
 void mnist_draw_gl41(
 	_obj* act, struct style* part,
@@ -290,6 +318,7 @@ static void mnist_write_bywnd(_obj* ent, struct event* ev)
 	if(_char_ == ev->what){
 		if(0x20 == ev->why)priv->back_propagation ^= 1;
 		if(ev->why>='0'&&ev->why<='9')priv->draw_w_and_b = ev->why - '0';
+		if( ('r'==ev->why)|('w'==ev->why) )give_data_into_peer(ent, _ann_, 0, 0, 0, _ev_, (void*)ev, 0);
 	}
 }
 

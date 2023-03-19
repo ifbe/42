@@ -394,6 +394,9 @@
 #define _kv44_ hex32('k','v','4','4')
 #define _kv88_ hex32('k','v','8','8')
 
+//
+#define _ev_ hex16('e','v')
+
 //keyboard
 #define kbd_esc 0x1b
 #define kbd_up 0x48

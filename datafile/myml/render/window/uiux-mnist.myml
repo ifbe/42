@@ -1,8 +1,8 @@
 <entity>
 mnist{
 fmt:mnist
-image:/Users/ifbe/Desktop/mnist/t10k-images-idx3-ubyte
-label:/Users/ifbe/Desktop/mnist/t10k-labels-idx1-ubyte
+image:/Users/ifbe/Desktop/mnist/train-images-idx3-ubyte
+label:/Users/ifbe/Desktop/mnist/train-labels-idx1-ubyte
 }
 </entity>
 

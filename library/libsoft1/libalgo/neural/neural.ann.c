@@ -1,6 +1,8 @@
 #include "libsoft.h"
 #define WEIGHT listptr.buf0
 #define RESULT listptr.buf1
+int openreadclose(void*, int, void*, int);
+int openwriteclose(void*, int, void*, int);
 
 
 
@@ -66,8 +68,21 @@ int ann_write(_obj* art,void* foot, struct halfrel* stack,int sp, void* arg,int 
 	//say("@ann_read\n");
 	float* weight = art->WEIGHT;
 	float* result = art->RESULT;
-	ann_forward(image, label, weight, result);
-	ann_backward(image, label, weight, result);
+	if(_ev_ == key){
+		say("onevent:%x\n",image[0]);
+		switch(image[0]){
+		case 'r':
+			openreadclose("myvar.bin", 0, weight, 4*28*28*10*2);
+			break;
+		case 'w':
+			openwriteclose("myvar.bin", 0, weight, 4*28*28*10*2);
+			break;
+		}
+	}
+	else{
+		ann_forward(image, label, weight, result);
+		ann_backward(image, label, weight, result);
+	}
 	return 0;
 }
 int ann_detach(struct halfrel* self, struct halfrel* peer)
