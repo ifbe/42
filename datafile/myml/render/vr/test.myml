@@ -26,6 +26,21 @@ depth:1024
 </supply>
 
 
+<artery>
+dbghex{
+fmt:dbghex
+}
+</artery>
+
+
+<system>
+udp{
+fmt:UDP
+arg:0.0.0.0:9999
+}
+</system>
+
+
 <style>
 skyslot{
 }
@@ -70,4 +85,6 @@ q:1.0, 1.0
 
 #glwnd depends on
 (opengl, viewrect, 0) -> (vrglass, 0, a0)
+
+(udp, 0, dst) -> (vrglass, 0, at)
 </relation>

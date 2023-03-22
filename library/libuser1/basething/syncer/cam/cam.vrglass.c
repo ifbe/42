@@ -1,5 +1,6 @@
 #include "libuser.h"
 #define _in_ hex32('i','n', 0, 0)
+#define _at_ hex32('a','t', 0, 0)
 #define MATBUF listptr.buf0
 #define CAMBUF listptr.buf1
 void world2clip_projz0z1_transpose(mat4 mat, struct fstyle* frus);
@@ -54,6 +55,19 @@ static int vrglass_draw_gl41(
 		}
 	}
 	return 0;
+}
+static int vrglass_where(_obj* act, struct fstyle* pin, float* f, int len)
+{
+	say("%f,%f,%f,%f\n", f[0], f[1], f[2], f[3]);
+	struct fstyle* obb;
+	struct halfrel* self;
+	struct halfrel* peer;
+	relationsearch(act, _in_, &self, &peer);
+	obb = peer->pfoot;
+
+	obb->vq[0] = (320-f[0])*3;
+	obb->vq[2] = (240-f[1])*3 + 1000.0;
+	obb->vq[1] = -1500+f[2];
 }
 static int vrglass_event(_obj* act, struct fstyle* pin, struct event* ev, int len)
 {
@@ -328,7 +342,12 @@ static int vrglass_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 }
 static int vrglass_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	vrglass_event(ent, 0, buf, 0);
+	switch(stack[sp-1].foottype){
+	case _at_:
+		vrglass_where(ent, 0, buf, 0);
+	default:
+		vrglass_event(ent, 0, buf, 0);
+	}
 	return 0;
 }
 static void vrglass_detach(struct halfrel* self, struct halfrel* peer)

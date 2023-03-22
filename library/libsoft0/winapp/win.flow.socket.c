@@ -596,6 +596,7 @@ skip:
 		return createsocket_raw(myaddr, myport);
 	}
 	case _UDP_:{
+		my.v4.sin_port = htons(myport);
 		socket_str2sockaddr(myaddr, &my);
 		return createsocket_udpserver(&my);
 	}
