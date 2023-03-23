@@ -47,7 +47,7 @@ int parsefmt(u8* buf, u8* str)
 	for(;j<8;j++)buf[j] = 0;
 	return 0;
 }
-void parserelation(u8* buf, int len,
+void parsehalfrel_old(u8* buf, int len,
 	struct chiplist chip[], int clen, struct footlist foot[], int flen,
 	struct halfrel* rel)
 {
@@ -66,7 +66,7 @@ void parserelation(u8* buf, int len,
 		}
 	}
 	if(k != 2){
-		say("error@parserelation,k=%d\n",k);
+		say("error@parsehalfrel,k=%d\n",k);
 		return;
 	}
 
@@ -105,6 +105,87 @@ void parserelation(u8* buf, int len,
 	parsefmt(addr, buf+j);
 	rel->foottype = hash;
 }
+void parsehalfrel(u8* buf, int len,
+	struct chiplist chip[], int clen, struct footlist foot[], int flen,
+	struct halfrel* rel)
+{
+	int j;
+	int cntcol=0;
+	int findcol[4];
+	for(j=0;j<len;j++){
+		if(',' == buf[j]){
+			findcol[cntcol] = j;
+			cntcol++;
+		}
+	}
+	if(cntcol > 1){
+		parsehalfrel_old(buf,len, chip,clen, foot,flen, rel);
+		return;
+	}
+
+	u64 hash;
+	int lat=-1;
+	int rat=-1;
+	for(j=0;j<findcol[0];j++){
+		if('@' == buf[j]){
+			lat = j;
+			break;
+		}
+	}
+	for(j=findcol[0];j<len;j++){
+		if('@' == buf[j]){
+			rat = j;
+			break;
+		}
+	}
+
+	//chip.type
+	j = 0;
+	while(0x20 == buf[j])j++;
+	parsefmt((u8*)&hash, buf+j);
+	rel->nodetype = hash;
+	say("nodetype=%.8s\n", &rel->nodetype);
+
+	//chip.addr
+	if(lat >= 0){
+		j = lat+1;
+		while(0x20 == buf[j])j++;
+		parsefmt((u8*)&hash, buf+j);
+
+		for(j=0;j<clen;j++){
+			if(hash == chip[j].hash){
+				rel->pchip = chip[j].addr;
+				if(0==rel->nodetype)rel->nodetype = chip[j].tier;
+				break;
+			}
+		}
+	}
+	else{
+		say("no @ at left?\n");
+	}
+	say("nodeaddr=%p\n", rel->pchip);
+
+	//foot.type
+	j = findcol[0]+1;
+	while(0x20 == buf[j])j++;
+	parsefmt((u8*)&hash, buf+j);
+	rel->foottype = hash;
+	say("foottype=%.8s\n", &rel->foottype);
+
+	if(rat >= 0){
+		j = rat+1;
+		while(0x20 == buf[j])j++;
+		parsefmt((u8*)&hash, buf+j);
+
+		for(j=0;j<clen;j++){
+			if(hash == foot[j].hash){
+				rel->pfoot = foot[j].addr;
+				break;
+			}
+		}
+	}
+	say("footaddr=%p\n", rel->pfoot);
+}
 void role_test_relation(
 	struct chiplist chip[], int clen,
 	struct footlist foot[], int flen,
@@ -126,15 +207,16 @@ void role_test_relation(
 		if( (run == len) | ('\n' == val) ) {
 			if((0 != dst.chip) && (0 != src.chip))
 			{
-				say("%llx,%llx,%.4s,%.4s -> %llx,%llx,%.4s,%.4s\n",
-					src.chip, src.foot, &src.nodetype, &src.foottype,
-					dst.chip, dst.foot, &dst.nodetype, &dst.foottype
+				say("%.4s@%llx,%.4s@%llx -> %.4s@%llx,%.4s@%llx\n",
+					&src.nodetype,src.chip, &src.foottype,src.foot,
+					&dst.nodetype,dst.chip, &dst.foottype,dst.foot
 				);
 				rel = relationcreate(
 					(void*)dst.chip, (void*)dst.foot, dst.nodetype, dst.foottype,
 					(void*)src.chip, (void*)src.foot, src.nodetype, src.foottype
 				);
 				relationattach((void*)&rel->srcchip, (void*)&rel->dstchip);
+				say("\n");
 			}
 //say("***\n");
 
@@ -162,20 +244,20 @@ void role_test_relation(
 		}
 		if(')' == val) {
 			if(bracket_r >= 0) {
-				say("[%x,%x)rrel: (%.*s)\n", bracket_r, run, run-bracket_r, buf+bracket_r);
+				say("[%x,%x)rrel: <%.*s>\n", bracket_r, run, run-bracket_r, buf+bracket_r);
 
 				dst.chip = dst.foot = 0;
 				dst.nodetype = dst.foottype = 0;
-				parserelation(buf+bracket_r, run-bracket_r,
+				parsehalfrel(buf+bracket_r, run-bracket_r,
 					chip, clen, foot, flen,
 					&dst);
 			}
 			else if(bracket_l >= 0) {
-				say("[%x,%x)lrel: (%.*s)\n", bracket_l, run, run-bracket_l, buf+bracket_l);
+				say("[%x,%x)lrel: <%.*s>\n", bracket_l, run, run-bracket_l, buf+bracket_l);
 
 				src.chip = src.foot = 0;
 				src.nodetype = src.foottype = 0;
-				parserelation(buf+bracket_l, run-bracket_l,
+				parsehalfrel(buf+bracket_l, run-bracket_l,
 					chip, clen, foot, flen,
 					&src);
 			}

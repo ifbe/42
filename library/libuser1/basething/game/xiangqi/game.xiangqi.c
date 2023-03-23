@@ -4,6 +4,7 @@
 #define PICKx whdf.ix0
 #define PICKy whdf.iy0
 #define TURN whdf.iw0
+void asset_create();
 void xiangqi_generate(char (*data)[9]);
 void xiangqi_move(char (*data)[9], int* turn, int px, int py, int x, int y);
 
@@ -723,6 +724,8 @@ say("@xiangqi_create:%llx\n",str);
 
 	act->PICKx = act->PICKy = 0;
 	act->TURN = 0;
+
+	asset_create();
 }
 
 

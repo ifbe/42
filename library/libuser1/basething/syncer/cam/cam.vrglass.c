@@ -65,9 +65,9 @@ static int vrglass_where(_obj* act, struct fstyle* pin, float* f, int len)
 	relationsearch(act, _in_, &self, &peer);
 	obb = peer->pfoot;
 
-	obb->vq[0] = (320-f[0])*3;
-	obb->vq[2] = (240-f[1])*3 + 1000.0;
-	obb->vq[1] = -1500+f[2];
+	obb->vq[0] = (320-f[0])/640/2;
+	obb->vq[2] = (240-f[1])/480/2 + obb->vc[2];
+	obb->vq[1] = f[2]/100 - 4.0;
 }
 static int vrglass_event(_obj* act, struct fstyle* pin, struct event* ev, int len)
 {
@@ -86,8 +86,8 @@ static int vrglass_event(_obj* act, struct fstyle* pin, struct event* ev, int le
 		if(0 == act->whdf.fwn)return 0;
 		t = (void*)ev;
 
-		obb->vq[0] += t[0] - act->whdf.fxn;
-		obb->vq[2] -= t[1] - act->whdf.fyn;
+		obb->vq[0] += (t[0] - act->whdf.fxn)/10;
+		obb->vq[2] -= (t[1] - act->whdf.fyn)/10;
 		act->whdf.fxn = t[0];
 		act->whdf.fyn = t[1];
 		return 0;
@@ -106,21 +106,21 @@ static int vrglass_event(_obj* act, struct fstyle* pin, struct event* ev, int le
 
 	if(joy_left == (ev->what&joy_mask)){
 		t = (void*)ev;
-		if(t[3] & joyl_left   )obb->vq[0] -= 10.0;
-		if(t[3] & joyl_right  )obb->vq[0] += 10.0;
-		if(t[3] & joyl_down   )obb->vq[2] += 10.0;
-		if(t[3] & joyl_up     )obb->vq[2] -= 10.0;
-		if(t[3] & joyl_trigger)obb->vq[1] -= 10.0;
-		if(t[3] & joyl_bumper )obb->vq[1] += 10.0;
+		if(t[3] & joyl_left   )obb->vq[0] -= 1.0;
+		if(t[3] & joyl_right  )obb->vq[0] += 1.0;
+		if(t[3] & joyl_down   )obb->vq[2] += 1.0;
+		if(t[3] & joyl_up     )obb->vq[2] -= 1.0;
+		if(t[3] & joyl_trigger)obb->vq[1] -= 1.0;
+		if(t[3] & joyl_bumper )obb->vq[1] += 1.0;
 	}
 	if(_char_ == ev->what){
 		switch(ev->why){
-			case 'a':obb->vq[0] -= 10.0;break;
-			case 'd':obb->vq[0] += 10.0;break;
-			case 's':obb->vq[1] -= 10.0;break;
-			case 'w':obb->vq[1] += 10.0;break;
-			case 'q':obb->vq[2] -= 10.0;break;
-			case 'e':obb->vq[2] += 10.0;break;
+			case 'a':obb->vq[0] -= 0.1;break;
+			case 'd':obb->vq[0] += 0.1;break;
+			case 's':obb->vq[1] -= 0.1;break;
+			case 'w':obb->vq[1] += 0.1;break;
+			case 'f':obb->vq[2] -= 0.1;break;
+			case 'r':obb->vq[2] += 0.1;break;
 		}
 		say("%f,%f,%f\n", obb->vq[0], obb->vq[1], obb->vq[2]);
 	}
