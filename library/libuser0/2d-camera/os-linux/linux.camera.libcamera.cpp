@@ -113,7 +113,7 @@ struct mydata{
 	Stream* stream;
 
 	FrameBufferAllocator* allocator;	//const std::vector<std::unique_ptr<FrameBuffer>> &buffers = my->allocator->buffers(my->stream);
-	uint8_t* mem[8];	//void* mem = mmap(NULL, plane.length, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
+	uint8_t* mem[8][2];	//void* mem = mmap(NULL, plane.length, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
 
 	std::vector<std::unique_ptr<Request>> requests;
 };
@@ -177,10 +177,11 @@ static void requestComplete(Request *request)
 			uint32_t off = planedata[j].offset;
 			uint32_t len = planedata[j].length;
 			int sz = planemeta[j].bytesused;
+			std::cout << "\tplane: " << j << std::endl;
 			std::cout << "\tfd: " << fd.get() << " off: " << off << std::endl;
 			std::cout << "\tsz: " << sz << " in " << len << std::endl;
 
-			uint8_t* p = my->mem[idx];
+			uint8_t* p = my->mem[idx][j] + off;
 			//printmemory(p, 0x20);
 			give_data_into_peer(my->myobj,_dst_, stack,0, kv,_kv88_, p, sz);
 		}
@@ -238,8 +239,9 @@ int createcamera(struct mydata* my){
 	my->cam->acquire();
 
 	//camera config
-	//std::unique_ptr<CameraConfiguration> camcfg = my->cam->generateConfiguration({StreamRole::Viewfinder});
-	std::unique_ptr<CameraConfiguration> camcfg = my->cam->generateConfiguration({StreamRole::Raw});
+	std::unique_ptr<CameraConfiguration> camcfg;
+	if(0 == my->fmt)camcfg = my->cam->generateConfiguration({StreamRole::Raw});
+	else camcfg = my->cam->generateConfiguration({StreamRole::Viewfinder});
 	//std::unique_ptr<CameraConfiguration> camcfg = my->cam->generateConfiguration({StreamRole::VideoRecording});
 	//std::unique_ptr<CameraConfiguration> camcfg = my->cam->generateConfiguration({StreamRole::StillCapture});
 
@@ -288,13 +290,15 @@ int createcamera(struct mydata* my){
 
 	for (unsigned int i = 0; i < buffers.size(); ++i) {
 		const std::unique_ptr<FrameBuffer> &buffer = buffers[i];
-		const FrameBuffer::Plane &plane = buffer->planes()[0];
-		int fd = plane.fd.get();
-		void* mem = mmap(NULL, plane.length, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
-		std::cout << i << ", fd=" << fd << ",mem=" << mem << std::endl;
-
+		for(unsigned int j = 0;j<buffer->planes().size();j++){
+			const FrameBuffer::Plane &plane = buffer->planes()[j];
+			int fd = plane.fd.get();
+			int off = plane.offset;
+			void* mem = mmap(NULL, off+plane.length, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
+			std::cout << i << "." << j << ", fd=" << fd << ",mem=" << mem << std::endl;
+			my->mem[i][j] = (uint8_t*)mem;
+		}
 		buffer->setCookie(i);
-		my->mem[i] = (uint8_t*)mem;
 
 		std::unique_ptr<Request> request = my->cam->createRequest((uint64_t)my);
 		if (!request)
@@ -319,6 +323,14 @@ int createcamera(struct mydata* my){
 
 		my->requests.push_back(std::move(request));
 	}
+
+	std::cout << "wait 3s" << std::endl;
+	usleep(1000*1000);
+	std::cout << "wait 2s" << std::endl;
+	usleep(1000*1000);
+	std::cout << "wait 1s" << std::endl;
+	usleep(1000*1000);
+	std::cout << "start now" << std::endl;
 
 	my->cam->requestCompleted.connect(requestComplete);
 	my->cam->start();
@@ -382,7 +394,11 @@ int libcam_create(_obj* cam, void* arg, int argc, u8** argv)
 	int j;
 	u32 w = 640;
 	u32 h = 480;
+	u32 fmt = 0;
 	for(j=1;j<argc;j++){
+		if(0 == ncmp(argv[j], (void*)"format:", 7)){
+			fmt = *(u32*)(argv[j]+7);
+		}
 		if(0 == ncmp(argv[j], (void*)"width:", 6)){
 			decstr2u32(argv[j]+6, &w);
 		}
@@ -390,11 +406,11 @@ int libcam_create(_obj* cam, void* arg, int argc, u8** argv)
 			decstr2u32(argv[j]+7, &h);
 		}
 	}
-	say((void*)"libcam_create w=%d,h=%d\n",w,h);
+	say((void*)"libcam_create fmt=%x,w=%d,h=%d\n", fmt, w, h);
 
 	struct mydata* my = (struct mydata*)cam->priv_256b;
 	my->myobj = cam;
-	my->fmt = 0;
+	my->fmt = fmt;
 	my->fps = 60;
 	my->w = w;
 	my->h = h;
