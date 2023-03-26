@@ -169,9 +169,25 @@ int avfcam_delete(_obj* win)
 {
 	return 0;
 }
-int avfcam_create(_obj* win)
+int avfcam_create(_obj* win, void* arg, int argc, u8** argv)
 {
 	say("avfcam_create\n");
+	int j;
+	u32 w = 640;
+	u32 h = 480;
+	u32 fmt = 0;
+	for(j=1;j<argc;j++){
+		if(0 == ncmp(argv[j], (void*)"format:", 7)){
+			fmt = *(u32*)(argv[j]+7);
+		}
+		if(0 == ncmp(argv[j], (void*)"width:", 6)){
+			decstr2u32(argv[j]+6, &w);
+		}
+		if(0 == ncmp(argv[j], (void*)"height:", 7)){
+			decstr2u32(argv[j]+7, &h);
+		}
+	}
+	say((void*)"libcam_create fmt=%x,w=%d,h=%d\n", fmt, w, h);
 
 	//authorization
 	switch([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo]){
@@ -266,7 +282,15 @@ int avfcam_create(_obj* win)
 
 	//session
 	AVCaptureSession* session = [[AVCaptureSession alloc] init];
-	session.sessionPreset = AVCaptureSessionPreset640x480;
+	if((1920==w)&&(1080==h)){
+		session.sessionPreset = AVCaptureSessionPreset1280x720;
+	}
+	else if((1280==w)&&(720==h)){
+		session.sessionPreset = AVCaptureSessionPreset1280x720;
+	}
+	else{
+		session.sessionPreset = AVCaptureSessionPreset640x480;
+	}
 	if([session canAddInput:input]){
 		[session addInput:input];
 	}

@@ -302,6 +302,7 @@ void video_gl41draw(
 	float* vr = geom->fshape.vr;
 	float* vf = geom->fshape.vf;
 	float* vt = geom->fshape.vt;
+	gl41line_rect(ctx, 0xffffff, vc,vr,vf);
 
 	struct own* own = act->OWNBUF;
 	if(0 == own)return;
@@ -310,44 +311,48 @@ void video_gl41draw(
 	float (*vbuf)[6] = data->vtx[0].vbuf;
 	if(0 == vbuf)return;
 
-	vbuf[0][0] = vc[0] - vr[0] - vf[0];
-	vbuf[0][1] = vc[1] - vr[1] - vf[1];
-	vbuf[0][2] = vc[2] - vr[2] - vf[2];
+	vec3 tf = {vf[0], vf[1], vf[2]};
+	float f = (float)own->inh / own->inw;
+	vec3_setlen(tf, vec3_getlen(vr)*f);
+
+	vbuf[0][0] = vc[0] - vr[0] - tf[0];
+	vbuf[0][1] = vc[1] - vr[1] - tf[1];
+	vbuf[0][2] = vc[2] - vr[2] - tf[2];
 	vbuf[0][3] = 0.0;
 	vbuf[0][4] = 1.0;
 	vbuf[0][5] = 0.0;
 
-	vbuf[1][0] = vc[0] + vr[0] + vf[0];
-	vbuf[1][1] = vc[1] + vr[1] + vf[1];
-	vbuf[1][2] = vc[2] + vr[2] + vf[2];
+	vbuf[1][0] = vc[0] + vr[0] + tf[0];
+	vbuf[1][1] = vc[1] + vr[1] + tf[1];
+	vbuf[1][2] = vc[2] + vr[2] + tf[2];
 	vbuf[1][3] = 1.0;
 	vbuf[1][4] = 0.0;
 	vbuf[1][5] = 0.0;
 
-	vbuf[2][0] = vc[0] - vr[0] + vf[0];
-	vbuf[2][1] = vc[1] - vr[1] + vf[1];
-	vbuf[2][2] = vc[2] - vr[2] + vf[2];
+	vbuf[2][0] = vc[0] - vr[0] + tf[0];
+	vbuf[2][1] = vc[1] - vr[1] + tf[1];
+	vbuf[2][2] = vc[2] - vr[2] + tf[2];
 	vbuf[2][3] = 0.0;
 	vbuf[2][4] = 0.0;
 	vbuf[2][5] = 0.0;
 
-	vbuf[3][0] = vc[0] + vr[0] + vf[0];
-	vbuf[3][1] = vc[1] + vr[1] + vf[1];
-	vbuf[3][2] = vc[2] + vr[2] + vf[2];
+	vbuf[3][0] = vc[0] + vr[0] + tf[0];
+	vbuf[3][1] = vc[1] + vr[1] + tf[1];
+	vbuf[3][2] = vc[2] + vr[2] + tf[2];
 	vbuf[3][3] = 1.0;
 	vbuf[3][4] = 0.0;
 	vbuf[3][5] = 0.0;
 
-	vbuf[4][0] = vc[0] - vr[0] - vf[0];
-	vbuf[4][1] = vc[1] - vr[1] - vf[1];
-	vbuf[4][2] = vc[2] - vr[2] - vf[2];
+	vbuf[4][0] = vc[0] - vr[0] - tf[0];
+	vbuf[4][1] = vc[1] - vr[1] - tf[1];
+	vbuf[4][2] = vc[2] - vr[2] - tf[2];
 	vbuf[4][3] = 0.0;
 	vbuf[4][4] = 1.0;
 	vbuf[4][5] = 0.0;
 
-	vbuf[5][0] = vc[0] + vr[0] - vf[0];
-	vbuf[5][1] = vc[1] + vr[1] - vf[1];
-	vbuf[5][2] = vc[2] + vr[2] - vf[2];
+	vbuf[5][0] = vc[0] + vr[0] - tf[0];
+	vbuf[5][1] = vc[1] + vr[1] - tf[1];
+	vbuf[5][2] = vc[2] + vr[2] - tf[2];
 	vbuf[5][3] = 1.0;
 	vbuf[5][4] = 1.0;
 	vbuf[5][5] = 0.0;
@@ -486,6 +491,8 @@ static void video_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 	if(0 == own)return;
 
 	own->inbuf = buf;
+
+	say("video parsearg:\n");
 	if(_kv88_ == key){
 		int j;
 		struct kv88* kv = arg;

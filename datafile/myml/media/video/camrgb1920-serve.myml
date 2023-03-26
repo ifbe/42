@@ -19,7 +19,7 @@ fmt:dbghex
 <supply>
 usbcam{
 fmt:cam
-format:YUYV
+format:RG24
 width:1920
 height:1080
 }
