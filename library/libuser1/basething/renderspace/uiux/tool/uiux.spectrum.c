@@ -2,8 +2,12 @@
 #define _mic_ hex32('m','i','c',0)
 #define _pcm_ hex32('p','c','m',0)
 #define slice 16
-#define TABBUF listptr.buf0
-#define TABLEN listu64.data2
+
+
+struct privdata{
+	volatile int TABLEN;
+	void* TABBUF[];
+};
 
 
 
@@ -21,7 +25,6 @@ static void spectrum_draw_gl41(
 	int x,y;
 	int r,g,b;
 	float dx,dy,dz;
-	void** tab;
 	short* buf;
 
 	vec3 ta,tb;
@@ -31,12 +34,13 @@ static void spectrum_draw_gl41(
 	float* vu = geom->fs.vt;
 	gl41line_prism4(ctx, 0xffff00, vc, vr, vf, vu);
 
-	tab = act->TABBUF;
-	if(0 == tab)return;
-	//printmemory(tab, 8*4);
-
+	struct privdata* priv = (void*)act->priv_256b;
+	int now = priv->TABLEN;
+	int idx;
 	for(y=0;y<slice;y++){
-		buf = tab[y];
+		idx = (slice-1+now-y)%slice;
+		buf = priv->TABBUF[idx];
+		//say("%d:%d\n",y,idx);
 		if(0 == buf)break;
 
 		for(x=0;x<512;x++){
@@ -46,15 +50,14 @@ static void spectrum_draw_gl41(
 			ta[1] = vc[1] + vr[1] * dx + vf[1] * dy;
 			ta[2] = vc[2] + vr[2] * dx + vf[2] * dy;
 
-			dz = buf[x] / 32768.0;
+			dz = 10 * buf[x] / 32768.0;
 			tb[0] = ta[0] + vu[0] * dz;
 			tb[1] = ta[1] + vu[1] * dz;
 			tb[2] = ta[2] + vu[2] * dz;
 
-			r = (x/100)*26+13;
-			g = ((x%100)/10)*26+13;
-			b = (x%10)*26+13;
-			gl41line(ctx, (r<<16)|(g<<8)|b, ta, tb);
+			r = buf[x] > 3276 ? 255 : buf[x]*255/3276;
+			b = 255-r;
+			gl41line(ctx, (r<<16)|b, ta, tb);
 		}
 	}
 }
@@ -85,17 +88,11 @@ static void spectrum_draw_cli(
 
 void spectrum_data(_obj* act, void* type, void* buf, int len)
 {
-	int j,idx;
-	void** tab;
+	struct privdata* priv = (void*)act->priv_256b;
 	say("@spectrum_write.pcm: %d,%llx\n", len, buf);
 
-	idx = act->TABLEN;
-	tab = act->TABBUF;
-
-	for(j=15;j>0;j--)tab[j] = tab[j-1];
-	tab[0] = buf;
-
-	act->TABLEN = (idx+1) % slice;
+	priv->TABBUF[priv->TABLEN] = buf;
+	priv->TABLEN = (priv->TABLEN+1) % slice;
 }
 
 
@@ -155,8 +152,6 @@ static void spectrum_delete(_obj* act)
 }
 static void spectrum_create(_obj* act)
 {
-	act->TABBUF = memorycreate(0x1000, 0);
-	act->TABLEN = 0;
 }
 
 

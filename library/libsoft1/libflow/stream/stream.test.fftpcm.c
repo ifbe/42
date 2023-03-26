@@ -7,8 +7,8 @@ void ifft(float* real, float* imag, int k);
 
 
 struct perobj{
-	float* buf0;
-	short* buf1;
+	void* buf0;
+	void* buf1;
 	int len;
 };
 
@@ -22,7 +22,8 @@ int fftpcm_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
 int fftpcm_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	int j;
-	float tmp,max;
+	float maxidx,maxval;
+	float magni,phase;
 	short* pcm;
 	float* real;
 	float* imag;
@@ -42,22 +43,39 @@ int fftpcm_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, v
 	fft(real, imag, 10);
 
 	//2.complex->pcm
+	say("len=%x\n", perobj->len);
 	pcm = perobj->buf1 + perobj->len;
 	perobj->len = (perobj->len+2048) % 0x100000;
 
-	max = 0.0;
+	maxval = 0.0;
 	for(j=0;j<1024;j++){
-		tmp = real[j]*real[j] + imag[j]*imag[j];
-		pcm[j] = (short)(squareroot(tmp)*100.0);
+		magni = squareroot(real[j]*real[j] + imag[j]*imag[j])/1024;
+		if(maxval < magni){
+			maxidx = j;
+			maxval = magni;
+		}
+		if(magni > 0.5){
+			say("%d:%f\n",j,magni);
+			magni = 1.0;
+		}
+
+		//phase = arctanyx(imag[j], real[j]);
+
+		pcm[j] = (short)(magni*32767.0);
 		if(j < 1)continue;
-		if(max < tmp)max = tmp;
 	}
 
-	max = squareroot(max);
-	max = max * 44100 / 1024;
-	say("freq = %f\n", max);
+	maxidx = maxidx * 44100 / 1024;
+	say("freq = %f\n", maxidx);
 
 	give_data_into_peer(art,_dst_, stack,sp, 0,0, pcm,1024*2);
+/*
+	pcm = buf;
+	ifft(real, imag, 10);		//check if x==ifft(fft(x))
+	for(j=0;j<16;j++){
+		say("%f, %f, %f\n", pcm[j]/32768.0, real[j], imag[j]);
+	}
+*/
 	return 0;
 }
 int fftpcm_detach(struct halfrel* self, struct halfrel* peer)
