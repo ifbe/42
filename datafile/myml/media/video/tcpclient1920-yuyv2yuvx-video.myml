@@ -42,8 +42,8 @@ dsth:1080
 <system>
 server{
 fmt:tcp
-#arg:192.168.5.147:9999
-arg:pi0w.deepstack.tech:9999
+arg:192.168.5.230:9999
+#arg:pi0w.deepstack.tech:9999
 }
 </system>
 

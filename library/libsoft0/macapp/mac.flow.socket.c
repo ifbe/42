@@ -309,7 +309,7 @@ _obj* createsocket_udpclient(union addrv4v6* my, union addrv4v6* to)
 
 	int fd,ret;
 	//create
-	fd = socket(AF_INET, SOCK_DGRAM, 0);
+	fd = socket(sockfmt, SOCK_DGRAM, 0);
 	if(-1 == fd){
 		printf("errno=%d@socket\n",errno);
 		return 0;

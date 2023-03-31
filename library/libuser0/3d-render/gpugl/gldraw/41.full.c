@@ -25,8 +25,12 @@ int gl41fbo_create(struct gl41data* tar);
 //#define DEBUG_PPLL
 //#define DEBUG_READPIXEL
 
+#ifdef __APPLE__
+#define PPLL_DISABLE
+#endif
 
 #ifdef __ANDROID__
+#define PPLL_DISABLE
 void gpudata_cleanup(u8* ss, u8* ee)
 {
 	while(ss < ee){
@@ -156,6 +160,7 @@ void update_onedraw(struct gldst* dst, struct mysrc* src)
 	}
 //say("@update done\n");
 }
+#ifndef PPLL_DISABLE
 void update_ppll(struct gldst* dst, struct mysrc* src)
 {
 	GLuint data[4] = {1,2,3,4};
@@ -243,6 +248,7 @@ void update_ppll(struct gldst* dst, struct mysrc* src)
 	//say("glGetError=%d\n",glGetError());
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
+#endif
 void fullwindow_upload(struct gl41world* world, int step)
 {
 	struct gl41data** cam = world->camera;
@@ -250,7 +256,7 @@ void fullwindow_upload(struct gl41world* world, int step)
 	struct gl41data** solid = world->solid;
 	struct gl41data** opaque = world->opaque;
 
-#ifndef __APPLE__
+#ifndef PPLL_DISABLE
 	if(UPLOADSTEP_PPLLWORLD0 == step){
 		update_ppll(&cam[0]->dst, &cam[0]->src);
 	}
@@ -352,7 +358,7 @@ void render_material(struct gl41data* cam, struct gl41data* lit, struct gl41data
 	//0.shader
 	glUseProgram(dst->shader);
 
-#ifndef __APPLE__
+#ifndef PPLL_DISABLE
 	if(cam && cam[0].dst.ppll_data){
 		glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, cam[0].dst.ppll_atomic);
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, cam[0].dst.ppll_head);

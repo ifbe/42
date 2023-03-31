@@ -178,13 +178,13 @@ static int kernel_failloop(struct item* wrk)
 		time = timeread_us();
 
 		//drawloop fail, i have to draw
-		if( (0 == heartbeat_draw) | (time > heartbeat_draw + 1000*1000*STALL_SEC) ){
+		if( (0 == heartbeat_draw) || (time > heartbeat_draw + 1000*1000*STALL_SEC) ){
 			//if(curr <= STALL_SEC)say("drawloop fail after %d sec\n", curr);
 			supply_takeby(wnd,0, stack,2, 0,0, 0,0);
 		}//draw
 
 		//pollloop fail, i have to poll
-		if( (0 == heartbeat_poll) | (time > heartbeat_poll + 1000*1000*STALL_SEC) ){
+		if( (0 == heartbeat_poll) || (time > heartbeat_poll + 1000*1000*STALL_SEC) ){
 			//if(curr <= STALL_SEC)say("pollloop fail after %d sec\n", curr);
 
 			//poll all
@@ -266,7 +266,7 @@ int kernel_create(struct item* wrk, void* arg, int argc, u8** argv)
 
 		//wait 1s
 		sleep_us(1000*1000);
-		if( (0 == heartbeat_draw) | (0 == heartbeat_poll) )success = 0;
+		if( (0 == heartbeat_draw) || (0 == heartbeat_poll) )success = 0;
 	}
 	else{
 		//processcreate("/init");

@@ -68,6 +68,7 @@ static int vrglass_where(_obj* act, struct fstyle* pin, float* f, int len)
 	obb->vq[0] = (320-f[0])/640/2;
 	obb->vq[2] = (240-f[1])/480/2 + obb->vc[2];
 	obb->vq[1] = f[2]/100 - 4.0;
+	return 0;
 }
 static int vrglass_event(_obj* act, struct fstyle* pin, struct event* ev, int len)
 {

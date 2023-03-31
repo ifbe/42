@@ -347,8 +347,8 @@ _obj* createsocket_udpserver(union addrv4v6* my)
 }
 _obj* createsocket_udpclient(union addrv4v6* my, union addrv4v6* to)
 {
-	//
-	int sockfmt,socklen;
+	int sockfmt;
+	int socklen;
 	if(AF_INET6 == my->sa.sa_family){
 		sockfmt = AF_INET6;
 		socklen = sizeof(struct sockaddr_in6);
@@ -360,7 +360,7 @@ _obj* createsocket_udpclient(union addrv4v6* my, union addrv4v6* to)
 
 	int fd,ret;
 	//create
-	fd = socket(AF_INET, SOCK_DGRAM, 0);
+	fd = socket(sockfmt, SOCK_DGRAM, 0);
 	if(-1 == fd){
 		printf("errno=%d@socket\n",errno);
 		return 0;
@@ -480,7 +480,8 @@ _obj* createsocket_tcpserver(union addrv4v6* my)
 }
 _obj* createsocket_tcpclient(union addrv4v6* my, union addrv4v6* to)
 {
-	int sockfmt,socklen;
+	int sockfmt;
+	int socklen;
 	if(AF_INET6 == to->sa.sa_family){
 		sockfmt = AF_INET6;
 		socklen = sizeof(struct sockaddr_in6);
@@ -491,7 +492,7 @@ _obj* createsocket_tcpclient(union addrv4v6* my, union addrv4v6* to)
 	}
 
 	//create socket
-	int fd = socket(AF_INET, SOCK_STREAM, 0);
+	int fd = socket(sockfmt, SOCK_STREAM, 0);
 	if(-1 == fd){
 		printf("errno=%d@socket\n",errno);
 		return 0;

@@ -140,7 +140,7 @@ int proxymaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 	if(0 == ncmp(buf, "CONNECT ", 8)){
 		ptr = buf+8;
 	}
-	else if( (0 == ncmp(buf, "GET ", 4)) | (0 == ncmp(buf, "POST ", 5)) ){
+	else if( (0 == ncmp(buf, "GET ", 4)) || (0 == ncmp(buf, "POST ", 5)) ){
 		for(j=4;j<len-1;j++){
 			if( (0xd == buf[j]) && (0xa == buf[j+1]) ){
 				if(0 == ncmp(buf+j+2, "Host: ", 6)){

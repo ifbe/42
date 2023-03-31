@@ -8,38 +8,37 @@
 
 void swap_u8(u8* p, u8* q)
 {
-	u8 temp;
 	if(p == 0)return;
 	if(q == 0)return;
 
-	temp = p[0];
+	u8 temp = p[0];
 	p[0] = q[0];
+	q[0] = temp;
 }
 void swap_u16(u16* p, u16* q)
 {
-	u16 temp;
 	if(p == 0)return;
 	if(q == 0)return;
 
-	temp = p[0];
+	u16 temp = p[0];
 	p[0] = q[0];
+	q[0] = temp;
 }
 void swap_u32(u32* p, u32* q)
 {
-	u32 temp;
 	if(p == 0)return;
 	if(q == 0)return;
 
-	temp = p[0];
+	u32 temp = p[0];
 	p[0] = q[0];
+	q[0] = temp;
 }
 void swap_u64(u64* p, u64* q)
 {
-	u64 temp;
 	if(p == 0)return;
 	if(q == 0)return;
 
-	temp = p[0];
+	u64 temp = p[0];
 	p[0] = q[0];
 	q[0] = temp;
 }

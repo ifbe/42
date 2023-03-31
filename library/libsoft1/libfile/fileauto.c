@@ -56,7 +56,7 @@ void cleverread(
 	u64 src, u64 count, u64 where,
 	u8* buf, u64 len, u64 want)
 {
-	u8* rdi = 0;    //内存地址
+/*	u8* rdi = 0;    //内存地址
 	u64 rsi = 0;    //扇区号
 	u64 rcx = 0;    //扇区数量
 
@@ -87,7 +87,7 @@ void cleverread(
 			rcx = want+len-where;
 		}
 	}
-
+*/
 /*
 	say(
 		"(%llx,%llx,%llx)->(%llx,%llx,%llx)\n",

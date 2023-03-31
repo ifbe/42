@@ -29,7 +29,7 @@ arg:2592000
 }
 picfmt{
 fmt:picfmt
-srcfmt:pGAA
+srcfmt:pBAA
 srcw:1920
 srch:1080
 dstfmt:rgbx

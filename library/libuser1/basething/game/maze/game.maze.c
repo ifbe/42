@@ -372,8 +372,8 @@ static void maze_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 	}
 
 	//caller defined behavior
-	_obj* caller;struct style* area;
-	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+	_obj* caller = stack[sp-2].pchip;
+	//struct style* area = stack[sp-2].pfoot;
 
 	switch(caller->hfmt){
 	case _rgba_:

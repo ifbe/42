@@ -684,7 +684,7 @@ void gbgbxrgrgx_to_rgba(
 {
 	if(0 == srcbuf)return;
 	if(0 == dstbuf)return;
-say("bgbgxgrgrx_to_rgba\n");
+say("gbgbxrgrgx_to_rgba\n");
 printmemory(srcbuf, 0x40);
 	int newx = 0;
 	int srcstride = srcw*5/4;
@@ -769,6 +769,100 @@ g b g b ~ g b g b ~ g b g b ~	//vd
 			dst1[4*x +12] = (vc[3]+vc[5])/2;
 			dst1[4*x +13] = vc[4];
 			dst1[4*x +14] = (vb[4]+vd[4])/2;
+		}
+	}
+}
+void bgbgxgrgrx_to_rgba(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth)
+{
+	if(0 == srcbuf)return;
+	if(0 == dstbuf)return;
+say("bgbgxgrgrx_to_rgba\n");
+printmemory(srcbuf, 0x40);
+	int newx = 0;
+	int srcstride = srcw*5/4;
+	int x,y;
+	int r,g,b;
+	u8* dst0;
+	u8* dst1;
+	u8* src = srcbuf;
+	short va[6];
+	short vb[6];
+	short vc[6];
+	short vd[6];
+	for(y=2;y<dsth-2;y+=2)
+	{
+		if(y >= dsth)break;
+
+		dst0 = dstbuf + (y+0)*dstw*4;
+		dst1 = dstbuf + (y+1)*dstw*4;
+		for(x=4;x<dstw-4;x+=4)
+		{
+			if(x >= dstw)break;
+
+			newx = (x/4)*5 + (x%4);
+			va[0] = src[srcstride*(y-1) + newx-1-1];
+			va[1] = src[srcstride*(y-1) + newx];
+			va[2] = src[srcstride*(y-1) + newx+1];
+			va[3] = src[srcstride*(y-1) + newx+2];
+			va[4] = src[srcstride*(y-1) + newx+3];
+			va[5] = src[srcstride*(y-1) + newx+4+1];
+
+			vb[0] = src[srcstride*(y+0) + newx-1-1];
+			vb[1] = src[srcstride*(y+0) + newx];
+			vb[2] = src[srcstride*(y+0) + newx+1];
+			vb[3] = src[srcstride*(y+0) + newx+2];
+			vb[4] = src[srcstride*(y+0) + newx+3];
+			vb[5] = src[srcstride*(y+0) + newx+4+1];
+
+			vc[0] = src[srcstride*(y+1) + newx-1-1];
+			vc[1] = src[srcstride*(y+1) + newx];
+			vc[2] = src[srcstride*(y+1) + newx+1];
+			vc[3] = src[srcstride*(y+1) + newx+2];
+			vc[4] = src[srcstride*(y+1) + newx+3];
+			vc[5] = src[srcstride*(y+1) + newx+4+1];
+
+			vd[0] = src[srcstride*(y+2) + newx-1-1];
+			vd[1] = src[srcstride*(y+2) + newx];
+			vd[2] = src[srcstride*(y+2) + newx+1];
+			vd[3] = src[srcstride*(y+2) + newx+2];
+			vd[4] = src[srcstride*(y+2) + newx+3];
+			vd[5] = src[srcstride*(y+2) + newx+4+1];
+/*
+      0   1 2 3 4   5
+g r g r ~ g r g r ~ g r g r ~	//va
+b g b g ~ B G B G ~ b g b g ~	//vb
+g r g r ~ G R G R ~ g r g r ~	//vc
+b g b g ~ b g b g ~ b g b g ~	//vd
+*/
+			dst0[4*x + 0] = (va[0]+va[2]+vc[0]+vc[2])/4;
+			dst0[4*x + 1] = (va[1]+vc[1]+vb[0]+vb[2])/4;
+			dst0[4*x + 2] = vb[1];
+			dst0[4*x + 4] = (va[2]+vc[2])/2;
+			dst0[4*x + 5] = vb[2];
+			dst0[4*x + 6] = (vb[1]+vb[3])/2;
+
+			dst0[4*x + 8] = (va[2]+va[4]+vc[2]+vc[4])/4;
+			dst0[4*x + 9] = (va[3]+vc[3]+vb[2]+vb[4])/4;
+			dst0[4*x +10] = vb[3];
+			dst0[4*x +12] = (va[4]+vc[4])/2;
+			dst0[4*x +13] = vb[4];
+			dst0[4*x +14] = (vb[3]+vb[5])/2;
+
+			dst1[4*x + 0] = (vc[0]+vc[2])/2;
+			dst1[4*x + 1] = vc[1];
+			dst1[4*x + 2] = (vb[1]+vd[1])/2;
+			dst1[4*x + 4] = vc[2];
+			dst1[4*x + 5] = (vc[1]+vc[3]+vb[2]+vd[2])/2;
+			dst1[4*x + 6] = (vb[1]+vb[3]+vc[1]+vc[3])/2;
+
+			dst1[4*x + 8] = (vc[2]+vc[4])/2;
+			dst1[4*x + 9] = vc[3];
+			dst1[4*x +10] = (vb[3]+vd[3])/2;
+			dst1[4*x +12] = vc[4];
+			dst1[4*x +13] = (vc[3]+vc[5]+vb[4]+vd[4])/2;
+			dst1[4*x +14] = (vb[3]+vb[5]+vc[3]+vc[5])/2;
 		}
 	}
 }

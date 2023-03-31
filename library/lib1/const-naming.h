@@ -376,6 +376,9 @@
 #define _bg10_ hex32('b','g','1','0')
 #define _rg10_ hex32('r','g','1','0')
 //
+#define _pBAA_ hex32('p','B','A','A')
+#define _pGAA_ hex32('p','G','A','A')
+//
 #define _yuv_ hex32('y','u','v',0)
 #define _yuvx_ hex32('y','u','v','x')
 #define _yuyv_ hex32('y','u','y','v')

@@ -48,9 +48,16 @@ static char dx11opaquetrigon_frag[] =
 "}";
 
 
+#ifdef __APPLE__
+#define PPLL_DISABLE
+#endif
+
+#ifdef __ANDROID__
+#define PPLL_DISABLE
+#endif
 
 
-#ifndef __APPLE__
+#ifndef PPLL_DISABLE
 static char gl41opaquetrigon_vert[] =
 GLSL_VERSION
 GLSL_PRECISION

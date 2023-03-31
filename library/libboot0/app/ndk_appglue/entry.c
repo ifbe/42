@@ -232,6 +232,40 @@ void* getassetmgr()
 {
 	return theapp->activity->assetManager;
 }
+#include <jni.h>
+#include <dlfcn.h>
+ASensorManager* AcquireASensorManagerInstance(struct android_app* app) {
+  if (!app) return 0;
+
+  typedef ASensorManager* (*PF_GETINSTANCEFORPACKAGE)(const char* name);
+  void* androidHandle = dlopen("libandroid.so", RTLD_NOW);
+  PF_GETINSTANCEFORPACKAGE getInstanceForPackageFunc = (PF_GETINSTANCEFORPACKAGE)dlsym(
+      androidHandle, "ASensorManager_getInstanceForPackage");
+  if (getInstanceForPackageFunc) {
+    JNIEnv* env = 0;
+    (*app->activity->vm)->AttachCurrentThread(app->activity->vm, &env, 0);
+
+    jclass android_content_Context = (*env)->GetObjectClass(env, app->activity->clazz);
+    jmethodID midGetPackageName = (*env)->GetMethodID(env, android_content_Context, "getPackageName", "()Ljava/lang/String;");
+    void* packageName = (*env)->CallObjectMethod(env, app->activity->clazz, midGetPackageName);
+    const char* nativePackageName = (*env)->GetStringUTFChars(env, packageName, 0);
+    ASensorManager* mgr = getInstanceForPackageFunc(nativePackageName);
+    (*env)->ReleaseStringUTFChars(env, packageName, nativePackageName);
+
+    (*app->activity->vm)->DetachCurrentThread(app->activity->vm);
+    if (mgr) {
+      dlclose(androidHandle);
+      return mgr;
+    }
+  }
+
+  typedef ASensorManager* (*PF_GETINSTANCE)();
+  PF_GETINSTANCE getInstanceFunc = (PF_GETINSTANCE)dlsym(androidHandle, "ASensorManager_getInstance");
+  // by all means at this point, ASensorManager_getInstance should be available
+  dlclose(androidHandle);
+
+  return getInstanceFunc();
+}
 
 
 
@@ -247,7 +281,7 @@ void android_main(struct android_app* app)
 	LOGI("assetManager=%p\n",theapp->activity->assetManager);
 
 
-	sensorManager = ASensorManager_getInstanceForPackage("com.example.finalanswer");
+	sensorManager = AcquireASensorManagerInstance(app);
 	sensorEventQueue = ASensorManager_createEventQueue(sensorManager, theapp->looper, LOOPER_ID_USER, 0, 0);
 	gyr = ASensorManager_getDefaultSensor(sensorManager, ASENSOR_TYPE_GYROSCOPE);
 	acc = ASensorManager_getDefaultSensor(sensorManager, ASENSOR_TYPE_ACCELEROMETER);
