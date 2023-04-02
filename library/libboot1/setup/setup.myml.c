@@ -7,6 +7,9 @@ int parsefv(float* fbuf, int flen, u8* sbuf, int slen);
 //
 int openreadclose(void*,int,void*,int);
 int openwriteclose(void*,int,void*,int);
+//
+void* poller_alloc();
+void poller(void*);
 
 
 
@@ -638,19 +641,14 @@ int role_fromfile(u8* str, int len)
 
 
 
-void exiter(void*);
-void pulser(void*);
-void poller(void*);
-void realer(void*);
-void waiter(void*);
 int myml_create(struct item* wrk, void* arg, int argc, u8** argv)
 {
 	int j;
-	if(0 == argv){
-		role_fromfile((u8*)"datafile/myml/index.myml", 0);
+	if(arg){
+		role_fromfile(arg, 0);
 	}
-	else if(argc <= 1){
-		supply_create(_std_, 0, 0, 0);
+	else if(0 == argv){
+		role_fromfile((u8*)"datafile/myml/index.myml", 0);
 	}
 	else{
 		for(j=1;j<argc;j++){
@@ -661,7 +659,8 @@ int myml_create(struct item* wrk, void* arg, int argc, u8** argv)
 
     say("----parse done, now loop or exit----\n");
 
-	poller(wrk);
+	void* mpoller = poller_alloc();
+	if(mpoller)poller(mpoller);
 	return 0;
 }
 

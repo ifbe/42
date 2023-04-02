@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <android/log.h>
 #include <android_native_app_glue.h>
 #include "libsoft.h"
@@ -17,7 +18,7 @@ void initfilemgr(void* addr)
 	obj = addr;
 	assetMgr = getassetmgr();
 
-	AAssetDir* assetDir=AAssetManager_openDir(assetMgr, "");
+	AAssetDir* assetDir=AAssetManager_openDir(assetMgr, ".");
 	const char* file_list;
 	do{
 		file_list=AAssetDir_getNextFileName(assetDir);
@@ -86,4 +87,24 @@ int file_take(_obj* oo,int xx, void* arg,int off, void* buf,int len)
 int file_give(_obj* oo,int xx, void* arg,int off, void* buf,int len)
 {
 	return 0;
+}
+
+
+
+
+
+int readfolder(void* url, int fd, void* arg, int off, void* buf, int len)
+{
+	int j=0;
+	AAssetDir* assetDir=AAssetManager_openDir(assetMgr, url+9);
+	const char* file_list;
+	do{
+		file_list=AAssetDir_getNextFileName(assetDir);
+		if(file_list){
+			//say("%s\n",file_list);
+			j += snprintf(buf+j, len-j, "%s/\n", file_list);
+		}
+	}while (file_list);
+	AAssetDir_close(assetDir);
+	return j;
 }

@@ -147,6 +147,7 @@ void pinid_recycle()
 
 void* supply_create(u64 type, void* arg, int argc, u8** argv)
 {
+	say("supply_create:%.8s\n",&type);
 	int j = 0;
 	_obj* win;
 

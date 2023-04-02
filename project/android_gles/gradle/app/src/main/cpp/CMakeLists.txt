@@ -145,7 +145,6 @@ ${LIB42}/libsoft0/linuxapp/linux.flow.epoll.c
 ${LIB42}/libsoft0/linuxapp/linux.flow.socket.c
 ${LIB42}/libsoft0/linuxapp/linux.flow.ptmx.c
 ${LIB42}/libsoft0/linuxapp/linux.flow.tty.c
-${LIB42}/libsoft0/linuxapp/linux.memory.folder.c
 ${LIB42}/libsoft0/linuxapp/linux.multitask.process.c
 ${LIB42}/libsoft0/linuxapp/linux.multitask.thread.c
 ${LIB42}/libsoft0/linuxapp/linux.system.random.c
@@ -814,8 +813,9 @@ ${LIB42}/lib1
 
 # add lib dependencies
 target_link_libraries(native-activity
-    android
-    native_app_glue
-    EGL
-    GLESv3
-    log)
+android
+native_app_glue
+EGL
+GLESv3
+aaudio
+log)

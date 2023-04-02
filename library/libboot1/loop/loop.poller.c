@@ -1,11 +1,14 @@
 #include "libboot.h"
 int input(void*, int);
 int role_fromfile(void* path, int len);
+void* bootup_alloc();
 
 
 
 
+static _obj* mpoller = 0;
 static int alive = 1;
+//
 static _obj* supply = 0;
 static _obj* entity = 0;
 
@@ -127,6 +130,17 @@ void poller_delete(struct item* wrk, u8* arg)
 }
 void poller_create(struct item* wrk, u8* arg, int argc, u8** argv)
 {
+}
+
+
+
+
+void* poller_alloc()
+{
+	if(mpoller)return 0;
+
+	mpoller = bootup_alloc();
+	return mpoller;
 }
 
 

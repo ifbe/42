@@ -1,5 +1,8 @@
 #include "libboot.h"
 #define _term_ hex32('t','e','r','m')
+//
+void* poller_alloc();
+void poller(void*);
 
 
 
@@ -8,6 +11,11 @@ int subcmd_create(struct item* wrk, void* arg, int argc, u8** argv)
 {
 	void* thr = 0;
 	if(argc <= 1){
+		supply_create(_std_, 0, 0, 0);
+		void* mpoller = poller_alloc();
+		if(mpoller)poller(mpoller);
+	}
+	else if(0 == ncmp(argv[1], "help", 4)){
 		say("./a.out myml xxxx.myml\n");
 		say("./a.out mython xxxx.my\n");
 		say("./a.out ...\n");
