@@ -14,7 +14,8 @@
 #define u64 unsigned long long
 void openwindow(struct android_app* theapp);
 void closewindow(struct android_app* theapp);
-void sendtowindow(int, void*);
+void sendtowindow_sensor(int, void*);
+void sendtowindow_touch(void*);
 
 
 
@@ -154,8 +155,8 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 					why[0] = x+(y<<16)+(why[0]<<48);
 					why[1] = touch_abs;
 					why[2] = (u64)(theapp->userData);
-					//fullwindow_write(theapp->userData, (void*)why);
-					eventwrite(why[0], why[1], why[2], why[3]);
+					sendtowindow_touch(why);
+					//eventwrite(why[0], why[1], why[2], why[3]);
 				}
 				return 0;
 			case 0:
@@ -177,8 +178,8 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 			why[0] = x+(y<<16)+(why[0]<<48);
 			why[1] = act;
 			why[2] = (u64)(theapp->userData);
-			//fullwindow_write(theapp->userData, (void*)why);
-			eventwrite(why[0], why[1], why[2], why[3]);
+			sendtowindow_touch(why);
+			//eventwrite(why[0], why[1], why[2], why[3]);
 		}//AINPUT_SOURCE_TOUCHSCREEN
 		else if(AINPUT_SOURCE_TRACKBALL == source){
 			say("AINPUT_SOURCE_TRACKBALL\n");
@@ -209,15 +210,15 @@ int checkevent()
 					case ASENSOR_TYPE_GYROSCOPE:
 						//say("gyr: x=%f,y=%f,z=%f\n", v[0], v[1], v[2]);
 						//say("time=%lld\n",ev.timestamp);
-						sendtowindow('g', v);
+						sendtowindow_sensor('g', v);
 						break;
 					case ASENSOR_TYPE_ACCELEROMETER:
 						//say("acc: x=%f,y=%f,z=%f\n",-v[0],-v[1],-v[2]);
-						sendtowindow('a', v);
+						sendtowindow_sensor('a', v);
 						break;
 					case ASENSOR_TYPE_MAGNETIC_FIELD:
 						//say("mag: x=%f,y=%f,z=%f\n", v[0], v[1], v[2]);
-						sendtowindow('m', v);
+						sendtowindow_sensor('m', v);
 						break;
 					}
 				}
@@ -228,10 +229,20 @@ int checkevent()
 	}
 	return 0;
 }
+
+
+void* getapp()
+{
+	return theapp;
+}
+
+
 void* getassetmgr()
 {
 	return theapp->activity->assetManager;
 }
+
+
 #include <jni.h>
 #include <dlfcn.h>
 ASensorManager* AcquireASensorManagerInstance(struct android_app* app) {

@@ -234,7 +234,7 @@ void closewindow(struct android_app* theapp)
 		if(opaque[j])bzero(&opaque[j]->dst, sizeof(struct gldst));
 	}*/
 }
-void sendtowindow(int k, float* v)
+void sendtowindow_sensor(int k, float* v)
 {
 	//say("%c: %f,%f,%f\n", k, v[0],v[1],v[2]);
 	switch(k){
@@ -270,4 +270,9 @@ void sendtowindow(int k, float* v)
 
 	struct halfrel st[32];
 	window_give(thewnd,0, st,0, 0,_quat_, quaternion,6);
+}
+void sendtowindow_touch(void* ev)
+{
+	struct halfrel st[32];
+	window_give(thewnd,0, st,0, 0,0, ev,0);
 }

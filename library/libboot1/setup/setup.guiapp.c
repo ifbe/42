@@ -133,8 +133,8 @@ void guiapp_delete(struct item* wrk, u8* arg)
 }
 int guiapp_create(struct item* wrk, u8* arg, int argc, u8** argv)
 {
-	//bootup_create(_myml_, "datafile/myml/index.myml", 0, 0);
-
+	bootup_create(_myml_, "datafile/myml/index.myml", 0, 0);
+/*
 	_obj* wnd = supply_create(_wnd_, 0, 0, 0);
 	wrk->priv_ptr = wnd;
 
@@ -145,7 +145,7 @@ int guiapp_create(struct item* wrk, u8* arg, int argc, u8** argv)
 
 	void* mpoller = poller_alloc();
 	if(mpoller)poller(mpoller);
-/*
+
 	struct halfrel stack[0x80];
 	stack[0].pchip = wrk;
 	stack[1].pchip = wnd;

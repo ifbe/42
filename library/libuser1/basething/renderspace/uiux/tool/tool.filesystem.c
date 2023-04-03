@@ -56,7 +56,8 @@ static int fslist_copy(struct str* path, u8* name)
 }
 static void fslist_write_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area, struct event* ev)
 {
-	if('p' == (ev->what&0xff)){
+	int what = (ev->what&0xff);
+	if(('p' == what) | ('t' == what)){
 		vec3 xyz;
 		gl41data_convert(wnd, area, ev, xyz);
 		say("%f,%f\n",xyz[0],xyz[1]);
@@ -67,7 +68,7 @@ static void fslist_write_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct st
 		ent->whdf.iy0 = (int)(8*(1.0-xyz[1])*dy/dx);
 		say("%d,%d\n",ent->whdf.ix0,ent->whdf.iy0);
 
-		if(0x2d70 == ev->what){
+		if((0x2d70 == ev->what) | (0x2d74 == ev->what) ){
 			int id = ent->whdf.ix0 + (ent->whdf.iy0*8);
 			say("%d\n",id);
 
@@ -228,6 +229,8 @@ static void fslist_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,in
 }
 static void fslist_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	if(0==key)printmemory(buf, 16);
+
 	//_obj* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
 	_obj* wnd = stack[sp-2].pchip;
@@ -235,7 +238,7 @@ static void fslist_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 
 	switch(wnd->hfmt){
 	case _gl41list_:
-		fslist_write_bywnd(ent,slot, wnd,area, buf);
+		if(0 == key)fslist_write_bywnd(ent,slot, wnd,area, buf);
 		break;
 	}
 }

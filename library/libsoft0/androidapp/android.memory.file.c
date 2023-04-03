@@ -1,7 +1,9 @@
 #include <stdio.h>
+#include <jni.h>
 #include <android/log.h>
 #include <android_native_app_glue.h>
 #include "libsoft.h"
+void* getapp();
 void* getassetmgr();
 
 
@@ -93,19 +95,63 @@ int file_give(_obj* oo,int xx, void* arg,int off, void* buf,int len)
 
 
 
-
 int readfolder(void* url, int fd, void* arg, int off, void* buf, int len)
 {
-	int j=0;
+	//non-dir
+	int olen=0;
 	AAssetDir* assetDir=AAssetManager_openDir(assetMgr, url);
 	const char* file_list;
 	do{
 		file_list=AAssetDir_getNextFileName(assetDir);
 		if(file_list){
 			//say("%s\n",file_list);
-			j += snprintf(buf+j, len-j, "%s/\n", file_list);
+			olen += snprintf(buf+olen, len-olen, "%s\n", file_list);
 		}
 	}while (file_list);
 	AAssetDir_close(assetDir);
-	return j;
+
+
+	//dir and non-dir
+	say("@readfolder\n");
+	struct android_app* app = getapp();
+
+	say("@AttachCurrentThread\n");
+    JNIEnv* env = 0;
+    (*app->activity->vm)->AttachCurrentThread(app->activity->vm, &env, 0);
+
+	say("@activity\n");
+    jclass activity_class = (*env)->GetObjectClass(env, app->activity->clazz);
+	jmethodID getAssets_method = (*env)->GetMethodID(env, activity_class, "getAssets", "()Landroid/content/res/AssetManager;");
+
+	say("@assetmanager\n");
+	void* assetmanager_obj = (*env)->CallObjectMethod(env, app->activity->clazz, getAssets_method);
+	say("@assetmanager.1\n");
+	jclass assetmanager_class = (*env)->GetObjectClass(env, assetmanager_obj);
+	say("@assetmanager.2\n");
+    jmethodID list_method = (*env)->GetMethodID(env, assetmanager_class, "list", "(Ljava/lang/String;)[Ljava/lang/String;");
+
+	say("@path\n");
+	jstring path_obj = (*env)->NewStringUTF(env, url);
+	say("@path.1\n");
+	void* file_obj = (jobjectArray)(*env)->CallObjectMethod(env, assetmanager_obj, list_method, path_obj);
+	say("@path.2\n");
+	(*env)->DeleteLocalRef(env, path_obj);
+
+	say("@GetArrayLength\n");
+	int cnt = (*env)->GetArrayLength(env, file_obj);
+	say("cnt=%d\n", cnt);
+
+	for(int k=0;k<cnt;k++){
+		jstring jstr = (jstring)(*env)->GetObjectArrayElement(env, file_obj, k);
+		const char* name = (*env)->GetStringUTFChars(env, jstr, 0);
+		if(name){
+			say("%d:%s\n", k, name);
+			olen += snprintf(buf+olen, len-olen, "%s/\n", name);
+		}
+		(*env)->DeleteLocalRef(env, jstr);
+	}
+
+	say("@DetachCurrentThread\n");
+    (*app->activity->vm)->DetachCurrentThread(app->activity->vm);
+	return olen;
 }
