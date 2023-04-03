@@ -36,11 +36,22 @@ android {
             )
             assets.srcDirs(
                     'src/main/assets',
-                    '../../../../datafile',
             )
         }
     }
     namespace 'com.example.native_activity'
+
+}
+
+afterEvaluate {
+    assembleDebug.doLast {
+        println "copy.before"
+        copy{
+            from "../../../../datafile"
+            into "build/intermediates/assets/debug/datafile"
+        }
+        println "copy.after"
+    }
 }
 
 dependencies {

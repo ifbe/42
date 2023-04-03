@@ -15,10 +15,11 @@ static AAsset* asset[16] = {0};
 
 void initfilemgr(void* addr)
 {
+	say("@initfilemgr\n");
 	obj = addr;
 	assetMgr = getassetmgr();
 
-	AAssetDir* assetDir=AAssetManager_openDir(assetMgr, ".");
+	AAssetDir* assetDir=AAssetManager_openDir(assetMgr, "");
 	const char* file_list;
 	do{
 		file_list=AAssetDir_getNextFileName(assetDir);
@@ -43,8 +44,8 @@ _obj* file_create(void* path, int flag)
 	int j;
 	for(j=0;j<16;j++){
 		if(0 == asset[j]){
-			say("@AAssetManager_open:%s\n",path+9);
-			asset[j] = AAssetManager_open(assetMgr, path+9, 0);
+			say("@AAssetManager_open:%s\n",path);
+			asset[j] = AAssetManager_open(assetMgr, path, 0);
 			if(asset[j])goto good;
 			break;
 		}
@@ -96,7 +97,7 @@ int file_give(_obj* oo,int xx, void* arg,int off, void* buf,int len)
 int readfolder(void* url, int fd, void* arg, int off, void* buf, int len)
 {
 	int j=0;
-	AAssetDir* assetDir=AAssetManager_openDir(assetMgr, url+9);
+	AAssetDir* assetDir=AAssetManager_openDir(assetMgr, url);
 	const char* file_list;
 	do{
 		file_list=AAssetDir_getNextFileName(assetDir);
