@@ -15,14 +15,16 @@ int readfolder(char* url, int fd, void* arg, int off, char* buf, int len)
 	HANDLE dir;
 	WIN32_FIND_DATA dat;
 
+	//slash to backslash
 	for(j=0;j<0x100;j++){
-		if(url[j] <= 0xa){
-			snprintf(tmp+j, 8, "\\*.*");
-			break;
-		}
-		if(url[j] == '/')tmp[j] = '\\';
-		tmp[j] = url[j];
+		if(0xa >= url[j])break;
+		if('/' == url[j])tmp[j] = '\\';
+		else tmp[j] = url[j];
 	}
+
+	//show all
+	snprintf(tmp+j, 8, "*.*");
+	//printf("readfolder:%s\n", tmp);
 
 	dir = FindFirstFileA(tmp, &dat);
 	if(INVALID_HANDLE_VALUE == dir){

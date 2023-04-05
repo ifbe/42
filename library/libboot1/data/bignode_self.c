@@ -103,6 +103,16 @@ int take_data_from_them(void* chip,int ftype, struct halfrel* stack,int sp, void
 
 	return 0;
 }
+int take_data_from_peer_temp_stack(void* chip,int ftype, void* arg,int cmd, void* buf,int len)
+{
+	struct halfrel stack[0x80];
+	return take_data_from_peer(chip,ftype, stack,0, arg,cmd, buf,len);
+}
+int take_data_from_them_temp_stack(void* chip,int ftype, void* arg,int cmd, void* buf,int len)
+{
+	struct halfrel stack[0x80];
+	return take_data_from_them(chip,ftype, stack,0, arg,cmd, buf,len);
+}
 
 
 
@@ -212,4 +222,19 @@ int give_data_into_them(void* chip,int ftype, struct halfrel* stack,int sp, void
 	}
 
 	return 0;
+}
+int give_data_into_orel_temp_stack(void* chip,int ftype, void* arg,int cmd, void* buf,int len)
+{
+	struct halfrel stack[0x80];
+	return give_data_into_orel(chip,ftype, stack,0, arg,cmd, buf,len);
+}
+int give_data_into_peer_temp_stack(void* chip,int ftype, void* arg,int cmd, void* buf,int len)
+{
+	struct halfrel stack[0x80];
+	return give_data_into_peer(chip,ftype, stack,0, arg,cmd, buf,len);
+}
+int give_data_into_them_temp_stack(void* chip,int ftype, void* arg,int cmd, void* buf,int len)
+{
+	struct halfrel stack[0x80];
+	return give_data_into_them(chip,ftype, stack,0, arg,cmd, buf,len);
 }

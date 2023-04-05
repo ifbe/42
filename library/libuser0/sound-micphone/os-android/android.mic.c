@@ -19,8 +19,8 @@ static aaudio_data_callback_result_t dataCallback(AAudioStream *stream, void *us
 	short* in = audioData;
 	//say((void*)"recordDataCallback: stream=%p,userData=%p,audiodata=%p,numFrames=%x: %d,%d,%d,%d\n", stream, userData, audioData, numFrames, in[0], in[1], in[2], in[3]);
 
-	_obj* spk = userData;
-	struct privdata* priv = (void*)spk->priv_256b;
+	_obj* mic = userData;
+	struct privdata* priv = (void*)mic->priv_256b;
 	short* pcm = priv->pcm;
 
 	int j;
@@ -31,6 +31,12 @@ static aaudio_data_callback_result_t dataCallback(AAudioStream *stream, void *us
 	}
 	priv->now = k;
 
+	if(priv->now < 1024){
+		for(j=0;j<1024;j++)pcm[48000+j] = pcm[j];
+	}
+
+	int todo_done= (priv->todo+48000-1024)%48000;
+	//int todo = priv->todo;
 	int todo_end = (priv->todo+1024) % 48000;
 	if(priv->todo < todo_end){		//normal case
 		if( (priv->now >= priv->todo) && (priv->now <= todo_end) ){
@@ -45,7 +51,8 @@ static aaudio_data_callback_result_t dataCallback(AAudioStream *stream, void *us
 	goto byebye;
 
 found:
-	say((void*)"now=%d,done=[%d,%d)\n", priv->now, (priv->todo+48000-1024)%48000, priv->todo);
+	say((void*)"now=%d,done=[%d,%d)\n", priv->now, todo_done, priv->todo);
+	give_data_into_peer_temp_stack(mic,_dst_, 0,0, &pcm[todo_done],1024*2);
 	priv->todo = todo_end;
 
 byebye:

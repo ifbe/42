@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 
+project(native-activity)
 cmake_minimum_required(VERSION 3.18)
 
 # build native_app_glue as a static lib

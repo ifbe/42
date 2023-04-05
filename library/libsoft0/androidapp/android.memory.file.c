@@ -1,8 +1,10 @@
 #include <stdio.h>
+#include <string.h>
 #include <jni.h>
 #include <android/log.h>
 #include <android_native_app_glue.h>
 #include "libsoft.h"
+u32 djb2hash(void* buf, int len);
 void* getapp();
 void* getassetmgr();
 
@@ -95,10 +97,24 @@ int file_give(_obj* oo,int xx, void* arg,int off, void* buf,int len)
 
 
 
+int notinhashlist(u32* hashbuf, int hashcnt, const char* name)
+{
+	int j;
+	u32 h = djb2hash((void*)name, strlen(name));
+	say("notinhashlist:hash=%x\n",h);
+	for(j=2;j<hashcnt;j++){
+	say("notinhashlist:j=%x\n",j);
+		if(h == hashbuf[j])return 0;
+	}
+	return 1;
+}
 int readfolder(void* url, int fd, void* arg, int off, void* buf, int len)
 {
+	//. and ..
+	int olen = snprintf(buf, 8, "./\n../\n");
+	int ocnt = 2;
+
 	//non-dir
-	int olen=0;
 	AAssetDir* assetDir=AAssetManager_openDir(assetMgr, url);
 	const char* file_list;
 	do{
@@ -106,47 +122,60 @@ int readfolder(void* url, int fd, void* arg, int off, void* buf, int len)
 		if(file_list){
 			//say("%s\n",file_list);
 			olen += snprintf(buf+olen, len-olen, "%s\n", file_list);
+			ocnt++;
 		}
 	}while (file_list);
 	AAssetDir_close(assetDir);
 
+	int j,k=0;
+	int hashcnt = 0;
+	u32 hashbuf[ocnt];
+	for(j=0;j<olen;j++){
+		if('\n' == *(u8*)(buf+j)){
+			hashbuf[hashcnt] = djb2hash(buf+k, j-k);
+			k = j+1;
+			hashcnt += 1;
+		}
+	}
 
 	//dir and non-dir
-	say("@readfolder\n");
+	//say("@readfolder\n");
 	struct android_app* app = getapp();
 
-	say("@AttachCurrentThread\n");
+	//say("@AttachCurrentThread\n");
     JNIEnv* env = 0;
     (*app->activity->vm)->AttachCurrentThread(app->activity->vm, &env, 0);
 
-	say("@activity\n");
+	//say("@activity\n");
     jclass activity_class = (*env)->GetObjectClass(env, app->activity->clazz);
 	jmethodID getAssets_method = (*env)->GetMethodID(env, activity_class, "getAssets", "()Landroid/content/res/AssetManager;");
 
-	say("@assetmanager\n");
+	//say("@assetmanager\n");
 	void* assetmanager_obj = (*env)->CallObjectMethod(env, app->activity->clazz, getAssets_method);
-	say("@assetmanager.1\n");
+	//say("@assetmanager.1\n");
 	jclass assetmanager_class = (*env)->GetObjectClass(env, assetmanager_obj);
-	say("@assetmanager.2\n");
+	//say("@assetmanager.2\n");
     jmethodID list_method = (*env)->GetMethodID(env, assetmanager_class, "list", "(Ljava/lang/String;)[Ljava/lang/String;");
 
-	say("@path\n");
+	//say("@path\n");
 	jstring path_obj = (*env)->NewStringUTF(env, url);
-	say("@path.1\n");
+	//say("@path.1\n");
 	void* file_obj = (jobjectArray)(*env)->CallObjectMethod(env, assetmanager_obj, list_method, path_obj);
-	say("@path.2\n");
+	//say("@path.2\n");
 	(*env)->DeleteLocalRef(env, path_obj);
 
-	say("@GetArrayLength\n");
+	//say("@GetArrayLength\n");
 	int cnt = (*env)->GetArrayLength(env, file_obj);
 	say("cnt=%d\n", cnt);
 
-	for(int k=0;k<cnt;k++){
-		jstring jstr = (jstring)(*env)->GetObjectArrayElement(env, file_obj, k);
+	for(int j=0;j<cnt;j++){
+		jstring jstr = (jstring)(*env)->GetObjectArrayElement(env, file_obj, j);
 		const char* name = (*env)->GetStringUTFChars(env, jstr, 0);
 		if(name){
-			say("%d:%s\n", k, name);
-			olen += snprintf(buf+olen, len-olen, "%s/\n", name);
+			say("%d:%s\n", j, name);
+			if(notinhashlist(hashbuf, hashcnt, name)){
+				olen += snprintf(buf+olen, len-olen, "%s/\n", name);
+			}
 		}
 		(*env)->DeleteLocalRef(env, jstr);
 	}

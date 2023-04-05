@@ -563,6 +563,10 @@ int take_data_from_peer(void* chip,int ftype, _syn* stack,int sp, void* arg,int 
 int give_data_into_peer(void* chip,int ftype, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 int take_data_from_them(void* item,int ftype, _syn* stack,int sp, void* arg,int key, void* buf,int len);
 int give_data_into_them(void* item,int ftype, _syn* stack,int sp, void* arg,int key, void* buf,int len);
+int take_data_from_peer_temp_stack(void* chip,int ftype, void* arg,int idx, void* buf,int len);
+int give_data_into_peer_temp_stack(void* chip,int ftype, void* arg,int idx, void* buf,int len);
+int take_data_from_them_temp_stack(void* item,int ftype, void* arg,int key, void* buf,int len);
+int give_data_into_them_temp_stack(void* item,int ftype, void* arg,int key, void* buf,int len);
 
 
 

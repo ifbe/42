@@ -28,11 +28,10 @@ static const pa_sample_spec ss =
 
 
 
-void* micphonelistener(_obj* win)
+void* micphonelistener(_obj* mic)
 {
 	int ret,err;
 	pa_usec_t latency;
-	struct halfrel stack[0x80];
 
 	while(alive)
 	{
@@ -51,7 +50,7 @@ void* micphonelistener(_obj* win)
 		}
 		usleep(1000000*10/441);
 
-		give_data_into_peer(win,_dst_, stack,0, 0,0, ibuf+(1024*2*icur),1024*2);
+		give_data_into_peer_temp_stack(mic,_dst_, 0,0, ibuf+(1024*2*icur),1024*2);
 		icur = (icur+1)%8;
 		//info.enq = (info.enq + 4096) % 0x100000;
 		//eventwrite((u64)&info, 's', 0, 0);
