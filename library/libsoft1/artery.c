@@ -1796,7 +1796,7 @@ int artery_writer(_obj* art,void* foot, void* arg, int idx, void* buf, int len)
 int artery_attach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ele;
-	say("@artery_attach\n");
+	//say("@artery_attach\n");
 
 	ele = self->pchip;
 	if(0 == ele)return 0;
@@ -1882,7 +1882,7 @@ int artery_attach(struct halfrel* self, struct halfrel* peer)
 int artery_detach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ele;
-	say("@arterydetach\n");
+	//say("@arterydetach\n");
 
 	ele = self->pchip;
 	if(0 == ele)return 0;

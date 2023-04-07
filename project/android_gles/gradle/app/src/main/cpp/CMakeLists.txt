@@ -818,5 +818,7 @@ android
 native_app_glue
 EGL
 GLESv3
+camera2ndk
+mediandk
 aaudio
 log)

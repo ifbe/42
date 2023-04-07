@@ -27,19 +27,23 @@ int proxyclient_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int id
 }
 int proxyclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	say("@proxyclient_write: %llx, %.4s, %d\n", art, &foot, len);
+	say("@proxyclient_write:%llx, %.4s, len=%d\n", art, &foot, len);
 	printmemory(buf, len<16?len:16);
 
 	return 0;
 }
 int proxyclient_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@proxyclient_detach: %.4s\n", &self->foottype);
+	say("@proxyclient_detach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+		&self->nodetype, self->pchip, &self->foottype, self->pfoot,
+		&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
 	return 0;
 }
 int proxyclient_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@proxyclient_attach: %.4s\n", &self->foottype);
+	say("@proxyclient_attach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+		&self->nodetype, self->pchip, &self->foottype, self->pfoot,
+		&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
 	return 0;
 }
 int proxyclient_delete(_obj* art)
@@ -63,7 +67,7 @@ int proxyserver_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int id
 int proxyserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	say("@proxyserver_write:%p,%p, len=%d\n", art, foot, len);
-printmemory(buf, len<16?len:16);
+//printmemory(buf, len<16?len:16);
 
 	struct perobj* perobj = (void*)art->priv_256b;
 	switch(stack[sp-1].foottype){
@@ -92,12 +96,16 @@ printmemory(buf, len<16?len:16);
 }
 int proxyserver_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@proxyserver_detach: %.4s\n", &self->foottype);
+	say("@proxyserver_detach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+		&self->nodetype, self->pchip, &self->foottype, self->pfoot,
+		&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
 	return 0;
 }
 int proxyserver_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@proxyserver_attach: %.4s\n", &self->foottype);
+	say("@proxyserver_attach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+		&self->nodetype, self->pchip, &self->foottype, self->pfoot,
+		&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
 	return 0;
 }
 int proxyserver_delete(_obj* art)
@@ -131,8 +139,9 @@ int proxymaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 	_obj* Proxy;		//server
 	_obj* socks;
 
-	say("@proxymaster_write: chip=%llx, foot=%.4s, len=%d\n", art, &foot, len);
-	printmemory(buf, len<16?len:16);
+	say("@proxymaster_write:chip=%llx, foot=%.4s, len=%d\n", art, &foot, len);
+	//printmemory(buf, len<16?len:16);
+	say("%.*s", len, buf);
 
 
 //0: CONNECT or GET ?

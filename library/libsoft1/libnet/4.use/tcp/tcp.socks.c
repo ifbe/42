@@ -43,8 +43,8 @@ int socksclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 	int j,port;
 	u8 tmp[256];
 	struct socks5_request* req;
-	say("@socksclient_write: %llx, %.4s, %x\n", art, &foot, len);
-	if(len>0)printmemory(buf, len<16?len:16);
+	say("@socksclient_write:%llx, %.4s, len=%d\n", art, &foot, len);
+	//if(len>0)printmemory(buf, len<16?len:16);
 
 	switch(stack[sp-1].foottype){
 	case _dst_:{
@@ -95,13 +95,17 @@ int socksclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 }
 int socksclient_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@socksclient_detach: %.4s\n", &self->foottype);
+	say("@socksclient_detach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+		&self->nodetype, self->pchip, &self->foottype, self->pfoot,
+		&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
 	return 0;
 }
 int socksclient_attach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ele;
-	say("@socksclient_attach: %.4s\n", &self->foottype);
+	say("@socksclient_attach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+		&self->nodetype, self->pchip, &self->foottype, self->pfoot,
+		&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
 
 	if(_src_ == self->foottype){
 		ele = self->pchip;
@@ -173,12 +177,16 @@ int socksserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 }
 int socksserver_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@socksserver_detach: %.4s\n", &self->foottype);
+	say("@socksserver_detach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+		&self->nodetype, self->pchip, &self->foottype, self->pfoot,
+		&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
 	return 0;
 }
 int socksserver_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@socksserver_attach: %.4s\n", &self->foottype);
+	say("@socksserver_attach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+		&self->nodetype, self->pchip, &self->foottype, self->pfoot,
+		&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
 	return 0;
 }
 int socksserver_delete(_obj* ele)

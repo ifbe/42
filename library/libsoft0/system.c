@@ -7,7 +7,7 @@ int freeprocess();
 int initthread();
 int freethread();
 //
-int initfilemgr();
+int initfilemgr(void*);
 int freefilemgr();
 //random
 int initrandom(void*);
@@ -290,12 +290,62 @@ int system_writer(_obj* sys,void* foot, void* arg,int cmd, void* buf,int len)
 
 int system_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@systemattach\n");
+	_obj* oo = self->pchip;
+	switch(oo->type){
+	case _file_:
+		say("@file_attach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+			&self->nodetype, self->pchip, &self->foottype, self->pfoot,
+			&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
+		//file_attach(oo);
+		break;
+	case _ptmx_:
+		say("@ptmx_attach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+			&self->nodetype, self->pchip, &self->foottype, self->pfoot,
+			&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
+		//shell_attach(oo);
+		break;
+	case _uart_:
+		say("@uart_attach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+			&self->nodetype, self->pchip, &self->foottype, self->pfoot,
+			&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
+		//uart_attach(oo);
+		break;
+	default:
+		say("@socket_attach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+			&self->nodetype, self->pchip, &self->foottype, self->pfoot,
+			&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
+		//socket_attach(oo);
+	}
 	return 0;
 }
 int system_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@systemdetach\n");
+	_obj* oo = self->pchip;
+	switch(oo->type){
+	case _file_:
+		say("@file_detach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+			&self->nodetype, self->pchip, &self->foottype, self->pfoot,
+			&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
+		//file_detach(oo);
+		break;
+	case _ptmx_:
+		say("@ptmx_detach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+			&self->nodetype, self->pchip, &self->foottype, self->pfoot,
+			&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
+		//shell_detach(oo);
+		break;
+	case _uart_:
+		say("@uart_detach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+			&self->nodetype, self->pchip, &self->foottype, self->pfoot,
+			&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
+		//uart_detach(oo);
+		break;
+	default:
+		say("@socket_detach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+			&self->nodetype, self->pchip, &self->foottype, self->pfoot,
+			&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
+		//socket_detach(oo);
+	}
 	return 0;
 }
 int system_takeby(_obj* sys,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
