@@ -498,7 +498,7 @@ void overview_draw_gl41(
 	}
 
 	//system
-	for(j=0;j<0x1000;j++)
+	for(j=0;j<0x800;j++)
 	{
 		if(0 == obj[j].type)continue;
 		if((j%128)+384 == cursor)

@@ -1,9 +1,14 @@
 #include "libuser.h"
-#define STRBUF listptr.buf0
-#define DATBUF listptr.buf1
+void gl41data_before(_obj* wnd);
+void gl41data_after(_obj* wnd);
+void gl41data_whcam(_obj* wnd, struct style* area);
 void printhtmlbody(u8* buf, int len);
 
 
+struct privdata{
+	struct str* url;
+	struct str* dat;
+};
 
 
 static void browser_draw_pixel(
@@ -12,8 +17,6 @@ static void browser_draw_pixel(
 {
 	int x0,y0,x1,y1;
 	int cx, cy, ww, hh;
-	struct str* str = act->STRBUF;
-	struct str* dat = act->DATBUF;
 	if(sty)
 	{
 		cx = sty->fs.vc[0];
@@ -30,13 +33,17 @@ static void browser_draw_pixel(
 	}
 	drawsolid_rect(win, 0xffffff, cx-ww, cy-hh, cx+ww, cy+hh);
 
+	struct privdata* priv = (void*)(act->priv_256b);
+	struct str* url = priv->url;
+	struct str* dat = priv->dat;
+
 	//address
 	x0 = cx-ww+32;
 	y0 = cy-hh+8;
 	x1 = cx+ww-32;
 	y1 = cy-hh+24;
 	drawsolid_rect(win, 0xc0c0c0, x0, y0-4, x1, y1+4);
-	drawstring(win, 0x000000, x0, y0, str->buf, str->len);
+	drawstring(win, 0x000000, x0, y0, url->buf, url->len);
 
 	//context
 	x0 = cx-ww;
@@ -51,34 +58,58 @@ static void browser_draw_gl41(
 	_obj* win, struct style* geom,
 	_obj* ctx, struct style* area)
 {
-	vec3 tc,tr,tf,tu;
-	struct str* str = act->STRBUF;
-	struct str* dat = act->DATBUF;
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vu = geom->fs.vt;
-	gl41solid_rect(win, 0xffffff, vc, vr, vf);
 
-	//address
-	tc[0] = vc[0] + vf[0]*0.95 + vu[0]*0.001;
-	tc[1] = vc[1] + vf[1]*0.95 + vu[1]*0.001;
-	tc[2] = vc[2] + vf[2]*0.95 + vu[2]*0.001;
-	tf[0] = vf[0]*0.02;
-	tf[1] = vf[1]*0.02;
-	tf[2] = vf[2]*0.02;
-	gl41solid_rect(win, 0xc0c0c0, tc, vr, tf);
+	int j;
+	vec3 tc,tr,tf,tu;
+	struct privdata* priv = (void*)(act->priv_256b);
 
-	tc[0] = vc[0] - vr[0] + vf[0]*0.95 + vu[0]*0.002;
-	tc[1] = vc[1] - vr[1] + vf[1]*0.95 + vu[1]*0.002;
-	tc[2] = vc[2] - vr[2] + vf[2]*0.95 + vu[2]*0.002;
-	tr[0] = vr[0]/32;
-	tr[1] = vr[1]/32;
-	tr[2] = vr[2]/32;
-	tf[0] = vf[0]*0.02;
-	tf[1] = vf[1]*0.02;
-	tf[2] = vf[2]*0.02;
-	gl41string(win, 0x000000, tc, tr, tf, str->buf, str->len);
+	//url
+	struct str* url = priv->url;
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] + vf[j]*31/32 + vu[j]*0.001;
+		tf[j] = vf[j]/32;
+	}
+	gl41solid_rect(ctx, 0xcccc00, tc, vr, tf);
+
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] - vr[j] + vf[j]*15/16 + vu[j]*0.002;
+		tr[j] = vr[j]/16;
+		tf[j] = vf[j]/16;
+	}
+	gl41string(ctx, 0x000000, tc, tr, tf, url->buf, url->len);
+
+	//data
+	struct str* dat = priv->dat;
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] + vu[j]*0.001;
+		tf[j] = vf[j]*15/16;
+	}
+	gl41solid_rect(ctx, 0xc0c0c0, tc, vr, tf);
+
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] + vu[j]*0.002;
+		tr[j] = vr[j];
+		tf[j] = vf[j]*15/16;
+	}
+	gl41text(ctx, 0x000000, tc, tr, tf, dat->buf, dat->len);
+
+	//status
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] - vf[j]*31/32 + vu[j]*0.001;
+		tf[j] = vf[j]/32;
+	}
+	gl41solid_rect(ctx, 0x0000cc, tc, vr, tf);
+
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] - vr[j] - vf[j] + vu[j]*0.002;
+		tr[j] = vr[j]/16;
+		tf[j] = vf[j]/16;
+	}
+	gl41string(ctx, 0x000000, tc, tr, tf, (void*)"loading", 7);
 }
 static void browser_draw_json(
 	_obj* act, struct style* pin,
@@ -110,44 +141,71 @@ static void browser_event(
 	_obj* win, struct style* sty,
 	struct event* ev)
 {
-	int len;
-	u8* buf;
-	void* www;
-	struct str* str;
-	struct str* dat;
 	if(_char_ != ev->what)return;
 
-	str = act->STRBUF;
-	len = str->len;
-	buf = str->buf;
+	struct privdata* priv = (void*)(act->priv_256b);
+	struct str* url = priv->url;
+	if(0 == url)return;
+
+	int len = url->len;
+	u8* buf = url->buf;
 	if(0xd == ev->why)
 	{
-		str->len = 0;
-/*
+		url->len = 0;
+
 		if(0 == ncmp(buf, "file://", 7))
 		{
-			dat = act->buf;
-			dat->len = openreadclose(str->buf+7, 0, dat->buf, 0xf0000);
+			struct str* dat = priv->dat;
+			if(0 == dat)return;
+
+			dat->len = openreadclose(url->buf+7, 0, dat->buf, 0xf0000);
 			printhtmlbody(dat->buf, dat->len);
 			return;
 		}
-		else
+		if(0 == ncmp(buf, "http://", 7))
 		{
-			www = arterycreate(0, buf);
-			relationcreate(act, 0, _ent_, 0, www, 0, _art_, 0);
-		}*/
+			struct str* dat = priv->dat;
+			if(0 == dat)return;
+			dat->len = 0;
+
+			_obj* http = artery_create(_http_, buf+7, 0, 0);
+			if(0 == http){
+				say("err@http\n");
+				return;
+			}
+			struct relation* rel1 = relationcreate(act, 0, _ent_, _http_, http, 0, _art_, _dst_);
+			if(0 == rel1){
+				say("err@rel1\n");
+				return;
+			}
+			relationattach((void*)rel1->dst, (void*)rel1->src);
+
+			_obj* sock = system_create(_tcp_, buf+7, 0, 0);
+			if(0 == sock){
+				say("err@sock\n");
+				return;
+			}
+			struct relation* rel2 = relationcreate(http, 0, _art_, _src_, sock, 0, _sys_, _dst_);
+			if(0 == rel2){
+				say("err@rel2\n");
+				return;
+			}
+			relationattach((void*)rel2->dst, (void*)rel2->src);
+			return;
+		}
+		say("not support: %s\n", url->buf);
 	}
 	else if(0x8 == ev->why)
 	{
 		if(len <= 0)
 		{
-			str->len = 0;
+			url->len = 0;
 		}
 		else
 		{
 			len--;
 			buf[len] = 0;
-			str->len = len;
+			url->len = len;
 		}
 	}
 	else
@@ -156,7 +214,7 @@ static void browser_event(
 		{
 			buf[len] = ev->why;
 			buf[len+1] = 0;
-			str->len = len+1;
+			url->len = len+1;
 		}
 	}
 }
@@ -164,28 +222,40 @@ static void browser_data(
 	_obj* act, struct style* pin,
 	u8* buf, int len)
 {
-	int j,cnt;
-	u8* tmp;
-	struct str* dat = act->DATBUF;
-	cnt = dat->len;
-	tmp = dat->buf;
+	struct privdata* priv = (void*)(act->priv_256b);
+	struct str* dat = priv->dat;
 
-	for(j=0;j<len;j++)tmp[cnt+j] = buf[j];
+	int j;
+	for(j=0;j<len;j++)dat->buf[dat->len+j] = buf[j];
 	dat->len += len;
 
-	printhtmlbody(dat->buf, dat->len);
+	//printhtmlbody(dat->buf, dat->len);
 }
 
 
 
 
-static void browser_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void browser_byworld_bycam_byglwnd_read(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	browser_draw_gl41(ent,slot, wor,geom, wnd,area);
+}
+static void browser_bywnd_read(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
+{
+	int j;
+	struct fstyle fs;
+	for(j=0;j<3;j++)fs.vc[j] = fs.vr[j] = fs.vf[j] = fs.vt[j] = 0.0;
+	fs.vr[0] = area->fs.vq[0] * wnd->whdf.fbwidth / 2.0;
+	fs.vf[1] = area->fs.vq[1] * wnd->whdf.fbheight/ 2.0;
+	fs.vt[2] = 1.0;
+
+	gl41data_before(wnd);
+	browser_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+	gl41data_whcam(wnd, area);
+	gl41data_after(wnd);
 }
 
 
@@ -200,21 +270,30 @@ static void browser_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 	}
 
 	//caller defined behavior
-	_obj* caller;struct style* area;
-	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+	_obj* caller = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
+		browser_bywnd_read(ent,slot, caller,area);
 		break;
 	default:
-		browser_wrl_cam_wnd(ent,slot, stack,sp);
+		browser_byworld_bycam_byglwnd_read(ent,slot, stack,sp);
 		break;
 	}
 }
 static void browser_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	_obj* caller = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+
+	switch(caller->type){
+	case _wnd_:
+		browser_event(ent, foot, caller, area, buf);
+		break;
+	default:
+		if(_http_ == stack[sp-1].foottype)browser_data(ent, foot, buf, len);
+	}
 }
 static void browser_detach(struct halfrel* self, struct halfrel* peer)
 {
@@ -235,26 +314,31 @@ static void browser_modify(_obj* act)
 static void browser_delete(_obj* act)
 {
 	if(0 == act)return;
-	if(act->STRBUF){
-		memorydelete(act->STRBUF);
-		act->STRBUF = 0;
+	struct privdata* priv = (void*)(act->priv_256b);
+	if(priv->url){
+		memorydelete(priv->url);
+		priv->url = 0;
 	}
-	if(act->DATBUF){
-		memorydelete(act->DATBUF);
-		act->DATBUF = 0;
+	if(priv->dat){
+		memorydelete(priv->dat);
+		priv->dat = 0;
 	}
 }
 static void browser_create(_obj* act)
 {
-	int j;
-	u8* buf;
 	if(0 == act)return;
 
-	buf = act->STRBUF = memorycreate(0x1000, 0);
-	for(j=0;j<0x1000;j++)buf[j] = 0;
+	struct privdata* priv = (void*)(act->priv_256b);
 
-	buf = act->DATBUF = memorycreate(0x100000, 0);
+	int j;
+	u8* buf;
+	buf = memorycreate(0x1000, 0);
 	for(j=0;j<0x1000;j++)buf[j] = 0;
+	priv->url = (void*)buf;
+
+	buf = memorycreate(0x100000, 0);
+	for(j=0;j<0x1000;j++)buf[j] = 0;
+	priv->dat = (void*)buf;
 }
 
 

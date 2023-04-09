@@ -779,6 +779,7 @@ void* artery_create(u64 type, void* arg, int argc, u8** argv)
 		if(0 == ret)return 0;	//unknown
 
 		url += ret;
+		say("type=%.8s,url=%s\n", (void*)&type, url);
 	}
 
 	//

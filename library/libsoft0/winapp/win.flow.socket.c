@@ -118,7 +118,7 @@ u32 resolvehostname4(char* addr)
 	ptr = host->h_addr_list;
 	while(1){
 		if(0 == ptr[j])break;
-		printf("ipadd:%s\n", inet_ntoa(*(struct in_addr*)ptr[j]));
+		printf("addr[%d] = %s\n", j, inet_ntoa(*(struct in_addr*)ptr[j]));
 		j++;
 	}
 	return *(u32*)ptr[0];
@@ -199,7 +199,7 @@ int socket_str2sockaddr(char* addr, union addrv4v6* out)
 	u32 tmp = resolvehostname4(addr);
 	if(tmp){
 		out->v4.sin_family = AF_INET;
-		out->v4.sin_addr.s_addr = inet_addr(addr);
+		out->v4.sin_addr.s_addr = tmp;
 		return 0;
 	}
 

@@ -188,7 +188,7 @@ int socket_str2sockaddr(char* addr, union addrv4v6* out)
 	u32 tmp = resolvehostname4(addr);
 	if(tmp){
 		out->v4.sin_family = AF_INET;
-		out->v4.sin_addr.s_addr = inet_addr(addr);
+		out->v4.sin_addr.s_addr = tmp;
 		return 0;
 	}
 

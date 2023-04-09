@@ -167,7 +167,7 @@ int httpclient_create(_obj* ele, u8* url)
 		clen, ctxt,
 		hlen, host
 	);
-	say("%.*s\n", ele->LEN, ele->BUF);
+	say("httpclient_create firstpacket=\n%.*s\n", ele->LEN, ele->BUF);
 	return 0;
 }
 
