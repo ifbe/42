@@ -420,9 +420,9 @@ void overview_draw_gl41(
 		tf[1] = vf[1] / 33.0;
 		tf[2] = vf[2] / 33.0;
 		gl41solid_rect(ctx, bg, tc, tr, tf);
-		tc[0] += vt[0]*0.01;
-		tc[1] += vt[1]*0.01;
-		tc[2] += vt[2]*0.01;
+		tc[0] -= vt[0]*0.5;
+		tc[1] -= vt[1]*0.5;
+		tc[2] -= vt[2]*0.5;
 		gl41string_center(ctx, fg, tc, tr, tf, (u8*)&entity[j].hfmt, 8);
 	}
 
@@ -491,9 +491,9 @@ void overview_draw_gl41(
 		tf[1] = vf[1] / 33.0;
 		tf[2] = vf[2] / 33.0;
 		gl41solid_rect(ctx, bg, tc, tr, tf);
-		tc[0] += vt[0]*0.01;
-		tc[1] += vt[1]*0.01;
-		tc[2] += vt[2]*0.01;
+		tc[0] -= vt[0]*0.5;
+		tc[1] -= vt[1]*0.5;
+		tc[2] -= vt[2]*0.5;
 		gl41string_center(ctx, fg, tc, tr, tf, (u8*)&ele[j].type, 8);
 	}
 
@@ -526,9 +526,9 @@ void overview_draw_gl41(
 		tf[1] = vf[1] / 33;
 		tf[2] = vf[2] / 33;
 		gl41solid_rect(ctx, bg, tc, tr, tf);
-		tc[0] += vt[0]*0.01;
-		tc[1] += vt[1]*0.01;
-		tc[2] += vt[2]*0.01;
+		tc[0] -= vt[0]*0.5;
+		tc[1] -= vt[1]*0.5;
+		tc[2] -= vt[2]*0.5;
 		gl41string_center(ctx, fg, tc, tr, tf, (u8*)&obj[j].type, 8);
 	}
 

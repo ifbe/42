@@ -126,7 +126,7 @@ int socksclient_create(_obj* ele, char* url)
 	ele->vfmt = 0;
 
 	if(0 == url)url = "www.baidu.com";
-	say("%s\n", url);
+	say("url = %s\n", url);
 
 	//head
 	req = (void*)(ele->priv_256b);
