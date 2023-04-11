@@ -505,17 +505,10 @@ void gl41string_center(_obj* win, u32 rgb,
 	}
 	dx = (len-cnt)/2.0;
 
-	//eachsize = 2*vr/len
-	tr[0] = 4*vr[0]/len;
-	tr[1] = 4*vr[1]/len;
-	tr[2] = 4*vr[2]/len;
-	tf[0] = 2*vf[0];
-	tf[1] = 2*vf[1];
-	tf[2] = 2*vf[2];
 	for(j=0;j<len;j++)
 	{
-		for(k=0;k<3;k++)tc[k] = vc[k] -vr[k]+tr[k]*(j+dx)/2 -vf[k];
-		gl41ascii(win, rgb, tc, tr, tf, buf[j]);
+		for(k=0;k<3;k++)tc[k] = vc[k] +vr[k]*(j-len/2.0)/2 -vf[k]/2;
+		gl41ascii(win, rgb, tc, vr, vf, buf[j]);
 	}
 }
 

@@ -222,7 +222,7 @@ static void fslist_draw_gl41(
 
 			for(j=0;j<3;j++){
 				tc[j] += vt[j]/100.0;
-				tr[j] = tr[j];
+				tr[j] = tr[j]/4.0;
 				tf[j] = tf[j]/4.0;
 			}
 			gl41string_center(wnd,fg, tc,tr,tf, list->buf+head,tail-head);

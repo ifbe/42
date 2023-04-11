@@ -125,7 +125,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 {
 	u64 why[4];
 	int x,y,z;
-	int act,cnt,j;
+	int act,cnt,index,pointerid;
 	int32_t type;
 	int32_t source;
 	//say("app=%llx,ev=%llx\n", (u64)app, (u64)ev);
@@ -142,16 +142,15 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 		if(AINPUT_SOURCE_TOUCHSCREEN == source){
 			act = AMotionEvent_getAction(ev);
 			cnt = AMotionEvent_getPointerCount(ev);
-			say("act=%x,cnt=%x\n", act, cnt);
-
-			j = (act>>8)&0xf;
-			act &= 0xf;
-			switch(act){
+			switch(act&0xf){
 			case 2:
-				for(j=0;j<cnt;j++){
-					x = AMotionEvent_getX(ev, j);
-					y = AMotionEvent_getY(ev, j);
-					why[0] = j;
+				for(index=0;index<cnt;index++){
+					x = AMotionEvent_getX(ev, index);
+					y = AMotionEvent_getY(ev, index);
+					pointerid = AMotionEvent_getPointerId(ev, index);
+					say("move(act=%x,cnt=%x,index=%x,pointerid=%x)x=%x,y=%x\n", act,cnt,index,pointerid, x,y);
+
+					why[0] = pointerid;
 					why[0] = x+(y<<16)+(why[0]<<48);
 					why[1] = touch_abs;
 					why[2] = (u64)(theapp->userData);
@@ -161,22 +160,26 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 				return 0;
 			case 0:
 			case 5:
-				act = touch_onto;
+				why[1] = touch_onto;
 				break;
 			case 1:
 			case 6:
-				act = touch_away;
+				why[1] = touch_away;
 				break;
 			default:
 				say("AMotionEvent_getAction=%x\n",act);
 				return 0;
 			}
 
-			x = AMotionEvent_getX(ev, j);
-			y = AMotionEvent_getY(ev, j);
-			why[0] = AMotionEvent_getPointerId(ev, j);
+			index = (act>>8)&0xf;
+			x = AMotionEvent_getX(ev, index);
+			y = AMotionEvent_getY(ev, index);
+			pointerid = AMotionEvent_getPointerId(ev, index);
+			say("other(act=%x,cnt=%x,index=%x,pointerid=%x)x=%x,y=%x\n", act,cnt,index,pointerid, x,y);
+
+			why[0] = pointerid;
 			why[0] = x+(y<<16)+(why[0]<<48);
-			why[1] = act;
+			//why[1] = why[1];
 			why[2] = (u64)(theapp->userData);
 			sendtowindow_touch(why);
 			//eventwrite(why[0], why[1], why[2], why[3]);

@@ -410,19 +410,16 @@ void overview_draw_gl41(
 		y = j / 16;
 		r = (x*2-15) / 16.0;
 		f = (31-y*2) / 32.0;
-		tc[0] = vc[0] + vr[0]*r + vf[0]*f;
-		tc[1] = vc[1] + vr[1]*r + vf[1]*f;
-		tc[2] = vc[2] + vr[2]*r + vf[2]*f;
-		tr[0] = vr[0] / 16.3;
-		tr[1] = vr[1] / 16.3;
-		tr[2] = vr[2] / 16.3;
-		tf[0] = vf[0] / 33.0;
-		tf[1] = vf[1] / 33.0;
-		tf[2] = vf[2] / 33.0;
+		for(k=0;k<3;k++){
+			tc[k] = vc[k] + vr[k]*r + vf[k]*f;
+			tr[k] = vr[k] / 16.3;
+			tf[k] = vf[k] / 33.0;
+		}
 		gl41solid_rect(ctx, bg, tc, tr, tf);
-		tc[0] -= vt[0]*0.5;
-		tc[1] -= vt[1]*0.5;
-		tc[2] -= vt[2]*0.5;
+		for(k=0;k<3;k++){
+			tc[k] -= vt[k]*0.5;
+			tr[k] = vr[k] / 32.0;
+		}
 		gl41string_center(ctx, fg, tc, tr, tf, (u8*)&entity[j].hfmt, 8);
 	}
 
@@ -446,19 +443,16 @@ void overview_draw_gl41(
 		y = j / 16;
 		r = (x*2-15) / 16.0;
 		f = (15-y*2) / 32.0;
-		tc[0] = vc[0] + vr[0]*r + vf[0]*f;
-		tc[1] = vc[1] + vr[1]*r + vf[1]*f;
-		tc[2] = vc[2] + vr[2]*r + vf[2]*f;
-		tr[0] = vr[0] / 16.3;
-		tr[1] = vr[1] / 16.3;
-		tr[2] = vr[2] / 16.3;
-		tf[0] = vf[0] / 33;
-		tf[1] = vf[1] / 33;
-		tf[2] = vf[2] / 33;
+		for(k=0;k<3;k++){
+			tc[k] = vc[k] + vr[k]*r + vf[k]*f;
+			tr[k] = vr[k] / 16.3;
+			tf[k] = vf[k] / 33.0;
+		}
 		gl41solid_rect(ctx, bg, tc, tr, tf);
-		tc[0] -= vt[0]*0.5;
-		tc[1] -= vt[1]*0.5;
-		tc[2] -= vt[2]*0.5;
+		for(k=0;k<3;k++){
+			tc[k] -= vt[k]*0.5;
+			tr[k] = vr[k] / 32.0;
+		}
 		gl41string_center(ctx, fg, tc, tr, tf, (u8*)&supply[j].hfmt, 8);
 	}
 
@@ -481,19 +475,16 @@ void overview_draw_gl41(
 		y = j / 16;
 		r = (x*2-15) / 16.0;
 		f = (-1-y*2) / 32.0;
-		tc[0] = vc[0] + vr[0]*r + vf[0]*f;
-		tc[1] = vc[1] + vr[1]*r + vf[1]*f;
-		tc[2] = vc[2] + vr[2]*r + vf[2]*f;
-		tr[0] = vr[0] / 16.3;
-		tr[1] = vr[1] / 16.3;
-		tr[2] = vr[2] / 16.3;
-		tf[0] = vf[0] / 33.0;
-		tf[1] = vf[1] / 33.0;
-		tf[2] = vf[2] / 33.0;
+		for(k=0;k<3;k++){
+			tc[k] = vc[k] + vr[k]*r + vf[k]*f;
+			tr[k] = vr[k] / 16.3;
+			tf[k] = vf[k] / 33.0;
+		}
 		gl41solid_rect(ctx, bg, tc, tr, tf);
-		tc[0] -= vt[0]*0.5;
-		tc[1] -= vt[1]*0.5;
-		tc[2] -= vt[2]*0.5;
+		for(k=0;k<3;k++){
+			tc[k] -= vt[k]*0.5;
+			tr[k] = vr[k] / 32.0;
+		}
 		gl41string_center(ctx, fg, tc, tr, tf, (u8*)&ele[j].type, 8);
 	}
 
@@ -516,19 +507,16 @@ void overview_draw_gl41(
 		y = (j % 128) / 16;
 		r = (x*2-15) / 16.0;
 		f = (-17-y*2) / 32.0;
-		tc[0] = vc[0] + vr[0]*r + vf[0]*f;
-		tc[1] = vc[1] + vr[1]*r + vf[1]*f;
-		tc[2] = vc[2] + vr[2]*r + vf[2]*f;
-		tr[0] = vr[0] / 16.3;
-		tr[1] = vr[1] / 16.3;
-		tr[2] = vr[2] / 16.3;
-		tf[0] = vf[0] / 33;
-		tf[1] = vf[1] / 33;
-		tf[2] = vf[2] / 33;
+		for(k=0;k<3;k++){
+			tc[k] = vc[k] + vr[k]*r + vf[k]*f;
+			tr[k] = vr[k] / 16.3;
+			tf[k] = vf[k] / 33.0;
+		}
 		gl41solid_rect(ctx, bg, tc, tr, tf);
-		tc[0] -= vt[0]*0.5;
-		tc[1] -= vt[1]*0.5;
-		tc[2] -= vt[2]*0.5;
+		for(k=0;k<3;k++){
+			tc[k] -= vt[k]*0.5;
+			tr[k] = vr[k] / 32.0;
+		}
 		gl41string_center(ctx, fg, tc, tr, tf, (u8*)&obj[j].type, 8);
 	}
 

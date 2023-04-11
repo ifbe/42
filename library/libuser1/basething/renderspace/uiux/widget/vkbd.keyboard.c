@@ -3,6 +3,20 @@ void dx11solid_rect(_obj* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
 void gl41data_convert(_obj* wnd, struct style* area, struct event* ev, vec3 v);
 
 
+struct privxyzw{
+	short x0;
+	short y0;
+	short z0;
+	short w0;
+	short xn;
+	short yn;
+	short zn;
+	short wn;
+};
+struct privdata{
+	struct privxyzw mouse[1];
+	struct privxyzw touch[1];
+};
 
 
 static int vkbd_search(_obj* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
@@ -33,7 +47,9 @@ static int vkbd_delete(_obj* act)
 }
 static int vkbd_create(_obj* act, u8* str)
 {
-	act->whdf.iw0 = 0;
+	struct privdata* priv = (void*)act->priv_256b;
+	priv->mouse[0].w0 = 0;
+	priv->touch[0].w0 = 0;
 	return 0;
 }
 
@@ -160,6 +176,7 @@ void vkbd_draw_gl41(
 	float* vt = geom->fs.vt;
 	//gl41opaque_rect(wnd, 0x800000ff, vc, vr, vf);
 
+	struct privdata* priv = (void*)act->priv_256b;
 	for(y=0;y<8;y++)
 	{
 		for(x=0;x<16;x++)
@@ -169,8 +186,11 @@ void vkbd_draw_gl41(
 				tf[j] = vf[j]/8.5;
 				tc[j] = vc[j] + vr[j]*(x-7.5)/8.0 + vf[j]*(y-3.5)/4.0;
 			}
-			if((act->whdf.iw0)&&(x == act->whdf.ix0)&&(y == act->whdf.iy0)){
+			if( (priv->mouse[0].w0)&&(x == priv->mouse[0].x0)&&(y == priv->mouse[0].y0) ){
 				gl41opaque_rect(wnd, 0x80ff0000, tc, tr, tf);
+			}
+			else if( (priv->touch[0].w0)&&(x == priv->touch[0].x0)&&(y == priv->touch[0].y0) ){
+				gl41opaque_rect(wnd, 0x800000ff, tc, tr, tf);
 			}
 			else{
 				gl41line_rect(wnd, 0x80808080, tc, tr, tf);
@@ -283,31 +303,56 @@ static void vkbd_wnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
 		break;
 	}
 }
-static void vkbd_write_bywnd(_obj* ent,void* foot, _syn* stack,int sp, struct event* ev,int len)
+static void vkbd_bywnd_event(_obj* ent,void* foot, _syn* stack,int sp, struct event* ev,int len)
 {
 	_obj* wnd;struct style* area;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+	//say("vkbd_bywnd_event\n");
+	//printmemory(ev,16);
 
 	if(_char_ == ev->what){
 		give_data_into_peer(ent,_evto_, stack,sp, 0,0, ev,0x20);
 		return;
 	}
-	if('p' == (ev->what&0xff)){
+	int type = (ev->what&0xff);
+	if( ('t'==type) | ('p'==type) ){
 		vec3 xyz;
 		gl41data_convert(wnd, area, ev, xyz);
-		ent->whdf.ix0 = xyz[0] * 16;
-		ent->whdf.iy0 = xyz[1] * 8;
 
-		if(0x2b70 == ev->what)ent->whdf.iw0 = 1;
-		if(0x2d70 == ev->what){
-			ent->whdf.iw0 = 0;
+		struct privdata* priv = (void*)ent->priv_256b;
+		if('p' == type){
+			priv->mouse[0].x0 = xyz[0] * 16;
+			priv->mouse[0].y0 = xyz[1] * 8;
 
-			struct event tmp;
-			int x = ent->whdf.ix0;
-			int y = ent->whdf.iy0;
-			tmp.why = x + y*16;
-			tmp.what = _char_;
-			give_data_into_peer(ent,_evto_, stack,sp, 0,0, &tmp,0x20);
+			if(point_onto == ev->what)priv->mouse[0].w0 = 1;
+			if(point_away == ev->what){
+				priv->mouse[0].w0 = 0;
+
+				struct event tmp;
+				int x = priv->mouse[0].x0;
+				int y = priv->mouse[0].y0;
+				tmp.why = x + y*16;
+				tmp.what = _char_;
+				give_data_into_peer(ent,_evto_, stack,sp, 0,0, &tmp,0x20);
+			}
+			return;
+		}
+		if('t' == type){
+			priv->touch[0].x0 = xyz[0] * 16;
+			priv->touch[0].y0 = xyz[1] * 8;
+
+			if(touch_onto == ev->what)priv->touch[0].w0 = 1;
+			if(touch_away == ev->what){
+				priv->touch[0].w0 = 0;
+
+				struct event tmp;
+				int x = priv->touch[0].x0;
+				int y = priv->touch[0].y0;
+				tmp.why = x + y*16;
+				tmp.what = _char_;
+				give_data_into_peer(ent,_evto_, stack,sp, 0,0, &tmp,0x20);
+			}
+			return;
 		}
 	}
 }
@@ -315,7 +360,7 @@ static void vkbd_write_bywnd(_obj* ent,void* foot, _syn* stack,int sp, struct ev
 
 
 
-static int vkbd_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vkbd_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
@@ -328,13 +373,13 @@ static int vkbd_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int k
 	}
 	return 0;
 }
-static int vkbd_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vkbd_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
 	_obj* wnd = stack[sp-2].pchip;
 	switch(wnd->hfmt){
 	case _dx11list_:
 	case _gl41list_:
-		vkbd_write_bywnd(ent,foot, stack,sp, buf,len);break;
+		if(0 == cmd)vkbd_bywnd_event(ent,foot, stack,sp, buf,len);break;
 	}
 	return 0;
 }
