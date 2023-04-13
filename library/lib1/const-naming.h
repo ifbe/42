@@ -383,7 +383,7 @@
 #define _yuvx_ hex32('y','u','v','x')
 #define _yuyv_ hex32('y','u','y','v')
 #define _uyvy_ hex32('u','y','v','y')
-#define _yyyyuv_ hex32('y','y','u','v')
+#define _yyyy_uv_ hex32('y','y','u','v')
 //
 #define _mjpg_ hex32('m','j','p','g')
 #define _h264_ hex32('h','2','6','4')

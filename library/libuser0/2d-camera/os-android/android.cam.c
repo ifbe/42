@@ -9,34 +9,34 @@
 
 
 void onCaptureFailed(void* context, ACameraCaptureSession* session,
-                     ACaptureRequest* request, ACameraCaptureFailure* failure)
+					 ACaptureRequest* request, ACameraCaptureFailure* failure)
 {
 	say("onCaptureFailed:context=%p,session=%p,request=%p,failure=%p\n", context, session, request, failure);
 }
 void onCaptureSequenceCompleted(void* context, ACameraCaptureSession* session,
-                                int sequenceId, int64_t frameNumber)
+								int sequenceId, int64_t frameNumber)
 {
 	say("onCaptureSequenceCompleted:context=%p,session=%p,sequenceId=%x,frameNumber=%llx\n", context, session, sequenceId, frameNumber);
 }
 void onCaptureSequenceAborted(void* context, ACameraCaptureSession* session,
-                              int sequenceId)
+							  int sequenceId)
 {
 	say("onCaptureCompleted:context=%p,session=%p,sequenceId=%x\n", context, session, sequenceId);
 }
 void onCaptureCompleted (void* context, ACameraCaptureSession* session,
-        ACaptureRequest* request, const ACameraMetadata* result)
+		ACaptureRequest* request, const ACameraMetadata* result)
 {
 	say("onCaptureCompleted:context=%p,session=%p,request=%p,result=%p\n", context, session, request, result);
 }
 static ACameraCaptureSession_captureCallbacks captureCallbacks = {
-        .context = 0,
-        .onCaptureStarted = 0,
-        .onCaptureProgressed = 0,
-        .onCaptureCompleted = onCaptureCompleted,
-        .onCaptureFailed = onCaptureFailed,
-        .onCaptureSequenceCompleted = onCaptureSequenceCompleted,
-        .onCaptureSequenceAborted = onCaptureSequenceAborted,
-        .onCaptureBufferLost = 0,
+		.context = 0,
+		.onCaptureStarted = 0,
+		.onCaptureProgressed = 0,
+		.onCaptureCompleted = onCaptureCompleted,
+		.onCaptureFailed = onCaptureFailed,
+		.onCaptureSequenceCompleted = onCaptureSequenceCompleted,
+		.onCaptureSequenceAborted = onCaptureSequenceAborted,
+		.onCaptureBufferLost = 0,
 };
 
 
@@ -55,10 +55,10 @@ static void onSessionClosed(void* context, ACameraCaptureSession* session)
 	say("onSessionClosed:context=%p,session=%p\n", context, session);
 }
 static ACameraCaptureSession_stateCallbacks sessionStateCallbacks = {
-        .context = 0,
-        .onActive = onSessionActive,
-        .onReady = onSessionReady,
-        .onClosed = onSessionClosed
+		.context = 0,
+		.onActive = onSessionActive,
+		.onReady = onSessionReady,
+		.onClosed = onSessionClosed
 };
 
 
@@ -68,15 +68,40 @@ static void imageCallback(void* context, AImageReader* reader)
 {
 	say("imageCallback:context=%p,reader=%p\n", context, reader);
 
-    AImage* image = 0;
-    int status = AImageReader_acquireNextImage(reader, &image);
-    // Check status here ...
+	AImage* image = 0;
+	int status = AImageReader_acquireNextImage(reader, &image);
+	// Check status here ...
+
+	_obj* cam = context;
+	struct kv88 kv[4] = {
+		{'w', 640},
+		{'h', 480},
+		{'f', _yyyy_uv_},
+		{'.', 0}
+	};
 
 	uint8_t* buf = 0;
 	int len = 0;
-	AImage_getPlaneData(image, 0, &buf, &len);
-	//say("buf=%p,len=%x\n", buf, len);
-	printmemory(buf, 16);
+	int plane;
+	for(plane=0;plane<3;plane++){
+		AImage_getPlaneData(image, plane, &buf, &len);
+		say("plane[%d]:buf=%p,len=%x\n", plane, buf, len);
+		printmemory(buf, 16);
+
+		if(0 == plane){
+			len = 640*480;
+			kv[3].val = 'y';
+		}
+		if(1 == plane){
+			len = 640*480/4;
+			kv[3].val = 'u';
+		}
+		if(2 == plane){
+			len = 640*480/4;
+			kv[3].val = 'v';
+		}
+		give_data_into_peer_temp_stack(cam,_dst_, kv,_kv88_, buf,len);
+	}
 
 	AImage_delete(image);
 }
@@ -187,16 +212,17 @@ void camera_create(_obj* cam, void* arg, int argc, u8** argv)
 
 
 
+	//AIMAGE_FORMAT_JPEG and AIMAGE_FORMAT_YUV_420_888 are always supported
+	AImageReader* reader = 0;
+	media_status_t status = AImageReader_new(640, 480, AIMAGE_FORMAT_YUV_420_888, 4, &reader);
+	//if (status != AMEDIA_OK)
+		// Handle errors here
 
-    AImageReader* reader = 0;
-    media_status_t status = AImageReader_new(640, 480, AIMAGE_FORMAT_JPEG, 4, &reader);
-    //if (status != AMEDIA_OK)
-        // Handle errors here
+	listener.context = cam;
+	AImageReader_setImageListener(reader, &listener);
 
-    AImageReader_setImageListener(reader, &listener);
-
-    ANativeWindow* nativeWindow;
-    AImageReader_getWindow(reader, &nativeWindow);
+	ANativeWindow* nativeWindow;
+	AImageReader_getWindow(reader, &nativeWindow);
 
 
 
