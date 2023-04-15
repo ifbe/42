@@ -180,7 +180,7 @@ void parsehalfrel(u8* buf, int len,
 		while(0x20 == buf[j])j++;
 		parsefmt((u8*)&hash, buf+j);
 
-		for(j=0;j<clen;j++){
+		for(j=0;j<flen;j++){
 			if(hash == foot[j].hash){
 				rel->pfoot = foot[j].addr;
 				break;
@@ -363,6 +363,7 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 					case _dev_:chip[clen].addr = device_create(fmt, arg, argc, argv);break;
 					case _wrk_:chip[clen].addr = bootup_create(fmt, arg, argc, argv);break;
 				}
+				say("node%d:tier=%.8s,fmt=%.8s,hash=%.8s,addr=%p\n",clen, &tier,&fmt,&hash,chip[clen].addr);
 
 				nodename = -1;
 				clen += 1;
@@ -492,6 +493,7 @@ int role_test_style(struct footlist foot[], int flen, u8* buf, int len)
 */
 				foot[flen].hash = hash;
 				foot[flen].addr = sty;
+				say("slot%d:hash=%.8s,addr=%p\n",flen,&hash,sty);
 
 				flen += 1;
 			}//if innode
