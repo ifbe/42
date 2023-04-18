@@ -1,0 +1,9 @@
+this folder contains unmodified copy of libraries:
+
+1.(open source + zero dependency)excellent job:
+    nanojpeg
+    upng
+
+2.(when in special environment)what i have to use
+    gnu-efi
+    multiboot

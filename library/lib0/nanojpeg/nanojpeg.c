@@ -194,6 +194,62 @@ void njDone(void);
     #define NJ_CHROMA_FILTER 1
 #endif
 
+
+///////////////////////////////////////////////////////////////////////////////
+// EXAMPLE PROGRAM                                                           //
+// just define _NJ_EXAMPLE_PROGRAM to compile this (requires NJ_USE_LIBC)    //
+///////////////////////////////////////////////////////////////////////////////
+
+#ifdef  _NJ_EXAMPLE_PROGRAM
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(int argc, char* argv[]) {
+    int size;
+    char *buf;
+    FILE *f;
+
+    if (argc < 2) {
+        printf("Usage: %s <input.jpg> [<output.ppm>]\n", argv[0]);
+        return 2;
+    }
+    f = fopen(argv[1], "rb");
+    if (!f) {
+        printf("Error opening the input file.\n");
+        return 1;
+    }
+    fseek(f, 0, SEEK_END);
+    size = (int) ftell(f);
+    buf = (char*) malloc(size);
+    fseek(f, 0, SEEK_SET);
+    size = (int) fread(buf, 1, size, f);
+    fclose(f);
+
+    njInit();
+    if (njDecode(buf, size)) {
+        free((void*)buf);
+        printf("Error decoding the input file.\n");
+        return 1;
+    }
+    free((void*)buf);
+
+    f = fopen((argc > 2) ? argv[2] : (njIsColor() ? "nanojpeg_out.ppm" : "nanojpeg_out.pgm"), "wb");
+    if (!f) {
+        printf("Error opening the output file.\n");
+        return 1;
+    }
+    fprintf(f, "P%d\n%d %d\n255\n", njIsColor() ? 6 : 5, njGetWidth(), njGetHeight());
+    fwrite(njGetImage(), 1, njGetImageSize(), f);
+    fclose(f);
+    njDone();
+    return 0;
+}
+
+#endif
+
+
 ///////////////////////////////////////////////////////////////////////////////
 // IMPLEMENTATION SECTION                                                    //
 // you may stop reading here                                                 //
@@ -209,17 +265,7 @@ void njDone(void);
     #define NJ_FORCE_INLINE static inline
 #endif
 
-#if 1
-	void memorydelete(void*);
-	void* memorycreate(int);
-	void* memorysetup(void*,int,int);
-	void* memorycopy(void*,void*,int);
-    #define njAllocMem memorycreate
-    #define njFreeMem  memorydelete
-    #define njFillMem  memorysetup
-    #define njCopyMem  memorycopy
-	#define NULL 0
-#elif NJ_USE_LIBC
+#if NJ_USE_LIBC
     #include <stdlib.h>
     #include <string.h>
     #define njAllocMem malloc
@@ -868,105 +914,3 @@ unsigned char* njGetImage(void) { return (nj.ncomp == 1) ? nj.comp[0].pixels : n
 int njGetImageSize(void)        { return nj.width * nj.height * nj.ncomp; }
 
 #endif // _NJ_INCLUDE_HEADER_ONLY
-
-
-
-
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
-void printmemory(void*, int);
-void say(void*, ...);
-int check_jpg(u8* buf)
-{
-	if(buf[0] != 0xff)return 0;
-	if(buf[1] != 0xd8)return 0;
-	if(buf[2] != 0xff)return 0;
-	if(buf[3] < 0xc0)return 0;
-	return 1;
-}
-int parse_jpg(u8* buf, int len)
-{
-	int j,k,m,n;
-	int type,length;
-
-	j = 2;
-	while(1)
-	{
-		if(j>=len)break;
-		if(buf[j] != 0xff)break;
-
-		type = buf[j+1];
-		length = (buf[j+2]<<8) + buf[j+3];
-		if(type == 0xc0)
-		{
-			say("[%x,%x]SOF0\n", j, j+length+1, type);
-			say("	acc:%d\n", buf[j+4]);
-			say("	height:%d\n", (buf[j+5]<<8) + buf[j+6]);
-			say("	width:%d\n", (buf[j+7]<<8) + buf[j+8]);
-			say("	%x,%x\n", buf[j+11], buf[j+12]);
-			say("	%x,%x\n", buf[j+14], buf[j+15]);
-			say("	%x,%x\n", buf[j+17], buf[j+18]);
-		}
-		else if(type == 0xc4)
-		{
-			say("[%x,%x]DHT\n", j, j+length+1, type);
-			//printmemory(buf+j+4, length-2);
-
-			k=j+4;
-			n=0;
-			for(m=k+1;m<k+0x11;m++)n+=buf[m];
-			say("	[%x,%x]%02x\n", k, k+n+16,buf[k]);
-
-			k+=16+n+1;
-			n=0;
-			for(m=k+1;m<k+0x11;m++)n+=buf[m];
-			say("	[%x,%x]%02x\n", k, k+n+16,buf[k]);
-
-			k+=16+n+1;
-			n=0;
-			for(m=k+1;m<k+0x11;m++)n+=buf[m];
-			say("	[%x,%x]%02x\n", k, k+n+16,buf[k]);
-
-			k+=16+n+1;
-			n=0;
-			for(m=k+1;m<k+0x11;m++)n+=buf[m];
-			say("	[%x,%x]%02x\n", k, k+n+16,buf[k]);
-		}
-		else if(type == 0xda)
-		{
-			say("[%x,%x]SOS\n", j, j+length+1, type);
-			say("	Y:%x	Cr:%x	Cb:%x\n",
-				buf[j+6],
-				buf[j+8],
-				buf[j+10]
-			);
-		}
-		else if(type == 0xdb)
-		{
-			say("[%x,%x]DQT\n", j, j+length+1, type);
-			//printmemory(buf+j+4, length-2);
-
-			k = j+4;
-			while(k < j+length)
-			{
-				m = (1 + ((buf[k]>>4)&0xf)) << 6;
-				n = buf[k]&0xf;
-				say("	[%x,%x]%x\n",k, k+m, n);
-				k += 1 + m;
-			}
-		}
-		else if(type == 0xdd)
-		{
-			say("[%x,%x]DRI\n", j, j+length+1, type);
-			say("	%x\n", (buf[j+4]<<8) + buf[j+5]);
-		}
-		else say("[%x,%x]%x\n", j, j+length+1, type);
-
-		j += length + 2;
-	}
-
-	say("[%x,?]data\n", j);
-	return 0;
-}
