@@ -779,6 +779,7 @@ ${LIB42}/libuser1/helpworld/mem/json/json.c
 ${LIB42}/libuser1/helpworld/mem/latex/latex.c
 ${LIB42}/libuser1/helpworld/mem/image/asset.image.c
 ${LIB42}/libuser1/helpworld/mem/model/asset.model.c
+${LIB42}/libuser1/helpworld/mem/shader/asset.shader.c
 ${LIB42}/libuser1/helpworld/mem/sound/asset.sound.c
 ${LIB42}/libuser1/helpworld/mem/xml/xml.c
 ${LIB42}/libuser1/helpworld/mem/zimu/zimu.c

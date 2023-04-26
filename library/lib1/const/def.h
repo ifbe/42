@@ -1,4 +1,4 @@
-#ifndef _DEFINE_H 
+#ifndef _DEFINE_H
 #define _DEFINE_H
 typedef float f32;
 typedef double f64;

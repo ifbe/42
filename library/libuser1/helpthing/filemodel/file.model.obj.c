@@ -108,9 +108,9 @@ static void obj3d_gl41_prep(struct privdata* own, char* albedo, char* matter, ch
 
 	//shader
 	src->vs = memorycreate(0x10000, 0);
-	openreadclose(vs, 0, src->vs, 0x10000);
+	loadglslfromfile(vs, 0, src->vs, 0x10000);
 	src->fs = memorycreate(0x10000, 0);
-	openreadclose(fs, 0, src->fs, 0x10000);
+	loadglslfromfile(fs, 0, src->fs, 0x10000);
 	src->shader_enq = 42;
 
 	//argument

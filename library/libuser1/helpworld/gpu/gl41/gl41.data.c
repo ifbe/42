@@ -117,8 +117,7 @@ void gl41data_nolit(_obj* wnd)
 	void* trick = wnd->gl41list.world[0].light;
 	struct gl41data* data = trick + 0x400;
 
-	data->dst.routine_name = "passtype";
-	data->dst.routine_detail = "pbrcolor";
+	data->dst.lighttype = _pbrcolor_;
 
 	wnd->gl41list.world[0].light[0] = (void*)data;
 }

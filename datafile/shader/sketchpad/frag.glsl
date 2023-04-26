@@ -1,4 +1,3 @@
-#version 410 core
 in mediump vec3 uvw;
 out mediump vec4 FragColor;
 float fun(float x, float y){

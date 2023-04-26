@@ -38,4 +38,3 @@ rpi3:
 	qemu-system-aarch64 -M raspi3 -serial null -serial stdio -drive file=../../../live/live.img,if=sd,format=raw -kernel kernel8.img
 clean:
 	rm -f *.o *.out *.bin *.img
-	make -C $(library) clean

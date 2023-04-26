@@ -1,5 +1,5 @@
 #include "libhard.h"
-#include "drv-usb.h"
+#include "drv/usb.h"
 #define usbhub_print(fmt, ...) say("%08lld usbhub@%p "fmt, timeread_us(), usb, ##__VA_ARGS__)
 //
 int usbdesc_addr2offs(struct perusb* perusb, void* desc);

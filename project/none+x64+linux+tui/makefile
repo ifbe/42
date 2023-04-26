@@ -50,4 +50,3 @@ exe:
 	-lpulse -lpulse-simple -lpthread
 clean:
 	rm -f *.o *.a *.so
-	make -C $(library) clean

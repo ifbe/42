@@ -2,8 +2,8 @@
 #define _BIGNODE_H
 
 
-#include "const-def.h"
-#include "const-naming.h"
+#include "const/def.h"
+#include "const/naming.h"
 
 
 #ifdef __cplusplus

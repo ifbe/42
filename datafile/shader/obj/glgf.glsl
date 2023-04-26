@@ -1,4 +1,3 @@
-#version 410 core
 in mediump vec3 texuvw;
 in mediump vec3 normal;
 in mediump vec3 tangen;

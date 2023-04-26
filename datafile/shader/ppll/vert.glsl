@@ -1,5 +1,3 @@
-#version 430 core
-precision mediump float;
 layout(location = 0)in mediump vec3 vertex;
 layout(location = 1)in mediump vec2 texuvw;
 out mediump vec2 uvw;

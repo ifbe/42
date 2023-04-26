@@ -205,9 +205,9 @@ static void stl3d_dx11prep(struct privdata* own, char* vs, char* fs)
 
 	//shader
 	src->vs = memorycreate(0x10000, 0);
-	openreadclose(vs, 0, src->vs, 0x10000);
+	loadhlslfromfile(vs, 0, src->vs, 0x10000);
 	src->fs = memorycreate(0x10000, 0);
-	openreadclose(fs, 0, src->fs, 0x10000);
+	loadhlslfromfile(fs, 0, src->fs, 0x10000);
 	src->shader_enq = 42;
 
 	//vertex
@@ -249,9 +249,9 @@ static void stl3d_gl41prep(struct privdata* own, char* vs, char* fs)
 
 	//shader
 	src->vs = memorycreate(0x10000, 0);
-	openreadclose(vs, 0, src->vs, 0x10000);
+	loadglslfromfile(vs, 0, src->vs, 0x10000);
 	src->fs = memorycreate(0x10000, 0);
-	openreadclose(fs, 0, src->fs, 0x10000);
+	loadglslfromfile(fs, 0, src->fs, 0x10000);
 	src->shader_enq = 42;
 
 	//argument

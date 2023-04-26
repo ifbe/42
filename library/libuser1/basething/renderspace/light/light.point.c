@@ -55,8 +55,7 @@ static void pointlight_light(
 	struct gl41data* data = act->LITBUF;
 	if(0 == data)return;
 
-	data->dst.routine_name = "passtype";
-	data->dst.routine_detail = "pointlight";
+	data->dst.lighttype = _pointlight_;
 
 	data->dst.arg[0].fmt = 'v';
 	data->dst.arg[0].name = "sunxyz";

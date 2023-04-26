@@ -41,4 +41,3 @@ exe:
 	-lglfw3 -lGLEW -lGLU -lGL -lpulse -lpulse-simple -lpthread -lX11 -lm -ldl
 clean:
 	rm -f *.o *.a *.so
-	make -C $(library) clean

@@ -1,5 +1,5 @@
 #include "libhard.h"
-#include "drv-usb.h"
+#include "drv/usb.h"
 void H2D_STD_DEV_SETCONF(void* req, u16 conf);
 void filemanager_registersupplier(void*, void*);
 

@@ -1,4 +1,3 @@
-#version 410 core
 layout(location = 0)in mediump vec3 v;
 layout(location = 1)in mediump vec2 t;
 out mediump vec3 normal;

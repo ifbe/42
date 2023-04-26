@@ -47,9 +47,9 @@ static void sketchpad_ctxforwnd(struct mysrc* src, char* vs, char* fs)
 {
 	//shader
 	src->vs = memorycreate(0x1000, 0);
-	openreadclose(vs, 0, src->vs, 0x1000);
+	loadglslfromfile(vs, 0, src->vs, 0x1000);
 	src->fs = memorycreate(0x1000, 0);
-	openreadclose(fs, 0, src->fs, 0x1000);
+	loadglslfromfile(fs, 0, src->fs, 0x1000);
 	src->shader_enq = 42;
 
 	//vertex

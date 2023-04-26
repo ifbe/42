@@ -49,4 +49,3 @@ link:
 	data.o -lgcc -o BOOTX64.EFI
 clean:
 	rm -f *.o *.EFI
-	make -C $(library) clean

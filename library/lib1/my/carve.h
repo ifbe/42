@@ -1,5 +1,5 @@
-#include "const-def.h"
-#include "data-node-outer.h"
+#include "const/def.h"
+#include "data/node-outer.h"
 //
 #ifdef __ANDROID__
 	#define GLSL_VERSION "#version 320 es\n"
@@ -41,6 +41,13 @@
 #define vbuffmt_4444   0x4444
 #define vbuffmt_44444  0x44444
 #define vbuffmt_444444 0x444444
+//
+#define _pbrcolor_ 10
+#define _dirlight_ 20
+#define _spotlight_ 21
+#define _projector_ 22
+#define _pointlight_ 23
+#define _imagelight_ 24
 
 
 
@@ -234,8 +241,7 @@ struct gldst
 	u32 depth;
 */
 	//shader
-	char* routine_name;
-	char* routine_detail;
+	int lighttype;
 
 	//uniform
 	struct arg{

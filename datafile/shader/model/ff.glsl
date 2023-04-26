@@ -1,77 +1,75 @@
-#version 410 core
-in mediump vec3 objxyz;
-in mediump vec3 normal;
-out mediump vec4 FragColor;
-subroutine vec3 passtype();
-subroutine uniform passtype routine;
+in vec3 objxyz;
+in vec3 normal;
+out vec4 FragColor;
 
-uniform mediump vec3 matter;
-uniform mediump vec3 camxyz;
-uniform mediump vec3 sunxyz;
-uniform mediump vec3 sundir;
-uniform mediump vec3 sunrgb;
+uniform int lighttype;
+uniform vec3 matter;
+uniform vec3 camxyz;
+uniform vec3 sunxyz;
+uniform vec3 sundir;
+uniform vec3 sunrgb;
 uniform sampler2D shadowmap;
 uniform sampler2D prjtormap;
 uniform sampler2D iblenvmap;
 uniform mat4 sunmvp;
-mediump vec3 LA = sunrgb;
-mediump vec3 LD = sunrgb;
-mediump vec3 LS = sunrgb;
-mediump vec3 KA = vec3(0.231250, 0.231250, 0.231250);
-mediump vec3 KD = vec3(0.277500, 0.277500, 0.277500);
-mediump vec3 KS = vec3(0.773911, 0.773911, 0.773911);
+vec3 LA = sunrgb;
+vec3 LD = sunrgb;
+vec3 LS = sunrgb;
+vec3 KA = vec3(0.231250, 0.231250, 0.231250);
+vec3 KD = vec3(0.277500, 0.277500, 0.277500);
+vec3 KS = vec3(0.773911, 0.773911, 0.773911);
 
-mediump vec3 albedo = vec3(1.0, 1.0, 1.0);
-mediump float PI = 3.1415926535897932384626433832795028841971693993151;
-mediump float getD(mediump float v, mediump float r){
+vec3 albedo = vec3(1.0, 1.0, 1.0);
+float PI = 3.1415926535897932384626433832795028841971693993151;
+float getD(float v, float r){
     float a2 = r*r*r*r;
     float de = (v*v * (a2 - 1.0) + 1.0);
     return a2 / (PI * de * de);
 }
-mediump float getG(mediump float v, mediump float r){
+float getG(float v, float r){
     float k = (r+1.0) * (r+1.0) / 8.0;
     return v / (v * (1.0 - k) + k);
 }
-subroutine (passtype) vec3 pbrcolor(){
-	mediump float metal = matter.x;
-	mediump float rough = matter.y;
-	mediump float amocc = matter.z;
+vec3 pbrcolor(){
+	float metal = matter.x;
+	float rough = matter.y;
+	float amocc = matter.z;
 
-	mediump vec3 N = normalize(normal);
-	mediump vec3 E = normalize(camxyz - objxyz);
-	mediump vec3 F0 = mix(vec3(0.04), albedo, metal);
+	vec3 N = normalize(normal);
+	vec3 E = normalize(camxyz - objxyz);
+	vec3 F0 = mix(vec3(0.04), albedo, metal);
 
-	mediump vec3 litrgb = vec3(3.0, 3.0, 3.0);
-	mediump vec3 litdir[4];
+	vec3 litrgb = vec3(3.0, 3.0, 3.0);
+	vec3 litdir[4];
 	litdir[0] = vec3(-1.0, 0.0, 1.0);
 	litdir[1] = vec3( 1.0, 0.0, 1.0);
 	litdir[2] = vec3( 0.0,-1.0, 1.0);
 	litdir[3] = vec3( 0.0, 1.0, 1.0);
 
-	mediump vec3 ocolor = vec3(0.03) * albedo * amocc;
+	vec3 ocolor = vec3(0.03) * albedo * amocc;
 	for(int j=0;j<4;j++){
-		mediump vec3 L = litdir[j];
-		//mediump float distance = length(L);
-		//mediump float attenuation = 1.0 / (distance * distance);
-		//mediump vec3 radiance = litrgb * attenuation;
-		mediump vec3 radiance = litrgb;
+		vec3 L = litdir[j];
+		//float distance = length(L);
+		//float attenuation = 1.0 / (distance * distance);
+		//vec3 radiance = litrgb * attenuation;
+		vec3 radiance = litrgb;
 
 		L = normalize(L);
-		mediump vec3 H = normalize(E + L);
-		mediump float NdotL = max(dot(N, L), 0.0);
-		mediump float NdotE = max(dot(N, E), 0.0);
-		mediump float NdotH = max(dot(N, H), 0.0);
-		mediump float HdotE = max(dot(H, E), 0.0);
+		vec3 H = normalize(E + L);
+		float NdotL = max(dot(N, L), 0.0);
+		float NdotE = max(dot(N, E), 0.0);
+		float NdotH = max(dot(N, H), 0.0);
+		float HdotE = max(dot(H, E), 0.0);
 
-		mediump vec3 F = F0 + (1.0 - F0) * pow(1.0 - HdotE, 5.0);
-		mediump float D = getD(NdotH, rough);
-		mediump float G = getG(NdotL, rough)*getG(NdotE, rough);
+		vec3 F = F0 + (1.0 - F0) * pow(1.0 - HdotE, 5.0);
+		float D = getD(NdotH, rough);
+		float G = getG(NdotL, rough)*getG(NdotE, rough);
 
-		mediump vec3 kS = F;
-		mediump vec3 specular = (D * G * F) / (4.0 * NdotE * NdotL + 0.0001);
+		vec3 kS = F;
+		vec3 specular = (D * G * F) / (4.0 * NdotE * NdotL + 0.0001);
 
-		mediump vec3 kD = (vec3(1.0) - kS) * (1.0 - metal);
-		mediump vec3 diffuse = kD * albedo / PI;
+		vec3 kD = (vec3(1.0) - kS) * (1.0 - metal);
+		vec3 diffuse = kD * albedo / PI;
 
 		ocolor += (diffuse + specular) * radiance * NdotL;
 	}
@@ -81,47 +79,47 @@ subroutine (passtype) vec3 pbrcolor(){
 }
 
 
-mediump float iblG(mediump float v, mediump float r){
+float iblG(float v, float r){
     float k = r*r / 2.0;
     return v / (v * (1.0 - k) + k);
 }
-subroutine (passtype) vec3 imagelight(){
-	mediump float metal = matter.x;
-	mediump float rough = matter.y;
-	mediump float amocc = matter.z;
+vec3 imagelight(){
+	float metal = matter.x;
+	float rough = matter.y;
+	float amocc = matter.z;
 
-	mediump vec3 N = normalize(normal);
-	mediump vec3 E = normalize(camxyz - objxyz);
-	mediump vec3 R = reflect(E, N);
-	mediump vec3 F0 = mix(vec3(0.04), albedo, metal);
+	vec3 N = normalize(normal);
+	vec3 E = normalize(camxyz - objxyz);
+	vec3 R = reflect(E, N);
+	vec3 F0 = mix(vec3(0.04), albedo, metal);
 
-	mediump float x = atan(R.y, R.x)/PI/2.0 + 0.5;
-	mediump float y = 0.5 + asin(R.z)/PI;
-	mediump vec3 litrgb = texture(iblenvmap, vec2(x,y)).bgr;
-	mediump vec3 litdir = -R;
+	float x = atan(R.y, R.x)/PI/2.0 + 0.5;
+	float y = 0.5 + asin(R.z)/PI;
+	vec3 litrgb = texture(iblenvmap, vec2(x,y)).bgr;
+	vec3 litdir = -R;
 
-	mediump vec3 ocolor = vec3(0.03) * albedo * amocc;
+	vec3 ocolor = vec3(0.03) * albedo * amocc;
 	//for(int j=0;j<4;j++){
-		mediump vec3 L = litdir;
-		//mediump float distance = length(L);
-		//mediump float attenuation = 1.0 / (distance * distance);
-		//mediump vec3 radiance = litrgb * attenuation;
-		mediump vec3 radiance = litrgb;
+		vec3 L = litdir;
+		//float distance = length(L);
+		//float attenuation = 1.0 / (distance * distance);
+		//vec3 radiance = litrgb * attenuation;
+		vec3 radiance = litrgb;
 
 		L = normalize(L);
-		mediump vec3 H = normalize(E + L);
-		mediump float NdotL = max(dot(N, L), 0.0);
-		mediump float NdotE = max(dot(N, E), 0.0);
-		mediump float NdotH = max(dot(N, H), 0.0);
-		mediump float HdotE = max(dot(H, E), 0.0);
+		vec3 H = normalize(E + L);
+		float NdotL = max(dot(N, L), 0.0);
+		float NdotE = max(dot(N, E), 0.0);
+		float NdotH = max(dot(N, H), 0.0);
+		float HdotE = max(dot(H, E), 0.0);
 
-		mediump vec3 F = F0 + (1.0 - F0) * pow(1.0 - HdotE, 5.0);
-		mediump float D = getD(NdotH, rough);
-		mediump float G = iblG(NdotL, rough)*iblG(NdotE, rough);
+		vec3 F = F0 + (1.0 - F0) * pow(1.0 - HdotE, 5.0);
+		float D = getD(NdotH, rough);
+		float G = iblG(NdotL, rough)*iblG(NdotE, rough);
 
-		mediump vec3 kS = F;
-		mediump vec3 kD = (vec3(1.0) - kS) * (1.0 - metal);
-		mediump vec3 specular = (D * G * F) / max(4.0 * NdotE * NdotL, 0.001);
+		vec3 kS = F;
+		vec3 kD = (vec3(1.0) - kS) * (1.0 - metal);
+		vec3 specular = (D * G * F) / max(4.0 * NdotE * NdotL, 0.001);
 		ocolor += (kD * albedo / PI + specular) * radiance * NdotL;
 	//}
 
@@ -129,9 +127,8 @@ subroutine (passtype) vec3 imagelight(){
 	return pow(ocolor, vec3(1.0/2.2));
 }
 
-
-subroutine (passtype) vec3 dirlight(){
-	mediump vec4 tmp = sunmvp * vec4(objxyz, 1.0);
+vec3 dirlight(){
+	vec4 tmp = sunmvp * vec4(objxyz, 1.0);
 	tmp /= tmp.w;
 	tmp = (tmp+1.0)*0.5;
 
@@ -140,27 +137,26 @@ subroutine (passtype) vec3 dirlight(){
 
 	if(tmp.z - texture(shadowmap, tmp.xy).r > 0.0001)return vec3(0.2);
 
-	mediump vec3 N = normalize(normal);
-	mediump vec3 L = normalize(-sundir);
-	mediump float SN = dot(N, L);
-	mediump vec3 ret = LA*KA + LD*KD*max(SN, 0.0);
+	vec3 N = normalize(normal);
+	vec3 L = normalize(-sundir);
+	float SN = dot(N, L);
+	vec3 ret = LA*KA + LD*KD*max(SN, 0.0);
 	if(SN < 0.0)return ret;
 
-	mediump vec3 E = normalize(camxyz - objxyz);
-	mediump vec3 H = normalize(E + L);
-	mediump float NH = max(dot(N, H), 0.0);
+	vec3 E = normalize(camxyz - objxyz);
+	vec3 H = normalize(E + L);
+	float NH = max(dot(N, H), 0.0);
 	return ret + LS*KS*pow(NH, 25.0);
 }
 
-
-subroutine (passtype) vec3 spotlight(){
-	mediump vec3 N = normalize(normal);
-	mediump vec3 L = normalize(sunxyz - objxyz);
-	mediump float dotNL = dot(N, L);
-	mediump vec3 colour = LA*KA + LD*KD*max(dotNL, 0.0);
+vec3 spotlight(){
+	vec3 N = normalize(normal);
+	vec3 L = normalize(sunxyz - objxyz);
+	float dotNL = dot(N, L);
+	vec3 colour = LA*KA + LD*KD*max(dotNL, 0.0);
 
 	//out of light
-	mediump vec4 tmp = sunmvp * vec4(objxyz, 1.0);
+	vec4 tmp = sunmvp * vec4(objxyz, 1.0);
 	tmp.x /= tmp.w;
 	tmp.y /= tmp.w;
 	float val = tmp.x*tmp.x + tmp.y*tmp.y;
@@ -174,21 +170,20 @@ subroutine (passtype) vec3 spotlight(){
 	if(dotNL < 0.0)return colour;
 
 	//have specular
-	mediump vec3 E = normalize(camxyz - objxyz);
-	mediump vec3 H = normalize(E + L);
-	mediump float NH = max(dot(N, H), 0.0);
+	vec3 E = normalize(camxyz - objxyz);
+	vec3 H = normalize(E + L);
+	float NH = max(dot(N, H), 0.0);
 	return colour + LS*KS*pow(NH, 25.0);
 }
 
-
-subroutine (passtype) vec3 projector(){
-	mediump vec3 N = normalize(normal);
-	mediump vec3 L = normalize(sunxyz - objxyz);
-	mediump float dotNL = dot(N, L);
-	mediump vec3 colour = LA*KA + LD*KD*max(dotNL, 0.0);
+vec3 projector(){
+	vec3 N = normalize(normal);
+	vec3 L = normalize(sunxyz - objxyz);
+	float dotNL = dot(N, L);
+	vec3 colour = LA*KA + LD*KD*max(dotNL, 0.0);
 
 	//out of light
-	mediump vec4 tmp = sunmvp * vec4(objxyz, 1.0);
+	vec4 tmp = sunmvp * vec4(objxyz, 1.0);
 	tmp.x /= tmp.w;
 	tmp.y /= tmp.w;
 	float val = tmp.x*tmp.x + tmp.y*tmp.y;
@@ -203,27 +198,35 @@ subroutine (passtype) vec3 projector(){
 	if(dotNL < 0.0)return colour;
 
 	//have specular
-	mediump vec3 E = normalize(camxyz - objxyz);
-	mediump vec3 H = normalize(E + L);
-	mediump float NH = max(dot(N, H), 0.0);
+	vec3 E = normalize(camxyz - objxyz);
+	vec3 H = normalize(E + L);
+	float NH = max(dot(N, H), 0.0);
 	return colour + LS*KS*pow(NH, 25.0);
 }
 
-
-subroutine (passtype) vec3 pointlight(){
-	mediump vec3 N = normalize(normal);
-	mediump vec3 L = normalize(sunxyz - objxyz);
-	mediump float SN = dot(N, L);
-	mediump vec3 ret = LA*KA + LD*KD*max(SN, 0.0);
+vec3 pointlight(){
+	vec3 N = normalize(normal);
+	vec3 L = normalize(sunxyz - objxyz);
+	float SN = dot(N, L);
+	vec3 ret = LA*KA + LD*KD*max(SN, 0.0);
 	if(SN < 0.0)return ret;
 
-	mediump vec3 E = normalize(camxyz - objxyz);
-	mediump vec3 H = normalize(E + L);
-	mediump float NH = max(dot(N, H), 0.0);
+	vec3 E = normalize(camxyz - objxyz);
+	vec3 H = normalize(E + L);
+	float NH = max(dot(N, H), 0.0);
 	return ret + LS*KS*pow(NH, 25.0);
 }
 
 
 void main(){
-	FragColor = vec4(routine(), 1.0);
+	vec3 c = vec3(0.0);
+	switch(lighttype){
+	case 20:c=dirlight();break;
+	case 21:c=spotlight();break;
+	case 22:c=projector();break;
+	case 23:c=pointlight();break;
+	case 24:c=imagelight();break;
+	default:c=pbrcolor();break;
+	}
+	FragColor = vec4(c, 1.0);
 }

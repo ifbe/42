@@ -361,9 +361,9 @@ static void portal_mesh_prepare(struct gl41data* data)
 
 	//
 	src->vs = memorycreate(0x1000, 0);
-	openreadclose("datafile/shader/portal/vert.glsl", 0, src->vs, 0x1000);
+	loadglslfromfile("datafile/shader/portal/vert.glsl", 0, src->vs, 0x1000);
 	src->fs = memorycreate(0x1000, 0);
-	openreadclose("datafile/shader/portal/frag.glsl", 0, src->fs, 0x1000);
+	loadglslfromfile("datafile/shader/portal/frag.glsl", 0, src->fs, 0x1000);
 	src->shader_enq = 42;
 
 	//vertex

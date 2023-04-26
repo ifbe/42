@@ -15,4 +15,3 @@ libboot0:
 clean:
 	rm -rf lib*/*.o
 	rm -f *.o *.EFI
-	make -C $(library) clean

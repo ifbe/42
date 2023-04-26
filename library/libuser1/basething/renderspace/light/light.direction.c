@@ -159,8 +159,7 @@ static void dirlight_lit_update(
 }
 static void dirlight_lit_prep(struct gl41data* data)
 {
-	data->dst.routine_name = "passtype";
-	data->dst.routine_detail = "dirlight";
+	data->dst.lighttype = _dirlight_;
 }
 
 

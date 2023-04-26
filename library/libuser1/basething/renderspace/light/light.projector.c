@@ -163,8 +163,7 @@ static void projector_lit_update(
 }
 static void projector_lit_prepare(struct gl41data* data)
 {
-	data->dst.routine_name = "passtype";
-	data->dst.routine_detail = "projector";
+	data->dst.lighttype = _projector_;
 	data->dst.texname[1] = "prjtormap";
 
 	data->src.tex[1].fmt = hex32('r','g','b','a');

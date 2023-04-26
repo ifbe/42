@@ -25,17 +25,6 @@ struct privdata{
 	struct dx11data dx11;
 	struct gl41data gl41;
 };
-static int loadhlslfromfile(char* buf, char* url)
-{
-	int ret = openreadclose(url, 0, buf, 0xf000);
-	buf[ret] = 0;
-	return ret+1;
-}
-static int loadglslfromfile(char* buf, char* url)
-{
-	int ret = mysnprintf(buf, 99, "%s%s", GLSL_VERSION, GLSL_PRECISION);
-	return openreadclose(url, 0, buf+ret, 0x10000-ret);
-}
 
 
 
@@ -238,9 +227,9 @@ static void terrain_dx11prep(struct privdata* own, char* vs, char* ps)
 
 	//shader
 	src->vs = memorycreate(0x10000, 0);
-	loadhlslfromfile(src->vs, vs);
+	loadhlslfromfile(vs, 0, src->vs, 0x10000);
 	src->fs = memorycreate(0x10000, 0);
-	loadhlslfromfile(src->fs, ps);
+	loadhlslfromfile(ps, 0, src->fs, 0x10000);
 	src->shader_enq = 42;
 
 	//texture
@@ -341,9 +330,9 @@ static void terrain_gl41prep(struct privdata* own, char* vs, char* fs)
 
 	//shader
 	src->vs = memorycreate(0x10000, 0);
-	loadglslfromfile(src->vs, vs);
+	loadglslfromfile(vs, 0, src->vs, 0x10000);
 	src->fs = memorycreate(0x10000, 0);
-	loadglslfromfile(src->fs, fs);
+	loadglslfromfile(fs, 0, src->fs, 0x10000);
 	src->shader_enq = 42;
 
 	//argument

@@ -1,15 +1,15 @@
 #include "libuser.h"
 //
-void forcpu_init();
+void forcpu_init(void*);
 void forcpu_exit();
-void formem_init();
+void formem_init(void*);
 void formem_exit();
 
 //
-void thing_exit();
 void thing_init(void*);
-void world_exit();
+void thing_exit();
 void world_init(void*);
+void world_exit();
 
 //
 int baby_create(void*, void*, int, u8**);

@@ -65,4 +65,3 @@ exe:
 clean:
 	rm -f */*.o
 	rm -f *.exe *.out *.o *.a *.dylib
-	make -C $(library) clean

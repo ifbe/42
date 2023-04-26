@@ -164,8 +164,7 @@ static void spotlight_lit_update(
 }
 static void spotlight_lit_prepare(struct gl41data* data)
 {
-	data->dst.routine_name = "passtype";
-	data->dst.routine_detail = "spotlight";
+	data->dst.lighttype = _spotlight_;
 }
 
 

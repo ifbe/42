@@ -40,5 +40,4 @@ exe:
 	$(library)/libuser0/*.o $(library)/libuser1/*.o \
 	-lwiringPi -lpulse -lpulse-simple -lpthread -lm
 clean:
-	make -C $(library) clean
 	rm -f *.o *.a *.so

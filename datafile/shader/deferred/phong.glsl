@@ -1,4 +1,3 @@
-#version 410 core
 in mediump vec2 uvw;
 out mediump vec4 FragColor;
 uniform sampler2D tex0;	//albedo

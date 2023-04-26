@@ -24,17 +24,6 @@ struct privdata{
 	struct dx11data dx11;
 	struct gl41data gl41;
 };
-static int loadglslfromfile(char* buf, char* url)
-{
-	int ret = mysnprintf(buf, 99, "%s%s", GLSL_VERSION, GLSL_PRECISION);
-	return openreadclose(url, 0, buf+ret, 0x10000-ret);
-}
-static int loadhlslfromfile(char* buf, char* url)
-{
-	int ret = openreadclose(url, 0, buf, 0xf000);
-	buf[ret] = 0;
-	return ret+1;
-}
 void ground_singlepiece(float (*vbuf)[6], float* vc,float* vr,float* vf)
 {
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
@@ -90,9 +79,9 @@ static void ground_dx11_prep(struct dx11data* data, char* tex0, char* tex1, char
 {
 	//shader
 	data->src.vs = memorycreate(0x10000, 0);
-	loadhlslfromfile(data->src.vs, vs);
+	loadhlslfromfile(vs, 0, data->src.vs, 0x10000);
 	data->src.fs = memorycreate(0x10000, 0);
-	loadhlslfromfile(data->src.fs, ps);
+	loadhlslfromfile(ps, 0, data->src.fs, 0x10000);
 	data->src.shader_enq = 42;
 
 	//texture
@@ -152,9 +141,9 @@ static void ground_gl41_prep(struct gl41data* data, char* tex0, char* tex1, char
 
 	//shader
 	data->src.vs = memorycreate(0x10000, 0);
-	loadglslfromfile(data->src.vs, vs);
+	loadglslfromfile(vs, 0, data->src.vs, 0x10000);
 	data->src.fs = memorycreate(0x10000, 0);
-	loadglslfromfile(data->src.fs, fs);
+	loadglslfromfile(fs, 0, data->src.fs, 0x10000);
 	data->src.shader_enq = 42;
 
 	data->dst.texname[0] = "tex0";

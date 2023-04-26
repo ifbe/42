@@ -1,4 +1,3 @@
-#version 410 core
 layout(location = 0)in mediump vec3 vert;
 layout(location = 1)in mediump vec3 texc;
 layout(location = 2)in mediump vec3 norm;

@@ -462,9 +462,9 @@ static void freecam_gl41gbuf_world2_prep(_obj* act)
 
 	//shader
 	data->src.vs = memorycreate(0x1000, 0);
-	openreadclose(vs, 0, data->src.vs, 0x1000);
+	loadglslfromfile(vs, 0, data->src.vs, 0x1000);
 	data->src.fs = memorycreate(0x1000, 0);
-	openreadclose(fs, 0, data->src.fs, 0x1000);
+	loadglslfromfile(fs, 0, data->src.fs, 0x1000);
 	data->src.shader_enq = 42;
 
 	//vertex
@@ -624,9 +624,9 @@ static void freecam_gl41ppll_world2_prep(_obj* act)
 
 	//shader
 	data->src.vs = memorycreate(0x1000, 0);
-	openreadclose(vs, 0, data->src.vs, 0x1000);
+	loadglslfromfile(vs, 0, data->src.vs, 0x1000);
 	data->src.fs = memorycreate(0x1000, 0);
-	openreadclose(fs, 0, data->src.fs, 0x1000);
+	loadglslfromfile(fs, 0, data->src.fs, 0x1000);
 	data->src.shader_enq = 42;
 
 	//vertex

@@ -60,6 +60,5 @@ program:
 	-lglfw -lGLEW -lGLU -lGL -lpulse -lpulse-simple -lpthread -lm
 	#-lasound -lpthread -lm
 clean:
-	make -C $(library) clean
 	rm -f *.o *.a *.so
 	rm -f */*.o

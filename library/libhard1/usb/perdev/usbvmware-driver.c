@@ -1,5 +1,5 @@
 #include "libhard.h"
-#include "drv-usb.h"
+#include "drv/usb.h"
 int usbdesc_addr2offs(struct perusb* perusb, void* desc);
 void* usbdesc_offs2addr(struct perusb* perusb, int offs);
 int printreport(void*,int);

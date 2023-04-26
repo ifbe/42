@@ -1,4 +1,4 @@
-#include "drv-usb.h"
+#include "drv/usb.h"
 #define DFU_DETACH 0
 #define DFU_DNLOAD 1
 #define DFU_UPLOAD 2

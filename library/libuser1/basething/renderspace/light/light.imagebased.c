@@ -34,8 +34,7 @@ GLSL_VERSION
 
 void imagelight_litforwnd(struct gl41data* data, char* str)
 {
-	data->dst.routine_name = "passtype";
-	data->dst.routine_detail = "imagelight";
+	data->dst.lighttype = _imagelight_;
 
 	//texture
 	data->dst.texname[0] = "iblenvmap";

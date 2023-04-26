@@ -312,6 +312,7 @@ void updatearg(u32 shader, struct gl41data* data)
 	struct mysrc* src = &data->src;
 	struct gldst* dst = &data->dst;
 
+/*
 #ifndef __ANDROID__
 	if((dst->routine_name) && (dst->routine_detail)){
 		//iii = glGetSubroutineUniformLocation(shader, GL_FRAGMENT_SHADER, dst->routine_name);
@@ -319,6 +320,14 @@ void updatearg(u32 shader, struct gl41data* data)
 		if(uuu < 256)glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &uuu);
 	}
 #endif
+*/
+	if(dst->lighttype){
+		iii = glGetUniformLocation(shader, "lighttype");
+		if(iii >= 0){
+			//say("iii=%d,lighttype=%d\n",iii,dst->lighttype);
+			glUniform1i(iii, dst->lighttype);
+		}
+	}
 
 	for(j=0;j<4;j++){
 		if(0 == dst->arg[j].name)break;

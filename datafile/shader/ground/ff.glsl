@@ -1,9 +1,8 @@
 in vec3 objxyz;
 in vec2 objuvw;
 out vec4 FragColor;
-subroutine vec3 passtype();
-subroutine uniform passtype routine;
 
+uniform int lighttype;
 uniform sampler2D tex0;
 uniform sampler2D tex1;
 uniform sampler2D tex2;
@@ -25,7 +24,7 @@ float getG(float v, float r){
     float k = (r+1.0) * (r+1.0) / 8.0;
     return v / (v * (1.0 - k) + k);
 }
-subroutine (passtype) vec3 pbrcolor(){
+vec3 pbrcolor(){
 	vec3 albedo = pow(texture(tex0, objuvw).bgr, vec3(2.2));
 	vec3 normal = texture(tex1, objuvw).bgr * 2.0 - vec3(1.0);
 	vec3 matter = texture(tex2, objuvw).bgr;
@@ -76,7 +75,7 @@ subroutine (passtype) vec3 pbrcolor(){
 	ocolor = ocolor / (ocolor + vec3(1.0));
 	return pow(ocolor, vec3(1.0/2.2));
 }
-subroutine (passtype) vec3 dirlight(){
+vec3 dirlight(){
 	vec3 albedo = texture(tex0, objuvw).bgr;
 
 	vec4 tmp = sunmvp * vec4(objxyz, 1.0);
@@ -93,7 +92,7 @@ subroutine (passtype) vec3 dirlight(){
 	//regular light
 	return albedo;
 }
-subroutine (passtype) vec3 spotlight(){
+vec3 spotlight(){
 	vec3 albedo = texture(tex0, objuvw).bgr;
 
 	vec4 tmp = sunmvp * vec4(objxyz, 1.0);
@@ -114,7 +113,7 @@ subroutine (passtype) vec3 spotlight(){
 	//regular light
 	return colour;
 }
-subroutine (passtype) vec3 projector(){
+vec3 projector(){
 	vec3 albedo = texture(tex0, objuvw).bgr;
 
 	vec4 tmp = sunmvp * vec4(objxyz, 1.0);
@@ -132,7 +131,7 @@ subroutine (passtype) vec3 projector(){
 	//regular light
 	return albedo*texture(prjtormap, tmp.xy).bgr;
 }
-subroutine (passtype) vec3 pointlight(){
+vec3 pointlight(){
 	vec3 albedo = texture(tex0, objuvw).bgr;
 
 	float dx = (sunxyz-objxyz).x;
@@ -143,5 +142,13 @@ subroutine (passtype) vec3 pointlight(){
 	return albedo*sunrgb * sq/100000000.0;
 }
 void main(){
-	FragColor = vec4(routine(), 1.0);
+	vec3 c = vec3(0.0);
+	switch(lighttype){
+	case 20:c=dirlight();break;
+	case 21:c=spotlight();break;
+	case 22:c=projector();break;
+	case 23:c=pointlight();break;
+	default:c=pbrcolor();break;
+	}
+	FragColor = vec4(c, 1.0);
 }

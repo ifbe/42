@@ -369,6 +369,7 @@ helpworld/mem/json/json.c \
 helpworld/mem/latex/latex.c \
 helpworld/mem/image/asset.image.c \
 helpworld/mem/model/asset.model.c \
+helpworld/mem/shader/asset.shader.c \
 helpworld/mem/sound/asset.sound.c \
 helpworld/mem/xml/xml.c \
 helpworld/mem/zimu/zimu.c \

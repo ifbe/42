@@ -63,4 +63,3 @@ exe:
 	-lole32 -lstrmiids -lxinput -lwinmm -lws2_32
 clean:
 	rm -f *.o *.a *.so
-	make -C $(library) clean

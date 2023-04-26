@@ -64,4 +64,3 @@ exe:
 clean:
 	rm -f *.o *.a *.so
 	rm -f */*.o
-	make -C $(library) clean

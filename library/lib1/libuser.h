@@ -1,12 +1,13 @@
-#include "const-def.h"
-#include "const-math.h"
-#include "const-naming.h"
-#include "data-node-inner.h"
-#include "data-node-outer.h"
-#include "data-wire-inner.h"
-#include "data-wire-outer.h"
-#include "my-draw.h"
-#include "my-carve.h"
+#include "const/def.h"
+#include "const/math.h"
+#include "const/naming.h"
+#include "const/event.h"
+#include "data/node-inner.h"
+#include "data/node-outer.h"
+#include "data/wire-inner.h"
+#include "data/wire-outer.h"
+#include "my/draw.h"
+#include "my/carve.h"
 
 
 
@@ -70,6 +71,8 @@ int openreadclose(void*, int, void*, int);
 int openwriteclose(void*, int, void*, int);
 int savefilefromtex(char* name, struct texture* tex);
 int loadtexfromfile(struct texture* tex, char* name);
+int loadglslfromfile(void* url, int max, void* buf, int len);
+int loadhlslfromfile(void* url, int max, void* buf, int len);
 //
 int md5sum(void*, void*, int);
 int sha1sum(void*, void*, int);

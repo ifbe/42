@@ -1,5 +1,3 @@
-#version 430 core
-precision mediump float;
 in vec2 uvw;
 out vec4 FragColor;
 uniform mediump vec3 camxyz;

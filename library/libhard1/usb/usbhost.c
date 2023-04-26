@@ -1,5 +1,5 @@
 #include "libhard.h"
-#include "drv-usb.h"
+#include "drv/usb.h"
 #define usbhost_print(fmt, ...) say("%08lld usbhost@%p "fmt, timeread_us(), usb, ##__VA_ARGS__)
 //device driver
 int usbvmware_driver(struct item* usb, int xxx, struct item* xhci, int slot);

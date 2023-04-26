@@ -42,4 +42,3 @@ exe:
 	#-lasound -lpthread -lm
 clean:
 	rm -f *.o *.a *.so
-	make -C $(library) clean

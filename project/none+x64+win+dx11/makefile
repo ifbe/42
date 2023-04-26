@@ -64,4 +64,3 @@ exe:
 	-ld3d11 -ld3dcompiler -lgdi32 -lole32 -lstrmiids -lxinput -lwinmm -lws2_32
 clean:
 	rm -f *.o *.a *.so
-	make -C $(library) clean
