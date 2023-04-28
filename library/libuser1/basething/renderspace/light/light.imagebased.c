@@ -9,10 +9,11 @@ void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 
 char* imagelight_glsl_v =
 GLSL_VERSION
-"layout(location = 0)in mediump vec3 vertex;\n"
-"layout(location = 1)in mediump vec2 texuvw;\n"
+GLSL_PRECISION
+"layout(location = 0)in vec3 vertex;\n"
+"layout(location = 1)in vec2 texuvw;\n"
 "uniform mat4 cammvp;\n"
-"out mediump vec2 uvw;\n"
+"out vec2 uvw;\n"
 "void main(){\n"
 	"uvw = texuvw;\n"
 	"gl_Position = cammvp * vec4(vertex, 1.0);\n"
@@ -21,8 +22,9 @@ char* imagelight_glsl_t = 0;
 char* imagelight_glsl_g = 0;
 char* imagelight_glsl_f = 
 GLSL_VERSION
-"in mediump vec2 uvw;\n"
-"out mediump vec4 FragColor;\n"
+GLSL_PRECISION
+"in vec2 uvw;\n"
+"out vec4 FragColor;\n"
 "uniform sampler2D iblenvmap;\n"
 "void main(){\n"
 	"FragColor = vec4(texture(iblenvmap, uvw).bgr, 1.0);\n"

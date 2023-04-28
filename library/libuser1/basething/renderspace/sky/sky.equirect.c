@@ -135,18 +135,20 @@ static void texball_dx11draw(
 
 char* texball_glsl_vs =
 GLSL_VERSION
-"layout(location = 0)in mediump vec3 vertex;\n"
-"layout(location = 1)in mediump vec2 texuvw;\n"
+GLSL_PRECISION
+"layout(location = 0)in vec3 vertex;\n"
+"layout(location = 1)in vec2 texuvw;\n"
 "uniform mat4 cammvp;\n"
-"out mediump vec2 uvw;\n"
+"out vec2 uvw;\n"
 "void main(){\n"
 	"uvw = texuvw;\n"
 	"gl_Position = cammvp * vec4(vertex, 1.0);\n"
 "}\n";
 char* texball_glsl_fs =
 GLSL_VERSION
-"in mediump vec2 uvw;\n"
-"out mediump vec4 FragColor;\n"
+GLSL_PRECISION
+"in vec2 uvw;\n"
+"out vec4 FragColor;\n"
 "uniform sampler2D tex0;\n"
 "void main(){\n"
 	"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"

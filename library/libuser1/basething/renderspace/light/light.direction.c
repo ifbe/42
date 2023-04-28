@@ -21,9 +21,10 @@ struct sunbuf{
 
 char* dirlit_glsl_v =
 GLSL_VERSION
-"layout(location = 0)in mediump vec3 vertex;\n"
-"layout(location = 1)in mediump vec2 texuvw;\n"
-"out mediump vec2 uvw;\n"
+GLSL_PRECISION
+"layout(location = 0)in vec3 vertex;\n"
+"layout(location = 1)in vec2 texuvw;\n"
+"out vec2 uvw;\n"
 "uniform mat4 cammvp;\n"
 "void main(){\n"
 	"uvw = texuvw;\n"
@@ -32,11 +33,12 @@ GLSL_VERSION
 
 char* dirlit_glsl_f =
 GLSL_VERSION
+GLSL_PRECISION
 "uniform sampler2D shadowmap;\n"
-"in mediump vec2 uvw;\n"
-"layout(location = 0)out mediump vec4 FragColor;\n"
+"in vec2 uvw;\n"
+"layout(location = 0)out vec4 FragColor;\n"
 "void main(){\n"
-	"mediump float d = 10.0 * texture(shadowmap, uvw).r;"
+	"float d = 10.0 * texture(shadowmap, uvw).r;"
 	"FragColor = vec4(d, d, d, 1.0);\n"
 "}\n";
 

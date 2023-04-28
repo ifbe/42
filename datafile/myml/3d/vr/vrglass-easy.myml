@@ -79,12 +79,12 @@ q:1.0, 1.0
 
 <relation>
 #scene depends on
-(scene, skygeom, 0) -> (sky, skyslot, 0)
-(scene, itemgeom, 0) -> (tree, itemslot, 0)
-(scene, viewgeom, 0) -> (vrglass, viewslot, in)
+(@scene, @skygeom) -> (@sky, @skyslot)
+(@scene, @itemgeom) -> (@tree, @itemslot)
+(@scene, @viewgeom) -> (@vrglass, in@viewslot)
 
 #glwnd depends on
-(opengl, viewrect, 0) -> (vrglass, 0, a0)
+(@opengl, @viewrect) -> (@vrglass, a0@0)
 
-(udp, 0, dst) -> (vrglass, 0, at)
+(@udp, dst@0) -> (@vrglass, at@0)
 </relation>

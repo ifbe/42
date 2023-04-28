@@ -3,7 +3,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <android/log.h>
-#include <android/sensor.h>
 #include <android_native_app_glue.h>
 #include "libuser.h"
 #define LOG_TAG "finalanswer"
@@ -12,21 +11,19 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+void androidsensor_init(struct android_app* app);
+void androidsensor_exit();
+void androidsensor_start();
+void androidsensor_stop();
+//
 void openwindow(struct android_app* theapp);
 void closewindow(struct android_app* theapp);
-void sendtowindow_sensor(int, void*);
 void sendtowindow_touch(void*);
 
 
 
 
 static struct android_app* theapp;
-//
-ASensorManager* sensorManager;
-ASensorEventQueue* sensorEventQueue;
-const ASensor* acc = 0;
-const ASensor* gyr = 0;
-const ASensor* mag = 0;
 
 
 
@@ -71,30 +68,11 @@ static void handle_cmd(struct android_app* app, int32_t cmd)
 
 	case APP_CMD_GAINED_FOCUS:
 		say("APP_CMD_GAINED_FOCUS\n");
-		if(gyr){
-			ASensorEventQueue_enableSensor(sensorEventQueue, gyr);
-			ASensorEventQueue_setEventRate(sensorEventQueue, gyr, (1000L/60)*1000);
-		}
-		if(acc){
-			ASensorEventQueue_enableSensor(sensorEventQueue, acc);
-			ASensorEventQueue_setEventRate(sensorEventQueue, acc, (1000L/60)*1000);
-		}
-		if(mag){
-			ASensorEventQueue_enableSensor(sensorEventQueue, mag);
-			ASensorEventQueue_setEventRate(sensorEventQueue, mag, (1000L/60)*1000);
-		}
+		androidsensor_start();
 		break;
 	case APP_CMD_LOST_FOCUS:
 		say("APP_CMD_LOST_FOCUS\n");
-		if(gyr){
-			ASensorEventQueue_disableSensor(sensorEventQueue, gyr);
-		}
-		if(acc){
-			ASensorEventQueue_disableSensor(sensorEventQueue, acc);
-		}
-		if(mag){
-			ASensorEventQueue_disableSensor(sensorEventQueue, mag);
-		}
+		androidsensor_stop();
 		break;
 
 	case APP_CMD_WINDOW_RESIZED:
@@ -194,44 +172,6 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 
 	return 1;
 }
-int checkevent()
-{
-	int ident;
-	int events;
-	struct android_poll_source* source;
-
-	while((ident=ALooper_pollAll(0, NULL, &events, (void**)&source)) >= 0)
-	{
-		if(source)source->process(theapp, source);
-
-		if (ident == LOOPER_ID_USER) {
-			ASensorEvent ev;
-			float* v = ev.vector.v;
-			if( (0!=gyr) | (0!=acc) | (0!=mag) ){
-				while (ASensorEventQueue_getEvents(sensorEventQueue, &ev, 1) > 0) {
-					switch(ev.type){
-					case ASENSOR_TYPE_GYROSCOPE:
-						//say("gyr: x=%f,y=%f,z=%f\n", v[0], v[1], v[2]);
-						//say("time=%lld\n",ev.timestamp);
-						sendtowindow_sensor('g', v);
-						break;
-					case ASENSOR_TYPE_ACCELEROMETER:
-						//say("acc: x=%f,y=%f,z=%f\n",-v[0],-v[1],-v[2]);
-						sendtowindow_sensor('a', v);
-						break;
-					case ASENSOR_TYPE_MAGNETIC_FIELD:
-						//say("mag: x=%f,y=%f,z=%f\n", v[0], v[1], v[2]);
-						sendtowindow_sensor('m', v);
-						break;
-					}
-				}
-			}
-		}
-
-		if(theapp->destroyRequested)return 0;
-	}
-	return 0;
-}
 
 
 void* getapp()
@@ -243,42 +183,6 @@ void* getapp()
 void* getassetmgr()
 {
 	return theapp->activity->assetManager;
-}
-
-
-#include <jni.h>
-#include <dlfcn.h>
-ASensorManager* AcquireASensorManagerInstance(struct android_app* app) {
-  if (!app) return 0;
-
-  typedef ASensorManager* (*PF_GETINSTANCEFORPACKAGE)(const char* name);
-  void* androidHandle = dlopen("libandroid.so", RTLD_NOW);
-  PF_GETINSTANCEFORPACKAGE getInstanceForPackageFunc = (PF_GETINSTANCEFORPACKAGE)dlsym(
-      androidHandle, "ASensorManager_getInstanceForPackage");
-  if (getInstanceForPackageFunc) {
-    JNIEnv* env = 0;
-    (*app->activity->vm)->AttachCurrentThread(app->activity->vm, &env, 0);
-
-    jclass android_content_Context = (*env)->GetObjectClass(env, app->activity->clazz);
-    jmethodID midGetPackageName = (*env)->GetMethodID(env, android_content_Context, "getPackageName", "()Ljava/lang/String;");
-    void* packageName = (*env)->CallObjectMethod(env, app->activity->clazz, midGetPackageName);
-    const char* nativePackageName = (*env)->GetStringUTFChars(env, packageName, 0);
-    ASensorManager* mgr = getInstanceForPackageFunc(nativePackageName);
-    (*env)->ReleaseStringUTFChars(env, packageName, nativePackageName);
-
-    (*app->activity->vm)->DetachCurrentThread(app->activity->vm);
-    if (mgr) {
-      dlclose(androidHandle);
-      return mgr;
-    }
-  }
-
-  typedef ASensorManager* (*PF_GETINSTANCE)();
-  PF_GETINSTANCE getInstanceFunc = (PF_GETINSTANCE)dlsym(androidHandle, "ASensorManager_getInstance");
-  // by all means at this point, ASensorManager_getInstance should be available
-  dlclose(androidHandle);
-
-  return getInstanceFunc();
 }
 
 
@@ -294,19 +198,14 @@ void android_main(struct android_app* app)
 	LOGI("externalDataPath=%s\n",theapp->activity->externalDataPath);
 	LOGI("assetManager=%p\n",theapp->activity->assetManager);
 
-
-	sensorManager = AcquireASensorManagerInstance(app);
-	sensorEventQueue = ASensorManager_createEventQueue(sensorManager, theapp->looper, LOOPER_ID_USER, 0, 0);
-	gyr = ASensorManager_getDefaultSensor(sensorManager, ASENSOR_TYPE_GYROSCOPE);
-	acc = ASensorManager_getDefaultSensor(sensorManager, ASENSOR_TYPE_ACCELEROMETER);
-	mag = ASensorManager_getDefaultSensor(sensorManager, ASENSOR_TYPE_MAGNETIC_FIELD);
-
+	androidsensor_init(app);
 
 	void* all = origin_create(_ndkmain_, 0, 0, 0);
 	void* thr = bootup_create(_guiapp_, 0, 0, 0);
 	bootup_delete(thr);
 	origin_delete(all);
 
+	androidsensor_exit(app);
 
 	exit(0);
 }

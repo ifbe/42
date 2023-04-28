@@ -102,140 +102,159 @@ void freecam_rotate(vec3 a, vec3 b, vec3 axis, float angle)
 	quaternion_operation(a, axis, angle);
 	quaternion_operation(b, axis, angle);
 }
-static int freecam_event_obb(
+static int freecam_event_obb_char(
 	_obj* act, struct style* part,
 	_obj* win, struct style* geom,
 	struct event* ev, int len)
 {
-	short* t;
-	float nx,ny,nz;
-	vec3 up = {0.0, 0.0, 1.0};
-	//say("freecam_event@%llx:%x,%x\n", act, ev->why, ev->what);
-
 	struct fstyle* obb = &geom->fshape;
-	if('p' == (ev->what&0xff))
+	switch(ev->why){
+		case 'a':freecam_move(obb->vc, obb->vr,-1.0);break;
+		case 'd':freecam_move(obb->vc, obb->vr, 1.0);break;
+		case 's':freecam_move(obb->vc, obb->vf,-1.0);break;
+		case 'w':freecam_move(obb->vc, obb->vf, 1.0);break;
+		case 'f':freecam_move(obb->vc, obb->vt,-1.0);break;
+		case 'r':freecam_move(obb->vc, obb->vt, 1.0);break;
+
+		case 'j':freecam_rotate(obb->vr, obb->vf, obb->vt, 0.05);break;
+		case 'l':freecam_rotate(obb->vr, obb->vf, obb->vt,-0.05);break;
+		case 'i':freecam_rotate(obb->vf, obb->vt, obb->vr, 0.05);break;
+		case 'k':freecam_rotate(obb->vf, obb->vt, obb->vr,-0.05);break;
+		case 'u':freecam_rotate(obb->vr, obb->vt, obb->vf,-0.05);break;
+		case 'o':freecam_rotate(obb->vr, obb->vt, obb->vf, 0.05);break;
+	}
+	return 0;
+}
+static int freecam_event_obb_joy(
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	struct event* ev, int len)
+{
+	struct fstyle* obb = &geom->fshape;
+	short* t = (void*)ev;
+	if(joy_left == (ev->what & joy_mask))
 	{
-		if(0x2d70 == ev->what){
-			act->whdf.iw0 = 0;
-			return 0;
+		if((t[0]<-4096)|(t[0]>4096)){
+			obb->vc[0] += t[0]/256;
 		}
-
-		t = (void*)ev;
-		if(0x2b70 == ev->what){
-			act->whdf.ix0 = act->whdf.ixn = t[0];
-			act->whdf.iy0 = act->whdf.iyn = t[1];
-			act->whdf.iw0 = 1;
-			return 0;
+		if((t[1]<-4096)|(t[1]>4096)){
+			obb->vc[1] += t[1]/256;
 		}
-		if(0x4070 == ev->what){
-			if(0 == act->whdf.iw0)return 0;
-			quaternion_operation(obb->vf, obb->vr, (t[1] - act->whdf.iyn)/100.0);
-			quaternion_operation(obb->vt, obb->vr, (t[1] - act->whdf.iyn)/100.0);
-
-			quaternion_operation(obb->vr, up, (t[0] - act->whdf.ixn)/100.0);
-			quaternion_operation(obb->vf, up, (t[0] - act->whdf.ixn)/100.0);
-			quaternion_operation(obb->vt, up, (t[0] - act->whdf.ixn)/100.0);
-
-			//freecam_rotate(obb->vr, obb->vf, up, (t[0] - act->whdf.ixn)/100.0);
-			//freecam_rotate(obb->vf, obb->vt, obb->vr, (t[1] - act->whdf.iyn)/100.0);
-			act->whdf.ixn = t[0];
-			act->whdf.iyn = t[1];
+		if(t[3] & joyl_left)		//x-
+		{
+			obb->vc[0] -= 10;
 		}
+		if(t[3] & joyl_right)		//x+
+		{
+			obb->vc[0] += 10;
+		}
+		if(t[3] & joyl_down)		//y-
+		{
+			obb->vc[1] -= 10;
+		}
+		if(t[3] & joyl_up)			//y+
+		{
+			obb->vc[1] += 10;
+		}
+		if(t[3] & joyl_trigger)		//z-
+		{
+			obb->vc[2] -= 10;
+		}
+		if(t[3] & joyl_bumper)		//z+
+		{
+			obb->vc[2] += 10;
+		}
+	}
+	else if(joy_right == (ev->what & joy_mask))
+	{
+		if((t[0]<-4096)|(t[0]>4096)){
+			freecam_rotate(obb->vr, obb->vf, obb->vt,-t[0]/1048576.0);
+		}
+		if((t[1]<-4096)|(t[1]>4096)){
+			freecam_rotate(obb->vf, obb->vt, obb->vr, t[1]/1048576.0);
+		}
+		if(t[3] & joyr_left)		//x-
+		{
+			freecam_rotate(obb->vr, obb->vf, obb->vt, 0.05);
+		}
+		if(t[3] & joyr_right)		//x+
+		{
+			freecam_rotate(obb->vr, obb->vf, obb->vt,-0.05);
+		}
+		if(t[3] & joyr_down)		//y-
+		{
+			freecam_rotate(obb->vf, obb->vt, obb->vr,-0.05);
+		}
+		if(t[3] & joyr_up)			//y+
+		{
+			freecam_rotate(obb->vf, obb->vt, obb->vr, 0.05);
+		}
+		if(t[3] & joyr_trigger)		//z-
+		{
+			freecam_rotate(obb->vr, obb->vt, obb->vf,-0.05);
+		}
+		if(t[3] & joyr_bumper)		//z+
+		{
+			freecam_rotate(obb->vr, obb->vt, obb->vf, 0.05);
+		}
+	}
+	return 0;
+}
+static int freecam_event_obb_point(
+	_obj* act, struct style* part,
+	_obj* wor, struct style* geom,
+	_obj* wnd, struct style* area,
+	struct event* ev, int len)
+{
+	int type = (ev->what>>8)&0xff;
+	if(0x2d == type){
+		act->whdf.iw0 = 0;
 		return 0;
 	}
-	else if('j' == (ev->what&0xff))
-	{
-		t = (void*)ev;
-		if(joy_left == (ev->what & joy_mask))
-		{
-			if((t[0]<-4096)|(t[0]>4096)){
-				obb->vc[0] += t[0]/256;
-			}
-			if((t[1]<-4096)|(t[1]>4096)){
-				obb->vc[1] += t[1]/256;
-			}
-			if(t[3] & joyl_left)		//x-
-			{
-				obb->vc[0] -= 10;
-			}
-			if(t[3] & joyl_right)		//x+
-			{
-				obb->vc[0] += 10;
-			}
-			if(t[3] & joyl_down)		//y-
-			{
-				obb->vc[1] -= 10;
-			}
-			if(t[3] & joyl_up)			//y+
-			{
-				obb->vc[1] += 10;
-			}
-			if(t[3] & joyl_trigger)		//z-
-			{
-				obb->vc[2] -= 10;
-			}
-			if(t[3] & joyl_bumper)		//z+
-			{
-				obb->vc[2] += 10;
-			}
-		}
-		else if(joy_right == (ev->what & joy_mask))
-		{
-			if((t[0]<-4096)|(t[0]>4096)){
-				freecam_rotate(obb->vr, obb->vf, obb->vt,-t[0]/1048576.0);
-			}
-			if((t[1]<-4096)|(t[1]>4096)){
-				freecam_rotate(obb->vf, obb->vt, obb->vr, t[1]/1048576.0);
-			}
-			if(t[3] & joyr_left)		//x-
-			{
-				freecam_rotate(obb->vr, obb->vf, obb->vt, 0.05);
-			}
-			if(t[3] & joyr_right)		//x+
-			{
-				freecam_rotate(obb->vr, obb->vf, obb->vt,-0.05);
-			}
-			if(t[3] & joyr_down)		//y-
-			{
-				freecam_rotate(obb->vf, obb->vt, obb->vr,-0.05);
-			}
-			if(t[3] & joyr_up)			//y+
-			{
-				freecam_rotate(obb->vf, obb->vt, obb->vr, 0.05);
-			}
-			if(t[3] & joyr_trigger)		//z-
-			{
-				freecam_rotate(obb->vr, obb->vt, obb->vf,-0.05);
-			}
-			if(t[3] & joyr_bumper)		//z+
-			{
-				freecam_rotate(obb->vr, obb->vt, obb->vf, 0.05);
-			}
-		}
-	}
-	else if(_char_ == ev->what){
-		switch(ev->why){
-			case 'a':freecam_move(obb->vc, obb->vr,-1.0);break;
-			case 'd':freecam_move(obb->vc, obb->vr, 1.0);break;
-			case 's':freecam_move(obb->vc, obb->vf,-1.0);break;
-			case 'w':freecam_move(obb->vc, obb->vf, 1.0);break;
-			case 'f':freecam_move(obb->vc, obb->vt,-1.0);break;
-			case 'r':freecam_move(obb->vc, obb->vt, 1.0);break;
 
-			case 'j':freecam_rotate(obb->vr, obb->vf, obb->vt, 0.05);break;
-			case 'l':freecam_rotate(obb->vr, obb->vf, obb->vt,-0.05);break;
-			case 'i':freecam_rotate(obb->vf, obb->vt, obb->vr, 0.05);break;
-			case 'k':freecam_rotate(obb->vf, obb->vt, obb->vr,-0.05);break;
-			case 'u':freecam_rotate(obb->vr, obb->vt, obb->vf,-0.05);break;
-			case 'o':freecam_rotate(obb->vr, obb->vt, obb->vf, 0.05);break;
-		}
+	short* t = (void*)ev;
+	vec3 up = {0.0, 0.0, 1.0};
+	struct fstyle* obb = &geom->fshape;
+	if(0x2b == type){
+		act->whdf.ix0 = act->whdf.ixn = t[0];
+		act->whdf.iy0 = act->whdf.iyn = t[1];
+		act->whdf.iw0 = 1;
+		return 0;
 	}
+	if(0x40 == type){
+		if(0 == act->whdf.iw0)return 0;
+		quaternion_operation(obb->vf, obb->vr, (t[1] - act->whdf.iyn)/100.0);
+		quaternion_operation(obb->vt, obb->vr, (t[1] - act->whdf.iyn)/100.0);
 
-	return 1;
+		quaternion_operation(obb->vr, up, (t[0] - act->whdf.ixn)/100.0);
+		quaternion_operation(obb->vf, up, (t[0] - act->whdf.ixn)/100.0);
+		quaternion_operation(obb->vt, up, (t[0] - act->whdf.ixn)/100.0);
+
+		//freecam_rotate(obb->vr, obb->vf, up, (t[0] - act->whdf.ixn)/100.0);
+		//freecam_rotate(obb->vf, obb->vt, obb->vr, (t[1] - act->whdf.iyn)/100.0);
+		act->whdf.ixn = t[0];
+		act->whdf.iyn = t[1];
+	}
+	return 0;
+}
+static int freecam_event_obb(
+	_obj* act, struct style* part,
+	_obj* wor, struct style* geom,
+	_obj* wnd, struct style* area,
+	struct event* ev, int len)
+{
+	int t = (ev->what&0xff);
+	if(_char_ == ev->what)return freecam_event_obb_char(act,part, wor,geom, ev,len);
+	else if('j' == t)return freecam_event_obb_joy(act,part, wor,geom, ev,len);
+	else if('p' == t)return freecam_event_obb_point(act,part, wor,geom, wnd,area, ev,len);
+	else if('t' == t)return freecam_event_obb_point(act,part, wor,geom, wnd,area, ev,len);
+
+	return 0;
 }
 static int freecam_event_frus(
 	_obj* act, struct style* part,
-	_obj* win, struct style* geom,
+	_obj* wor, struct style* geom,
+	_obj* wnd, struct style* area,
 	struct event* ev, int len)
 {
 	short* t;
@@ -905,7 +924,7 @@ static int freecam_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, void* ar
 	return 0;
 //say("@freecam_bywnd_read.end\n");
 }
-static int freecam_bywnd_write(_obj* ent,struct event* ev)
+static int freecam_bywnd_write(_obj* ent,void* ef, _obj* wnd,void* wf, struct event* ev)
 {
 //find world from camera
 	struct privdata* own = ent->OWNBUF;
@@ -914,8 +933,8 @@ static int freecam_bywnd_write(_obj* ent,struct event* ev)
 	_obj* wor = rel->pchip;
 	struct style* geom = rel->pfoot;
 	switch(own->evtype){
-	case 'f':return freecam_event_frus(ent,0, wor,geom, ev,0);break;
-	default:return freecam_event_obb(ent,0, wor,geom, ev,0);break;
+	case 'f':return freecam_event_frus(ent,0, wor,geom, wnd,wf, ev,0);break;
+	default:return freecam_event_obb(ent,0, wor,geom, wnd,wf, ev,0);break;
 	}
 	return 0;
 }
@@ -992,8 +1011,12 @@ static int freecam_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 			return 0;
 		}
 	}
-	freecam_bywnd_write(ent, buf);
-	return 0;
+
+	_obj* selfnode = ent; //stack[sp-1].pchip;
+	void* selffoot = stack[sp-1].pfoot;
+	_obj* callnode = stack[sp-2].pchip;
+	void* callfoot = stack[sp-2].pfoot;
+	return freecam_bywnd_write(selfnode,selffoot, callnode,callfoot, buf);
 }
 static void freecam_detach(struct halfrel* self, struct halfrel* peer)
 {

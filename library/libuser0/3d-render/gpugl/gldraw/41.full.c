@@ -614,7 +614,9 @@ int fullwindow_chooseandsend(_obj* wnd,void* foot, _syn* stack,int sp, void* arg
 		say("x=%f,y=%f,c=%f,d=%f\n", x, y, color[0], depth[0]);
 	}
 */
-	if(0x4070 == ev->what){
+	//change focus
+	ret = ev->what&0xff;
+	if( ('p' == ret)|('t' == ret) ){
 		rel = wnd->oreln;
 		while(1){
 			if(0 == rel)return 0;
@@ -638,6 +640,8 @@ int fullwindow_chooseandsend(_obj* wnd,void* foot, _syn* stack,int sp, void* arg
 		}
 		return 0;
 	}
+
+	//android case
 	else if(_quat_ == cmd){
 		rel = wnd->oreln;
 		while(1){
@@ -650,6 +654,8 @@ int fullwindow_chooseandsend(_obj* wnd,void* foot, _syn* stack,int sp, void* arg
 		}
 		return 0;
 	}
+
+	//other event send to focus
 	else{
 		rel = wnd->gl41list.glevto;
 		if(0 == rel)rel = wnd->oreln;

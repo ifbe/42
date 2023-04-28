@@ -21,9 +21,10 @@ struct sunbuf{
 
 char* spotlit_glsl_v =
 GLSL_VERSION
-"layout(location = 0)in mediump vec3 vertex;\n"
-"layout(location = 1)in mediump vec2 texuvw;\n"
-"out mediump vec2 uvw;\n"
+GLSL_PRECISION
+"layout(location = 0)in vec3 vertex;\n"
+"layout(location = 1)in vec2 texuvw;\n"
+"out vec2 uvw;\n"
 "uniform mat4 cammvp;\n"
 "void main(){\n"
 	"uvw = texuvw;\n"
@@ -32,15 +33,16 @@ GLSL_VERSION
 
 char* spotlit_glsl_f =
 GLSL_VERSION
+GLSL_PRECISION
 "uniform sampler2D shadowmap;\n"
-"in mediump vec2 uvw;\n"
-"layout(location = 0)out mediump vec4 FragColor;\n"
+"in vec2 uvw;\n"
+"layout(location = 0)out vec4 FragColor;\n"
 "void main(){\n"
 	//"FragColor = vec4(texture(tex0, uvw).rgb, 1.0);\n"
-	"mediump float n = 1.0;"
-	"mediump float f = 10000.0;"
-	"mediump float d = texture(shadowmap, uvw).r;"
-	"mediump float c = (2.0 * n) / (f + n - d * (f - n));"
+	"float n = 1.0;"
+	"float f = 10000.0;"
+	"float d = texture(shadowmap, uvw).r;"
+	"float c = (2.0 * n) / (f + n - d * (f - n));"
 	"FragColor = vec4(c, c, c, 1.0);\n"
 "}\n";
 

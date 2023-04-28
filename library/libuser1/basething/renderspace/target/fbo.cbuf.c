@@ -11,9 +11,10 @@ void gl41data_insert(_obj* ctx, int type, void* data, int cnt);
 
 char* teevee_glsl_v =
 GLSL_VERSION
-"layout(location = 0)in mediump vec3 vertex;\n"
-"layout(location = 1)in mediump vec2 texuvw;\n"
-"out mediump vec2 uvw;\n"
+GLSL_PRECISION
+"layout(location = 0)in vec3 vertex;\n"
+"layout(location = 1)in vec2 texuvw;\n"
+"out vec2 uvw;\n"
 "uniform mat4 cammvp;\n"
 "void main(){\n"
 	"uvw = texuvw;\n"
@@ -22,14 +23,15 @@ GLSL_VERSION
 
 char* teevee_glsl_f =
 GLSL_VERSION
-"in mediump vec2 uvw;\n"
-"out mediump vec4 FragColor;\n"
+GLSL_PRECISION
+"in vec2 uvw;\n"
+"out vec4 FragColor;\n"
 "uniform sampler2D tex0;\n"
 "void main(){\n"
-	"mediump float dx = uvw.x-0.5;\n"
-	"mediump float dy = uvw.y-0.5;\n"
-	"mediump float ff = max(0.0, 1.0-(dx*dx+dy*dy)*4);\n"
-	"mediump vec3 rgb = ff*texture(tex0, uvw).rgb;\n"
+	"float dx = uvw.x-0.5;\n"
+	"float dy = uvw.y-0.5;\n"
+	"float ff = max(0.0, 1.0-(dx*dx+dy*dy)*4);\n"
+	"vec3 rgb = ff*texture(tex0, uvw).rgb;\n"
 	"FragColor = vec4(rgb, 1.0);\n"
 "}\n";
 

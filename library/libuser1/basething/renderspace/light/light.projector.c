@@ -20,9 +20,10 @@ struct sunbuf{
 
 char* projector_glsl_v =
 GLSL_VERSION
-"layout(location = 0)in mediump vec3 vertex;\n"
-"layout(location = 1)in mediump vec2 texuvw;\n"
-"out mediump vec2 uvw;\n"
+GLSL_PRECISION
+"layout(location = 0)in vec3 vertex;\n"
+"layout(location = 1)in vec2 texuvw;\n"
+"out vec2 uvw;\n"
 "uniform mat4 cammvp;\n"
 "void main(){\n"
 	"uvw = texuvw;\n"
@@ -31,16 +32,17 @@ GLSL_VERSION
 
 char* projector_glsl_f =
 GLSL_VERSION
-"in mediump vec2 uvw;\n"
-"layout(location = 0)out mediump vec4 FragColor;\n"
+GLSL_PRECISION
+"in vec2 uvw;\n"
+"layout(location = 0)out vec4 FragColor;\n"
 "uniform sampler2D shadowmap;\n"
 "uniform sampler2D prjtormap;\n"
 "void main(){\n"
-	"mediump float n = 1.0;\n"
-	"mediump float f = 10000.0;\n"
-	"mediump float d = texture(shadowmap, uvw).r;\n"
-	"mediump float c = (2.0 * n) / (f + n - d * (f - n));\n"
-	"mediump vec3 tmp = 0.9*vec3(c) + 0.1*texture(prjtormap, uvw).bgr;\n"
+	"float n = 1.0;\n"
+	"float f = 10000.0;\n"
+	"float d = texture(shadowmap, uvw).r;\n"
+	"float c = (2.0 * n) / (f + n - d * (f - n));\n"
+	"vec3 tmp = 0.9*vec3(c) + 0.1*texture(prjtormap, uvw).bgr;\n"
 	"FragColor = vec4(tmp, 1.0);\n"
 "}\n";
 

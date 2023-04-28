@@ -16,6 +16,13 @@ allprojects {
     }
 }
 
+beforeEvaluate {
+    println "gradle beforeEvaluate"
+}
+afterEvaluate {
+    println "gradle afterEvaluate"
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }

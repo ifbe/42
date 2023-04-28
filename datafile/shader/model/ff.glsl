@@ -12,9 +12,6 @@ uniform sampler2D shadowmap;
 uniform sampler2D prjtormap;
 uniform sampler2D iblenvmap;
 uniform mat4 sunmvp;
-vec3 LA = sunrgb;
-vec3 LD = sunrgb;
-vec3 LS = sunrgb;
 vec3 KA = vec3(0.231250, 0.231250, 0.231250);
 vec3 KD = vec3(0.277500, 0.277500, 0.277500);
 vec3 KS = vec3(0.773911, 0.773911, 0.773911);
@@ -128,6 +125,9 @@ vec3 imagelight(){
 }
 
 vec3 dirlight(){
+vec3 LA = sunrgb;
+vec3 LD = sunrgb;
+vec3 LS = sunrgb;
 	vec4 tmp = sunmvp * vec4(objxyz, 1.0);
 	tmp /= tmp.w;
 	tmp = (tmp+1.0)*0.5;
@@ -150,6 +150,9 @@ vec3 dirlight(){
 }
 
 vec3 spotlight(){
+vec3 LA = sunrgb;
+vec3 LD = sunrgb;
+vec3 LS = sunrgb;
 	vec3 N = normalize(normal);
 	vec3 L = normalize(sunxyz - objxyz);
 	float dotNL = dot(N, L);
@@ -177,6 +180,9 @@ vec3 spotlight(){
 }
 
 vec3 projector(){
+vec3 LA = sunrgb;
+vec3 LD = sunrgb;
+vec3 LS = sunrgb;
 	vec3 N = normalize(normal);
 	vec3 L = normalize(sunxyz - objxyz);
 	float dotNL = dot(N, L);
@@ -205,6 +211,9 @@ vec3 projector(){
 }
 
 vec3 pointlight(){
+vec3 LA = sunrgb;
+vec3 LD = sunrgb;
+vec3 LS = sunrgb;
 	vec3 N = normalize(normal);
 	vec3 L = normalize(sunxyz - objxyz);
 	float SN = dot(N, L);

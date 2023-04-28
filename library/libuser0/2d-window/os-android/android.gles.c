@@ -48,7 +48,9 @@ static int height = 0;
 static _obj* thewnd = 0;
 static int candraw = 0;
 //
-struct artery* fusion = 0;
+struct artery* fusion_easyag = 0;
+struct artery* fusion_madgwick = 0;
+//
 int age[3] = {0};
 vec3 sensor[3] = {
 	{0,0,0},
@@ -125,9 +127,9 @@ void* window_alloc()
 void initwindow()
 {
 	while(0==height)checkevent();
-	//fusion = arterycreate(_easyag_, 0, 0, 0);
-	//fusion = arterycreate(_mahony_, 0, 0, 0);
-	fusion = artery_create(_madgwick_, 0, 0, 0);
+	fusion_easyag = artery_create(_easyag_, 0, 0, 0);
+	//fusion = artery_create(_mahony_, 0, 0, 0);
+	fusion_madgwick = artery_create(_madgwick_, 0, 0, 0);
 }
 void freewindow()
 {
@@ -234,6 +236,10 @@ void closewindow(struct android_app* theapp)
 		if(opaque[j])bzero(&opaque[j]->dst, sizeof(struct gldst));
 	}*/
 }
+
+
+
+
 void sendtowindow_sensor(int k, float* v)
 {
 	//say("%c: %f,%f,%f\n", k, v[0],v[1],v[2]);
@@ -258,15 +264,20 @@ void sendtowindow_sensor(int k, float* v)
 		age[2] = 1;
 		return;		//record only
 	}
-	if(0 == fusion)return;
 	if(0 == age[0])return;
 	if(0 == age[1])return;
-	if(0 == age[2])return;
 
 	vec4 quaternion;
-	//easyag_modify(fusion,0, sensor,0, quaternion,0);
-	//mahony_modify(fusion,0, sensor,0, quaternion,0);
-	madgwick_modify(fusion,0, sensor,0, quaternion,0);
+	if(0 == age[2]){
+		if(0 == fusion_easyag)return;
+		easyag_modify(fusion_easyag,0, sensor,0, quaternion,0);
+	}
+	else{
+		//mahony_modify(fusion,0, sensor,0, quaternion,0);
+		if(0 == fusion_madgwick)return;
+		madgwick_modify(fusion_madgwick,0, sensor,0, quaternion,0);
+	}
+	//say("q=%f,%f,%f,%f\n",quaternion[0],quaternion[1],quaternion[2],quaternion[3]);
 
 	struct halfrel st[32];
 	window_give(thewnd,0, st,0, 0,_quat_, quaternion,6);

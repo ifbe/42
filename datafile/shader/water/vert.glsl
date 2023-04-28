@@ -1,8 +1,8 @@
-layout(location = 0)in mediump vec3 v;
-layout(location = 1)in mediump vec2 t;
-out mediump vec3 normal;
-out mediump vec2 texuvw;
-out mediump vec3 angle0;
+layout(location = 0)in vec3 v;
+layout(location = 1)in vec2 t;
+out vec3 normal;
+out vec2 texuvw;
+out vec3 angle0;
 uniform vec3 camxyz;
 uniform mat4 cammvp;
 void main(){

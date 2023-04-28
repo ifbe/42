@@ -37,9 +37,9 @@ skyhaha{
 }
 skygeom{
 c: 0.0, 0.0, 0.0
-r: 10000000.0, 0.0, 0.0
-f: 0.0, 10000000.0, 0.0
-t: 0.0, 0.0, 10000000.0
+r: 1000000.0, 0.0, 0.0
+f: 0.0, 1000000.0, 0.0
+t: 0.0, 0.0, 1000000.0
 }
 
 treehaha{
@@ -92,9 +92,6 @@ q:1.0, 1.0
 
 
 <relation>
-#glass depends on thefbo
-(glass, 0, fbo) -> (thefbo, mirrrect, mvp)
-
 #virtual depends on inner objects
 (virtual, skygeom, 0) -> (texball, skyhaha, 0)
 (virtual, treegeom, 0) -> (tree, treehaha, 0)

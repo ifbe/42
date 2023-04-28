@@ -110,16 +110,16 @@ q:0.333333333, 0.333333333
 
 <relation>
 #reality depends on
-(reality, wingeom, 0) -> (screen, winslot, 0)
-(reality, eyegeom, 0) -> (theeye, eyeslot, 0)
+(@reality, @wingeom) -> (@screen, @winslot)
+(@reality, @eyegeom) -> (@theeye, @eyeslot)
 
 #virtual depends on
-(virtual, skygeom, 0) -> (sky, skyslot, 0)
-(virtual, itemgeom, 0) -> (tree, itemslot, 0)
-(virtual, viewgeom, 0) -> (vrglass, viewslot, in)
-(virtual, freegeom, 0) -> (freecam, freeslot, in)
+(@virtual, @skygeom) -> (@sky, @skyslot)
+(@virtual, @itemgeom) -> (@tree, @itemslot)
+(@virtual, @viewgeom) -> (@vrglass, in@viewslot)
+(@virtual, @freegeom) -> (@freecam, in@freeslot)
 
 #glwnd depends on
-(opengl, viewrect, 0) -> (vrglass, 0, 0)
-(opengl, freerect, 0) -> (freecam, 0, 0)
+(@opengl, @viewrect) -> (@vrglass, 0)
+(@opengl, @freerect) -> (@freecam, 0)
 </relation>

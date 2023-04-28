@@ -17,10 +17,11 @@ struct glassbuf{
 
 char* glass_glsl_v =
 GLSL_VERSION
-"layout(location = 0)in mediump vec3 vertex;\n"
-"layout(location = 1)in mediump vec2 texuvw;\n"
+GLSL_PRECISION
+"layout(location = 0)in vec3 vertex;\n"
+"layout(location = 1)in vec2 texuvw;\n"
 "uniform mat4 cammvp;\n"
-"out mediump vec2 uvw;\n"
+"out vec2 uvw;\n"
 "void main()\n"
 "{\n"
 	"uvw = texuvw;\n"
@@ -29,12 +30,13 @@ GLSL_VERSION
 
 char* glass_glsl_f =
 GLSL_VERSION
+GLSL_PRECISION
 "uniform sampler2D tex0;\n"
-"in mediump vec2 uvw;\n"
-"out mediump vec4 FragColor;\n"
+"in vec2 uvw;\n"
+"out vec4 FragColor;\n"
 "void main()\n"
 "{\n"
-	"mediump vec3 c = texture(tex0, uvw).rgb * vec3(1.0, 0.8, 0.6);\n"
+	"vec3 c = texture(tex0, uvw).rgb * vec3(1.0, 0.8, 0.6);\n"
 	"FragColor = vec4(c, 0.5);\n"
 "}\n";
 

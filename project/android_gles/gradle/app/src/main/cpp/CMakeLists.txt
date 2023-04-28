@@ -401,6 +401,7 @@ ${LIB42}/libuser0/3d-render/gpugl/globj/globj.vertex.c
 ${LIB42}/libuser0/control-gamepad/android/android.gamepad.c
 ${LIB42}/libuser0/control-systray/android/android.tray.c
 ${LIB42}/libuser0/control-cmdline/android/android.stdio.c
+${LIB42}/libuser0/sensor-input/os-android/android.sensor.c
 ${LIB42}/libuser0/sound-micphone/os-android/android.mic.c
 ${LIB42}/libuser0/sound-speaker/os-android/android.speaker.c
 ${LIB42}/libuser0/gadget-sensor/sensor.ahrs.c

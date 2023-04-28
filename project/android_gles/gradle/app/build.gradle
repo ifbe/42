@@ -42,9 +42,17 @@ android {
     namespace 'com.example.native_activity'
 
 }
-
+beforeEvaluate {
+    println "app beforeEvaluate"
+}
 afterEvaluate {
-    assembleDebug.doLast {
+    println "app afterEvaluate.before"
+
+    mergeDebugAssets.doFirst {
+        println "mergeDebugAssets.doFirst"
+    }
+    mergeDebugAssets.doLast {
+        println "mergeDebugAssets.doLast"
         println "copy.before"
         copy{
             from "../../../../datafile"
@@ -52,6 +60,15 @@ afterEvaluate {
         }
         println "copy.after"
     }
+
+    assembleDebug.doFirst {
+        println "assembleDebug.doFirst"
+    }
+    assembleDebug.doLast {
+        println "assembleDebug.doLast"
+    }
+
+    println "app afterEvaluate.after"
 }
 
 dependencies {
