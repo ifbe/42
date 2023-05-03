@@ -2,27 +2,23 @@
 #define _src_ hex32('s','r','c',0)
 #define _dst_ hex32('d','s','t',0)
 
-#define halfT 0.001
 #define Kp 100.0f
 #define Ki 0.005f
-
-//????
-static float integralx;
-static float integraly;
-static float integralz;
-
-//quaternion
-static float q[4];
-#define qx q[0]
-#define qy q[1]
-#define qz q[2]
-#define qw q[3]
+#define qx per->q[0]
+#define qy per->q[1]
+#define qz per->q[2]
+#define qw per->q[3]
+struct perimu{
+	float q[4];
+	float integralx, integraly, integralz;
+	float dt;
+};
 
 
 
 
 //accel + gyro
-void imuupdate(
+void imuupdate(struct perimu* per,
 	float gx, float gy, float gz,
 	float ax, float ay, float az)
 {
@@ -46,18 +42,18 @@ void imuupdate(
 	ey = vz*ax - vx*az;
 	ez = vx*ay - vy*ax;
 
-	integralx += ex*Ki;
-	integraly += ey*Ki;
-	integralz += ez*Ki;
+	per->integralx += ex*Ki;
+	per->integraly += ey*Ki;
+	per->integralz += ez*Ki;
 
-	gx = gx + Kp*ex + integralx;
-	gy = gy + Kp*ey + integraly;
-	gz = gz + Kp*ez + integralz;
+	gx = gx + Kp*ex + per->integralx;
+	gy = gy + Kp*ey + per->integraly;
+	gz = gz + Kp*ez + per->integralz;
 
-	qw = qw + (-qx*gx - qy*gy - qz*gz)*halfT;
-	qx = qx + (qw*gx + qy*gz - qz*gy)*halfT;
-	qy = qy + (qw*gy - qx*gz + qz*gx)*halfT;
-	qz = qz + (qw*gz + qx*gy - qy*gx)*halfT;
+	qw = qw + (-qx*gx - qy*gy - qz*gz) * per->dt/2.0;
+	qx = qx + ( qw*gx + qy*gz - qz*gy) * per->dt/2.0;
+	qy = qy + ( qw*gy - qx*gz + qz*gx) * per->dt/2.0;
+	qz = qz + ( qw*gz + qx*gy - qy*gx) * per->dt/2.0;
 
 	norm = squareroot(qw*qw + qx*qx + qy*qy + qz*qz);
 	qw = qw / norm;
@@ -93,10 +89,11 @@ int easyag_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, v
 	float* f = (void*)buf;
 	say("	ii: %f,%f,%f,%f,%f,%f\n",f[0],f[1],f[2], f[3],f[4],f[5]);
 
-	imuupdate(f[0],f[1],f[2], f[3],f[4],f[5]);
-	say("	oo: %f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
+	struct perimu* per = (void*)art->priv_256b;
+	imuupdate(per, f[0],f[1],f[2], f[3],f[4],f[5]);
+	say("	oo: %f,%f,%f,%f\n",qx,qy,qz,qw);
 
-	give_data_into_peer(art,_dst_, stack,sp, 0,0, q,4);
+	give_data_into_peer(art,_dst_, stack,sp, 0,0, per->q,4);
 	return 0;
 }
 int easyag_detach(struct halfrel* self, struct halfrel* peer)
@@ -118,20 +115,24 @@ void easyag_search(_obj* ele)
 }
 void easyag_modify(_obj* ele, int foot, float* f, int cmd, float* buf, int len)
 {
-	imuupdate(f[0],f[1],f[2], f[3],f[4],f[5]);
+	struct perimu* per = (void*)ele->priv_256b;
+	imuupdate(per, f[0],f[1],f[2], f[3],f[4],f[5]);
 
-	buf[0] = q[0];
-	buf[1] = q[1];
-	buf[2] = q[2];
-	buf[3] = q[3];
+	buf[0] = qx;
+	buf[1] = qy;
+	buf[2] = qz;
+	buf[3] = qw;
 }
 void easyag_delete(_obj* ele)
 {
 }
 void easyag_create(_obj* ele, u8* arg)
 {
-	qw = 1.0;
-	qx = qy = qz = 0;
+	struct perimu* per = (void*)ele->priv_256b;
 
-	integralx = integraly = integralz = 0;
+	qx = qy = qz = 0;
+	qw = 1.0;
+
+	per->integralx = per->integraly = per->integralz = 0;
+	per->dt = 0.01;
 }

@@ -1,0 +1,119 @@
+<entity>
+terrain{
+fmt:terrain
+rgb:datafile/jpg/cartoon.jpg
+dep:datafile/png/heightmap.png
+}
+texball{
+fmt:texball
+arg:datafile/jpg/texball-earth.jpg
+}
+rabbit{
+fmt:stl3d
+arg:datafile/stl/bunny-lowpoly.stl
+}
+virtual{
+fmt:virtual
+}
+vrbox{
+fmt:vrbox
+}
+
+term{
+fmt:term
+}
+corner{
+fmt:corner
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+}
+</supply>
+
+
+<style>
+gndslot{
+}
+gndgeom{
+c: 0.0, 0.0, 0.0
+r: 1.1, 0.0, 0.0
+f: 0.0, 1.1, 0.0
+t: 0.0, 0.0, 1.1
+}
+
+skyslot{
+}
+skygeom{
+c: 0.0, 0.5, 1.0
+r: 0.1, 0.0, 0.0
+f: 0.0, 0.1, 0.0
+t: 0.0, 0.0, 0.1
+}
+
+rabhaha{
+}
+rabgeom{
+c: 0.5, 0.0, 1.0
+r: 0.1, 0.0, 0.0
+f: 0.0, 0.1, 0.0
+t: 0.0, 0.0, 0.1
+}
+
+viewslot{
+}
+viewgeom{
+c: 0.0, 0.0, 1.0
+q: 0.0,-0.2, 0.0
+r: 0.04, 0.0, 0.0, 0.04
+f: 0.0, 0.005, 0.0, 0.005
+t: 0.0, 0.0, 0.08, 0.08
+
+L: 0.0, 0.0, 0.0,-0.001
+R: 0.0, 0.0, 0.0, 0.001
+B: 0.0, 0.0, 0.0,-0.001
+T: 0.0, 0.0, 0.0, 0.001
+N: 0.0, 0.0, 0.0, 0.001
+F: 0.0, 0.0, 0.0, 1000.0
+}
+
+3dslot{
+}
+3drect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+
+termslot{
+}
+termrect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+
+uislot{
+}
+uirect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<relation>
+#first world
+(@virtual, @gndgeom) -> (@terrain, @gndslot)
+(@virtual, @skygeom) -> (@texball, @skyslot)
+(@virtual, @rabgeom) -> (@rabbit, @rabhaha)
+(@virtual, @viewgeom) -> (@vrbox, in@viewslot)
+
+#second world
+(@corner, @termrect) -> (@term, @termslot)
+
+#
+(@opengl, @3drect) -> (@vrbox, @3dslot)
+(@opengl, @uirect) -> (@corner, @uislot)
+</relation>

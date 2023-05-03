@@ -70,33 +70,50 @@ static void terrain_texprep(struct privdata* own, char* rgb, char* dep)
 		}
 	}
 }
-static void terrain_generate(float (*vbuf)[9], u16* ibuf, _obj* act, struct privdata* own)
+static int terrain_needredo(_obj* act, struct privdata* own, float x, float y)
+{
+	int texw = own->depth.w;
+	int texh = own->depth.h;
+	int texx = texw*x;
+	int texy = texh*y;
+
+	int cx = texw * act->whdf.fx0;
+	int cy = texh * act->whdf.fy0;
+	//say("cx=%d,cy=%d,texx=%d,texy=%d\n",cx,cy, texx,texy);
+
+	if(texx < cx-64)return 1;
+	if(texx > cx+64)return 1;
+	if(texy < cy-64)return 1;
+	if(texy > cy+64)return 1;
+	return 0;
+}
+static void terrain_generate(_obj* act, struct privdata* own, float (*vbuf)[9], u16* ibuf)
 {
 	int x,y,j;
 	int cx,cy,px,py;
-	int w = own->depth.w;
-	int h = own->depth.h;
+	int texw = own->depth.w;
+	int texh = own->depth.h;
 	u8* rgba = own->depth.data;
 
 	//cx,cy is integer
-	cx = w * act->whdf.fx0;
-	cy = h * act->whdf.fy0;
+	cx = texw * act->whdf.fx0;
+	cy = texh * act->whdf.fy0;
 	for(y=0;y<255;y++){
 		for(x=0;x<255;x++){
 			//xyz[-1,1]
 			px = cx+x-127;
 			py = cy+y-127;
-			vbuf[y*256+x][0] = (float)px/w*2 - 1.0;
-			vbuf[y*256+x][1] = (float)py/h*2 - 1.0;
+			vbuf[y*256+x][0] = (float)px/texw*2 - 1.0;
+			vbuf[y*256+x][1] = (float)py/texh*2 - 1.0;
 
 			//jpg inverts y?
-			py = h-1-py;
-			if((px < 0) | (px >= w) | (py < 0) | (py >= h))vbuf[y*256+x][2] = 0.0;
-			vbuf[y*256+x][2] = rgba[(w*py+px)*4]/255.0;
+			py = texh-1-py;
+			if((px < 0) | (px >= texw) | (py < 0) | (py >= texh))vbuf[y*256+x][2] = 0.0;
+			vbuf[y*256+x][2] = rgba[(texw*py+px)*4]/255.0;
 
 			//uv[0,1]
-			vbuf[y*256+x][6] = (float)px/w;
-			vbuf[y*256+x][7] = (float)py/h;
+			vbuf[y*256+x][6] = (float)px/texw;
+			vbuf[y*256+x][7] = (float)py/texh;
 			vbuf[y*256+x][8] = 0.0;
 		}
 	}
@@ -294,7 +311,7 @@ static void terrain_dx11draw(
 		if(0 == vbuf)return;
 		ibuf = own->vtx.ibuf;
 		if(0 == ibuf)return;
-		terrain_generate(vbuf, ibuf, act, own);
+		terrain_generate(act, own, vbuf, ibuf);
 		src->vbuf_enq += 1;
 
 		//ndc -> geom
@@ -383,32 +400,34 @@ static void terrain_gl41draw(
 	_obj* wrd, struct style* camg,
 	_obj* ctx, struct style* area)
 {
-	float w = vec3_getlen(geom->fs.vr);
+	float w = vec3_getlen(geom->fs.vr);		//terrian width
 	float h = vec3_getlen(geom->fs.vf);
-	float x = camg->frus.vc[0]/w/2 + 0.5;
+	float x = camg->frus.vc[0]/w/2 + 0.5;	//heightmap uv
 	float y = camg->frus.vc[1]/h/2 + 0.5;
-	float dx = x - act->whdf.fx0;
+/*	float dx = x - act->whdf.fx0;
 	float dy = y - act->whdf.fy0;
 	if(dx<0)dx = -dx;
 	if(dy<0)dy = -dy;
-	//say("x=%f,y=%f,dx=%f,dy=%f\n",x,y,dx,dy);
-
+	say("cx=%f,cy=%f,w=%f,h=%f,x=%f,y=%f,dx=%f,dy=%f\n",camg->frus.vc[0],camg->frus.vc[1], w,h, x,y, dx,dy);
+*/
 	struct privdata* own = act->OWNBUF;
 	struct mysrc* src = &own->gl41.src;
 	struct gldst* dst = &own->gl41.dst;
 	float* mat;
 	void* vbuf;
 	void* ibuf;
-	if((dx > 1.0/16)|(dy > 1.0/16)){
+	//if((dx > 1.0/16)|(dy > 1.0/16)){
+	if(terrain_needredo(act, own, x,y)){
 		act->whdf.fx0 = x;
 		act->whdf.fy0 = y;
+		//say("cx=%f,cy=%f,x=%f,y=%f\n",camg->frus.vc[0],camg->frus.vc[1], x,y);
 
 		//x0,y0,z0,dx,dy,dz -> ndc
 		vbuf = own->vtx.vbuf;
 		if(0 == vbuf)return;
 		ibuf = own->vtx.ibuf;
 		if(0 == ibuf)return;
-		terrain_generate(vbuf, ibuf, act, own);
+		terrain_generate(act, own, vbuf, ibuf);
 		src->vbuf_enq += 1;
 
 		//ndc -> geom

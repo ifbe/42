@@ -35,22 +35,34 @@ int checkevent()
 
 		if (ident == LOOPER_ID_USER) {
 			ASensorEvent ev;
-			float* v = ev.vector.v;
+			float* iv = ev.vector.v;
+            vec4 ov;
 			if( (0!=gyr) | (0!=acc) | (0!=mag) ){
 				while (ASensorEventQueue_getEvents(sensorEventQueue, &ev, 1) > 0) {
 					switch(ev.type){
 					case ASENSOR_TYPE_GYROSCOPE:
-						//say("gyr: x=%f,y=%f,z=%f\n", v[0], v[1], v[2]);
-						//say("time=%lld\n",ev.timestamp);
-						sendtowindow_sensor('g', v);
+						//say("gyr: x=%f,y=%f,z=%f,time=%lld\n", iv[0], iv[1], iv[2], ev.timestamp);
+                        ov[0] = iv[0];
+                        ov[1] = iv[1];
+                        ov[2] = iv[2];
+                        ov[3] = (float)ev.timestamp;
+						sendtowindow_sensor('g', ov);
 						break;
 					case ASENSOR_TYPE_ACCELEROMETER:
-						//say("acc: x=%f,y=%f,z=%f\n",-v[0],-v[1],-v[2]);
-						sendtowindow_sensor('a', v);
+						//say("acc: x=%f,y=%f,z=%f,time=%lld\n", iv[0], iv[1], iv[2], ev.timestamp);
+                        ov[0] = iv[0];
+                        ov[1] = iv[1];
+                        ov[2] = iv[2];
+                        ov[3] = (float)ev.timestamp;
+						sendtowindow_sensor('a', ov);
 						break;
 					case ASENSOR_TYPE_MAGNETIC_FIELD:
-						//say("mag: x=%f,y=%f,z=%f\n", v[0], v[1], v[2]);
-						sendtowindow_sensor('m', v);
+						//say("mag: x=%f,y=%f,z=%f,time=%lld\n", iv[0], iv[1], iv[2], ev.timestamp);
+                        ov[0] = iv[0];
+                        ov[1] = iv[1];
+                        ov[2] = iv[2];
+                        ov[3] = (float)ev.timestamp;
+						sendtowindow_sensor('m', ov);
 						break;
 					}
 				}

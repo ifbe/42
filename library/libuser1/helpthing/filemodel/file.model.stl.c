@@ -298,7 +298,7 @@ static void stl3d_gl41draw(
 	tc[2] = act->whdf.fz0 + f[5]*100.0;
 	stl3d_mat4vec3(td, mat, tc);
 	stl3d_mat4vec3(tc, mat, &act->whdf.fx0);
-	gl41solid_spheretest(wnd, 0xff00ff, tc);
+	//gl41solid_spheretest(wnd, 0xff00ff, tc);
 	gl41line(wnd, 0xffffff, tc, td);
 
 	vec3 t0,t1,t2;

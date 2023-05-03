@@ -22,13 +22,14 @@ static int vrbox_draw_gl41(
 
 	int j;
 	vec3 tr,tf,tt;
-	vec3 north,earth;
+	vec3 east,north,sky;
 	float lr = vec3_getlen(vr);
 	float lf = vec3_getlen(vf);
 	float lt = vec3_getlen(vt);
 	for(j=0;j<3;j++){
-		earth[j] = vc[j];
+		east[j] = vc[j];
 		north[j] = vc[j];
+		sky[j] = vc[j];
 		tr[j] = vr[j];
 		tf[j] = vf[j];
 		tt[j] = vt[j];
@@ -37,13 +38,17 @@ static int vrbox_draw_gl41(
 	vec3_setlen(tf, lf*0.5);
 	vec3_setlen(tt, lf*0.5);
 
-	earth[2] -= (lr+lt)*0.5;
-	gl41line(wnd,0xff00ff,vc,earth);
-	gl41opaque_sphere(wnd,0x8000ff00, earth,tr,tf,tt);
+	east[0] += (lr+lt)*0.5;
+	gl41line(wnd,0x0000ff,vc,east);
+	//gl41opaque_sphere(wnd,0x8000ff00, east,tr,tf,tt);
 
 	north[1] += (lr+lt)*0.5;
-	gl41line(wnd,0x00ffff,vc,north);
-	gl41opaque_sphere(wnd,0x8000ff00, north,tr,tf,tt);
+	gl41line(wnd,0x00ff00,vc,north);
+	//gl41opaque_sphere(wnd,0x8000ff00, north,tr,tf,tt);
+
+	sky[2] += (lr+lt)*0.5;
+	gl41line(wnd,0xff0000,vc,sky);
+	//gl41opaque_sphere(wnd,0x8000ff00, sky,tr,tf,tt);
 	return 0;
 }
 static int vrbox_event(_obj* act, struct fstyle* pin, struct event* ev, int len)

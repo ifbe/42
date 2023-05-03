@@ -308,6 +308,6 @@ int madgwick_create(_obj* ele, u8* arg)
 
 	per->integralx = per->integraly = per->integralz = 0.0;
 
-	per->dt = 0.016;
+	per->dt = 0.01;
 	return 1;
 }
