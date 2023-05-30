@@ -1,0 +1,34 @@
+<artery>
+dbgf32{
+fmt:dbgf32
+}
+</artery>
+
+
+<driver>
+lsm9ds1{
+fmt:lsm9ds1
+}
+</driver>
+
+
+<device>
+i2chost{
+fmt:i2c
+arg:/dev/i2c-1
+}
+</device>
+
+
+<bootup>
+pulser{
+fmt:pulser
+}
+</bootup>
+
+
+<relation>
+(i2chost, 0, 0) -> (lsm9ds1, 0, i2c)
+
+(pulser, 0, clk) -> (lsm9ds1, 0, clk)
+</relation>

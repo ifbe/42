@@ -75,6 +75,7 @@ libalgo/transform/trfm.laplace.c \
 libalgo/tree/tree.binary.c \
 libalgo/tree/tree.redblack.c \
 libalgo/tree/tree.bplus.c \
+libauto/dataio/vehicleio.c \
 libauto/estimate/filter/filter.kalman.c \
 libauto/control/motor/motor.foc.c \
 libchem/chem.equation.c \

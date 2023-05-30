@@ -14,6 +14,8 @@
 #define _Mavlink_ hex64('M','a','v','l','i','n','k',0)
 #define _nema0183_ hex64('n','e','m','a','0','1','8','3')
 #define _Nema0183_ hex64('N','e','m','a','0','1','8','3')
+#define _vehicle_ hex64('v','e','h','i','c','l','e',0)
+#define _Vehicle_ hex64('V','e','h','i','c','l','e',0)
 //
 #define _control_ hex64('c','o','n','t','r','o','l', 0)
 #define _crawler_ hex64('c','r','a','w','l','e','r', 0)
@@ -327,6 +329,18 @@ int nema0183server_attach(struct halfrel* self, struct halfrel* peer);
 int nema0183server_detach(struct halfrel* self, struct halfrel* peer);
 int nema0183server_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
 int nema0183server_read( _obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+int vehicleclient_create(_obj* ele, void* arg, int argc, u8** argv);
+int vehicleclient_delete(_obj* ele, void* arg);
+int vehicleclient_attach(struct halfrel* self, struct halfrel* peer);
+int vehicleclient_detach(struct halfrel* self, struct halfrel* peer);
+int vehicleclient_takeby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+int vehicleclient_giveby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+int vehicleserver_create(_obj* ele, void* arg, int argc, u8** argv);
+int vehicleserver_delete(_obj* ele, void* arg);
+int vehicleserver_attach(struct halfrel* self, struct halfrel* peer);
+int vehicleserver_detach(struct halfrel* self, struct halfrel* peer);
+int vehicleserver_takeby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+int vehicleserver_giveby( _obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
 //socket
 int proxyclient_create(_obj* ele, void* arg, int argc, u8** argv);
 int proxyclient_delete(_obj* ele, void* arg);
@@ -1186,6 +1200,24 @@ void* artery_create(u64 type, void* arg, int argc, u8** argv)
 		nema0183server_create(e, url, argc, argv);
 		return e;
 	}
+	if(_vehicle_ == type)
+	{
+		e = artery_alloc();
+		if(0 == e)return 0;
+
+		e->type = _vehicle_;
+		vehicleclient_create(e, url, argc, argv);
+		return e;
+	}
+	if(_Vehicle_ == type)
+	{
+		e = artery_alloc();
+		if(0 == e)return 0;
+
+		e->type = _Vehicle_;
+		vehicleserver_create(e, url, argc, argv);
+		return e;
+	}
 
 	//boop
 	if(_BOOTP_ == type)
@@ -2023,6 +2055,8 @@ int artery_takeby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, 
 	case _Mavlink_:mavlinkserver_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _nema0183_:nema0183client_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _Nema0183_:nema0183server_read(art,foot, stack,sp, arg,idx, buf,len);break;
+	case _vehicle_:vehicleclient_takeby(art,foot, stack,sp, arg,idx, buf,len);break;
+	case _Vehicle_:vehicleserver_takeby(art,foot, stack,sp, arg,idx, buf,len);break;
 
 	case _DNS_:dnsserver_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _dns_:dnsclient_read(art,foot, stack,sp, arg,idx, buf,len);break;
@@ -2145,6 +2179,8 @@ int artery_giveby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, 
 	case _mavlink_:return mavlinkclient_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _Nema0183_:return nema0183server_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _nema0183_:return nema0183client_write(art,foot, stack,sp, arg,idx, buf,len);break;
+	case _vehicle_:return vehicleclient_giveby(art,foot, stack,sp, arg,idx, buf,len);break;
+	case _Vehicle_:return vehicleserver_giveby(art,foot, stack,sp, arg,idx, buf,len);break;
 
 	case _DNS_:return dnsserver_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _dns_:return dnsclient_write(art,foot, stack,sp, arg,idx, buf,len);break;

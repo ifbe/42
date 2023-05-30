@@ -22,9 +22,9 @@ linuxarm_c = \
 linuxarm_o = $(patsubst %.c, %.o, $(linuxarm_c))
 
 linuxpi32_c = \
+2soc/chipbcm/bcm2835.c \
 2soc/inlinux/linux.wire.bt.c \
 2soc/inlinux/linux.wire.i2c.c \
-2soc/inlinux/linux.wire.gpio.c \
 2soc/inlinux/linux.wire.pci.c \
 2soc/inlinux/linux.wire.spi.c \
 2soc/inlinux/linux.wire.usb.c \
@@ -97,8 +97,8 @@ linuxarm64_c = \
 linuxarm64_o = $(patsubst %.c, %.o, $(linuxarm64_c))
 
 linuxpi64_c = \
+2soc/chipbcm/bcm2835.c \
 2soc/inlinux/linux.wire.bt.c \
-2soc/inlinux/linux.wire.gpio.c \
 2soc/inlinux/linux.wire.i2c.c \
 2soc/inlinux/linux.wire.pci.c \
 2soc/inlinux/linux.wire.spi.c \
