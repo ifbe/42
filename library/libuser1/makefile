@@ -12,9 +12,6 @@ basething/syncer/syncout/copter/copter-octo.c \
 basething/syncer/syncout/copter/copter-quad.c \
 basething/syncer/syncout/factory/3d-printer.c \
 basething/syncer/syncout/factory/3d-router.c \
-basething/syncer/syncout/vehicle/car-bldc.c \
-basething/syncer/syncout/vehicle/car-step.c \
-basething/syncer/syncout/vehicle/car-toy.c \
 basething/syncer/voice/real.speaker.c \
 basething/syncer/cam/cam.free.c \
 basething/syncer/cam/cam.ortho.c \

@@ -11,130 +11,13 @@ int decstr2u64(u8* src, u64* dst);
 int sleep_us(int);
 
 
-
-
-struct msg{
-	union{
-		u32 type;
-		char str[4];
-	};
-	union{
-		u8 _u8[4];
-		u32 _u32;
-		float _f32;
-	};
-};
-struct perobj{
+char pintable[4][3] = {
+	{13, 5, 6},	//left,front
+	{26,12,16},	//left,back
+	{22,17,27},	//right,front
+	{ 4,15,14},	//right,back
 };
 
-
-
-
-int vehicleclient_takeby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
-{
-	return 0;
-}
-int vehicleclient_giveby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
-{
-	struct perobj* perobj = (void*)art->priv_256b;
-	//say("@vehicleclient_giveby:len=%x\n",len);
-	//printmemory(buf,len>8?8:len);
-
-	struct msg* msg = (void*)buf;
-	switch(msg->type){
-	case _time_:
-		say("day=%d,hour=%d,minute=%d,second=%d\n", msg->_u8[3], msg->_u8[2], msg->_u8[1], msg->_u8[0]);
-		break;
-	case _v0v1_:
-		say("v0v1=%f\n", msg->_f32);
-		break;
-	case _v0v2_:
-		say("v0v2=%f\n", msg->_f32);
-		break;
-	}
-	return 0;
-}
-int vehicleclient_detach(struct halfrel* self, struct halfrel* peer)
-{
-	return 0;
-}
-int vehicleclient_attach(struct halfrel* self, struct halfrel* peer)
-{
-	return 0;
-}
-
-
-
-
-int vehicleclient_read(_obj* art,void* foot, void* arg, int idx, u8* buf, int len)
-{
-	return 0;
-}
-int vehicleclient_write(_obj* art,void* foot,void* arg, int idx, u8* buf, int len)
-{
-	return 0;
-}
-int vehicleclient_create(_obj* ele, void* arg, int argc, u8** argv)
-{
-	say("@vehicleclient_create\n");
-
-	struct perobj* perobj = (void*)ele->priv_256b;
-
-	return 1;
-}
-int vehicleclient_delete(_obj* ele)
-{
-	return 0;
-}
-
-
-
-
-
-int vehicleserver_takeby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
-{
-	return 0;
-}
-int vehicleserver_giveby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
-{
-	struct perobj* perobj = (void*)art->priv_256b;
-	say("@vehicleserver_giveby:len=%x\n",len);
-	return 0;
-}
-int vehicleserver_detach(struct halfrel* self, struct halfrel* peer)
-{
-	return 0;
-}
-int vehicleserver_attach(struct halfrel* self, struct halfrel* peer)
-{
-	return 0;
-}
-
-
-
-
-static void pollerthread(_obj* ele);
-int vehicleserver_read(_obj* art,void* foot, void* arg, int idx, u8* buf, int len)
-{
-	return 0;
-}
-int vehicleserver_write(_obj* art,void* foot,void* arg, int idx, u8* buf, int len)
-{
-	return 0;
-}
-int vehicleserver_create(_obj* ele, void* arg, int argc, u8** argv)
-{
-	say("@vehicleserver_create\n");
-
-	struct perobj* perobj = (void*)ele->priv_256b;
-
-	threadcreate(pollerthread, ele);
-	return 1;
-}
-int vehicleserver_delete(_obj* ele)
-{
-	return 0;
-}
 
 #define ADS1X15_REG_POINTER_MASK (0x03)      ///< Point mask
 #define ADS1X15_REG_POINTER_CONVERT (0x00)   ///< Conversion
@@ -289,6 +172,261 @@ float readadc(_obj* ele, int chan)
 
 	return volt;
 }
+
+
+
+struct msg{
+	union{
+		u32 type;
+		char str[4];
+	};
+	union{
+		u8 _u8[4];
+		u32 _u32;
+		float _f32;
+	};
+};
+struct perobj{
+};
+
+
+int vehicleclient_sock(_obj* art,void* foot, u8* buf, int len)
+{
+	struct msg* msg = (void*)buf;
+	switch(msg->type){
+	case _time_:
+		say("day=%d,hour=%d,minute=%d,second=%d\n", msg->_u8[3], msg->_u8[2], msg->_u8[1], msg->_u8[0]);
+		break;
+	case _v0v1_:
+		say("v0v1=%f\n", msg->_f32);
+		break;
+	case _v0v2_:
+		say("v0v2=%f\n", msg->_f32);
+		break;
+	}
+	return 0;
+}
+int vehicleclient_std(_obj* art,void* foot, u8* buf, int len)
+{
+	u32 ch[2];
+	ch[0] = _char_;
+	ch[1] = *(u32*)buf;
+
+	switch(ch[1]){
+	case 'w':
+	case 0x415b1b:
+		say("front\n");
+		ch[1] = 'w';
+		break;
+	case 's':
+	case 0x425b1b:
+		say("back\n");
+		ch[1] = 's';
+		break;
+	case 'a':
+	case 0x445b1b:
+		say("left\n");
+		ch[1] = 'a';
+		break;
+	case 'd':
+	case 0x435b1b:
+		say("right\n");
+		ch[1] = 'd';
+		break;
+	default:
+		say("other\n");
+		ch[1] = 0;
+	}
+
+	give_data_into_peer_temp_stack(art, _sock_, 0,0, ch, 8);
+	return 0;
+}
+
+
+int vehicleclient_takeby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+{
+	return 0;
+}
+int vehicleclient_giveby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+{
+	struct perobj* perobj = (void*)art->priv_256b;
+	//say("@vehicleclient_giveby:len=%x,foot=%.4s\n",len,&stack[sp-1].foottype);
+	//printmemory(buf,len>8?8:len);
+
+	switch(stack[sp-1].foottype){
+	case _sock_:
+		vehicleclient_sock(art,foot, buf,len);
+		break;
+	case _std_:
+		vehicleclient_std(art,foot, buf,len);
+		break;
+	}
+	return 0;
+}
+int vehicleclient_detach(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+int vehicleclient_attach(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+
+
+
+
+int vehicleclient_read(_obj* art,void* foot, void* arg, int idx, u8* buf, int len)
+{
+	return 0;
+}
+int vehicleclient_write(_obj* art,void* foot,void* arg, int idx, u8* buf, int len)
+{
+	return 0;
+}
+int vehicleclient_create(_obj* ele, void* arg, int argc, u8** argv)
+{
+	say("@vehicleclient_create\n");
+
+	struct perobj* perobj = (void*)ele->priv_256b;
+
+	//initgpio
+	//initi2c
+	return 1;
+}
+int vehicleclient_delete(_obj* ele)
+{
+	return 0;
+}
+
+
+void vehicleserver_sock(_obj* art,void* foot, void* buf,int len)
+{
+	int k;
+	u8 u[4][3];
+
+	u32* in = buf;
+	say("vehicleserver_sock:%x,%x\n",in[0],in[1]);
+	switch(in[1]){
+	case 'w':
+		for(k=0;k<4;k++){
+			u[k][0] = 1;
+			u[k][1] = 0;
+			u[k][2] = 1;
+		}
+		printmemory(u,12);
+		give_data_into_peer_temp_stack(art, _gpio_, pintable,_volt_, u,12);
+		sleep_us(200*1000);
+		break;
+	case 's':
+		for(k=0;k<4;k++){
+			u[k][0] = 1;
+			u[k][1] = 1;
+			u[k][2] = 0;
+		}
+		printmemory(u,12);
+		give_data_into_peer_temp_stack(art, _gpio_, pintable,_volt_, u,12);
+		sleep_us(200*1000);
+		break;
+	case 'a':
+		for(k=0;k<2;k++){
+			u[k][0] = 1;
+			u[k][1] = 1;
+			u[k][2] = 0;
+		}
+		for(k=2;k<4;k++){
+			u[k][0] = 1;
+			u[k][1] = 0;
+			u[k][2] = 1;
+		}
+		printmemory(u,12);
+		give_data_into_peer_temp_stack(art, _gpio_, pintable,_volt_, u,12);
+		sleep_us(200*1000);
+		break;
+	case 'd':
+		for(k=0;k<2;k++){
+			u[k][0] = 1;
+			u[k][1] = 0;
+			u[k][2] = 1;
+		}
+		for(k=2;k<4;k++){
+			u[k][0] = 1;
+			u[k][1] = 1;
+			u[k][2] = 0;
+		}
+		printmemory(u,12);
+		give_data_into_peer_temp_stack(art, _gpio_, pintable,_volt_, u,12);
+		sleep_us(200*1000);
+		break;
+	default:
+		for(k=0;k<4;k++)u[k][0] = 0;
+		printmemory(u,12);
+		give_data_into_peer_temp_stack(art, _gpio_, pintable,_volt_, u,12);
+	}
+}
+
+
+int vehicleserver_takeby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+{
+	return 0;
+}
+int vehicleserver_giveby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+{
+	struct perobj* perobj = (void*)art->priv_256b;
+	//say("@vehicleserver_giveby:len=%x,foot=%.4s\n",len,&stack[sp-1].foottype);
+	switch(stack[sp-1].foottype){
+	case _sock_:
+		vehicleserver_sock(art,foot, buf,len);
+	}
+	return 0;
+}
+int vehicleserver_detach(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+int vehicleserver_attach(struct halfrel* self, struct halfrel* peer)
+{
+	say("@vehicleserver_attach\n");
+	int j;
+	u8 f[12];
+	for(j=0;j<12;j++)f[j] = 1;
+
+	switch(self->foottype){
+	case _gpio_:
+		give_data_into_peer_temp_stack(self->pchip, _gpio_, pintable,_func_, f, 12);
+		break;
+	}
+	return 0;
+}
+
+
+
+
+static void pollerthread(_obj* ele);
+int vehicleserver_read(_obj* art,void* foot, void* arg, int idx, u8* buf, int len)
+{
+	return 0;
+}
+int vehicleserver_write(_obj* art,void* foot,void* arg, int idx, u8* buf, int len)
+{
+	return 0;
+}
+int vehicleserver_create(_obj* ele, void* arg, int argc, u8** argv)
+{
+	say("@vehicleserver_create\n");
+
+	struct perobj* perobj = (void*)ele->priv_256b;
+
+	threadcreate(pollerthread, ele);
+	return 1;
+}
+int vehicleserver_delete(_obj* ele)
+{
+	return 0;
+}
+
+
+
+
 static void pollerthread(_obj* ele)
 {
 	u64 time;

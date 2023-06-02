@@ -71,7 +71,7 @@ int balancer_detach(void*, void*);
 int balancer_taking(void*,void*, void*,int, void*,int, void*,int);
 int balancer_giving(void*,void*, void*,int, void*,int, void*,int);
 
-//
+/*
 int toycar_create(void*, void*, int, u8**);
 int toycar_delete(void*, void*);
 int toycar_attach(void*, void*);
@@ -84,7 +84,7 @@ int stepcar_attach(void*, void*);
 int stepcar_detach(void*, void*);
 int stepcar_taking(void*,void*, void*,int, void*,int, void*,int);
 int stepcar_giving(void*,void*, void*,int, void*,int, void*,int);
-
+*/
 
 //
 int schematic_create(void*, void*, int, u8**);
@@ -673,7 +673,7 @@ void* entity_create(u64 type, void* buf, int argc, u8** argv)
 	}
 
 //----------------other----------------
-	case _bdc_:
+/*	case _bdc_:
 	{
 		act = entity_alloc();
 		act->hfmt = act->type = _bdc_;
@@ -687,7 +687,7 @@ void* entity_create(u64 type, void* buf, int argc, u8** argv)
 		stepcar_create(act, buf, argc, argv);
 		return act;
 	}
-
+*/
 /*	case _gl41data_:
 	{
 		act = entity_alloc();
@@ -786,10 +786,10 @@ int entity_attach(struct halfrel* self, struct halfrel* peer)
 	case _xamlroot_:return xamlroot_attach(self, peer);
 	case _mmio_:return mmiospace_attach(self, peer);
 	case _port_:return portspace_attach(self, peer);
-
+/*
 	case _step_:return stepcar_attach(self, peer);
 	case _bdc_:return toycar_attach(self, peer);
-
+*/
 	case _test_:return test_attach(self, peer);
 	case _baby_:return baby_attach(self, peer);
 	}
@@ -848,10 +848,10 @@ int entity_detach(struct halfrel* self, struct halfrel* peer)
 	case _xamlroot_:return xamlroot_detach(self, peer);
 	case _mmio_:return mmiospace_detach(self, peer);
 	case _port_:return portspace_detach(self, peer);
-
+/*
 	case _step_:return stepcar_detach(self, peer);
 	case _bdc_:return toycar_detach(self, peer);
-
+*/
 	case _test_:return test_detach(self, peer);
 	case _baby_:return baby_detach(self, peer);
 	}
@@ -904,10 +904,10 @@ int entity_takeby(_obj* act,void* foot, _syn* stack,int sp, void* arg,int key, v
 	case _xamlroot_:return xamlroot_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _mmio_:return mmiospace_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _port_:return portspace_taking(act,foot, stack,sp, arg,key, buf,len);
-
+/*
 	case _step_:return stepcar_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _bdc_:return toycar_taking(act,foot, stack,sp, arg,key, buf,len);
-
+*/
 	case _test_:return test_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _baby_:return baby_taking(act,foot, stack,sp, arg,key, buf,len);
 	}
@@ -961,10 +961,10 @@ int entity_giveby(_obj* act,void* foot, _syn* stack,int sp, void* arg,int key, v
 	case _xamlroot_:return xamlroot_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _mmio_:return mmiospace_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _port_:return portspace_giving(act,foot, stack,sp, arg,key, buf,len);
-
+/*
 	case _step_:return stepcar_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _bdc_:return toycar_giving(act,foot, stack,sp, arg,key, buf,len);
-
+*/
 	case _test_:return test_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _baby_:return baby_giving(act,foot, stack,sp, arg,key, buf,len);
 	}

@@ -12,6 +12,11 @@ int spi_create(void*, int, int, u8**);
 int spi_delete(int);
 int spi_read(int fd, int addr, u8* buf, int len);
 int spi_write(int fd, int addr, u8* buf, int len);
+//gpio
+int gpio_create(void*,void*,int,void*);
+int gpio_delete(void*);
+int gpio_read(_obj* obj,void* foot, void* arg,int cmd, u8* buf,int len);
+int gpio_write(_obj* obj,void* foot, void* arg,int cmd, u8* buf,int len);
 
 
 
@@ -56,6 +61,10 @@ void* device_alloc()
 }
 void device_recycle()
 {
+}
+void* device_fd2obj(int fd)
+{
+	return &dev[fd];
 }
 
 
@@ -137,6 +146,15 @@ void* device_create(u64 type, void* name, int argc, u8** argv)
 		dev[fd].priv_fd = fd;
 		return &dev[fd];
 	}
+	if(_gpio_ == type){
+		int fd = gpio_create(0, name, argc, argv);
+		if(fd <= 0)return 0;
+
+		dev[fd].type = _gpio_;
+		dev[fd].priv_fd = fd;
+		say("return:%p\n",&dev[fd]);
+		return &dev[fd];
+	}
 	return 0;
 }
 int device_delete(_obj* this)
@@ -165,22 +183,24 @@ int device_detach(struct halfrel* self, struct halfrel* peer)
 	say("@devicedetach\n");
 	return 0;
 }
-int device_takeby(struct item* dev,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int device_takeby(struct item* dev,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
 	//say("@deviceread\n");
 	if(dev->ontaking){
-		return dev->ontaking(dev,foot, stack,sp, arg,idx, buf,len);
+		return dev->ontaking(dev,foot, stack,sp, arg,cmd, buf,len);
 	}
 
 	int fd = dev->priv_fd;
 	switch(dev->type){
-		case _i2c_:return i2c_read(fd, idx, buf, len);break;
-		case _spi_:return spi_read(fd, idx, buf, len);break;
+		case _i2c_:return i2c_read(fd, cmd, buf, len);break;
+		case _spi_:return spi_read(fd, cmd, buf, len);break;
+		case _gpio_:return gpio_read(dev,foot, arg,cmd, buf,len);break;
 	}
 	return 0;
 }
-int device_giveby(struct item* dev,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int device_giveby(struct item* dev,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
+	//say("@device_giveby\n");
 	u8 t[2];
 	if(0 == buf){
 		t[0] = len;
@@ -190,8 +210,9 @@ int device_giveby(struct item* dev,void* foot, _syn* stack,int sp, void* arg,int
 
 	int fd = dev->priv_fd;
 	switch(dev->type){
-		case _i2c_:return i2c_write(fd, idx, buf, len);break;
-		case _spi_:return spi_write(fd, idx, buf, len);break;
+		case _i2c_:return i2c_write(fd, cmd, buf, len);break;
+		case _spi_:return spi_write(fd, cmd, buf, len);break;
+		case _gpio_:return gpio_write(dev,foot, arg,cmd, buf,len);break;
 	}
 	return 0;
 }

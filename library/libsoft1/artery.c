@@ -1857,6 +1857,9 @@ int artery_attach(struct halfrel* self, struct halfrel* peer)
 	case _ntp_:return ntpclient_attach(self, peer);break;
 	case _NTP_:return ntpserver_attach(self, peer);break;
 
+	case _vehicle_:vehicleclient_attach(self, peer);break;
+	case _Vehicle_:vehicleserver_attach(self, peer);break;
+
 	case _bootp_:return bootpclient_attach(self, peer);break;
 	case _BOOTP_:return bootpserver_attach(self, peer);break;
 	case _dhcp_:return dhcpclient_attach(self, peer);break;

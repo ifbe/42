@@ -63,6 +63,8 @@
 #define _dbg_ hex32('d','b','g',0)
 #define _i2c_ hex32('i','2','c',0)
 #define _spi_ hex32('s','p','i',0)
+#define _gpio_ hex32('g','p','i','o')
+//
 #define _ptmx_ hex32('p','t','m','x')
 #define _uart_ hex32('u','a','r','t')
 #define _usb_ hex32('u','s','b',0)

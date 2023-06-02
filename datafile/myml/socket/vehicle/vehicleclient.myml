@@ -13,6 +13,13 @@ fmt:vehicle
 </artery>
 
 
+<supply>
+std{
+fmt:std
+}
+</supply>
+
 <relation>
 (@tcp, dst@0) -> (@vehicle, sock@0)
+(@std, dst@0) -> (@vehicle, std@0)
 </relation>

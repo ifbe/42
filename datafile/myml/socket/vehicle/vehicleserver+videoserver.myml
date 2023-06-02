@@ -10,15 +10,29 @@ arg:/dev/i2c-1
 </device>
 
 
+<driver>
+</driver>
+
+
 <system>
 tcpsrv{
 fmt:TCP
 arg:``:10000
 }
+vserver{
+fmt:TCP
+arg:``:9999
+}
 </system>
 
 
 <artery>
+goslow{
+fmt:goslow
+}
+dbghex{
+fmt:dbghex
+}
 vehicle{
 fmt:Vehicle
 lf:13,5,6
@@ -29,8 +43,22 @@ rb:4,14,15
 </artery>
 
 
+<supply>
+usbcam{
+fmt:cam
+#format:pBAA
+width:640
+height:480
+}
+</supply>
+
+
 <relation>
 (@gpio, dst@0) -> (@vehicle, gpio@0)
 (@i2chost, dst@0) -> (@vehicle, i2c@0)
 (@tcpsrv, dst@0) -> (@vehicle, sock@0)
+
+(usbcam, 0, dst) -> (goslow, 0, src)
+(goslow, 0, dst) -> (vserver, 0, src)
+(usbcam, 0, dst) -> (dbghex, 0, src)
 </relation>

@@ -25,7 +25,7 @@ title:"42"
 <artery>
 recut{
 fmt:recut
-arg:2592000
+arg:384000
 }
 picfmt{
 fmt:picfmt

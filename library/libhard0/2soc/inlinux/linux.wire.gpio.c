@@ -1,31 +1,35 @@
 #include "libhard.h"
 
 
-int gpioread(int type, int addr, u8* buf, int len)
-{
-	say("@gpioread:%x,%x\n", type, addr);
-	return 0;
-}
-int gpiowrite(int type, int addr, u8* buf, int len)
-{
-	say("@gpiowrite:%x,%x,%x,%x\n", type, addr, buf, len);
-	return 0;
-}
-int gpiostart(int name, int mode)
-{
-	say("@gpiostart:%x,%x\n", name, mode);
-	return 0;
-}
-int gpiostop(int pin)
-{
-	say("@gpiostop:%x\n", pin);
-	return 0;
-}
-int gpiodelete()
+int gpio_takeby(struct halfrel* st,int sp, void* arg,int cmd, void* buf,int len)
 {
 	return 0;
 }
-int gpiocreate()
+int gpio_giveby(struct halfrel* st,int sp, void* arg,int cmd, void* buf,int len)
+{
+	return 0;
+}
+int gpio_detach(struct halfrel* st, struct halfrel* peer)
+{
+	return 0;
+}
+int gpio_attach(struct halfrel* st, struct halfrel* peer)
+{
+	return 0;
+}
+int gpio_read(_obj* obj,void* foot, void* arg,int cmd, u8* buf,int len)
+{
+	return 0;
+}
+int gpio_write(_obj* obj,void* foot, u8* pin,int cmd, u8* val,int len)
+{
+	return 0;
+}
+int gpio_delete(_obj* obj, void* arg, int argc, void** argv)
+{
+	return 0;
+}
+int gpio_create(_obj* obj, void* arg, int argc, void** argv)
 {
 	return 0;
 }

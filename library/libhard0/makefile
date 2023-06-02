@@ -22,7 +22,7 @@ linuxarm_c = \
 linuxarm_o = $(patsubst %.c, %.o, $(linuxarm_c))
 
 linuxpi32_c = \
-2soc/chipbcm/bcm2835.c \
+2soc/chipbcm/bcm2835.gpio.c \
 2soc/inlinux/linux.wire.bt.c \
 2soc/inlinux/linux.wire.i2c.c \
 2soc/inlinux/linux.wire.pci.c \
@@ -60,20 +60,20 @@ barepi64_c = \
 0cpu/arm/cpu64el1/arm64.syscall.handler.c \
 1arch/arm/irq/irq.gic4.c \
 1arch/arm/timer/generictimer.c \
-1arch/arm/rpi/rpi.mbox.c \
-1arch/arm/rpi/rpi.pmic.c \
-1arch/arm/rpi/rpi.watchdog.c \
-1arch/arm/rpi/rpi.systmr.c \
-1arch/arm/rpi/rpi.sdhci.c \
-1arch/arm/rpi/rpi.sdhost.c \
-1arch/arm/rpi/rpi.gpio.c \
-1arch/arm/rpi/rpi.i2c.c \
-1arch/arm/rpi/rpi.spi.c \
-1arch/arm/rpi/rpi.uart.c \
-1arch/arm/rpi/rpi.bt.c \
-1arch/arm/rpi/rpi.pcie.c \
-1arch/arm/rpi/rpi.usb.innerxhci.c \
-1arch/arm/rpi/rpi.usb.dwc2.c \
+2soc/chipbcm/rpi/rpi.mbox.c \
+2soc/chipbcm/rpi/rpi.pmic.c \
+2soc/chipbcm/rpi/rpi.watchdog.c \
+2soc/chipbcm/rpi/rpi.systmr.c \
+2soc/chipbcm/rpi/rpi.sdhci.c \
+2soc/chipbcm/rpi/rpi.sdhost.c \
+2soc/chipbcm/rpi/rpi.gpio.c \
+2soc/chipbcm/rpi/rpi.i2c.c \
+2soc/chipbcm/rpi/rpi.spi.c \
+2soc/chipbcm/rpi/rpi.uart.c \
+2soc/chipbcm/rpi/rpi.bt.c \
+2soc/chipbcm/rpi/rpi.pcie.c \
+2soc/chipbcm/rpi/rpi.usb.innerxhci.c \
+2soc/chipbcm/rpi/rpi.usb.dwc2.c \
 2soc/bareusb/xhci/xhci-driver.c \
 3board/pi/barepi34.c
 barepi64_o = $(patsubst %.c, %.o, $(barepi64_c))
@@ -97,7 +97,7 @@ linuxarm64_c = \
 linuxarm64_o = $(patsubst %.c, %.o, $(linuxarm64_c))
 
 linuxpi64_c = \
-2soc/chipbcm/bcm2835.c \
+2soc/chipbcm/bcm2835.gpio.c \
 2soc/inlinux/linux.wire.bt.c \
 2soc/inlinux/linux.wire.i2c.c \
 2soc/inlinux/linux.wire.pci.c \
