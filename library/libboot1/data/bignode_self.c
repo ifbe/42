@@ -7,6 +7,106 @@ void* samedstnextsrc(void*);
 
 
 
+int relation_read(struct item* item,void* foot, void* arg, int cmd, void* buf, int len)
+{
+	if(item->onreader){
+		return item->onreader(item,foot, arg,cmd, buf,len);
+	}
+	switch(item->tier){
+		case _ori_:return origin_reader(item,foot, arg, cmd, buf, len);
+		case _wrk_:return bootup_reader(item,foot, arg, cmd, buf, len);
+		case _dev_:return device_reader(item,foot, arg, cmd, buf, len);
+		case _dri_:return driver_reader(item,foot, arg, cmd, buf, len);
+		case _sys_:return system_reader((void*)item,foot, arg, cmd, buf, len);
+		case _art_:return artery_reader((void*)item,foot, arg, cmd, buf, len);
+		case _sup_:return supply_reader((void*)item,foot, arg, cmd, buf, len);
+		case _ent_:return entity_reader((void*)item,foot, arg, cmd, buf, len);
+	}
+	return 0;
+}
+int reading_data_from_peer(void* chip,int ftype, void* arg,int cmd, void* buf,int len)
+{
+	struct item* item;
+	struct relation* rel;
+
+	if(0 == chip)return 0;
+	item = chip;
+
+	rel = item->irel0;
+	while(1){
+		if(0 == rel)break;
+		if(ftype == rel->dstfoottype){
+			return relation_read(rel->psrcchip, rel->psrcfoot, arg,cmd, buf,len);
+		}
+		rel = samedstnextsrc(rel);
+	}
+
+	rel = item->orel0;
+	while(1){
+		if(0 == rel)break;
+		if(ftype == rel->srcfoottype){
+			return relation_read(rel->pdstchip, rel->pdstfoot, arg,cmd, buf,len);
+		}
+		rel = samesrcnextdst(rel);
+	}
+
+	return 0;
+}
+
+
+
+
+int relation_write(struct item* item,void* foot, void* arg,int cmd, void* buf,int len)
+{
+	if(item->onwriter){
+		return item->onwriter(item,foot, arg,cmd, buf,len);
+	}
+	switch(item->tier){
+		case _ori_:return origin_writer(item,foot, arg,cmd, buf,len);
+		case _wrk_:return bootup_writer(item,foot, arg,cmd, buf,len);
+		case _dev_:return device_writer(item,foot, arg,cmd, buf,len);
+		case _dri_:return driver_writer(item,foot, arg,cmd, buf,len);
+		case _sys_:return system_writer((void*)item,foot, arg,cmd, buf,len);
+		case _art_:return artery_writer((void*)item,foot, arg,cmd, buf,len);
+		case _sup_:return supply_writer((void*)item,foot, arg,cmd, buf,len);
+		case _ent_:return entity_writer((void*)item,foot, arg,cmd, buf,len);
+	}
+	return 0;
+}
+int writing_data_into_peer(void* chip,int ftype, void* arg,int cmd, void* buf,int len)
+{
+	struct item* item;
+	struct relation* rel;
+
+	if(0 == chip)return 0;
+	item = chip;
+
+	rel = item->irel0;
+	while(1){
+		if(0 == rel)break;
+		//say("irel:%.8s\n",&rel->dstfoottype);
+		if(ftype == rel->dstfoottype){
+			relation_write(rel->psrcchip, rel->psrcfoot, arg,cmd, buf,len);
+		}
+		rel = samedstnextsrc(rel);
+	}
+
+	rel = item->orel0;
+	while(1){
+		if(0 == rel)break;
+		//say("orel:%.8s\n",&rel->srcfoottype);
+		if(ftype == rel->srcfoottype){
+			relation_write(rel->pdstchip, rel->pdstfoot, arg,cmd, buf,len);
+		}
+		rel = samesrcnextdst(rel);
+	}
+
+	return 0;
+}
+
+
+
+
 void relcopy(struct halfrel* dst, struct halfrel* src)
 {
 	dst->chip = src->chip;
@@ -14,6 +114,10 @@ void relcopy(struct halfrel* dst, struct halfrel* src)
 	dst->nodetype = src->nodetype;
 	dst->foottype = src->foottype;
 }
+
+
+
+
 int relation_take(struct item* item,void* foot, struct halfrel* stack,int sp, void* arg, int cmd, void* buf, int len)
 {
 	if(item->ontaking){
@@ -117,7 +221,7 @@ int take_data_from_them_temp_stack(void* chip,int ftype, void* arg,int cmd, void
 
 
 
-int relation_w(struct item* item,void* foot, struct halfrel* stack,int sp, void* arg,int cmd, void* buf,int len)
+int relation_give(struct item* item,void* foot, struct halfrel* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
 	if(item->ontaking){
 		return item->ongiving(item,foot, stack,sp, arg,cmd, buf,len);
@@ -164,7 +268,7 @@ int give_data_into_peer(void* chip,int ftype, struct halfrel* stack,int sp, void
 				relcopy(&stack[sp+0], (void*)rel->dst);
 				relcopy(&stack[sp+1], (void*)rel->src);
 			}
-			relation_w(rel->psrcchip, rel->psrcfoot, stack,sp+2, arg,cmd, buf,len);
+			relation_give(rel->psrcchip, rel->psrcfoot, stack,sp+2, arg,cmd, buf,len);
 		}
 		rel = samedstnextsrc(rel);
 	}
@@ -178,7 +282,7 @@ int give_data_into_peer(void* chip,int ftype, struct halfrel* stack,int sp, void
 				relcopy(&stack[sp+0], (void*)rel->src);
 				relcopy(&stack[sp+1], (void*)rel->dst);
 			}
-			relation_w(rel->pdstchip, rel->pdstfoot, stack,sp+2, arg,cmd, buf,len);
+			relation_give(rel->pdstchip, rel->pdstfoot, stack,sp+2, arg,cmd, buf,len);
 		}
 		rel = samesrcnextdst(rel);
 	}
@@ -202,7 +306,7 @@ int give_data_into_them(void* chip,int ftype, struct halfrel* stack,int sp, void
 				relcopy(&stack[sp+0], (void*)rel->dst);
 				relcopy(&stack[sp+1], (void*)rel->src);
 			}
-			relation_w(rel->psrcchip, rel->psrcfoot, stack,sp+2, arg,cmd, buf,len);
+			relation_give(rel->psrcchip, rel->psrcfoot, stack,sp+2, arg,cmd, buf,len);
 		}
 		rel = samedstnextsrc(rel);
 	}
@@ -216,7 +320,7 @@ int give_data_into_them(void* chip,int ftype, struct halfrel* stack,int sp, void
 				relcopy(&stack[sp+0], (void*)rel->src);
 				relcopy(&stack[sp+1], (void*)rel->dst);
 			}
-			relation_w(rel->pdstchip, rel->pdstfoot, stack,sp+2, arg,cmd, buf,len);
+			relation_give(rel->pdstchip, rel->pdstfoot, stack,sp+2, arg,cmd, buf,len);
 		}
 		rel = samesrcnextdst(rel);
 	}

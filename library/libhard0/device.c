@@ -161,12 +161,20 @@ int device_delete(_obj* this)
 {
 	return 0;
 }
-int device_reader(struct item* dev,void* foot, void* arg,int idx, void* buf,int len)
+int device_reader(struct item* dev,void* foot, void* arg,int cmd, void* buf,int len)
 {
+	int fd = dev->priv_fd;
+	switch(dev->type){
+		case _gpio_:return gpio_read(dev,foot, arg,cmd, buf,len);break;
+	}
 	return 0;
 }
-int device_writer(struct item* dev,void* foot, void* arg,int idx, void* buf,int len)
+int device_writer(struct item* dev,void* foot, void* arg,int cmd, void* buf,int len)
 {
+	int fd = dev->priv_fd;
+	switch(dev->type){
+		case _gpio_:return gpio_write(dev,foot, arg,cmd, buf,len);break;
+	}
 	return 0;
 }
 

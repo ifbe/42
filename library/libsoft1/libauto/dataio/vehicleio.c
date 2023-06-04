@@ -314,8 +314,8 @@ void vehicleserver_sock(_obj* art,void* foot, void* buf,int len)
 			u[k][2] = 1;
 		}
 		printmemory(u,12);
-		give_data_into_peer_temp_stack(art, _gpio_, pintable,_volt_, u,12);
-		sleep_us(200*1000);
+		writing_data_into_peer(art, _gpio_, pintable,_volt_, u,12);
+		sleep_us(100*1000);
 		break;
 	case 's':
 		for(k=0;k<4;k++){
@@ -324,8 +324,8 @@ void vehicleserver_sock(_obj* art,void* foot, void* buf,int len)
 			u[k][2] = 0;
 		}
 		printmemory(u,12);
-		give_data_into_peer_temp_stack(art, _gpio_, pintable,_volt_, u,12);
-		sleep_us(200*1000);
+		writing_data_into_peer(art, _gpio_, pintable,_volt_, u,12);
+		sleep_us(100*1000);
 		break;
 	case 'a':
 		for(k=0;k<2;k++){
@@ -339,8 +339,8 @@ void vehicleserver_sock(_obj* art,void* foot, void* buf,int len)
 			u[k][2] = 1;
 		}
 		printmemory(u,12);
-		give_data_into_peer_temp_stack(art, _gpio_, pintable,_volt_, u,12);
-		sleep_us(200*1000);
+		writing_data_into_peer(art, _gpio_, pintable,_volt_, u,12);
+		sleep_us(100*1000);
 		break;
 	case 'd':
 		for(k=0;k<2;k++){
@@ -354,14 +354,14 @@ void vehicleserver_sock(_obj* art,void* foot, void* buf,int len)
 			u[k][2] = 0;
 		}
 		printmemory(u,12);
-		give_data_into_peer_temp_stack(art, _gpio_, pintable,_volt_, u,12);
-		sleep_us(200*1000);
+		writing_data_into_peer(art, _gpio_, pintable,_volt_, u,12);
+		sleep_us(100*1000);
 		break;
-	default:
-		for(k=0;k<4;k++)u[k][0] = 0;
-		printmemory(u,12);
-		give_data_into_peer_temp_stack(art, _gpio_, pintable,_volt_, u,12);
 	}
+
+	for(k=0;k<4;k++)u[k][0] = 0;
+	printmemory(u,12);
+	writing_data_into_peer(art, _gpio_, pintable,_volt_, u,12);
 }
 
 
@@ -392,7 +392,7 @@ int vehicleserver_attach(struct halfrel* self, struct halfrel* peer)
 
 	switch(self->foottype){
 	case _gpio_:
-		give_data_into_peer_temp_stack(self->pchip, _gpio_, pintable,_func_, f, 12);
+		writing_data_into_peer(self->pchip, _gpio_, pintable,_func_, f, 12);
 		break;
 	}
 	return 0;
