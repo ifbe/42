@@ -2,6 +2,8 @@
 canvas{
 fmt:video
 format:yuvx
+width:640
+height:480
 }
 freecam{
 fmt:freecam
@@ -16,6 +18,8 @@ fmt:virtual
 usbcam{
 fmt:cam
 arg:/dev/video0
+width:640
+height:480
 }
 opengl{
 fmt:wnd
@@ -30,7 +34,7 @@ depth:1024
 <artery>
 convert{
 fmt:picfmt
-srcfmt:yyuv
+srcfmt:yuyv
 srcw:640
 srch:480
 dstfmt:yuvx

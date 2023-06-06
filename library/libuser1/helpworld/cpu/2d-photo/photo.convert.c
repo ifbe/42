@@ -592,6 +592,7 @@ void yuyv_to_yuvx(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth)
 {
+	//say("yuyv_to_yuvx:srcw=%d,srch=%d,dstw=%d,dsth=%d\n",srcw,srch,dstw,dsth);
 	if(0 == srcbuf)return;
 	if(0 == dstbuf)return;
 	//printmemory(srcbuf, 0x10);

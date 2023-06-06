@@ -343,11 +343,15 @@ int mf_select(IMFMediaSource* source, _obj* camobj){
 		hr = MFGetAttributeSize(mediatype, MF_MT_FRAME_RATE, &numerator, &denominator);
 
 		if( (ww==camobj->STRIDE) && (hh==camobj->HEIGHT) ){
-			if(IsEqualGUID(subtype, MFVideoFormat_YUY2) ){
+			if(
+				(IsEqualGUID(subtype, MFVideoFormat_YUY2) && (_yuyv_ == camobj->FORMAT) ) |
+				(IsEqualGUID(subtype, MFVideoFormat_NV12) && (_yyyy_uv_ == camobj->FORMAT) )
+			){
 				char str[64];
 				printf("%d: width=%d,height=%d,fps=%f,format=%.32s\n", k, ww, hh, (float)numerator/denominator, mf_subtype2format(&subtype, str));
 		
 				hr = hand->SetCurrentMediaType(mediatype);
+				break;
 			}
 		}
 	}
@@ -535,6 +539,7 @@ int mfcam_create(_obj* win, void* arg, int argc, u8** argv)
 			arg = argv[j]+7;
 			//say("format=%.5s\n",arg);
 			if(0 == ncmp(arg, (void*)"mjpeg", 5))win->FORMAT = _mjpg_;
+			if(0 == ncmp(arg, (void*)"yyuv", 4))win->FORMAT = _yyyy_uv_;
 		}
 		if(0 == ncmp(arg, (void*)"width:", 6)){
 			arg = argv[j]+6;

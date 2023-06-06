@@ -1,0 +1,91 @@
+<entity>
+canvas{
+fmt:video
+format:yuvx
+width:1280
+height:720
+}
+freecam{
+fmt:freecam
+}
+virtual{
+fmt:virtual
+}
+</entity>
+
+
+<supply>
+usbcam{
+fmt:cam
+arg:/dev/video0
+format:yyuv
+width:1280
+height:720
+}
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<artery>
+convert{
+fmt:picfmt
+srcfmt:yyuv
+srcw:1280
+srch:720
+dstfmt:yuvx
+dstw:1280
+dsth:720
+}
+</artery>
+
+
+<style>
+skyhaha{
+}
+skygeom{
+c: 0.0, 0.0, 0.0
+r: 640.0, 0.0, 0.0
+f: 0.0, 480.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+freemodl{
+}
+freegeom{
+c: 0.0, 0.0, 640.0
+r: 640.0, 0.0, 0.0
+t: 0.0, 640.0, 0.0
+f: 0.0, 0.0, -640.0
+L: 0.0, 0.0, 0.0, -1.0
+R: 0.0, 0.0, 0.0, 1.0
+B: 0.0, 0.0, 0.0, -1.0
+T: 0.0, 0.0, 0.0, 1.0
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000000000.0
+}
+
+freerect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<relation>
+#canvas depends on usbcam
+(usbcam, 0, dst) -> (convert, 0, src)
+(convert, 0, dst) -> (canvas, 0, yuv)
+
+#virtual depends on inner objects
+(virtual, skygeom, 0) -> (canvas, skyhaha, 0)
+(virtual, freegeom, 0) -> (freecam, freemodl, 0)
+
+#glwnd depends on cam
+(opengl, freerect, 0) -> (freecam, 0, 0)
+</relation>

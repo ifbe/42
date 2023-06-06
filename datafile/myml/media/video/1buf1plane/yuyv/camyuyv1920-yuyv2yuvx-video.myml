@@ -2,6 +2,8 @@
 canvas{
 fmt:video
 format:yuvx
+width:1920
+height:1080
 }
 freecam{
 fmt:freecam
@@ -16,6 +18,8 @@ fmt:virtual
 usbcam{
 fmt:cam
 arg:/dev/video0
+width:1920
+height:1080
 }
 opengl{
 fmt:wnd
@@ -30,12 +34,12 @@ depth:1024
 <artery>
 convert{
 fmt:picfmt
-srcfmt:yyuv
-srcw:1280
-srch:720
+srcfmt:yuyv
+srcw:1920
+srch:1080
 dstfmt:yuvx
-dstw:1280
-dsth:720
+dstw:1920
+dsth:1080
 }
 </artery>
 
@@ -45,18 +49,18 @@ skyhaha{
 }
 skygeom{
 c: 0.0, 0.0, 0.0
-r: 640.0, 0.0, 0.0
-f: 0.0, 480.0, 0.0
+r: 1920.0, 0.0, 0.0
+f: 0.0, 1080.0, 0.0
 t: 0.0, 0.0, 1000.0
 }
 
 freemodl{
 }
 freegeom{
-c: 0.0, 0.0, 640.0
-r: 640.0, 0.0, 0.0
-t: 0.0, 640.0, 0.0
-f: 0.0, 0.0, -640.0
+c: 0.0, 0.0, 1920.0
+r: 1920.0, 0.0, 0.0
+t: 0.0, 1920.0, 0.0
+f: 0.0, 0.0, -1920.0
 L: 0.0, 0.0, 0.0, -1.0
 R: 0.0, 0.0, 0.0, 1.0
 B: 0.0, 0.0, 0.0, -1.0
