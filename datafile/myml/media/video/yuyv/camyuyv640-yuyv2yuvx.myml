@@ -14,6 +14,8 @@ dsth:480
 <supply>
 usbcam{
 fmt:cam
+width:640
+height:480
 }
 </supply>
 

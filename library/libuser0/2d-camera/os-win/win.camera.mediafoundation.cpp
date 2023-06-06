@@ -3,6 +3,9 @@
 #include <mfidl.h>
 #include <mfreadwrite.h>
 #include "libuser.h"
+#define STRIDE whdf.width
+#define HEIGHT whdf.height
+#define FORMAT whdf.fourth
 
 
 
@@ -103,7 +106,7 @@ char* mf_subtype2format(GUID* guid, char* str){
 		c = "Y42T";
 	}
 	else if(IsEqualGUID(*guid, MFVideoFormat_YUY2)){
-		c = "YUV2";
+		c = "YUY2";		//yuyv
 	}
 	else if(IsEqualGUID(*guid, MFVideoFormat_YVU9)){
 		c = "YVU9";
@@ -261,7 +264,7 @@ char* mf_subtype2format(GUID* guid, char* str){
 		return str;
 	}
 }
-int mf_enum(IMFMediaSource*){
+int mf_enum(IMFMediaSource* source){
 	printf("--------format enum--------:\n");
 	IMFPresentationDescriptor* desc = 0;
 	auto hr = source->CreatePresentationDescriptor(&desc);
@@ -315,9 +318,41 @@ int mf_enum(IMFMediaSource*){
 	}
 	return 0;
 }
-int mf_select(IMFMediaSource*){
+int mf_select(IMFMediaSource* source, _obj* camobj){
 	printf("--------format select--------:\n");
-	auto hr = MFCreateSourceReaderFromMediaSource(source, NULL, &reader);
+	IMFPresentationDescriptor* desc = 0;
+	auto hr = source->CreatePresentationDescriptor(&desc);
+
+	BOOL pfSelected;
+	IMFStreamDescriptor* streamdesc;
+	hr = desc->GetStreamDescriptorByIndex(0, &pfSelected, &streamdesc);
+
+	IMFMediaTypeHandler* hand;
+	hr = streamdesc->GetMediaTypeHandler(&hand);
+
+	DWORD cnt2;
+	hr = hand->GetMediaTypeCount(&cnt2);
+	for(int k=0;k<cnt2;k++){
+		hr = hand->GetMediaTypeByIndex(k, &mediatype);
+		hr = mediatype->GetGUID(MF_MT_SUBTYPE, &subtype);
+		u32 ww;
+		u32 hh;
+		hr = MFGetAttributeSize(mediatype, MF_MT_FRAME_SIZE, &ww, &hh);
+		u32 numerator;
+		u32 denominator;
+		hr = MFGetAttributeSize(mediatype, MF_MT_FRAME_RATE, &numerator, &denominator);
+
+		if( (ww==camobj->STRIDE) && (hh==camobj->HEIGHT) ){
+			if(IsEqualGUID(subtype, MFVideoFormat_YUY2) ){
+				char str[64];
+				printf("%d: width=%d,height=%d,fps=%f,format=%.32s\n", k, ww, hh, (float)numerator/denominator, mf_subtype2format(&subtype, str));
+		
+				hr = hand->SetCurrentMediaType(mediatype);
+			}
+		}
+	}
+
+	hr = MFCreateSourceReaderFromMediaSource(source, NULL, &reader);
 	if(FAILED(hr)){
 		printf("6\n");
 	}
@@ -393,7 +428,7 @@ int mfthread(_obj* camobj){
 
 	mf_enum(source);
 
-	mf_select(source);
+	mf_select(source, camobj);
 
 	printf("--------run--------:\n");
 	while(!exitflag){
@@ -489,7 +524,7 @@ int mfcam_delete(_obj* win)
 }
 int mfcam_create(_obj* win, void* arg, int argc, u8** argv)
 {
-/*	int j;
+	int j;
 	win->STRIDE = 640;
 	win->HEIGHT = 480;
 	win->FORMAT = _yuyv_;
@@ -510,7 +545,7 @@ int mfcam_create(_obj* win, void* arg, int argc, u8** argv)
 			decstr2u32(arg, (u32*)&win->HEIGHT);
 		}
 	}
-*/
+
 	threadcreate((void*)mfthread, win);
 	return 0;
 }
