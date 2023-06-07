@@ -101,6 +101,7 @@ int picfmt_take(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, vo
 }
 int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, void* buf, int len)
 {
+	//say("@picfmt_give\n");
 	struct perobj* per = (void*)art->priv_256b;
 
 	//process metadata
@@ -220,6 +221,7 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, vo
 	}
 
 unknown:
+	say("picfmt_give:srcfmt=%x,dstfmt=%x\n", srcfmt, per->dstfmt);
 	printmemory(buf, 16);
 
 done:

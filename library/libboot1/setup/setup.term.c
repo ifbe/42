@@ -16,7 +16,8 @@ int term_create(struct item* wrk, u8* arg, int argc, u8** argv)
 	if(0 == sss)return 0;
 
 	//client
-	void* ccc = supply_create(_std_, 0, 0, 0);
+	void* ccc = supply_prep(0, _std_, 0, 0);
+	supply_create(ccc, 0, 0, 0);
 	if(0 == ccc)return 0;
 
 	//composer

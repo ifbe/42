@@ -52,6 +52,11 @@ int screencap_create(void*, void*, int, u8**);
 int screencap_delete(void*);
 int screencap_take(void*,void*, void*,int, void*,int, void*,int);
 int screencap_give(void*,void*, void*,int, void*,int, void*,int);
+//
+int codecv_create(void*, void*, int, u8**);
+int codecv_delete(void*);
+int codecv_take(void*,void*, void*,int, void*,int, void*,int);
+int codecv_give(void*,void*, void*,int, void*,int, void*,int);
 //light.window
 void initwindow(void*);
 void freewindow();
@@ -111,17 +116,17 @@ void supply_exit()
 void* supply_alloc()
 {
 	int j;
-	_obj* win;
+	_obj* obj;
 	for(j=0;j<0x100;j++)
 	{
 		if(0 == supply[j].type)break;
 	}
 	if(j >= 0x100)return 0;
 
-	win = &supply[j];
-	win->irel0 = win->ireln = 0;
-	win->orel0 = win->oreln = 0;
-	return win;
+	obj = &supply[j];
+	obj->irel0 = obj->ireln = 0;
+	obj->orel0 = obj->oreln = 0;
+	return obj;
 }
 void supply_recycle()
 {
@@ -145,206 +150,272 @@ void pinid_recycle()
 
 
 
-void* supply_create(u64 type, void* arg, int argc, u8** argv)
+void* supply_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt)
 {
-	say("supply_create:%.8s\n",&type);
+	//say("supply_prep:%.8s\n",&type);
 	int j = 0;
-	_obj* win;
+	_obj* obj;
 
 	switch(type){
 //-------------------tobe delete--------------
 	case _ahrs_:
 	{
-		win = supply_alloc();
-		if(0 == win)return 0;
+		obj = supply_alloc();
+		if(0 == obj)return 0;
 
-		win->type = _sensor_;
-		win->hfmt = _ahrs_;
-		ahrs_create(win, arg, argc, argv);
-		return win;
+		obj->type = _sensor_;
+		obj->hfmt = _ahrs_;
+		return obj;
 	}
 	case _slam_:
 	{
-		win = supply_alloc();
-		if(0 == win)return 0;
+		obj = supply_alloc();
+		if(0 == obj)return 0;
 
-		win->type = _sensor_;
-		win->hfmt = _slam_;
-		slam_create(win, arg, argc, argv);
-		return win;
+		obj->type = _sensor_;
+		obj->hfmt = _slam_;
+		return obj;
 	}
 
 //---------------------gadget-----------------
 	case _joy_:
 	{
-		win = supply_alloc();
-		if(0 == win)return 0;
+		obj = supply_alloc();
+		if(0 == obj)return 0;
 
-		win->type = _joy_;
-		win->hfmt = _joy_;
-		joycreate(win, arg, argc, argv);
-		return win;
+		obj->type = _joy_;
+		obj->hfmt = _joy_;
+		return obj;
 	}
 	case _std_:
 	{
-		win = supply_alloc();
-		if(0 == win)return 0;
+		obj = supply_alloc();
+		if(0 == obj)return 0;
 
-		win->type = _std_;
-		win->hfmt = _std_;
-		stdio_create(win, arg, argc, argv);
-		return win;
+		obj->type = _std_;
+		obj->hfmt = _std_;
+		return obj;
 	}
 	case _tray_:
 	{
-		win = supply_alloc();
-		if(0 == win)return 0;
+		obj = supply_alloc();
+		if(0 == obj)return 0;
 
-		win->type = _tray_;
-		win->hfmt = _tray_;
-		traycreate(win, arg, argc, argv);
-		return win;
+		obj->type = _tray_;
+		obj->hfmt = _tray_;
+		return obj;
 	}
 
 //--------------------micphone------------------
 	case _mic_:
 	{
-		win = supply_alloc();
-		if(0 == win)return 0;
+		obj = supply_alloc();
+		if(0 == obj)return 0;
 
-		win->type = _mic_;
-		win->hfmt = hex32('p','c','m',0);
-		micphonecreate(win, arg, argc, argv);
-		return win;
+		obj->type = _mic_;
+		obj->hfmt = hex32('p','c','m',0);
+		return obj;
 	}
 
 //--------------------speaker--------------------
 	case _spk_:
 	{
-		win = supply_alloc();
-		if(0 == win)return 0;
+		obj = supply_alloc();
+		if(0 == obj)return 0;
 
-		win->type = _spk_;
-		win->hfmt = hex32('p','c','m',0);
-		speakercreate(win, arg, argc, argv);
-		return win;
+		obj->type = _spk_;
+		obj->hfmt = hex32('p','c','m',0);
+		return obj;
 	}
 
 //---------------------camera-------------------
 	case _cam_:
 	{
-		win = supply_alloc();
-		if(0 == win)return 0;
+		obj = supply_alloc();
+		if(0 == obj)return 0;
 
-		win->type = _cam_;
-		win->hfmt = hex32('y','u','v',0);
-		camera_create(win, arg, argc, argv);
-		return win;
+		obj->type = _cam_;
+		obj->hfmt = hex32('y','u','v',0);
+		return obj;
 	}
 	case _wndcap_:
 	{
-		win = supply_alloc();
-		if(0 == win)return 0;
+		obj = supply_alloc();
+		if(0 == obj)return 0;
 
-		win->type = _wndcap_;
-		screencap_create(win, arg, argc, argv);
-		return win;
+		obj->type = _wndcap_;
+		return obj;
 	}
 
 //---------------------window----------------
 	case _wnd_:
 	{
-		win = window_alloc();
-		if(0 == win)return 0;
+		obj = window_alloc();
+		if(0 == obj)return 0;
 
-		win->type = _wnd_;
-		window_create(win, arg, argc, argv);
-		return win;
+		obj->type = _wnd_;
+		return obj;
+	}
+
+	case _dec_:
+	{
+		obj = supply_alloc();
+		if(0 == obj)return 0;
+
+		obj->type = _dec_;
+		obj->hfmt = _h264_;
+		return obj;
+	}
+	case _enc_:
+	{
+		obj = supply_alloc();
+		if(0 == obj)return 0;
+
+		obj->type = _enc_;
+		obj->hfmt = _h264_;
+		return obj;
 	}
 
 //---------------------3dinput-------------------
 	case _cap_:
 	{
-		win = supply_alloc();
-		if(0 == win)return 0;
+		obj = supply_alloc();
+		if(0 == obj)return 0;
 
-		win->type = _cap_;
-		win->hfmt = hex32('h','o','l','o');
-		//hologram_create(win, arg, argc, argv);
-		return win;
+		obj->type = _cap_;
+		obj->hfmt = hex32('h','o','l','o');
+		return obj;
 	}
-
 //---------------------3doutput-------------------
 	case _gpu_:
 	{
-		win = supply_alloc();
-		if(0 == win)return 0;
+		obj = supply_alloc();
+		if(0 == obj)return 0;
 
-		win->type = _gpu_;
-		win->hfmt = _gpu_;
-		//gpulib_create(win, arg, argc, argv);
-		return win;
+		obj->type = _gpu_;
+		obj->hfmt = _gpu_;
+		return obj;
 	}
 	case _gl41none_:
 	{
-		win = supply_alloc();
-		if(0 == win)return 0;
+		obj = supply_alloc();
+		if(0 == obj)return 0;
 
-		win->type = _wnd_;
-		win->hfmt = _gl41none_;
-		window_create(win, arg, argc, argv);
-		return win;
+		obj->type = _wnd_;
+		obj->hfmt = _gl41none_;
+		return obj;
 	}
 	case _gl41easy_:
 	{
-		win = supply_alloc();
-		if(0 == win)return 0;
+		obj = supply_alloc();
+		if(0 == obj)return 0;
 
-		win->type = _wnd_;
-		win->hfmt = _gl41easy_;
-		window_create(win, arg, argc, argv);
-		return win;
+		obj->type = _wnd_;
+		obj->hfmt = _gl41easy_;
+		return obj;
 	}
 	case _gl41list_:
 	{
-		win = supply_alloc();
-		if(0 == win)return 0;
+		obj = supply_alloc();
+		if(0 == obj)return 0;
 
-		win->type = _wnd_;
-		win->hfmt = _gl41list_;
-		window_create(win, arg, argc, argv);
-		return win;
+		obj->type = _wnd_;
+		obj->hfmt = _gl41list_;
+		return obj;
 	}
 	case _gl41cmdq_:
 	{
-		win = supply_alloc();
-		if(0 == win)return 0;
+		obj = supply_alloc();
+		if(0 == obj)return 0;
 
-		win->type = _wnd_;
-		win->hfmt = _gl41cmdq_;
-		window_create(win, arg, argc, argv);
-		return win;
+		obj->type = _wnd_;
+		obj->hfmt = _gl41cmdq_;
+		return obj;
 	}
 
 	}//switch
 	return 0;
 }
-int supply_delete(_obj* win)
+
+
+
+
+int supply_create(_obj* obj, void* arg, int argc, u8** argv)
 {
-	if(0 == win)return 0;
+	say("supply_create:obj=%p,arg=%p,argc=%d,argv=%p\n", obj, arg, argc, argv);
+	switch(obj->type){
+	case _joy_:
+		joycreate(obj, arg, argc, argv);
+		break;
+	case _std_:
+		stdio_create(obj, arg, argc, argv);
+		break;
+	case _tray_:
+		traycreate(obj, arg, argc, argv);
+		break;
+	case _mic_:
+		micphonecreate(obj, arg, argc, argv);
+		break;
+	case _spk_:
+		speakercreate(obj, arg, argc, argv);
+		break;
+	case _cam_:
+		camera_create(obj, arg, argc, argv);
+		break;
+	case _wndcap_:
+		screencap_create(obj, arg, argc, argv);
+		break;
+	case _wnd_:
+		window_create(obj, arg, argc, argv);
+		break;
+	case _dec_:
+	case _enc_:
+		codecv_create(obj, arg, argc, argv);
+		break;
+	case _cap_:
+		//hologram_create(obj, arg, argc, argv);
+		break;
+	case _gpu_:
+		//gpulib_create(obj, arg, argc, argv);
+		break;
+	case _gl41none_:
+		window_create(obj, arg, argc, argv);
+		break;
+	case _gl41easy_:
+		window_create(obj, arg, argc, argv);
+		break;
+	case _gl41list_:
+		window_create(obj, arg, argc, argv);
+		break;
+	case _gl41cmdq_:
+		window_create(obj, arg, argc, argv);
+		break;
+	}//switch
+	return 0;
+}
+int supply_delete(_obj* obj)
+{
+	if(0 == obj)return 0;
 
-	//1.close
-	window_delete(win);
+	//1.unlink
+	obj->irel0 = 0;
+	obj->ireln = 0;
+	obj->orel0 = 0;
+	obj->oreln = 0;
 
-	//2.unlink
-	win->irel0 = 0;
-	win->ireln = 0;
-	win->orel0 = 0;
-	win->oreln = 0;
+	//2.close
+	switch(obj->type){
+	case _wnd_:
+		window_delete(obj);
+		break;
+	case _spk_:
+		speakerdelete(obj);
+		break;
+	}
 
 	//3.cleanup
-	win->type = 0;
-	win->hfmt = 0;
+	obj->type = 0;
+	obj->hfmt = 0;
 	return 0;
 }
 int supply_reader(_obj* sup,void* foot, void* arg,int idx, void* buf,int len)
@@ -365,8 +436,8 @@ int supply_attach(struct halfrel* self, struct halfrel* peer)
 
 	if(0 == self)return 0;
 
-	_obj* win = (void*)(self->chip);
-	if(0 == win)return 0;
+	_obj* obj = (void*)(self->chip);
+	if(0 == obj)return 0;
 
 	return 0;
 }
@@ -383,9 +454,13 @@ int supply_takeby(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, v
 		case _mic_:break;
 		case _spk_:return speaker_take(sup,foot, stack,sp, arg, idx, buf, len);
 
-		case _wndcap_:return screencap_take(sup,foot, stack,sp, arg, idx, buf, len);
 		case _cam_:return camera_take(sup,foot, stack,sp, arg, idx, buf, len);
 		case _wnd_:return window_take(sup,foot, stack,sp, arg, idx, buf, len);
+		case _wndcap_:return screencap_take(sup,foot, stack,sp, arg, idx, buf, len);
+
+		case _dec_:
+		case _enc_:
+			return codecv_take(sup,foot, stack,sp, arg, idx, buf, len);
 	}
 	return 0;
 }
@@ -397,9 +472,13 @@ int supply_giveby(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, v
 		case _mic_:break;
 		case _spk_:return speaker_give(sup,foot, stack,sp, arg, idx, buf, len);
 
-		case _wndcap_:return screencap_take(sup,foot, stack,sp, arg, idx, buf, len);
 		case _cam_:return camera_give(sup,foot, stack,sp, arg, idx, buf, len);
 		case _wnd_:return window_give(sup,foot, stack,sp, arg, idx, buf, len);
+		case _wndcap_:return screencap_take(sup,foot, stack,sp, arg, idx, buf, len);
+
+		case _dec_:
+		case _enc_:
+			return codecv_give(sup,foot, stack,sp, arg, idx, buf, len);
 	}
 	switch(sup->hfmt){
 		case _ahrs_:return ahrs_give(sup,foot, stack,sp, arg, idx, buf, len);
@@ -424,14 +503,14 @@ void* supply_search(u8* buf, int len)
 {
 	int j,k;
 	u8* p;
-	_obj* win;
+	_obj* obj;
 	if(0 == buf)
 	{
 		for(j=0;j<0x100;j++)
 		{
-			win = &supply[j];
-			if(0 == win->type)break;
-			say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j, &win->tier, &win->type, &win->hfmt, &win->vfmt);
+			obj = &supply[j];
+			if(0 == obj->type)break;
+			say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j, &obj->tier, &obj->type, &obj->hfmt, &obj->vfmt);
 		}
 		if(0 == j)say("empty supply\n");
 	}
@@ -475,7 +554,7 @@ void* supply_modify(int argc, u8** argv)
 			tmp[j] = argv[2][j];
 		}
 		say("%llx,%llx\n",name, argv[3]);
-		supply_create(name, argv[3], argc-3, &argv[3]);
+		//supply_create(name, argv[3], argc-3, &argv[3]);
 	}
 
 	return 0;

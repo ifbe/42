@@ -489,7 +489,8 @@ int entity_detach(struct halfrel* self, struct halfrel* peer);
 int entity_takeby(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 int entity_giveby(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 //
-void* supply_create(u64 type, void* addr, int argc, u8** argv);
+void* supply_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt);
+int supply_create(_obj*, void* addr, int argc, u8** argv);
 int supply_delete(_obj*);
 int supply_reader(_obj* ent,void* foot, void* arg,int idx, void* buf,int len);
 int supply_writer(_obj* ent,void* foot, void* arg,int idx, void* buf,int len);
@@ -561,6 +562,8 @@ void* relationcreate(void*,void*,u32,u32,void*,void*,u32,u32);
 //
 int reading_data_from_peer(void* chip,int ftype, void* arg,int idx, void* buf,int len);
 int writing_data_into_peer(void* chip,int ftype, void* arg,int idx, void* buf,int len);
+int reading_data_from_them(void* chip,int ftype, void* arg,int idx, void* buf,int len);
+int writing_data_into_them(void* chip,int ftype, void* arg,int idx, void* buf,int len);
 //
 int take_data_from_peer_temp_stack(void* chip,int ftype, void* arg,int idx, void* buf,int len);
 int give_data_into_peer_temp_stack(void* chip,int ftype, void* arg,int idx, void* buf,int len);

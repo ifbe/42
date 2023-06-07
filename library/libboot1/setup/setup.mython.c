@@ -63,7 +63,8 @@ u64 u64fromstr(u8* buf)
 }
 void term_window(int argc, u8** argv)
 {
-	_obj* wnd = supply_create(_wnd_, 0, 0, 0);
+	_obj* wnd = supply_prep(0, _wnd_, 0, 0);
+	supply_create(wnd, 0, 0, 0);
 	if(0 == wnd)return;
 	if(argc <=1)return;
 
@@ -246,7 +247,8 @@ int mython_create(struct item* wrk, void* arg, int argc, u8** argv)
 		mython_fromfile(argv[j], 0);
 	}
 
-	supply_create(_std_, 0, 0, 0);
+	void* std = supply_prep(0, _std_, 0, 0);
+	supply_create(std, 0, 0, 0);
 	waiter(wrk);
 	return 0;
 }

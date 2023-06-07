@@ -11,7 +11,9 @@ int subcmd_create(struct item* wrk, void* arg, int argc, u8** argv)
 {
 	void* thr = 0;
 	if(argc <= 1){
-		supply_create(_std_, 0, 0, 0);
+		void* std = supply_prep(0, _std_, 0, 0);
+		supply_create(std, 0, 0, 0);
+
 		void* mpoller = poller_alloc();
 		if(mpoller)poller(mpoller);
 	}

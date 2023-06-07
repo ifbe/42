@@ -31,7 +31,8 @@ void initdbg()
 	//debug serial
 
 	//debug framebuffer
-	_obj* wnd = supply_create(_wnd_, 0, 0, 0);
+	_obj* wnd = supply_prep(0, _wnd_, 0, 0);
+	supply_create(wnd, 0, 0, 0);
 }
 
 

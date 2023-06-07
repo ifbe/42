@@ -289,6 +289,8 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 	u8 tmp[128];
 
 	u64 hash = 0;
+
+	u64 type = 0;
 	u64 fmt = 0;
 
 	for(j=0;j<=len;j++) {
@@ -327,8 +329,8 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 
 				//say("propname = %.*s\n", j-propname, buf+propname);
 				if(0 == ncmp(buf+propname, "fmt", 3)){
-					parsefmt((void*)&fmt, buf+propdata);
-					//say("%llx\n", fmt);
+					parsefmt((void*)&type, buf+propdata);
+					//say("%llx\n", type);
 				}
 				if(0 == ncmp(buf+propname, "arg", 3)){
 					copypath(tmp, buf+propdata);
@@ -352,18 +354,33 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 				//say("haha:%llx,%llx\n", fmt, arg);
 
 				chip[clen].tier = tier;		//_ent_ _sup_ _art_ _sys_ _dri_ _dev_ _wrk_
-				chip[clen].type = fmt;
+				chip[clen].type = type;
 				chip[clen].hash = hash;
 				switch(tier){
-					case _ent_:chip[clen].addr = entity_create(fmt, arg, argc, argv);break;
-					case _sup_:chip[clen].addr = supply_create(fmt, arg, argc, argv);break;
-					case _art_:chip[clen].addr = artery_create(fmt, arg, argc, argv);break;
-					case _sys_:chip[clen].addr = system_create(fmt, arg, argc, argv);break;
-					case _dri_:chip[clen].addr = driver_create(fmt, arg, argc, argv);break;
-					case _dev_:chip[clen].addr = device_create(fmt, arg, argc, argv);break;
-					case _wrk_:chip[clen].addr = bootup_create(fmt, arg, argc, argv);break;
+					case _ent_:
+						chip[clen].addr = entity_create(type, arg, argc, argv);
+						break;
+					case _sup_:
+						chip[clen].addr = supply_prep(0, type, 0, 0);
+						if(chip[clen].addr)supply_create(chip[clen].addr, arg, argc, argv);
+						break;
+					case _art_:
+						chip[clen].addr = artery_create(type, arg, argc, argv);
+						break;
+					case _sys_:
+						chip[clen].addr = system_create(type, arg, argc, argv);
+						break;
+					case _dri_:
+						chip[clen].addr = driver_create(type, arg, argc, argv);
+						break;
+					case _dev_:
+						chip[clen].addr = device_create(type, arg, argc, argv);
+						break;
+					case _wrk_:
+						chip[clen].addr = bootup_create(type, arg, argc, argv);
+						break;
 				}
-				say("node%d:tier=%.8s,fmt=%.8s,hash=%.8s,addr=%p\n",clen, &tier,&fmt,&hash,chip[clen].addr);
+				say("node%d:tier=%.8s,type=%.8s,hash=%.8s,addr=%p\n",clen, &tier,&type,&hash,chip[clen].addr);
 
 				nodename = -1;
 				clen += 1;
@@ -372,7 +389,7 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 				arg = 0;
 			}//if innode
 
-			fmt = 0;
+			type = 0;
 		}//if }
 	}//for
 

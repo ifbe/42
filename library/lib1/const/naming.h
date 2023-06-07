@@ -387,6 +387,9 @@
 #define _uyvy_ hex32('u','y','v','y')
 #define _yyyy_uv_ hex32('y','y','u','v')
 //
+#define _dec_ hex32('d','e','c',0)
+#define _enc_ hex32('e','n','c',0)
+//
 #define _mjpg_ hex32('m','j','p','g')
 #define _h264_ hex32('h','2','6','4')
 //event handle ret val
