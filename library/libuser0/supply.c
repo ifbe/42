@@ -55,6 +55,8 @@ int screencap_give(void*,void*, void*,int, void*,int, void*,int);
 //
 int codecv_create(void*, void*, int, u8**);
 int codecv_delete(void*);
+int codecv_reader(void*,void*, void*,int, void*,int);
+int codecv_writer(void*,void*, void*,int, void*,int);
 int codecv_take(void*,void*, void*,int, void*,int, void*,int);
 int codecv_give(void*,void*, void*,int, void*,int, void*,int);
 //light.window
@@ -420,6 +422,11 @@ int supply_delete(_obj* obj)
 }
 int supply_reader(_obj* sup,void* foot, void* arg,int idx, void* buf,int len)
 {
+	switch(sup->type){
+	case _dec_:
+	case _enc_:
+		return codecv_reader(sup,foot, arg, idx, buf, len);
+	}
 	return 0;
 }
 int supply_writer(_obj* sup,void* foot, void* arg,int idx, void* buf,int len)

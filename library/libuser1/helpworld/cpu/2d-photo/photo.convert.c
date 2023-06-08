@@ -690,7 +690,6 @@ printmemory(srcbuf, 0x40);
 	int newx = 0;
 	int srcstride = srcw*5/4;
 	int x,y;
-	int r,g,b;
 	u8* dst0;
 	u8* dst1;
 	u8* src = srcbuf;
@@ -784,7 +783,6 @@ printmemory(srcbuf, 0x40);
 	int newx = 0;
 	int srcstride = srcw*5/4;
 	int x,y;
-	int r,g,b;
 	u8* dst0;
 	u8* dst1;
 	u8* src = srcbuf;
@@ -867,3 +865,155 @@ b g b g ~ b g b g ~ b g b g ~	//vd
 		}
 	}
 }
+void bgbgxgrgrx_to_yyyyuv(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth)
+{
+	if(0 == srcbuf)return;
+	if(0 == dstbuf)return;
+//say("bgbgxgrgrx_to_yyyyuv\n");
+//printmemory(srcbuf, 0x40);
+	int newx = 0;
+	int srcstride = srcw*5/4;
+	int x,y;
+	int r,g,b;
+	int sumr,sumg,sumb;
+	float sumy,sumu,sumv;
+	u8* dsty0;
+	u8* dsty1;
+	u8* dstu;
+	u8* dstv;
+	short va[6];
+	short vb[6];
+	short vc[6];
+	short vd[6];
+	u8* src = srcbuf;
+	for(y=2;y<dsth-2;y+=2)
+	{
+		if(y >= dsth)break;
+
+		dsty0 = dstbuf + (y+0)*dstw;
+		dsty1 = dstbuf + (y+1)*dstw;
+		dstu = dstbuf + dstw*dsth + (y/2)*(dstw/2);
+		dstv = dstbuf + dstw*dsth + dstw*dsth/4 + (y/2)*(dstw/2);
+		for(x=4;x<dstw-4;x+=4)
+		{
+			if(x >= dstw)break;
+
+			newx = (x/4)*5 + (x%4);
+			va[0] = src[srcstride*(y-1) + newx-1-1];
+			va[1] = src[srcstride*(y-1) + newx];
+			va[2] = src[srcstride*(y-1) + newx+1];
+			va[3] = src[srcstride*(y-1) + newx+2];
+			va[4] = src[srcstride*(y-1) + newx+3];
+			va[5] = src[srcstride*(y-1) + newx+4+1];
+
+			vb[0] = src[srcstride*(y+0) + newx-1-1];
+			vb[1] = src[srcstride*(y+0) + newx];
+			vb[2] = src[srcstride*(y+0) + newx+1];
+			vb[3] = src[srcstride*(y+0) + newx+2];
+			vb[4] = src[srcstride*(y+0) + newx+3];
+			vb[5] = src[srcstride*(y+0) + newx+4+1];
+
+			vc[0] = src[srcstride*(y+1) + newx-1-1];
+			vc[1] = src[srcstride*(y+1) + newx];
+			vc[2] = src[srcstride*(y+1) + newx+1];
+			vc[3] = src[srcstride*(y+1) + newx+2];
+			vc[4] = src[srcstride*(y+1) + newx+3];
+			vc[5] = src[srcstride*(y+1) + newx+4+1];
+
+			vd[0] = src[srcstride*(y+2) + newx-1-1];
+			vd[1] = src[srcstride*(y+2) + newx];
+			vd[2] = src[srcstride*(y+2) + newx+1];
+			vd[3] = src[srcstride*(y+2) + newx+2];
+			vd[4] = src[srcstride*(y+2) + newx+3];
+			vd[5] = src[srcstride*(y+2) + newx+4+1];
+/*
+      0   1 2 3 4   5
+g r g r ~ g r g r ~ g r g r ~	//va
+b g b g ~ B G B G ~ b g b g ~	//vb
+g r g r ~ G R G R ~ g r g r ~	//vc
+b g b g ~ b g b g ~ b g b g ~	//vd
+*/
+			//yyyy
+			r = (va[0]+va[2]+vc[0]+vc[2])/4;
+			g = (va[1]+vc[1]+vb[0]+vb[2])/4;
+			b = vb[1];
+			sumr = r;
+			sumg = g;
+			sumb = b;
+			dsty0[x + 0] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+			r = (va[2]+vc[2])/2;
+			g = vb[2];
+			b = (vb[1]+vb[3])/2;
+			sumr += r;
+			sumg += g;
+			sumb += b;
+			dsty0[x + 1] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+			r = (vc[0]+vc[2])/2;
+			g = vc[1];
+			b = (vb[1]+vd[1])/2;
+			sumr += r;
+			sumg += g;
+			sumb += b;
+			dsty1[x + 0] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+			r = vc[2];
+			g = (vc[1]+vc[3]+vb[2]+vd[2])/2;
+			b = (vb[1]+vb[3]+vc[1]+vc[3])/2;
+			sumr += r;
+			sumg += g;
+			sumb += b;
+			dsty1[x + 1] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+
+			//u,v
+			sumr /= 4;
+			sumg /= 4;
+			sumb /= 4;
+			sumy = 0.2126*sumr+0.7152*sumg+0.0722*sumb;
+			dstu[x/2] = (u8)(128+sumb-sumy);
+			dstv[x/2] = (u8)(128+sumr-sumy);
+			//say("sumb=%d,sumr=%d,sumy=%f\n",sumb,sumr,sumy);
+
+			//yyyy
+			r = (va[2]+va[4]+vc[2]+vc[4])/4;
+			g = (va[3]+vc[3]+vb[2]+vb[4])/4;
+			b = vb[3];
+			sumr = r;
+			sumg = g;
+			sumb = b;
+			dsty0[x + 2] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+			r = (va[4]+vc[4])/2;
+			g = vb[4];
+			b = (vb[3]+vb[5])/2;
+			sumr += r;
+			sumg += g;
+			sumb += b;
+			dsty0[x + 3] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+			r = (vc[2]+vc[4])/2;
+			g = vc[3];
+			b = (vb[3]+vd[3])/2;
+			sumr += r;
+			sumg += g;
+			sumb += b;
+			dsty1[x + 2] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+			r = vc[4];
+			g = (vc[3]+vc[5]+vb[4]+vd[4])/2;
+			b = (vb[3]+vb[5]+vc[3]+vc[5])/2;
+			sumr += r;
+			sumg += g;
+			sumb += b;
+			dsty1[x + 3] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+
+			//u,v
+			sumr /= 4;
+			sumg /= 4;
+			sumb /= 4;
+			sumy = (u8)(0.2126*sumr+0.7152*sumg+0.0722*sumb);
+			dstu[x/2 + 1] = (u8)(128+sumb-sumy);
+			dstv[x/2 + 1] = (u8)(128+sumr-sumy);
+		}
+	}
+}
+//1. BT.601标准[1]——标清数字电视（SDTV)    Y=0.299R+0.587G+0.114B
+//2. BT.709标准[2]——高清数字电视（HDTV)    Y=0.2126R+0.7152G+0.0722B
+//3. BT.2020标准[3]——超高清数字电视（UHDTV)  Y=0.2627R+0.6780G+0.0593B

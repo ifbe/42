@@ -42,10 +42,11 @@ rb:4,14,15
 }
 picfmt{
 fmt:picfmt
+zerocopy:1
 srcfmt:pBAA
 srcw:640
 srch:480
-dstfmt:yyyy,u,v
+dstfmt:yyuv
 dstw:640
 dsth:480
 }
@@ -60,7 +61,7 @@ width:640
 height:480
 }
 codec{
-fmt:h264enc
+fmt:enc
 }
 </supply>
 

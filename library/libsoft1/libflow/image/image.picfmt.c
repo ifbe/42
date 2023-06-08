@@ -17,6 +17,9 @@ void bggr10_to_rgba(
 void bgbgxgrgrx_to_rgba(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
+void bgbgxgrgrx_to_yyyyuv(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth);
 void gbgbxrgrgx_to_rgba(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
@@ -52,6 +55,7 @@ void yuyv_to_rgba(
 
 struct perobj{
 	struct kv88 kv[4];
+	int zerocopy;
 
 	void* srcbuf[1];
 	u32 srclen;
@@ -109,10 +113,12 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, vo
 	int srcfmt = per->srcfmt;
 	int srcw = per->srcw;
 	int srch = per->srch;
+	//say("srcw=%d,srch=%d\n",srcw,srch);
 	if(_kv88_ == cmd){
 		int j;
 		struct kv88* kv = arg;
 		for(j=0;j<16;j++){
+			//say("key=%llx,val=%llx\n",kv[j].key, kv[j].val);
 			if(kv[j].key <= 0x20)break;
 			switch(kv[j].key){
 			case '.':
@@ -131,7 +137,7 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, vo
 		}
 	}
 	if((0 == srcw)|(0 == srch)){
-		say("wrong srcw or srch\n");
+		say("wrong srcw=%d or srch=%d\n",srcw,srch);
 		return 0;
 	}
 
@@ -162,6 +168,10 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, vo
 	if((0 == per->dstw)|(0 == per->dsth)){
 		per->dstw = srcw;
 		per->dsth = srch;
+	}
+	if(per->zerocopy){
+		reading_data_from_peer(art, _dst_, 0, _buf_, &per->dstbuf, 1);
+		say("zerocopy:%p\n", per->dstbuf[0]);
 	}
 	if(0 == per->dstbuf[0]){
 		per->dstlen = 4 * per->dstw * per->dsth;
@@ -201,6 +211,10 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, vo
 		bgbgxgrgrx_to_rgba(buf, len, srcw, srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
 		goto done;
 	}
+	if((_pBAA_ == srcfmt)&&(_yyyy_uv_ == per->dstfmt)){
+		bgbgxgrgrx_to_yyyyuv(buf, len, srcw, srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
+		goto done;
+	}
 	if((_pGAA_ == srcfmt)&&(_rgbx_ == per->dstfmt)){
 		gbgbxrgrgx_to_rgba(buf, len, srcw, srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
 		goto done;
@@ -221,7 +235,7 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, vo
 	}
 
 unknown:
-	say("picfmt_give:srcfmt=%x,dstfmt=%x\n", srcfmt, per->dstfmt);
+	say("picfmt_give unknown:srcfmt=%x,dstfmt=%x\n", srcfmt, per->dstfmt);
 	printmemory(buf, 16);
 
 done:
@@ -281,6 +295,10 @@ int picfmt_create(_obj* ele, u8* arg, int argc, char** argv)
 		}
 		if(0 == ncmp(argv[j], "dsth:", 5)){
 			decstr2u32(argv[j]+5, &per->dsth);
+			continue;
+		}
+		if(0 == ncmp(argv[j], "zerocopy", 8)){
+			per->zerocopy = 1;
 			continue;
 		}
 	}

@@ -92,6 +92,7 @@ f-ColourGains = [ 1.447118, 1.521400 ]
 */
 extern "C"{
 #include "libuser.h"
+#define _BG10_ hex32('B','G','1','0')
 }
 #include <iomanip>
 #include <iostream>
@@ -183,6 +184,9 @@ static void requestComplete(Request *request)
 
 			uint8_t* p = my->mem[idx][j] + off;
 			//printmemory(p, 0x20);
+			kv[0].val = my->w;
+			kv[1].val = my->h;
+			kv[2].val = my->fmt;
 			give_data_into_peer(my->myobj,_dst_, stack,0, kv,_kv88_, p, sz);
 		}
 	}
@@ -266,7 +270,13 @@ int createcamera(struct mydata* my){
 	//stream config
 	stmcfg.size.width = my->w;
 	stmcfg.size.height = my->h;
-	if(my->fmt)stmcfg.pixelFormat = PixelFormat(my->fmt);
+	if(my->fmt){
+		stmcfg.pixelFormat = PixelFormat(my->fmt);
+	}
+	else{
+		my->fmt = stmcfg.pixelFormat.fourcc();
+		if(_BG10_ == my->fmt)my->fmt = _pBAA_;
+	}
 
 	//camera config
 	camcfg->validate();
