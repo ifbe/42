@@ -871,7 +871,7 @@ void bgbgxgrgrx_to_yyyyuv(
 {
 	if(0 == srcbuf)return;
 	if(0 == dstbuf)return;
-//say("bgbgxgrgrx_to_yyyyuv\n");
+say("bgbgxgrgrx_to_yyyyuv:srcw=%d,srch=%d,dstw=%d,dsth=%d\n",srcw,srch,dstw,dsth);
 //printmemory(srcbuf, 0x40);
 	int newx = 0;
 	int srcstride = srcw*5/4;
@@ -890,7 +890,9 @@ void bgbgxgrgrx_to_yyyyuv(
 	u8* src = srcbuf;
 	for(y=2;y<dsth-2;y+=2)
 	{
-		if(y >= dsth)break;
+		if(y+2 >= srch)break;		//1080
+		if(y+2 >= dsth)break;		//1088
+		//say("y=%d\n",y);
 
 		dsty0 = dstbuf + (y+0)*dstw;
 		dsty1 = dstbuf + (y+1)*dstw;
@@ -970,8 +972,8 @@ b g b g ~ b g b g ~ b g b g ~	//vd
 			sumg /= 4;
 			sumb /= 4;
 			sumy = 0.2126*sumr+0.7152*sumg+0.0722*sumb;
-			dstu[x/2] = (u8)(128+sumb-sumy);
-			dstv[x/2] = (u8)(128+sumr-sumy);
+			dstu[x/2] = (u8)(128+(sumb-sumy)/1.8556);
+			dstv[x/2] = (u8)(128+(sumr-sumy)/1.5748);
 			//say("sumb=%d,sumr=%d,sumy=%f\n",sumb,sumr,sumy);
 
 			//yyyy
@@ -1009,11 +1011,21 @@ b g b g ~ b g b g ~ b g b g ~	//vd
 			sumg /= 4;
 			sumb /= 4;
 			sumy = (u8)(0.2126*sumr+0.7152*sumg+0.0722*sumb);
-			dstu[x/2 + 1] = (u8)(128+sumb-sumy);
-			dstv[x/2 + 1] = (u8)(128+sumr-sumy);
+			dstu[x/2 + 1] = (u8)(128+(sumb-sumy)/1.8556);
+			dstv[x/2 + 1] = (u8)(128+(sumr-sumy)/1.5748);
 		}
+		//say("yyyyy=%d\n",y);
 	}
 }
-//1. BT.601标准[1]——标清数字电视（SDTV)    Y=0.299R+0.587G+0.114B
-//2. BT.709标准[2]——高清数字电视（HDTV)    Y=0.2126R+0.7152G+0.0722B
-//3. BT.2020标准[3]——超高清数字电视（UHDTV)  Y=0.2627R+0.6780G+0.0593B
+//1. BT.601标准[1]——标清数字电视（SDTV)
+	//Y=0.299R+0.587G+0.114B
+	//128+(sumb-sumy)/1.772;
+	//128+(sumr-sumy)/1.402;
+//2. BT.709标准[2]——高清数字电视（HDTV)
+	//Y=0.2126R+0.7152G+0.0722B
+	//128+(sumb-sumy)/1.8556;
+	//128+(sumr-sumy)/1.5748;
+//3. BT.2020标准[3]——超高清数字电视（UHDTV)
+	//Y=0.2627R+0.6780G+0.0593B
+	//128+(sumb-sumy)/1.8814;
+	//128+(sumr-sumy)/1.4746;
