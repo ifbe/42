@@ -14,13 +14,18 @@ void bggr_to_rgba(
 void bggr10_to_rgba(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
+//
 void bgbgxgrgrx_to_rgba(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
 void bgbgxgrgrx_to_yyyyuv(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
+//
 void gbgbxrgrgx_to_rgba(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth);
+void gbgbxrgrgx_to_yyyyuv(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
 //
@@ -217,6 +222,10 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, vo
 	}
 	if((_pGAA_ == srcfmt)&&(_rgbx_ == per->dstfmt)){
 		gbgbxrgrgx_to_rgba(buf, len, srcw, srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
+		goto done;
+	}
+	if((_pGAA_ == srcfmt)&&(_yyyy_uv_ == per->dstfmt)){
+		gbgbxrgrgx_to_yyyyuv(buf, len, srcw, srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
 		goto done;
 	}
 

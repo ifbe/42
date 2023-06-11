@@ -772,6 +772,162 @@ g b g b ~ g b g b ~ g b g b ~	//vd
 		}
 	}
 }
+void gbgbxrgrgx_to_yyyyuv(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth)
+{
+	if(0 == srcbuf)return;
+	if(0 == dstbuf)return;
+say("gbgbxrgrgx_to_yyyyuv:srcw=%d,srch=%d,dstw=%d,dsth=%d\n",srcw,srch,dstw,dsth);
+//printmemory(srcbuf, 0x40);
+	int newx = 0;
+	int srcstride = srcw*5/4;
+	int x,y;
+	int r,g,b;
+	int sumr,sumg,sumb;
+	float sumy,sumu,sumv;
+	u8* dsty0;
+	u8* dsty1;
+	u8* dstu;
+	u8* dstv;
+	short va[6];
+	short vb[6];
+	short vc[6];
+	short vd[6];
+	u8* src = srcbuf;
+	for(y=2;y<dsth-2;y+=2)
+	{
+		if(y+2 >= srch)break;		//1080
+		if(y+2 >= dsth)break;		//1088
+		//say("y=%d\n",y);
+
+		dsty0 = dstbuf + (y+0)*dstw;
+		dsty1 = dstbuf + (y+1)*dstw;
+		dstu = dstbuf + dstw*dsth + (y/2)*(dstw/2);
+		dstv = dstbuf + dstw*dsth + dstw*dsth/4 + (y/2)*(dstw/2);
+		for(x=4;x<dstw-4;x+=4)
+		{
+			if(x >= dstw)break;
+
+			newx = (x/4)*5 + (x%4);
+			va[0] = src[srcstride*(y-1) + newx-1-1];
+			va[1] = src[srcstride*(y-1) + newx];
+			va[2] = src[srcstride*(y-1) + newx+1];
+			va[3] = src[srcstride*(y-1) + newx+2];
+			va[4] = src[srcstride*(y-1) + newx+3];
+			va[5] = src[srcstride*(y-1) + newx+4+1];
+
+			vb[0] = src[srcstride*(y+0) + newx-1-1];
+			vb[1] = src[srcstride*(y+0) + newx];
+			vb[2] = src[srcstride*(y+0) + newx+1];
+			vb[3] = src[srcstride*(y+0) + newx+2];
+			vb[4] = src[srcstride*(y+0) + newx+3];
+			vb[5] = src[srcstride*(y+0) + newx+4+1];
+
+			vc[0] = src[srcstride*(y+1) + newx-1-1];
+			vc[1] = src[srcstride*(y+1) + newx];
+			vc[2] = src[srcstride*(y+1) + newx+1];
+			vc[3] = src[srcstride*(y+1) + newx+2];
+			vc[4] = src[srcstride*(y+1) + newx+3];
+			vc[5] = src[srcstride*(y+1) + newx+4+1];
+
+			vd[0] = src[srcstride*(y+2) + newx-1-1];
+			vd[1] = src[srcstride*(y+2) + newx];
+			vd[2] = src[srcstride*(y+2) + newx+1];
+			vd[3] = src[srcstride*(y+2) + newx+2];
+			vd[4] = src[srcstride*(y+2) + newx+3];
+			vd[5] = src[srcstride*(y+2) + newx+4+1];
+/*
+      0   1 2 3 4   5
+r g r g ~ r g r g ~ r g r g ~	//va
+g b g b ~ G B G B ~ g b g b ~	//vb
+r g r g ~ R G R G ~ r g r g ~	//vc
+g b g b ~ g b g b ~ g b g b ~	//vd
+*/
+			//yyyy
+			r = (va[1]+vc[1])/2;
+			g = vb[1];
+			b = (vb[0]+vb[2])/2;
+			sumr = r;
+			sumg = g;
+			sumb = b;
+			dsty0[x + 0] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+			r = (va[1]+va[3]+vc[1]+vc[3])/4;
+			g = (va[2]+vc[2]+vb[1]+vb[3])/4;
+			b = vb[2];
+			sumr += r;
+			sumg += g;
+			sumb += b;
+			dsty0[x + 1] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+			r = vc[1];
+			g = (vb[1]+vd[1]+vc[0]+vc[2])/4;
+			b = (vb[0]+vb[2]+vd[0]+vd[2])/4;
+			sumr += r;
+			sumg += g;
+			sumb += b;
+			dsty1[x + 0] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+			r = (vc[1]+vc[3])/2;
+			g = vc[2];
+			b = (vb[2]+vd[2])/2;
+			sumr += r;
+			sumg += g;
+			sumb += b;
+			dsty1[x + 1] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+
+			//u,v
+			sumr /= 4;
+			sumg /= 4;
+			sumb /= 4;
+			sumy = 0.2126*sumr+0.7152*sumg+0.0722*sumb;
+			dstu[x/2] = (u8)(128+(sumb-sumy)/1.8556);
+			dstv[x/2] = (u8)(128+(sumr-sumy)/1.5748);
+			//say("sumb=%d,sumr=%d,sumy=%f\n",sumb,sumr,sumy);
+
+			//yyyy
+			r = (va[3]+vc[3])/2;
+			g = vb[3];
+			b = (vb[2]+vb[4])/2;
+			sumr = r;
+			sumg = g;
+			sumb = b;
+			dsty0[x + 2] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+			r = (va[3]+va[5]+vc[3]+vc[5])/4;
+			g = (va[4]+vc[4]+vb[3]+vb[5])/4;
+			b = vb[4];
+			sumr += r;
+			sumg += g;
+			sumb += b;
+			dsty0[x + 3] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+			r = vc[3];
+			g = (vb[3]+vd[3]+vc[2]+vc[4])/4;
+			b = (vb[2]+vb[4]+vd[2]+vd[4])/4;
+			sumr += r;
+			sumg += g;
+			sumb += b;
+			dsty1[x + 2] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+			r = (vc[3]+vc[5])/2;
+			g = vc[4];
+			b = (vb[4]+vd[4])/2;
+			sumr += r;
+			sumg += g;
+			sumb += b;
+			dsty1[x + 3] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+
+			//u,v
+			sumr /= 4;
+			sumg /= 4;
+			sumb /= 4;
+			sumy = (u8)(0.2126*sumr+0.7152*sumg+0.0722*sumb);
+			dstu[x/2 + 1] = (u8)(128+(sumb-sumy)/1.8556);
+			dstv[x/2 + 1] = (u8)(128+(sumr-sumy)/1.5748);
+		}
+		//say("yyyyy=%d\n",y);
+	}
+}
+
+
+
+
 void bgbgxgrgrx_to_rgba(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth)

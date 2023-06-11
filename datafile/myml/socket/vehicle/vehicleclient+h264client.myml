@@ -42,7 +42,7 @@ arg:384000
 }
 picfmt{
 fmt:picfmt
-srcfmt:yyyy,u,v
+srcfmt:yyuv
 srcw:640
 srch:480
 dstfmt:yuvx

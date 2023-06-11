@@ -93,6 +93,7 @@ f-ColourGains = [ 1.447118, 1.521400 ]
 extern "C"{
 #include "libuser.h"
 #define _BG10_ hex32('B','G','1','0')
+#define _GB10_ hex32('G','B','1','0')
 }
 #include <iomanip>
 #include <iostream>
@@ -276,6 +277,7 @@ int createcamera(struct mydata* my){
 	else{
 		my->fmt = stmcfg.pixelFormat.fourcc();
 		if(_BG10_ == my->fmt)my->fmt = _pBAA_;
+		if(_GB10_ == my->fmt)my->fmt = _pGAA_;
 	}
 
 	//camera config
