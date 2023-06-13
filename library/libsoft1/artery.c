@@ -42,6 +42,7 @@
 //
 #define _recut_ hex64('r','e','c','u','t', 0, 0, 0)
 #define _reline_ hex64('r','e','l','i','n','e', 0, 0)
+#define _renalu_ hex64('r','e','n','a','l','u', 0, 0)
 #define _reorder_ hex64('r','e','o','r','d','e','r', 0)
 //
 #define _qu2eu_ hex64('q','u','2','e','u',0,0,0)
@@ -242,6 +243,12 @@ int recut_attach(struct halfrel* self, struct halfrel* peer);
 int recut_detach(struct halfrel* self, struct halfrel* peer);
 int recut_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
 int recut_read( _obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+int renalu_create(_obj* ele, void* arg, int argc, u8** argv);
+int renalu_delete(_obj* ele, void* arg);
+int renalu_attach(struct halfrel* self, struct halfrel* peer);
+int renalu_detach(struct halfrel* self, struct halfrel* peer);
+int renalu_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+int renalu_read( _obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
 int reline_create(_obj* ele, void* arg, int argc, u8** argv);
 int reline_delete(_obj* ele, void* arg);
 int reline_attach(struct halfrel* self, struct halfrel* peer);
@@ -1075,6 +1082,15 @@ void* artery_create(u64 type, void* arg, int argc, u8** argv)
 
 		e->type = _recut_;
 		recut_create(e, url, argc, argv);
+		return e;
+	}
+	if(_renalu_ == type)
+	{
+		e = artery_alloc();
+		if(0 == e)return 0;
+
+		e->type = _renalu_;
+		renalu_create(e, url, argc, argv);
 		return e;
 	}
 	if(_reline_ == type)
@@ -2042,6 +2058,7 @@ int artery_takeby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, 
 	//case _scale_: scale_read(art,foot, stack,sp, arg,idx, buf,len);break;
 
 	case _recut_:recut_read(art,foot, stack,sp, arg,idx, buf,len);break;
+	case _renalu_:renalu_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _reline_:reline_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _reorder_:reorder_read(art,foot, stack,sp, arg,idx, buf,len);break;
 
@@ -2166,6 +2183,7 @@ int artery_giveby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, 
 	case _sobel_:return sobel_give(art,foot, stack,sp, arg,idx, buf,len);break;
 
 	case _recut_:return recut_write(art,foot, stack,sp, arg,idx, buf,len);break;
+	case _renalu_:return renalu_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _reline_:return reline_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _reorder_:return reorder_write(art,foot, stack,sp, arg,idx, buf,len);break;
 

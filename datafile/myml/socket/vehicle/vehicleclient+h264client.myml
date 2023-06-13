@@ -36,9 +36,8 @@ fmt:h264dec
 vehicle{
 fmt:vehicle
 }
-recut{
-fmt:recut
-arg:384000
+renalu{
+fmt:renalu
 }
 picfmt{
 fmt:picfmt
@@ -109,8 +108,8 @@ q:0.8, 0.4
 (@vkbd, evto@0) -> (@vehicle, std@0)
 
 #canvas depends on usbcam
-(tcpvid, 0, dst) -> (recut, 0, src)
-(recut, 0, dst) -> (codec, 0, bs)
+(tcpvid, 0, dst) -> (renalu, 0, src)
+(renalu, 0, dst) -> (codec, 0, bs)
 (codec, 0, img) -> (picfmt, 0, src)
 (picfmt, 0, dst) -> (canvas, 0, rgb)
 

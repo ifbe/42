@@ -1,0 +1,33 @@
+<system>
+client{
+fmt:tcp
+arg:192.168.5.147:9999
+}
+file{
+fmt:FILE
+arg:test.h264
+}
+</system>
+
+
+<artery>
+dbghex{
+fmt:dbghex
+}
+renalu{
+fmt:renalu
+}
+</artery>
+
+
+<supply>
+codec{
+fmt:h264dec
+}
+</supply>
+
+
+<relation>
+(client, 0, dst) -> (renalu, 0, src)
+(renalu, 0, dst) -> (file, 0, src)
+</relation>

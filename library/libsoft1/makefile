@@ -213,6 +213,7 @@ libflow/stream/stream.parse.gcode.c \
 libflow/stream/stream.parse.mavlink.c \
 libflow/stream/stream.parse.nema0183.c \
 libflow/stream/stream.revise.recut.c \
+libflow/stream/stream.revise.renalu.c \
 libflow/stream/stream.revise.reline.c \
 libflow/stream/stream.revise.reorder.c \
 libflow/stream/stream.test.echo.c \

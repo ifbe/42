@@ -30,7 +30,7 @@ arg:384000
 }
 picfmt{
 fmt:picfmt
-srcfmt:test
+srcfmt:pGAA
 srcw:640
 srch:480
 dstfmt:rgbx
@@ -44,7 +44,7 @@ dsth:480
 server{
 fmt:tcp
 #arg:192.168.5.147:9999
-arg:pi0w.deepstack.tech:9999
+arg:pi0w2.deepstack.tech:9999
 }
 </system>
 
