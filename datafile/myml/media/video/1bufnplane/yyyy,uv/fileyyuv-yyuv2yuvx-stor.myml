@@ -6,7 +6,7 @@ arg:C:\Users\NUC\Desktop\cts\mdp\02799_00015_00-o_w128_h288_y128_uv128_f12.bin
 }
 picfmt{
 fmt:picfmt
-srcfmt:yyuv
+srcfmt:y4,uv
 srcw:128
 srch:288
 dstfmt:yuvx

@@ -18,7 +18,7 @@ fmt:virtual
 usbcam{
 fmt:cam
 arg:/dev/video0
-format:yyuv
+format:y4,uv
 width:1280
 height:720
 }
@@ -35,7 +35,7 @@ depth:1024
 <artery>
 convert{
 fmt:picfmt
-srcfmt:yyuv
+srcfmt:y4,uv
 srcw:1280
 srch:720
 dstfmt:yuvx

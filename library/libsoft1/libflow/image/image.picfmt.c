@@ -1,5 +1,6 @@
 #include "libsoft.h"
 int copyfourcc(void*,void*);
+int copyeightcc(void*,void*);
 int decstr2u32(void*,void*);
 //
 void bgr_to_rgba(
@@ -18,14 +19,14 @@ void bggr10_to_rgba(
 void bgbgxgrgrx_to_rgba(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
-void bgbgxgrgrx_to_yyyyuv(
+void bgbgxgrgrx_to_y4_u_v(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
 //
 void gbgbxrgrgx_to_rgba(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
-void gbgbxrgrgx_to_yyyyuv(
+void gbgbxrgrgx_to_y4_u_v(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
 //
@@ -43,7 +44,7 @@ void uyvy_to_yuvx(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
 //
-void yyyyuv_to_yuvx(
+void y4_uv_to_yuvx(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
 //
@@ -63,14 +64,14 @@ struct perobj{
 	int zerocopy;
 
 	void* srcbuf[1];
+	u64 srcfmt;
 	u32 srclen;
-	u32 srcfmt;
 	u32 srcw;
 	u32 srch;
 
 	void* dstbuf[1];
+	u64 dstfmt;
 	u32 dstlen;
-	u32 dstfmt;
 	u32 dstw;
 	u32 dsth;
 };
@@ -115,7 +116,7 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, vo
 
 	//process metadata
 	int ispart = 0;
-	int srcfmt = per->srcfmt;
+	u64 srcfmt = per->srcfmt;
 	int srcw = per->srcw;
 	int srch = per->srch;
 	//say("srcw=%d,srch=%d\n",srcw,srch);
@@ -164,7 +165,7 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, vo
 			picfmt_copy_v(per->srcbuf[0], buf);
 			buf = per->srcbuf[0];
 			len = per->srclen;
-			srcfmt = _yyyy_uv_;
+			srcfmt = _y4_uv_;
 		}
 		else return 0;
 	}
@@ -191,8 +192,8 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, vo
 		uyvy_to_yuvx(buf, len, srcw, srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
 		goto done;
 	}
-	if((_yyyy_uv_ == srcfmt)&&(_yuvx_ == per->dstfmt)){
-		yyyyuv_to_yuvx(buf, len, srcw, srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
+	if((_y4_uv_ == srcfmt)&&(_yuvx_ == per->dstfmt)){
+		y4_uv_to_yuvx(buf, len, srcw, srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
 		goto done;
 	}
 
@@ -216,16 +217,16 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, vo
 		bgbgxgrgrx_to_rgba(buf, len, srcw, srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
 		goto done;
 	}
-	if((_pBAA_ == srcfmt)&&(_yyyy_uv_ == per->dstfmt)){
-		bgbgxgrgrx_to_yyyyuv(buf, len, srcw, srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
+	if((_pBAA_ == srcfmt)&&(_y4_u_v_ == per->dstfmt)){
+		bgbgxgrgrx_to_y4_u_v(buf, len, srcw, srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
 		goto done;
 	}
 	if((_pGAA_ == srcfmt)&&(_rgbx_ == per->dstfmt)){
 		gbgbxrgrgx_to_rgba(buf, len, srcw, srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
 		goto done;
 	}
-	if((_pGAA_ == srcfmt)&&(_yyyy_uv_ == per->dstfmt)){
-		gbgbxrgrgx_to_yyyyuv(buf, len, srcw, srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
+	if((_pGAA_ == srcfmt)&&(_y4_u_v_ == per->dstfmt)){
+		gbgbxrgrgx_to_y4_u_v(buf, len, srcw, srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
 		goto done;
 	}
 
@@ -244,7 +245,7 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, vo
 	}
 
 unknown:
-	say("picfmt_give unknown:srcfmt=%x,dstfmt=%x\n", srcfmt, per->dstfmt);
+	say("picfmt_give unknown:srcfmt=%llx,dstfmt=%llx\n", srcfmt, per->dstfmt);
 	printmemory(buf, 16);
 
 done:
@@ -283,7 +284,7 @@ int picfmt_create(_obj* ele, u8* arg, int argc, char** argv)
 	for(j=0;j<argc;j++){
 		say("%d:%.8s\n", j, argv[j]);
 		if(0 == ncmp(argv[j], "srcfmt:", 7)){
-			copyfourcc(&per->srcfmt, argv[j]+7);
+			copyeightcc(&per->srcfmt, argv[j]+7);
 			continue;
 		}
 		if(0 == ncmp(argv[j], "srcw:", 5)){
@@ -295,7 +296,7 @@ int picfmt_create(_obj* ele, u8* arg, int argc, char** argv)
 			continue;
 		}
 		if(0 == ncmp(argv[j], "dstfmt:", 7)){
-			copyfourcc(&per->dstfmt, argv[j]+7);
+			copyeightcc(&per->dstfmt, argv[j]+7);
 			continue;
 		}
 		if(0 == ncmp(argv[j], "dstw:", 5)){

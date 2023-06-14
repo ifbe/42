@@ -386,7 +386,8 @@
 #define _yuvx_ hex32('y','u','v','x')
 #define _yuyv_ hex32('y','u','y','v')
 #define _uyvy_ hex32('u','y','v','y')
-#define _yyyy_uv_ hex32('y','y','u','v')
+#define _y4_uv_ hex64 ('y','4',',','u','v', 0 , 0, 0)
+#define _y4_u_v_ hex64('y','4',',','u',',','v', 0, 0)
 //
 #define _dec_ hex32('d','e','c',0)
 #define _enc_ hex32('e','n','c',0)

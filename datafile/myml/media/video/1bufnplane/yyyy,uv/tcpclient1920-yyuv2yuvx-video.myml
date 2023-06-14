@@ -29,7 +29,7 @@ arg:3110400
 }
 picfmt{
 fmt:picfmt
-srcfmt:yyuv
+srcfmt:y4,uv
 srcw:1920
 srch:1080
 dstfmt:yuvx

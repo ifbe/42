@@ -42,6 +42,16 @@ void movsb(u8* rdi, u8* rsi, int rcx)
 
 
 
+int copypath(u8* dst, u8* src)
+{
+	int j;
+	for(j=0;j<127;j++){
+		if(src[j] < 0x20)break;
+		dst[j] = src[j];
+	}
+	dst[j] = 0;
+	return j;
+}
 int copyfourcc(u8* dst, u8* src)
 {
 	int j;
@@ -58,13 +68,19 @@ int copyfourcc(u8* dst, u8* src)
 	}
 	return j;
 }
-int copypath(u8* dst, u8* src)
+int copyeightcc(u8* dst, u8* src)
 {
 	int j;
-	for(j=0;j<127;j++){
-		if(src[j] < 0x20)break;
-		dst[j] = src[j];
+	for(j=0;j<8;j++)dst[j] = 0;
+	for(j=0;j<8;j++){
+		if( ('_' == src[j]) | (',' == src[j]) |
+			( (src[j] >= '0')&&(src[j] <= '9') )|
+			( (src[j] >= 'A')&&(src[j] <= 'Z') )|
+			( (src[j] >= 'a')&&(src[j] <= 'z') ))
+		{
+			dst[j] = src[j];
+		}
+		else break;
 	}
-	dst[j] = 0;
 	return j;
 }

@@ -1,6 +1,7 @@
 #include "libuser.h"
 #define OWNBUF listptr.buf0
 #define _cam_ hex32('c','a','m',0)
+int parsefv(float* vec, int flen, u8* str, int slen);
 int copyfourcc(void*,void*);
 void yuyv_to_rgba(
 	u8* src, int s1, int w0, int h0, int x0, int y0, int x1, int y1,
@@ -35,6 +36,7 @@ struct own{
 	int inw;
 	int inh;
 
+	mat4 ccm;	//colorcorrectmatrix;
 	struct dx11data dx11;
 	struct gl41data gl41;
 };
@@ -212,6 +214,7 @@ GLSL_VERSION
 "}\n";
 char* video_glsl_rgba =
 GLSL_VERSION
+"uniform mat4 ccm;\n"
 "uniform sampler2D tex0;\n"
 "in mediump vec2 uv;\n"
 "out mediump vec4 FragColor;\n"
@@ -220,11 +223,12 @@ GLSL_VERSION
 	"mediump float r = yuv.r;\n"
 	"mediump float g = yuv.g;\n"
 	"mediump float b = yuv.b;\n"
-	"mediump vec3 rgb = vec3(r,g,b);\n"
+	"mediump vec4 rgbx = vec4(r,g,b,1.0);\n"
 	//"mat3 correct = mat3(1.831268, -0.453759, -0.377514, -0.451451, 1.634110, -0.182660, 0.026111, -0.919596, 1.893486);\n"
 	//"mat3 correct = mat3(1.693204, -0.595422, -0.097788, -0.444015, 1.963518, -0.519503, -0.082125, -0.739284, 1.821409);\n"
 	//"rgb = correct*rgb;\n"
-	"FragColor = vec4(rgb, 1.0);\n"
+	"rgbx = ccm*rgbx;\n"
+	"FragColor = vec4(vec3(rgbx), 1.0);\n"
 "}\n";
 char* video_glsl_yuvx =
 GLSL_VERSION
@@ -290,6 +294,10 @@ static void video_gl41prep(struct own* my)
 	vtx->vbuf_h = 6;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
 	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+
+	data->dst.arg[0].fmt = 'm';
+	data->dst.arg[0].name = "ccm";
+	data->dst.arg[0].data = my->ccm;
 
 	//
 	data->dst.texname[0] = "tex0";
@@ -529,10 +537,16 @@ static void video_create(_obj* act, void* arg, int argc, u8** argv)
 	struct own* own = act->OWNBUF = memorycreate(0x1000, 0);
 	if(0 == own)return;
 
-	int j;
+	int x,y,j;
 	u32 width = 640;
 	u32 height = 480;
 	u64 fmt = _yuvx_;
+	for(y=0;y<4;y++){
+		for(x=0;x<4;x++){
+			if(x==y)own->ccm[y][x] = 1.0;
+			else own->ccm[y][x] = 0.0;
+		}
+	}
 	for(j=0;j<argc;j++){
 		say("%d:%.4s\n", j, argv[j]);
 		if(0 == ncmp(argv[j], "format:", 7)){
@@ -544,11 +558,15 @@ static void video_create(_obj* act, void* arg, int argc, u8** argv)
 		if(0 == ncmp(argv[j], "height:", 7)){
 			decstr2u32(argv[j]+7, &height);
 		}
+		if(0 == ncmp(argv[j], "ccm:", 4)){
+			parsefv(&own->ccm[0][0], 16, argv[j]+4, 200);
+		}
 	}
 	own->inw = width;
 	own->inh = height;
 	own->infmt = fmt;
 	own->inbuf = 0;
+	for(j=0;j<4;j++)say("%f,%f,%f,%f\n",own->ccm[j][0],own->ccm[j][1],own->ccm[j][2],own->ccm[j][3]);
 
 	video_dx11prep(own);
 	video_gl41prep(own);

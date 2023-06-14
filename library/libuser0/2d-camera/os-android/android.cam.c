@@ -76,7 +76,7 @@ static void imageCallback(void* context, AImageReader* reader)
 	struct kv88 kv[4] = {
 		{'w', 640},
 		{'h', 480},
-		{'f', _yyyy_uv_},
+		{'f', _y4_uv_},
 		{'.', 0}
 	};
 

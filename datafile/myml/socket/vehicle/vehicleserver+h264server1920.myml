@@ -46,7 +46,7 @@ zerocopy:1
 srcfmt:pBAA
 srcw:1920
 srch:1080
-dstfmt:yyuv
+dstfmt:y4,u,v
 dstw:1920
 dsth:1088
 }

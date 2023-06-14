@@ -651,7 +651,7 @@ yyyyyyyy
 yyyyyyyy
 uvuvuvuv
 */
-void yyyyuv_to_yuvx(
+void y4_uv_to_yuvx(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth)
 {
@@ -772,13 +772,13 @@ g b g b ~ g b g b ~ g b g b ~	//vd
 		}
 	}
 }
-void gbgbxrgrgx_to_yyyyuv(
+void gbgbxrgrgx_to_y4_u_v(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth)
 {
 	if(0 == srcbuf)return;
 	if(0 == dstbuf)return;
-say("gbgbxrgrgx_to_yyyyuv:srcw=%d,srch=%d,dstw=%d,dsth=%d\n",srcw,srch,dstw,dsth);
+say("gbgbxrgrgx_to_y4_u_v:srcw=%d,srch=%d,dstw=%d,dsth=%d\n",srcw,srch,dstw,dsth);
 //printmemory(srcbuf, 0x40);
 	int newx = 0;
 	int srcstride = srcw*5/4;
@@ -1021,13 +1021,13 @@ b g b g ~ b g b g ~ b g b g ~	//vd
 		}
 	}
 }
-void bgbgxgrgrx_to_yyyyuv(
+void bgbgxgrgrx_to_y4_u_v(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth)
 {
 	if(0 == srcbuf)return;
 	if(0 == dstbuf)return;
-say("bgbgxgrgrx_to_yyyyuv:srcw=%d,srch=%d,dstw=%d,dsth=%d\n",srcw,srch,dstw,dsth);
+say("bgbgxgrgrx_to_y4_u_v:srcw=%d,srch=%d,dstw=%d,dsth=%d\n",srcw,srch,dstw,dsth);
 //printmemory(srcbuf, 0x40);
 	int newx = 0;
 	int srcstride = srcw*5/4;

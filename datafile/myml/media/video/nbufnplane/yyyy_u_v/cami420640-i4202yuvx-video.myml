@@ -30,7 +30,7 @@ depth:1024
 <artery>
 convert{
 fmt:picfmt
-srcfmt:yyuv
+srcfmt:y4,u,v
 srcw:640
 srch:480
 dstfmt:yuvx

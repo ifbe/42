@@ -327,11 +327,9 @@ int createcamera(struct mydata* my){
 			return EXIT_FAILURE;
 		}
 
-		/*
-		 * Controls can be added to a request on a per frame basis.
-		 */
-		ControlList &controls = request->controls();
-		controls.set(controls::Brightness, 0.5);
+		//Controls can be added to a request on a per frame basis.
+		//ControlList &controls = request->controls();
+		//controls.set(controls::Brightness, 0.5);
 
 		my->requests.push_back(std::move(request));
 	}
