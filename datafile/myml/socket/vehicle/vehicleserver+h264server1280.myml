@@ -11,6 +11,12 @@ arg:/dev/i2c-1
 
 
 <driver>
+ads1115{
+fmt:ads1115
+}
+l298n{
+fmt:l298n
+}
 </driver>
 
 
@@ -69,8 +75,11 @@ height:720
 
 
 <relation>
-(@gpio, dst@0) -> (@vehicle, gpio@0)
-(@i2chost, dst@0) -> (@vehicle, i2c@0)
+(@i2chost, dst@0) -> (@ads1115, i2c@0)
+(@gpio, dst@0) -> (@l298n, gpio@0)
+
+(@l298n, dst@0) -> (@vehicle, drv@0)
+(@ads1115, dst@0) -> (@vehicle, volt@0)
 (@tcpsrv, dst@0) -> (@vehicle, sock@0)
 
 (usbcam, 0, dst) -> (picfmt, 0, src)

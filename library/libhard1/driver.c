@@ -15,6 +15,25 @@ int mpu9250_attach(struct halfrel* self, struct halfrel* peer);
 int mpu9250_detach(struct halfrel* self, struct halfrel* peer);
 int mpu9250_write( struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len);
 int mpu9250_read(  struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len);
+//
+#define _ads1115_ hex64('a','d','s','1','1','1','5',0)
+int ads1115_create(struct item* ele, void* arg, int argc, u8** argv);
+int ads1115_delete(struct item* ele);
+int ads1115_read(  struct item* dri,void* foot, void* arg,int idx, u8* buf,int len);
+int ads1115_write( struct item* dri,void* foot, void* arg,int idx, u8* buf,int len);
+int ads1115_attach(struct halfrel* self, struct halfrel* peer);
+int ads1115_detach(struct halfrel* self, struct halfrel* peer);
+int ads1115_take(  struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len);
+int ads1115_give(  struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len);
+#define _l298n_ hex64('l','2','9','8','n', 0, 0, 0)
+int l298n_create(struct item* ele, void* arg, int argc, u8** argv);
+int l298n_delete(struct item* ele);
+int l298n_read(  struct item* dri,void* foot, void* arg,int idx, u8* buf,int len);
+int l298n_write( struct item* dri,void* foot, void* arg,int idx, u8* buf,int len);
+int l298n_attach(struct halfrel* self, struct halfrel* peer);
+int l298n_detach(struct halfrel* self, struct halfrel* peer);
+int l298n_take(  struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len);
+int l298n_give(  struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len);
 
 
 
@@ -66,22 +85,34 @@ void* driver_create(u64 type, void* arg, int argc, u8** argv)
 	struct item* dr;
 	say("@drivercreate: %.8s\n", &type);
 
-	if(_mpu9250_ == type)
-	{
+	switch(type){
+	case _mpu9250_:
 		dr = driver_alloc();
 		if(0 == dr)return 0;
 
 		dr->type = _mpu9250_;
 		mpu9250_create(dr, arg, argc, argv);
 		return dr;
-	}
-	if(_lsm9ds1_ == type)
-	{
+	case _lsm9ds1_:
 		dr = driver_alloc();
 		if(0 == dr)return 0;
 
 		dr->type = _lsm9ds1_;
 		lsm9ds1_create(dr, arg, argc, argv);
+		return dr;
+	case _ads1115_:
+		dr = driver_alloc();
+		if(0 == dr)return 0;
+
+		dr->type = _ads1115_;
+		ads1115_create(dr, arg, argc, argv);
+		return dr;
+	case _l298n_:
+		dr = driver_alloc();
+		if(0 == dr)return 0;
+
+		dr->type = _l298n_;
+		l298n_create(dr, arg, argc, argv);
 		return dr;
 	}
 
@@ -110,6 +141,8 @@ int driver_attach(struct halfrel* self, struct halfrel* peer)
 	switch(ele->type){
 		case _mpu9250_:return mpu9250_attach(self, peer);break;
 		case _lsm9ds1_:return lsm9ds1_attach(self, peer);break;
+		case _ads1115_:return ads1115_attach(self, peer);break;
+		case _l298n_:return l298n_attach(self, peer);break;
 	}
 	return 0;
 }
@@ -120,6 +153,8 @@ int driver_detach(struct halfrel* self, struct halfrel* peer)
 	switch(ele->type){
 		case _mpu9250_:return mpu9250_detach(self, peer);break;
 		case _lsm9ds1_:return lsm9ds1_detach(self, peer);break;
+		case _ads1115_:return ads1115_detach(self, peer);break;
+		case _l298n_:return l298n_detach(self, peer);break;
 	}
 	return 0;
 }
@@ -128,6 +163,8 @@ int driver_takeby(struct item* dri,void* foot, _syn* stack,int sp, void* arg, in
 	switch(dri->type){
 		case _mpu9250_:mpu9250_read(dri,foot, stack,sp, arg,idx, buf,len);break;
 		case _lsm9ds1_:lsm9ds1_read(dri,foot, stack,sp, arg,idx, buf,len);break;
+		case _ads1115_:ads1115_take(dri,foot, stack,sp, arg,idx, buf,len);break;
+		case _l298n_:l298n_take(dri,foot, stack,sp, arg,idx, buf,len);break;
 	}
 	return 0;
 }
@@ -137,6 +174,8 @@ int driver_giveby(struct item* dri,void* foot, _syn* stack,int sp, void* arg, in
 	switch(dri->type){
 		case _mpu9250_:return mpu9250_write(dri,foot, stack,sp, arg,idx, buf,len);break;
 		case _lsm9ds1_:return lsm9ds1_write(dri,foot, stack,sp, arg,idx, buf,len);break;
+		case _ads1115_:return ads1115_give(dri,foot, stack,sp, arg,idx, buf,len);break;
+		case _l298n_:return l298n_give(dri,foot, stack,sp, arg,idx, buf,len);break;
 	}
 	return 0;
 }
