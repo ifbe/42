@@ -4,6 +4,7 @@ fmt:video
 format:rgba
 width:640
 height:480
+ccm:1.694403, -0.592992, -0.101416, 0.0, -0.447695, 1.952163, -0.504469, 0.0, -0.081394, -0.748748, 1.830141, 0.0
 }
 freecam{
 fmt:freecam
@@ -42,8 +43,8 @@ dsth:480
 <system>
 server{
 fmt:tcp
-arg:192.168.5.150:9999
-#arg:pi0w.deepstack.tech:9999
+#arg:192.168.5.229:9999
+arg:picar.deepstack.tech:9999
 }
 </system>
 

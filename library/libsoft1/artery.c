@@ -35,6 +35,9 @@
 //
 #define _easymux_ hex64('e','a','s','y','m','u','x',0)
 #define _mediamux_ hex64('m','e','d','i','a','m','u','x')
+#define _flvclient_ hex32('f','l','v',0)
+#define _flvserver_ hex32('F','l','v',0)
+//
 #define _echo_ hex32('e','c','h','o')
 #define _goslow_ hex64('g','o','s','l','o','w',0,0)
 #define _dbgf32_ hex64('d','b','g','f','3','2',0,0)
@@ -173,6 +176,14 @@ int mediamux_attach(struct halfrel* self, struct halfrel* peer);
 int mediamux_detach(struct halfrel* self, struct halfrel* peer);
 int mediamux_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
 int mediamux_read( _obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+int flvserver_create(_obj* ele, void* arg, int argc, u8** argv);
+int flvserver_delete(_obj* ele, void* arg);
+int flvserver_read( _obj* art,void* foot, void* arg, int idx, u8* buf, int len);
+int flvserver_write(_obj* art,void* foot, void* arg, int idx, u8* buf, int len);
+int flvserver_attach(struct halfrel* self, struct halfrel* peer);
+int flvserver_detach(struct halfrel* self, struct halfrel* peer);
+int flvserver_takeby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+int flvserver_giveby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
 //
 int echo_create(_obj* ele, void* arg, int argc, u8** argv);
 int echo_delete(_obj* ele, void* arg);
@@ -975,6 +986,15 @@ void* artery_create(u64 type, void* arg, int argc, u8** argv)
 
 		e->type = _mediamux_;
 		mediamux_create(e, url, argc, argv);
+		return e;
+	}
+	if(_flvserver_ == type)
+	{
+		e = artery_alloc();
+		if(0 == e)return 0;
+
+		e->type = _flvserver_;
+		flvserver_create(e, url, argc, argv);
 		return e;
 	}
 
@@ -1868,6 +1888,8 @@ int artery_attach(struct halfrel* self, struct halfrel* peer)
 
 	case _h264_:return h264_attach(self, peer);break;
 
+	case _flvserver_:return flvserver_attach(self, peer);break;
+
 	case _dns_:return dnsclient_attach(self, peer);break;
 	case _DNS_:return dnsserver_attach(self, peer);break;
 	case _ntp_:return ntpclient_attach(self, peer);break;
@@ -1957,6 +1979,8 @@ int artery_detach(struct halfrel* self, struct halfrel* peer)
 
 	case _h264_:return h264_detach(self, peer);break;
 
+	case _flvserver_:return flvserver_detach(self, peer);break;
+
 	case _dns_:return dnsclient_detach(self, peer);break;
 	case _DNS_:return dnsserver_detach(self, peer);break;
 	case _ntp_:return ntpclient_detach(self, peer);break;
@@ -2042,6 +2066,7 @@ int artery_takeby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, 
 
 	case _easymux_:easymux_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _mediamux_:mediamux_read(art,foot, stack,sp, arg,idx, buf,len);break;
+	case _flvserver_:flvserver_takeby(art,foot, stack,sp, arg,idx, buf,len);break;
 
 	case _echo_:echo_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _goslow_:goslow_read(art,foot, stack,sp, arg,idx, buf,len);break;
@@ -2168,6 +2193,7 @@ int artery_giveby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, 
 
 	case _easymux_:return easymux_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _mediamux_:return mediamux_write(art,foot, stack,sp, arg,idx, buf,len);break;
+	case _flvserver_:return flvserver_giveby(art,foot, stack,sp, arg,idx, buf,len);break;
 
 	case _echo_:return echo_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _goslow_:return goslow_write(art,foot, stack,sp, arg,idx, buf,len);break;

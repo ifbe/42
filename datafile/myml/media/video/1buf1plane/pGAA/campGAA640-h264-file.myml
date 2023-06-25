@@ -1,0 +1,40 @@
+<system>
+file{
+fmt:FILE
+arg:test.h264
+}
+</system>
+
+
+<artery>
+picfmt{
+fmt:picfmt
+zerocopy:1
+srcfmt:pGAA
+srcw:640
+srch:480
+dstfmt:y4,u,v
+dstw:640
+dsth:480
+}
+</artery>
+
+
+<supply>
+usbcam{
+fmt:cam
+#format:pGAA
+width:640
+height:480
+}
+codec{
+fmt:enc
+}
+</supply>
+
+
+<relation>
+(usbcam, 0, dst) -> (picfmt, 0, src)
+(picfmt, 0, dst) -> (codec, 0, img)
+(codec, 0, bs) -> (file, 0, src)
+</relation>
