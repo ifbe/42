@@ -30,6 +30,7 @@ static const pa_sample_spec ss =
 
 void* micphonelistener(_obj* mic)
 {
+	int t0,t1;
 	int ret,err;
 	pa_usec_t latency;
 
@@ -48,13 +49,15 @@ void* micphonelistener(_obj* mic)
 			printf("fail@pa_simple_read:%s\n", pa_strerror(err));
 			goto finish;
 		}
-		usleep(1000000*10/441);
 
+		t0 = timeread_us();
 		give_data_into_peer_temp_stack(mic,_dst_, 0,0, ibuf+(1024*2*icur),1024*2);
 		icur = (icur+1)%8;
 		//info.enq = (info.enq + 4096) % 0x100000;
 		//eventwrite((u64)&info, 's', 0, 0);
-		//usleep(10000*1024/441);
+		t1 = timeread_us();
+
+		usleep(1000000*10/441 - (t1-t0));
 	}
 
 finish:
@@ -72,11 +75,25 @@ int micphone_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, v
 {
 	return 0;
 }
-void micphonestop()
+int micphone_attach()
 {
+	return 0;
 }
-void micphonestart()
+int micphone_detach()
 {
+	return 0;
+}
+
+
+
+
+int micphone_take(_obj* sup,void* foot, void* arg,int idx, void* buf, int len)
+{
+	return 0;
+}
+int micphone_give(_obj* sup,void* foot, void* arg,int idx, void* buf, int len)
+{
+	return 0;
 }
 void micphonedelete(_obj* win)
 {

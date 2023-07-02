@@ -1,0 +1,18 @@
+<system>
+file{
+fmt:FILE
+arg:test.pcm
+}
+</system>
+
+
+<supply>
+usbmic{
+fmt:mic
+}
+</supply>
+
+
+<relation>
+(usbmic, 0, dst) -> (file, 0, src)
+</relation>

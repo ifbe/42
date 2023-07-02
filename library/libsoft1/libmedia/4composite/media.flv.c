@@ -696,15 +696,7 @@ int flvserver_cutnalu(u8* buf, int len)
 	}
 	return len;
 }
-
-
-
-
-int flvserver_takeby(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
-{
-	return 0;
-}
-int flvserver_giveby(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int flvserver_giveby_h264(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	say("%s\n",__FUNCTION__);
 
@@ -753,6 +745,32 @@ begin:
 
 	if(len > 4)goto begin;
 
+	return 0;
+}
+int flvserver_giveby_pcm(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+{
+	say("flvserver_pcm:len=%x\n",len);
+	return 0;
+}
+
+
+
+
+int flvserver_takeby(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+{
+	return 0;
+}
+int flvserver_giveby(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+{
+	u32 foottype = stack[sp-1].foottype;
+	//say("@@@@@@@@@@@%.4s\n",&foottype);
+	switch(foottype){
+	case _pcm_:
+		flvserver_giveby_pcm(obj,foot, stack,sp, arg,idx, buf,len);
+		break;
+	default:
+		flvserver_giveby_h264(obj,foot, stack,sp, arg,idx, buf,len);
+	}
 	return 0;
 }
 int flvserver_attach(struct halfrel* self, struct halfrel* peer)

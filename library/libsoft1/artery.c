@@ -25,9 +25,10 @@
 #define _fftpcm_ hex64('f','f','t','p','c','m',0,0)
 #define _fftrgb_ hex64('f','f','t','r','g','b',0,0)
 //
+#define _pcmfmt_ hex64('p','c','m','f','m','t',0,0)
+#define _picfmt_ hex64('p','i','c','f','m','t',0,0)
 #define _img2pbr_ hex64('i','m','g','2','p','b','r',0)
 #define _rotate_ hex64('r','o','t','a','t','e',0,0)
-#define _picfmt_ hex64('p','i','c','f','m','t',0,0)
 #define _sobel_ hex64('s','o','b','e','l',0,0,0)
 //
 #define _pump_ hex32('p','u','m','p')
@@ -223,6 +224,12 @@ int fftrgb_detach(struct halfrel* self, struct halfrel* peer);
 int fftrgb_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
 int fftrgb_read( _obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
 //
+int pcmfmt_create(_obj* ele, void* arg, int argc, u8** argv);
+int pcmfmt_delete(_obj* ele, void* arg);
+int pcmfmt_attach(struct halfrel* self, struct halfrel* peer);
+int pcmfmt_detach(struct halfrel* self, struct halfrel* peer);
+int pcmfmt_take(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+int pcmfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
 int picfmt_create(_obj* ele, void* arg, int argc, u8** argv);
 int picfmt_delete(_obj* ele, void* arg);
 int picfmt_attach(struct halfrel* self, struct halfrel* peer);
@@ -1075,6 +1082,15 @@ void* artery_create(u64 type, void* arg, int argc, u8** argv)
 		rotate_create(e, url, argc, argv);
 		return e;
 	}
+	if(_sobel_ == type)
+	{
+		e = artery_alloc();
+		if(0 == e)return 0;
+
+		e->type = _sobel_;
+		sobel_create(e, url, argc, argv);
+		return e;
+	}
 	if(_picfmt_ == type)
 	{
 		e = artery_alloc();
@@ -1084,13 +1100,13 @@ void* artery_create(u64 type, void* arg, int argc, u8** argv)
 		picfmt_create(e, url, argc, argv);
 		return e;
 	}
-	if(_sobel_ == type)
+	if(_pcmfmt_ == type)
 	{
 		e = artery_alloc();
 		if(0 == e)return 0;
 
-		e->type = _sobel_;
-		sobel_create(e, url, argc, argv);
+		e->type = _pcmfmt_;
+		pcmfmt_create(e, url, argc, argv);
 		return e;
 	}
 
@@ -1883,6 +1899,7 @@ int artery_attach(struct halfrel* self, struct halfrel* peer)
 	case _fat_:return fatclient_attach(self, peer);break;
 	case _hfs_:return hfsclient_attach(self, peer);break;
 
+	case _pcmfmt_:return pcmfmt_attach(self, peer);break;
 	case _picfmt_:return picfmt_attach(self, peer);break;
 	case _sobel_:return sobel_attach(self, peer);break;
 
@@ -1974,6 +1991,7 @@ int artery_detach(struct halfrel* self, struct halfrel* peer)
 	case _fat_:return fatclient_detach(self, peer);break;
 	case _hfs_:return hfsclient_detach(self, peer);break;
 
+	case _pcmfmt_:return pcmfmt_detach(self, peer);break;
 	case _picfmt_:return picfmt_detach(self, peer);break;
 	case _sobel_:return sobel_detach(self, peer);break;
 
@@ -2076,9 +2094,10 @@ int artery_takeby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, 
 	case _fftpcm_:fftpcm_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _fftrgb_:fftrgb_read(art,foot, stack,sp, arg,idx, buf,len);break;
 
+	case _pcmfmt_:pcmfmt_take(art,foot, stack,sp, arg,idx, buf,len);break;
+	case _picfmt_:picfmt_take(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _img2pbr_:img2pbr_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _rotate_:rotate_read(art,foot, stack,sp, arg,idx, buf,len);break;
-	case _picfmt_:picfmt_take(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _sobel_:sobel_take(art,foot, stack,sp, arg,idx, buf,len);break;
 	//case _scale_: scale_read(art,foot, stack,sp, arg,idx, buf,len);break;
 
@@ -2203,9 +2222,10 @@ int artery_giveby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, 
 	case _fftpcm_:return fftpcm_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _fftrgb_:return fftrgb_write(art,foot, stack,sp, arg,idx, buf,len);break;
 
+	case _pcmfmt_:return pcmfmt_give(art,foot, stack,sp, arg,idx, buf,len);break;
+	case _picfmt_:return picfmt_give(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _img2pbr_:return img2pbr_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _rotate_:return rotate_write(art,foot, stack,sp, arg,idx, buf,len);break;
-	case _picfmt_:return picfmt_give(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _sobel_:return sobel_give(art,foot, stack,sp, arg,idx, buf,len);break;
 
 	case _recut_:return recut_write(art,foot, stack,sp, arg,idx, buf,len);break;

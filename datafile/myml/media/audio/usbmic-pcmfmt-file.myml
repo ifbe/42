@@ -1,0 +1,35 @@
+<system>
+file{
+fmt:FILE
+arg:test.pcm
+}
+</system>
+
+
+<supply>
+usbmic{
+fmt:mic
+path:plughw:0,0
+}
+</supply>
+
+
+<artery>
+pcmfmt{
+fmt:pcmfmt
+srcfmt:s32
+srcendian:l
+srcchan:1
+srcfreq:44100
+dstfmt:s16
+dstendian:l
+dstchan:1
+dstfreq:44100
+}
+</artery>
+
+
+<relation>
+(@usbmic, dst@0) -> (@pcmfmt, src@0)
+(@pcmfmt, dst@0) -> (@file, src@0)
+</relation>

@@ -1,0 +1,63 @@
+<system>
+file{
+fmt:FILE
+arg:test.flv
+}
+</system>
+
+
+<artery>
+pcmfmt{
+fmt:pcmfmt
+srcfmt:s32
+srcendian:l
+srcchan:1
+srcfreq:44100
+dstfmt:s16
+dstendian:l
+dstchan:1
+dstfreq:44100
+}
+picfmt{
+fmt:picfmt
+zerocopy:1
+srcfmt:pBAA
+srcw:640
+srch:480
+dstfmt:y4,u,v
+dstw:640
+dsth:480
+}
+flv{
+fmt:Flv
+}
+</artery>
+
+
+<supply>
+usbmic{
+fmt:mic
+path:plughw:0,0
+}
+usbcam{
+fmt:cam
+#format:pBAA
+width:640
+height:480
+}
+codec{
+fmt:enc
+}
+</supply>
+
+
+<relation>
+(usbcam, 0, dst) -> (picfmt, 0, src)
+(picfmt, 0, dst) -> (codec, 0, img)
+(codec, 0, bs) -> (flv, 0, src)
+
+(@usbmic, dst@0) -> (@pcmfmt, src@0)
+(@pcmfmt, dst@0) -> (@flv, pcm@0)
+
+(flv, 0, dst) -> (file, 0, src)
+</relation>

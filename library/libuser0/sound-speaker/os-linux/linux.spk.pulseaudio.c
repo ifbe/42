@@ -26,14 +26,6 @@ static const pa_sample_spec ss =
 
 
 
-int speakerlist()
-{
-	return 0;
-}
-int speakerchoose()
-{
-	return 0;
-}
 int speaker_take(_obj* spk,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	struct pcmdata* pcm;
@@ -90,10 +82,22 @@ int speaker_give(_obj* spk,void* foot, _syn* stack,int sp, void* arg, int idx, u
 finish:
 	return 0;
 }
-void speakerstop()
+int speaker_attach()
+{
+	return 0;
+}
+int speaker_detach()
+{
+	return 0;
+}
+
+
+
+
+void speakerread()
 {
 }
-void speakerstart()
+void speakerwrite()
 {
 }
 void speakerdelete(_obj* win)

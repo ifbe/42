@@ -115,8 +115,8 @@ myoscli:$(myoscli_o)
 
 ############################linux#########################
 linux_c = \
-sound-micphone/os-linux/linux.pulsein.c \
-sound-speaker/os-linux/linux.pulseout.c \
+sound-micphone/os-linux/linux.mic.alsa.c \
+sound-speaker/os-linux/linux.spk.alsa.c \
 control-systray/linux/linux.tray.c \
 control-cmdline/linux/linux.stdio.c \
 2d-codec/os-linux/linux.codecv.c \

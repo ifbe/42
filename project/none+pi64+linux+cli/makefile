@@ -60,8 +60,7 @@ program:
 	libsoft0/*.o libsoft1/*.o \
 	libuser0/*.o libuser1/*.o \
 	-lcamera -lcamera-base -lstdc++ \
-	-lpulse -lpulse-simple -lpthread -lm
-	#-lasound -lpthread -lm
+	-lasound -lpthread -lm
 clean:
 	rm -f *.o *.a *.so
 	rm -f */*.o

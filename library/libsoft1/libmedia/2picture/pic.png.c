@@ -23,8 +23,8 @@ freely, subject to the following restrictions:
 		3. This notice may not be removed or altered from any source
 		distribution.
 */
-void memorydelete();
-void* memorycreate();
+void memorydelete(void*);
+void* memorycreate(int);
 void* memorysetup(void*,int,int);
 void* memorycopy(void*,void*,int);
 
