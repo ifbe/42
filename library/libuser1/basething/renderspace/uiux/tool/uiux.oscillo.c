@@ -1,7 +1,7 @@
 #include "libuser.h"
 #define _mic_ hex32('m','i','c',0)
 #define _pcm_ hex32('p','c','m',0)
-#define SLICE 16
+#define SLICECOUNT (0xe0/8)
 //libsoft1
 void fft(float* real, float* imag, int k);
 void ifft(float* real, float* imag, int k);
@@ -10,90 +10,12 @@ void ifft(float* real, float* imag, int k);
 
 
 struct peroscillo{
-	int tablen;
-	void* tabbuf[SLICE];
-
-	int datlen;
 	void* datbuf;
-};
-/*
-struct perframe
-{
-	float real[1024];
-	float imag[1024];
-	float amp[1024];
-	float phase[1024];
-};
-static int cur = 0;
-static int haha;
-static int that;
-static void oscillo_draw_pixel(
-	_obj* act, struct style* pin,
-	_obj* win, struct style* sty)
-{
-	float t,cc,ss;
-	int x,y;
-	int cx, cy, ww, hh;
-	short* pcm;
-	struct perframe* frame = act->buf0;
-	float* real = frame[cur].real;
-	float* imag = frame[cur].imag;
-	float* amp = frame[cur].amp;
-	if(sty)
-	{
-		cx = sty->fs.vc[0];
-		cy = sty->fs.vc[1];
-		ww = sty->fs.vr[0];
-		hh = sty->fs.vf[1];
-	}
-	else
-	{
-		cx = win->whdf.width/2;
-		cy = win->whdf.height/2;
-		ww = win->whdf.width/2;
-		hh = win->whdf.height/2;
-	}
+	int datlen;
 
-	if(0x30 == haha)
-	{
-		pcm = (act->buf0)+0x80000;
-		for(x=0;x<0x2000;x++)
-		{
-			drawline(win, 0xffffff,
-				cx-ww + (x*2+1)*ww/0x2000, cy,
-				cx-ww + (x*2+1)*ww/0x2000, cy-(pcm[x]*hh/32768)
-			);
-		}
-	}
-	else if(haha&1)
-	{
-		for(x=0;x<512;x++)
-		{
-			t = (float)hh*amp[x]*16;
-			drawline(win, 0xffffff,
-				cx-ww + (x*2+1)*ww/512, cy+hh,
-				cx-ww + (x*2+1)*ww/512, cy+hh-(int)t
-			);
-		}
-	}
-	else
-	{
-		for(x=0;x<512;x++)
-		{
-			t = tau / 512 * x;
-			cc = getcos(t) * ww;
-			ss = -getsin(t) * hh;
-			drawline(win, 0xffffff,
-				cx + (int)(cc * (1.0 - 16*amp[x])),
-				cy + (int)(ss * (1.0 - 16*amp[x])),
-				cx + (int)cc,
-				cy + (int)ss
-			);
-		}
-	}
-	drawdecimal(win, 0xffffff, cx, cy, that);
-}
-*/
+	void* tabbuf[SLICECOUNT];
+	int tablen;
+};
 static void oscillo_draw_pixel(
 	_obj* act, struct style* pin,
 	_obj* wnd, struct style* sty)
@@ -109,12 +31,12 @@ static void oscillo_draw_pixel(
 	struct peroscillo* per = (void*)act->priv_256b;
 	int x,t,m;
 	short* buf;
-	for(t=0;t<SLICE;t++){
+	for(t=0;t<SLICECOUNT;t++){
 		buf = per->tabbuf[t];
 		if(0 == buf)break;
 
 		for(x=0;x<1024;x++){
-			m = cx-ww + (t*1024+x)*(2*ww)/(SLICE*1024);
+			m = cx-ww + (t*1024+x)*(2*ww)/(SLICECOUNT*1024);
 			drawline((void*)wnd, 0xffffff, m, cy, m, cy + buf[x]*hh/32768);
 		}
 	}
@@ -139,12 +61,12 @@ static void oscillo_dx11draw(
 	if(0 == tab)return;
 	//printmemory(tab, 8*4);
 
-	for(t=0;t<SLICE;t++){
+	for(t=0;t<SLICECOUNT;t++){
 		buf = tab[t];
 		if(0 == buf)break;
 
 		for(x=0;x<1024;x++){
-			tmp = (t*1024 + x)/(SLICE*512.0) - 1.0;
+			tmp = (t*1024 + x)/(SLICECOUNT*512.0) - 1.0;
 			ta[0] = vc[0] + vr[0] * tmp;
 			ta[1] = vc[1] + vr[1] * tmp;
 			ta[2] = vc[2] + vr[2] * tmp;
@@ -176,12 +98,15 @@ static void oscillo_gl41draw(
 	float tmp,val;
 	vec3 ta,tb;
 	short* buf;
-	for(t=0;t<SLICE;t++){
+#if 0
+#define SHOWCOUNT SLICECOUNT
+	for(t=0;t<SHOWCOUNT;t++){
 		buf = per->tabbuf[t];
-		if(0 == buf)break;
+
+		if(0 == buf)continue;
 
 		for(x=0;x<1024;x++){
-			tmp = (t*1024 + x)/(SLICE*512.0) - 1.0;
+			tmp = (t*1024 + x)/(SHOWCOUNT*512.0) - 1.0;
 			ta[0] = vc[0] + vr[0] * tmp;
 			ta[1] = vc[1] + vr[1] * tmp;
 			ta[2] = vc[2] + vr[2] * tmp;
@@ -194,6 +119,28 @@ static void oscillo_gl41draw(
 			gl41line(ctx, 0xffffff, ta, tb);
 		}
 	}
+#else
+#define SHOWCOUNT 24
+	for(t=0;t<SHOWCOUNT;t++){
+		buf = per->tabbuf[(SLICECOUNT+per->tablen-SHOWCOUNT+t)%SLICECOUNT];
+
+		if(0 == buf)continue;
+
+		for(x=0;x<1024;x++){
+			tmp = (t*1024 + x)/(SHOWCOUNT*512.0) - 1.0;
+			ta[0] = vc[0] + vr[0] * tmp;
+			ta[1] = vc[1] + vr[1] * tmp;
+			ta[2] = vc[2] + vr[2] * tmp;
+
+			val = buf[x] / 32768.0;
+			tb[0] = ta[0] + vf[0] * val;
+			tb[1] = ta[1] + vf[1] * val;
+			tb[2] = ta[2] + vf[2] * val;
+
+			gl41line(ctx, 0xffffff, ta,tb);
+		}
+	}
+#endif
 }
 static void oscillo_draw_json(
 	_obj* act, struct style* pin,
@@ -238,10 +185,18 @@ void oscillo_getpcm(_obj* ent, _obj* sup)
 void oscillo_data(_obj* act, int type, void* buf, int len)
 {
 	say("@oscillo_write.pcm: %d\n", len);
-
 	struct peroscillo* per = (void*)act->priv_256b;
-	per->tabbuf[per->tablen] = buf;
-	per->tablen = (per->tablen+1) % SLICE;
+
+	int j;
+	u8* dst = per->datbuf + per->datlen;
+	u8* src = buf;
+	for(j=0;j<len;j++)dst[j] = src[j];
+
+	per->datlen += len;
+	if(per->datlen > 0xf0000)per->datlen = 0x10000;
+
+	per->tabbuf[per->tablen] = dst;
+	per->tablen = (per->tablen+1) % SLICECOUNT;
 }
 
 
@@ -321,17 +276,21 @@ static void oscillo_delete(_obj* act)
 }
 static void oscillo_create(_obj* act, u8* arg)
 {
-	int j;
 	struct peroscillo* per = (void*)act->priv_256b;
+
+	per->datlen = 0x10000;
+	per->datbuf = memorycreate(0x100000, 0);
+	//say("size=%x\n",sizeof(struct peroscillo));
+
+	int j;
 	per->tablen = 0;
-	per->datlen = 0;
+	for(j=0;j<SLICECOUNT;j++)per->tabbuf[j] = 0;
 
 	if(arg){	//wav file
-		per->datbuf = memorycreate(0x100000, 0);
 		openreadclose(arg, 0, per->datbuf, 0x100000);
 
-		for(j=0;j<SLICE;j++)per->tabbuf[j] = per->datbuf+44 + j*1024;
-		per->tablen = SLICE;
+		for(j=0;j<SLICECOUNT;j++)per->tabbuf[j] = per->datbuf+44 + j*1024;
+		per->tablen = SLICECOUNT;
 	}
 }
 

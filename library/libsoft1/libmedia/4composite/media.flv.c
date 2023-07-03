@@ -359,7 +359,7 @@ int makescript(u8* buf, int len)
 	cnt += 1+4;
 
 	//width = 1920.0
-	cnt += makescript_each(buf+cnt, 0x1000, (u8*)"duration", 1.0);	//make ffprobe happy
+	cnt += makescript_each(buf+cnt, 0x1000, (u8*)"duration", 60.0);	//make ffprobe happy
 	cnt += makescript_each(buf+cnt, 0x1000, (u8*)"width", 1920.0);
 	cnt += makescript_each(buf+cnt, 0x1000, (u8*)"height", 1080.0);
 	cnt += makescript_each(buf+cnt, 0x1000, (u8*)"videocodecid", 7.0);
@@ -452,7 +452,7 @@ int flv_maker_head(struct flvhead* head){
 	head->flv[1] = 'L';
 	head->flv[2] = 'V';
 	head->ver = 1;
-	head->attr = 1;		//1=video, 0x4=audio, 0x5=audio|video
+	head->attr = 5;		//1=video, 0x4=audio, 0x5=audio|video
 	head->size = swap32(9);
 	return 9;
 }
@@ -610,15 +610,20 @@ struct privdata{
 	void* tmp;
 	int offs;
 
+	int log;
+	int haveav;
+	int lock;
+
+	int audiocount;
+	int videocount;
+
 	u8* spsbuf;
 	int spslen;
 
 	u8* ppsbuf;
 	int ppslen;
-
-	int time;
 };
-int flvserver_spspps(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx)
+int flvserver_header(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx)
 {
 	int ret;
 	struct privdata* priv = (void*)obj->priv_256b;
@@ -626,12 +631,12 @@ int flvserver_spspps(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int id
 	//000000000
 	struct flvhead* head = priv->tmp;
 	int len = flv_maker_head(head);
-	say("[%x,%x)\n",0,len);
+	if(priv->log)say("[%x,%x)\n",0,len);
 	priv->offs = len;
 
 	u32* prevsize = priv->tmp+len;
 	*prevsize = 0;
-	say("[%x,%x)", priv->offs, priv->offs+4);
+	if(priv->log)say("[%x,%x)", priv->offs, priv->offs+4);
 	priv->offs += 4;
 
 	ret = give_data_into_peer(obj,_dst_, stack,sp, arg,idx, head,len+4);
@@ -640,26 +645,36 @@ int flvserver_spspps(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int id
 	//111111111
 	struct flvtag* tagscript = priv->tmp+priv->offs;
 	len = flv_maker_script(tagscript);
-	say("[%x,%x)\n", priv->offs, priv->offs+len);
+	if(priv->log)say("[%x,%x)\n", priv->offs, priv->offs+len);
 	priv->offs += len;
 
 	prevsize = (void*)tagscript+len;
 	*prevsize = swap32(len);
-	say("[%x,%x)\n", priv->offs, priv->offs+4);
+	if(priv->log)say("[%x,%x)\n", priv->offs, priv->offs+4);
 	priv->offs += 4;
 
 	ret = give_data_into_peer(obj,_dst_, stack,sp, arg,idx, tagscript,len+4);
 
+	return priv->offs;
+}
+
+
+
+
+int flvserver_spspps(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx)
+{
+	int ret;
+	struct privdata* priv = (void*)obj->priv_256b;
 
 	//222222222
-	struct flvtag* tagavchead = priv->tmp+priv->offs;
-	len = flv_maker_h264_deccfg(tagavchead,0, priv->spsbuf,priv->spslen, priv->ppsbuf,priv->ppslen);
-	say("[%x,%x)\n", priv->offs, priv->offs+len);
+	struct flvtag* tagavchead = priv->tmp;
+	int len = flv_maker_h264_deccfg(tagavchead,0, priv->spsbuf,priv->spslen, priv->ppsbuf,priv->ppslen);
+	if(priv->log)say("[%x,%x)\n", priv->offs, priv->offs+len);
 	priv->offs += len;
 
-	prevsize = (void*)tagavchead+len;
+	u32* prevsize = (void*)tagavchead+len;
 	*prevsize = swap32(len);
-	say("[%x,%x)\n", priv->offs, priv->offs+4);
+	if(priv->log)say("[%x,%x)\n", priv->offs, priv->offs+4);
 	priv->offs += 4;
 
 	ret = give_data_into_peer(obj,_dst_, stack,sp, arg,idx, tagavchead,len+4);
@@ -673,12 +688,12 @@ int flvserver_ipb(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int time,
 	//3333333333
 	struct flvtag* tagavcbs = priv->tmp;
 	int len = flv_maker_h264_bs(tagavcbs, time, bs, bl);
-	say("[%x,%x)\n", priv->offs, priv->offs+len);
+	if(priv->log)say("[%x,%x)flv h264\n", priv->offs, priv->offs+len);
 	priv->offs += len;
 
 	u32* prevsize = (void*)tagavcbs+len;
 	*prevsize = swap32(len);
-	say("[%x,%x)\n", priv->offs, priv->offs+4);
+	if(priv->log)say("[%x,%x)\n", priv->offs, priv->offs+4);
 	priv->offs += 4;
 
 	int ret = give_data_into_peer(obj,_dst_, stack,sp, 0,0, tagavcbs,len+4);
@@ -698,7 +713,8 @@ int flvserver_cutnalu(u8* buf, int len)
 }
 int flvserver_giveby_h264(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
-	say("%s\n",__FUNCTION__);
+	struct privdata* priv = (void*)obj->priv_256b;
+	if(priv->log)say("%s\n",__FUNCTION__);
 
 	int bl;
 	u8* bs;
@@ -715,16 +731,15 @@ begin:
 		buf += 4+bl;
 		len -= 4+bl;
 	}
-	printmemory(bs, (bl<32) ? bl : 32);
+	if(priv->log)printmemory(bs, (bl<32) ? bl : 32);
 
-	struct privdata* priv = (void*)obj->priv_256b;
 	switch(bs[0]&0x1f){
 	case 1:		//p,b
 	case 5:		//i
 		if(0 == priv->spslen)break;
 		if(0 == priv->ppslen)break;
-		flvserver_ipb(obj,foot, stack,sp, arg,priv->time, bs,bl);
-		priv->time += 100;		//100ms
+		flvserver_ipb(obj,foot, stack,sp, arg,priv->audiocount*1000/44100, bs,bl);
+		priv->videocount += 1;
 		break;
 	case 6:		//sei
 		break;
@@ -747,9 +762,73 @@ begin:
 
 	return 0;
 }
+
+
+
+
+struct flv_audiotag{
+	u8 chan:1;
+	u8 bits:1;
+	u8 freq:2;
+	u8 type:4;
+	u8 data[];
+}__attribute__((packed));
+struct flv_audiotag_aac{
+	u8 type;	//0=header, 1=raw
+	u8 data[];
+}__attribute__((packed));
+int makepcm_s16le_44k1ch(u8* dstbuf,int dstlen, u8* srcbuf,int srclen)
+{
+#define AUDIO_TYPE_MP3 2
+#define AUDIO_TYPE_PCM 3
+#define AUDIO_TYPE_AAC 10
+#define AUDIO_FREQ_5512 0
+#define AUDIO_FREQ_11025 1
+#define AUDIO_FREQ_22055 2
+#define AUDIO_FREQ_44100 3
+#define AUDIO_SIZE_8BIT 0
+#define AUDIO_SIZE_16BIT 1
+#define AUDIO_CHAN_MONO 0
+#define AUDIO_CHAN_STEREO 1
+	dstbuf[0] = (AUDIO_TYPE_PCM<<4) | (AUDIO_FREQ_44100<<2) | (AUDIO_SIZE_16BIT<<1) | (AUDIO_CHAN_MONO);
+
+	int j;
+	for(j=0;j<srclen;j++){
+		dstbuf[1+j] = srcbuf[j];
+	}
+
+	return 1+srclen;
+}
+int flv_maker_pcm_s16le_44k1ch(struct flvtag* tag, int time, u8* srcbuf,int srclen){
+	int len = makepcm_s16le_44k1ch((void*)tag->data, time, srcbuf, srclen);
+	tag->type = 0x8;
+	tag->thissize[0] = (len>>16)&0xff;
+	tag->thissize[1] = (len>>8)&0xff;
+	tag->thissize[2] = len&0xff;
+	tag->time[0] = (time>>16)&0xff;
+	tag->time[1] = (time>>8)&0xff;
+	tag->time[2] = time&0xff;
+	tag->time_ext = 0;
+	tag->stream[0] = tag->stream[1] = tag->stream[2] = 0;
+	return len+11;
+}
 int flvserver_giveby_pcm(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
-	say("flvserver_pcm:len=%x\n",len);
+	struct privdata* priv = (void*)obj->priv_256b;
+	if(priv->log)say("flvserver_pcm:len=%x\n",len);
+
+	int sz = flv_maker_pcm_s16le_44k1ch(priv->tmp, priv->audiocount*1000/44100, buf,len);
+	if(priv->log)say("[%x,%x)flv pcm\n", priv->offs, priv->offs+sz);
+	priv->offs += sz;
+
+	u32* prevsize = (void*)priv->tmp+sz;
+	*prevsize = swap32(sz);
+	if(priv->log)say("[%x,%x)\n", priv->offs, priv->offs+4);
+	priv->offs += 4;
+
+	priv->audiocount += len/2;
+	int ret = give_data_into_peer(obj,_dst_, stack,sp, 0,0, priv->tmp,sz+4);
+
 	return 0;
 }
 
@@ -762,14 +841,26 @@ int flvserver_takeby(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int id
 }
 int flvserver_giveby(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
+	struct privdata* priv = (void*)obj->priv_256b;
+	if(0 == priv->haveav){
+		while(__sync_lock_test_and_set(&priv->lock,1) == 1);
+		flvserver_header(obj,foot, stack,sp, arg,idx);
+		priv->haveav = 1;
+		__sync_lock_release(&priv->lock);
+	}
+
 	u32 foottype = stack[sp-1].foottype;
 	//say("@@@@@@@@@@@%.4s\n",&foottype);
 	switch(foottype){
 	case _pcm_:
+		while(__sync_lock_test_and_set(&priv->lock,1) == 1);
 		flvserver_giveby_pcm(obj,foot, stack,sp, arg,idx, buf,len);
+		__sync_lock_release(&priv->lock);
 		break;
 	default:
+		while(__sync_lock_test_and_set(&priv->lock,1) == 1);
 		flvserver_giveby_h264(obj,foot, stack,sp, arg,idx, buf,len);
+		__sync_lock_release(&priv->lock);
 	}
 	return 0;
 }
@@ -798,6 +889,12 @@ int flvserver_create(_obj* obj, void* arg, int argc, u8** argv)
 	say("%s\n",__FUNCTION__);
 	struct privdata* priv = (void*)obj->priv_256b;
 
+	priv->haveav = 0;
+	priv->lock = 0;
+
+	priv->audiocount = 0;
+	priv->videocount = 0;
+
 	priv->tmp = memorycreate(0x100000, 0);
 	priv->offs = 0;
 
@@ -807,7 +904,6 @@ int flvserver_create(_obj* obj, void* arg, int argc, u8** argv)
 	priv->ppsbuf = priv->tmp+0xf8000;
 	priv->ppslen = 0;
 
-	priv->time = 0;
 	return 0;
 }
 int flvserver_delete(_obj* ele)

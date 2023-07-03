@@ -105,6 +105,8 @@ using namespace libcamera;
 
 struct mydata{
 	_obj* myobj;
+	int log;
+
 	int fmt;
 	int fps;
 	int w;
@@ -124,40 +126,42 @@ struct mydata{
 static void requestComplete(Request *request)
 {
 	struct halfrel stack[0x80];
-	struct kv88 kv[4] = {
+	struct kv88 kv[5] = {
 		{'w', 0},
 		{'h', 0},
-		{'f', 0}
+		{'f', 0},
+		{'t', 0},
+		{0,0}
 	};
 	if (request->status() == Request::RequestCancelled)return;
 
 	uint64_t cookie = request->cookie();
 	struct mydata* my = (struct mydata*)cookie;
-	std::cout << "requestComplete: " << my->cam << std::endl;
-	std::cout << "requestcookie: " << cookie << std::endl;
+	if(my->log)std::cout << "requestComplete: " << my->cam << std::endl;
+	if(my->log)std::cout << "requestcookie: " << cookie << std::endl;
 
+	u64 sensortime;
 	const ControlList &requestMetadata = request->metadata();
 	for (const auto &ctrl : requestMetadata) {
 		const ControlId *cid = controls::controls.at(ctrl.first);
 		const ControlValue &value = ctrl.second;
 		int id = cid->id();
 		Span<const uint8_t> sp = value.data();
-		u64 time;
 		switch(id){
 		case libcamera::controls::SENSOR_TIMESTAMP:
 			//auto time = value.get<ControlTypeInteger64>();
-			time = sp[7];
-			time = (time<<8) | sp[6];
-			time = (time<<8) | sp[5];
-			time = (time<<8) | sp[4];
-			time = (time<<8) | sp[3];
-			time = (time<<8) | sp[2];
-			time = (time<<8) | sp[1];
-			time = (time<<8) | sp[0];
-			std::cout << "\t" << id <<"-SENSOR_TIMESTAMP = " <<std::dec<< time << std::endl;
+			sensortime = sp[7];
+			sensortime = (sensortime<<8) | sp[6];
+			sensortime = (sensortime<<8) | sp[5];
+			sensortime = (sensortime<<8) | sp[4];
+			sensortime = (sensortime<<8) | sp[3];
+			sensortime = (sensortime<<8) | sp[2];
+			sensortime = (sensortime<<8) | sp[1];
+			sensortime = (sensortime<<8) | sp[0];
+			if(my->log)std::cout << "\t" << id <<"-SENSOR_TIMESTAMP = " <<std::dec<< sensortime << std::endl;
 			break;
 		default:
-			std::cout << "\t" << id <<"-"<< cid->name() << " = " << value.toString() << std::endl;
+			if(my->log)std::cout << "\t" << id <<"-"<< cid->name() << " = " << value.toString() << std::endl;
 		}
 	}
 
@@ -166,11 +170,11 @@ static void requestComplete(Request *request)
 		// (Unused) Stream *stream = bufferPair.first;
 		FrameBuffer *buffer = bufferPair.second;
 		uint64_t idx = buffer->cookie();
-		std::cout << "\tbuffercookie: " << idx << std::endl;
+		if(my->log)std::cout << "\tbuffercookie: " << idx << std::endl;
 
 		const FrameMetadata &metadata = buffer->metadata();
-		std::cout << "\tbuffersequence: " << metadata.sequence << std::endl;
-		std::cout << "\tbuffertimems: " << metadata.timestamp/1000/1000 << std::endl;
+		if(my->log)std::cout << "\tbuffersequence: " << metadata.sequence << std::endl;
+		if(my->log)std::cout << "\tbuffertimems: " << metadata.timestamp/1000/1000 << std::endl;
 
 		auto planedata = buffer->planes();
 		auto planemeta = metadata.planes();
@@ -179,15 +183,16 @@ static void requestComplete(Request *request)
 			uint32_t off = planedata[j].offset;
 			uint32_t len = planedata[j].length;
 			int sz = planemeta[j].bytesused;
-			std::cout << "\tplane: " << j << std::endl;
-			std::cout << "\tfd: " << fd.get() << " off: " << off << std::endl;
-			std::cout << "\tsz: " << sz << " in " << len << std::endl;
+			if(my->log)std::cout << "\tplane: " << j << std::endl;
+			if(my->log)std::cout << "\tfd: " << fd.get() << " off: " << off << std::endl;
+			if(my->log)std::cout << "\tsz: " << sz << " in " << len << std::endl;
 
 			uint8_t* p = my->mem[idx][j] + off;
 			//printmemory(p, 0x20);
 			kv[0].val = my->w;
 			kv[1].val = my->h;
 			kv[2].val = my->fmt;
+			kv[4].val = sensortime;
 			give_data_into_peer(my->myobj,_dst_, stack,0, kv,_kv88_, p, sz);
 		}
 	}
@@ -401,6 +406,10 @@ int libcam_delete(_obj* cam)
 }
 int libcam_create(_obj* cam, void* arg, int argc, u8** argv)
 {
+	struct mydata* my = (struct mydata*)cam->priv_256b;
+	my->myobj = cam;
+	my->log = 0;
+
 	int j;
 	u32 w = 640;
 	u32 h = 480;
@@ -415,11 +424,12 @@ int libcam_create(_obj* cam, void* arg, int argc, u8** argv)
 		if(0 == ncmp(argv[j], (void*)"height:", 7)){
 			decstr2u32(argv[j]+7, &h);
 		}
+		if(0 == ncmp(argv[j], (void*)"log:", 4)){
+			my->log = 1;
+		}
 	}
 	say((void*)"libcam_create fmt=%x,w=%d,h=%d\n", fmt, w, h);
 
-	struct mydata* my = (struct mydata*)cam->priv_256b;
-	my->myobj = cam;
 	my->fmt = fmt;
 	my->fps = 60;
 	my->w = w;

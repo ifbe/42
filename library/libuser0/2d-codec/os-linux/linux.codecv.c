@@ -30,6 +30,8 @@ struct v4l2img{
 	int seq;
 };
 struct privdata{
+	int log;
+
 	int fd;
 	int width;
 	int height;
@@ -53,9 +55,9 @@ static void bsthread(_obj* obj)
 		for(j=0;j<2;j++){
 			if(_v4l2_ == priv->bs[j].own)continue;
 
-			say("bs.enq=%d,j=%d\n",enq,j);
+			if(priv->log)say("bs.enq=%d,j=%d\n",enq,j);
 			ioctl(fd, VIDIOC_QBUF, &priv->bs[j].buf);
-			say("bs.enq=%d,end\n",enq);
+			if(priv->log)say("bs.enq=%d,end\n",enq);
 
 			priv->bs[j].own = _v4l2_;
 			priv->bs[j].seq = enq;
@@ -66,17 +68,17 @@ static void bsthread(_obj* obj)
 			if(_v4l2_ != priv->bs[j].own)continue;
 			if(deq != priv->bs[j].seq)continue;
 
-			say("bs.deq=%d,j=%d\n",deq,j);
+			if(priv->log)say("bs.deq=%d,j=%d\n",deq,j);
 			priv->bs[j].buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
 			ioctl(priv->fd, VIDIOC_DQBUF, &priv->bs[j].buf);
 
 			int len = priv->bs[j].buf.m.planes[0].bytesused;
-			say("bs.deq=%d,bs.len=%d\n",deq,len);
+			if(priv->log)say("bs.deq=%d,bs.len=%d\n",deq,len);
 
 			priv->bs[j].own = _node_;
 			deq++;
 
-			printmemory(priv->bs[j].mem, 16);
+			if(priv->log)printmemory(priv->bs[j].mem, 16);
 			//write(ff, bsmem, len);
 			give_data_into_peer_temp_stack(obj,_bs_, 0,0, priv->bs[j].mem,len);
 		}
@@ -92,31 +94,35 @@ int codecv_take(_obj* cam,void* foot, _syn* stack,int sp, void* arg,int idx, u8*
 }
 int codecv_give(_obj* cam,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
-	say("codecv_give\n");
 	struct privdata* priv = (void*)cam->priv_ptr;
 	int w = priv->width;
 	int h = priv->height;
-	printmemory(buf + w*4, 16);
-	printmemory(buf + w*h + w, 16);
-	printmemory(buf + w*h*5/4 + w, 16);
+	if(priv->log)say("codecv_give\n");
+	if(priv->log)printmemory(buf + w*4, 16);
+	if(priv->log)printmemory(buf + w*h + w, 16);
+	if(priv->log)printmemory(buf + w*h*5/4 + w, 16);
 
 	int j,ret;
 	for(j=0;j<2;j++){
 			if(_read_ != priv->img[j].own)continue;
 			if(buf != priv->img[j].mem)continue;
 
-			say("img.enq:j=%d\n",j);
+			if(priv->log)say("img.enq:j=%d\n",j);
 			priv->img[j].plane.bytesused = priv->img[j].buf.m.planes[0].length;
 			ret = ioctl(priv->fd, VIDIOC_QBUF, &priv->img[j].buf);
-			if(-1 != ret)say("img.enq end\n");
-			else say("img.enq:ret=%d,errno=%d\n",ret,errno);
+			if(-1 != ret){
+				if(priv->log)say("img.enq end\n");
+			}
+			else{
+				if(priv->log)say("img.enq:ret=%d,errno=%d\n",ret,errno);
+			}
 
 			priv->img[j].own = _v4l2_;
 			priv->img[j].seq = priv->imgenq;
 			priv->imgenq++;
 			return 0;
 	}
-	say("codecv_give unknown:%p\n",buf);
+	if(priv->log)say("codecv_give unknown:%p\n",buf);
 	return 0;
 }
 int codecv_attach()
@@ -141,23 +147,27 @@ int codecv_reader(_obj* cam,void* foot, void* arg,int idx, u8* buf,int len)
 		if(_v4l2_ != priv->img[j].own)continue;
 		if(priv->imgdeq != priv->img[j].seq)continue;
 
-		say("img.deq:j=%d\n",j);
+		if(priv->log)say("img.deq:j=%d\n",j);
 		priv->img[j].buf.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
 		ret = ioctl(priv->fd, VIDIOC_DQBUF, &priv->img[j].buf);
-		if(-1 != ret)say("img.deq end\n");
-		else say("img.deq:ret=%d,errno=%d\n",ret,errno);
+		if(-1 != ret){
+			if(priv->log)say("img.deq end\n");
+		}
+		else{
+			if(priv->log)say("img.deq:ret=%d,errno=%d\n",ret,errno);
+		}
 
 		priv->img[j].own = _node_;
 		priv->imgdeq++;
 		goto find;
 	}
-	say("codecv_read nobuf\n");
+	if(priv->log)say("codecv_read nobuf\n");
 	return 0;
 
 find:
 	priv->img[j].own = _read_;
 	*(void**)buf = priv->img[j].mem;
-	say("codecv_read:%p,j=%d\n",priv->img[j].mem,j);
+	if(priv->log)say("codecv_read:%p,j=%d\n",priv->img[j].mem,j);
 	return 0;
 }
 int codecv_writer(_obj* cam,void* foot, void* arg,int idx, u8* buf,int len)
@@ -186,16 +196,19 @@ int codecv_delete(_obj* cam)
 }
 int codecv_create(_obj* cam, void* arg, int argc, u8** argv)
 {
+	struct privdata* priv = cam->priv_ptr = memorycreate(0x1000, 4);
+	priv->log = 0;
+
 	int j;
 	int width = 640;
 	int height = 480;
 	for(j=0;j<argc;j++){
 		if(0 == ncmp(argv[j], "width:", 6))decstr2u32(argv[j]+6, &width);
 		if(0 == ncmp(argv[j], "height:", 7))decstr2u32(argv[j]+7, &height);
+		if(0 == ncmp(argv[j], "log:", 4))priv->log = 1;
 	}
 	say("video encoder:width=%d,height=%d\n",width,height);
 
-	struct privdata* priv = cam->priv_ptr = memorycreate(0x1000, 4);
 	priv->width = width;
 	priv->height = height;
 

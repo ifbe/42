@@ -62,6 +62,7 @@ void yuyv_to_rgba(
 struct perobj{
 	struct kv88 kv[4];
 	int zerocopy;
+	int log;
 
 	void* srcbuf[1];
 	u64 srcfmt;
@@ -177,7 +178,7 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, vo
 	}
 	if(per->zerocopy){
 		reading_data_from_peer(art, _dst_, 0, _buf_, &per->dstbuf, 1);
-		say("zerocopy:%p\n", per->dstbuf[0]);
+		if(per->log)say("zerocopy:%p\n", per->dstbuf[0]);
 	}
 	if(0 == per->dstbuf[0]){
 		per->dstlen = 4 * per->dstw * per->dsth;
@@ -310,6 +311,9 @@ int picfmt_create(_obj* ele, u8* arg, int argc, char** argv)
 		if(0 == ncmp(argv[j], "zerocopy", 8)){
 			per->zerocopy = 1;
 			continue;
+		}
+		if(0 == ncmp(argv[j], "log:", 4)){
+			per->log = 1;
 		}
 	}
 

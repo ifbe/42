@@ -10,6 +10,7 @@
 struct privdata{
 	u64 thread;
 	int alive;
+	int log;
 
 	u8* ibuf;
 	int icur;
@@ -40,32 +41,41 @@ static void copyname(u8* dst, u8* src)
 
 void* micphone_thread(_obj* mic)
 {
-	int j;
-	u64 t0,t1,dt;
+	int ret;
+	int dt,dt01,dt12;
+	u64 t0,t1,t2;
 	static snd_pcm_uframes_t frames;
 	struct privdata* priv = (void*)mic->priv_256b;
 
 	while(priv->alive)
 	{
+		t0 = timeread_us();
+
 		frames = 1024;
-		j = snd_pcm_readi(priv->capture_handle, priv->ibuf+priv->icur, frames);
-		if(j != frames)
+		ret = snd_pcm_readi(priv->capture_handle, priv->ibuf+priv->icur, frames);
+		if(ret != frames)
 		{
-			printf("snd_pcm_readi:%s\n", snd_strerror(j));
+			printf("snd_pcm_readi:%s\n", snd_strerror(ret));
 			sleep_us(1000*1000*1024/44100);
 			continue;
 		}
 
-		t0 = timeread_us();
-		say("pcm[%x,%x]\n",priv->icur,priv->icur+1024*priv->bytes);
-		printmemory(priv->ibuf+priv->icur, 16);
+		t1 = timeread_us();
+
+		if(priv->log)say("pcm[%x,%x]\n",priv->icur,priv->icur+1024*priv->bytes);
+		if(priv->log)printmemory(priv->ibuf+priv->icur, 16);
 		give_data_into_peer_temp_stack(mic,_dst_, 0,0, priv->ibuf+priv->icur,1024*priv->bytes);
 		priv->icur += 1024*priv->bytes;
 		if(priv->icur > 0xc0000)priv->icur = 0;
-		t1 = timeread_us();
 
-		dt = 1000*1000*1024/44100 - (t1-t0);
-		sleep_us(dt/2);
+		t2 = timeread_us();
+
+		dt01 = t1-t0;
+		dt12 = t2-t1;
+		if(priv->log)printf("t0=%lld,t1=%lld,t2=%lld,dt01=%d,dt12=%d\n",t0,t1,t2,dt01,dt12);
+
+		dt = 1000*1000*1024/44100 - (t2-t0);
+		if(dt>0)sleep_us(dt/2);
 	}
 	return 0;
 }
@@ -214,6 +224,7 @@ int micphonedelete(_obj* mic)
 int micphonecreate(_obj* mic, u8* arg, int argc, char** argv)
 {
 	struct privdata* priv = (void*)mic->priv_256b;
+	priv->log = 0;
 
 	copyname(priv->path, "plughw:0,0");
 	priv->bits = 32;
@@ -224,7 +235,10 @@ int micphonecreate(_obj* mic, u8* arg, int argc, char** argv)
 
 	int j;
 	for(j=0;j<argc;j++){
-		if(0 == ncmp(argv[j], "path:", 5)){
+		if(0 == ncmp(argv[j], "log:", 4)){
+			priv->log = 1;
+		}
+		else if(0 == ncmp(argv[j], "path:", 5)){
 			copyname(priv->path, argv[j]+5);
 		}
 	}

@@ -1027,7 +1027,7 @@ void bgbgxgrgrx_to_y4_u_v(
 {
 	if(0 == srcbuf)return;
 	if(0 == dstbuf)return;
-say("bgbgxgrgrx_to_y4_u_v:srcw=%d,srch=%d,dstw=%d,dsth=%d\n",srcw,srch,dstw,dsth);
+//say("bgbgxgrgrx_to_y4_u_v:srcw=%d,srch=%d,dstw=%d,dsth=%d\n",srcw,srch,dstw,dsth);
 //printmemory(srcbuf, 0x40);
 	int newx = 0;
 	int srcstride = srcw*5/4;

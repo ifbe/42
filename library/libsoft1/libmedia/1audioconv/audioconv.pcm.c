@@ -13,6 +13,7 @@ int decstr2u32(void*,void*);
 struct perobj{
 	struct kv88 kv[4];
 	int zerocopy;
+	int log;
 
 	void* srcbuf[1];
 	u32 srclen;
@@ -50,8 +51,9 @@ int pcmfmt_take(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, vo
 }
 int pcmfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, void* buf, int len)
 {
-	say("@pcmfmt_give:len=%x\n",len);
 	struct perobj* per = (void*)art->priv_256b;
+	if(per->log)say("@pcmfmt_give:len=%x\n",len);
+
 	int outlen;
 	if( (_s32_ == per->srcfmt) && (_s16_ == per->dstfmt) ){
 		if(0 == per->dstbuf[0]){
@@ -85,6 +87,8 @@ int pcmfmt_create(_obj* ele, u8* arg, int argc, char** argv)
 	say("@pcmfmt_create\n");
 
 	struct perobj* per = (void*)ele->priv_256b;
+	per->log = 0;
+
 	per->dstfmt = _s16_;
 	per->dstendian = 'l';
 	per->dstchan = 1;
@@ -128,6 +132,10 @@ int pcmfmt_create(_obj* ele, u8* arg, int argc, char** argv)
 		}
 		else if(0 == ncmp(argv[j], "dstfreq:", 8)){
 			decstr2u32(argv[j]+8, &per->dstfreq);
+			continue;
+		}
+		else if(0 == ncmp(argv[j], "log:", 4)){
+			per->log = 1;
 			continue;
 		}
 	}
