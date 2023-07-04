@@ -26,6 +26,7 @@ fmt:cam
 #format:pGAA
 width:640
 height:480
+log:1
 }
 codec{
 fmt:enc

@@ -47,18 +47,58 @@ void datewrite(u64 date)
 
 
 
-u64 time_ns()
+u64 timeread_from1970_ns()
 {
 	struct timespec t;
 	clock_gettime(CLOCK_REALTIME, &t);
-	return (t.tv_sec*1000*1000*1000) + t.tv_nsec;
+	return (u64)t.tv_sec*1000*1000*1000 + t.tv_nsec;
+}
+u64 timeread_from1970_us()
+{
+	struct timespec t;
+	clock_gettime(CLOCK_REALTIME, &t);
+	return (u64)t.tv_sec*1000*1000 + t.tv_nsec/1000;
+}
+u64 timeread_from1970_ms()
+{
+	struct timespec t;
+	clock_gettime(CLOCK_REALTIME, &t);
+	return (u64)t.tv_sec*1000 + t.tv_nsec/1000/1000;
+}
+u64 timeread_from1970_s()
+{
+	struct timespec t;
+	clock_gettime(CLOCK_REALTIME, &t);
+	return t.tv_sec;
+}
+
+
+u64 timeread_ns()
+{
+	struct timespec t;
+	clock_gettime(CLOCK_MONOTONIC, &t);
+	return (u64)t.tv_sec*1000*1000*1000 + t.tv_nsec;
 }
 u64 timeread_us()
 {
-	struct timeval t;
-	gettimeofday(&t,0);
-	return (t.tv_sec%1000)*1000*1000 + (t.tv_usec);
+	struct timespec t;
+	clock_gettime(CLOCK_MONOTONIC, &t);
+	return (u64)t.tv_sec*1000*1000 + t.tv_nsec/1000;
 }
+u64 timeread_ms()
+{
+	struct timespec t;
+	clock_gettime(CLOCK_MONOTONIC, &t);
+	return (u64)t.tv_sec*1000 + t.tv_nsec/1000/1000;
+}
+u64 timeread_s()
+{
+	struct timespec t;
+	clock_gettime(CLOCK_MONOTONIC, &t);
+	return t.tv_sec;
+}
+
+
 void timewrite(u64 time)
 {
 }

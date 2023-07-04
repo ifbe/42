@@ -94,6 +94,8 @@ extern "C"{
 #include "libuser.h"
 #define _BG10_ hex32('B','G','1','0')
 #define _GB10_ hex32('G','B','1','0')
+u64 timeread_ns();
+u64 timeread_from1970_ns();
 }
 #include <iomanip>
 #include <iostream>
@@ -137,8 +139,14 @@ static void requestComplete(Request *request)
 
 	uint64_t cookie = request->cookie();
 	struct mydata* my = (struct mydata*)cookie;
-	if(my->log)std::cout << "requestComplete: " << my->cam << std::endl;
-	if(my->log)std::cout << "requestcookie: " << cookie << std::endl;
+	if(my->log){
+		std::cout << "requestcookie: " << cookie << std::endl;
+		std::cout << "requestcamera: " << my->cam << std::endl;
+		uint64_t from1970 = timeread_from1970_ns();
+		uint64_t fromboot = timeread_ns();
+		std::cout << "from1970_ns: " << from1970 << std::endl;
+		std::cout << "fromboot_ns: " << fromboot << std::endl;
+	}
 
 	u64 sensortime;
 	const ControlList &requestMetadata = request->metadata();
@@ -158,7 +166,7 @@ static void requestComplete(Request *request)
 			sensortime = (sensortime<<8) | sp[2];
 			sensortime = (sensortime<<8) | sp[1];
 			sensortime = (sensortime<<8) | sp[0];
-			if(my->log)std::cout << "\t" << id <<"-SENSOR_TIMESTAMP = " <<std::dec<< sensortime << std::endl;
+			if(my->log)std::cout << "\t" << id <<"-SENSOR_TIMESTAMP_ns = " <<std::dec<< sensortime << std::endl;
 			break;
 		default:
 			if(my->log)std::cout << "\t" << id <<"-"<< cid->name() << " = " << value.toString() << std::endl;
@@ -174,7 +182,7 @@ static void requestComplete(Request *request)
 
 		const FrameMetadata &metadata = buffer->metadata();
 		if(my->log)std::cout << "\tbuffersequence: " << metadata.sequence << std::endl;
-		if(my->log)std::cout << "\tbuffertimems: " << metadata.timestamp/1000/1000 << std::endl;
+		if(my->log)std::cout << "\tbuffertime_ns: " << metadata.timestamp << std::endl;
 
 		auto planedata = buffer->planes();
 		auto planemeta = metadata.planes();

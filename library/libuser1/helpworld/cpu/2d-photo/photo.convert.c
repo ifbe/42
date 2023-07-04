@@ -685,8 +685,8 @@ void gbgbxrgrgx_to_rgba(
 {
 	if(0 == srcbuf)return;
 	if(0 == dstbuf)return;
-say("gbgbxrgrgx_to_rgba\n");
-printmemory(srcbuf, 0x40);
+//say("gbgbxrgrgx_to_rgba\n");
+//printmemory(srcbuf, 0x40);
 	int newx = 0;
 	int srcstride = srcw*5/4;
 	int x,y;
@@ -778,7 +778,7 @@ void gbgbxrgrgx_to_y4_u_v(
 {
 	if(0 == srcbuf)return;
 	if(0 == dstbuf)return;
-say("gbgbxrgrgx_to_y4_u_v:srcw=%d,srch=%d,dstw=%d,dsth=%d\n",srcw,srch,dstw,dsth);
+//say("gbgbxrgrgx_to_y4_u_v:srcw=%d,srch=%d,dstw=%d,dsth=%d\n",srcw,srch,dstw,dsth);
 //printmemory(srcbuf, 0x40);
 	int newx = 0;
 	int srcstride = srcw*5/4;
