@@ -127,7 +127,6 @@ struct mydata{
 
 static void requestComplete(Request *request)
 {
-	struct halfrel stack[0x80];
 	struct kv88 kv[5] = {
 		{'w', 0},
 		{'h', 0},
@@ -201,7 +200,7 @@ static void requestComplete(Request *request)
 			kv[1].val = my->h;
 			kv[2].val = my->fmt;
 			kv[4].val = sensortime;
-			give_data_into_peer(my->myobj,_dst_, stack,0, kv,_kv88_, p, sz);
+			give_data_into_peer_temp_stack(my->myobj,_dst_, kv,_kv88_, p, sz);
 		}
 	}
 

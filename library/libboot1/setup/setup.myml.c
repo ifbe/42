@@ -660,7 +660,7 @@ int role_fromfile(u8* str, int len)
 
 
 
-int myml_create(struct item* wrk, void* arg, int argc, u8** argv)
+int myml_create(struct item* obj, void* arg, int argc, u8** argv)
 {
 	int j;
 	if(arg){
@@ -680,7 +680,13 @@ int myml_create(struct item* wrk, void* arg, int argc, u8** argv)
 
 	void* mpoller = poller_alloc();
 	if(mpoller)poller(mpoller);
+
+	say("myml@%p exiting\n",obj);
 	return 0;
+}
+int myml_delete(struct item* obj)
+{
+	say("myml_delete:%p\n", obj);
 }
 
 

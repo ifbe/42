@@ -7,7 +7,6 @@ void* bootup_alloc();
 
 
 static _obj* mpoller = 0;
-static int alive = 1;
 //
 static _obj* supply = 0;
 static _obj* entity = 0;
@@ -97,6 +96,7 @@ void poller(void* poller)
 	stack[0].pchip = poller;
 
 	//forever
+	int alive = 1;
 	while(alive)
 	{
 		//cur time
@@ -110,7 +110,7 @@ void poller(void* poller)
 		{
 			ev = eventread();
 			if(0 == ev)break;
-			if(0 == ev->what)return;
+			if(0 == ev->what)goto byebye;
 
 			supplyevent(stack, ev);
 		}
@@ -120,6 +120,8 @@ void poller(void* poller)
 		//say("dt=%d\n", delta);
 		if(dt < 16000)sleep_us(16000-dt);
 	}
+byebye:
+	say("poller@%p exiting\n", poller);
 }
 
 

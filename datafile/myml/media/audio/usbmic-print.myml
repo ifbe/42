@@ -8,6 +8,7 @@ fmt:dbghex
 <supply>
 usbmic{
 fmt:mic
+path:plughw:1,0
 }
 </supply>
 

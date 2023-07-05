@@ -28,6 +28,7 @@ void kernel_create(struct item*, u8*, int, u8**);
 //
 void myml_init(void*);
 void myml_create(struct item*, u8*, int, u8**);
+void myml_delete(struct item*);
 //
 void mython_init(void*);
 void mython_create(struct item*, u8*, int, u8**);
@@ -193,6 +194,11 @@ int bootup_delete(struct item* tmp)
 	if(0 == tmp)return 0;
 	say("bootup_delete:%.8s\n", &tmp->type);
 
+	switch(tmp->type){
+	case _myml_:
+		myml_delete(tmp);
+		break;
+	}
 	return 0;
 }
 int bootup_reader(struct item* wrk,void* foot, void* arg,int idx, void* buf,int len)

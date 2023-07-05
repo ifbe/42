@@ -22,12 +22,18 @@ static void sig_int(int a)
 	old = new;
 	new = timeread_us();
 
-	if(new-old < 500*1000)	//0.5 s
-	{
-		if(new-die < 1000*1000)exit(-1);
-		else eventwrite(0, 0, 0, 0);
+	if(new-die < 1000*1000){
+		printf("ctrl+c triple!\n");
+		exit(-1);
 	}
-	else eventwrite(0x3, 0x72616863, 0, 0);
+	else if(new-old < 500*1000){
+		printf("ctrl+c twice!\n");
+		eventwrite(0, 0, 0, 0);
+	}
+	else{
+		printf("ctrl+c once!\n");
+		eventwrite(0x3, 0x72616863, 0, 0);
+	}
 }
 static void sig_tstp(int a)
 {

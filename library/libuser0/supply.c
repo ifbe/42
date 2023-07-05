@@ -397,6 +397,7 @@ int supply_create(_obj* obj, void* arg, int argc, u8** argv)
 }
 int supply_delete(_obj* obj)
 {
+	say("supply_delete\n");
 	if(0 == obj)return 0;
 
 	//1.unlink
@@ -412,6 +413,9 @@ int supply_delete(_obj* obj)
 		break;
 	case _spk_:
 		speakerdelete(obj);
+		break;
+	case _mic_:
+		micphonedelete(obj);
 		break;
 	}
 
