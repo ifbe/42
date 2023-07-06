@@ -63,7 +63,7 @@ int pcmfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, vo
 		outlen = pcmfmt_s32tos16(buf,len, per->dstbuf[0], per->dstlen);
 	}
 
-	give_data_into_peer(art,_dst_, stack,sp, 0,0, per->dstbuf[0],outlen);
+	give_data_into_peer(art,_dst_, stack,sp, arg,cmd, per->dstbuf[0],outlen);
 	return 0;
 }
 int pcmfmt_detach(struct halfrel* self, struct halfrel* peer)

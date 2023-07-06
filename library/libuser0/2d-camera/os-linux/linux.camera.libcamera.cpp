@@ -199,7 +199,7 @@ static void requestComplete(Request *request)
 			kv[0].val = my->w;
 			kv[1].val = my->h;
 			kv[2].val = my->fmt;
-			kv[4].val = sensortime;
+			kv[3].val = sensortime;
 			give_data_into_peer_temp_stack(my->myobj,_dst_, kv,_kv88_, p, sz);
 		}
 	}

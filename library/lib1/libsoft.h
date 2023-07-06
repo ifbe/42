@@ -37,7 +37,9 @@ void* eventwrite(u64,u64,u64,u64);
 //
 u32 random_read();
 u64 dateread();
+u64 timeread_ms();
 u64 timeread_us();
+u64 timeread_ns();
 //
 int ncmp(void*, void*, int);
 int cmp(void*, void*);

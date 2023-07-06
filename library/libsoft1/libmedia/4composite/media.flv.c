@@ -613,8 +613,10 @@ struct privdata{
 	int log;
 	int haveav;
 	int lock;
+	u64 time_firstcapture;
 
 	int audiocount;
+
 	int videocount;
 
 	u8* spsbuf;
@@ -639,7 +641,7 @@ int flvserver_header(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int id
 	if(priv->log)say("[%x,%x)", priv->offs, priv->offs+4);
 	priv->offs += 4;
 
-	ret = give_data_into_peer(obj,_dst_, stack,sp, arg,idx, head,len+4);
+	ret = give_data_into_peer(obj,_dst_, stack,sp, 0,0, head,len+4);
 
 
 	//111111111
@@ -653,7 +655,7 @@ int flvserver_header(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int id
 	if(priv->log)say("[%x,%x)\n", priv->offs, priv->offs+4);
 	priv->offs += 4;
 
-	ret = give_data_into_peer(obj,_dst_, stack,sp, arg,idx, tagscript,len+4);
+	ret = give_data_into_peer(obj,_dst_, stack,sp, 0,0, tagscript,len+4);
 
 	return priv->offs;
 }
@@ -661,7 +663,7 @@ int flvserver_header(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int id
 
 
 
-int flvserver_spspps(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx)
+int flvserver_spspps(_obj* obj,void* foot, _syn* stack,int sp)
 {
 	int ret;
 	struct privdata* priv = (void*)obj->priv_256b;
@@ -677,17 +679,17 @@ int flvserver_spspps(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int id
 	if(priv->log)say("[%x,%x)\n", priv->offs, priv->offs+4);
 	priv->offs += 4;
 
-	ret = give_data_into_peer(obj,_dst_, stack,sp, arg,idx, tagavchead,len+4);
+	ret = give_data_into_peer(obj,_dst_, stack,sp, 0,0, tagavchead,len+4);
 
 	return priv->offs;
 }
-int flvserver_ipb(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int time, void* bs, int bl)
+int flvserver_ipb(_obj* obj,void* foot, _syn* stack,int sp, u64 ts, int xxx, void* bs, int bl)
 {
 	struct privdata* priv = (void*)obj->priv_256b;
 
 	//3333333333
 	struct flvtag* tagavcbs = priv->tmp;
-	int len = flv_maker_h264_bs(tagavcbs, time, bs, bl);
+	int len = flv_maker_h264_bs(tagavcbs, ts, bs, bl);
 	if(priv->log)say("[%x,%x)flv h264\n", priv->offs, priv->offs+len);
 	priv->offs += len;
 
@@ -711,7 +713,7 @@ int flvserver_cutnalu(u8* buf, int len)
 	}
 	return len;
 }
-int flvserver_giveby_h264(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int flvserver_giveby_h264(_obj* obj,void* foot, _syn* stack,int sp, u64 capturetime, int idx, u8* buf, int len)
 {
 	struct privdata* priv = (void*)obj->priv_256b;
 	if(priv->log)say("%s\n",__FUNCTION__);
@@ -738,7 +740,17 @@ begin:
 	case 5:		//i
 		if(0 == priv->spslen)break;
 		if(0 == priv->ppslen)break;
-		flvserver_ipb(obj,foot, stack,sp, arg,priv->audiocount*1000/44100, bs,bl);
+		u64 time;
+		if(0 == priv->time_firstcapture){
+			priv->time_firstcapture = capturetime;
+			time = 0;
+		}
+		else{
+			time = capturetime - priv->time_firstcapture;
+			if(time < 0)time = 0;
+		}
+		if(priv->log)say("firstcapture=%lld,capturetime=%lld,videotime=%lld\n", priv->time_firstcapture, capturetime, time);
+		flvserver_ipb(obj,foot, stack,sp, time/1000/1000,0, bs,bl);
 		priv->videocount += 1;
 		break;
 	case 6:		//sei
@@ -753,7 +765,7 @@ begin:
 		if(0 == priv->ppslen){
 			movsb(priv->ppsbuf, bs, bl);
 			priv->ppslen = bl;
-			flvserver_spspps(obj,foot, stack,sp, arg,idx);
+			flvserver_spspps(obj,foot, stack,sp);
 		}
 		break;
 	}
@@ -812,12 +824,23 @@ int flv_maker_pcm_s16le_44k1ch(struct flvtag* tag, int time, u8* srcbuf,int srcl
 	tag->stream[0] = tag->stream[1] = tag->stream[2] = 0;
 	return len+11;
 }
-int flvserver_giveby_pcm(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int flvserver_giveby_pcm(_obj* obj,void* foot, _syn* stack,int sp, u64 capturetime, int idx, u8* buf, int len)
 {
 	struct privdata* priv = (void*)obj->priv_256b;
 	if(priv->log)say("flvserver_pcm:len=%x\n",len);
 
-	int sz = flv_maker_pcm_s16le_44k1ch(priv->tmp, priv->audiocount*1000/44100, buf,len);
+	u64 time;
+	if(0 == priv->time_firstcapture){
+		priv->time_firstcapture = capturetime;
+		time = 0;
+	}
+	else{
+		time = capturetime - priv->time_firstcapture;
+		if(time < 0)time = 0;
+	}
+	if(priv->log)say("firstcapture=%lld,capturetime=%lld,audiotime=%lld\n", priv->time_firstcapture, capturetime, time);
+
+	int sz = flv_maker_pcm_s16le_44k1ch(priv->tmp, time/1000/1000, buf,len);
 	if(priv->log)say("[%x,%x)flv pcm\n", priv->offs, priv->offs+sz);
 	priv->offs += sz;
 
@@ -842,6 +865,22 @@ int flvserver_takeby(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int id
 int flvserver_giveby(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	struct privdata* priv = (void*)obj->priv_256b;
+
+	u64 receivetime = timeread_ns();
+	u64 capturetime = 0;
+	if(_kv88_ == idx){
+		int j;
+		struct kv88* kv = arg;
+		for(j=0;j<8;j++){
+			if(0 == kv[j].key)break;
+			if('t' == kv[j].key){
+				capturetime = kv[j].val;
+			}
+		}
+	}
+	u32 foottype = stack[sp-1].foottype;
+	if(priv->log)say("flv %.4s: capturetime=%lld, receivetime=%lld\n", &foottype, capturetime, receivetime);
+
 	if(0 == priv->haveav){
 		while(__sync_lock_test_and_set(&priv->lock,1) == 1);
 		flvserver_header(obj,foot, stack,sp, arg,idx);
@@ -849,17 +888,15 @@ int flvserver_giveby(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int id
 		__sync_lock_release(&priv->lock);
 	}
 
-	u32 foottype = stack[sp-1].foottype;
-	//say("@@@@@@@@@@@%.4s\n",&foottype);
 	switch(foottype){
 	case _pcm_:
 		while(__sync_lock_test_and_set(&priv->lock,1) == 1);
-		flvserver_giveby_pcm(obj,foot, stack,sp, arg,idx, buf,len);
+		flvserver_giveby_pcm(obj,foot, stack,sp, capturetime,idx, buf,len);
 		__sync_lock_release(&priv->lock);
 		break;
 	default:
 		while(__sync_lock_test_and_set(&priv->lock,1) == 1);
-		flvserver_giveby_h264(obj,foot, stack,sp, arg,idx, buf,len);
+		flvserver_giveby_h264(obj,foot, stack,sp, capturetime,idx, buf,len);
 		__sync_lock_release(&priv->lock);
 	}
 	return 0;

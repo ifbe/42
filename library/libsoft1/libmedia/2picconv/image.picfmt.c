@@ -117,9 +117,10 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, vo
 
 	//process metadata
 	int ispart = 0;
-	u64 srcfmt = per->srcfmt;
 	int srcw = per->srcw;
 	int srch = per->srch;
+	u64 srcfmt = per->srcfmt;
+	u64 ts = 0;
 	//say("srcw=%d,srch=%d\n",srcw,srch);
 	if(_kv88_ == cmd){
 		int j;
@@ -139,6 +140,9 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, vo
 				break;
 			case 'f':
 				srcfmt = kv[j].val;
+				break;
+			case 't':
+				ts = kv[j].val;
 				break;
 			}
 		}
@@ -255,6 +259,7 @@ done:
 		per->dstbuf[0], per->dstlen, per->dstw, per->dsth);*/
 	per->kv[0].key = 'w';per->kv[0].val = per->dstw;
 	per->kv[1].key = 'h';per->kv[1].val = per->dsth;
+	if(ts){per->kv[2].key = 't';per->kv[2].val = ts;}
 	give_data_into_peer(art,_dst_, stack,sp, per->kv,_kv88_, per->dstbuf[0],per->dstlen);
 	return 0;
 }

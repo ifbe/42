@@ -46,7 +46,11 @@ struct privdata{
 
 static void bsthread(_obj* obj)
 {
-	int j;
+	struct kv88 kv[2] = {
+		't', 0,
+		 0 , 0
+	};
+	int j,ret;
 	int enq = 0;
 	int deq = 0;
 	struct privdata* priv = (void*)obj->priv_ptr;
@@ -55,9 +59,9 @@ static void bsthread(_obj* obj)
 		for(j=0;j<2;j++){
 			if(_v4l2_ == priv->bs[j].own)continue;
 
-			if(priv->log)say("bs.enq=%d,j=%d\n",enq,j);
-			ioctl(fd, VIDIOC_QBUF, &priv->bs[j].buf);
-			if(priv->log)say("bs.enq=%d,end\n",enq);
+			if(priv->log)say("bs.enq: id=%d,j=%d\n",enq,j);
+			ret = ioctl(fd, VIDIOC_QBUF, &priv->bs[j].buf);
+			if(priv->log)say("bs.enq: id=%d,ret=%d\n",enq,ret);
 
 			priv->bs[j].own = _v4l2_;
 			priv->bs[j].seq = enq;
@@ -68,19 +72,22 @@ static void bsthread(_obj* obj)
 			if(_v4l2_ != priv->bs[j].own)continue;
 			if(deq != priv->bs[j].seq)continue;
 
-			if(priv->log)say("bs.deq=%d,j=%d\n",deq,j);
+			if(priv->log)say("bs.deq: id=%d,j=%d\n", deq, j);
 			priv->bs[j].buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
-			ioctl(priv->fd, VIDIOC_DQBUF, &priv->bs[j].buf);
+			ret = ioctl(priv->fd, VIDIOC_DQBUF, &priv->bs[j].buf);
 
+			u64 ts = (u64)priv->bs[j].buf.timestamp.tv_sec*1000*1000*1000 + priv->bs[j].buf.timestamp.tv_usec*1000;
 			int len = priv->bs[j].buf.m.planes[0].bytesused;
-			if(priv->log)say("bs.deq=%d,bs.len=%d\n",deq,len);
+			if(priv->log)say("bs.deq: id=%d, ret=%d, len=%d, ts=%lld\n", deq, ret, len, ts);
 
 			priv->bs[j].own = _node_;
 			deq++;
 
 			if(priv->log)printmemory(priv->bs[j].mem, 16);
 			//write(ff, bsmem, len);
-			give_data_into_peer_temp_stack(obj,_bs_, 0,0, priv->bs[j].mem,len);
+
+			kv[0].val = ts;
+			give_data_into_peer_temp_stack(obj,_bs_, kv,_kv88_, priv->bs[j].mem,len);
 		}
 	}
 }
@@ -102,6 +109,21 @@ int codecv_give(_obj* cam,void* foot, _syn* stack,int sp, void* arg,int idx, u8*
 	if(priv->log)printmemory(buf + w*h + w, 16);
 	if(priv->log)printmemory(buf + w*h*5/4 + w, 16);
 
+	u64 receivetime = timeread_ns();
+	u64 capturetime = 0;
+	if(_kv88_ == idx){
+		int j;
+		struct kv88* kv = arg;
+		for(j=0;j<8;j++){
+			if(0 == kv[j].key)break;
+			if('t' == kv[j].key){
+				capturetime = kv[j].val;
+			}
+		}
+	}
+	//printmemory(arg, 0x40);
+	if(priv->log)say("encoder: capturetime=%lld, receivetime=%lld\n", capturetime, receivetime);
+
 	int j,ret;
 	for(j=0;j<2;j++){
 			if(_read_ != priv->img[j].own)continue;
@@ -109,6 +131,8 @@ int codecv_give(_obj* cam,void* foot, _syn* stack,int sp, void* arg,int idx, u8*
 
 			if(priv->log)say("img.enq:j=%d\n",j);
 			priv->img[j].plane.bytesused = priv->img[j].buf.m.planes[0].length;
+			priv->img[j].buf.timestamp.tv_sec = capturetime/1000/1000/1000;
+			priv->img[j].buf.timestamp.tv_usec = (capturetime/1000)%1000000;
 			ret = ioctl(priv->fd, VIDIOC_QBUF, &priv->img[j].buf);
 			if(-1 != ret){
 				if(priv->log)say("img.enq end\n");
