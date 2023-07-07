@@ -58,9 +58,9 @@ exe:
 	libhard0/*.o libhard1/*.o \
 	libsoft0/*.o libsoft1/*.o \
 	libuser0/*.o libuser1/*.o \
-	-lglfw -lGLEW -lGLU -lGL \
-	-lpulse -lpulse-simple \
-	-lpthread -lX11 -ldl -lm
+	-lglfw -lGLEW -lGLU -lGL -lX11 \
+	-lasound \
+	-lpthread -ldl -lm
 clean:
 	rm -f *.o *.a *.so
 	rm -f */*.o

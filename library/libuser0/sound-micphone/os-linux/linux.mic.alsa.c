@@ -324,8 +324,8 @@ int micphonecreate(_obj* mic, u8* arg, int argc, char** argv)
 	struct privdata* priv = (void*)mic->priv_256b;
 	priv->log = 0;
 
-	copyname(priv->path, "plughw:0,0");
-	priv->bits = 32;
+	copyname(priv->path, "default");
+	priv->bits = 16;
 	priv->freq = 44100;
 	priv->chan = 1;
 	priv->ibuf = malloc(0x100000);
@@ -336,11 +336,15 @@ int micphonecreate(_obj* mic, u8* arg, int argc, char** argv)
 		if(0 == ncmp(argv[j], "log:", 4)){
 			priv->log = 1;
 		}
+		if(0 == ncmp(argv[j], "bits:", 5)){
+			decstr2u32(argv[j]+5, &priv->bits);
+		}
 		else if(0 == ncmp(argv[j], "path:", 5)){
 			copyname(priv->path, argv[j]+5);
 		}
 	}
 	say("path=%s\n",priv->path);
+	say("bits=%d\n",priv->bits);
 
 	int ret = micphone_startcapture(mic);
 	if(ret < 0)return -1;

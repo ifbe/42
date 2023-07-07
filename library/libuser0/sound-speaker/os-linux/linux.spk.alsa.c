@@ -110,13 +110,15 @@ int speaker_take(_obj* spk,void* foot, _syn* stack,int sp, void* arg,int idx, vo
 }
 int speaker_give(_obj* spk,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
-/*
-	int j = snd_pcm_writei(playback_handle, bufout, frames);
+	struct privdata* priv = (void*)spk->priv_256b;
+
+	int frames = len/2;
+	int j = snd_pcm_writei(priv->playback_handle, buf, frames);
+	//printf("snd_pcm_writei:%s\n", snd_strerror(j));
 	if(j == frames)return 0;
 
-	printf("snd_pcm_writei:%s\n", snd_strerror(j));
-	if(j == -EPIPE)snd_pcm_prepare(playback_handle);
-*/
+	if(j == -EPIPE)snd_pcm_prepare(priv->playback_handle);
+
 	return 0;
 }
 int speaker_detach()
@@ -151,7 +153,7 @@ int speakerdelete(_obj* spk)
 int speakercreate(_obj* spk)
 {
 	struct privdata* priv = (void*)spk->priv_256b;
-	priv->hwname = "plughw:1,0";
+	priv->hwname = "default";
 	priv->freq = 44100;
 	priv->chan = 1;
 

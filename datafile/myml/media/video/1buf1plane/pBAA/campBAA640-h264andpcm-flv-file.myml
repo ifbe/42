@@ -38,6 +38,7 @@ fmt:Flv
 usbmic{
 fmt:mic
 path:plughw:1,0
+bits:32
 }
 usbcam{
 fmt:cam
