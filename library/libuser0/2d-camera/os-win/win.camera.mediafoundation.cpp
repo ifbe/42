@@ -3,22 +3,26 @@
 #include <mfidl.h>
 #include <mfreadwrite.h>
 #include "libuser.h"
-#define STRIDE whdf.width
-#define HEIGHT whdf.height
-#define FORMAT whdf.fourth
 
 
 
-IMFAttributes* attr = NULL;
-IMFActivate** devices = NULL;
-IMFMediaSource* source = NULL;
-IMFSourceReader* reader = NULL;
-//
-IMFMediaType* mediatype = NULL;
-GUID subtype;
-//
-u32 camcount = 0;
-int exitflag;
+
+struct privdata{
+	IMFAttributes* attr = NULL;
+	IMFActivate** devices = NULL;
+	IMFMediaSource* source = NULL;
+	IMFSourceReader* reader = NULL;
+
+	IMFMediaType* mediatype = NULL;
+	GUID subtype;
+
+	u32 camcount = 0;
+	int exitflag;
+
+	u64 format;
+	int stride;
+	int height;
+};
 
 
 
@@ -264,7 +268,9 @@ char* mf_subtype2format(GUID* guid, char* str){
 		return str;
 	}
 }
-int mf_enum(IMFMediaSource* source){
+int mf_enum(_obj* cam, IMFMediaSource* source){
+	struct privdata* priv = (struct privdata*)cam->priv_256b;
+
 	printf("--------format enum--------:\n");
 	IMFPresentationDescriptor* desc = 0;
 	auto hr = source->CreatePresentationDescriptor(&desc);
@@ -303,22 +309,24 @@ int mf_enum(IMFMediaSource* source){
 		DWORD cnt2;
 		hr = hand->GetMediaTypeCount(&cnt2);
 		for(int k=0;k<cnt2;k++){
-			hr = hand->GetMediaTypeByIndex(k, &mediatype);
-			hr = mediatype->GetGUID(MF_MT_SUBTYPE, &subtype);
+			hr = hand->GetMediaTypeByIndex(k, &priv->mediatype);
+			hr = priv->mediatype->GetGUID(MF_MT_SUBTYPE, &priv->subtype);
 			u32 width;
 			u32 height;
-			hr = MFGetAttributeSize(mediatype, MF_MT_FRAME_SIZE, &width, &height);
+			hr = MFGetAttributeSize(priv->mediatype, MF_MT_FRAME_SIZE, &width, &height);
 			u32 numerator;
 			u32 denominator;
-			hr = MFGetAttributeSize(mediatype, MF_MT_FRAME_RATE, &numerator, &denominator);
+			hr = MFGetAttributeSize(priv->mediatype, MF_MT_FRAME_RATE, &numerator, &denominator);
 
 			char str[64];
-			printf("%d: width=%d,height=%d,fps=%f,format=%.32s\n", k, width, height, (float)numerator/denominator, mf_subtype2format(&subtype, str));
+			printf("%d: width=%d,height=%d,fps=%f,format=%.32s\n", k, width, height, (float)numerator/denominator, mf_subtype2format(&priv->subtype, str));
 		}
 	}
 	return 0;
 }
-int mf_select(IMFMediaSource* source, _obj* camobj){
+int mf_select(_obj* cam, IMFMediaSource* source){
+	struct privdata* priv = (struct privdata*)cam->priv_256b;
+
 	printf("--------format select--------:\n");
 	IMFPresentationDescriptor* desc = 0;
 	auto hr = source->CreatePresentationDescriptor(&desc);
@@ -333,70 +341,71 @@ int mf_select(IMFMediaSource* source, _obj* camobj){
 	DWORD cnt2;
 	hr = hand->GetMediaTypeCount(&cnt2);
 	for(int k=0;k<cnt2;k++){
-		hr = hand->GetMediaTypeByIndex(k, &mediatype);
-		hr = mediatype->GetGUID(MF_MT_SUBTYPE, &subtype);
+		hr = hand->GetMediaTypeByIndex(k, &priv->mediatype);
+		hr = priv->mediatype->GetGUID(MF_MT_SUBTYPE, &priv->subtype);
 		u32 ww;
 		u32 hh;
-		hr = MFGetAttributeSize(mediatype, MF_MT_FRAME_SIZE, &ww, &hh);
+		hr = MFGetAttributeSize(priv->mediatype, MF_MT_FRAME_SIZE, &ww, &hh);
 		u32 numerator;
 		u32 denominator;
-		hr = MFGetAttributeSize(mediatype, MF_MT_FRAME_RATE, &numerator, &denominator);
+		hr = MFGetAttributeSize(priv->mediatype, MF_MT_FRAME_RATE, &numerator, &denominator);
 
-		if( (ww==camobj->STRIDE) && (hh==camobj->HEIGHT) ){
+		if( (ww==priv->stride) && (hh==priv->height) ){
 			if(
-				(IsEqualGUID(subtype, MFVideoFormat_YUY2) && (_yuyv_ == camobj->FORMAT) ) |
-				(IsEqualGUID(subtype, MFVideoFormat_NV12) && (_y4_uv_ == camobj->FORMAT) )
+				(IsEqualGUID(priv->subtype, MFVideoFormat_YUY2) && (_yuyv_ == priv->format) ) |
+				(IsEqualGUID(priv->subtype, MFVideoFormat_NV12) && (_y4_uv_ == priv->format) )
 			){
 				char str[64];
-				printf("%d: width=%d,height=%d,fps=%f,format=%.32s\n", k, ww, hh, (float)numerator/denominator, mf_subtype2format(&subtype, str));
+				printf("%d: width=%d,height=%d,fps=%f,format=%.32s\n", k, ww, hh, (float)numerator/denominator, mf_subtype2format(&priv->subtype, str));
 		
-				hr = hand->SetCurrentMediaType(mediatype);
+				hr = hand->SetCurrentMediaType(priv->mediatype);
 				break;
 			}
 		}
 	}
 
-	hr = MFCreateSourceReaderFromMediaSource(source, NULL, &reader);
+	hr = MFCreateSourceReaderFromMediaSource(source, NULL, &priv->reader);
 	if(FAILED(hr)){
 		printf("6\n");
 	}
 
-	hr = reader->GetCurrentMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM, &mediatype);
+	hr = priv->reader->GetCurrentMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM, &priv->mediatype);
 	if(FAILED(hr)){
 		printf("7\n");
 	}
 
-	hr = mediatype->GetGUID(MF_MT_SUBTYPE, &subtype);
+	hr = priv->mediatype->GetGUID(MF_MT_SUBTYPE, &priv->subtype);
 	if(FAILED(hr)){
 		printf("8\n");
 	}
 
 	u32 width;
 	u32 height;
-	hr = MFGetAttributeSize(mediatype, MF_MT_FRAME_SIZE, &width, &height);
+	hr = MFGetAttributeSize(priv->mediatype, MF_MT_FRAME_SIZE, &width, &height);
 	if(FAILED(hr)){
 		printf("9\n");
 	}
 
 	char str[64];
-	printf("width=%d,height=%d,format=%.32s\n", width, height, mf_subtype2format(&subtype, str));
+	printf("width=%d,height=%d,format=%.32s\n", width, height, mf_subtype2format(&priv->subtype, str));
 
 	return 0;
 }
-int mfthread(_obj* camobj){
+int mfthread(_obj* cam){
 	//Coinitialize(NULL);
+	struct privdata* priv = (struct privdata*)cam->priv_256b;
 
 	auto hr = MFStartup(MF_VERSION);
 	if(FAILED(hr)){
 		printf("0\n");
 	}
 
-	hr = MFCreateAttributes(&attr, 1);
+	hr = MFCreateAttributes(&priv->attr, 1);
 	if(FAILED(hr)){
 		printf("1\n");
 	}
 
-	hr = attr->SetGUID(
+	hr = priv->attr->SetGUID(
 		MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
 		MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID);
 	if(FAILED(hr)){
@@ -404,19 +413,19 @@ int mfthread(_obj* camobj){
 	}
 
 	printf("--------device enum--------:\n");
-	hr = MFEnumDeviceSources(attr, &devices, &camcount);
+	hr = MFEnumDeviceSources(priv->attr, &priv->devices, &priv->camcount);
 	if(FAILED(hr)){
 		printf("3\n");
 		return 0;
 	}
-	if(camcount < 1){
+	if(priv->camcount < 1){
 		printf("4\n");
 		return 0;
 	}
-	for(int j=0;j<camcount;j++){
+	for(int j=0;j<priv->camcount;j++){
 		wchar_t wstr[64];
 		UINT32 wlen;
-		devices[j]->GetString(MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME, wstr, 64, &wlen);
+		priv->devices[j]->GetString(MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME, wstr, 64, &wlen);
 
 		char str[64];
 		wstr2str(wstr,wlen, str,64);
@@ -424,38 +433,45 @@ int mfthread(_obj* camobj){
 	}
 
 	printf("--------device select--------:\n");
-	hr = MFCreateDeviceSource(devices[0], &source);
+	hr = MFCreateDeviceSource(priv->devices[0], &priv->source);
 	if(FAILED(hr)){
 		printf("5\n");
 	}
 	//devices[0]->ActivateObject(IID_PPV_ARGS(source));
 
-	mf_enum(source);
+	mf_enum(cam, priv->source);
 
-	mf_select(source, camobj);
+	mf_select(cam, priv->source);
 
 	printf("--------run--------:\n");
-	while(!exitflag){
+	struct kv88 kv88[4] = {
+		't', 0,
+		 0 , 0
+	};
+	while(!priv->exitflag){
 		DWORD idx = 0;
 		DWORD flag = 0;
 		LONGLONG timestamp = 0;		//100ns
 		IMFSample* sample;
-		hr = reader->ReadSample(MF_SOURCE_READER_FIRST_VIDEO_STREAM, 0, &idx, &flag, &timestamp, &sample);
+		hr = priv->reader->ReadSample(MF_SOURCE_READER_FIRST_VIDEO_STREAM, 0, &idx, &flag, &timestamp, &sample);
 		if(FAILED(hr)){
 			printf("10\n");
 		}
+
+		u64 timenow = timeread_ns();
+		u64 timeimg = timestamp*100;		//ns
+		printf("ReadSample: idx=%d,flag=%x,sample=%p, timeimg=%lld,timenow=%lld,dt=%d\n", idx, flag, sample, timeimg,timenow,timenow-timeimg);
 		if(0 == sample)continue;
-		printf("sample:%d,%x,%lld,%p\n", idx,flag,timestamp/10/1000,sample);
 
 		DWORD cnt = 0;
-		DWORD len;
-		u8* data;
-		IMFMediaBuffer* buffer = NULL;
 		hr = sample->GetBufferCount(&cnt);
 		for(int i=0;i<cnt;i++){
+			IMFMediaBuffer* buffer = NULL;
 			hr = sample->GetBufferByIndex(i, &buffer);
 			if(0 == buffer)continue;
 
+			DWORD len;
+			u8* data;
 			hr = buffer->Lock(&data, NULL, &len);
 			if(FAILED(hr)){
 				printf("10\n");
@@ -464,8 +480,8 @@ int mfthread(_obj* camobj){
 			//char str[64];
 			//printf("type=%.32s,data=%p\n", mf_subtype2format(&subtype, str), data);
 			//printmemory(data, 0x20);
-			struct halfrel stack[0x80];
-			give_data_into_peer(camobj,_dst_, stack,0, 0,0, data, 0);
+			kv88[0].val = timeimg;
+			give_data_into_peer_temp_stack(cam,_dst_, kv88,_kv88_, data, 0);
 
 			hr = buffer->Unlock();
 			if(FAILED(hr)){
@@ -483,12 +499,12 @@ int mfthread(_obj* camobj){
 			printf("13\n");
 		}
 	}
-	attr->Release();
-	source->Release();
-	reader->Release();
-	mediatype->Release();
-	for(int i=0;i<camcount;i++){
-		devices[i]->Release();
+	priv->attr->Release();
+	priv->source->Release();
+	priv->reader->Release();
+	priv->mediatype->Release();
+	for(int i=0;i<priv->camcount;i++){
+		priv->devices[i]->Release();
 	}
 	return 0;
 }
@@ -497,11 +513,11 @@ int mfthread(_obj* camobj){
 extern "C" {
 
 
-int mfcam_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int mfcam_take(_obj* cam,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int mfcam_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int mfcam_give(_obj* cam,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }
@@ -513,45 +529,47 @@ int mfcam_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int mfcam_reader(_obj* sup,void* foot, void* arg,int idx, void* buf,int len)
+int mfcam_reader(_obj* cam,void* foot, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int mfcam_writer(_obj* sup,void* foot, void* arg,int idx, void* buf,int len)
+int mfcam_writer(_obj* cam,void* foot, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int mfcam_delete(_obj* win)
+int mfcam_delete(_obj* cam)
 {
-	//shutupdie(win);
+	//shutupdie(cam);
 	return 0;
 }
-int mfcam_create(_obj* win, void* arg, int argc, u8** argv)
+int mfcam_create(_obj* cam, void* arg, int argc, u8** argv)
 {
+	struct privdata* priv = (struct privdata*)cam->priv_256b;
+	priv->stride = 640;
+	priv->height = 480;
+	priv->format = _yuyv_;
+
 	int j;
-	win->STRIDE = 640;
-	win->HEIGHT = 480;
-	win->FORMAT = _yuyv_;
 	for(j=1;j<argc;j++){
 		arg = argv[j];
 		//say("%d->%.16s\n",j,arg;
 		if(0 == ncmp(arg, (void*)"format:", 7)){
 			arg = argv[j]+7;
 			//say("format=%.5s\n",arg);
-			if(0 == ncmp(arg, (void*)"mjpeg", 5))win->FORMAT = _mjpg_;
-			if(0 == ncmp(arg, (void*)"y4,uv", 5))win->FORMAT = _y4_uv_;
+			if(0 == ncmp(arg, (void*)"mjpeg", 5))priv->format = _mjpg_;
+			if(0 == ncmp(arg, (void*)"y4,uv", 5))priv->format = _y4_uv_;
 		}
 		if(0 == ncmp(arg, (void*)"width:", 6)){
 			arg = argv[j]+6;
-			decstr2u32(arg, (u32*)&win->STRIDE);
+			decstr2u32(arg, (u32*)&priv->stride);
 		}
 		if(0 == ncmp(arg, (void*)"height:", 7)){
 			arg = argv[j]+7;
-			decstr2u32(arg, (u32*)&win->HEIGHT);
+			decstr2u32(arg, (u32*)&priv->height);
 		}
 	}
 
-	threadcreate((void*)mfthread, win);
+	threadcreate((void*)mfthread, cam);
 	return 0;
 }
 

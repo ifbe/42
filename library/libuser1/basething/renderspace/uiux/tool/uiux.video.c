@@ -501,13 +501,22 @@ static void video_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 
 	own->inbuf = buf;
 
-	say("video parsearg:\n");
 	if(_kv88_ == key){
+		//say("video kv88:\n");
+		int w=0,h=0;
+		u64 ts=0;
+
 		int j;
 		struct kv88* kv = arg;
-		for(j=0;j<2;j++){
-			say("%llx=%llx\n", kv[j].key, kv[j].val);
+		for(j=0;j<4;j++){
+			switch(kv[j].key){
+			case 'w':w=kv[j].val;break;
+			case 'h':h=kv[j].val;break;
+			case 't':ts=kv[j].val;break;
+			//default:say("%llx=%llx\n", kv[j].key, kv[j].val);
+			}
 		}
+		say("video: w=%d,h=%d,t=%lld\n",w,h,ts);
 	}
 }
 static void video_detach(struct halfrel* self, struct halfrel* peer)

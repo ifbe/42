@@ -53,7 +53,7 @@ u64 timeread_ms()
 	int ret = QueryPerformanceFrequency(&freq);
 	if(ret && freq.QuadPart){
 		ret = QueryPerformanceCounter(&count);
-		if(ret && count.QuadPart)return 1000 * count.QuadPart / freq.QuadPart;
+		if(ret && count.QuadPart)return 1000 * (u64)count.QuadPart / freq.QuadPart;
 	}
 
 	return GetTickCount64();
@@ -64,8 +64,8 @@ u64 timeread_us()
 	int ret = QueryPerformanceFrequency(&freq);
 	if(ret && freq.QuadPart){
 		ret = QueryPerformanceCounter(&count);
-		//say("count=%lld,freq=%lld,time=%lld\n", count.QuadPart, freq.QuadPart, 1000*1000 * count.QuadPart / freq.QuadPart);
-		if(ret && count.QuadPart)return 1000*1000 * count.QuadPart / freq.QuadPart;
+		//say("count=%lld,freq=%lld,time=%lld\n", count.QuadPart, freq.QuadPart, (u64)count.QuadPart*1000*1000 / freq.QuadPart);
+		if(ret && count.QuadPart)return (u64)count.QuadPart*1000*1000 / freq.QuadPart;
 	}
 
 	return 1000 * GetTickCount64();
@@ -76,7 +76,8 @@ u64 timeread_ns()
 	int ret = QueryPerformanceFrequency(&freq);
 	if(ret && freq.QuadPart){
 		ret = QueryPerformanceCounter(&count);
-		if(ret && count.QuadPart)return 1000*1000*1000 * count.QuadPart / freq.QuadPart;
+		//say("count=%lld,freq=%lld,time=%lld\n", count.QuadPart, freq.QuadPart, (u64)count.QuadPart*1000*1000 / (freq.QuadPart/1000));
+		if(ret && count.QuadPart)return (u64)count.QuadPart*1000*1000 / (freq.QuadPart/1000);		//without (u64)=overflow, 10^9*count/freq = overflow
 	}
 
 	return 1000 * 1000 * GetTickCount64();
