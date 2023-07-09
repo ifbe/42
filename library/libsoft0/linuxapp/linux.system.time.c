@@ -40,6 +40,8 @@ u64 dateread()
 	//
 	return temp;
 }
+
+
 void datewrite(u64 date)
 {
 }
@@ -97,6 +99,10 @@ u64 timeread_s()
 	clock_gettime(CLOCK_MONOTONIC, &t);
 	return t.tv_sec;
 }
+u64 since1970()
+{
+	return time(0);
+}
 
 
 void timewrite(u64 time)
@@ -117,8 +123,4 @@ void sleep_us(int t)
 void sleep_ms(int t)
 {
 	usleep(t*1000);
-}
-u64 since1970()
-{
-	return time(0);
 }

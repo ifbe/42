@@ -3,7 +3,6 @@
 #include<windows.h>
 #define u8 unsigned char
 #define u64 unsigned long long
-u64 GetTickCount64();
 
 
 
@@ -39,6 +38,8 @@ u64 dateread()
 
 	return temp;
 }
+
+
 void datewrite()
 {
 }
@@ -46,10 +47,46 @@ void datewrite()
 
 
 
+u64 timeread_ms()
+{
+	LARGE_INTEGER count,freq;
+	int ret = QueryPerformanceFrequency(&freq);
+	if(ret && freq.QuadPart){
+		ret = QueryPerformanceCounter(&count);
+		if(ret && count.QuadPart)return 1000 * count.QuadPart / freq.QuadPart;
+	}
+
+	return GetTickCount64();
+}
 u64 timeread_us()
 {
+	LARGE_INTEGER count,freq;
+	int ret = QueryPerformanceFrequency(&freq);
+	if(ret && freq.QuadPart){
+		ret = QueryPerformanceCounter(&count);
+		//say("count=%lld,freq=%lld,time=%lld\n", count.QuadPart, freq.QuadPart, 1000*1000 * count.QuadPart / freq.QuadPart);
+		if(ret && count.QuadPart)return 1000*1000 * count.QuadPart / freq.QuadPart;
+	}
+
 	return 1000 * GetTickCount64();
 }
+u64 timeread_ns()
+{
+	LARGE_INTEGER count,freq;
+	int ret = QueryPerformanceFrequency(&freq);
+	if(ret && freq.QuadPart){
+		ret = QueryPerformanceCounter(&count);
+		if(ret && count.QuadPart)return 1000*1000*1000 * count.QuadPart / freq.QuadPart;
+	}
+
+	return 1000 * 1000 * GetTickCount64();
+}
+u64 since1970()
+{
+	return time(0);
+}
+
+
 void timewrite(u64 x)
 {
 }
@@ -59,7 +96,7 @@ void timewrite(u64 x)
 
 void sleep_ns(int t)
 {
-	//todo
+	Sleep(t/1000/1000);
 }
 void sleep_us(int t)
 {
@@ -68,8 +105,4 @@ void sleep_us(int t)
 void sleep_ms(int t)
 {
 	Sleep(t);
-}
-u64 since1970()
-{
-	return time(0);
 }

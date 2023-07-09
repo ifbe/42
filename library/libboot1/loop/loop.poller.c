@@ -101,6 +101,7 @@ void poller(void* poller)
 	{
 		//cur time
 		t0 = timeread_us();
+		//say("t0=%lld\n",t0);
 
 		//draw frame
 		supplyread_all(stack);

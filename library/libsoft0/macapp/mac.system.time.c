@@ -40,6 +40,8 @@ u64 dateread()
 	//
 	return temp;
 }
+
+
 void datewrite(u64 x)
 {
 }
@@ -47,20 +49,32 @@ void datewrite(u64 x)
 
 
 
+u64 timeread_ms()
+{
+	return mach_absolute_time() / 1000 / 1000;
+}
 u64 timeread_us()
 {
 	return mach_absolute_time() / 1000;
 }
+u64 timeread_ns()
+{
+	return mach_absolute_time();
+}
+u64 since1970()
+{
+	return time(0);
+}
+
+
 void timewrite(u64 x)
 {
 }
 
 
-
-
 void sleep_ns(int t)
 {
-	//todo
+	usleep(t/1000);
 }
 void sleep_us(int t)
 {
@@ -69,8 +83,4 @@ void sleep_us(int t)
 void sleep_ms(int t)
 {
 	usleep(t*1000);
-}
-u64 since1970()
-{
-	return time(0);
 }

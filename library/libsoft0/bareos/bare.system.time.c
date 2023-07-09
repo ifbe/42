@@ -40,14 +40,24 @@ u64 dateread()
 
 
 
-void timewrite(u64 t)
+u64 timeread_ms()
 {
-	time = t;
-	//archtimer_write(t);
+	return archtimer_ms();
 }
 u64 timeread_us()
 {
 	return archtimer_us();
+}
+u64 timeread_ns()
+{
+	return archtimer_ns();
+}
+
+
+void timewrite(u64 t)
+{
+	time = t;
+	//archtimer_write(t);
 }
 
 
