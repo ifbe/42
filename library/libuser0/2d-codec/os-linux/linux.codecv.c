@@ -87,19 +87,19 @@ static void bsthread(_obj* obj)
 			//write(ff, bsmem, len);
 
 			kv[0].val = ts;
-			give_data_into_peer_temp_stack(obj,_bs_, kv,_kv88_, priv->bs[j].mem,len);
+			give_data_into_peer_temp_stack(obj,_bs_, (p64)kv,_kv88_, priv->bs[j].mem,len);
 		}
 	}
 }
 
 
 
-int codecv_take(_obj* cam,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int codecv_take(_obj* cam,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len)
 {
 	say("codecv_take\n");
 	return 0;
 }
-int codecv_give(_obj* cam,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int codecv_give(_obj* cam,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len)
 {
 	struct privdata* priv = (void*)cam->priv_ptr;
 	int w = priv->width;
@@ -113,7 +113,7 @@ int codecv_give(_obj* cam,void* foot, _syn* stack,int sp, void* arg,int idx, u8*
 	u64 capturetime = 0;
 	if(_kv88_ == idx){
 		int j;
-		struct kv88* kv = arg;
+		struct kv88* kv = (void*)arg;
 		for(j=0;j<8;j++){
 			if(0 == kv[j].key)break;
 			if('t' == kv[j].key){
@@ -159,7 +159,7 @@ int codecv_detach()
 }
 
 
-int codecv_reader(_obj* cam,void* foot, void* arg,int idx, u8* buf,int len)
+int codecv_reader(_obj* cam,void* foot, p64 arg,int idx, u8* buf,int len)
 {
 	int j,ret;
 	struct privdata* priv = (void*)cam->priv_ptr;
@@ -194,7 +194,7 @@ find:
 	if(priv->log)say("codecv_read:%p,j=%d\n",priv->img[j].mem,j);
 	return 0;
 }
-int codecv_writer(_obj* cam,void* foot, void* arg,int idx, u8* buf,int len)
+int codecv_writer(_obj* cam,void* foot, p64 arg,int idx, u8* buf,int len)
 {
 	say("codecv_write\n");
 	printmemory(buf, 16);

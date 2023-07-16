@@ -7,8 +7,8 @@
 #include "libuser.h"
 void* supply_alloc();
 void* supply_recycle(void*);
-int tuinode_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len);
-int tuinode_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len);
+int tuinode_take(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len);
+int tuinode_give(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len);
 
 
 
@@ -128,7 +128,7 @@ void window_attach()
 void window_detach()
 {
 }
-void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	struct winsize ws;
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
@@ -144,7 +144,7 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 
 	usleep(100*1000);
 }
-void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
 

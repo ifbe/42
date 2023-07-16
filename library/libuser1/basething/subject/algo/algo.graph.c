@@ -313,10 +313,10 @@ say("%d,%d,%d,%d\n",perobj->nlen, perobj->wlen, perobj->vlen, perobj->ilen);
 
 
 
-static void graph_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void graph_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
-static void graph_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void graph_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
 static void graph_detach(struct halfrel* self, struct halfrel* peer)

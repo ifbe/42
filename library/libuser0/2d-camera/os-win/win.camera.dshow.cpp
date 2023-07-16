@@ -424,7 +424,7 @@ fail:
 extern "C" {
 
 
-int dshowcam_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int dshowcam_take(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 	u64 addr = obj[(enq+59)%60].addr;
 	printf("addr=%llx\n",addr);
@@ -432,7 +432,7 @@ int dshowcam_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, v
 	*(u64*)buf = addr;
 	return 0;
 }
-int dshowcam_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int dshowcam_give(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 	return 0;
 }
@@ -444,11 +444,11 @@ int dshowcam_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int dshowcam_reader(_obj* sup,void* foot, void* arg,int idx, void* buf,int len)
+int dshowcam_reader(_obj* sup,void* foot, p64 arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int dshowcam_writer(_obj* sup,void* foot, void* arg,int idx, void* buf,int len)
+int dshowcam_writer(_obj* sup,void* foot, p64 arg,int idx, void* buf,int len)
 {
 	return 0;
 }

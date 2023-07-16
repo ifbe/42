@@ -84,6 +84,11 @@
 #define _filetype_ hex64('f','i','l','e','t','y','p','e')
 #define _fileauto_ hex64('f','i','l','e','a','u','t','o')
 //
+#define _part_ hex32('p','a','r','t')
+#define _path_ hex32('p','a','t','h')
+#define _info_ hex32('i','n','f','o')
+#define _pos_ hex32('p','o','s', 0)
+//
 #define _mbr_ hex32('m','b','r',0)
 #define _gpt_ hex32('g','p','t',0)
 //
@@ -365,9 +370,12 @@
 #define _COPY_ hex32('C','O','P','Y')
 //
 #define _char_ hex32('c','h','a','r')
-#define _drag_ hex32('d','r','a','g')
 #define _joy_ hex32('j','o','y',0)
 #define _kbd_ hex32('k','b','d',0)
+//
+#define _drag_ hex32('d','r','a','g')
+#define _drag_str_ hex64('d','r','a','g','s','t','r',0)
+#define _drag_ptrtbl_ hex64('d','r','a','g','c','h','*','*')
 //
 #define _rgb_ hex32('r','g','b',0)
 #define _bgr_ hex32('b','g','r',0)

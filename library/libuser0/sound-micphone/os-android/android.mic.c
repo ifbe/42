@@ -65,10 +65,10 @@ static void errorCallback(AAudioStream *stream, void *userData, aaudio_result_t 
 
 
 
-void micphone_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+void micphone_take(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf, int len)
 {
 }
-void micphone_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+void micphone_give(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf, int len)
 {
 }
 void micphone_detach()
@@ -79,13 +79,13 @@ void micphone_attach()
 }
 
 
-void micphone_reader(_obj* sup,void* foot, void* arg,int idx, void* buf, int len)
+void micphone_reader(_obj* sup,void* foot, p64 arg,int idx, void* buf, int len)
 {
 }
-void micphone_writer(_obj* sup,void* foot, void* arg,int idx, void* buf, int len)
+void micphone_writer(_obj* sup,void* foot, p64 arg,int idx, void* buf, int len)
 {
 }
-void micphonedelete(_obj* mic, void* arg, int argc, u8** argv)
+void micphone_delete(_obj* mic, void* arg, int argc, u8** argv)
 {
 	//res = AAudioStream_requestStop(stream);
 	//res = AAudioStream_requestPause(stream);
@@ -93,7 +93,7 @@ void micphonedelete(_obj* mic, void* arg, int argc, u8** argv)
 
 	//AAudioStream_close(stream);
 }
-void micphonecreate(_obj* mic, void* arg, int argc, u8** argv)
+void micphone_create(_obj* mic, void* arg, int argc, u8** argv)
 {
 	say((void*)"micphonecreate\n");
 

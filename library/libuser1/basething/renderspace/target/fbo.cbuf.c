@@ -235,7 +235,7 @@ static void cbuffer_wnd(_obj* ent,void* foot, _syn* stack,int sp)
 
 
 
-static void cbuffer_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void cbuffer_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -258,7 +258,7 @@ static void cbuffer_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void cbuffer_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void cbuffer_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//say("@cbuffer_write\n");
 	if(_wnd_ == stack[sp-1].foottype){

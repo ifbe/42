@@ -473,7 +473,7 @@ static void video_read_bycam(_obj* ent,void* slot, _syn* stack,int sp)
 	case _gl41list_:video_gl41draw(ent,slot, wor,geom, wnd,area);break;
 	}
 }
-static void video_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void video_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
@@ -492,7 +492,7 @@ static void video_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 		video_read_bycam(ent,foot, stack,sp);
 	}
 }
-static void video_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void video_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//say("@video_write.yuv: %p,%x,%p,%x\n", arg, key, buf, len);
 
@@ -507,7 +507,7 @@ static void video_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 		u64 ts=0;
 
 		int j;
-		struct kv88* kv = arg;
+		struct kv88* kv = (void*)arg;
 		for(j=0;j<4;j++){
 			switch(kv[j].key){
 			case 'w':w=kv[j].val;break;

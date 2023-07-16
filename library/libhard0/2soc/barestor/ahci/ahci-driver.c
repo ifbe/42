@@ -281,6 +281,7 @@ struct perahci{
 	struct HBA_PORT* port;	//port0
 
 	//my
+	void* onemega;
 	void* cmdlist;
 	void* fisrecv;
 }__attribute__((packed));
@@ -562,35 +563,36 @@ static int ahci_satacmd(volatile struct HBA_PORT* port, struct SATA_ident* rdi)
 {
 	return 0;
 }
-static int ahci_readdata(struct item* ahci,void* foot,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
+static int ahci_readdata(struct item* ahci,void* foot,struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	struct perahci* my = (void*)(ahci->priv_256b);
 	struct HBA_MEM* abar = my->abar;
 	struct HBA_PORT* port = foot;
-	//ahci_print("@ahci_ontake: node=%p,abar=%p,port=%p, off=%x,len=%x\n", my,abar,port, off,len);
+	//ahci_print("@ahci_ontake: node=%p,abar=%p,port=%p, off=%llx,len=%x\n", my,abar,port, arg,len);
 
-	int ret = ahci_readblock(port, off>>9, buf, len>>9);
+	int ret = ahci_readblock(port, arg>>9, buf, len>>9);
 	if(ret < 0)return 0;
 
 	//ahci_print("ret=%d\n",ret);
 	return len;
 }
-static int ahci_readinfo(struct item* ahci,void* foot,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
+static int ahci_readinfo(struct item* ahci,void* foot,struct halfrel* stack,int sp, void* buf,int len)
 {
-	//say("@ahci_readinfo: %p,%p\n",ahci,foot);
-	int ret = ahci_identify(foot, (void*)buf);
+	struct perahci* my = (void*)(ahci->priv_256b);
+	say("@ahci_readinfo: %p,%p\n",ahci,foot);
+
+	if(0 == buf)buf = my->onemega + receivebuf;
+	int ret = ahci_identify(foot, buf);
 	return 0;
 }
 
 
 
 
-static int ahci_ontake(struct item* ahci,void* foot,struct halfrel* stack,int sp, u8* arg,int off, void* buf,int len)
+static int ahci_ontake(struct item* ahci,void* foot,struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
-	//say("ahci_ontake:%p,%x,%p,%x\n",arg,off,buf,len);
-	if(arg){
-		if('i' == arg[0])return ahci_readinfo(ahci,foot, stack,sp, arg,off, buf,len);
-	}
+	say("ahci_ontake:%llx,%x,%p,%x\n",arg,cmd,buf,len);
+	if(_info_ == cmd)return ahci_readinfo(ahci,foot, stack,sp, buf,len);
 
 	if(0 == buf){
 		ahci_print("error: buf=0\n");
@@ -600,7 +602,7 @@ static int ahci_ontake(struct item* ahci,void* foot,struct halfrel* stack,int sp
 		ahci_print("error: len=%d\n", len);
 		return 0;
 	}
-	return ahci_readdata(ahci,foot, stack,sp, arg,off, buf,len);
+	return ahci_readdata(ahci,foot, stack,sp, arg,cmd, buf,len);
 }
 static int ahci_ongive(struct item* ahci,void* foot,struct halfrel* stack,int sp, u8* arg,int off, void* buf,int len)
 {
@@ -813,6 +815,7 @@ void ahci_mmioinit(struct item* dev, struct HBA_MEM* abar)
 	struct perahci* my = (void*)(dev->priv_256b);
 	my->abar = abar;
 	my->port = &abar->ports[0];
+	my->onemega = ptr;
 	my->cmdlist = ptr+commandlist;
 	my->fisrecv = ptr+receivefis;
 	dev->ongiving = (void*)ahci_ongive;

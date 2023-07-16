@@ -308,7 +308,7 @@ int usbany_handledevdesc(struct item* usb, int xxx, struct item* xhci, int slot)
 		ret = xhci->give_pxpxpxpx(
 			xhci, slot,
 			0, 0,
-			&req, 8,
+			(p64)&req, 8,
 			devdesc, req.wLength
 		);
 		if(8 != ret)return -2;
@@ -329,7 +329,7 @@ int usbany_handledevdesc(struct item* usb, int xxx, struct item* xhci, int slot)
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
-		&req,8,
+		(p64)&req,8,
 		devdesc, req.wLength
 	);
 	if(0x12 != ret)return -3;
@@ -359,7 +359,7 @@ int usbany_handlestrdesc(struct item* usb, int xxx, struct item* xhci, int slot)
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
-		&req,8,
+		(p64)&req,8,
 		strdesc,req.wLength
 	);
 	if(4 != ret)return -6;
@@ -369,7 +369,7 @@ int usbany_handlestrdesc(struct item* usb, int xxx, struct item* xhci, int slot)
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
-		&req,8,
+		(p64)&req,8,
 		strdesc,strdesc->bLength
 	);
 	if(req.wLength != ret)return -7;
@@ -395,7 +395,7 @@ int usbany_ReadAndHandleString(struct item* usb, int xxx, struct item* xhci, int
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
-		&req,8,
+		(p64)&req,8,
 		strdesc,req.wLength
 	);
 	if(4 != ret)return -7;
@@ -404,7 +404,7 @@ int usbany_ReadAndHandleString(struct item* usb, int xxx, struct item* xhci, int
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
-		&req,8,
+		(p64)&req,8,
 		strdesc,req.wLength
 	);
 	if(req.wLength != ret)return -8;
@@ -657,7 +657,7 @@ int usbany_ReadAndHandleConfigure(struct item* usb, int xxx, struct item* xhci, 
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
-		&req,8,
+		(p64)&req,8,
 		confdesc,req.wLength
 	);
 	if(8 != ret)return -4;
@@ -667,7 +667,7 @@ int usbany_ReadAndHandleConfigure(struct item* usb, int xxx, struct item* xhci, 
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
-		&req,8,
+		(p64)&req,8,
 		confdesc,confdesc->wTotalLength
 	);
 	if(req.wLength != ret)return -5;

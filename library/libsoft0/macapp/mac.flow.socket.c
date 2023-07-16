@@ -589,38 +589,7 @@ int socket_delete(_obj* oo)
 	printf("----fd=%d,ret=%d,errno=%d\n", fd, ret, errno);
 	return ret;
 }
-int socket_search(_obj* oo,int xx)
-{
-	return 0;
-}
-int socket_modify(_obj* oo,int xx, void* arg,int cmd, u8* addr,int port)
-{
-	if(_connect_ == cmd){
-		u8* p = oo->sockinfo.self;
-		u8* q = addr;
-		say("reuse this for connect: %d.%d.%d.%d:%d -> %d.%d.%d.%d:%d\n",
-			p[4],p[5],p[6],p[7], (p[2]<<8)+p[3],
-			q[0],p[1],q[2],q[3], port
-		);
-	}
-	if(_listen_ == cmd){
-		say("reuse this for listen\n");
-	}
-	return 0;
-}
-
-
-
-
-int socket_attach()
-{
-	return 0;
-}
-int socket_detach()
-{
-	return 0;
-}
-int socket_give(_obj* oo,int xx, struct sockaddr_in* tmp,int cmd, void* buf, int len)
+int socket_writer(_obj* oo,int xx, p64 arg,int cmd, void* buf, int len)
 {
 //say("@writesocket:%x,%llx,%llx,%x\n",fd,tmp,buf,len);
 	if(buf == 0)return 0;
@@ -633,6 +602,7 @@ int socket_give(_obj* oo,int xx, struct sockaddr_in* tmp,int cmd, void* buf, int
 	u64 type = oo->type;
 	if(_UDP_ == type){
 		struct sockaddr_in out;
+		struct sockaddr_in* tmp = (void*)arg;
 		if(0 == tmp)tmp = (void*)oo->sockinfo.peer;
 		else{
 			memset(&out, 0, sizeof(struct sockaddr_in));
@@ -680,7 +650,7 @@ int socket_give(_obj* oo,int xx, struct sockaddr_in* tmp,int cmd, void* buf, int
 	}
 	return ret;
 }
-int socket_take(_obj* oo,int xx, void* tmp,int cmd, void* buf,int len)
+int socket_reader(_obj* oo,int xx, p64 arg,int cmd, void* buf,int len)
 {
 	if(0 == buf)return 0;
 
@@ -692,6 +662,7 @@ int socket_take(_obj* oo,int xx, void* tmp,int cmd, void* buf,int len)
 	if(_UDP_ == type)
 	{
 		cnt = sizeof(union addrv4v6);
+		struct sockaddr* tmp = (void*)arg;
 		ret = recvfrom(
 			fd, buf, len, 0,
 			tmp, (void*)&cnt
@@ -713,4 +684,47 @@ int socket_take(_obj* oo,int xx, void* tmp,int cmd, void* buf,int len)
 		cnt++;
 	}
 	return ret;
+}
+
+
+
+
+int socket_attach()
+{
+	return 0;
+}
+int socket_detach()
+{
+	return 0;
+}
+int socket_take(_obj* oo,int xx, _syn* stack,int sp, p64 arg,int cmd, void* buf, int len)
+{
+	return 0;
+}
+int socket_give(_obj* oo,int xx, _syn* stack,int sp, p64 arg,int cmd, void* buf, int len)
+{
+	return 0;
+}
+
+
+
+
+int socket_search(_obj* oo,int xx)
+{
+	return 0;
+}
+int socket_modify(_obj* oo,int xx, p64 arg,int cmd, u8* addr,int port)
+{
+	if(_connect_ == cmd){
+		u8* p = oo->sockinfo.self;
+		u8* q = addr;
+		say("reuse this for connect: %d.%d.%d.%d:%d -> %d.%d.%d.%d:%d\n",
+			p[4],p[5],p[6],p[7], (p[2]<<8)+p[3],
+			q[0],p[1],q[2],q[3], port
+		);
+	}
+	if(_listen_ == cmd){
+		say("reuse this for listen\n");
+	}
+	return 0;
 }

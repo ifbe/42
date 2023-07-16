@@ -166,7 +166,7 @@ static int truth_write_bykarnaugh(_obj* ent, u8* i)
 
 
 
-static int truth_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int truth_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
@@ -176,7 +176,7 @@ static int truth_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int 
 	}
 	return 0;
 }
-static int truth_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int truth_giving(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(_karnaugh_ == stack[sp-1].foottype){
 		return truth_write_bykarnaugh(ent, buf);

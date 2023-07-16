@@ -106,7 +106,7 @@ static void piano_event(_obj* act, struct event* ev)
 	}//if(mouseup)
 */
 }
-static void piano_write_bywnd(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void piano_write_bywnd(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* wnd;struct style* area;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
@@ -364,7 +364,7 @@ static void piano_wnd(_obj* ent,void* foot, _syn* stack,int sp)
 
 
 
-static void piano_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void piano_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -387,7 +387,7 @@ static void piano_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 		break;
 	}
 }
-static void piano_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void piano_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(_std_ == stack[sp-1].foottype){
 		piano_char(ent, buf);

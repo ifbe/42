@@ -9,23 +9,23 @@ void* supply_recycle(void*);
 //
 void nonewindow_create(void*);
 void nonewindow_delete(void*);
-void nonewindow_take(void*,void*, void*,int, void*,int, void*,int);
-void nonewindow_give(void*,void*, void*,int, void*,int, void*,int);
+void nonewindow_take(void*,void*, void*,int, p64,int, void*,int);
+void nonewindow_give(void*,void*, void*,int, p64,int, void*,int);
 //
 void easywindow_create(void*);
 void easywindow_delete(void*);
-void easywindow_take(void*,void*, void*,int, void*,int, void*,int);
-void easywindow_give(void*,void*, void*,int, void*,int, void*,int);
+void easywindow_take(void*,void*, void*,int, p64,int, void*,int);
+void easywindow_give(void*,void*, void*,int, p64,int, void*,int);
 //
 void fullwindow_create(void*,void*,int,char**);
 void fullwindow_delete(void*);
-void fullwindow_take(void*,void*, void*,int, void*,int, void*,int);
-void fullwindow_give(void*,void*, void*,int, void*,int, void*,int);
+void fullwindow_take(void*,void*, void*,int, p64,int, void*,int);
+void fullwindow_give(void*,void*, void*,int, p64,int, void*,int);
 //
 void cmdqwindow_create(void*);
 void cmdqwindow_delete(void*);
-void cmdqwindow_take(void*,void*, void*,int, void*,int, void*,int);
-void cmdqwindow_give(void*,void*, void*,int, void*,int, void*,int);
+void cmdqwindow_take(void*,void*, void*,int, p64,int, void*,int);
+void cmdqwindow_give(void*,void*, void*,int, p64,int, void*,int);
 //
 static u8 uppercase[] = {
 	' ', '!','\"', '#', '$', '%', '&','\"',		//20,27
@@ -45,7 +45,7 @@ static u8 uppercase[] = {
 
 
 
-int window_take(_obj* ogl,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int window_take(_obj* ogl,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 	u64 t0,t1,t2,t3;
 	GLFWwindow* fw;
@@ -92,7 +92,7 @@ ogl->gl41list.gltime = t3;
 
 	return 0;
 }
-void window_give(_obj* ogl,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void window_give(_obj* ogl,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 	switch(ogl->hfmt){
 		case _gl41none_:nonewindow_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
@@ -241,20 +241,21 @@ static void callback_move(GLFWwindow* fw, double xpos, double ypos)
 }
 static void callback_drop(GLFWwindow* fw, int count, const char** paths)
 {
+	say("drop: %p,%d,%p\n",fw, count, paths);
 	//char dragdata[0x1000];
-	int j,ret=0;
+/*	int j,ret=0;
 	for(j=0;j<count;j++)
 	{
 		//ret += snprintf(dragdata+ret, 0x1000-ret, "%s\n", paths[j]);
 		printf("%s\n", paths[j]);
 	}
-
+*/
 	_obj* ogl = glfwGetWindowUserPointer(fw);
 	struct event ev;
-	ev.why = paths;		//(u64)dragdata;
-	ev.what = _drag_;
+	ev.why = (u64)paths;		//(u64)dragdata;
+	ev.what = _drag_ptrtbl_;
 	ev.where = (u64)ogl;
-	ev.when = 0;
+	ev.when = 0;			//timeread_ns();
 	restorestackdeliverevent(ogl, &ev);
 }
 static void callback_reshape(GLFWwindow* fw, int w, int h)

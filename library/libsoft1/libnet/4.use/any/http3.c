@@ -54,16 +54,16 @@ void http3parser(u8* buf, int len, struct http3parsed* p)
 
 
 
-int http3client_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int http3client_read(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int http3client_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int http3client_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	say("@http3client_write:%p,%p\n", art, foot);
 	return 0;
 }
-int http3client_detach(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int http3client_detach(struct halfrel* self, struct halfrel* peer)
 {
 	say("@http3client_detach: %.4s\n", &self->foottype);
 	return 0;
@@ -85,11 +85,11 @@ int http3client_create(_obj* ele, u8* url)
 
 
 
-int http3server_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int http3server_read(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int http3server_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int http3server_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
 	return 0;
 }
@@ -115,12 +115,12 @@ int http3server_create(_obj* ele, u8* url)
 
 
 
-int http3master_write_byudp(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int http3master_write_byudp(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	say("@%s\n", __FUNCTION__);
 	return 0;
 }
-int http3master_write_bysrc(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int http3master_write_bysrc(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	struct http3parsed p;
 	http3parser(buf, len, &p);
@@ -138,7 +138,7 @@ int http3master_write_bysrc(_obj* art,void* foot, _syn* stack,int sp, void* arg,
 	give_data_into_peer(art, _src_, stack,sp, 0,0, buf,len);
 	return 0;
 }
-int http3master_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int http3master_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	//say("@http3master_write:%p,%p\n", art, foot);
 	switch(stack[sp-1].foottype){
@@ -147,7 +147,7 @@ int http3master_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 	}
 	return 0;
 }
-int http3master_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int http3master_read(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
 	return 0;
 }

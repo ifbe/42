@@ -108,7 +108,7 @@ static void spectrum_take_bycam(_obj* ent,void* slot, _syn* stack,int sp)
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	spectrum_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void spectrum_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spectrum_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
@@ -122,7 +122,7 @@ static void spectrum_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,
 		break;
 	}
 }
-static void spectrum_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spectrum_giving(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	switch(stack[sp-1].foottype){
 	case _pcm_:

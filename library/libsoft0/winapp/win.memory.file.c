@@ -119,6 +119,15 @@ void listfile(char* dest)
 		}
 	}//10个记录
 }
+int file_search(void* buf, int len)
+{
+	say("@filesearch\n");
+	return 0;
+}
+int file_modify(void* buf, int len)
+{
+	return 0;
+}
 
 
 
@@ -208,28 +217,15 @@ int file_delete(_obj* oo)
 	HANDLE fd = gethandlefromobj(oo);
 	return CloseHandle(fd);
 }
-int file_search(void* buf, int len)
-{
-	say("@filesearch\n");
-	return 0;
-}
-int file_modify(void* buf, int len)
-{
-	return 0;
-}
-
-
-
-
-int file_take(_obj* oo, int xx, void* arg, int off, void* mem, int len)
+int file_reader(_obj* oo, int xx, p64 arg, int cmd, void* mem, int len)
 {
 	LARGE_INTEGER li;
 	DWORD val;
 	int ret;
 
 	HANDLE file = gethandlefromobj(oo);
-	if(arg){
-		li.QuadPart = off;
+	if(_pos_ == cmd){
+		li.QuadPart = arg;
 		SetFilePointer (file, li.LowPart, &li.HighPart, FILE_BEGIN);
 	}//from head
 
@@ -237,15 +233,15 @@ int file_take(_obj* oo, int xx, void* arg, int off, void* mem, int len)
 	if(ret == 0)say("ret=%d,val=%d,error=%d\n", ret, val, GetLastError());
 	return val;
 }
-int file_give(_obj* oo, int xx, void* arg, int off, void* mem, int len)
+int file_writer(_obj* oo, int xx, p64 arg, int cmd, void* mem, int len)
 {
 	LARGE_INTEGER li;
 	DWORD val;
 	int ret;
 
 	HANDLE file = gethandlefromobj(oo);
-	if(arg){
-		li.QuadPart = off;
+	if(_pos_ == cmd){
+		li.QuadPart = arg;
 		SetFilePointer(file, li.LowPart, &li.HighPart, FILE_BEGIN);
 	}//from head
 

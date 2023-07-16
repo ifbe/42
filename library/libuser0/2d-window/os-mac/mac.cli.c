@@ -10,7 +10,7 @@ void* supply_recycle(void*);
 
 
 
-void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	struct relation* rel = wnd->orel0;
 	while(1){
@@ -27,7 +27,7 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 		rel = samesrcnextdst(rel);
 	}
 }
-void window_give(_obj* win,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(_obj* win,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
 void window_attach()

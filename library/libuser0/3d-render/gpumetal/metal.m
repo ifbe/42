@@ -607,7 +607,7 @@ NSLog(@"mouseDragged");
 
 
 
-int fullwindow_taking(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int fullwindow_taking(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	MyView* view = thewnd->mt20list.view;
 	[view drawprep];
@@ -640,7 +640,7 @@ int fullwindow_taking(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* 
 	[view drawdone];
 	return 0;
 }
-int fullwindow_giving(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int fullwindow_giving(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -648,7 +648,7 @@ int fullwindow_giving(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* 
 
 
 
-void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	fullwindow_taking(wnd,foot, stack,sp, arg,key, buf,len);
 
@@ -682,7 +682,7 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 		[NSApp sendEvent:event];
 	}
 }
-void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
 void window_attach()

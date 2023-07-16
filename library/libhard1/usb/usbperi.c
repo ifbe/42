@@ -44,11 +44,11 @@ int usbperi_delete(struct item* usb)
 {
 	return 0;
 }
-int usbperi_reader(struct item* usb,int xxx, void* arg,int cmd, void* rbuf,int rlen)
+int usbperi_reader(struct item* usb,int xxx, p64 arg,int cmd, void* rbuf,int rlen)
 {
     return 0;
 }
-int usbperi_writer(struct item* usb,int xxx, void* arg,int cmd, void* rbuf,int rlen)
+int usbperi_writer(struct item* usb,int xxx, p64 arg,int cmd, void* rbuf,int rlen)
 {
     return 0;
 }
@@ -66,11 +66,11 @@ int usbperi_discon()
 {
 	return 0;
 }
-int usbperi_takeby(struct item* usb,int xxx, struct item* xhci,int endp, void* arg,int cmd, void* rbuf,int rlen)
+int usbperi_takeby(struct item* usb,int xxx, struct item* xhci,int endp, p64 arg,int cmd, void* rbuf,int rlen)
 {
     return 0;
 }
-int usbperi_giveby(struct item* usb,int xxx, struct item* xhci,int endp, void* arg,int cmd, void* rbuf,int rlen)
+int usbperi_giveby(struct item* usb,int xxx, struct item* xhci,int endp, p64 arg,int cmd, void* rbuf,int rlen)
 {
     return 0;
 }

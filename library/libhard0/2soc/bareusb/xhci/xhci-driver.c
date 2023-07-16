@@ -1876,11 +1876,11 @@ int xhci_portstatuschange(struct item* xhci, u32* ev)
 
 
 
-static int xhci_reader(struct item* xhci,u32 SlotEndp, void* arg,int cmd, void* buf,int len)
+static int xhci_reader(struct item* xhci,u32 SlotEndp, p64 arg,int cmd, void* buf,int len)
 {
 	return 0;
 }
-static int xhci_writer(struct item* xhci,u32 SlotEndp, void* arg,int cmd, void* buf,int len)
+static int xhci_writer(struct item* xhci,u32 SlotEndp, p64 arg,int cmd, void* buf,int len)
 {
 	if(cmd & 0x80000000){	//to xhci
 		switch(cmd&0x7fffffff){
@@ -1919,7 +1919,7 @@ static int xhci_writer(struct item* xhci,u32 SlotEndp, void* arg,int cmd, void* 
 
 	return 0;
 }
-static int xhci_takeby(struct item* xhci,void* foot, void* stack,int sp, void* arg,int cmd, void* buf,int len)
+static int xhci_takeby(struct item* xhci,void* foot, void* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	if(0 == xhci)return 0;
 
@@ -1933,7 +1933,7 @@ static int xhci_takeby(struct item* xhci,void* foot, void* stack,int sp, void* a
 	}
 	return 0;
 }
-static int xhci_giveby(struct item* xhci,u32 SlotEndp, void* stack,int sp, void* arg,int cmd, void* buf,int len)
+static int xhci_giveby(struct item* xhci,u32 SlotEndp, void* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	return xhci_writer(xhci,SlotEndp, arg,cmd, buf,len);
 }

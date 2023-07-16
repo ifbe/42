@@ -127,11 +127,12 @@ struct mydata{
 
 static void requestComplete(Request *request)
 {
-	struct kv88 kv[5] = {
+	struct kv88 kv[6] = {
 		{'w', 0},
 		{'h', 0},
 		{'f', 0},
 		{'t', 0},
+		{hex16('m','3'), 0},
 		{0,0}
 	};
 	if (request->status() == Request::RequestCancelled)return;
@@ -148,15 +149,19 @@ static void requestComplete(Request *request)
 	}
 
 	u64 sensortime;
+	void* ccm = 0;
+	float m3[9];
 	const ControlList &requestMetadata = request->metadata();
 	for (const auto &ctrl : requestMetadata) {
 		const ControlId *cid = controls::controls.at(ctrl.first);
 		const ControlValue &value = ctrl.second;
 		int id = cid->id();
-		Span<const uint8_t> sp = value.data();
+		Span<const uint8_t> sp;
+		Span<const float> sf;
 		switch(id){
 		case libcamera::controls::SENSOR_TIMESTAMP:
-			//auto time = value.get<ControlTypeInteger64>();
+			sensortime = value.get<int64_t>();		//must use template int64_t
+/*			sp = value.data();
 			sensortime = sp[7];
 			sensortime = (sensortime<<8) | sp[6];
 			sensortime = (sensortime<<8) | sp[5];
@@ -165,7 +170,15 @@ static void requestComplete(Request *request)
 			sensortime = (sensortime<<8) | sp[2];
 			sensortime = (sensortime<<8) | sp[1];
 			sensortime = (sensortime<<8) | sp[0];
-			if(my->log)std::cout << "\t" << id <<"-SENSOR_TIMESTAMP_ns = " <<std::dec<< sensortime << std::endl;
+*/
+			if(my->log)std::cout << "\t" << id <<"-SENSOR_TIMESTAMP_ns = " << std::dec<< sensortime << std::endl;
+			break;
+		case libcamera::controls::COLOUR_CORRECTION_MATRIX:
+			if(my->log)std::cout << "\t" << id <<"-COLOUR_CORRECTION_MATRIX = " << value.toString() << std::endl;
+			sf = value.get<Span<const float>>();
+            //std::cout << sf[0] << " " << sf[1] << " " << sf[2] << " " << sf[3] << std::endl;
+			for(int k=0;k<9;k++)m3[k] = sf[k];
+			ccm = m3;
 			break;
 		default:
 			if(my->log)std::cout << "\t" << id <<"-"<< cid->name() << " = " << value.toString() << std::endl;
@@ -200,7 +213,8 @@ static void requestComplete(Request *request)
 			kv[1].val = my->h;
 			kv[2].val = my->fmt;
 			kv[3].val = sensortime;
-			give_data_into_peer_temp_stack(my->myobj,_dst_, kv,_kv88_, p, sz);
+			kv[4].val = (u64)ccm;
+			give_data_into_peer_temp_stack(my->myobj,_dst_, (p64)kv,_kv88_, p, sz);
 		}
 	}
 
@@ -375,11 +389,11 @@ int deletecamera(struct mydata* my){
 extern "C" {
 
 
-int libcam_take(_obj* cam,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int libcam_take(_obj* cam,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int libcam_give(_obj* cam,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int libcam_give(_obj* cam,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
@@ -395,11 +409,11 @@ int libcam_detach()
 
 
 
-int libcam_reader(_obj* cam,void* foot, void* arg,int idx, u8* buf,int len)
+int libcam_reader(_obj* cam,void* foot, p64 arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int libcam_writer(_obj* cam,void* foot, void* arg,int idx, u8* buf,int len)
+int libcam_writer(_obj* cam,void* foot, p64 arg,int idx, u8* buf,int len)
 {
 	return 0;
 }

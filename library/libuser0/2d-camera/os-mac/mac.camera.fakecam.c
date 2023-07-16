@@ -50,11 +50,11 @@ int fakecam_detach()
 {
 	return 0;
 }
-int fakecam_take(_obj* cam,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int fakecam_take(_obj* cam,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int fakecam_give(_obj* cam,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int fakecam_give(_obj* cam,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	return 0;
 }

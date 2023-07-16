@@ -2,13 +2,14 @@
 #include<stdlib.h>
 #include<string.h>
 #include<windows.h>
+#include "const/def.h"
 void say(char*,...);
 void printmemory(char*,int);
 
 
 
 
-int readfolder(char* url, int fd, void* arg, int off, char* buf, int len)
+int readfolder(char* url, int fd, p64 arg, int off, char* buf, int len)
 {
 	int j,ret;
 	char tmp[0x100];
@@ -48,7 +49,7 @@ int readfolder(char* url, int fd, void* arg, int off, char* buf, int len)
 	FindClose(dir);
 	return j;
 }
-int writefolder(void* url, int fd, void* arg, int off, char* buf, int len)
+int writefolder(void* url, int fd, p64 arg, int off, char* buf, int len)
 {
 	return 0;
 }

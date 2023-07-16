@@ -208,7 +208,7 @@ static void dff_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void dff_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void dff_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -230,7 +230,7 @@ static void dff_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int k
 		break;
 	}
 }
-static void dff_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void dff_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
 static void dff_detach(struct halfrel* self, struct halfrel* peer)

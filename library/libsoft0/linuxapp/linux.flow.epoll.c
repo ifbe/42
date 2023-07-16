@@ -18,7 +18,7 @@
 #include "libsoft.h"
 #define MAXSIZE 4096
 #define BUFFER_SIZE 0x100000
-int socket_take(void* obj,int fd, void* arg,int cmd, void* buf,int len);
+int socket_reader(void* obj,int fd, p64 arg,int cmd, void* buf,int len);
 
 
 
@@ -119,12 +119,12 @@ static void* epollthread(void* p)
 				case _udp_:
 				case _UDP_:
 				case _tcp_:{
-					cnt = socket_take(here,fd, here->sockinfo.peer,0, tmpbuf,BUFFER_SIZE);
+					cnt = socket_reader(here,fd, (p64)here->sockinfo.peer,0, tmpbuf,BUFFER_SIZE);
 					if(cnt >= 0)
 					{
 						//say("@epollthread: %.4s\n", &obj[cc].type);
 						if((0==here->irel0)&&(0==here->orel0))printmemory(tmpbuf, cnt);
-						else give_data_into_peer(here,_dst_, stack,0, here->sockinfo.peer,0, tmpbuf,cnt);
+						else give_data_into_peer(here,_dst_, stack,0, (p64)here->sockinfo.peer,0, tmpbuf,cnt);
 					}
 					if(cnt <= 0)
 					{
@@ -138,7 +138,7 @@ static void* epollthread(void* p)
 				}//tcp
 
 				case _Tcp_:{
-					cnt = socket_take(here,fd, here->sockinfo.peer,0, tmpbuf,BUFFER_SIZE);
+					cnt = socket_reader(here,fd, (p64)here->sockinfo.peer,0, tmpbuf,BUFFER_SIZE);
 					if(cnt >= 0)
 					{
 						//printmemory(tmpbuf, cnt);

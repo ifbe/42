@@ -311,7 +311,7 @@ void windowdraw(_obj* win)
 
 
 
-void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//read context
 	tuinode_take(wnd,0, stack,sp, arg,key, buf,len);
@@ -319,7 +319,7 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 	//update screen
 	windowdraw(wnd);
 }
-void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
 void window_detach()

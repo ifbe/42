@@ -57,10 +57,10 @@ static void arm64_create(_obj* act, void* arg, int argc, u8** argv)
 
 
 
-static void arm64_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void arm64_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
-static void arm64_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void arm64_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(_clk_ == stack[sp-1].foottype){
 		struct cpu* cpu = ent->listptr.buf0;

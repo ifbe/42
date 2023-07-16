@@ -47,7 +47,7 @@ static void vmddr_create(_obj* act, void* arg, int argc, u8** argv)
 
 
 
-static int vmddr_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static int vmddr_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
 	if(_mmio_ == stack[sp-1].foottype){
 		u8* ram = ent->listptr.buf0;
@@ -59,7 +59,7 @@ static int vmddr_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 	}
 	return 0;
 }
-static int vmddr_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vmddr_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	return 0;
 }

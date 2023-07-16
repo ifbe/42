@@ -278,7 +278,7 @@ static void vrbox_camera(
 
 
 
-static int vrbox_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vrbox_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -294,7 +294,7 @@ static int vrbox_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, void* arg,
 	}
 	return 0;
 }
-static int vrbox_read_bywnd(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vrbox_read_bywnd(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 //find world from camera
 	struct halfrel* tmp[2];
@@ -352,7 +352,7 @@ static void vrbox_create(_obj* act, void* str)
 
 
 
-static int vrbox_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
+static int vrbox_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	if(0 == stack)return 0;
 
@@ -374,7 +374,7 @@ static int vrbox_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 	}
 	return 0;
 }
-static int vrbox_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
+static int vrbox_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 #define _sens_ hex32('s','e','n','s')
 #define _quat_ hex32('q','u','a','t')

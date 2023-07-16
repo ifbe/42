@@ -144,7 +144,7 @@ static void balance_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void balance_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void balance_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -166,7 +166,7 @@ static void balance_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void balance_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void balance_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
 static void balance_detach(struct halfrel* self, struct halfrel* peer)

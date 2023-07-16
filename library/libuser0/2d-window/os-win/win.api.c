@@ -12,8 +12,8 @@
 int arg2utf8(void*, void*);
 void* supply_alloc();
 void* supply_recycle(void*);
-int rgbanode_take(void*,void*, void*,int, void*,int, void*,int);
-int rgbanode_give(void*,void*, void*,int, void*,int, void*,int);
+int rgbanode_take(void*,void*, void*,int, p64,int, void*,int);
+int rgbanode_give(void*,void*, void*,int, p64,int, void*,int);
 
 
 
@@ -32,7 +32,7 @@ static RECT rt, re;
 
 
 
-int window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	MSG msg;
 	BITMAPINFO info;
@@ -82,7 +82,7 @@ int window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,in
 	per->save_stack = 0;
 	return 0;
 }
-int window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -574,7 +574,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			buf[ret] = 0;
 
 			ev.why = (u64)buf;
-			ev.what = _drag_;
+			ev.what = _drag_str_;
 			ev.where = addr;
 			restorestackdeliverevent(win, &ev);
 			return 0;

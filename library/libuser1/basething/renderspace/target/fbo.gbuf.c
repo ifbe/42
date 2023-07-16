@@ -269,7 +269,7 @@ static void gbuffer_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void gbuffer_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gbuffer_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -292,7 +292,7 @@ static void gbuffer_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void gbuffer_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gbuffer_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//say("@gbuffer_write\n");
 	if(_wnd_ == stack[sp-1].foottype){

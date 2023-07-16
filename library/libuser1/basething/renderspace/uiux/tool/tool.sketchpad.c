@@ -520,7 +520,7 @@ static void sketchpad_take_bycam(_obj* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void sketchpad_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void sketchpad_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
@@ -545,7 +545,7 @@ static void sketchpad_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg
 		break;
 	}
 }
-static void sketchpad_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void sketchpad_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
 static void sketchpad_detach(struct halfrel* self, struct halfrel* peer)

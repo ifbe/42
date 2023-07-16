@@ -126,7 +126,7 @@ void* micphone_thread(_obj* mic)
 		if(priv->log)say("pcm[%x,%x]\n",priv->icur,priv->icur+1024*priv->bytes);
 		if(priv->log)printmemory(priv->ibuf+priv->icur, 16);
 		kv[0].val = ts;
-		give_data_into_peer_temp_stack(mic,_dst_, kv,_kv88_, priv->ibuf+priv->icur,1024*priv->bytes);
+		give_data_into_peer_temp_stack(mic,_dst_, (p64)kv,_kv88_, priv->ibuf+priv->icur,1024*priv->bytes);
 		priv->icur += 1024*priv->bytes;
 		if(priv->icur > 0xc0000)priv->icur = 0;
 
@@ -281,11 +281,11 @@ int micphone_startcapture(_obj* mic)
 
 
 
-int micphone_take(_obj* mic,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+int micphone_take(_obj* mic,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf, int len)
 {
 	return 0;
 }
-int micphone_give(_obj* mic,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+int micphone_give(_obj* mic,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf, int len)
 {
 	return 0;
 }
@@ -301,15 +301,15 @@ int micphone_attach()
 
 
 
-int micphone_reader(_obj* mic,void* foot, void* arg,int idx, void* buf, int len)
+int micphone_reader(_obj* mic,void* foot, p64 arg,int idx, void* buf, int len)
 {
 	return 0;
 }
-int micphone_writer(_obj* mic,void* foot, void* arg,int idx, void* buf, int len)
+int micphone_writer(_obj* mic,void* foot, p64 arg,int idx, void* buf, int len)
 {
 	return 0;
 }
-int micphonedelete(_obj* mic)
+int micphone_delete(_obj* mic)
 {
 	printf("@snd_pcm_close\n");
 	struct privdata* priv = (void*)mic->priv_256b;
@@ -319,7 +319,7 @@ int micphonedelete(_obj* mic)
 	snd_pcm_close(priv->capture_handle);
 	return 0;
 }
-int micphonecreate(_obj* mic, u8* arg, int argc, char** argv)
+int micphone_create(_obj* mic, u8* arg, int argc, char** argv)
 {
 	struct privdata* priv = (void*)mic->priv_256b;
 	priv->log = 0;

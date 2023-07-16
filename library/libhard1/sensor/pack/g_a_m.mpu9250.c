@@ -332,11 +332,11 @@ int mpu9250_i2cread(struct item* dri, float* vec)
 
 
 
-int mpu9250_read( struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int mpu9250_read( struct item* dri,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int mpu9250_write(struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int mpu9250_write(struct item* dri,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len)
 {
 	int ret;
 	float tmp[10];

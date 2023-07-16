@@ -239,7 +239,7 @@ static void digital_draw_gl41(
 		}
 	}
 }
-void digital_read_board(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key)
+void digital_read_board(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -253,7 +253,7 @@ void digital_read_board(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int 
 
 
 
-int digital_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int digital_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return 0;
 
@@ -275,7 +275,7 @@ int digital_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, 
 	digital_read_board(ent,foot, stack,sp, arg,key);
 	return 0;
 }
-int digital_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+int digital_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
 	struct wireindex* sts = ent->PERPIN;
 	if(0 == sts)return 0;

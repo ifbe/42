@@ -57,7 +57,7 @@ void* cam1rd_findgeom(_obj* ent)
 
 
 
-int cam1rd_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int cam1rd_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	struct privdata* own = ent->priv_ptr;
 	if(0 == own)return 0;
@@ -97,7 +97,7 @@ int cam1rd_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, v
 	cam->fs.vt[2] = tar->fs.vt[2];
 	return 0;
 }
-int cam1rd_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, struct event* ev, int len)
+int cam1rd_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, struct event* ev, int len)
 {
 	return 0;
 }

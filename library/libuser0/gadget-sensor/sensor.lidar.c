@@ -3,11 +3,11 @@
 
 
 
-int lidar_search()
+int lidar_reader()
 {
 	return 0;
 }
-int lidar_modify()
+int lidar_writer()
 {
 	return 0;
 }
@@ -23,17 +23,19 @@ int lidar_create(_obj* win, void* str)
 
 
 
-void lidar_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
-{
-}
-void lidar_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
-{
-}
-int lidar_discon(struct halfrel* self, struct halfrel* peer)
+int lidar_take(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf, int len)
 {
 	return 0;
 }
-int lidar_linkup(struct halfrel* self, struct halfrel* peer)
+int lidar_give(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf, int len)
+{
+	return 0;
+}
+int lidar_attach(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+int lidar_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

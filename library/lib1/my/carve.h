@@ -364,7 +364,7 @@ void dx11data_before(_obj* wnd);
 void dx11data_after(_obj* wnd);
 void dx11data_nocam(_obj* wnd);
 void dx11data_01cam(_obj* wnd);
-int dx11data_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int dx11data_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
 
 void dx11solid_rect(_obj* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
 /*
@@ -400,7 +400,7 @@ void dx11hexadecimal(         _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32
 //metal
 void mt20data_before(_obj* wnd);
 void mt20data_after(_obj* wnd);
-int mt20data_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int mt20data_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
 
 
 
@@ -410,7 +410,7 @@ void gl41data_before(_obj* wnd);
 void gl41data_after(_obj* wnd);
 void gl41data_nocam(_obj* wnd);
 void gl41data_01cam(_obj* wnd);
-int gl41data_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int gl41data_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
 
 void gl41point(              _obj* ctx, u32 rgb, vec3 vc);
 void gl41point_bezier(       _obj* ctx, u32 rgb, vec3 va, vec3 vb, vec3 vt);

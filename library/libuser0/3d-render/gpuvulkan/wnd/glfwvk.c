@@ -187,7 +187,7 @@ void window_delete(_obj* ogl)
 
 
 
-void window_take(_obj* ogl,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void window_take(_obj* ogl,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 	struct perobj* per = (void*)ogl->priv_256b;
 	drawframe();
@@ -198,7 +198,7 @@ void window_take(_obj* ogl,void* foot, _syn* stack,int sp, void* arg,int idx, vo
 	}
 	glfwPollEvents();
 }
-void window_give(_obj* ogl,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void window_give(_obj* ogl,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 }
 void window_attach()

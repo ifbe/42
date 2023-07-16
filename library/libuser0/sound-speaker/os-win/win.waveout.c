@@ -38,13 +38,7 @@ static void CALLBACK ocb(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1,
 
 
 
-void speakerlist()
-{
-}
-void speakerchoose()
-{
-}
-void speaker_take(_obj* spk,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void speaker_take(_obj* spk,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 	struct pcmdata* pcm;
 	if(spk->orel0)take_data_from_peer(spk,_ctx_, stack,sp, 0,0, 0,0);
@@ -65,7 +59,7 @@ void speaker_take(_obj* spk,void* foot, _syn* stack,int sp, void* arg,int idx, v
 
 	sleep_us(1000*1000);
 }
-void speaker_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+void speaker_give(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len)
 {
 	int j;
 	if(0 == obuf)obuf = malloc(0x100000);
@@ -85,18 +79,32 @@ void speaker_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, u
 	ocur = (ocur+1) % 16;
 	olen = olen+len;
 }
-void speakerstop()
+int speaker_attach()
+{
+	return 0;
+}
+int speaker_detach()
+{
+	return 0;
+}
+
+
+
+
+int speaker_reader(_obj* spk,void* foot, p64 arg,int idx, void* buf, int len)
+{
+	return 0;
+}
+int speaker_writer(_obj* spk,void* foot, p64 arg,int idx, void* buf, int len)
+{
+	return 0;
+}
+void speaker_delete(_obj* win)
 {
 	waveOutClose(waveout);
 	//waveOutUnprepareHeader(waveout, &headout, sizeof(WAVEHDR));
 }
-void speakerstart()
-{
-}
-void speakerdelete(_obj* win)
-{
-}
-void speakercreate(_obj* win)
+void speaker_create(_obj* win)
 {
 	int j,ret;
 	working = win;

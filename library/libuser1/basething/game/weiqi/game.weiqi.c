@@ -389,7 +389,7 @@ static void weiqi_taking_bycam(_obj* ent,void* slot, _syn* stack,int sp)
 		break;
 	}
 }
-static void weiqi_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void weiqi_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 	_obj* caller;struct style* area;
@@ -404,7 +404,7 @@ static void weiqi_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int
 		break;
 	}
 }
-static void weiqi_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void weiqi_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* caller;struct style* geom;
 	caller = stack[sp-2].pchip;geom = stack[sp-2].pfoot;

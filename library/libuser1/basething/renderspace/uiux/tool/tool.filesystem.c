@@ -1,6 +1,6 @@
 #include "libuser.h"
 int copypath(void* path, void* data);
-int readfolder(void* url, int fd, void* arg, int off, void* buf, int len);
+int readfolder(void* url, int fd, p64 arg, int off, void* buf, int len);
 void gl41data_before(_obj* wnd);
 void gl41data_after(_obj* wnd);
 void gl41data_whcam(_obj* wnd, struct style* area);
@@ -256,7 +256,7 @@ static void fslist_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct sty
 
 
 
-static void fslist_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void fslist_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
@@ -267,7 +267,7 @@ static void fslist_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,in
 		break;
 	}
 }
-static void fslist_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void fslist_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//if(0==key)printmemory(buf, 16);
 

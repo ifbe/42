@@ -136,7 +136,7 @@ static void clock_draw_cli(
 
 
 
-static void clock_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key)
+static void clock_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -153,7 +153,7 @@ static void clock_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, void* arg
 		break;
 	}
 }
-static void clock_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void clock_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* wnd;struct style* area;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
@@ -167,7 +167,7 @@ static void clock_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 		break;
 	}
 }
-static void clock_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void clock_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
 static void clock_detach(struct halfrel* self, struct halfrel* peer)

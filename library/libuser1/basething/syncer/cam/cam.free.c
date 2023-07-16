@@ -787,7 +787,7 @@ static void freecam_mt20_cam(
 
 
 
-static int freecam_byworld_bycam_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int freecam_byworld_bycam_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 //[-6,-5]: wnd,area -> cam,togl
 //[-4,-3]: cam,gl41 -> wor,geom		//the camera taking photo
@@ -833,7 +833,7 @@ static int freecam_generate(_obj* ent,void* slot, _syn* stack,int sp, _obj* wor,
 		//printmat4(m);
 
 		pixel_cleardepth(wnd);
-		entity_takeby(stack[sp+1].pchip, 0, stack, sp+2, m, own->drawtype, 0, 0);
+		entity_takeby(stack[sp+1].pchip, 0, stack, sp+2, (p64)m, own->drawtype, 0, 0);
 		break;
 
 	case _dx11list_:
@@ -901,7 +901,7 @@ static int freecam_generate(_obj* ent,void* slot, _syn* stack,int sp, _obj* wor,
 
 
 
-static int freecam_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int freecam_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	struct privdata* own = ent->OWNBUF;
 	struct halfrel* self = own->self;
@@ -942,7 +942,7 @@ static int freecam_bywnd_write(_obj* ent,void* ef, _obj* wnd,void* wf, struct ev
 
 
 
-static int freecam_byrts_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int freecam_byrts_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	say("@%s\n",__FUNCTION__);
 	struct privdata* own = ent->OWNBUF;
@@ -970,7 +970,7 @@ static int freecam_byrts_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, vo
 
 
 
-static int freecam_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int freecam_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//say("@freecam_read\n");
 	if(0 == stack)return 0;
@@ -991,7 +991,7 @@ static int freecam_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 	}
 	return 0;
 }
-static int freecam_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int freecam_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	struct privdata* own = ent->OWNBUF;
 	struct event* ev = buf;

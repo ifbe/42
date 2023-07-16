@@ -357,7 +357,7 @@ static void mnist_byglwnd(_obj* ent,void* foot, _syn* stack,int sp)
 
 
 
-static void mnist_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mnist_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -380,7 +380,7 @@ static void mnist_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 		break;
 	}
 }
-static int mnist_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int mnist_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* xxx = stack[sp-2].pchip;
 	switch(xxx->hfmt){

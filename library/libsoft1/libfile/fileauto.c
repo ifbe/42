@@ -21,7 +21,7 @@ int openreadclose(void* name, int off, void* buf, int len)
 	_obj* obj = file_create(name, 'r');
 	if(0 == obj)return 0;
 
-	int ret = file_take(obj,0, "",off, buf,len);
+	int ret = file_reader(obj,0, off,_pos_, buf,len);
 
 	file_delete(obj);
 	return ret;
@@ -31,7 +31,7 @@ int openwriteclose(void* name, int off, void* buf, int len)
 	_obj* obj = file_create(name, 'w');
 	if(0 == obj)return 0;
 
-	int ret = file_give(obj,0, "",off, buf,len);
+	int ret = file_writer(obj,0, off,_pos_, buf,len);
 
 	file_delete(obj);
 	return ret;
@@ -155,12 +155,12 @@ int fileauto_attach(struct halfrel* self, struct halfrel* peer)
 	struct item* xxx = peer->pchip;
 	if((_sys_ == xxx->tier)|(_art_ == xxx->tier)){
 		_obj* obj = peer->pchip;
-		ret = file_take(obj,0, "", 0, buf, 0x10000);
+		ret = file_reader(obj,0, 0, _pos_, buf, 0x10000);
 		if(0x10000 != ret)return -1;
 	}
 	else{
 		if(0 == xxx->ontaking)return -1;
-		ret = xxx->ontaking(xxx,peer->pfoot, 0,0, 0,0, buf, 0x10000);
+		ret = xxx->ontaking(xxx,peer->pfoot, 0,0, 0,_pos_, buf, 0x10000);
 		if(0x10000 != ret)return -1;
 	}
 

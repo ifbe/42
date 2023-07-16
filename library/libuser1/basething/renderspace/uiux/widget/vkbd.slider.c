@@ -117,7 +117,7 @@ static void slider_write_bywnd(_obj* ent,void* foot, _syn* stack,int sp, struct 
 
 
 
-static int slider_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int slider_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
@@ -134,7 +134,7 @@ static int slider_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 	}
 	return 0;
 }
-static int slider_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int slider_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* wnd = stack[sp-2].pchip;
 	switch(wnd->hfmt){

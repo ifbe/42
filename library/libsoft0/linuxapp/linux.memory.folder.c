@@ -7,11 +7,12 @@
 #include<unistd.h>
 #include<sys/stat.h>
 #include<sys/types.h>
+#include "libsoft.h"
 
 
 
 
-int readfolder(void* url, int fd, void* arg, int off, char* buf, int len)
+int readfolder(void* url, int fd, p64 arg, int off, void* buf, int len)
 {
 	int j,k;
 	DIR* dir;
@@ -40,7 +41,7 @@ int readfolder(void* url, int fd, void* arg, int off, char* buf, int len)
 	closedir(dir);
 	return j;
 }
-int writefolder(void* url, int fd, void* arg, int off, char* buf, int len)
+int writefolder(void* url, int fd, p64 arg, int off, void* buf, int len)
 {
 	return 0;
 }

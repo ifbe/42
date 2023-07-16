@@ -30,7 +30,7 @@ static u8 uppercase[] = {
 
 
 
-void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	SDL_Event ev;
 	SDL_Keysym sym;
@@ -159,7 +159,7 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 		}
 	}
 }
-void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//SDL_Event ev;  
 	//ev.type = SDL_USEREVENT;  

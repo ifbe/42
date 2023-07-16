@@ -360,7 +360,7 @@ static void vkbd_bywnd_event(_obj* ent,void* foot, _syn* stack,int sp, struct ev
 
 
 
-static int vkbd_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
+static int vkbd_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
@@ -373,7 +373,7 @@ static int vkbd_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int c
 	}
 	return 0;
 }
-static int vkbd_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
+static int vkbd_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	_obj* wnd = stack[sp-2].pchip;
 	switch(wnd->hfmt){

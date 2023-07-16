@@ -201,11 +201,11 @@ int bootup_delete(struct item* tmp)
 	}
 	return 0;
 }
-int bootup_reader(struct item* wrk,void* foot, void* arg,int idx, void* buf,int len)
+int bootup_reader(struct item* wrk,void* foot, p64 arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int bootup_writer(struct item* wrk,void* foot, void* arg,int idx, void* buf,int len)
+int bootup_writer(struct item* wrk,void* foot, p64 arg,int idx, void* buf,int len)
 {
 	return 0;
 }
@@ -223,11 +223,11 @@ int bootup_detach(struct halfrel* self, struct halfrel* peer)
 	say("@bootupdetach\n");
 	return 0;
 }
-int bootup_takeby(struct item* wrk,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int bootup_takeby(struct item* wrk,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int bootup_giveby(struct item* wrk,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int bootup_giveby(struct item* wrk,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
 	return 0;
 }

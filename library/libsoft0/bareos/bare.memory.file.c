@@ -48,7 +48,7 @@ int filemanager_registerpart(_obj* node, void* foot)
 	//2.find first fat16 or fat32
 	if(0 == node->ontaking)return 0;
 
-	ret = node->ontaking((void*)node,foot, 0,0, "p",0, tmp,0);
+	ret = node->ontaking((void*)node,foot, 0,0, 0,_part_, tmp,0);
 	say("filemgr.ret=%x\n",ret);
 	if(ret <= 0)return 0;
 
@@ -105,16 +105,16 @@ int filemanager_registersupplier(void* node, void* foot)
 
 
 
-int file_take(void* obj, int fd, void* arg, int off, u8* buf, int len)
+int file_reader(void* obj, int fd, p64 arg, int cmd, u8* buf, int len)
 {
 	_obj* node = fsysnode[0];
 	if(0 == node)return 0;
 	if(0 == node->ontaking)return 0;
 
 	void* slot = fsysfoot[0];
-	return node->ontaking((void*)node,slot, 0,0, obj,0, buf,len);
+	return node->ontaking((void*)node,slot, 0,0, (p64)obj,0, buf,len);
 }
-int file_give(void* obj, int fd, void* arg, int off, u8* buf, int len)
+int file_writer(void* obj, int fd, p64 arg, int cmd, u8* buf, int len)
 {
 	return 0;
 }
@@ -130,11 +130,11 @@ int file_detach()
 
 
 
-int file_reader()
+int file_take()
 {
 	return 0;
 }
-int file_writer()
+int file_give()
 {
 	return 0;
 }
@@ -163,7 +163,7 @@ int file_search_disk()
 		node = disknode[j];
 		if(node->ontaking){
 			slot = diskfoot[j];
-			ret = node->ontaking(node,slot, 0,0, 0,0, 0,0);
+			ret = node->ontaking(node,slot, 0,0, 0,_info_, 0,0);
 			//say("ret=%d\n",ret);
 		}
 		else{
@@ -186,7 +186,7 @@ int file_search_ptbl()
 		node = ptblnode[j];
 		if(node->ontaking){
 			slot = ptblfoot[j];
-			ret = node->ontaking(node,slot, 0,0, 0,0, 0,0);
+			ret = node->ontaking(node,slot, 0,0, 0,_info_, 0,0);
 			//say("ret=%d\n",ret);
 		}
 		else{
@@ -209,7 +209,7 @@ int file_search_fsys()
 		node = fsysnode[j];
 		if(node->ontaking){
 			slot = fsysfoot[j];
-			ret = node->ontaking(node,slot, 0,0, 0,0, 0,0);
+			ret = node->ontaking(node,slot, 0,0, 0,_info_, 0,0);
 			//say("ret=%d\n",ret);
 		}
 		else{
@@ -227,7 +227,7 @@ int file_search_fsys_x(int id, u8* path)
 	struct item* node = fsysnode[id];
 	void* slot = fsysfoot[id];
 	if(node->ontaking){
-		node->ontaking(node,slot, 0,0, path,0, 0,0);
+		node->ontaking(node,slot, 0,0, (p64)path,_path_, 0,0);
 	}
 }
 int file_search(u8* buf, int len)

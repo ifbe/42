@@ -133,7 +133,7 @@ static void qrcode_draw_cli(
 
 
 
-static void qrcode_read_bycam(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+static void qrcode_read_bycam(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -147,7 +147,7 @@ static void qrcode_read_bycam(_obj* ent,void* foot, _syn* stack,int sp, void* ar
 
 
 
-static void qrcode_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void qrcode_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
@@ -161,7 +161,7 @@ static void qrcode_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 		break;
 	}
 }
-static void qrcode_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void qrcode_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
 static void qrcode_detach(struct halfrel* self, struct halfrel* peer)

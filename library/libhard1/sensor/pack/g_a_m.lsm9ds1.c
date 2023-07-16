@@ -133,11 +133,11 @@ int lsm9ds1_i2cinit(void* it)
 
 
 
-int lsm9ds1_read(struct item* dri,void* foot, struct halfrel* stack,int sp, struct halfrel* peer, void* arg,int key, u8* buf,int len)
+int lsm9ds1_read(struct item* dri,void* foot, struct halfrel* stack,int sp, struct halfrel* peer, p64 arg,int key, u8* buf,int len)
 {
 	return 0;
 }
-int lsm9ds1_write(struct item* dri,void* foot, struct halfrel* stack,int sp, struct halfrel* peer, void* arg,int key, u8* buf,int len)
+int lsm9ds1_write(struct item* dri,void* foot, struct halfrel* stack,int sp, struct halfrel* peer, p64 arg,int key, u8* buf,int len)
 {
 	int ret;
 	float tmp[10];

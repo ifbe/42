@@ -8,7 +8,6 @@
 #include <windows.h>
 #include "libsoft.h"
 #define _BT_ hex16('B','T')
-#define _bt_ hex16('b','t')
 void iocp_add(SOCKET, int);
 void iocp_del(SOCKET, int);
 void iocp_mod(SOCKET, int);
@@ -668,27 +667,7 @@ int socket_delete(_obj* oo)
 	disconnectex(sock, 0, TF_REUSE_SOCKET, 0);
 	return 0;
 }
-int socket_search(_obj* oo)
-{
-	return 0;
-}
-int socket_modify(_obj* oo)
-{
-	return 0;
-}
-
-
-
-
-int socket_attach()
-{
-	return 0;
-}
-int socket_detach()
-{
-	return 0;
-}
-int socket_take(_obj* oo,int xx, struct sockaddr_in* tmp,int cmd, void* buf, int len)
+int socket_reader(_obj* oo,int xx, p64 arg,int cmd, void* buf, int len)
 {
 	int j,ret;
 	char* src;
@@ -710,6 +689,7 @@ int socket_take(_obj* oo,int xx, struct sockaddr_in* tmp,int cmd, void* buf, int
 	//peer
 	if(_UDP_ == oo->type)
 	{
+		union addrv4v6* tmp = (void*)arg;
 		dst = (void*)tmp;
 		src = oo->sockinfo.peer;
 		for(j=0;j<8;j++)dst[j] = src[j];
@@ -720,7 +700,7 @@ int socket_take(_obj* oo,int xx, struct sockaddr_in* tmp,int cmd, void* buf, int
 	iocp_mod(sock, oo->type);
 	return ret;
 }
-int socket_give(_obj* oo,int xx, union addrv4v6* tmp,int cmd, void* buf, int len)
+int socket_writer(_obj* oo,int xx, p64 arg,int cmd, void* buf, int len)
 {
 	int ret;
 	DWORD dwret;
@@ -734,6 +714,7 @@ int socket_give(_obj* oo,int xx, union addrv4v6* tmp,int cmd, void* buf, int len
 	if(_UDP_ == oo->type)
 	{
 		union addrv4v6 out;
+		union addrv4v6* tmp = (void*)arg;
 		if(0 == tmp)tmp = (void*)(oo->sockinfo.peer);
 		else{
 			memset(&out, 0, sizeof(struct sockaddr_in));
@@ -759,4 +740,36 @@ int socket_give(_obj* oo,int xx, union addrv4v6* tmp,int cmd, void* buf, int len
 	ret = WSASend(sock, &wbuf, 1, &dwret, 0, 0, 0);
 	//printf("@send:len=%d,ret=%d,err=%d\n",len,ret,GetLastError());
 	return len;
+}
+
+
+
+
+int socket_take(_obj* oo,int xx, _syn* stack,int sp, p64 arg,int cmd, void* buf, int len)
+{
+	return 0;
+}
+int socket_give(_obj* oo,int xx, _syn* stack,int sp, p64 arg,int cmd, void* buf, int len)
+{
+	return 0;
+}
+int socket_attach()
+{
+	return 0;
+}
+int socket_detach()
+{
+	return 0;
+}
+
+
+
+
+int socket_search(_obj* oo)
+{
+	return 0;
+}
+int socket_modify(_obj* oo)
+{
+	return 0;
 }

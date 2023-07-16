@@ -289,7 +289,7 @@ static void obj3d_event(
 
 
 
-static void obj3d_world_camera_window(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key)
+static void obj3d_world_camera_window(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key)
 {
 	_obj* scn;struct style* geom;
 	_obj* wrd;struct style* camg;
@@ -300,14 +300,14 @@ static void obj3d_world_camera_window(_obj* ent,void* slot, _syn* stack,int sp, 
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 
 	if(_rgba_ == wnd->hfmt){
-		if(0==key)obj3d_draw_raster(ent,slot, scn,geom, wrd,camg, wnd,area, arg);
-		else obj3d_draw_raytrace(ent,slot, scn,geom, wrd,camg, wnd,area, arg);
+		if(0==key)obj3d_draw_raster(ent,slot, scn,geom, wrd,camg, wnd,area, (void*)arg);
+		else obj3d_draw_raytrace(ent,slot, scn,geom, wrd,camg, wnd,area, (void*)arg);
 		return;
 	}
 
 	obj3d_draw_gl41(ent,slot, scn,geom, wrd,camg, wnd,area);
 }
-static void obj3d_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void obj3d_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -328,7 +328,7 @@ static void obj3d_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int
 		obj3d_world_camera_window(ent,slot, stack,sp, arg,key);
 	}
 }
-static void obj3d_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void obj3d_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
 static void obj3d_detach(struct halfrel* self, struct halfrel* peer)

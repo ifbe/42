@@ -271,12 +271,12 @@ int gravtest_foreach(_obj* ent)
 
 
 
-int gravtest_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int gravtest_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//say("@gravtest_read:%.4s\n",&foot);
 	return 0;
 }
-int gravtest_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+int gravtest_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
 	//say("@gravtest_write:%.4s\n",&foot);
 	switch(stack[sp-1].foottype){

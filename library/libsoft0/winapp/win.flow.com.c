@@ -199,7 +199,7 @@ int uart_delete(_obj* oo)
 
 	CloseHandle(hcom);
 }
-int uart_reader(_obj* oo,int xx, void* arg,int off, void* buf,int len)
+int uart_reader(_obj* oo,int xx, p64 arg,int off, void* buf,int len)
 {
 	struct percom* per = (void*)oo->priv_256b;
 	HANDLE hcom = per->hcom;
@@ -208,7 +208,7 @@ int uart_reader(_obj* oo,int xx, void* arg,int off, void* buf,int len)
 	int ret = ReadFile(hcom, buf, len, (void*)&cnt, 0);
 	return ret;
 }
-int uart_writer(_obj* oo,int xx, void* arg,int off, void* buf,int len)
+int uart_writer(_obj* oo,int xx, p64 arg,int off, void* buf,int len)
 {
 	struct percom* per = (void*)oo->priv_256b;
 	HANDLE hcom = per->hcom;

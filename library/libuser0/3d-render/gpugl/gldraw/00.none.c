@@ -19,7 +19,7 @@
 
 
 
-void nonewindow_take(_obj* win,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void nonewindow_take(_obj* win,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 	float w = win->whdf.width;
 	float h = win->whdf.height;
@@ -48,7 +48,7 @@ void nonewindow_take(_obj* win,void* foot, _syn* stack,int sp, void* arg,int idx
 	glClearColor(r, g, b, a);
 	glClear(GL_COLOR_BUFFER_BIT);	//GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT
 }
-void nonewindow_give(_obj* win,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void nonewindow_give(_obj* win,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 	struct event* ev = buf;
 	if(0x2b70 == ev->what){

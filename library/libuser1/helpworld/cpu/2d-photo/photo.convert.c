@@ -1,6 +1,35 @@
 #include "libuser.h"
 
 
+
+
+void fixrgbbyccm(int* r, int* g, int* b, float (*ccm)[3])
+{
+	float out[3];
+	float rgb[3] = {(float)*r, (float)*g, (float)*b};
+	out[0] = (ccm[0][0]*rgb[0] + ccm[0][1]*rgb[1] + ccm[0][2]*rgb[2]);
+	out[1] = (ccm[1][0]*rgb[0] + ccm[1][1]*rgb[1] + ccm[1][2]*rgb[2]);
+	out[2] = (ccm[2][0]*rgb[0] + ccm[2][1]*rgb[1] + ccm[2][2]*rgb[2]);
+	if(out[0] < 0.0)out[0] = 0.0;
+	if(out[0] > 255.0)out[0] = 255.0;
+	if(out[1] < 0.0)out[1] = 0.0;
+	if(out[1] > 255.0)out[1] = 255.0;
+	if(out[2] < 0.0)out[2] = 0.0;
+	if(out[2] > 255.0)out[2] = 255.0;
+	*r = (int)out[0];
+	*g = (int)out[1];
+	*b = (int)out[2];
+}
+u8 clamprgbfromfloat(float val)
+{
+	if(val < 0.0)val = 0.0;
+	if(val > 255.0)val = 255.0;
+	return (u8)val;
+}
+
+
+
+
 void rgb_to_rgba(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth)
@@ -681,7 +710,8 @@ void y4_uv_to_yuvx(
 
 void gbgbxrgrgx_to_rgba(
 	u8* srcbuf, int srclen, int srcw, int srch,
-	u8* dstbuf, int dstlen, int dstw, int dsth)
+	u8* dstbuf, int dstlen, int dstw, int dsth,
+	mat3 ccm)
 {
 	if(0 == srcbuf)return;
 	if(0 == dstbuf)return;
@@ -690,6 +720,7 @@ void gbgbxrgrgx_to_rgba(
 	int newx = 0;
 	int srcstride = srcw*5/4;
 	int x,y;
+	int r,g,b;
 	u8* dst0;
 	u8* dst1;
 	u8* src = srcbuf;
@@ -742,39 +773,76 @@ g b g b ~ G B G B ~ g b g b ~	//vb
 r g r g ~ R G R G ~ r g r g ~	//vc
 g b g b ~ g b g b ~ g b g b ~	//vd
 */
-			dst0[4*x + 0] = (va[1]+vc[1])/2;
-			dst0[4*x + 1] = vb[1];
-			dst0[4*x + 2] = (vb[0]+vb[2])/2;
-			dst0[4*x + 4] = (va[1]+va[3]+vc[1]+vc[3])/4;
-			dst0[4*x + 5] = (va[2]+vc[2]+vb[1]+vb[3])/4;
-			dst0[4*x + 6] = vb[2];
+			r = (va[1]+vc[1])/2;
+			g = vb[1];
+			b = (vb[0]+vb[2])/2;
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dst0[4*x + 0] = r;
+			dst0[4*x + 1] = g;
+			dst0[4*x + 2] = b;
 
-			dst0[4*x + 8] = (va[3]+vc[3])/2;
-			dst0[4*x + 9] = vb[3];
-			dst0[4*x +10] = (vb[2]+vb[4])/2;
-			dst0[4*x +12] = (va[3]+va[5]+vc[3]+vc[5])/4;
-			dst0[4*x +13] = (va[4]+vc[4]+vb[3]+vb[5])/4;
-			dst0[4*x +14] = vb[4];
+			r = (va[1]+va[3]+vc[1]+vc[3])/4;
+			g = (va[2]+vc[2]+vb[1]+vb[3])/4;
+			b = vb[2];
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dst0[4*x + 4] = r;
+			dst0[4*x + 5] = g;
+			dst0[4*x + 6] = b;
 
-			dst1[4*x + 0] = vc[1];
-			dst1[4*x + 1] = (vb[1]+vd[1]+vc[0]+vc[2])/4;
-			dst1[4*x + 2] = (vb[0]+vb[2]+vd[0]+vd[2])/4;
-			dst1[4*x + 4] = (vc[1]+vc[3])/2;
-			dst1[4*x + 5] = vc[2];
-			dst1[4*x + 6] = (vb[2]+vd[2])/2;
+			r = (va[3]+vc[3])/2;
+			g = vb[3];
+			b = (vb[2]+vb[4])/2;
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dst0[4*x + 8] = r;
+			dst0[4*x + 9] = g;
+			dst0[4*x +10] = b;
 
-			dst1[4*x + 8] = vc[3];
-			dst1[4*x + 9] = (vb[3]+vd[3]+vc[2]+vc[4])/4;
-			dst1[4*x +10] = (vb[2]+vb[4]+vd[2]+vd[4])/4;
-			dst1[4*x +12] = (vc[3]+vc[5])/2;
-			dst1[4*x +13] = vc[4];
-			dst1[4*x +14] = (vb[4]+vd[4])/2;
+			r = (va[3]+va[5]+vc[3]+vc[5])/4;
+			g = (va[4]+vc[4]+vb[3]+vb[5])/4;
+			b = vb[4];
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dst0[4*x +12] = r;
+			dst0[4*x +13] = g;
+			dst0[4*x +14] = b;
+
+			r = vc[1];
+			g = (vb[1]+vd[1]+vc[0]+vc[2])/4;
+			b = (vb[0]+vb[2]+vd[0]+vd[2])/4;
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dst1[4*x + 0] = r;
+			dst1[4*x + 1] = g;
+			dst1[4*x + 2] = b;
+
+			r = (vc[1]+vc[3])/2;
+			g = vc[2];
+			b = (vb[2]+vd[2])/2;
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dst1[4*x + 4] = r;
+			dst1[4*x + 5] = g;
+			dst1[4*x + 6] = b;
+
+			r = vc[3];
+			g = (vb[3]+vd[3]+vc[2]+vc[4])/4;
+			b = (vb[2]+vb[4]+vd[2]+vd[4])/4;
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dst1[4*x + 8] = r;
+			dst1[4*x + 9] = g;
+			dst1[4*x +10] = b;
+
+			r = (vc[3]+vc[5])/2;
+			g = vc[4];
+			b = (vb[4]+vd[4])/2;
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dst1[4*x +12] = r;
+			dst1[4*x +13] = g;
+			dst1[4*x +14] = b;
 		}
 	}
 }
 void gbgbxrgrgx_to_y4_u_v(
 	u8* srcbuf, int srclen, int srcw, int srch,
-	u8* dstbuf, int dstlen, int dstw, int dsth)
+	u8* dstbuf, int dstlen, int dstw, int dsth,
+	mat3 ccm)
 {
 	if(0 == srcbuf)return;
 	if(0 == dstbuf)return;
@@ -848,78 +916,92 @@ g b g b ~ g b g b ~ g b g b ~	//vd
 			r = (va[1]+vc[1])/2;
 			g = vb[1];
 			b = (vb[0]+vb[2])/2;
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dsty0[x + 0] = clamprgbfromfloat(0.2126*r+0.7152*g+0.0722*b);
 			sumr = r;
 			sumg = g;
 			sumb = b;
-			dsty0[x + 0] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+
 			r = (va[1]+va[3]+vc[1]+vc[3])/4;
 			g = (va[2]+vc[2]+vb[1]+vb[3])/4;
 			b = vb[2];
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dsty0[x + 1] = clamprgbfromfloat(0.2126*r+0.7152*g+0.0722*b);
 			sumr += r;
 			sumg += g;
 			sumb += b;
-			dsty0[x + 1] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+
 			r = vc[1];
 			g = (vb[1]+vd[1]+vc[0]+vc[2])/4;
 			b = (vb[0]+vb[2]+vd[0]+vd[2])/4;
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dsty1[x + 0] = clamprgbfromfloat(0.2126*r+0.7152*g+0.0722*b);
 			sumr += r;
 			sumg += g;
 			sumb += b;
-			dsty1[x + 0] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+
 			r = (vc[1]+vc[3])/2;
 			g = vc[2];
 			b = (vb[2]+vd[2])/2;
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dsty1[x + 1] = clamprgbfromfloat(0.2126*r+0.7152*g+0.0722*b);
 			sumr += r;
 			sumg += g;
 			sumb += b;
-			dsty1[x + 1] = (u8)(0.2126*r+0.7152*g+0.0722*b);
 
 			//u,v
 			sumr /= 4;
 			sumg /= 4;
 			sumb /= 4;
 			sumy = 0.2126*sumr+0.7152*sumg+0.0722*sumb;
-			dstu[x/2] = (u8)(128+(sumb-sumy)/1.8556);
-			dstv[x/2] = (u8)(128+(sumr-sumy)/1.5748);
+			dstu[x/2] = clamprgbfromfloat(128+(sumb-sumy)/1.8556);
+			dstv[x/2] = clamprgbfromfloat(128+(sumr-sumy)/1.5748);
 			//say("sumb=%d,sumr=%d,sumy=%f\n",sumb,sumr,sumy);
 
 			//yyyy
 			r = (va[3]+vc[3])/2;
 			g = vb[3];
 			b = (vb[2]+vb[4])/2;
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dsty0[x + 2] = clamprgbfromfloat(0.2126*r+0.7152*g+0.0722*b);
 			sumr = r;
 			sumg = g;
 			sumb = b;
-			dsty0[x + 2] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+
 			r = (va[3]+va[5]+vc[3]+vc[5])/4;
 			g = (va[4]+vc[4]+vb[3]+vb[5])/4;
 			b = vb[4];
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dsty0[x + 3] = clamprgbfromfloat(0.2126*r+0.7152*g+0.0722*b);
 			sumr += r;
 			sumg += g;
 			sumb += b;
-			dsty0[x + 3] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+
 			r = vc[3];
 			g = (vb[3]+vd[3]+vc[2]+vc[4])/4;
 			b = (vb[2]+vb[4]+vd[2]+vd[4])/4;
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dsty1[x + 2] = clamprgbfromfloat(0.2126*r+0.7152*g+0.0722*b);
 			sumr += r;
 			sumg += g;
 			sumb += b;
-			dsty1[x + 2] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+
 			r = (vc[3]+vc[5])/2;
 			g = vc[4];
 			b = (vb[4]+vd[4])/2;
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dsty1[x + 3] = clamprgbfromfloat(0.2126*r+0.7152*g+0.0722*b);
 			sumr += r;
 			sumg += g;
 			sumb += b;
-			dsty1[x + 3] = (u8)(0.2126*r+0.7152*g+0.0722*b);
 
 			//u,v
 			sumr /= 4;
 			sumg /= 4;
 			sumb /= 4;
-			sumy = (u8)(0.2126*sumr+0.7152*sumg+0.0722*sumb);
-			dstu[x/2 + 1] = (u8)(128+(sumb-sumy)/1.8556);
-			dstv[x/2 + 1] = (u8)(128+(sumr-sumy)/1.5748);
+			sumy = clamprgbfromfloat(0.2126*sumr+0.7152*sumg+0.0722*sumb);
+			dstu[x/2 + 1] = clamprgbfromfloat(128+(sumb-sumy)/1.8556);
+			dstv[x/2 + 1] = clamprgbfromfloat(128+(sumr-sumy)/1.5748);
 		}
 		//say("yyyyy=%d\n",y);
 	}
@@ -930,15 +1012,17 @@ g b g b ~ g b g b ~ g b g b ~	//vd
 
 void bgbgxgrgrx_to_rgba(
 	u8* srcbuf, int srclen, int srcw, int srch,
-	u8* dstbuf, int dstlen, int dstw, int dsth)
+	u8* dstbuf, int dstlen, int dstw, int dsth,
+	mat3 ccm)
 {
 	if(0 == srcbuf)return;
 	if(0 == dstbuf)return;
-say("bgbgxgrgrx_to_rgba\n");
-printmemory(srcbuf, 0x40);
+//say("bgbgxgrgrx_to_rgba\n");
+//printmemory(srcbuf, 0x40);
 	int newx = 0;
 	int srcstride = srcw*5/4;
 	int x,y;
+	int r,g,b;
 	u8* dst0;
 	u8* dst1;
 	u8* src = srcbuf;
@@ -991,39 +1075,76 @@ b g b g ~ B G B G ~ b g b g ~	//vb
 g r g r ~ G R G R ~ g r g r ~	//vc
 b g b g ~ b g b g ~ b g b g ~	//vd
 */
-			dst0[4*x + 0] = (va[0]+va[2]+vc[0]+vc[2])/4;
-			dst0[4*x + 1] = (va[1]+vc[1]+vb[0]+vb[2])/4;
-			dst0[4*x + 2] = vb[1];
-			dst0[4*x + 4] = (va[2]+vc[2])/2;
-			dst0[4*x + 5] = vb[2];
-			dst0[4*x + 6] = (vb[1]+vb[3])/2;
+			r = (va[0]+va[2]+vc[0]+vc[2])/4;
+			g = (va[1]+vc[1]+vb[0]+vb[2])/4;
+			b = vb[1];
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dst0[4*x + 0] = r;
+			dst0[4*x + 1] = g;
+			dst0[4*x + 2] = b;
 
-			dst0[4*x + 8] = (va[2]+va[4]+vc[2]+vc[4])/4;
-			dst0[4*x + 9] = (va[3]+vc[3]+vb[2]+vb[4])/4;
-			dst0[4*x +10] = vb[3];
-			dst0[4*x +12] = (va[4]+vc[4])/2;
-			dst0[4*x +13] = vb[4];
-			dst0[4*x +14] = (vb[3]+vb[5])/2;
+			r = (va[2]+vc[2])/2;
+			g = vb[2];
+			b = (vb[1]+vb[3])/2;
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dst0[4*x + 4] = r;
+			dst0[4*x + 5] = g;
+			dst0[4*x + 6] = b;
 
-			dst1[4*x + 0] = (vc[0]+vc[2])/2;
-			dst1[4*x + 1] = vc[1];
-			dst1[4*x + 2] = (vb[1]+vd[1])/2;
-			dst1[4*x + 4] = vc[2];
-			dst1[4*x + 5] = (vc[1]+vc[3]+vb[2]+vd[2])/2;
-			dst1[4*x + 6] = (vb[1]+vb[3]+vc[1]+vc[3])/2;
+			r = (va[2]+va[4]+vc[2]+vc[4])/4;
+			g = (va[3]+vc[3]+vb[2]+vb[4])/4;
+			b = vb[3];
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dst0[4*x + 8] = r;
+			dst0[4*x + 9] = g;
+			dst0[4*x +10] = b;
 
-			dst1[4*x + 8] = (vc[2]+vc[4])/2;
-			dst1[4*x + 9] = vc[3];
-			dst1[4*x +10] = (vb[3]+vd[3])/2;
-			dst1[4*x +12] = vc[4];
-			dst1[4*x +13] = (vc[3]+vc[5]+vb[4]+vd[4])/2;
-			dst1[4*x +14] = (vb[3]+vb[5]+vc[3]+vc[5])/2;
+			r = (va[4]+vc[4])/2;
+			g = vb[4];
+			b = (vb[3]+vb[5])/2;
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dst0[4*x +12] = r;
+			dst0[4*x +13] = g;
+			dst0[4*x +14] = b;
+
+			r = (vc[0]+vc[2])/2;
+			g = vc[1];
+			b = (vb[1]+vd[1])/2;
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dst1[4*x + 0] = r;
+			dst1[4*x + 1] = g;
+			dst1[4*x + 2] = b;
+
+			r = vc[2];
+			g = (vc[1]+vc[3]+vb[2]+vd[2])/2;
+			b = (vb[1]+vb[3]+vc[1]+vc[3])/2;
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dst1[4*x + 4] = r;
+			dst1[4*x + 5] = g;
+			dst1[4*x + 6] = b;
+
+			r = (vc[2]+vc[4])/2;
+			g = vc[3];
+			b = (vb[3]+vd[3])/2;
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dst1[4*x + 8] = r;
+			dst1[4*x + 9] = g;
+			dst1[4*x +10] = b;
+
+			r = vc[4];
+			g = (vc[3]+vc[5]+vb[4]+vd[4])/2;
+			b = (vb[3]+vb[5]+vc[3]+vc[5])/2;
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dst1[4*x +12] = r;
+			dst1[4*x +13] = g;
+			dst1[4*x +14] = b;
 		}
 	}
 }
 void bgbgxgrgrx_to_y4_u_v(
 	u8* srcbuf, int srclen, int srcw, int srch,
-	u8* dstbuf, int dstlen, int dstw, int dsth)
+	u8* dstbuf, int dstlen, int dstw, int dsth,
+	mat3 ccm)
 {
 	if(0 == srcbuf)return;
 	if(0 == dstbuf)return;
@@ -1097,78 +1218,92 @@ b g b g ~ b g b g ~ b g b g ~	//vd
 			r = (va[0]+va[2]+vc[0]+vc[2])/4;
 			g = (va[1]+vc[1]+vb[0]+vb[2])/4;
 			b = vb[1];
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dsty0[x + 0] = clamprgbfromfloat(0.2126*r+0.7152*g+0.0722*b);
 			sumr = r;
 			sumg = g;
 			sumb = b;
-			dsty0[x + 0] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+
 			r = (va[2]+vc[2])/2;
 			g = vb[2];
 			b = (vb[1]+vb[3])/2;
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dsty0[x + 1] = clamprgbfromfloat(0.2126*r+0.7152*g+0.0722*b);
 			sumr += r;
 			sumg += g;
 			sumb += b;
-			dsty0[x + 1] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+
 			r = (vc[0]+vc[2])/2;
 			g = vc[1];
 			b = (vb[1]+vd[1])/2;
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dsty1[x + 0] = clamprgbfromfloat(0.2126*r+0.7152*g+0.0722*b);
 			sumr += r;
 			sumg += g;
 			sumb += b;
-			dsty1[x + 0] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+
 			r = vc[2];
 			g = (vc[1]+vc[3]+vb[2]+vd[2])/2;
 			b = (vb[1]+vb[3]+vc[1]+vc[3])/2;
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dsty1[x + 1] = clamprgbfromfloat(0.2126*r+0.7152*g+0.0722*b);
 			sumr += r;
 			sumg += g;
 			sumb += b;
-			dsty1[x + 1] = (u8)(0.2126*r+0.7152*g+0.0722*b);
 
 			//u,v
 			sumr /= 4;
 			sumg /= 4;
 			sumb /= 4;
 			sumy = 0.2126*sumr+0.7152*sumg+0.0722*sumb;
-			dstu[x/2] = (u8)(128+(sumb-sumy)/1.8556);
-			dstv[x/2] = (u8)(128+(sumr-sumy)/1.5748);
+			dstu[x/2] = clamprgbfromfloat(128+(sumb-sumy)/1.8556);
+			dstv[x/2] = clamprgbfromfloat(128+(sumr-sumy)/1.5748);
 			//say("sumb=%d,sumr=%d,sumy=%f\n",sumb,sumr,sumy);
 
 			//yyyy
 			r = (va[2]+va[4]+vc[2]+vc[4])/4;
 			g = (va[3]+vc[3]+vb[2]+vb[4])/4;
 			b = vb[3];
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dsty0[x + 2] = clamprgbfromfloat(0.2126*r+0.7152*g+0.0722*b);
 			sumr = r;
 			sumg = g;
 			sumb = b;
-			dsty0[x + 2] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+
 			r = (va[4]+vc[4])/2;
 			g = vb[4];
 			b = (vb[3]+vb[5])/2;
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dsty0[x + 3] = clamprgbfromfloat(0.2126*r+0.7152*g+0.0722*b);
 			sumr += r;
 			sumg += g;
 			sumb += b;
-			dsty0[x + 3] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+
 			r = (vc[2]+vc[4])/2;
 			g = vc[3];
 			b = (vb[3]+vd[3])/2;
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dsty1[x + 2] = clamprgbfromfloat(0.2126*r+0.7152*g+0.0722*b);
 			sumr += r;
 			sumg += g;
 			sumb += b;
-			dsty1[x + 2] = (u8)(0.2126*r+0.7152*g+0.0722*b);
+
 			r = vc[4];
 			g = (vc[3]+vc[5]+vb[4]+vd[4])/2;
 			b = (vb[3]+vb[5]+vc[3]+vc[5])/2;
+			if(ccm)fixrgbbyccm(&r,&g,&b,ccm);
+			dsty1[x + 3] = clamprgbfromfloat(0.2126*r+0.7152*g+0.0722*b);
 			sumr += r;
 			sumg += g;
 			sumb += b;
-			dsty1[x + 3] = (u8)(0.2126*r+0.7152*g+0.0722*b);
 
 			//u,v
 			sumr /= 4;
 			sumg /= 4;
 			sumb /= 4;
-			sumy = (u8)(0.2126*sumr+0.7152*sumg+0.0722*sumb);
-			dstu[x/2 + 1] = (u8)(128+(sumb-sumy)/1.8556);
-			dstv[x/2 + 1] = (u8)(128+(sumr-sumy)/1.5748);
+			sumy = clamprgbfromfloat(0.2126*sumr+0.7152*sumg+0.0722*sumb);
+			dstu[x/2 + 1] = clamprgbfromfloat(128+(sumb-sumy)/1.8556);
+			dstv[x/2 + 1] = clamprgbfromfloat(128+(sumr-sumy)/1.5748);
 		}
 		//say("yyyyy=%d\n",y);
 	}

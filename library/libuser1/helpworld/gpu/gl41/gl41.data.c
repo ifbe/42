@@ -229,7 +229,7 @@ void gl41data_after(_obj* ctx)
 
 //[-4,-3]: ogl,area -> cam,togl
 //[-2,-1]: cam,towr -> wor,geom
-int gl41data_taking(_obj* world,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int gl41data_taking(_obj* world,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	struct relation* rel = world->orel0;
 	while(1){
@@ -249,7 +249,7 @@ int gl41data_taking(_obj* world,void* foot, _syn* stack,int sp, void* arg,int ke
 	}
 	return 0;
 }
-int gl41data_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int gl41data_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	return 0;
 }

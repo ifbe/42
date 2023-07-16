@@ -158,7 +158,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 
 
 
-void windowread_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void windowread_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	ANativeWindow_Buffer buffer;
 	struct android_poll_source* source;
@@ -188,7 +188,7 @@ void windowread_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* a
 	//events
 	pollenv();
 }
-void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
 void window_detach()

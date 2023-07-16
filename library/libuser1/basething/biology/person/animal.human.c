@@ -343,7 +343,7 @@ static void human_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void human_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void human_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -365,7 +365,7 @@ static void human_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 		break;
 	}
 }
-static int human_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int human_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	return 0;
 }

@@ -14,7 +14,7 @@ void scene3d_selected(_obj* wnd, struct fstyle* sty)
 //[-6,-5]: wnd,area -> cam,togl
 //[-4,-3]: cam, xxxx -> world,camgeom
 //[-2,-1]: world,0 -> scene,0
-int scene3d_world_camera_window(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int scene3d_world_camera_window(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	struct fstyle* sty;
 	struct relation* rel = ent->orel0;
@@ -36,7 +36,7 @@ int scene3d_world_camera_window(_obj* ent,void* foot, _syn* stack,int sp, void* 
 	}
 	return 0;
 }
-int scene3d_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int scene3d_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return 0;
 
@@ -58,12 +58,12 @@ int scene3d_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, 
 	scene3d_world_camera_window(ent,foot, stack,sp, arg,key, buf,len);
 	return 0;
 }
-int scene3d_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int scene3d_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	say("@scene3d_giving\n");
 
 	//remember which is raypicked
-	struct relation* rel = arg;
+	struct relation* rel = (void*)arg;
 	ent->priv_ptr = rel;
 
 	//tell that thing, a ray coming

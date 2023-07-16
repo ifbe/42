@@ -50,6 +50,22 @@ int parsefmt(u8* buf, u8* str)
 	for(;j<8;j++)buf[j] = 0;
 	return 0;
 }
+int parsenameandtype(u8* buf, int len, u8* name, u8* type)
+{
+	parsefmt(name, buf);
+
+	int j;
+	for(j=1;j<16;j++){
+		if(':' == buf[j]){
+			parsefmt(type, buf+j+1);
+		}
+	}
+	return 0;
+}
+
+
+
+
 void parsehalfrel_old(u8* buf, int len,
 	struct chiplist chip[], int clen, struct footlist foot[], int flen,
 	struct halfrel* rel)
@@ -346,8 +362,9 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 			nodedata = j+1;
 			str = -1;
 
-			parsefmt((void*)&hash, buf+nodename);
-			//say("actnode=%.*s\n", j-nodename, buf+nodename);
+			say("actnode=%.*s\n", j-nodename, buf+nodename);
+			parsenameandtype(buf+nodename, j-nodename, (void*)&hash, (void*)&type);
+			say("name=%.8s,type=%.8s\n", &hash, &type);
 		}
 		if('}' == k) {
 			if(nodename >= 0){
@@ -687,6 +704,7 @@ int myml_create(struct item* obj, void* arg, int argc, u8** argv)
 int myml_delete(struct item* obj)
 {
 	say("myml_delete:%p\n", obj);
+	return 0;
 }
 
 

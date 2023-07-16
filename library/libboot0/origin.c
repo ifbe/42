@@ -125,11 +125,11 @@ int origin_delete(_obj* tmp)
 	}
 	return 0;
 }
-int origin_reader(struct item* ori,void* foot, void* arg, int idx, void* buf, int len)
+int origin_reader(struct item* ori,void* foot, p64 arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int origin_writer(struct item* ori,void* foot, void* arg, int idx, void* buf, int len)
+int origin_writer(struct item* ori,void* foot, p64 arg, int idx, void* buf, int len)
 {
 	return 0;
 }
@@ -147,11 +147,11 @@ int origin_detach(struct halfrel* self, struct halfrel* peer)
 	say("@origindetach\n");
 	return 0;
 }
-int origin_takeby(struct item* ori,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int origin_takeby(struct item* ori,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int origin_giveby(struct item* ori,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int origin_giveby(struct item* ori,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
 	return 0;
 }

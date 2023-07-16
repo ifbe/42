@@ -363,7 +363,7 @@ static void maze_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void maze_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void maze_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -385,7 +385,7 @@ static void maze_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 		break;
 	}
 }
-static void maze_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void maze_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
 static void maze_detach(struct halfrel* self, struct halfrel* peer)

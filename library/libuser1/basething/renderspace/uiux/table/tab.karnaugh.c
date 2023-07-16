@@ -211,7 +211,7 @@ static int karnaugh_write_bytruthtable(_obj* ent, u8* i)
 
 
 
-static int karnaugh_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int karnaugh_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
@@ -222,7 +222,7 @@ static int karnaugh_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 	}
 	return 0;
 }
-static int karnaugh_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int karnaugh_giving(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(_truthtable_ == stack[sp-1].foottype){
 		return karnaugh_write_bytruthtable(ent, buf);

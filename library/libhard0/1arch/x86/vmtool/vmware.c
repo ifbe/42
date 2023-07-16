@@ -1,4 +1,3 @@
-#include "libhard.h"
 #include "libuser.h"
 u8* getoemid();
 //

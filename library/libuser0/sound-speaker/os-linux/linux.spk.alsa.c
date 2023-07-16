@@ -104,11 +104,11 @@ int speaker_startplayback(_obj* spk)
 
 
 
-int speaker_take(_obj* spk,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+int speaker_take(_obj* spk,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf, int len)
 {
 	return 0;
 }
-int speaker_give(_obj* spk,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+int speaker_give(_obj* spk,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf, int len)
 {
 	struct privdata* priv = (void*)spk->priv_256b;
 
@@ -133,15 +133,15 @@ int speaker_attach()
 
 
 
-int speakerread()
+int speaker_read()
 {
 	return 0;
 }
-int speakerwrite()
+int speaker_write()
 {
 	return 0;
 }
-int speakerdelete(_obj* spk)
+int speaker_delete(_obj* spk)
 {
 	//printf("@snd_pcm_close\n");
 	struct privdata* priv = (void*)spk->priv_256b;
@@ -150,7 +150,7 @@ int speakerdelete(_obj* spk)
 	priv->alive = 0;
 	return 0;
 }
-int speakercreate(_obj* spk)
+int speaker_create(_obj* spk)
 {
 	struct privdata* priv = (void*)spk->priv_256b;
 	priv->hwname = "default";

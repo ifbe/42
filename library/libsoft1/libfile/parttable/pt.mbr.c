@@ -185,23 +185,19 @@ static int mbrclient_showpart(_obj* art,void* foot, void* buf,int len)
 
 
 
-static int mbrclient_ontake(_obj* art,void* foot, _syn* stack,int sp, u8* arg, int off, u8* buf, int len)
+static int mbrclient_ontake(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, u8* buf, int len)
 {
-	u64 offs;
-	say("@mbrclient_ontake:obj=%p,slot=%p,arg=%p,off=%x,buf=%p,len=%x\n", art,foot, arg,off, buf,len);
+	say("@mbrclient_ontake:obj=%p,slot=%p,arg=%llx,cmd=%x,buf=%p,len=%x\n", art,foot, arg,cmd, buf,len);
 
-	if(arg){
-		//info
-		if('i' == arg[0])return mbrclient_showinfo(art);
-		//part
-		if('p' == arg[0])return mbrclient_showpart(art,foot, buf,len);
+	switch(cmd){
+	case _info_:return mbrclient_showinfo(art);
+	case _part_:return mbrclient_showpart(art,foot, buf,len);
 	}
 
-takedata:
-	offs = (u64)foot + off;		//foot->offs + idx		//partoffs + dataoffs
-	return take_data_from_peer(art,_src_, stack,sp+2, arg,offs, buf,len);
+	u64 offs = (u64)foot + arg;		//foot->offs + idx		//partoffs + dataoffs
+	return take_data_from_peer(art,_src_, stack,sp+2, offs,_pos_, buf,len);
 }
-static int mbrclient_ongive(_obj* art,void* foot, _syn* stack,int sp, u8* arg, int idx, u8* buf, int len)
+static int mbrclient_ongive(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
@@ -226,15 +222,15 @@ int mbrclient_attach(struct halfrel* self, struct halfrel* peer)
 	struct item* xxx = peer->pchip;
 	if((_sys_ == xxx->tier)|(_art_ == xxx->tier)){
 		_obj* obj = peer->pchip;
-		ret = file_take(obj,0, "",0, buf,0x10000);
+		ret = file_reader(obj,0, 0,_pos_, buf,0x10000);
 		if(0x10000 != ret)return -1;
 	}
 	else{
 		if(xxx->ontaking){
-			ret = xxx->ontaking(xxx,peer->pfoot, 0,0, 0,0, buf, 0x10000);
+			ret = xxx->ontaking(xxx,peer->pfoot, 0,0, 0,_pos_, buf, 0x10000);
 		}
 		else{
-			ret = take_data_from_peer(ele,_src_, 0,0, "",0, ele->listptr.buf0,0x1000);
+			ret = take_data_from_peer(ele,_src_, 0,0, 0,_pos_, ele->listptr.buf0,0x1000);
 		}
 		if(0x10000 != ret)return -1;
 	}

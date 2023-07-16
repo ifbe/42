@@ -68,11 +68,11 @@ static int setvolt(void* gpio, int pin, int volt)
 
 
 
-int gpio_takeby(struct halfrel* st,int sp, void* arg,int cmd, void* buf,int len)
+int gpio_takeby(struct halfrel* st,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	return 0;
 }
-int gpio_giveby(struct halfrel* st,int sp, void* arg,int cmd, void* buf,int len)
+int gpio_giveby(struct halfrel* st,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	return 0;
 }
@@ -84,7 +84,7 @@ int gpio_attach(struct halfrel* st, struct halfrel* peer)
 {
 	return 0;
 }
-int gpio_read(_obj* obj,void* foot, void* arg,int cmd, u8* buf,int len)
+int gpio_read(_obj* obj,void* foot, p64 arg,int cmd, u8* buf,int len)
 {
 	return 0;
 }

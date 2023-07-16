@@ -155,7 +155,7 @@ static void test_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 
 
 
-void test_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+void test_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -181,7 +181,7 @@ void test_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, vo
 		break;
 	}
 }
-int test_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int test_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	return 0;
 }

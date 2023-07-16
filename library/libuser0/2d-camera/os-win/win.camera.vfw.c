@@ -1,8 +1,12 @@
+#include "libuser.h"
 
-void vfwcam_take(_obj* win, void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+
+
+
+void vfwcam_take(_obj* win, void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 }
-void vfwcam_give(_obj* win, void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void vfwcam_give(_obj* win, void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 }
 void vfwcam_attach()

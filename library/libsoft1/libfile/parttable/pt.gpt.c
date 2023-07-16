@@ -172,27 +172,22 @@ static int gptclient_showpart(_obj* art,void* foot, void* buf,int len)
 
 
 
-int gptclient_ontake(_obj* art,void* foot, _syn* stack,int sp, u8* arg,int idx, u8* buf,int len)
+int gptclient_ontake(_obj* art,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len)
 {
-	int ret;
-	u64 offs;
 	//say("@gptclient_take\n");
 
-	if(arg){
-		//info
-		if('i' == arg[0])return gptclient_showinfo(art);
-		//part
-		if('p' == arg[0])return gptclient_showpart(art,foot, buf,len);
+	switch(idx){
+	case _info_:return gptclient_showinfo(art);
+	case _part_:return gptclient_showpart(art,foot, buf,len);
 	}
 
-takedata:
 	//say("foot=%x\n",foot);
-	offs = (u64)foot + idx;		//foot->offs + idx		//partoffs + dataoffs
-	ret = take_data_from_peer(art,_src_, stack,sp+2, arg,offs, buf,len);
+	u64 offs = (u64)foot + arg;		//foot->offs + arg		//partoffs + dataoffs
+	int ret = take_data_from_peer(art,_src_, stack,sp+2, offs,_pos_, buf,len);
 	//say("gpt.ret=%x\n",ret);
 	return ret;
 }
-int gptclient_ongive(_obj* art,void* foot, _syn* stack,int sp, u8* arg,int idx, u8* buf,int len)
+int gptclient_ongive(_obj* art,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
@@ -213,7 +208,7 @@ int gptclient_attach(struct halfrel* self, struct halfrel* peer)
 
 	//read
 	if(_src_ == self->foottype){
-		int ret = take_data_from_peer(ele,_src_, 0,0, "",0, buf,0x4800);
+		int ret = take_data_from_peer(ele,_src_, 0,0, 0,_pos_, buf,0x4800);
 		if(ret != 0x4800)return 0;
 	}
 

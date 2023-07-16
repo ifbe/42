@@ -100,7 +100,7 @@ static void button_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct sty
 
 
 
-static void button_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void button_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
@@ -122,7 +122,7 @@ static void button_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 		button_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 	}
 }
-static void button_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void button_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	say("button:%s\n",__func__);
 	struct event* ev = buf;

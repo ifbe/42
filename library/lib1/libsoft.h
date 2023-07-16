@@ -22,11 +22,11 @@ double arctanyx(double, double);
 //
 _obj* file_create(void*, int);
 int file_delete(_obj*);
-int file_take(_obj*, int, void*, int, void*, int);
-int file_give(_obj*, int, void*, int, void*, int);
+int file_reader(_obj*, int, p64, int, void*, int);
+int file_writer(_obj*, int, p64, int, void*, int);
 //
-int readfolder( void*, int, void*, int, void*, int);
-int writefolder(void*, int, void*, int, void*, int);
+int readfolder( void*, int, p64, int, void*, int);
+int writefolder(void*, int, p64, int, void*, int);
 //
 int threaddelete(u64);
 u64 threadcreate(void*, void*);

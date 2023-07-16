@@ -583,7 +583,7 @@ void fullwindow_uploadandrender(_obj* wnd, struct fstyle* area)
 
 
 
-int fullwindow_trytosend(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd, struct relation* rel, struct event* ev)
+int fullwindow_trytosend(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int cmd, struct relation* rel, struct event* ev)
 {
 	stack[sp+0].pchip = rel->psrcchip;
 	stack[sp+0].pfoot = rel->psrcfoot;
@@ -594,7 +594,7 @@ int fullwindow_trytosend(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int
 	stack[sp+1].foottype = rel->dstfoottype;
 	return entity_giveby(rel->pdstchip, rel->pdstfoot, stack,sp+2, arg,cmd, ev,0);
 }
-int fullwindow_chooseandsend(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd, struct event* ev)
+int fullwindow_chooseandsend(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int cmd, struct event* ev)
 {
 	int ret;
 	float x,y,x0,y0,xn,yn;
@@ -674,7 +674,7 @@ senddone:
 
 
 
-int fullwindow_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
+int fullwindow_take(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	//say("@gl41wnd0_read\n");
 	//say("%d,%llx@fullwindow_renderwnd\n", rsp, stack);
@@ -715,7 +715,7 @@ next:
 	}
 	return 0;
 }
-int fullwindow_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
+int fullwindow_give(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 /*
 	if(mouse event from window)send to user

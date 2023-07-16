@@ -261,7 +261,7 @@ static void browser_bywnd_read(_obj* ent,struct style* slot, _obj* wnd,struct st
 
 
 
-static void browser_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void browser_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -282,7 +282,7 @@ static void browser_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void browser_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void browser_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* caller = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;

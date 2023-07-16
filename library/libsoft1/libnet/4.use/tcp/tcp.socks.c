@@ -34,11 +34,11 @@ static u8 httpreq[] =
 
 
 
-int socksclient_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int socksclient_read(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int socksclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int socksclient_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
 	int j,port;
 	u8 tmp[256];
@@ -156,11 +156,11 @@ int socksclient_create(_obj* ele, char* url)
 
 
 
-int socksserver_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int socksserver_read(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int socksserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int socksserver_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
 	say("@socksserver_write:%p,%p, len=%d\n", art, foot, len);
 	printmemory(buf, len<16?len:16);
@@ -202,11 +202,11 @@ int socksserver_create(_obj* ele, u8* url)
 
 
 
-int socksmaster_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int socksmaster_read(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int socksmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int socksmaster_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
 	int j;
 	u8* ch;

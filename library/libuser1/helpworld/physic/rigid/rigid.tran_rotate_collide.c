@@ -292,12 +292,12 @@ int rigidsimu_foreach(_obj* ent)
 
 
 
-int rigidsimu_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int rigidsimu_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//say("@rigidsimu_read:%.4s\n",&foot);
 	return 0;
 }
-int rigidsimu_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+int rigidsimu_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
 	//say("@rigidsimu_write:%.4s\n",&foot);
 	switch(stack[sp-1].foottype){
@@ -326,11 +326,11 @@ int rigidsimu_attach(struct halfrel* self, struct halfrel* peer)
 
 
 
-int rigidsimu_reader(_obj* ent,void* foot, void* arg,int key, u8* buf,int len)
+int rigidsimu_reader(_obj* ent,void* foot, p64 arg,int key, u8* buf,int len)
 {
 	return 0;
 }
-int rigidsimu_writer(_obj* ent,void* foot, void* arg,int key, u8* buf,int len)
+int rigidsimu_writer(_obj* ent,void* foot, p64 arg,int key, u8* buf,int len)
 {
 	return 0;
 }

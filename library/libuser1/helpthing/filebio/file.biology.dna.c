@@ -109,7 +109,7 @@ static void dna_world_camera_window(_obj* ent,void* slot, _syn* stack,int sp)
 
 	dna_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void dna_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void dna_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -130,7 +130,7 @@ static void dna_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int k
 		dna_world_camera_window(ent,slot, stack,sp);
 	}
 }
-static void dna_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void dna_giving(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
 static void dna_detach(struct halfrel* self, struct halfrel* peer)

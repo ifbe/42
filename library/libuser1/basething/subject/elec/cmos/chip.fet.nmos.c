@@ -265,7 +265,7 @@ static void nmos_wnd(_obj* ent,void* foot, _syn* stack,int sp)
 
 
 
-static void nmos_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void nmos_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -291,7 +291,7 @@ static void nmos_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 		break;
 	}
 }
-static void nmos_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static void nmos_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
 	say("nmos_write: %llx, %.4s=%x\n", ent, &foot, buf[0]);
 	switch(stack[sp-1].foottype){

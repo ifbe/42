@@ -67,8 +67,13 @@ int cmp(void*,void*);
 int ncmp(void*,void*,int);
 
 //
+_obj* file_create(void*, int);
+int file_delete(_obj*);
+int file_reader(_obj*, int, p64, int, void*, int);
+int file_writer(_obj*, int, p64, int, void*, int);
 int openreadclose(void*, int, void*, int);
 int openwriteclose(void*, int, void*, int);
+//
 int savefilefromtex(char* name, struct texture* tex);
 int loadtexfromfile(struct texture* tex, char* name);
 int loadglslfromfile(void* url, int max, void* buf, int len);

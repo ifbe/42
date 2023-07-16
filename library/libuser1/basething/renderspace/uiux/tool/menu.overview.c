@@ -1186,7 +1186,7 @@ static int overview_event(
 
 
 
-static void overview_read_bycam(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+static void overview_read_bycam(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key)
 {
 	struct style* slot;
 	_obj* wor;struct style* geom;
@@ -1228,7 +1228,7 @@ static void overview_write_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct 
 
 
 
-static int overview_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int overview_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* caller = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
@@ -1243,7 +1243,7 @@ static int overview_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 	}
 	return 0;
 }
-static int overview_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int overview_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//_obj* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;

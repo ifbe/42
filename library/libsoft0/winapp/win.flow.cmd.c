@@ -44,11 +44,11 @@ int shell_delete(_obj* fd)
 	say("!!!this func is wrong!!!\n");
 	return 0;
 }
-int shell_reader(_obj* oo,int xx, void* arg,int off, void* buf,int len)
+int shell_reader(_obj* oo,int xx, p64 arg,int off, void* buf,int len)
 {
 	return 0;
 }
-int shell_writer(_obj* oo,int xx, void* arg,int off, void* buf,int len)
+int shell_writer(_obj* oo,int xx, p64 arg,int off, void* buf,int len)
 {
 	return 0;
 }
@@ -64,11 +64,11 @@ int shell_detach()
 {
 	return 0;
 }
-int shell_takeby(_obj* oo,int xx, void* arg,int off, void* buf,int len)
+int shell_takeby(_obj* oo,int xx, p64 arg,int off, void* buf,int len)
 {
 	return 0;
 }
-int shell_giveby(_obj* oo,int xx, void* arg,int off, void* buf,int len)
+int shell_giveby(_obj* oo,int xx, p64 arg,int off, void* buf,int len)
 {
 	return 0;
 }

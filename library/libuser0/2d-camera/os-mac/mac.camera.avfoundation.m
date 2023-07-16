@@ -5,12 +5,13 @@
 _obj* thewin = 0;
 
 
-@interface MyDelegate : NSObject
+@interface MyDelegate : NSObject <AVCaptureVideoDataOutputSampleBufferDelegate>
 {
 }
 @end
 
 @implementation MyDelegate : NSObject
+
 - (void) captureOutput:(AVCaptureOutput *)captureOutput
  didOutputSampleBuffer:(CMSampleBufferRef)videoFrame
 	    fromConnection:(AVCaptureConnection *)connection
@@ -37,6 +38,23 @@ _obj* thewin = 0;
 	OSType pixelFormat = CVPixelBufferGetPixelFormatType(imageBuffer);
 	//NSLog(@"fmt=%.4s", (char*)&pixelFormat);
     //NSLog(@"w=%zu, h=%zu, bytesPerRow=%zu, bytesTotal=%zu", width, height, bytesPerRow, bytesTotal);
+
+	CMTime timestamp = CMSampleBufferGetPresentationTimeStamp(videoFrame);
+    u64 timepkt = (u64)(1000*1000*1000*CMTimeGetSeconds(timestamp));
+	u64 timenow = timeread_ns();
+	NSLog(@"timepkt=%lld,timenow=%lld,dt=%lld", timepkt, timenow, timenow-timepkt);
+
+	//be careful: mac's yuv2 = actually uyvy
+	struct kv88 kv[4] = {
+		{'t', 0},
+		{ 0 , 0}
+	};
+	kv[0].val = timepkt;
+	if(thewin)give_data_into_peer_temp_stack(thewin,_dst_, (p64)kv,_kv88_, baseAddress,bytesTotal);
+    CVPixelBufferUnlockBaseAddress(imageBuffer,0);
+}
+
+@end
 
 /*
 	// Create a device-dependent RGB color space
@@ -72,11 +90,6 @@ _obj* thewin = 0;
     // Release the Quartz image
     CGImageRelease(quartzImage);
 */
-
-	//be careful: mac's yuv2 = actually uyvy
-	struct halfrel stack[0x80];
-	if(thewin)give_data_into_peer(thewin,_dst_, stack,0, 0,_uyvy_, baseAddress,bytesTotal);
-    CVPixelBufferUnlockBaseAddress(imageBuffer,0);
 
 /*
 //int bufferWidth = CVPixelBufferGetWidth(pixelBuffer);
@@ -124,9 +137,6 @@ for(int y=0,y<uvHeight;y++)
    }
  }
 */
-}
-@end
-
 
 
 
@@ -149,14 +159,18 @@ int avfcam_detach()
 {
 	return 0;
 }
-int avfcam_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int avfcam_take(_obj* sup,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int avfcam_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int avfcam_give(_obj* sup,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
+
+
+
+
 int avfcam_reader()
 {
 	return 0;
@@ -177,13 +191,16 @@ int avfcam_create(_obj* win, void* arg, int argc, u8** argv)
 	u32 h = 480;
 	u32 fmt = 0;
 	for(j=1;j<argc;j++){
-		if(0 == ncmp(argv[j], (void*)"format:", 7)){
+		if(0 == ncmp(argv[j], (void*)"log:", 4)){
+			//priv->log = 1;
+		}
+		else if(0 == ncmp(argv[j], (void*)"format:", 7)){
 			fmt = *(u32*)(argv[j]+7);
 		}
-		if(0 == ncmp(argv[j], (void*)"width:", 6)){
+		else if(0 == ncmp(argv[j], (void*)"width:", 6)){
 			decstr2u32(argv[j]+6, &w);
 		}
-		if(0 == ncmp(argv[j], (void*)"height:", 7)){
+		else if(0 == ncmp(argv[j], (void*)"height:", 7)){
 			decstr2u32(argv[j]+7, &h);
 		}
 	}

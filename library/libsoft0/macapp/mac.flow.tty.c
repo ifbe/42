@@ -131,7 +131,7 @@ int uart_delete(struct item* oo)
 	close(fd);
 	return 0;
 }
-int uart_reader(_obj* oo,int xx, void* arg,int off, void* buf,int len)
+int uart_reader(_obj* oo,int xx, p64 arg,int off, void* buf,int len)
 {
 	int fd = oo->sockinfo.fd;
 	//say("fd=%d,obj=%p\n", fd, oo);
@@ -142,7 +142,7 @@ int uart_reader(_obj* oo,int xx, void* arg,int off, void* buf,int len)
 	}
 	return ret;
 }
-int uart_writer(_obj* oo,int xx, void* arg,int off, void* buf,int len)
+int uart_writer(_obj* oo,int xx, p64 arg,int off, void* buf,int len)
 {
 	int fd = oo->sockinfo.fd;
 	//say("fd=%d,obj=%p\n", fd, oo);
@@ -165,11 +165,11 @@ int uart_detach()
 {
 	return 0;
 }
-int uart_takeby(_obj* oo,int xx, void* arg,int off, void* buf,int len)
+int uart_takeby(_obj* oo,int xx, p64 arg,int off, void* buf,int len)
 {
 	return 0;
 }
-int uart_giveby(_obj* oo,int xx, void* arg,int off, void* buf,int len)
+int uart_giveby(_obj* oo,int xx, p64 arg,int off, void* buf,int len)
 {
 	return 0;
 }

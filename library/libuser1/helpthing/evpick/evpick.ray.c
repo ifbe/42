@@ -69,7 +69,7 @@ static int clickray_intersect(_obj* handler,void* foot,
 			stack[sp+1].pchip = totar[1]->pchip;
 			stack[sp+1].pfoot = totar[1]->pfoot;
 			stack[sp+1].foottype = totar[1]->foottype;
-			entity_giveby(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, rel, 0, ray, 0);
+			entity_giveby(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, (p64)rel, 0, ray, 0);
 			return 1;
 		}
 		rel = samesrcnextdst(rel);
@@ -107,11 +107,11 @@ int clickray_create(_obj* act, void* flag)
 
 
 
-int clickray_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int clickray_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int clickray_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int clickray_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 //[-4,-3]: wnd,area -> cam,togl
 //[-2,-1]: cam,evto -> this,bycam

@@ -150,7 +150,7 @@ static void mmioedit_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void mmioedit_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mmioedit_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
@@ -166,7 +166,7 @@ static void mmioedit_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,
 		break;
 	}
 }
-static int mmioedit_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int mmioedit_giving(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//say("@mmioedit_give\n");
 

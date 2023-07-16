@@ -97,7 +97,7 @@ void window_update(_obj* wnd)
 
 
 
-void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//read context
 	rgbanode_take(wnd,0, stack,sp, arg,key, buf,len);
@@ -105,7 +105,7 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 	//update area
 	window_update(wnd);
 }
-void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len)
+void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 }
 void window_attach()

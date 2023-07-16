@@ -68,7 +68,7 @@ static void graphene_draw_cli(
 
 
 
-static void graphene_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void graphene_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	_obj* wor;struct style* geom;
@@ -80,7 +80,7 @@ static void graphene_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,
 		graphene_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void graphene_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void graphene_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
 static void graphene_detach(struct halfrel* self, struct halfrel* peer)

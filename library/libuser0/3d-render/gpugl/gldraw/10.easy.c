@@ -132,7 +132,7 @@ void easywindow_drawthis(struct gl41data* pair)
 
 
 
-void easywindow_take(_obj* win,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void easywindow_take(_obj* win,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 	float w = win->whdf.fbwidth;
 	float h = win->whdf.fbheight;
@@ -149,7 +149,7 @@ void easywindow_take(_obj* win,void* foot, _syn* stack,int sp, void* arg,int idx
 	if(win->gl41easy.solid)easywindow_drawthis(win->gl41easy.solid);
 	else easywindow_example();
 }
-void easywindow_give(_obj* win,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void easywindow_give(_obj* win,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 	say("@easywindow_event\n");
 }

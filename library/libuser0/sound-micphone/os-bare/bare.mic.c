@@ -4,25 +4,25 @@ void micphone_take()
 void micphone_give()
 {
 }
-void micphone_gone()
+void micphone_attach()
 {
 }
-void micphone_link()
+void micphone_detach()
 {
 }
 
 
 
 
-void micphonelist()
+void micphone_read()
 {
 }
-void micphonechange()
+void micphone_write()
 {
 }
-void micphonedelete()
+void micphone_delete()
 {
 }
-void micphonecreate()
+void micphone_create()
 {
 }

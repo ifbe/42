@@ -26,7 +26,7 @@ static const pa_sample_spec ss =
 
 
 
-int speaker_take(_obj* spk,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int speaker_take(_obj* spk,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	struct pcmdata* pcm;
 	if(spk->orel0)take_data_from_peer(spk,_ctx_, stack,sp, 0,0, 0,0);
@@ -57,7 +57,7 @@ int speaker_take(_obj* spk,void* foot, _syn* stack,int sp, void* arg, int idx, u
 
 	return 0;
 }
-int speaker_give(_obj* spk,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int speaker_give(_obj* spk,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	int err;
 	pa_usec_t latency;
@@ -94,17 +94,17 @@ int speaker_detach()
 
 
 
-void speakerread()
+void speaker_read()
 {
 }
-void speakerwrite()
+void speaker_write()
 {
 }
-void speakerdelete(_obj* win)
+void speaker_delete(_obj* win)
 {
 	if(s_out)pa_simple_free(s_out);
 }
-void speakercreate(_obj* win)
+void speaker_create(_obj* win)
 {
 	int error;
 

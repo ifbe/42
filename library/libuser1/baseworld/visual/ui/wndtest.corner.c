@@ -782,7 +782,7 @@ handlepointer:
 
 
 
-static int corner_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int corner_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//say("@corner_read\n");
 	_obj* caller;struct style* area;
@@ -798,7 +798,7 @@ static int corner_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int
 	}
 	return 0;
 }
-static int corner_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int corner_giving(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//printmemory(buf,16);
 	_obj* caller;struct style* area;

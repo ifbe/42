@@ -67,7 +67,7 @@ int toycar_read_byhttp(_obj* ent,void* foot, struct halfrel* stack,int sp)
 	give_data_into_peer(ent,stack[sp-1].foottype, stack,sp, "text/html",0, buf,ret);
 	return ret;
 }
-int toycar_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
+int toycar_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
 	say("@toycar_read:%p,%p,sp=%x\n", ent,foot, sp);
 	if(0 == stack)return 0;
@@ -83,7 +83,7 @@ int toycar_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg,
 
 	return 0;
 }
-int toycar_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
+int toycar_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
 	say("@toycar_write\n");
 	//printmemory(buf, len);

@@ -36,7 +36,7 @@ void border3d_draw_gl41(_obj* scene, _obj* wnd)
 		rel = samesrcnextdst(rel);
 	}
 }
-int border3d_read_bycam(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key)
+int border3d_read_bycam(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,int key)
 {
 	struct halfrel* aa[2];
 	int ret = relationsearch(ent, _tar_, &aa[0], &aa[1]);
@@ -55,7 +55,7 @@ int border3d_read_bycam(_obj* ent,void* foot, struct halfrel* stack,int sp, void
 
 
 
-int border3d_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int border3d_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return 0;
 
@@ -76,7 +76,7 @@ int border3d_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, void* ar
 
 	return border3d_read_bycam(ent,foot, stack,sp, arg,key);
 }
-int border3d_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int border3d_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	return 0;
 }

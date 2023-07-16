@@ -54,11 +54,11 @@ void lookat_doit(struct fstyle* this, struct fstyle* that)
 
 
 
-int lookat_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int lookat_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int lookat_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int lookat_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 	say("@lookat_write:%.4s\n",&foot);
 	if(_clk_ == stack[sp-1].foottype){

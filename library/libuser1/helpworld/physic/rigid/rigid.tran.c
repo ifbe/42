@@ -61,12 +61,12 @@ int graveasy_working(_obj* ent)
 
 
 
-int graveasy_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int graveasy_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	say("@graveasy_read:%p,%p\n",ent,foot);
 	return 0;
 }
-int graveasy_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int graveasy_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	say("@graveasy_give:%p,%p\n",ent,foot);
 	if(_clk_ == stack[sp-1].foottype)graveasy_working(ent);

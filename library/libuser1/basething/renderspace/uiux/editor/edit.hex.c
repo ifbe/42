@@ -274,7 +274,7 @@ static void hexedit_read_bywnd(_obj* ent,void* foot, _syn* stack,int sp)
 
 
 
-static int hexedit_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int hexedit_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return 0;
 
@@ -289,7 +289,7 @@ static int hexedit_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,in
 	}
 	return 0;
 }
-static int hexedit_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int hexedit_giving(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return 0;
 

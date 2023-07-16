@@ -108,9 +108,16 @@ DWORD WINAPI trayworker()
 		DispatchMessage(&msg);
 	}
 }
-void traycreate(_obj* win)
+
+
+
+
+void tray_create(_obj* win)
 {
 	threadcreate(trayworker, win);
+}
+void tray_delete(_obj* win)
+{
 }
 
 

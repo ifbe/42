@@ -357,14 +357,15 @@ void printreport(u8* buf, int len)
 
 
 static int parsekeyboard(struct item* usb,int xxx, struct item* xhci,int endp,
-	void* sbuf,int slen, void* rbuf,int rlen)
+	p64 arg,int slen, void* rbuf,int rlen)
 {
 	struct perusb* perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
 	struct perfunc* perfunc = (void*)perusb->perfunc;
 	//if(0 == perfunc)return 0;
 
-	struct report_keyboard* report = *(void**)sbuf;
+	void** sbuf = (void**)arg;
+	struct report_keyboard* report = *sbuf;
 	perfunc->perkbd.modifer = report->modifier;
 
 	int j,k,v;
@@ -389,14 +390,15 @@ static int parsekeyboard(struct item* usb,int xxx, struct item* xhci,int endp,
 	return 0;
 }
 static int parsemouse(struct item* usb,int xxx, struct item* xhci,int endp,
-	void* sbuf,int slen, void* rbuf,int rlen)
+	p64 arg,int slen, void* rbuf,int rlen)
 {
 	struct perusb* perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
 	struct perfunc* perfunc = (void*)perusb->perfunc;
 	//if(0 == perfunc)return 0;
 
-	struct report_mouse* report = *(void**)sbuf;
+	void** sbuf = (void**)arg;
+	struct report_mouse* report = *sbuf;
 	//say("[usbmouse]btn=%x,dx=%d,dy=%d\n", report->btn, report->dx, report->dy);
 	//printmemory(in, 
 
@@ -416,14 +418,15 @@ static int parsemouse(struct item* usb,int xxx, struct item* xhci,int endp,
 	return 0;
 }
 static int parsemouse_g502(struct item* usb,int xxx, struct item* xhci,int endp,
-	void* sbuf,int slen, void* rbuf,int rlen)
+	p64 arg,int slen, void* rbuf,int rlen)
 {
 	struct perusb* perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
 	struct perfunc* perfunc = (void*)perusb->perfunc;
 	//if(0 == perfunc)return 0;
 
-	char* in = *(void**)sbuf;
+	void** sbuf = (void**)arg;
+	char* in = *sbuf;
 	//say("[usbmouse]btn=%x,dx=%d,dy=%d\n", in[0], in[1], in[2]);
 
 	u64 type = point_dlt;
@@ -442,14 +445,15 @@ static int parsemouse_g502(struct item* usb,int xxx, struct item* xhci,int endp,
 	return 0;
 }
 static int parsemouse_qemu(struct item* usb,int xxx, struct item* xhci,int endp,
-	void* sbuf,int slen, void* rbuf,int rlen)
+	p64 arg,int slen, void* rbuf,int rlen)
 {
 	struct perusb* perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
 	struct perfunc* perfunc = (void*)perusb->perfunc;
 	//if(0 == perfunc)return 0;
 
-	char* in = *(void**)sbuf;
+	void** sbuf = (void**)arg;
+	char* in = *sbuf;
 	//say("[usbmouse]btn=%x,dx=%d,dy=%d\n", in[0], in[1], in[2]);
 
 	u64 type = point_per;
@@ -471,7 +475,7 @@ static int parsemouse_qemu(struct item* usb,int xxx, struct item* xhci,int endp,
 	return 0;
 }
 static int parsemouse_vbox(struct item* usb,int xxx, struct item* xhci,int endp,
-	void* sbuf,int slen, void* rbuf,int rlen)
+	p64 arg,int slen, void* rbuf,int rlen)
 {
 	//must do:
 	//1.install virtualbox extension pack
@@ -482,7 +486,8 @@ static int parsemouse_vbox(struct item* usb,int xxx, struct item* xhci,int endp,
 	struct perfunc* perfunc = (void*)perusb->perfunc;
 	//if(0 == perfunc)return 0;
 
-	char* in = *(void**)sbuf;
+	void** sbuf = (void**)arg;
+	char* in = *sbuf;
 	//say("[usbmouse]btn=%x,dx=%d,dy=%d\n", in[0], in[1], in[2]);
 
 	u64 type = point_per;
@@ -503,9 +508,10 @@ static int parsemouse_vbox(struct item* usb,int xxx, struct item* xhci,int endp,
 	eventwrite(*(u64*)xx, type, 0, 0);
 	return 0;
 }
-static int usbhid_ongive(struct item* usb,int xxx, struct item* xhci,int endp, void* sbuf,int slen, void* rbuf,int rlen)
+static int usbhid_ongive(struct item* usb,int xxx, struct item* xhci,int endp, p64 arg,int slen, void* rbuf,int rlen)
 {
-	void* data = *(void**)sbuf;
+	void** sbuf = (void**)arg;
+	void* data = *sbuf;
 	printmemory(data, 16);
 	return 0;
 }
@@ -634,7 +640,7 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 			ret = xhci->give_pxpxpxpx(
 				xhci,slot,
 				0,0,
-				&req,8,
+				(p64)&req,8,
 				temp,hiddesc->wReportDescLength
 			);
 			if(ret >= 0){
@@ -678,7 +684,7 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
-			&req,8,
+			(p64)&req,8,
 			0,0
 		);
 		if(ret < 0)return -11;
@@ -691,7 +697,7 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
-			&req,8,
+			(p64)&req,8,
 			0,0
 		);
 		//ignore if not stall error
@@ -726,7 +732,7 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	ret = xhci->give_pxpxpxpx(
 		xhci, slot|(inaddr<<8),
 		0, 0,
-		perfunc->trb, pktlen,
+		(p64)perfunc->trb, pktlen,
 		usb, 0
 	);
 	return 0;

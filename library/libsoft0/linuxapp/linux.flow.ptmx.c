@@ -131,7 +131,7 @@ int shell_delete(_obj* oo)
 	close(fd);
 	return 0;
 }
-int shell_reader(_obj* oo,int xx, void* arg,int cmd, void* buf, int len)
+int shell_reader(_obj* oo,int xx, p64 arg,int cmd, void* buf, int len)
 {
 	int fd = oo->sockinfo.fd;
 	if(fd < 0)return 0;
@@ -139,7 +139,7 @@ int shell_reader(_obj* oo,int xx, void* arg,int cmd, void* buf, int len)
 	int ret = read(fd, buf, len);
 	return ret;
 }
-int shell_writer(_obj* oo,int xx, void* arg,int cmd, void* buf, int len)
+int shell_writer(_obj* oo,int xx, p64 arg,int cmd, void* buf, int len)
 {
 	int fd = oo->sockinfo.fd;
 	if(fd < 0)return 0;
@@ -159,11 +159,11 @@ int shell_detach()
 {
 	return 0;
 }
-int shell_takeby(_obj* oo,int xx, void* arg,int cmd, void* buf, int len)
+int shell_takeby(_obj* oo,int xx, p64 arg,int cmd, void* buf, int len)
 {
 	return 0;
 }
-int shell_giveby(_obj* oo,int xx, void* arg,int cmd, void* buf, int len)
+int shell_giveby(_obj* oo,int xx, p64 arg,int cmd, void* buf, int len)
 {
 	return 0;
 }

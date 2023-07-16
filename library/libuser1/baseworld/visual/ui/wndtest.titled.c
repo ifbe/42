@@ -124,7 +124,7 @@ void* wndmgr_find_close(_obj* wnd, int x, int y)
 
 
 
-int wndmgr_rgba_take(_obj* mgr,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int wndmgr_rgba_take(_obj* mgr,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* wnd = mgr;
 	if(_rgba_ != mgr->hfmt)wnd = stack[sp-2].pchip;
@@ -208,7 +208,7 @@ next:
 	drawline((void*)wnd, 0xffff00, mx, my-16, mx, my+16);
 	return 0;
 }
-int wndmgr_rgba_give(_obj* mgr,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int wndmgr_rgba_give(_obj* mgr,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//say("@rgbanode_write:%p,%x\n", mgr,foot);
 	//printmemory(buf,16);
@@ -308,7 +308,7 @@ int wndmgr_gl41cmdq_take(_obj* mgr,void* foot, _obj* wnd,void* sty)
 }
 
 
-int wndmgr_take(_obj* mgr,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int wndmgr_take(_obj* mgr,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//manager called by window
 	_obj* caller;struct style* area;
@@ -340,7 +340,7 @@ int wndmgr_take(_obj* mgr,void* foot, _syn* stack,int sp, void* arg,int key, voi
 	caller->LASTDRAWTIME = t1 - t0;
 	return 0;
 }
-int wndmgr_give(_obj* mgr,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int wndmgr_give(_obj* mgr,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	return wndmgr_rgba_give(mgr,foot, stack,sp, arg,key, buf,len);
 }
@@ -357,10 +357,10 @@ int wndmgr_detach(_obj* wnd,void* foot)
 
 
 
-void wndmgr_reader(_obj* act, u8* xxx, void* arg,int key, void* buf,int len)
+void wndmgr_reader(_obj* act, u8* xxx, p64 arg,int key, void* buf,int len)
 {
 }
-void wndmgr_writer(_obj* act, u8* xxx, void* arg,int key, void* buf,int len)
+void wndmgr_writer(_obj* act, u8* xxx, p64 arg,int key, void* buf,int len)
 {
 }
 void wndmgr_delete(_obj* act, u8* xxx)

@@ -537,7 +537,7 @@ static void stl3d_draw_cli(
 //[-6,-5]: wnd -> cam
 //[-4,-3]: cam -> world
 //[-2,-1]: world -> stl3d
-static void stl3d_world_camera_window(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key)
+static void stl3d_world_camera_window(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key)
 {
 	_obj* scn;struct style* geom;
 	_obj* wrd;struct style* camg;
@@ -548,13 +548,13 @@ static void stl3d_world_camera_window(_obj* ent,void* slot, _syn* stack,int sp, 
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 
 	if(_rgba_ == wnd->hfmt){
-		if(0==key)stl3d_rgba_raster(ent,slot, scn,geom, wrd,camg, wnd,area, arg);
-		else stl3d_rgba_raytrace(ent,slot, scn,geom, wrd,camg, wnd,area, arg);
+		if(0==key)stl3d_rgba_raster(ent,slot, scn,geom, wrd,camg, wnd,area, (void*)arg);
+		else stl3d_rgba_raytrace(ent,slot, scn,geom, wrd,camg, wnd,area, (void*)arg);
 		return;
 	}
 	if(_tui_ == wnd->hfmt){
 		//stl3d_tui_test(ent,slot, wnd,area);
-		stl3d_tui_raytrace(ent,slot, scn,geom, wrd,camg, wnd,area, arg);
+		stl3d_tui_raytrace(ent,slot, scn,geom, wrd,camg, wnd,area, (void*)arg);
 		return;
 	}
 
@@ -563,7 +563,7 @@ static void stl3d_world_camera_window(_obj* ent,void* slot, _syn* stack,int sp, 
 	case _gl41list_:stl3d_gl41draw(ent,slot, scn,geom, wrd,camg, wnd,area);break;
 	}
 }
-static void stl3d_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void stl3d_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -584,7 +584,7 @@ static void stl3d_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int
 		stl3d_world_camera_window(ent,slot, stack,sp, arg,key);
 	}
 }
-static void stl3d_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void stl3d_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(_int_ == stack[sp-1].foottype)stl3d_modify_matter(ent, buf,len);
 	else stl3d_modify_ray(ent, buf);

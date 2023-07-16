@@ -32,6 +32,15 @@ void freefilemgr()
 void filemanager_registersupplier()
 {
 }
+int file_search(void* buf, int len)
+{
+	say("@filesearch\n");
+	return 0;
+}
+int file_modify(void* buf, int len)
+{
+	return 0;
+}
 
 
 
@@ -65,67 +74,44 @@ int file_delete(_obj* oo)
 	int fd = oo->fileinfo.fd;
 	return close(fd);
 }
-int file_search(void* buf, int len)
-{
-	say("@filesearch\n");
-	return 0;
-}
-int file_modify(void* buf, int len)
-{
-	return 0;
-}
-
-
-
-
-int file_link()
-{
-	return 0;
-}
-int file_gone()
-{
-	return 0;
-}
-int file_take(_obj* oo, int xx, void* arg, int off, void* buf, int len)
+int file_reader(_obj* oo, int xx, p64 arg, int cmd, void* buf, int len)
 {
 	int ret;
 	int fd = oo->fileinfo.fd;
 	//say("obj=%p,fd=%d\n", oo, fd);
 
-	if(arg){
-		ret = lseek(fd, off, SEEK_SET);
+	if(_pos_ == cmd){
+		ret = lseek(fd, arg, SEEK_SET);
 		if(-1 == ret){
-			//say("errno:%d,seek:%llx\n", errno, off);
+			//say("lseek64: offs=%llx, errno=%d\n", arg, errno);
 			return -2;
 		}
 	}//from head
 
 	ret = read(fd, buf, len);
-	if(-1 == ret)
-	{
-		//say("errno:%d,read:%llx,%llx\n", errno, off, len);
+	if(-1 == ret){
+		//say("read: offs=%llx, len=%x, errno=%d\n", arg, len, errno);
 		return -1;
 	}
 
 	return ret;
 }
-int file_give(_obj* oo, int xx, void* arg, int off, void* buf, int len)
+int file_writer(_obj* oo, int xx, p64 arg, int cmd, void* buf, int len)
 {
 	int ret;
 	int fd = oo->fileinfo.fd;
 
-	if(arg){
-		ret = lseek(fd, off, SEEK_SET);
+	if(_pos_ == cmd){
+		ret = lseek(fd, arg, SEEK_SET);
 		if(-1 == ret){
-			//say("errno:%d,seek:%llx\n", errno, off);
+			//say("lseek64: offs=%llx, errno=%d\n", arg, errno);
 			return -2;
 		}
 	}//from head
 
 	ret = write(fd, buf, len);
-	if(-1 == ret)
-	{
-		//say("errno:%d,read:%llx,%llx\n", errno, off, len);
+	if(-1 == ret){
+		//say("write: offs=%llx, len=%x, errno=%d\n", arg, len, errno);
 		return -1;
 	}
 

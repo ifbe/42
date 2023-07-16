@@ -431,12 +431,12 @@ int sd_readblock(struct persdhci* per, unsigned int lba, unsigned char *buf, int
 
 
 
-static int sdhci_ontake(struct item* dev, void* foot, void* stack, int sp, void* arg, int idx, void* buf, int len)
+static int sdhci_ontake(struct item* dev, void* foot, void* stack, int sp, p64 arg, int idx, void* buf, int len)
 {
 	struct persdhci* per = (void*)dev->priv_256b;
 	return sd_readblock(per, idx>>9, buf, len>>9);
 }
-static int sdhci_ongive(struct item* dev, void* foot, void* stack, int sp, void* arg, int idx, void* buf, int len)
+static int sdhci_ongive(struct item* dev, void* foot, void* stack, int sp, p64 arg, int idx, void* buf, int len)
 {
 	return 0;
 }

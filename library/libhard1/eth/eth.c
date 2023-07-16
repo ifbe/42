@@ -214,11 +214,11 @@ int macpacket_parse(u8* buf, int len)
 
 
 
-int eth_take(struct item* e1000,void* foot, void* stack,int sp, void* arg,int cmd, void* buf,int len)
+int eth_take(struct item* e1000,void* foot, void* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	return 0;
 }
-int eth_give(struct item* e1000,void* foot, void* stack,int sp, void* arg,int cmd, void* buf,int len)
+int eth_give(struct item* e1000,void* foot, void* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	say("@eth_give\n");
 	//printmemory(buf,len);

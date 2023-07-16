@@ -78,7 +78,7 @@ int camrts_window_give(_obj* ent,void* foot, _syn* stack,int sp)
 
 
 
-int camrts_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int camrts_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//say("@%s\n",__FUNCTION__);
 
@@ -102,7 +102,7 @@ int camrts_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, v
 
 	return 0;
 }
-int camrts_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int camrts_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 	//say("@%s\n",__FUNCTION__);
 

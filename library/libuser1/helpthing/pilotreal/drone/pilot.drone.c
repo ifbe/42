@@ -376,12 +376,12 @@ void flycon_report(_obj* ent)
 
 
 
-int flycon_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int flycon_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	dronelog("@flycon_read:%.4s\n",&foot);
 	return 0;
 }
-int flycon_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+int flycon_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
 	//dronelog("@flycon_write:%.4s\n",&foot);
 	if(_clk_ == stack[sp-1].foottype){

@@ -3,19 +3,19 @@
 
 
 
-int speaker_take(_obj* spk,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int speaker_take(_obj* spk,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int speaker_give(_obj* spk,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int speaker_give(_obj* spk,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int speakerstop()
+int speaker_attach()
 {
 	return 0;
 }
-int speakerstart()
+int speaker_detach()
 {
 	return 0;
 }
@@ -23,19 +23,19 @@ int speakerstart()
 
 
 
-int speakerlist()
+int speaker_reader()
 {
 	return 0;
 }
-int speakerchoose()
+int speaker_writer()
 {
 	return 0;
 }
-int speakerdelete(_obj* win)
+int speaker_delete(_obj* win)
 {
 	return 0;
 }
-int speakercreate(_obj* win)
+int speaker_create(_obj* win)
 {
 	return 0;
 }

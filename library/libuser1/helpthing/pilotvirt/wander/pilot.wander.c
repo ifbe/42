@@ -74,11 +74,11 @@ void wander_doit(struct privdata* own, struct fstyle* this)
 
 
 
-int wander_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int wander_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int wander_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int wander_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 	say("@wander_write:%.4s\n",&foot);
 	if(_clk_ == stack[sp-1].foottype){

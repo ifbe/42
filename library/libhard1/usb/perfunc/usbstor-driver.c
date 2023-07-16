@@ -230,9 +230,9 @@ struct perstor{
 	u64 blocksize;
 	u64 totalsize;
 };
-static int usbstor_readdata(struct item* usb,void* foot,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
+static int usbstor_readdata(struct item* usb,void* foot,struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
-	say("@usbstor_readdata: %p,%p,%p,%x,%p,%x,%p,%x\n",usb,foot,stack,sp,arg,off,buf,len);
+	say("@usbstor_readdata: %p,%p,%p,%x,%llx,%x,%p,%x\n",usb,foot,stack,sp,arg,cmd,buf,len);
 	struct perusb* perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
 
@@ -241,9 +241,10 @@ static int usbstor_readdata(struct item* usb,void* foot,struct halfrel* stack,in
 	if(0 == info->blocksize)return 0;
 
 	int j,ret;
-	int bytecur = off;	//byte cur
+	u64 off = arg;
+	u64 bytecur = off;	//byte cur
 	int bytecnt =   0;	//byte cnt
-	int blocklba;
+	u64 blocklba;
 	int blockcnt;
 	struct CommandBlockWrapper cbw;
 	struct CommandStatusWrapper rsw;
@@ -279,7 +280,7 @@ static int usbstor_readdata(struct item* usb,void* foot,struct halfrel* stack,in
 		ret = info->host->give_pxpxpxpx(
 			info->host,info->slot|(info->bulkout<<8),
 			0,0,
-			&cbw, 0x1f,
+			(p64)&cbw, 0x1f,
 			0,0
 		);
 		if(ret < 0){
@@ -290,7 +291,7 @@ static int usbstor_readdata(struct item* usb,void* foot,struct halfrel* stack,in
 		ret = info->host->give_pxpxpxpx(
 			info->host,info->slot|(info->bulkin<<8),
 			0,0,
-			buf+bytecur-off, bytecnt,
+			(p64)buf+bytecur-off, bytecnt,
 			0,0
 		);
 		if(ret < 0){
@@ -301,7 +302,7 @@ static int usbstor_readdata(struct item* usb,void* foot,struct halfrel* stack,in
 		ret = info->host->give_pxpxpxpx(
 			info->host,info->slot|(info->bulkin<<8),
 			0,0,
-			&rsw, 0x0d,
+			(p64)&rsw, 0x0d,
 			0,0
 		);
 		if(ret < 0){
@@ -317,7 +318,7 @@ static int usbstor_readdata(struct item* usb,void* foot,struct halfrel* stack,in
 	}
 	return bytecur-off;
 }
-static int usbstor_readinfo(struct item* usb,void* foot,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
+static int usbstor_readinfo(struct item* usb,void* foot,struct halfrel* stack,int sp, void* buf,int len)
 {
 	//say("@usbstor_readinfo: %p,%p\n",usb,foot);
 
@@ -340,12 +341,10 @@ static int usbstor_readinfo(struct item* usb,void* foot,struct halfrel* stack,in
 
 
 
-static int usbstor_ontake(struct item* usb,void* foot,struct halfrel* stack,int sp, u8* arg,int off, void* buf,int len)
+static int usbstor_ontake(struct item* usb,void* foot,struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
-	//say("usbstor_readfile:%p,%x,%p,%x\n",arg,off,buf,len);
-	if(arg){
-		if('i' == arg[0])return usbstor_readinfo(usb,foot, stack,sp, arg,off, buf,len);
-	}
+	//say("usbstor_readfile:%llx,%x,%p,%x\n",arg,cmd,buf,len);
+	if(_info_ == cmd)return usbstor_readinfo(usb,foot, stack,sp, buf,len);
 
 	if(0 == buf){
 		say("error: buf=0\n");
@@ -355,9 +354,9 @@ static int usbstor_ontake(struct item* usb,void* foot,struct halfrel* stack,int 
 		say("error: len=0\n");
 		return 0;
 	}
-	return usbstor_readdata(usb,foot, stack,sp, arg,off, buf,len);
+	return usbstor_readdata(usb,foot, stack,sp, arg,cmd, buf,len);
 }
-static int usbstor_ongive(struct item* usb,void* foot,struct halfrel* stack,int sp, u8* arg,int off, void* buf,int len)
+static int usbstor_ongive(struct item* usb,void* foot,struct halfrel* stack,int sp, p64 arg,int off, void* buf,int len)
 {
 	say("@ahci_ongive: %p,%p\n", usb,foot);
 	return 0;
@@ -459,7 +458,7 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
-		&req,8,
+		(p64)&req,8,
 		0,0
 	);
 
@@ -489,14 +488,14 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot|(outaddr<<8),
 		0,0,
-		inqcbw, 0x1f,
+		(p64)inqcbw, 0x1f,
 		0,0
 	);
 
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot|(inaddr<<8),
 		0,0,
-		inqrep, 0x24,
+		(p64)inqrep, 0x24,
 		0,0
 	);
 	printmemory(inqrep, 0x24);
@@ -504,7 +503,7 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot|(inaddr<<8),
 		0,0,
-		inqcsw, 0x0d,
+		(p64)inqcsw, 0x0d,
 		0,0
 	);
 
@@ -530,14 +529,14 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot|(outaddr<<8),
 		0,0,
-		turcbw, 0x1f,
+		(p64)turcbw, 0x1f,
 		0,0
 	);
 
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot|(inaddr<<8),
 		0,0,
-		turcsw, 0x0d,
+		(p64)turcsw, 0x0d,
 		0,0
 	);
 
@@ -564,14 +563,14 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot|(outaddr<<8),
 		0,0,
-		capcbw, 0x1f,
+		(p64)capcbw, 0x1f,
 		0,0
 	);
 
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot|(inaddr<<8),
 		0,0,
-		caprep, 8,
+		(p64)caprep, 8,
 		0,0
 	);
 
@@ -585,7 +584,7 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot|(inaddr<<8),
 		0,0,
-		capcsw, 0x0d,
+		(p64)capcsw, 0x0d,
 		0,0
 	);
 

@@ -252,7 +252,7 @@ static void fractal_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void fractal_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void fractal_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -274,7 +274,7 @@ static void fractal_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void fractal_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void fractal_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
 static void fractal_detach(struct halfrel* self, struct halfrel* peer)

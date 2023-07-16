@@ -54,11 +54,11 @@ void httpparser(u8* buf, int len, struct httpparsed* p)
 
 
 
-int httpclient_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int httpclient_read(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int httpclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int httpclient_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	int j,k;
 	say("@httpclient_write:%p,%p\n", art, foot);
@@ -103,7 +103,7 @@ int httpclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int id
 
 	return 0;
 }
-int httpclient_detach(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int httpclient_detach(struct halfrel* self, struct halfrel* peer)
 {
 	say("@httpclient_detach: %.4s\n", &self->foottype);
 	return 0;
@@ -174,11 +174,11 @@ int httpclient_create(_obj* ele, u8* url)
 
 
 
-int httpserver_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int httpserver_read(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int httpserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int httpserver_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {/*
 	u8 tmp[0x1000];
 	if(0 == buf)
@@ -218,28 +218,30 @@ int httpserver_create(_obj* ele, u8* url)
 
 
 
-int httpmaster_write_bydst(_obj* art,void* foot, _syn* stack,int sp, struct httpparsed* arg, int idx, u8* buf, int len)
+int httpmaster_write_bydst(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	int ret;
 	u8 tmp[0x400];
 
 if(0 == idx){
+	struct httpparsed* parsed = (void*)arg;
+
 	char* type = "text/plain";
-	if(arg->Content_Type)type = (char*)arg->Content_Type;
+	if(parsed->Content_Type)type = (char*)parsed->Content_Type;
 
 	ret = mysnprintf(tmp, 0x1000,
 		"HTTP/1.1 200 OK\r\n"
 		"Content-type: %s\r\n"
 		"Content-Length: %d\r\n"
 		"\r\n",
-		type, arg->Content_Length
+		type, parsed->Content_Length
 	);
 	give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
 }
 	give_data_into_peer(art,_src_, stack,sp, 0,0, buf,len);
 	return 0;
 }
-int httpmaster_write_bysrc(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int httpmaster_write_bysrc(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	struct httpparsed p;
 	httpparser(buf, len, &p);
@@ -289,7 +291,7 @@ int httpmaster_write_bysrc(_obj* art,void* foot, _syn* stack,int sp, void* arg, 
 			if(s[j])give_data_into_peer(art,_src_, stack,sp, 0,0, s[j]->buf,s[j]->len);
 		}
 */
-		give_data_into_peer(art,_dst_, stack,sp, &p,0, p.Content,p.End-p.Content);
+		give_data_into_peer(art,_dst_, stack,sp, (p64)&p,0, p.Content,p.End-p.Content);
 		return 0;
 	}
 	else{
@@ -317,7 +319,7 @@ int httpmaster_write_bysrc(_obj* art,void* foot, _syn* stack,int sp, void* arg, 
 	//system_delete(obj);
 	return 0;
 }
-int httpmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int httpmaster_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	say("@httpmaster_write:%p,%p\n", art, foot);
 	switch(stack[sp-1].foottype){
@@ -326,7 +328,7 @@ int httpmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int id
 	}
 	return 0;
 }
-int httpmaster_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int httpmaster_read(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
 	return 0;
 }

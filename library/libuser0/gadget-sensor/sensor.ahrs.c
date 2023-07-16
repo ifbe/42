@@ -8,12 +8,12 @@
 
 
 
-void ahrs_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+void ahrs_take(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf, int len)
 {
 	//writeback: east north sky?
 	say("@ahrs_read\n");
 }
-void ahrs_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+void ahrs_give(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf, int len)
 {
 /*
 	receive gpsdata(already filtered):
@@ -27,13 +27,13 @@ void ahrs_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void
 	e[2] = arctanyx(2*(qw*qz+qx*qy),1-2*(qy*qy+qz*qz))*180/3.141592653;
 	say("@ahrs_write:%f,%f,%f,%f -> %f,%f,%f\n", qx,qy,qz,qw, e[0],e[1],e[2]);
 }
-int ahrs_discon(struct halfrel* self, struct halfrel* peer)
+int ahrs_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int ahrs_linkup(struct halfrel* self, struct halfrel* peer)
+int ahrs_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@ahrs_linkup\n");
+	say("@ahrs_attach\n");
 	return 0;
 }
 

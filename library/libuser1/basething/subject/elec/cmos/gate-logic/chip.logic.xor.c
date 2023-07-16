@@ -368,7 +368,7 @@ static void xor_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void xor_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void xor_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -390,7 +390,7 @@ static void xor_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int k
 		break;
 	}
 }
-static void xor_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static void xor_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
 	u8 tmp;
 	if(_src_ == stack[sp-1].foottype){

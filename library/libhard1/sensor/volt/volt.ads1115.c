@@ -154,7 +154,7 @@ float readadc(_obj* ele, int chan)
 
 
 
-int ads1115_take(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int ads1115_take(_obj* obj,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
 	say("@ads1115_take\n");
 	float* v = buf;
@@ -165,7 +165,7 @@ int ads1115_take(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx, v
 
 	return 0;
 }
-int ads1115_give(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int ads1115_give(_obj* obj,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
 	return 0;
 }
@@ -181,11 +181,11 @@ int ads1115_detach(struct halfrel* self, struct halfrel* peer)
 
 
 
-int ads1115_read(_obj* obj,void* foot, void* arg, int idx, void* buf, int len)
+int ads1115_read(_obj* obj,void* foot, p64 arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int ads1115_write(_obj* obj,void* foot,void* arg, int idx, u8* buf, int len)
+int ads1115_write(_obj* obj,void* foot,p64 arg, int idx, u8* buf, int len)
 {
 	return 0;
 }

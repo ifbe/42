@@ -149,7 +149,7 @@ static void autocmos_wnd(_obj* ent,void* foot, _syn* stack,int sp)
 
 
 
-static void autocmos_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void autocmos_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -171,7 +171,7 @@ static void autocmos_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,
 		break;
 	}
 }
-static void autocmos_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void autocmos_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//say("@autocmos_write:%x\n",buf[0]);
 }

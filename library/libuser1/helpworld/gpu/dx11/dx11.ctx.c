@@ -195,7 +195,7 @@ void dx11data_insert(_obj* ctx, int type, struct dx11data* src, int cnt)
 
 //[-4,-3]: ogl,area -> cam,togl
 //[-2,-1]: cam,towr -> wor,geom
-int dx11data_taking(_obj* world,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int dx11data_taking(_obj* world,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	struct relation* rel = world->orel0;
 	while(1){
@@ -215,7 +215,7 @@ int dx11data_taking(_obj* world,void* foot, _syn* stack,int sp, void* arg,int ke
 	}
 	return 0;
 }
-int dx11data_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int dx11data_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	return 0;
 }

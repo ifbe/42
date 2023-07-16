@@ -15,8 +15,8 @@ int spi_write(int fd, int addr, u8* buf, int len);
 //gpio
 int gpio_create(void*,void*,int,void*);
 int gpio_delete(void*);
-int gpio_read(_obj* obj,void* foot, void* arg,int cmd, u8* buf,int len);
-int gpio_write(_obj* obj,void* foot, void* arg,int cmd, u8* buf,int len);
+int gpio_read(_obj* obj,void* foot, p64 arg,int cmd, u8* buf,int len);
+int gpio_write(_obj* obj,void* foot, p64 arg,int cmd, u8* buf,int len);
 
 
 
@@ -161,7 +161,7 @@ int device_delete(_obj* this)
 {
 	return 0;
 }
-int device_reader(struct item* dev,void* foot, void* arg,int cmd, void* buf,int len)
+int device_reader(struct item* dev,void* foot, p64 arg,int cmd, void* buf,int len)
 {
 	int fd = dev->priv_fd;
 	switch(dev->type){
@@ -169,7 +169,7 @@ int device_reader(struct item* dev,void* foot, void* arg,int cmd, void* buf,int 
 	}
 	return 0;
 }
-int device_writer(struct item* dev,void* foot, void* arg,int cmd, void* buf,int len)
+int device_writer(struct item* dev,void* foot, p64 arg,int cmd, void* buf,int len)
 {
 	int fd = dev->priv_fd;
 	switch(dev->type){
@@ -191,7 +191,7 @@ int device_detach(struct halfrel* self, struct halfrel* peer)
 	say("@devicedetach\n");
 	return 0;
 }
-int device_takeby(struct item* dev,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
+int device_takeby(struct item* dev,void* foot, _syn* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	//say("@deviceread\n");
 	if(dev->ontaking){
@@ -206,7 +206,7 @@ int device_takeby(struct item* dev,void* foot, _syn* stack,int sp, void* arg,int
 	}
 	return 0;
 }
-int device_giveby(struct item* dev,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
+int device_giveby(struct item* dev,void* foot, _syn* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	//say("@device_giveby\n");
 	u8 t[2];

@@ -5,35 +5,35 @@ int lsm9ds1_create(struct item* ele, void* arg, int argc, u8** argv);
 int lsm9ds1_delete(struct item* ele);
 int lsm9ds1_attach(struct halfrel* self, struct halfrel* peer);
 int lsm9ds1_detach(struct halfrel* self, struct halfrel* peer);
-int lsm9ds1_write( struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len);
-int lsm9ds1_read(  struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len);
+int lsm9ds1_write( struct item* dri,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len);
+int lsm9ds1_read(  struct item* dri,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len);
 //
 #define _mpu9250_ hex64('m','p','u','9','2','5','0',0)
 int mpu9250_create(struct item* ele, void* arg, int argc, u8** argv);
 int mpu9250_delete(struct item* ele);
 int mpu9250_attach(struct halfrel* self, struct halfrel* peer);
 int mpu9250_detach(struct halfrel* self, struct halfrel* peer);
-int mpu9250_write( struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len);
-int mpu9250_read(  struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len);
+int mpu9250_write( struct item* dri,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len);
+int mpu9250_read(  struct item* dri,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len);
 //
 #define _ads1115_ hex64('a','d','s','1','1','1','5',0)
 int ads1115_create(struct item* ele, void* arg, int argc, u8** argv);
 int ads1115_delete(struct item* ele);
-int ads1115_read(  struct item* dri,void* foot, void* arg,int idx, u8* buf,int len);
-int ads1115_write( struct item* dri,void* foot, void* arg,int idx, u8* buf,int len);
+int ads1115_read(  struct item* dri,void* foot, p64 arg,int idx, u8* buf,int len);
+int ads1115_write( struct item* dri,void* foot, p64 arg,int idx, u8* buf,int len);
 int ads1115_attach(struct halfrel* self, struct halfrel* peer);
 int ads1115_detach(struct halfrel* self, struct halfrel* peer);
-int ads1115_take(  struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len);
-int ads1115_give(  struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len);
+int ads1115_take(  struct item* dri,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len);
+int ads1115_give(  struct item* dri,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len);
 #define _l298n_ hex64('l','2','9','8','n', 0, 0, 0)
 int l298n_create(struct item* ele, void* arg, int argc, u8** argv);
 int l298n_delete(struct item* ele);
-int l298n_read(  struct item* dri,void* foot, void* arg,int idx, u8* buf,int len);
-int l298n_write( struct item* dri,void* foot, void* arg,int idx, u8* buf,int len);
+int l298n_read(  struct item* dri,void* foot, p64 arg,int idx, u8* buf,int len);
+int l298n_write( struct item* dri,void* foot, p64 arg,int idx, u8* buf,int len);
 int l298n_attach(struct halfrel* self, struct halfrel* peer);
 int l298n_detach(struct halfrel* self, struct halfrel* peer);
-int l298n_take(  struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len);
-int l298n_give(  struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len);
+int l298n_take(  struct item* dri,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len);
+int l298n_give(  struct item* dri,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len);
 
 
 
@@ -122,11 +122,11 @@ int driver_delete(_obj* this)
 {
 	return 0;
 }
-int driver_reader(struct item* dri,void* foot, void* arg, int idx, void* buf, int len)
+int driver_reader(struct item* dri,void* foot, p64 arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int driver_writer(struct item* dri,void* foot, void* arg, int idx, void* buf, int len)
+int driver_writer(struct item* dri,void* foot, p64 arg, int idx, void* buf, int len)
 {
 	return 0;
 }
@@ -158,7 +158,7 @@ int driver_detach(struct halfrel* self, struct halfrel* peer)
 	}
 	return 0;
 }
-int driver_takeby(struct item* dri,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int driver_takeby(struct item* dri,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
 	switch(dri->type){
 		case _mpu9250_:mpu9250_read(dri,foot, stack,sp, arg,idx, buf,len);break;
@@ -168,7 +168,7 @@ int driver_takeby(struct item* dri,void* foot, _syn* stack,int sp, void* arg, in
 	}
 	return 0;
 }
-int driver_giveby(struct item* dri,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int driver_giveby(struct item* dri,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
 	//say("@driverwrite\n");
 	switch(dri->type){

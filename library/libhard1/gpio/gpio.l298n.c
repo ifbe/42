@@ -15,13 +15,13 @@ char pintable[4][3] = {
 
 
 
-int l298n_take(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int l298n_take(_obj* obj,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
 	say("@l298n_take\n");
 
     return 0;
 }
-int l298n_give(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int l298n_give(_obj* obj,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
 	int k;
 	u8 u[4][3];
@@ -36,7 +36,7 @@ int l298n_give(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx, voi
 			u[k][2] = 1;
 		}
 		printmemory(u,12);
-		writing_data_into_peer(obj, _gpio_, pintable,_volt_, u,12);
+		writing_data_into_peer(obj, _gpio_, (p64)pintable,_volt_, u,12);
 		sleep_us(100*1000);
 		break;
 	case 's':
@@ -46,7 +46,7 @@ int l298n_give(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx, voi
 			u[k][2] = 0;
 		}
 		printmemory(u,12);
-		writing_data_into_peer(obj, _gpio_, pintable,_volt_, u,12);
+		writing_data_into_peer(obj, _gpio_, (p64)pintable,_volt_, u,12);
 		sleep_us(100*1000);
 		break;
 	case 'a':
@@ -61,7 +61,7 @@ int l298n_give(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx, voi
 			u[k][2] = 1;
 		}
 		printmemory(u,12);
-		writing_data_into_peer(obj, _gpio_, pintable,_volt_, u,12);
+		writing_data_into_peer(obj, _gpio_, (p64)pintable,_volt_, u,12);
 		sleep_us(100*1000);
 		break;
 	case 'd':
@@ -76,14 +76,14 @@ int l298n_give(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx, voi
 			u[k][2] = 0;
 		}
 		printmemory(u,12);
-		writing_data_into_peer(obj, _gpio_, pintable,_volt_, u,12);
+		writing_data_into_peer(obj, _gpio_, (p64)pintable,_volt_, u,12);
 		sleep_us(100*1000);
 		break;
 	}
 
 	for(k=0;k<4;k++)u[k][0] = 0;
 	printmemory(u,12);
-	writing_data_into_peer(obj, _gpio_, pintable,_volt_, u,12);
+	writing_data_into_peer(obj, _gpio_, (p64)pintable,_volt_, u,12);
     return 0;
 }
 int l298n_attach(struct halfrel* self, struct halfrel* peer)
@@ -94,7 +94,7 @@ int l298n_attach(struct halfrel* self, struct halfrel* peer)
 
 	switch(self->foottype){
 	case _gpio_:
-		writing_data_into_peer(self->pchip, _gpio_, pintable,_func_, f, 12);
+		writing_data_into_peer(self->pchip, _gpio_, (p64)pintable,_func_, f, 12);
 		break;
 	}
     return 0;
@@ -107,11 +107,11 @@ int l298n_detach(struct halfrel* self, struct halfrel* peer)
 
 
 
-int l298n_read(_obj* obj,void* foot, void* arg, int idx, void* buf, int len)
+int l298n_read(_obj* obj,void* foot, p64 arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int l298n_write(_obj* obj,void* foot,void* arg, int idx, u8* buf, int len)
+int l298n_write(_obj* obj,void* foot,p64 arg, int idx, u8* buf, int len)
 {
 	return 0;
 }

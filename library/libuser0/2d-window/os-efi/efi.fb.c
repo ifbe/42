@@ -9,8 +9,8 @@ void getscreen(void** _buf, u64* _fmt, int* _w, int* _h, int* _fbw, int* _fbh);
 void* supply_alloc();
 void* supply_recycle(void*);
 //
-int wndmgr_take(void*,void*, void*,int, void*,int, void*,int);
-int wndmgr_give(void*,void*, void*,int, void*,int, void*,int);
+int wndmgr_take(void*,void*, void*,int, p64,int, void*,int);
+int wndmgr_give(void*,void*, void*,int, p64,int, void*,int);
 
 
 
@@ -63,7 +63,7 @@ void window_update(_obj* wnd,void* test, int x0,int y0, int xn,int yn)
 
 
 
-void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == lfb)return;
 	u64 t0 = timeread_us();
@@ -79,7 +79,7 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,i
 	u64 t2 = timeread_us();
 	wnd->whdf.iwn = t2 - t1;
 }
-void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(foot){
 		//update area

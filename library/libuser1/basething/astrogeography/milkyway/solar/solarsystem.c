@@ -147,7 +147,7 @@ static void planet_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void planet_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void planet_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -169,7 +169,7 @@ static void planet_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 		break;
 	}
 }
-static void planet_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void planet_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
 static void planet_detach(struct halfrel* self, struct halfrel* peer)
@@ -182,10 +182,10 @@ static void planet_attach(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void planet_modify(_obj* act)
+static void planet_reader(_obj* ent,void* foot, p64 arg,int key, void* buf,int len)
 {
 }
-static void planet_search(_obj* act)
+static void planet_writer(_obj* ent,void* foot, p64 arg,int key, void* buf,int len)
 {
 }
 static void planet_delete(_obj* act)
@@ -207,8 +207,8 @@ void planet_register(_obj* p)
 
 	p->oncreate = (void*)planet_create;
 	p->ondelete = (void*)planet_delete;
-	p->onreader = (void*)planet_search;
-	p->onwriter = (void*)planet_modify;
+	p->onreader = (void*)planet_reader;
+	p->onwriter = (void*)planet_writer;
 
 	p->onattach = (void*)planet_attach;
 	p->ondetach = (void*)planet_detach;

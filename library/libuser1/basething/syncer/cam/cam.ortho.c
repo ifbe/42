@@ -191,7 +191,7 @@ static void orthcam_matrix(
 
 
 
-static int orthcam_byworld_bycam_bywnd_read(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int orthcam_byworld_bycam_bywnd_read(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 //[-6,-5]: wnd,area -> cam,togl
 //[-4,-3]: cam,gl41 -> wor,geom		//the camera taking photo
@@ -207,7 +207,7 @@ static int orthcam_byworld_bycam_bywnd_read(_obj* ent,void* foot, _syn* stack,in
 	}
 	return 0;
 }
-static int orthcam_bywnd_read(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int orthcam_bywnd_read(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 //find world from camera
 	struct halfrel* tmp[2];
@@ -243,7 +243,7 @@ static int orthcam_bywnd_read(_obj* ent,void* foot, _syn* stack,int sp, void* ar
 	}
 	return 0;
 }
-static int orthcam_write_bycam(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int orthcam_write_bycam(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -251,7 +251,7 @@ static int orthcam_write_bycam(_obj* ent,void* foot, _syn* stack,int sp, void* a
 
 
 
-static int orthcam_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int orthcam_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return 0;
 
@@ -268,7 +268,7 @@ static int orthcam_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 	}
 	return 0;
 }
-static int orthcam_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int orthcam_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	struct privdata* priv = (void*)ent->priv_256b;
 	if(EVSEND == priv->evtype)give_data_into_peer(ent,_evto_, stack,sp, arg,key, buf,len);

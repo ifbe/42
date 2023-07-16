@@ -47,7 +47,7 @@ static void schematic_gl41draw(
 
 
 
-static void schematic_world_camera_window(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key)
+static void schematic_world_camera_window(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -64,7 +64,7 @@ static void schematic_world_camera_window(_obj* ent,void* slot, _syn* stack,int 
 		break;
 	}
 }
-int schematic_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int schematic_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
@@ -80,7 +80,7 @@ int schematic_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key
 	}
 	return 0;
 }
-int schematic_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int schematic_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	return 0;
 }

@@ -208,17 +208,17 @@ static void font_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 		break;
 	}
 }
-static void font_wrl_wnd(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+static void font_wrl_wnd(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key)
 {
 }
-static void font_wnd(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+static void font_wnd(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key)
 {
 }
 
 
 
 
-static void font_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void font_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -241,7 +241,7 @@ static void font_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int 
 		break;
 	}
 }
-static void font_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void font_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	printmemory(buf,16);
 	font_event(ent, 0, buf, len);

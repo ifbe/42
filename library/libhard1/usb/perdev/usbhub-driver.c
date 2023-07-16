@@ -193,7 +193,7 @@ int usbhub_powerone(struct item* usb, int id)
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
-		&req,8,
+		(p64)&req,8,
 		&perfunc->portstat[id],4
 	);
 	if(ret < 0)return -10;
@@ -205,7 +205,7 @@ int usbhub_powerone(struct item* usb, int id)
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
-		&req,8,
+		(p64)&req,8,
 		0,0
 	);
 	if(ret < 0)return -10;
@@ -215,7 +215,7 @@ int usbhub_powerone(struct item* usb, int id)
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
-		&req,8,
+		(p64)&req,8,
 		&perfunc->portstat[id],4
 	);
 	if(ret < 0)return -10;
@@ -245,7 +245,7 @@ int usbhub_resetone(struct item* usb, int id)
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
-		&req,8,
+		(p64)&req,8,
 		&perfunc->portstat[id],4
 	);
 	if(ret < 0)return -10;
@@ -257,7 +257,7 @@ int usbhub_resetone(struct item* usb, int id)
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
-		&req,8,
+		(p64)&req,8,
 		0,0
 	);
 	if(ret < 0)return -10;
@@ -268,7 +268,7 @@ int usbhub_resetone(struct item* usb, int id)
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
-		&req,8,
+		(p64)&req,8,
 		&perfunc->portstat[id],4
 	);
 	if(ret < 0)return -10;
@@ -282,7 +282,7 @@ int usbhub_resetone(struct item* usb, int id)
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
-		&req,8,
+		(p64)&req,8,
 		0,0
 	);
 	if(ret < 0)return -10;
@@ -293,7 +293,7 @@ int usbhub_resetone(struct item* usb, int id)
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
-		&req,8,
+		(p64)&req,8,
 		&perfunc->portstat[id],4
 	);
 	if(ret < 0)return -10;
@@ -324,7 +324,7 @@ int usbhub_checkone(struct item* usb, int id)
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
-		&req,8,
+		(p64)&req,8,
 		&perfunc->portstat[id],4
 	);
 	if(ret < 0)return -10;
@@ -337,7 +337,7 @@ int usbhub_checkone(struct item* usb, int id)
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
-		&req,8,
+		(p64)&req,8,
 		0,0
 	);
 	if(ret < 0)return -10;
@@ -348,7 +348,7 @@ int usbhub_checkone(struct item* usb, int id)
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
-		&req,8,
+		(p64)&req,8,
 		&perfunc->portstat[id],4
 	);
 	if(ret < 0)return -10;
@@ -437,9 +437,10 @@ int usbhub_stopall(struct item* usb)
 
 
 
-static int usbhub_ongive(struct item* usb,int xxx, struct item* xhci,int endp, void* sbuf,int slen, void* rbuf,int rlen)
+static int usbhub_ongive(struct item* usb,int xxx, struct item* xhci,int endp, p64 arg,int slen, void* rbuf,int rlen)
 {
 	//usbhub_print("usbhub_ongive\n");
+	void** sbuf = (void**)arg;
 	void* data = *(void**)sbuf;
 	//printmemory(data, 16);
 
@@ -463,7 +464,7 @@ static int usbhub_ongive(struct item* usb,int xxx, struct item* xhci,int endp, v
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
-			&req,8,
+			(p64)&req,8,
 			&perfunc->portstat[j],4
 		);
 		if(ret < 0)return -10;
@@ -482,7 +483,7 @@ static int usbhub_ongive(struct item* usb,int xxx, struct item* xhci,int endp, v
 			ret = xhci->give_pxpxpxpx(
 				xhci,slot,
 				0,0,
-				&req,8,
+				(p64)&req,8,
 				0,0
 			);
 		}
@@ -492,7 +493,7 @@ static int usbhub_ongive(struct item* usb,int xxx, struct item* xhci,int endp, v
 			ret = xhci->give_pxpxpxpx(
 				xhci,slot,
 				0,0,
-				&req,8,
+				(p64)&req,8,
 				0,0
 			);
 		}
@@ -528,7 +529,7 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
-		&req,8,
+		(p64)&req,8,
 		hubdesc,8
 	);
 	say("bDescLength=%x\n",         hubdesc->bDescLength);
@@ -565,7 +566,7 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
-			&req,8,
+			(p64)&req,8,
 			&status, 4
 		);
 		usbhub_print("devicestatus=%x\n",status);
@@ -575,7 +576,7 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
-			&req,8,
+			(p64)&req,8,
 			&status, 4
 		);
 		usbhub_print("interfacestatus=%x\n",status);
@@ -585,7 +586,7 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
-			&req,8,
+			(p64)&req,8,
 			&status, 4
 		);
 		usbhub_print("hubstatus=%x\n",status);
@@ -637,7 +638,7 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
-		&req,8,
+		(p64)&req,8,
 		0,0
 	);
 	if(ret < 0){
@@ -652,7 +653,7 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
-			&req,8,
+			(p64)&req,8,
 			&status, 4
 		);
 		usbhub_print("devicestatus=%x\n",status);
@@ -662,7 +663,7 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
-			&req,8,
+			(p64)&req,8,
 			&status, 4
 		);
 		usbhub_print("interfacestatus=%x\n",status);
@@ -672,7 +673,7 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
-			&req,8,
+			(p64)&req,8,
 			&status, 4
 		);
 		usbhub_print("hubstatus=%x\n",status);
@@ -682,7 +683,7 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
-			&req,8,
+			(p64)&req,8,
 			0,0
 		);
 		if(ret < 0){
@@ -705,7 +706,7 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
-			&req,8,
+			(p64)&req,8,
 			0,0
 		);
 		if(ret < 0)return -10;
@@ -755,7 +756,7 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	ret = xhci->give_pxpxpxpx(
 		xhci, slot|(inaddr<<8),
 		0, 0,
-		perfunc->buf, pktlen,
+		(p64)perfunc->buf, pktlen,
 		usb, 0
 	);
 	return 0;

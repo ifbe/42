@@ -8,7 +8,7 @@ void say(char*,...);
 
 
 
-u32 resolvehostname(char* addr)
+u32 resolvehostname4(char* addr)
 {
 	return 0;
 }
@@ -16,16 +16,12 @@ u32 resolvehostname(char* addr)
 
 
 
-void socket_take(int fd, void* tmp, void* buf, int len)
+void socket_reader(int fd, void* tmp, void* buf, int len)
 {
 }
-void socket_give(int fd, void* tmp, void* buf, int len)
+void socket_writer(int fd, void* tmp, void* buf, int len)
 {
 }
-
-
-
-
 void socket_delete()
 {
 }

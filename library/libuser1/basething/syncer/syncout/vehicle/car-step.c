@@ -88,7 +88,7 @@ int stepcar_print(_obj* ent,void* foot, struct halfrel* stack,int sp, u8* buf, i
 
 
 
-int stepcar_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
+int stepcar_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
 	if(0 == stack)return 0;
 
@@ -102,7 +102,7 @@ int stepcar_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg
 
 	return 0;
 }
-int stepcar_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
+int stepcar_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
 	say("@stepcar_write\n");
 	printmemory(buf, len);

@@ -368,7 +368,7 @@ static void xnor_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void xnor_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void xnor_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -390,7 +390,7 @@ static void xnor_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 		break;
 	}
 }
-static void xnor_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static void xnor_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
 	u8 tmp;
 	//say("@xorgate_write:%x\n",buf[0]);

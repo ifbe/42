@@ -130,7 +130,7 @@ static u8 dpad2lrdu(u8 dpad)
 	if((dpad >= 3)&&(dpad <= 5))val |= 4;
 	if((0==dpad)|(1==dpad)|(7==dpad))val |= 8;*/
 }
-static int dsfourhid_ongive(struct item* usb,int xxx, struct item* xhci,int endp, void* sbuf,int slen, void* rbuf,int rlen)
+static int dsfourhid_ongive(struct item* usb,int xxx, struct item* xhci,int endp, p64 arg,int slen, void* rbuf,int rlen)
 {
 	struct perusb* perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
@@ -138,7 +138,8 @@ static int dsfourhid_ongive(struct item* usb,int xxx, struct item* xhci,int endp
 	struct perhid* perhid = (void*)&perds->hid;
 	u8 notold = ~perhid->stat;
 
-	struct dsfourreport* data = *(void**)sbuf;
+	void** sbuf = (void**)arg;
+	struct dsfourreport* data = *sbuf;
 	//printmemory(data, 0x10);
 
 	//key
@@ -165,7 +166,7 @@ static int dsfourhid_ongive(struct item* usb,int xxx, struct item* xhci,int endp
 	say("gx=%d,gy=%d,gz=%d, ax=%d,ay=%d,az=%d\n",data->gx,-data->gz,data->gy,  -data->ax,data->az,-data->ay);*/
 	return 0;
 }
-static int dsfivehid_ongive(struct item* usb,int xxx, struct item* xhci,int endp, void* sbuf,int slen, void* rbuf,int rlen)
+static int dsfivehid_ongive(struct item* usb,int xxx, struct item* xhci,int endp, p64 arg,int slen, void* rbuf,int rlen)
 {
 	struct perusb* perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
@@ -173,7 +174,8 @@ static int dsfivehid_ongive(struct item* usb,int xxx, struct item* xhci,int endp
 	struct perhid* perhid = (void*)&perds->hid;
 	u8 notold = ~perhid->stat;
 
-	struct dsfivereport* data = *(void**)sbuf;
+	void** sbuf = (void**)arg;
+	struct dsfivereport* data = *sbuf;
 	//printmemory(data, 0x10);
 
 	//key
@@ -196,13 +198,14 @@ static int dsfivehid_ongive(struct item* usb,int xxx, struct item* xhci,int endp
 
 	return 0;
 }
-static int dswhat_ongive(struct item* usb,int xxx, struct item* xhci,int endp, void* sbuf,int slen, void* rbuf,int rlen)
+static int dswhat_ongive(struct item* usb,int xxx, struct item* xhci,int endp, p64 arg,int slen, void* rbuf,int rlen)
 {
 	struct perusb* perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
 
 	int j;
-	u8* tmp = *(void**)sbuf;
+	void** sbuf = (void**)arg;
+	u8* tmp = *sbuf;
 	u8* debug = (void*)0;
 	for(j=0;j<0x40;j++)debug[j] = tmp[j];
 
@@ -291,7 +294,7 @@ int dsfourhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struc
 			ret = xhci->give_pxpxpxpx(
 				xhci,slot,
 				0,0,
-				&req,8,
+				(p64)&req,8,
 				temp,hiddesc->wReportDescLength
 			);
 			if(ret >= 0){
@@ -316,7 +319,7 @@ int dsfourhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struc
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
-		&req,8,
+		(p64)&req,8,
 		0,0
 	);
 	if(ret < 0)return -10;
@@ -330,7 +333,7 @@ int dsfourhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struc
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
-		&req,8,
+		(p64)&req,8,
 		0,0
 	);
 
@@ -351,7 +354,7 @@ int dsfourhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struc
 	ret = xhci->give_pxpxpxpx(
 		xhci, slot|(inaddr<<8),
 		0, 0,
-		perds->trb, pktlen,
+		(p64)perds->trb, pktlen,
 		usb,0
 	);
 	return 0;

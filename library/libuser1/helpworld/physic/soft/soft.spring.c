@@ -134,7 +134,7 @@ static void force_draw_gl41(
 		gl41ascii_center(wnd, 0xff0000, jo[j].here,tr,tu,'a'+j);
 	}
 }
-void force_read_board(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+void force_read_board(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key)
 {
 	struct style* slot;
 	_obj* wor;struct style* geom;
@@ -148,7 +148,7 @@ void force_read_board(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int ke
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	force_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-void force_read_inner(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+void force_read_inner(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key)
 {
 	//spring, stick
 	struct joint* jo = ent->listptr.buf0;
@@ -169,7 +169,7 @@ void force_read_inner(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int ke
 		entity_takeby(tab[j],0, stack,sp+2, 0,0, jo,0);
 	}
 }
-int force_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int force_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	struct joint* jo = ent->listptr.buf0;
 	if(0 == stack)return 0;
@@ -196,7 +196,7 @@ int force_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, vo
 	}
 	return 0;
 }
-int force_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int force_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 	return 0;
 }

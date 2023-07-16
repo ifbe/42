@@ -3,28 +3,34 @@
 
 
 
-void video_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+void micphone_take(_sup* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf, int len)
 {
 	printf("%llx,%llx,%llx,%llx\n", win, sty, act, pin);
 	if(0 == act)return;
 }
-void video_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+void micphone_give(_sup* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf, int len)
+{
+}
+void micphone_detach()
+{
+}
+void micphone_attach()
 {
 }
 
 
 
 
-void videolist()
+void micphone_reader(_obj* sup,void* foot, p64 arg,int idx, void* buf, int len)
 {
 }
-void videochoose()
+void micphone_writer(_obj* sup,void* foot, p64 arg,int idx, void* buf, int len)
 {
 }
-void videodelete(_obj* win)
+void micphone_delete(_obj* win)
 {
 }
-void videocreate(_obj* win)
+void micphone_create(_obj* win)
 {
 }
 

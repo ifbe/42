@@ -197,7 +197,7 @@ static void rectify_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	rectify_draw_gl41(ent, slot, wor,geom, wnd,area);
 }
-static void rectify_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void rectify_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -218,7 +218,7 @@ static void rectify_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 		rectify_wrl_cam_wnd(ent,slot, stack,sp);
 	}
 }
-static void rectify_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void rectify_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
 static void rectify_detach(struct halfrel* self, struct halfrel* peer)

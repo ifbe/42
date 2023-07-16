@@ -112,14 +112,15 @@ struct perxbox{
 
 
 
-static int xboxhid_ongive(struct item* usb,int xxx, struct item* xhci,int endp, void* sbuf,int slen, void* rbuf,int rlen)
+static int xboxhid_ongive(struct item* usb,int xxx, struct item* xhci,int endp, p64 arg,int slen, void* rbuf,int rlen)
 {
 	struct perusb* perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
 	struct perxbox* perxbox = (void*)perusb->perfunc;
 	struct perhid* perhid = (void*)&perxbox->hid;
 
-	struct xboxonereport* data = *(void**)sbuf;
+	void** sbuf = (void**)arg;
+	struct xboxonereport* data = *sbuf;
 	//printmemory(data, 0x40);
 
 	int notold, now;
@@ -244,7 +245,7 @@ int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
 		0,0,
-		&req,8,
+		(p64)&req,8,
 		0,0
 	);
 	if(ret < 0)return -10;
@@ -261,7 +262,7 @@ int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot|(outaddr<<8),
 		0,0,
-		tmp,5,
+		(p64)tmp,5,
 		0,0
 	);
 
@@ -274,7 +275,7 @@ int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	ret = xhci->give_pxpxpxpx(
 		xhci, slot|(inaddr<<8),
 		0, 0,
-		perxbox->trb, pktlen,
+		(p64)perxbox->trb, pktlen,
 		usb,0
 	);
 	return 0;

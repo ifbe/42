@@ -23,11 +23,11 @@ int slam_create(_obj* win, void* str)
 
 
 
-int slam_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+int slam_take(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf, int len)
 {
 	return 0;
 }
-int slam_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+int slam_give(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf, int len)
 {
 	return 0;
 }

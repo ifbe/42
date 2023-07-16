@@ -186,7 +186,7 @@ static void spurgear_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void spurgear_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spurgear_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -208,7 +208,7 @@ static void spurgear_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,
 		break;
 	}
 }
-static void spurgear_giving(_obj* gear,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spurgear_giving(_obj* gear,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 
 	if(_gear_ == stack[sp-1].foottype){
@@ -219,7 +219,7 @@ static void spurgear_giving(_obj* gear,void* foot, _syn* stack,int sp, void* arg
 	else{
 		say("@spurgear_mouse:%llx\n", gear);
 		gear->STAMP += 1;
-		spurgear_write_ray(gear, 0, arg,buf);
+		spurgear_write_ray(gear, 0, (void*)arg,buf);
 		spurgear_spread(stack, sp, gear);
 	}
 }

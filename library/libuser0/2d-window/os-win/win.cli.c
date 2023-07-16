@@ -21,10 +21,10 @@ void window_attach()
 void window_detach()
 {
 }
-void window_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg, int idx, short* buf, int len)
+void window_take(_sup* wnd,void* foot, _syn* stack,int sp, p64 arg, int idx, short* buf, int len)
 {
 }
-void window_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg, int idx, short* buf, int len)
+void window_give(_sup* wnd,void* foot, _syn* stack,int sp, p64 arg, int idx, short* buf, int len)
 {
 }
 

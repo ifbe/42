@@ -71,25 +71,25 @@ int file_delete(_obj* oo)
 	asset[fd] = 0;
 	return 0;
 }
+int file_reader(_obj* oo,int xx, p64 arg,int cmd, void* buf,int len)
+{
+	int fd = oo->fileinfo.fd;
+	return AAsset_read(asset[fd], buf, len);
+}
+int file_writer(_obj* oo,int xx, p64 arg,int cmd, void* buf,int len)
+{
+	return 0;
+}
+
+
+
+
 int file_search()
 {
 	say("@filesearch\n");
 	return 0;
 }
 int file_modify()
-{
-	return 0;
-}
-
-
-
-
-int file_take(_obj* oo,int xx, void* arg,int off, void* buf,int len)
-{
-	int fd = oo->fileinfo.fd;
-	return AAsset_read(asset[fd], buf, len);
-}
-int file_give(_obj* oo,int xx, void* arg,int off, void* buf,int len)
 {
 	return 0;
 }
@@ -108,7 +108,7 @@ int notinhashlist(u32* hashbuf, int hashcnt, const char* name)
 	}
 	return 1;
 }
-int readfolder(void* url, int fd, void* arg, int off, void* buf, int len)
+int readfolder(void* url, int fd, p64 arg, int off, void* buf, int len)
 {
 	//. and ..
 	int olen = snprintf(buf, 8, "./\n../\n");

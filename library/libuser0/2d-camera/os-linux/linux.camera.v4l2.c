@@ -383,7 +383,7 @@ void* cameraworker(_obj* cam)
 
 
 
-int v4l2cam_take(_obj* cam,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int v4l2cam_take(_obj* cam,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len)
 {
 	struct percam* pcam = cam->priv_ptr;
 	if(0 == pcam)return 0;
@@ -394,7 +394,7 @@ int v4l2cam_take(_obj* cam,void* foot, _syn* stack,int sp, void* arg,int idx, u8
 	*(u64*)buf = addr;
 	return 0;
 }
-int v4l2cam_give(_obj* cam,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int v4l2cam_give(_obj* cam,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
@@ -410,11 +410,11 @@ int v4l2cam_detach()
 
 
 
-int v4l2cam_reader(_obj* cam,void* foot, void* arg,int idx, u8* buf,int len)
+int v4l2cam_reader(_obj* cam,void* foot, p64 arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int v4l2cam_writer(_obj* cam,void* foot, void* arg,int idx, u8* buf,int len)
+int v4l2cam_writer(_obj* cam,void* foot, p64 arg,int idx, u8* buf,int len)
 {
 	return 0;
 }

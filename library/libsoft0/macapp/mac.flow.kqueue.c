@@ -11,7 +11,7 @@
 #include "libsoft.h"
 #define MAXSIZE 4096
 #define BUFFER_SIZE 0x100000
-int socket_take(void*,int, void*,int, void*,int);
+int socket_reader(void*,int, p64,int, void*,int);
 
 
 
@@ -103,12 +103,12 @@ int kqueue_thread(int argc, const char * argv[])
 			case _udp_:
 			case _UDP_:
 			case _tcp_:{
-				cnt = socket_take(here,0, here->sockinfo.peer,0, tmpbuf,BUFFER_SIZE);
+				cnt = socket_reader(here,0, (p64)here->sockinfo.peer,0, tmpbuf,BUFFER_SIZE);
 				if(cnt >= 0)
 				{
 					//say("@kqueuethread: %.4s\n", &obj[cc].type);
 					if((0==here->irel0)&&(0==here->orel0))printmemory(tmpbuf, cnt);
-					else give_data_into_peer(here,_dst_, stack,0, here->sockinfo.peer,0, tmpbuf,cnt);
+					else give_data_into_peer(here,_dst_, stack,0, (p64)here->sockinfo.peer,0, tmpbuf,cnt);
 				}
 				if(cnt <= 0)
 				{
@@ -121,7 +121,7 @@ int kqueue_thread(int argc, const char * argv[])
 			}//tcp
 
 			case _Tcp_:{
-				cnt = socket_take(here,0, here->sockinfo.peer,0, tmpbuf, BUFFER_SIZE);
+				cnt = socket_reader(here,0, (p64)here->sockinfo.peer,0, tmpbuf, BUFFER_SIZE);
 				if(cnt >= 0)
 				{
 					//printmemory(buf, cnt);

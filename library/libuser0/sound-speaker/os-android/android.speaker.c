@@ -39,10 +39,10 @@ static void errorCallback(AAudioStream *stream, void *userData, aaudio_result_t 
 
 
 
-void speaker_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+void speaker_take(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf, int len)
 {
 }
-void speaker_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+void speaker_give(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf, int len)
 {
 }
 void speaker_detach()
@@ -53,13 +53,13 @@ void speaker_attach()
 }
 
 
-void speaker_reader(_obj* sup,void* foot, void* arg,int idx, void* buf, int len)
+void speaker_reader(_obj* sup,void* foot, p64 arg,int idx, void* buf, int len)
 {
 }
-void speaker_writer(_obj* sup,void* foot, void* arg,int idx, void* buf, int len)
+void speaker_writer(_obj* sup,void* foot, p64 arg,int idx, void* buf, int len)
 {
 }
-void speakerdelete(_obj* spk, void* arg, int argc, u8** argv)
+void speaker_delete(_obj* spk, void* arg, int argc, u8** argv)
 {
 	//res = AAudioStream_requestStop(stream);
 	//res = AAudioStream_requestPause(stream);
@@ -67,7 +67,7 @@ void speakerdelete(_obj* spk, void* arg, int argc, u8** argv)
 
 	//AAudioStream_close(stream);
 }
-void speakercreate(_obj* spk, void* arg, int argc, u8** argv)
+void speaker_create(_obj* spk, void* arg, int argc, u8** argv)
 {
 	say((void*)"speakercreate\n");
 

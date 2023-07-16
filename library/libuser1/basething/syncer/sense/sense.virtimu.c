@@ -60,12 +60,12 @@ void virtimu_senseforce(_obj* ent)
 
 
 
-int virtimu_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int virtimu_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	say("@virtimu_read:%p,%p\n", ent, foot);
 	return 0;
 }
-int virtimu_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+int virtimu_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
 	//say("@virtimu_write:%.4s\n",&foot);
 	if(_clk_ == stack[sp=1].foottype){

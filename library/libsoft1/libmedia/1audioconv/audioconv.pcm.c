@@ -45,11 +45,11 @@ int pcmfmt_s32tos16(int* srcbuf, int srclen, short* dstbuf, int dstlen)
 }
 
 
-int pcmfmt_take(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, void* buf, int len)
+int pcmfmt_take(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, void* buf, int len)
 {
 	return 0;
 }
-int pcmfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, void* buf, int len)
+int pcmfmt_give(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, void* buf, int len)
 {
 	struct perobj* per = (void*)art->priv_256b;
 	if(per->log)say("@pcmfmt_give:len=%x\n",len);

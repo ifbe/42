@@ -41,7 +41,7 @@ static void speakercallback(void* ptr, AudioQueueRef aqref, AudioQueueBufferRef 
 
 
 
-int speaker_take(_obj* spk,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int speaker_take(_obj* spk,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {/*
 	if(spk->orel0)take_data_from_peer(spk,_ctx_, stack,sp, 0,0, 0,0);
 
@@ -66,7 +66,7 @@ int speaker_take(_obj* spk,void* foot, _syn* stack,int sp, void* arg, int idx, v
 	usleep(1000*1000);*/
 	return 0;
 }
-int speaker_give(_obj* spk,void* foot, _syn* stack,int sp, void* arg, int idx, short* buf, int len)
+int speaker_give(_obj* spk,void* foot, _syn* stack,int sp, p64 arg, int idx, short* buf, int len)
 {
 	int j;
 	//say("@speakerwrite: len=%x\n", len);
@@ -85,6 +85,14 @@ int speaker_give(_obj* spk,void* foot, _syn* stack,int sp, void* arg, int idx, s
 		spk,enq,deq, aqref,aqbufref, j);
 
 	spk->appleaq.aqenq = (enq+1)%BUFCNT;
+	return 0;
+}
+int speaker_attach()
+{
+	return 0;
+}
+int speaker_detach()
+{
 	return 0;
 }
 
@@ -116,11 +124,23 @@ int spaker_makezero10ms(_obj* spk, AudioQueueRef aqref)
 
 	return 0;
 }
-int speakerdelete(_obj* spk)
+
+
+
+
+int speaker_reader(_obj* spk,void* foot, p64 arg,int idx, void* buf, int len)
 {
 	return 0;
 }
-int speakercreate(_obj* spk)
+int speaker_writer(_obj* spk,void* foot, p64 arg,int idx, void* buf, int len)
+{
+	return 0;
+}
+int speaker_delete(_obj* spk)
+{
+	return 0;
+}
+int speaker_create(_obj* spk)
 {
 	//0.aqref
 	AudioStreamBasicDescription fmt = {0};

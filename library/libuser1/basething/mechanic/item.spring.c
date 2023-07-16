@@ -151,7 +151,7 @@ static void spring_read_b(_obj* ent, int key, struct joint* jo, int thisone)
 
 
 
-static void spring_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spring_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//say("@spring_read: %.4s\n", &self->foottype);
 	switch(stack[sp-1].foottype){
@@ -160,7 +160,7 @@ static void spring_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 	case 'f':spring_read_force(ent,stack[sp-8].pchip, buf,len);break;
 	}
 }
-static void spring_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spring_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
 static void spring_detach(struct halfrel* self, struct halfrel* peer)

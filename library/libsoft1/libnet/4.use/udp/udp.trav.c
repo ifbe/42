@@ -24,17 +24,17 @@ int udptrav_memory(u64* list, u64 self)
 
 
 
-int udptravclient_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int udptravclient_read(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int udptravclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int udptravclient_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	//say("@udptravclient_write: %.4s\n", &foot);
 
 	if(_std_ == stack[sp-1].foottype){
-		if(' ' == buf[0])give_data_into_peer(art,_src_, stack,sp, &art->listu64.data0,0, buf, 1);
-		else if(art->listu64.data1)give_data_into_peer(art,_src_, stack,sp, &art->listu64.data1,0, buf, 1);
+		if(' ' == buf[0])give_data_into_peer(art,_src_, stack,sp, (p64)&art->listu64.data0,0, buf, 1);
+		else if(art->listu64.data1)give_data_into_peer(art,_src_, stack,sp, (p64)&art->listu64.data1,0, buf, 1);
 		return 0;
 	}
 
@@ -50,8 +50,7 @@ int udptravclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int
 
 	//from server
 	if( (p_port == s_port) && (p_addr == s_addr) ) {
-		u8* t;
-		t = arg;
+		u8* t = (void*)arg;
 		say("server: %d.%d.%d.%d:%d\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
 		t = buf;
 		say("myself: %d.%d.%d.%d:%d\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
@@ -66,7 +65,7 @@ int udptravclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int
 
 	//from friend
 	if( (p_port == f_port) && (p_addr == f_addr) ) {
-		u8* t = arg;
+		u8* t = (void*)arg;
 		say("from %d.%d.%d.%d:%d->\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
 		printmemory(buf, len);
 		return 0;
@@ -105,11 +104,11 @@ int udptravclient_create(_obj* art, u8* url)
 
 
 
-int udptravserver_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int udptravserver_read(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int udptravserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int udptravserver_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
@@ -133,11 +132,11 @@ int udptravserver_create(_obj* art, u8* url)
 
 
 
-int udptravmaster_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int udptravmaster_read(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int udptravmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int udptravmaster_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	if(0==stack|sp<2)return 0;
 	_obj* sys = stack[sp-2].pchip;
@@ -148,7 +147,7 @@ int udptravmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int
 			return 0;
 		}
 
-		u8* t = arg;
+		u8* t = (void*)arg;
 		say("from %d.%d.%d.%d:%d->\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
 		printmemory(buf, len);
 

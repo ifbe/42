@@ -6,10 +6,17 @@
 void joythread(_obj* win)
 {
 }
-void joycreate(_obj* win)
+
+
+
+
+void joy_create(_obj* win)
 {
 	//threadcreate(joystickthread, win);
 	//threadcreate(joythread, win);
+}
+void joy_delete(_obj* win)
+{
 }
 
 

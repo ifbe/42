@@ -395,11 +395,11 @@ struct item
 		char padding1[8];
 	};
 	union{
-		int (*onreader)(struct item* node,void* foot, void* arg,int cmd, void* buf,int len);
+		int (*onreader)(struct item* node,void* foot, p64 arg,int cmd, void* buf,int len);
 		char padding2[8];
 	};
 	union{
-		int (*onwriter)(struct item* node,void* foot, void* arg,int cmd, void* buf,int len);
+		int (*onwriter)(struct item* node,void* foot, p64 arg,int cmd, void* buf,int len);
 		char padding3[8];
 	};
 	union{
@@ -412,16 +412,16 @@ struct item
 	};
 	union{
 		int (*take_xxxxxxxx)(u64 node,u64 foot, u64 stack,u64 sp, u64 arg,u32 cmd, u64 buf,u32 len);
-		int (*take_pxpxpxpx)(struct item* node,u32 foot, struct halfrel* stack,u32 sp, void* arg,u32 cmd, void* buf,u32 len);
-		int (*ontaking)(struct item* node,void* foot, struct halfrel* stack,int sp, void* arg,int cmd, void* buf,int len);
-		int (*take)(struct item* node,void* foot, struct halfrel* stack,int sp, void* arg,int cmd, void* buf,int len);
+		int (*take_pxpxpxpx)(struct item* node,u32 foot, struct halfrel* stack,u32 sp, p64 arg,u32 cmd, void* buf,u32 len);
+		int (*ontaking)(struct item* node,void* foot, struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len);
+		int (*take)(struct item* node,void* foot, struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len);
 		char padding6[8];
 	};
 	union{
 		int (*give_xxxxxxxx)(u64 node,u64 foot, u64 stack,u64 sp, u64 arg,u32 cmd, u64 buf,u32 len);
-		int (*give_pxpxpxpx)(struct item* node,u32 foot, struct halfrel* stack,u32 sp, void* arg,u32 cmd, void* buf,u32 len);
-		int (*ongiving)(struct item* node,void* foot, struct halfrel* stack,int sp, void* arg,int cmd, void* buf,int len);
-		int (*give)(struct item* node,void* foot, struct halfrel* stack,int sp, void* arg,int cmd, void* buf,int len);
+		int (*give_pxpxpxpx)(struct item* node,u32 foot, struct halfrel* stack,u32 sp, p64 arg,u32 cmd, void* buf,u32 len);
+		int (*ongiving)(struct item* node,void* foot, struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len);
+		int (*give)(struct item* node,void* foot, struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len);
 		char padding7[8];
 	};
 
@@ -474,6 +474,74 @@ struct item
 		struct mt20list mt20list;
 	};
 }__attribute__((packed));
+struct item_common
+{
+	//[00,1f]: type
+	u64 tier;
+	u64 type;
+	u64 hfmt;
+	u64 vfmt;
+
+	//[20,3f]: wire
+	union{
+		void* irel0;
+		u64 ipad0;
+	};
+	union{
+		void* ireln;
+		u64 ipadn;
+	};
+	union{
+		void* orel0;
+		u64 opad0;
+	};
+	union{
+		void* oreln;
+		u64 opadn;
+	};
+
+	//[40,7f]: func
+	union{
+		int (*oncreate)(struct item* node, void* arg, int argc, u8** argv);
+		char padding0[8];
+	};
+	union{
+		int (*ondelete)(struct item* node);
+		char padding1[8];
+	};
+	union{
+		int (*onreader)(struct item* node,void* foot, p64 arg,int cmd, void* buf,int len);
+		char padding2[8];
+	};
+	union{
+		int (*onwriter)(struct item* node,void* foot, p64 arg,int cmd, void* buf,int len);
+		char padding3[8];
+	};
+	union{
+		int (*onattach)(void* self, void* peer);
+		char padding4[8];
+	};
+	union{
+		int (*ondetach)(void* self, void* peer);
+		char padding5[8];
+	};
+	union{
+		int (*take)(struct item* node,void* foot, struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len);
+		char padding6[8];
+	};
+	union{
+		int (*give)(struct item* node,void* foot, struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len);
+		char padding7[8];
+	};
+
+	//[80,ff]: public
+	union{
+		u8 public_data[0x80];
+		struct whdf_xyzw whdf;
+		struct sock_info sockinfo;
+		struct file_info fileinfo;
+	};
+}__attribute__((packed));
 typedef struct item _obj;
 
 
@@ -482,76 +550,76 @@ typedef struct item _obj;
 //--------------------------------function--------------------------------
 void* entity_create(u64 type, void* addr, int argc, u8** argv);
 int entity_delete(_obj*);
-int entity_reader(_obj* ent,void* foot, void* arg,int idx, void* buf,int len);
-int entity_writer(_obj* ent,void* foot, void* arg,int idx, void* buf,int len);
+int entity_reader(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
+int entity_writer(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
 int entity_attach(struct halfrel* self, struct halfrel* peer);
 int entity_detach(struct halfrel* self, struct halfrel* peer);
-int entity_takeby(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int entity_giveby(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int entity_takeby(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
+int entity_giveby(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
 //
 void* supply_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt);
 int supply_create(_obj*, void* addr, int argc, u8** argv);
 int supply_delete(_obj*);
-int supply_reader(_obj* ent,void* foot, void* arg,int idx, void* buf,int len);
-int supply_writer(_obj* ent,void* foot, void* arg,int idx, void* buf,int len);
+int supply_reader(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
+int supply_writer(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
 int supply_attach(struct halfrel* self, struct halfrel* peer);
 int supply_detach(struct halfrel* self, struct halfrel* peer);
-int supply_takeby(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int supply_giveby(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int supply_takeby(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
+int supply_giveby(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
 //
 void* artery_create(u64 type, void* addr, int argc, u8** argv);
 int artery_delete(_obj*);
-int artery_reader(_obj* ent,void* foot, void* arg,int idx, void* buf,int len);
-int artery_writer(_obj* ent,void* foot, void* arg,int idx, void* buf,int len);
+int artery_reader(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
+int artery_writer(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
 int artery_attach(struct halfrel* self, struct halfrel* peer);
 int artery_detach(struct halfrel* self, struct halfrel* peer);
-int artery_takeby(_obj* art,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int artery_giveby(_obj* art,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int artery_takeby(_obj* art,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
+int artery_giveby(_obj* art,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
 //
 void* system_create(u64 type, void* addr, int argc, u8** argv);
 int system_delete(_obj*);
-int system_reader(_obj* ent,void* foot, void* arg,int idx, void* buf,int len);
-int system_writer(_obj* ent,void* foot, void* arg,int idx, void* buf,int len);
+int system_reader(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
+int system_writer(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
 int system_attach(struct halfrel* self, struct halfrel* peer);
 int system_detach(struct halfrel* self, struct halfrel* peer);
-int system_takeby(_obj* obj,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int system_giveby(_obj* obj,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int system_takeby(_obj* obj,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
+int system_giveby(_obj* obj,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
 //
 void* driver_create(u64 type, void* addr, int argc, u8** argv);
 int driver_delete(_obj*);
-int driver_reader(_obj* ent,void* foot, void* arg,int idx, void* buf,int len);
-int driver_writer(_obj* ent,void* foot, void* arg,int idx, void* buf,int len);
+int driver_reader(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
+int driver_writer(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
 int driver_attach(struct halfrel* self, struct halfrel* peer);
 int driver_detach(struct halfrel* self, struct halfrel* peer);
-int driver_takeby(struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int driver_giveby(struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int driver_takeby(struct item* dri,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
+int driver_giveby(struct item* dri,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
 //
 void* device_create(u64 type, void* addr, int argc, u8** argv);
 int device_delete(_obj*);
-int device_reader(_obj* ent,void* foot, void* arg,int idx, void* buf,int len);
-int device_writer(_obj* ent,void* foot, void* arg,int idx, void* buf,int len);
+int device_reader(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
+int device_writer(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
 int device_attach(struct halfrel* self, struct halfrel* peer);
 int device_detach(struct halfrel* self, struct halfrel* peer);
-int device_takeby(struct item* dev,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int device_giveby(struct item* dev,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int device_takeby(struct item* dev,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
+int device_giveby(struct item* dev,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
 //
 void* bootup_create(u64 type, void* addr, int argc, u8** argv);
 int bootup_delete(_obj*);
-int bootup_reader(_obj* ent,void* foot, void* arg,int idx, void* buf,int len);
-int bootup_writer(_obj* ent,void* foot, void* arg,int idx, void* buf,int len);
+int bootup_reader(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
+int bootup_writer(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
 int bootup_attach(struct halfrel* self, struct halfrel* peer);
 int bootup_detach(struct halfrel* self, struct halfrel* peer);
-int bootup_takeby(struct item* wrk,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int bootup_giveby(struct item* wrk,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int bootup_takeby(struct item* wrk,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
+int bootup_giveby(struct item* wrk,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
 //
 void* origin_create(u64 type, void* addr, int argc, u8** argv);
 int origin_delete(_obj*);
-int origin_reader(_obj* ent,void* foot, void* arg,int idx, void* buf,int len);
-int origin_writer(_obj* ent,void* foot, void* arg,int idx, void* buf,int len);
+int origin_reader(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
+int origin_writer(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
 int origin_attach(struct halfrel* self, struct halfrel* peer);
 int origin_detach(struct halfrel* self, struct halfrel* peer);
-int origin_takeby(struct item* ori,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int origin_giveby(struct item* ori,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int origin_takeby(struct item* ori,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
+int origin_giveby(struct item* ori,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
 //
 int relationdetach(struct halfrel* self, struct halfrel* peer);
 int relationattach(struct halfrel* self, struct halfrel* peer);
@@ -560,20 +628,20 @@ int relationmodify(void* item,u32 foot, struct halfrel** self,struct halfrel** p
 int relationdelete(_rel* rel);
 void* relationcreate(void*,void*,u32,u32,void*,void*,u32,u32);
 //
-int reading_data_from_peer(void* chip,int ftype, void* arg,int idx, void* buf,int len);
-int writing_data_into_peer(void* chip,int ftype, void* arg,int idx, void* buf,int len);
-int reading_data_from_them(void* chip,int ftype, void* arg,int idx, void* buf,int len);
-int writing_data_into_them(void* chip,int ftype, void* arg,int idx, void* buf,int len);
+int reading_data_from_peer(void* chip,int ftype, p64 arg,int idx, void* buf,int len);
+int writing_data_into_peer(void* chip,int ftype, p64 arg,int idx, void* buf,int len);
+int reading_data_from_them(void* chip,int ftype, p64 arg,int idx, void* buf,int len);
+int writing_data_into_them(void* chip,int ftype, p64 arg,int idx, void* buf,int len);
 //
-int take_data_from_peer_temp_stack(void* chip,int ftype, void* arg,int idx, void* buf,int len);
-int give_data_into_peer_temp_stack(void* chip,int ftype, void* arg,int idx, void* buf,int len);
-int take_data_from_them_temp_stack(void* item,int ftype, void* arg,int key, void* buf,int len);
-int give_data_into_them_temp_stack(void* item,int ftype, void* arg,int key, void* buf,int len);
+int take_data_from_peer_temp_stack(void* chip,int ftype, p64 arg,int idx, void* buf,int len);
+int give_data_into_peer_temp_stack(void* chip,int ftype, p64 arg,int idx, void* buf,int len);
+int take_data_from_them_temp_stack(void* item,int ftype, p64 arg,int key, void* buf,int len);
+int give_data_into_them_temp_stack(void* item,int ftype, p64 arg,int key, void* buf,int len);
 //
-int take_data_from_peer(void* chip,int ftype, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int give_data_into_peer(void* chip,int ftype, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int take_data_from_them(void* item,int ftype, _syn* stack,int sp, void* arg,int key, void* buf,int len);
-int give_data_into_them(void* item,int ftype, _syn* stack,int sp, void* arg,int key, void* buf,int len);
+int take_data_from_peer(void* chip,int ftype, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
+int give_data_into_peer(void* chip,int ftype, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
+int take_data_from_them(void* item,int ftype, _syn* stack,int sp, p64 arg,int key, void* buf,int len);
+int give_data_into_them(void* item,int ftype, _syn* stack,int sp, p64 arg,int key, void* buf,int len);
 
 
 

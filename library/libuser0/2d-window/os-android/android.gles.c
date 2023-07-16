@@ -61,7 +61,7 @@ vec3 sensor[3] = {
 
 
 
-int window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int cmd, void* buf,int len)
+int window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	if(wnd != thewnd)return 0;
 	if(candraw){
@@ -71,7 +71,7 @@ int window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,in
 	checkevent();
 	return 0;
 }
-int window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int cmd, void* buf,int len)
+int window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	switch(wnd->hfmt){
 	default:fullwindow_give(wnd,foot, stack,sp, arg,cmd, buf,len);

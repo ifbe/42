@@ -54,7 +54,7 @@ void cmdqwindow_execute(_obj* wnd)
 
 
 
-void cmdqwindow_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
+void cmdqwindow_take(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	struct relation* rel = wnd->orel0;
 	while(1){
@@ -67,7 +67,7 @@ void cmdqwindow_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int cmd
 
 	cmdqwindow_execute(wnd);
 }
-void cmdqwindow_give(_obj* win,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void cmdqwindow_give(_obj* win,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 }
 void cmdqwindow_delete(_obj* ogl)

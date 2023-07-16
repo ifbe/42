@@ -41,23 +41,33 @@ static void CALLBACK icb(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1,
 
 
 
-void micphone_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+void micphone_take(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf, int len)
 {
 }
-void micphone_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+void micphone_give(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf, int len)
 {
 }
-void micphonestop()
+void micphone_detach()
+{
+}
+void micphone_attach()
+{
+}
+
+
+
+
+void micphone_reader(_obj* sup,void* foot, p64 arg,int idx, void* buf, int len)
+{
+}
+void micphone_writer(_obj* sup,void* foot, p64 arg,int idx, void* buf, int len)
+{
+}
+void micphone_delete(_obj* win)
 {
 	waveInClose(wavein);
 }
-void micphonestart()
-{
-}
-void micphonedelete(_obj* win)
-{
-}
-void micphonecreate(_obj* win, void* arg, int argc, u8** argv)
+void micphone_create(_obj* win, void* arg, int argc, u8** argv)
 {
 	int j,ret,freq;
 	working = win;

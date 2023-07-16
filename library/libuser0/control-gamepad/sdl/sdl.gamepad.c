@@ -1,7 +1,7 @@
-void joydelete()
+void joy_delete()
 {
 }
-void joycreate()
+void joy_create()
 {
 }
 

@@ -281,10 +281,10 @@ static void callback_joystick(int id, int ev)
 
 
 
-void joydelete(_obj* joy)
+void joy_delete(_obj* joy)
 {
 }
-void joycreate(_obj* joy)
+void joy_create(_obj* joy)
 {
 	int j;
 	for(j=0;j<10;j++){
@@ -294,6 +294,10 @@ void joycreate(_obj* joy)
 		}
 	}
 }
+
+
+
+
 void freejoy()
 {
 }

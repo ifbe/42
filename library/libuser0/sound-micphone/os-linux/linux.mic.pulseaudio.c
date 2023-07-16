@@ -67,11 +67,11 @@ finish:
 
 
 
-int micphone_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+int micphone_take(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf, int len)
 {
 	return 0;
 }
-int micphone_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+int micphone_give(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf, int len)
 {
 	return 0;
 }
@@ -87,20 +87,20 @@ int micphone_detach()
 
 
 
-int micphone_take(_obj* sup,void* foot, void* arg,int idx, void* buf, int len)
+int micphone_take(_obj* sup,void* foot, p64 arg,int idx, void* buf, int len)
 {
 	return 0;
 }
-int micphone_give(_obj* sup,void* foot, void* arg,int idx, void* buf, int len)
+int micphone_give(_obj* sup,void* foot, p64 arg,int idx, void* buf, int len)
 {
 	return 0;
 }
-void micphonedelete(_obj* win)
+void micphone_delete(_obj* win)
 {
 	alive = 0;
 	if(s_in)pa_simple_free(s_in);
 }
-void micphonecreate(_obj* win)
+void micphone_create(_obj* win)
 {
 	int error;
 

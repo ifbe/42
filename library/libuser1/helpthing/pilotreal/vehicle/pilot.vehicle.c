@@ -135,12 +135,12 @@ void carcon_checkplace(_obj* ent)
 
 
 
-int carcon_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int carcon_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	say("@carcon_read:%p,%p\n",ent,foot);
 	return 0;
 }
-int carcon_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+int carcon_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
 	//say("@carcon_write:%.4s\n",&foot);
 	float angle;

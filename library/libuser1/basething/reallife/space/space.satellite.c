@@ -167,7 +167,7 @@ static void satellite_wnd(_obj* ent,void* foot, _syn* stack,int sp)
 
 
 
-static void satellite_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void satellite_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -190,7 +190,7 @@ static void satellite_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg
 		break;
 	}
 }
-static void satellite_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void satellite_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	float* f = buf;
 	say("@satellite_write: %f,%f,%f,%f\n", f[0],f[1],f[2],f[3]);

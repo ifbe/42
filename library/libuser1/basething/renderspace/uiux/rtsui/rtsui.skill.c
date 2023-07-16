@@ -56,7 +56,7 @@ static void skill_draw_cli(
 
 
 
-static void skill_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key)
+static void skill_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -94,7 +94,7 @@ static void skill_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct styl
 
 
 
-static void skill_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void skill_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
@@ -112,7 +112,7 @@ static void skill_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int
 		break;
 	}
 }
-static void skill_giving(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void skill_giving(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
 static void skill_detach(struct halfrel* self, struct halfrel* peer)

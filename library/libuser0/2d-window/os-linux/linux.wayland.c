@@ -312,10 +312,10 @@ void* uievent(_obj* p)
 
 	wl_display_disconnect(display);
 }
-void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
-void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	wl_display_dispatch(display);
 	wl_surface_damage(surface, 0, 0, wnd->width, wnd->height);

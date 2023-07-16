@@ -24,27 +24,39 @@ void* micphonelistener(_obj* win)
 
 
 
-int micphone_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+int micphone_take(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf, int len)
 {
 	return 0;
 }
-int micphone_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+int micphone_give(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf, int len)
 {
 	return 0;
 }
-int micphonestop()
+int micphone_attach()
 {
 	return 0;
 }
-int micphonestart()
+int micphone_detach()
 {
 	return 0;
 }
-int micphonedelete(_obj* win)
+
+
+
+
+int micphone_reader(_obj* sup,void* foot, p64 arg,int idx, void* buf, int len)
 {
 	return 0;
 }
-int micphonecreate(_obj* win)
+int micphone_writer(_obj* sup,void* foot, p64 arg,int idx, void* buf, int len)
+{
+	return 0;
+}
+int micphone_delete(_obj* win)
+{
+	return 0;
+}
+int micphone_create(_obj* win)
 {
 	ibuf = memorycreate(0x100000, 0);
 	icur = 0;

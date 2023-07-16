@@ -166,7 +166,7 @@ static void analog_draw_gl41(
 		gl41float(wnd, rgb, tc,tr,tf, sts[k].volt);
 	}
 }
-void analog_read_board(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+void analog_read_board(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -176,7 +176,7 @@ void analog_read_board(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int k
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	analog_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-int analog_read_child(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int analog_read_child(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	struct relation* rel = ent->orel0;
 	while(1){
@@ -194,7 +194,7 @@ int analog_read_child(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int ke
 	}
 	return 0;
 }
-int analog_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int analog_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return 0;
 
@@ -217,7 +217,7 @@ int analog_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, v
 	analog_read_board(ent,foot, stack,sp, arg,key, buf,len);
 	return 0;
 }
-int analog_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int analog_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	struct wireindex* sts = ent->listptr.buf0;
 	if(0 == sts)return 0;

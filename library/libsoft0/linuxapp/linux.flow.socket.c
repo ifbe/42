@@ -642,19 +642,7 @@ int socket_delete(_obj* oo)
 	//epoll_del(x);
 	//if(fd>0)epoll_del(fd);
 }
-int socket_search(_obj* oo)
-{
-	return 0;
-}
-int socket_modify(_obj* oo)
-{
-	return 0;
-}
-
-
-
-
-int socket_give(_obj* oo,int xx, struct sockaddr_in* tmp,int cmd, void* buf,int len)
+int socket_writer(_obj* oo,int xx, struct sockaddr_in* tmp,int cmd, void* buf,int len)
 {
 	if(0 == buf)return 0;
 
@@ -712,7 +700,7 @@ int socket_give(_obj* oo,int xx, struct sockaddr_in* tmp,int cmd, void* buf,int 
 	}
 	return len;
 }
-int socket_take(_obj* oo,int xx, void* tmp,int cmd, void* buf,int len)
+int socket_reader(_obj* oo,int xx, void* tmp,int cmd, void* buf,int len)
 {
 	if(0 == buf)return 0;
 
@@ -746,4 +734,36 @@ int socket_take(_obj* oo,int xx, void* tmp,int cmd, void* buf,int len)
 	}
 	epoll_mod(fd);
 	return ret;
+}
+
+
+
+
+int socket_attach()
+{
+	return 0;
+}
+int socket_detach()
+{
+	return 0;
+}
+int socket_take(_obj* oo,int xx, _syn* stack,int sp, p64 arg,int cmd, void* buf, int len)
+{
+	return 0;
+}
+int socket_give(_obj* oo,int xx, _syn* stack,int sp, p64 arg,int cmd, void* buf, int len)
+{
+	return 0;
+}
+
+
+
+
+int socket_search(_obj* oo)
+{
+	return 0;
+}
+int socket_modify(_obj* oo)
+{
+	return 0;
 }

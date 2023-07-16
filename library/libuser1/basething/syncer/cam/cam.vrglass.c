@@ -263,7 +263,7 @@ static void vrglass_camera(
 
 
 
-static int vrglass_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vrglass_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -279,7 +279,7 @@ static int vrglass_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, void* ar
 	}
 	return 0;
 }
-static int vrglass_read_bywnd(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vrglass_read_bywnd(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 //find world from camera
 	struct halfrel* tmp[2];
@@ -319,7 +319,7 @@ static int vrglass_read_bywnd(_obj* ent,void* slot, _syn* stack,int sp, void* ar
 
 
 
-static int vrglass_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vrglass_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return 0;
 
@@ -341,7 +341,7 @@ static int vrglass_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,in
 	}
 	return 0;
 }
-static int vrglass_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vrglass_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	switch(stack[sp-1].foottype){
 	case _at_:

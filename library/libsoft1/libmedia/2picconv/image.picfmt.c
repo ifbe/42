@@ -18,17 +18,21 @@ void bggr10_to_rgba(
 //
 void bgbgxgrgrx_to_rgba(
 	u8* srcbuf, int srclen, int srcw, int srch,
-	u8* dstbuf, int dstlen, int dstw, int dsth);
+	u8* dstbuf, int dstlen, int dstw, int dsth,
+	float* ccm);
 void bgbgxgrgrx_to_y4_u_v(
 	u8* srcbuf, int srclen, int srcw, int srch,
-	u8* dstbuf, int dstlen, int dstw, int dsth);
+	u8* dstbuf, int dstlen, int dstw, int dsth,
+	float* ccm);
 //
 void gbgbxrgrgx_to_rgba(
 	u8* srcbuf, int srclen, int srcw, int srch,
-	u8* dstbuf, int dstlen, int dstw, int dsth);
+	u8* dstbuf, int dstlen, int dstw, int dsth,
+	float* ccm);
 void gbgbxrgrgx_to_y4_u_v(
 	u8* srcbuf, int srclen, int srcw, int srch,
-	u8* dstbuf, int dstlen, int dstw, int dsth);
+	u8* dstbuf, int dstlen, int dstw, int dsth,
+	float* ccm);
 //
 void rggb_to_rgba(
 	u8* srcbuf, int srclen, int srcw, int srch,
@@ -106,11 +110,11 @@ void picfmt_copy_uv(u8* dst, u8* src)
 }
 
 
-int picfmt_take(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, void* buf, int len)
+int picfmt_take(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, void* buf, int len)
 {
 	return 0;
 }
-int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, void* buf, int len)
+int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, void* buf, int len)
 {
 	//say("@picfmt_give\n");
 	struct perobj* per = (void*)art->priv_256b;
@@ -121,10 +125,11 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, vo
 	int srch = per->srch;
 	u64 srcfmt = per->srcfmt;
 	u64 ts = 0;
+	float* m3 = 0;
 	//say("srcw=%d,srch=%d\n",srcw,srch);
 	if(_kv88_ == cmd){
 		int j;
-		struct kv88* kv = arg;
+		struct kv88* kv = (void*)arg;
 		for(j=0;j<16;j++){
 			//say("key=%llx,val=%llx\n",kv[j].key, kv[j].val);
 			if(kv[j].key <= 0x20)break;
@@ -144,6 +149,8 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, vo
 			case 't':
 				ts = kv[j].val;
 				break;
+			case hex16('m','3'):
+				m3 = (float*)kv[j].val;
 			}
 		}
 	}
@@ -219,19 +226,31 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, vo
 		goto done;
 	}
 	if((_pBAA_ == srcfmt)&&(_rgbx_ == per->dstfmt)){
-		bgbgxgrgrx_to_rgba(buf, len, srcw, srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
+		bgbgxgrgrx_to_rgba(
+			buf, len, srcw, srch,
+			per->dstbuf[0], per->dstlen, per->dstw, per->dsth,
+			m3);
 		goto done;
 	}
 	if((_pBAA_ == srcfmt)&&(_y4_u_v_ == per->dstfmt)){
-		bgbgxgrgrx_to_y4_u_v(buf, len, srcw, srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
+		bgbgxgrgrx_to_y4_u_v(
+			buf, len, srcw, srch,
+			per->dstbuf[0], per->dstlen, per->dstw, per->dsth,
+			m3);
 		goto done;
 	}
 	if((_pGAA_ == srcfmt)&&(_rgbx_ == per->dstfmt)){
-		gbgbxrgrgx_to_rgba(buf, len, srcw, srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
+		gbgbxrgrgx_to_rgba(
+			buf, len, srcw, srch,
+			per->dstbuf[0], per->dstlen, per->dstw, per->dsth,
+			m3);
 		goto done;
 	}
 	if((_pGAA_ == srcfmt)&&(_y4_u_v_ == per->dstfmt)){
-		gbgbxrgrgx_to_y4_u_v(buf, len, srcw, srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
+		gbgbxrgrgx_to_y4_u_v(
+			buf, len, srcw, srch,
+			per->dstbuf[0], per->dstlen, per->dstw, per->dsth,
+			m3);
 		goto done;
 	}
 
@@ -260,7 +279,7 @@ done:
 	per->kv[0].key = 'w';per->kv[0].val = per->dstw;
 	per->kv[1].key = 'h';per->kv[1].val = per->dsth;
 	if(ts){per->kv[2].key = 't';per->kv[2].val = ts;}
-	give_data_into_peer(art,_dst_, stack,sp, per->kv,_kv88_, per->dstbuf[0],per->dstlen);
+	give_data_into_peer(art,_dst_, stack,sp, (p64)per->kv,_kv88_, per->dstbuf[0],per->dstlen);
 	return 0;
 }
 int picfmt_detach(struct halfrel* self, struct halfrel* peer)

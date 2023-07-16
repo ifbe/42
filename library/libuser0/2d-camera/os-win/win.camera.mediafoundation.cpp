@@ -481,7 +481,7 @@ int mfthread(_obj* cam){
 			//printf("type=%.32s,data=%p\n", mf_subtype2format(&subtype, str), data);
 			//printmemory(data, 0x20);
 			kv88[0].val = timeimg;
-			give_data_into_peer_temp_stack(cam,_dst_, kv88,_kv88_, data, 0);
+			give_data_into_peer_temp_stack(cam,_dst_, (p64)kv88,_kv88_, data, 0);
 
 			hr = buffer->Unlock();
 			if(FAILED(hr)){
@@ -513,11 +513,11 @@ int mfthread(_obj* cam){
 extern "C" {
 
 
-int mfcam_take(_obj* cam,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int mfcam_take(_obj* cam,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int mfcam_give(_obj* cam,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int mfcam_give(_obj* cam,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 	return 0;
 }
@@ -529,11 +529,11 @@ int mfcam_attach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int mfcam_reader(_obj* cam,void* foot, void* arg,int idx, void* buf,int len)
+int mfcam_reader(_obj* cam,void* foot, p64 arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int mfcam_writer(_obj* cam,void* foot, void* arg,int idx, void* buf,int len)
+int mfcam_writer(_obj* cam,void* foot, p64 arg,int idx, void* buf,int len)
 {
 	return 0;
 }

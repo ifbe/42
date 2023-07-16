@@ -237,7 +237,7 @@ static int fat16_read(_obj* art, int ign, u32 clus,int offs, u8* buf,int len)
 
 		//read this cluster
 		tmp = per->byte_per_sec * (per->sec_of_clus2 + per->sec_per_clus * (clus-2));
-		ret = take_data_from_peer(art,_src_, 0,0, "",tmp, buf+cnt,byteperclus);
+		ret = take_data_from_peer(art,_src_, 0,0, tmp,_pos_, buf+cnt,byteperclus);
 		if(ret < byteperclus)goto retcnt;
 		cnt += byteperclus;
 
@@ -249,7 +249,7 @@ static int fat16_read(_obj* art, int ign, u32 clus,int offs, u8* buf,int len)
 	}
 
 	tmp = per->byte_per_sec * (per->sec_of_clus2 + per->sec_per_clus * (clus-2));
-	ret = take_data_from_peer(art,_src_, 0,0, "",ret, buf+cnt,len-cnt);
+	ret = take_data_from_peer(art,_src_, 0,0, ret,_pos_, buf+cnt,len-cnt);
 	if(ret < len-cnt)goto retcnt;
 	cnt += ret;
 
@@ -271,7 +271,7 @@ static u32 fat32_nextclus(_obj* art, u32 clus)
 		per->cache_first = clus-remain;
 
 		byte = per->byte_per_sec * per->sec_of_fat0 + 4*per->cache_first;
-		take_data_from_peer(art,_src_, 0,0, "",byte, cache,4*per->cache_count);
+		take_data_from_peer(art,_src_, 0,0, byte,_pos_, cache,4*per->cache_count);
 	}
 
 	return cache[remain];
@@ -289,7 +289,7 @@ static int fat32_read(_obj* art, int ign, u64 clus,int offs, u8* buf,int len)
 		else if(offs >= byteperclus)offs -= byteperclus;
 		else if(offs < byteperclus){
 			tmp = per->byte_per_sec * (per->sec_of_clus2 + per->sec_per_clus * (clus-2));
-			ret = take_data_from_peer(art,_src_, 0,0, "",tmp+offs, buf,byteperclus-offs);
+			ret = take_data_from_peer(art,_src_, 0,0, tmp+offs,_pos_, buf,byteperclus-offs);
 			if(ret < byteperclus-offs)goto retcnt;
 			cnt += byteperclus-offs;
 
@@ -308,7 +308,7 @@ static int fat32_read(_obj* art, int ign, u64 clus,int offs, u8* buf,int len)
 
 		//read this cluster
 		tmp = per->byte_per_sec * (per->sec_of_clus2 + per->sec_per_clus * (clus-2));
-		ret = take_data_from_peer(art,_src_, 0,0, "",tmp, buf+cnt,byteperclus);
+		ret = take_data_from_peer(art,_src_, 0,0, tmp,_pos_, buf+cnt,byteperclus);
 		if(ret < byteperclus)goto retcnt;
 		cnt += byteperclus;
 
@@ -320,7 +320,7 @@ static int fat32_read(_obj* art, int ign, u64 clus,int offs, u8* buf,int len)
 	}
 
 	tmp = per->byte_per_sec * (per->sec_of_clus2 + per->sec_per_clus * (clus-2));
-	ret = take_data_from_peer(art,_src_, 0,0, "",tmp, buf+cnt,len-cnt);
+	ret = take_data_from_peer(art,_src_, 0,0, tmp,_pos_, buf+cnt,len-cnt);
 	if(ret < len-cnt)goto retcnt;
 	cnt += ret;
 
@@ -336,7 +336,7 @@ int fat_buildcache(_obj* art)
 	struct perfs* per = art->priv_ptr;
 	per->cache_first = 0;
 	per->cache_count = 0x10000;
-	return take_data_from_peer(art,_src_, 0,0, "",per->sec_of_fat0 * per->byte_per_sec, per->fatbuffer,0x40000);
+	return take_data_from_peer(art,_src_, 0,0, per->sec_of_fat0 * per->byte_per_sec,_pos_, per->fatbuffer,0x40000);
 }
 int fat_checkname(u8* name, u8* fatname)
 {
@@ -539,19 +539,22 @@ int fat_showinfo(_obj* art)
 
 
 
-static int fatclient_ontake(_obj* art,void* foot, _syn* stack,int sp, u8* arg, int idx, u8* buf, int len)
+static int fatclient_ontake(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, u8* buf, int len)
 {
 	say("@fatclient_ontake\n");
-	say("%p,%p, %p,%x, %p,%x, %p,%x\n",art,foot, stack,sp, arg,idx, buf,len);
-	if(0 == arg){
-		return fat_showinfo(art);
-	}
+	say("%p,%p, %p,%x, %llx,%x, %p,%x\n",art,foot, stack,sp, arg,cmd, buf,len);
 
 	struct perfs* per = art->priv_ptr;
 	if(0 == per)return 0;
 
-	u32 clus = fat_name2clus(art, arg);
-	say("name=%s,fat=%x\n", arg, clus);
+	if(_info_ == cmd){
+		return fat_showinfo(art);
+	}
+
+	//if(_path_ == cmd){
+	void* name = (void*)foot;
+	u32 clus = fat_name2clus(art, name);
+	say("name=%s,fat=%x\n", name, clus);
 	if(0 == clus){
 		say("wrong file\n");
 		return 0;
@@ -584,7 +587,7 @@ static int fatclient_ontake(_obj* art,void* foot, _syn* stack,int sp, u8* arg, i
 	if(debug&&(ret > 0))printmemory(buf, 0x200);
 	return ret;
 }
-static int fatclient_ongive(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+static int fatclient_ongive(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
@@ -600,7 +603,7 @@ int fatclient_attach(struct halfrel* self, struct halfrel* peer)
 	struct perfs* per = art->priv_ptr;
 	if(0 == per)return 0;
 
-	ret = take_data_from_peer(art,_src_, 0,0, "",0, per->pbrbuffer,0x200);
+	ret = take_data_from_peer(art,_src_, 0,0, 0,_pos_, per->pbrbuffer,0x200);
 	if(ret < 0x200){
 		say("fail@read:%d\n",ret);
 		return 0;

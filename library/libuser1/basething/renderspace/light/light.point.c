@@ -102,7 +102,7 @@ static void pointlight_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void pointlight_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void pointlight_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -124,7 +124,7 @@ static void pointlight_taking(_obj* ent,void* slot, _syn* stack,int sp, void* ar
 		break;
 	}
 }
-static void pointlight_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void pointlight_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	u8* in = buf;
 	say("@pointlight_write:%x\n",in[0]);

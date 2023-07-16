@@ -160,7 +160,7 @@ static void picture_draw_cli(
 
 
 
-static void picture_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void picture_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -170,7 +170,7 @@ static void picture_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,i
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	picture_draw_gl41(ent,foot, wor,geom, wnd,area);
 }
-static void picture_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void picture_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	say("@picture_write\n");
 	give_data_into_peer(ent,_evto_, stack,sp, 0,0, "calibrate\n", 10);

@@ -182,11 +182,11 @@ int tcptravserver_create(_obj* art, u8* url)
 
 
 
-int tcptravmaster_read(_obj* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int tcptravmaster_read(_obj* art,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int tcptravmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int tcptravmaster_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len)
 {
 	if(0==stack|sp < 2)return 0;
 	_obj* sys = stack[sp-2].pchip;

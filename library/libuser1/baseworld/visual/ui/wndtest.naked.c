@@ -3,7 +3,7 @@
 
 
 
-int rgbanode_draw(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int rgbanode_draw(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//pixel_clearcolor(wnd);
 
@@ -26,7 +26,7 @@ next:
 
 	return 0;
 }
-int rgbanode_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int rgbanode_take(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return 0;
 	rgbanode_draw(wnd,foot, stack,sp, arg,key, buf,len);
@@ -48,7 +48,7 @@ int rgbanode_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, v
 */
 	return 0;
 }
-int rgbanode_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int rgbanode_give(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//say("@rgbanode_write:%p,%x\n", wnd,foot);
 	//printmemory(buf,16);

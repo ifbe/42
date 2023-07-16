@@ -21,9 +21,10 @@ struct perfunc{		//0x10000 byte per func
 
 
 
-static int vmmouse_ongive(struct item* usb,int xxx, struct item* xhci,int endp, void* sbuf,int slen, void* rbuf,int rlen)
+static int vmmouse_ongive(struct item* usb,int xxx, struct item* xhci,int endp, p64 arg,int slen, void* rbuf,int rlen)
 {
-	void* data = *(void**)sbuf;
+	void** sbuf = (void**)arg;
+	void* data = *sbuf;
 	printmemory(data, 16);
 	return 0;
 }
@@ -51,7 +52,7 @@ int usbvmware_perintf(struct item* usb,int xxx, struct item* xhci,int slot, stru
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
-			&req,8,
+			(p64)&req,8,
 			0,0
 		);
 		if(ret < 0)return -10;
@@ -67,7 +68,7 @@ int usbvmware_perintf(struct item* usb,int xxx, struct item* xhci,int slot, stru
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
-			&req,8,
+			(p64)&req,8,
 			0,0
 		);
 	}
@@ -138,7 +139,7 @@ int usbvmware_perintf(struct item* usb,int xxx, struct item* xhci,int slot, stru
 				ret = xhci->give_pxpxpxpx(
 					xhci,slot,
 					0,0,
-					&req,8,
+					(p64)&req,8,
 					temp,hiddesc->wReportDescLength
 				);
 				if(ret >= 0){
@@ -167,7 +168,7 @@ int usbvmware_perintf(struct item* usb,int xxx, struct item* xhci,int slot, stru
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
-			&req,8,
+			(p64)&req,8,
 			rrrr,0x40
 		);
 		printmemory(rrrr, 0x40);
@@ -177,7 +178,7 @@ int usbvmware_perintf(struct item* usb,int xxx, struct item* xhci,int slot, stru
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
 			0,0,
-			&req,8,
+			(p64)&req,8,
 			rrrr,0x40
 		);
 		printmemory(rrrr, 0x40);
@@ -192,7 +193,7 @@ int usbvmware_perintf(struct item* usb,int xxx, struct item* xhci,int slot, stru
 	ret = xhci->give_pxpxpxpx(
 		xhci, slot|(inaddr<<8),
 		0, 0,
-		perfunc->trb, pktlen,
+		(p64)perfunc->trb, pktlen,
 		usb, 0
 	);
 

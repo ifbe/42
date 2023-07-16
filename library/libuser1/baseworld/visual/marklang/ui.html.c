@@ -104,7 +104,7 @@ int htmlroot_taketext(_obj* ent,void* foot, _syn* stack,int sp)
 	foreground_html(ent);
 	return 0;
 }
-int htmlroot_sendtext(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
+int htmlroot_sendtext(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void** buf,int len)
 {
 	int j;
 	struct str** ctx = ent->html.ctx;
@@ -115,7 +115,7 @@ int htmlroot_sendtext(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int ke
 	for(j=0;j<4;j++)head.Content_Length += ctx[j]->len;
 
 	for(j=0;j<4;j++){
-		give_data_into_peer(ent,_src_, stack,sp, &head,j, ctx[j]->buf,ctx[j]->len);
+		give_data_into_peer(ent,_src_, stack,sp, (p64)&head,j, ctx[j]->buf,ctx[j]->len);
 	}
 	return 0;
 }
@@ -172,7 +172,7 @@ int htmlroot_draw_gl41_nocam(
 
 
 
-int htmlroot_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
+int htmlroot_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void** buf,int len)
 {
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
@@ -194,7 +194,7 @@ int htmlroot_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key,
 	}
 	return 0;
 }
-int htmlroot_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int htmlroot_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//say("@htmlroot_write: %.4s\n", &foot);
 	_obj* caller = stack[sp-2].pchip;

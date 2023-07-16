@@ -172,7 +172,7 @@ DWORD WINAPI iocpthread(LPVOID pM)
 		}//Tcp
 		case _UDP_:{
 			printf("UDP recv:fd=%x,len=%x\n",fd,tran);
-			give_data_into_peer(oo,_dst_, stack,0, oo->sockinfo.peer,0, perio->bufing.buf,tran);
+			give_data_into_peer(oo,_dst_, stack,0, (p64)oo->sockinfo.peer,0, perio->bufing.buf,tran);
 			iocp_mod(fd, oo->type);
 			break;
 		}

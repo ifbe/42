@@ -4,11 +4,11 @@
 
 
 
-int mmiospace_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
+int mmiospace_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void** buf,int len)
 {
 	return take_data_from_peer(ent,_ram_, stack,sp, arg,key, buf,len);
 }
-int mmiospace_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
+int mmiospace_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void** buf,int len)
 {
 	return 0;
 }

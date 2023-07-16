@@ -135,7 +135,7 @@ static void not_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void not_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void not_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -157,7 +157,7 @@ static void not_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int k
 		break;
 	}
 }
-static void not_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static void not_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
 	u8 tmp;
 	say("@notgate_write:%x\n",buf[0]);

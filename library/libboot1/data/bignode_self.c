@@ -7,7 +7,7 @@ void* samedstnextsrc(void*);
 
 
 
-int relation_read(struct item* item,void* foot, void* arg, int cmd, void* buf, int len)
+int relation_read(struct item* item,void* foot, p64 arg, int cmd, void* buf, int len)
 {
 	if(item->onreader){
 		return item->onreader(item,foot, arg,cmd, buf,len);
@@ -24,7 +24,7 @@ int relation_read(struct item* item,void* foot, void* arg, int cmd, void* buf, i
 	}
 	return 0;
 }
-int reading_data_from_peer(void* chip,int ftype, void* arg,int cmd, void* buf,int len)
+int reading_data_from_peer(void* chip,int ftype, p64 arg,int cmd, void* buf,int len)
 {
 	struct item* item;
 	struct relation* rel;
@@ -56,7 +56,7 @@ int reading_data_from_peer(void* chip,int ftype, void* arg,int cmd, void* buf,in
 
 
 
-int relation_write(struct item* item,void* foot, void* arg,int cmd, void* buf,int len)
+int relation_write(struct item* item,void* foot, p64 arg,int cmd, void* buf,int len)
 {
 	if(item->onwriter){
 		return item->onwriter(item,foot, arg,cmd, buf,len);
@@ -73,7 +73,7 @@ int relation_write(struct item* item,void* foot, void* arg,int cmd, void* buf,in
 	}
 	return 0;
 }
-int writing_data_into_peer(void* chip,int ftype, void* arg,int cmd, void* buf,int len)
+int writing_data_into_peer(void* chip,int ftype, p64 arg,int cmd, void* buf,int len)
 {
 	struct item* item;
 	struct relation* rel;
@@ -118,7 +118,7 @@ void relcopy(struct halfrel* dst, struct halfrel* src)
 
 
 
-int relation_take(struct item* item,void* foot, struct halfrel* stack,int sp, void* arg, int cmd, void* buf, int len)
+int relation_take(struct item* item,void* foot, struct halfrel* stack,int sp, p64 arg, int cmd, void* buf, int len)
 {
 	if(item->ontaking){
 		return item->ontaking(item,foot, stack,sp, arg,cmd, buf,len);
@@ -135,7 +135,7 @@ int relation_take(struct item* item,void* foot, struct halfrel* stack,int sp, vo
 	}
 	return 0;
 }
-int take_data_from_peer(void* chip,int ftype, struct halfrel* stack,int sp, void* arg,int cmd, void* buf,int len)
+int take_data_from_peer(void* chip,int ftype, struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	struct item* item;
 	struct relation* rel;
@@ -171,7 +171,7 @@ int take_data_from_peer(void* chip,int ftype, struct halfrel* stack,int sp, void
 
 	return 0;
 }
-int take_data_from_them(void* chip,int ftype, struct halfrel* stack,int sp, void* arg,int cmd, void* buf,int len)
+int take_data_from_them(void* chip,int ftype, struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	struct item* item;
 	struct relation* rel;
@@ -207,12 +207,12 @@ int take_data_from_them(void* chip,int ftype, struct halfrel* stack,int sp, void
 
 	return 0;
 }
-int take_data_from_peer_temp_stack(void* chip,int ftype, void* arg,int cmd, void* buf,int len)
+int take_data_from_peer_temp_stack(void* chip,int ftype, p64 arg,int cmd, void* buf,int len)
 {
 	struct halfrel stack[0x80];
 	return take_data_from_peer(chip,ftype, stack,0, arg,cmd, buf,len);
 }
-int take_data_from_them_temp_stack(void* chip,int ftype, void* arg,int cmd, void* buf,int len)
+int take_data_from_them_temp_stack(void* chip,int ftype, p64 arg,int cmd, void* buf,int len)
 {
 	struct halfrel stack[0x80];
 	return take_data_from_them(chip,ftype, stack,0, arg,cmd, buf,len);
@@ -221,7 +221,7 @@ int take_data_from_them_temp_stack(void* chip,int ftype, void* arg,int cmd, void
 
 
 
-int relation_give(struct item* item,void* foot, struct halfrel* stack,int sp, void* arg,int cmd, void* buf,int len)
+int relation_give(struct item* item,void* foot, struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	if(item->ontaking){
 		return item->ongiving(item,foot, stack,sp, arg,cmd, buf,len);
@@ -238,7 +238,7 @@ int relation_give(struct item* item,void* foot, struct halfrel* stack,int sp, vo
 	}
 	return 0;
 }
-int give_data_into_orel(void* chip,int ftype, struct halfrel* stack,int sp, void* arg,int cmd, void* buf,int len)
+int give_data_into_orel(void* chip,int ftype, struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	struct item* item = chip;
 	if(0 == item)return 0;
@@ -251,7 +251,7 @@ int give_data_into_orel(void* chip,int ftype, struct halfrel* stack,int sp, void
 
 	return peer->give(chip,0, stack,sp, arg,cmd, buf,len);
 }
-int give_data_into_peer(void* chip,int ftype, struct halfrel* stack,int sp, void* arg,int cmd, void* buf,int len)
+int give_data_into_peer(void* chip,int ftype, struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	struct item* item;
 	struct relation* rel;
@@ -289,7 +289,7 @@ int give_data_into_peer(void* chip,int ftype, struct halfrel* stack,int sp, void
 
 	return 0;
 }
-int give_data_into_them(void* chip,int ftype, struct halfrel* stack,int sp, void* arg,int cmd, void* buf,int len)
+int give_data_into_them(void* chip,int ftype, struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	struct item* item;
 	struct relation* rel;
@@ -327,17 +327,17 @@ int give_data_into_them(void* chip,int ftype, struct halfrel* stack,int sp, void
 
 	return 0;
 }
-int give_data_into_orel_temp_stack(void* chip,int ftype, void* arg,int cmd, void* buf,int len)
+int give_data_into_orel_temp_stack(void* chip,int ftype, p64 arg,int cmd, void* buf,int len)
 {
 	struct halfrel stack[0x80];
 	return give_data_into_orel(chip,ftype, stack,0, arg,cmd, buf,len);
 }
-int give_data_into_peer_temp_stack(void* chip,int ftype, void* arg,int cmd, void* buf,int len)
+int give_data_into_peer_temp_stack(void* chip,int ftype, p64 arg,int cmd, void* buf,int len)
 {
 	struct halfrel stack[0x80];
 	return give_data_into_peer(chip,ftype, stack,0, arg,cmd, buf,len);
 }
-int give_data_into_them_temp_stack(void* chip,int ftype, void* arg,int cmd, void* buf,int len)
+int give_data_into_them_temp_stack(void* chip,int ftype, p64 arg,int cmd, void* buf,int len)
 {
 	struct halfrel stack[0x80];
 	return give_data_into_them(chip,ftype, stack,0, arg,cmd, buf,len);

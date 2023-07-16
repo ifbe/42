@@ -201,7 +201,7 @@ static void detail_take_bycam(_obj* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void detail_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void detail_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
@@ -226,7 +226,7 @@ static void detail_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,in
 		break;
 	}
 }
-static int detail_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int detail_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	return 1;
 }

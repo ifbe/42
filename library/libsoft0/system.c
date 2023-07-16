@@ -23,15 +23,15 @@ int initshell(void*);
 int freeshell();
 void* shell_create(void*, int);
 int shell_delete(void*);
-int shell_reader(void*,void*, void*,int, void*,int);
-int shell_writer(void*,void*, void*,int, void*,int);
+int shell_reader(void*,void*, p64,int, void*,int);
+int shell_writer(void*,void*, p64,int, void*,int);
 //uart
 int inituart(void*);
 int freeuart();
 void* uart_create(void*, int);
 int uart_delete(void*);
-int uart_reader(void*,void*, void*,int, void*,int);
-int uart_writer(void*,void*, void*,int, void*,int);
+int uart_reader(void*,void*, p64,int, void*,int);
+int uart_writer(void*,void*, p64,int, void*,int);
 //socket
 int initsocket(void*);
 int freesocket();
@@ -39,8 +39,8 @@ void* socket_create(int fmt, void* arg);
 int socket_delete(void*);
 int socket_search(int);
 int socket_modify(int);
-int socket_take(void*,void*, void*,int, void*,int);
-int socket_give(void*,void*, void*,int, void*,int);
+int socket_reader(void*,void*, p64,int, void*,int);
+int socket_writer(void*,void*, p64,int, void*,int);
 //
 int parseuart(void*, int*, void*);
 int ncmp(void*, void*, int);
@@ -276,12 +276,22 @@ int system_delete(struct item* oo)
 	oo->vfmt = 0;
 	return 0;
 }
-int system_reader(_obj* sys,void* foot, void* arg,int cmd, void* buf,int len)
+int system_reader(_obj* sys,void* foot, p64 arg,int cmd, void* buf,int len)
 {
+	switch(sys->type){
+	case _FILE_:
+	case _file_:
+		return file_reader(sys, 0, arg, cmd, buf, len);
+	}
 	return 0;
 }
-int system_writer(_obj* sys,void* foot, void* arg,int cmd, void* buf,int len)
+int system_writer(_obj* sys,void* foot, p64 arg,int cmd, void* buf,int len)
 {
+	switch(sys->type){
+	case _FILE_:
+	case _file_:
+		return file_writer(sys, 0, arg, cmd, buf, len);
+	}
 	return 0;
 }
 
@@ -348,22 +358,22 @@ int system_detach(struct halfrel* self, struct halfrel* peer)
 	}
 	return 0;
 }
-int system_takeby(_obj* sys,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
+int system_takeby(_obj* sys,void* foot, _syn* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	switch(sys->type){
 	case _FILE_:
 	case _file_:
-		return file_take(sys, 0, arg, cmd, buf, len);
+		return file_reader(sys, 0, arg, cmd, buf, len);
 	}
 	return 0;
 }
-int system_giveby(_obj* sys,void* foot, _syn* stack,int sp, void* arg,int cmd, void* buf,int len)
+int system_giveby(_obj* sys,void* foot, _syn* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	//say("@systemwrite: obj=%.8s,len=%x\n", &sys->type,len);
 	switch(sys->type){
 	case _FILE_:
 	case _file_:
-		return file_give(sys,0, arg,cmd, buf,len);
+		return file_writer(sys,0, arg,cmd, buf,len);
 	case _ptmx_:
 		return shell_writer(sys,0, arg,cmd, buf,len);
 	case _uart_:
@@ -372,7 +382,7 @@ int system_giveby(_obj* sys,void* foot, _syn* stack,int sp, void* arg,int cmd, v
 		sys = sys->sockinfo.child;
 		if(0 == sys)return -1;
 	default:
-		return socket_give(sys,0, arg,cmd, buf,len);
+		return socket_writer(sys,0, arg,cmd, buf,len);
 	}
 	return 0;
 }

@@ -113,7 +113,7 @@ static void resistor_read_b(_obj* ent, int key, struct wireindex* sts, int thiso
 
 
 
-static void resistor_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void resistor_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -140,7 +140,7 @@ static void resistor_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,
 		resistor_read_bycam(ent,foot, stack,sp);break;
 	}
 }
-static void resistor_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void resistor_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	struct wireindex* sts = buf;
 	say("@resistor_write: %.4s\n", &foot);

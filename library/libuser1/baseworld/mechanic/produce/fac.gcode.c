@@ -137,7 +137,7 @@ static void gcode_world_camera_window(_obj* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void gcode_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gcode_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -158,7 +158,7 @@ static void gcode_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int
 		gcode_world_camera_window(ent,slot, stack,sp);
 	}
 }
-static void gcode_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gcode_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
 static void gcode_detach(struct halfrel* self, struct halfrel* peer)

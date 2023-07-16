@@ -82,7 +82,7 @@ static void vsrc_draw_gl41(
 	}
 	gl41float(wnd, 0xffffff, tc,tr,tf, act->whdf.fx0);
 }
-static void vsrc_read_bycam(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void vsrc_read_bycam(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	_obj* wor;struct style* geom;
@@ -134,7 +134,7 @@ static void vsrc_read_n(_obj* ent, int key, struct wireindex* sts, int thisone)
 
 
 
-static void vsrc_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void vsrc_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	switch(stack[sp-1].foottype){
 		case 'p':vsrc_read_p(ent,key, buf,len);break;
@@ -142,7 +142,7 @@ static void vsrc_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int 
 		default:vsrc_read_bycam(ent,foot, stack,sp, arg,key, buf,len);break;
 	}
 }
-static void vsrc_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void vsrc_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	say("@vsrc_write: %.4s\n", &foot);
 	if('n' == stack[sp-1].foottype){

@@ -2,63 +2,63 @@
 //
 void initjoy(void*);
 void freejoy();
-int joycreate(void*, void*, int, u8**);
-int joydelete(void*);
+int joy_create(void*, void*, int, u8**);
+int joy_delete(void*);
 //
 void initstd(void*);
 void freestd();
 int stdio_create(void*, void*, int, u8**);
 int stdio_delete(void*);
-int stdio_take(void*,void*, void*,int, void*,int, void*,int);
-int stdio_give(void*,void*, void*,int, void*,int, void*,int);
+int stdio_take(void*,void*, void*,int, p64,int, void*,int);
+int stdio_give(void*,void*, void*,int, p64,int, void*,int);
 //
 void inittray(void*);
 void freetray();
-int traycreate(void*, void*, int, u8**);
-int traydelete(void*);
+int tray_create(void*, void*, int, u8**);
+int tray_delete(void*);
 //
 int ahrs_create(void*, void*, int, u8**);
 int ahrs_delete(void*);
-int ahrs_take(void*,void*, void*,int, void*,int, void*,int);
-int ahrs_give(void*,void*, void*,int, void*,int, void*,int);
+int ahrs_take(void*,void*, void*,int, p64,int, void*,int);
+int ahrs_give(void*,void*, void*,int, p64,int, void*,int);
 //
 int slam_create(void*, void*, int, u8**);
 int slam_delete(void*);
-int slam_take(void*,void*, void*,int, void*,int, void*,int);
-int slam_give(void*,void*, void*,int, void*,int, void*,int);
+int slam_take(void*,void*, void*,int, p64,int, void*,int);
+int slam_give(void*,void*, void*,int, p64,int, void*,int);
 //sound.usbmic
 void initmicphone(void*);
 void freemicphone();
-int micphonecreate(void*, void*, int, u8**);
-int micphonedelete(void*);
-int micphone_take(void*,void*, void*,int, void*,int, void*,int);
-int micphone_give(void*,void*, void*,int, void*,int, void*,int);
+int micphone_create(void*, void*, int, u8**);
+int micphone_delete(void*);
+int micphone_take(void*,void*, void*,int, p64,int, void*,int);
+int micphone_give(void*,void*, void*,int, p64,int, void*,int);
 //sound.speaker
 void initspeaker(void*);
 void freespeaker();
-int speakercreate(void*, void*, int, u8**);
-int speakerdelete(void*);
-int speaker_take(void*,void*, void*,int, void*,int, void*,int);
-int speaker_give(void*,void*, void*,int, void*,int, void*,int);
+int speaker_create(void*, void*, int, u8**);
+int speaker_delete(void*);
+int speaker_take(void*,void*, void*,int, p64,int, void*,int);
+int speaker_give(void*,void*, void*,int, p64,int, void*,int);
 //light.usbcam
 void initcam(void*);
 void freecam();
 int camera_create(void*, void*, int, u8**);
 int camera_delete(void*);
-int camera_take(void*,void*, void*,int, void*,int, void*,int);
-int camera_give(void*,void*, void*,int, void*,int, void*,int);
+int camera_take(void*,void*, void*,int, p64,int, void*,int);
+int camera_give(void*,void*, void*,int, p64,int, void*,int);
 //
 int screencap_create(void*, void*, int, u8**);
 int screencap_delete(void*);
-int screencap_take(void*,void*, void*,int, void*,int, void*,int);
-int screencap_give(void*,void*, void*,int, void*,int, void*,int);
+int screencap_take(void*,void*, void*,int, p64,int, void*,int);
+int screencap_give(void*,void*, void*,int, p64,int, void*,int);
 //
 int codecv_create(void*, void*, int, u8**);
 int codecv_delete(void*);
-int codecv_reader(void*,void*, void*,int, void*,int);
-int codecv_writer(void*,void*, void*,int, void*,int);
-int codecv_take(void*,void*, void*,int, void*,int, void*,int);
-int codecv_give(void*,void*, void*,int, void*,int, void*,int);
+int codecv_reader(void*,void*, p64,int, void*,int);
+int codecv_writer(void*,void*, p64,int, void*,int);
+int codecv_take(void*,void*, void*,int, p64,int, void*,int);
+int codecv_give(void*,void*, void*,int, p64,int, void*,int);
 //light.window
 void initwindow(void*);
 void freewindow();
@@ -70,8 +70,8 @@ int window_read(void*);
 int window_write(void*);
 int window_attach(void*);
 int window_detach(void*);
-int window_take(void*,void*, void*,int, void*,int, void*,int);
-int window_give(void*,void*, void*,int, void*,int, void*,int);
+int window_take(void*,void*, void*,int, p64,int, void*,int);
+int window_give(void*,void*, void*,int, p64,int, void*,int);
 
 
 
@@ -347,19 +347,19 @@ int supply_create(_obj* obj, void* arg, int argc, u8** argv)
 	say("supply_create:obj=%p,arg=%p,argc=%d,argv=%p\n", obj, arg, argc, argv);
 	switch(obj->type){
 	case _joy_:
-		joycreate(obj, arg, argc, argv);
+		joy_create(obj, arg, argc, argv);
 		break;
 	case _std_:
 		stdio_create(obj, arg, argc, argv);
 		break;
 	case _tray_:
-		traycreate(obj, arg, argc, argv);
+		tray_create(obj, arg, argc, argv);
 		break;
 	case _mic_:
-		micphonecreate(obj, arg, argc, argv);
+		micphone_create(obj, arg, argc, argv);
 		break;
 	case _spk_:
-		speakercreate(obj, arg, argc, argv);
+		speaker_create(obj, arg, argc, argv);
 		break;
 	case _cam_:
 		camera_create(obj, arg, argc, argv);
@@ -411,11 +411,14 @@ int supply_delete(_obj* obj)
 	case _wnd_:
 		window_delete(obj);
 		break;
+	case _cam_:
+		camera_delete(obj);
+		break;
 	case _spk_:
-		speakerdelete(obj);
+		speaker_delete(obj);
 		break;
 	case _mic_:
-		micphonedelete(obj);
+		micphone_delete(obj);
 		break;
 	}
 
@@ -424,7 +427,7 @@ int supply_delete(_obj* obj)
 	obj->hfmt = 0;
 	return 0;
 }
-int supply_reader(_obj* sup,void* foot, void* arg,int idx, void* buf,int len)
+int supply_reader(_obj* sup,void* foot, p64 arg,int idx, void* buf,int len)
 {
 	switch(sup->type){
 	case _dec_:
@@ -433,7 +436,7 @@ int supply_reader(_obj* sup,void* foot, void* arg,int idx, void* buf,int len)
 	}
 	return 0;
 }
-int supply_writer(_obj* sup,void* foot, void* arg,int idx, void* buf,int len)
+int supply_writer(_obj* sup,void* foot, p64 arg,int idx, void* buf,int len)
 {
 	return 0;
 }
@@ -457,7 +460,7 @@ int supply_detach(struct halfrel* self, struct halfrel* peer)
 	say("@supplydetach\n");
 	return 0;
 }
-int supply_takeby(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int supply_takeby(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 	switch(sup->type){
 		case _std_:return stdio_take(sup,foot, stack,sp, arg,idx, buf,len);
@@ -475,7 +478,7 @@ int supply_takeby(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, v
 	}
 	return 0;
 }
-int supply_giveby(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int supply_giveby(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 	switch(sup->type){
 		case _std_:return stdio_give(sup,foot, stack,sp, arg,idx, buf,len);

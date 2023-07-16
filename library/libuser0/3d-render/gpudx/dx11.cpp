@@ -953,7 +953,7 @@ BOOL InitWin32(_obj* wnd)
 
 
 extern "C" {
-int fullwindow_taking(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int fullwindow_taking(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//take
 	struct relation* rel = (struct relation*)wnd->orel0;
@@ -985,7 +985,7 @@ int fullwindow_taking(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* 
 	}
 	return 0;
 }
-int fullwindow_giving(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int fullwindow_giving(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -993,7 +993,7 @@ int fullwindow_giving(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* 
 
 
 
-int window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//target
 	g_dx11context->OMSetRenderTargets(1, &g_renderTargetView, g_depthStencilView);
@@ -1027,7 +1027,7 @@ int window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,in
 	wnd->dx11list.spsave = 0;
 	return 0;
 }
-int window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	return 0;
 }

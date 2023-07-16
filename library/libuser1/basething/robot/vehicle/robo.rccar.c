@@ -1,7 +1,7 @@
 #include "libuser.h"
 #define _car_ hex32('c','a','r',0)
-int gpioread(int,int,void*,int);
-int gpiowrite(int,int,void*,int);
+//int gpioread(int,int,void*,int);
+//int gpiowrite(int,int,void*,int);
 
 
 
@@ -127,6 +127,7 @@ static void rccar_event(
 	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
+/*
 	u8* p;
 	short* t;
 	if(len > 0)
@@ -184,6 +185,7 @@ static void rccar_event(
 			gpiowrite(_car_, 0, " ", 0);
 		}
 	}
+*/
 }
 
 
@@ -203,7 +205,7 @@ static void rccar_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void rccar_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void rccar_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -225,7 +227,7 @@ static void rccar_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 		break;
 	}
 }
-static void rccar_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void rccar_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
 static void rccar_detach(struct halfrel* self, struct halfrel* peer)

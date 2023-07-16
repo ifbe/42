@@ -26,7 +26,7 @@ int virtual_inside_01(struct style* sty, float x, float y)
 
 
 
-int virtual_takeall(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+int virtual_takeall(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key)
 {
 	struct relation* rel = ent->orel0;
 	while(1){
@@ -47,7 +47,7 @@ int virtual_takeall(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 
 
 
-int virtual_ongive_bywnd(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int virtual_ongive_bywnd(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//say("@%s\n",__FUNCTION__);
 	struct event* ev = buf;
@@ -86,7 +86,7 @@ int virtual_ongive_bywnd(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 
 
 
-int virtual_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int virtual_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* wnd = stack[sp-2].pchip;
 	if(0 == wnd)return 0;
@@ -107,7 +107,7 @@ int virtual_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, 
 	}//switch
 	return 0;
 }
-int virtual_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int virtual_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//say("@virtual_write\n");
 	//give_data_into_peer(ent,_evto_, stack,sp, arg,key, buf,len);

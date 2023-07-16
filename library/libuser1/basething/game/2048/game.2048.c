@@ -410,7 +410,7 @@ static void the2048_event(_obj* act, struct event* ev)
 
 
 
-static void the2048_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key)
+static void the2048_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -450,7 +450,7 @@ static void the2048_wrl_wnd(_obj* ent,void* slot, _obj* mgr,struct style* geom, 
 
 
 
-static void the2048_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void the2048_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//say("@the2048_read\n");
 	_obj* caller;struct style* area;
@@ -486,7 +486,7 @@ static void the2048_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void the2048_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void the2048_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//say("@the2048_write\n");
 	switch(stack[sp-1].foottype){

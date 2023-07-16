@@ -97,7 +97,7 @@ static void h2o_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 
 
 
-static void h2o_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void h2o_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -119,7 +119,7 @@ static void h2o_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int k
 		break;
 	}
 }
-static void h2o_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void h2o_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
 static void h2o_detach(struct halfrel* self, struct halfrel* peer)

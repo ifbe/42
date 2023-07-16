@@ -22,7 +22,7 @@ int fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41d
 
 
 
-int gl41fbog_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int gl41fbog_take(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 //say("@gl41fbog\n");
 /*
@@ -67,7 +67,7 @@ int gl41fbog_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int idx, v
 	}*/
 	return 0;
 }
-int gl41fbog_give(_obj* this,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int gl41fbog_give(_obj* this,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 	//say("@gl41fbog_write\n");
 	give_data_into_peer(this,_cam_, stack,sp, arg,idx, buf,len);

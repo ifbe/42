@@ -3,11 +3,11 @@
 
 
 
-int screencap_take(_obj* cam,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int screencap_take(_obj* cam,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int screencap_give(_obj* cam,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int screencap_give(_obj* cam,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
@@ -23,11 +23,11 @@ int screencap_detach()
 
 
 
-int screencap_reader(_obj* cam,void* foot, void* arg,int idx, u8* buf,int len)
+int screencap_reader(_obj* cam,void* foot, p64 arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int screencap_writer(_obj* cam,void* foot, void* arg,int idx, u8* buf,int len)
+int screencap_writer(_obj* cam,void* foot, p64 arg,int idx, u8* buf,int len)
 {
 	return 0;
 }

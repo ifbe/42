@@ -9,12 +9,12 @@ void parsedevmap_acpi(void*);
 void parsedevmap_dts(void*);
 //
 void localapic_check();
-void initirq();
+void initirq(void*);
 //
 void initcpu_bsp(struct item* p);
 void initcpu_ap();
 //
-void initpci_port();
+void initpci_port(void*);
 void initpci_mmio();
 //
 void inittimer();

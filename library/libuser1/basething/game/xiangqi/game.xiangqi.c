@@ -648,7 +648,7 @@ static void xiangqi_taking_bycam(_obj* ent,void* foot, _syn* stack,int sp)
 		break;
 	}
 }
-static void xiangqi_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void xiangqi_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 	_obj* caller;struct style* area;
@@ -669,7 +669,7 @@ static void xiangqi_taking(_obj* ent,void* slot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void xiangqi_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void xiangqi_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	say("@xiangqi_giving: %p\n", foot);
 	struct perxiangqi* xq = ent->listptr.buf0;

@@ -142,7 +142,7 @@ static void stick_read_b(_obj* ent, int key, struct joint* jo,int thisone)
 
 
 
-static void stick_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void stick_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	switch(stack[sp-1].foottype){
 	case 'a':stick_read_a(ent,key, buf,len);break;
@@ -150,7 +150,7 @@ static void stick_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int
 	case 'f':stick_read_force(ent,stack[sp-8].pchip, buf,len);break;
 	}
 }
-static void stick_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void stick_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
 static void stick_detach(struct halfrel* self, struct halfrel* peer)

@@ -9,12 +9,18 @@ static void micphonecallback(void* ptr, AudioQueueRef aqref, AudioQueueBufferRef
 	_obj* spk = ptr;
 	void* buf = aqbufref->mAudioData;
 	int len = aqbufref->mAudioDataByteSize;
-	say("@aqin.callback: spk=%p, aqref=%p,aqbufref=%p, len=%x,buf=%p, time=%lld\n",
-	spk, aqref, aqbufref, len,buf, inStartTime->mHostTime);
+	u64 timepkt = inStartTime->mHostTime;
+	u64 timenow = timeread_ns();
+	say("@aqin.callback: spk=%p, aqref=%p,aqbufref=%p, len=%x,buf=%p, timepkt=%lld,timenow=%lld,dt=%d\n",
+	spk, aqref, aqbufref, len,buf, timepkt, timenow, timenow-timepkt);
 
 	//deliver
-	struct halfrel stack[0x80];
-	give_data_into_peer(spk,_dst_, stack,0, 0,0, buf,len);
+	struct kv88 kv[4] = {
+		{'t', 0},
+		{ 0 , 0}
+	};
+	kv[0].val = timepkt;
+	give_data_into_peer_temp_stack(spk,_dst_, (p64)kv,_kv88_, buf,len);
 
 	//reuse
 	AudioQueueEnqueueBuffer(aqref, aqbufref, 0, NULL);
@@ -23,27 +29,39 @@ static void micphonecallback(void* ptr, AudioQueueRef aqref, AudioQueueBufferRef
 
 
 
-int micphone_take(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+int micphone_take(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf, int len)
 {
 	return 0;
 }
-int micphone_give(_obj* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+int micphone_give(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf, int len)
 {
 	return 0;
 }
-int micphonestop()
+int micphone_attach()
 {
 	return 0;
 }
-int micphonestart()
+int micphone_detach()
 {
 	return 0;
 }
-int micphonedelete(_obj* spk)
+
+
+
+
+int micphone_reader(_obj* sup,void* foot, p64 arg,int idx, void* buf, int len)
 {
 	return 0;
 }
-int micphonecreate(_obj* spk)
+int micphone_writer(_obj* sup,void* foot, p64 arg,int idx, void* buf, int len)
+{
+	return 0;
+}
+int micphone_delete(_obj* spk)
+{
+	return 0;
+}
+int micphone_create(_obj* spk)
 {
 	AudioStreamBasicDescription fmt = {0};
 	fmt.mSampleRate = 44100;

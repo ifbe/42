@@ -231,9 +231,16 @@ void joystickthread(_obj* win)
 
 	close(fd);
 }
-void joycreate(_obj* win)
+
+
+
+
+void joy_create(_obj* win)
 {
 	threadcreate(joystickthread, win);
+}
+void joy_delete(_obj* win)
+{
 }
 
 

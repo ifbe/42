@@ -56,11 +56,11 @@ int sobel_convert(u8* src, u8* dst)
 }
 
 
-int sobel_take(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, void* buf, int len)
+int sobel_take(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, void* buf, int len)
 {
 	return 0;
 }
-int sobel_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, void* buf, int len)
+int sobel_give(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, void* buf, int len)
 {
 	struct perobj* per = (void*)art->priv_256b;
 
@@ -70,7 +70,7 @@ int sobel_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, voi
 	int srch = per->srch;
 	if(_kv88_ == cmd){
 		int j;
-		struct kv88* kv = arg;
+		struct kv88* kv = (void*)arg;
 		for(j=0;j<16;j++){
 			if(kv[j].key <= 0x20)break;
 			switch(kv[j].key){
@@ -106,7 +106,7 @@ int sobel_give(_obj* art,void* foot, _syn* stack,int sp, void* arg, int cmd, voi
 done:
 	per->kv[0].key = 'w';per->kv[0].val = per->dstw;
 	per->kv[1].key = 'h';per->kv[1].val = per->dsth;
-	give_data_into_peer(art,_dst_, stack,sp, per->kv,_kv88_, per->dstbuf[0],per->dstlen);
+	give_data_into_peer(art,_dst_, stack,sp, (p64)per->kv,_kv88_, per->dstbuf[0],per->dstlen);
 	return 0;
 }
 int sobel_detach(struct halfrel* self, struct halfrel* peer)

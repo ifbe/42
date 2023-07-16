@@ -564,11 +564,11 @@ int flv_parser(char* filename)
 
 
 
-int flvclient_takeby(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int flvclient_takeby(_obj* obj,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int flvclient_giveby(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int flvclient_giveby(_obj* obj,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
 	say("%s\n",__FUNCTION__);
 	return 0;
@@ -585,11 +585,11 @@ int flvclient_detach(struct halfrel* self, struct halfrel* peer)
 
 
 
-int flvclient_read(_obj* obj,void* foot, void* arg, int idx, void* buf, int len)
+int flvclient_read(_obj* obj,void* foot, p64 arg, int cmd, void* buf, int len)
 {
 	return 0;
 }
-int flvclient_write(_obj* obj,void* foot,void* arg, int idx, u8* buf, int len)
+int flvclient_write(_obj* obj,void* foot, p64 arg, int cmd, u8* buf, int len)
 {
 	return 0;
 }
@@ -625,7 +625,7 @@ struct privdata{
 	u8* ppsbuf;
 	int ppslen;
 };
-int flvserver_header(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx)
+int flvserver_header(_obj* obj,void* foot, _syn* stack,int sp)
 {
 	int ret;
 	struct privdata* priv = (void*)obj->priv_256b;
@@ -858,11 +858,11 @@ int flvserver_giveby_pcm(_obj* obj,void* foot, _syn* stack,int sp, u64 captureti
 
 
 
-int flvserver_takeby(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int flvserver_takeby(_obj* obj,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int flvserver_giveby(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int flvserver_giveby(_obj* obj,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	struct privdata* priv = (void*)obj->priv_256b;
 
@@ -870,7 +870,7 @@ int flvserver_giveby(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int id
 	u64 capturetime = 0;
 	if(_kv88_ == idx){
 		int j;
-		struct kv88* kv = arg;
+		struct kv88* kv = (void*)arg;
 		for(j=0;j<8;j++){
 			if(0 == kv[j].key)break;
 			if('t' == kv[j].key){
@@ -883,7 +883,7 @@ int flvserver_giveby(_obj* obj,void* foot, _syn* stack,int sp, void* arg, int id
 
 	if(0 == priv->haveav){
 		while(__sync_lock_test_and_set(&priv->lock,1) == 1);
-		flvserver_header(obj,foot, stack,sp, arg,idx);
+		flvserver_header(obj,foot, stack,sp);
 		priv->haveav = 1;
 		__sync_lock_release(&priv->lock);
 	}
@@ -913,11 +913,11 @@ int flvserver_detach(struct halfrel* self, struct halfrel* peer)
 
 
 
-int flvserver_read(_obj* obj,void* foot, void* arg, int idx, void* buf, int len)
+int flvserver_read(_obj* obj,void* foot, p64 arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int flvserver_write(_obj* obj,void* foot,void* arg, int idx, u8* buf, int len)
+int flvserver_write(_obj* obj,void* foot, p64 arg, int idx, u8* buf, int len)
 {
 	return 0;
 }

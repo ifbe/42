@@ -152,7 +152,7 @@ void gentui_decstr(_obj* win, u32 rgb, int x, int y, int data)
 
 
 
-int tuinode_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int tuinode_take(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//gentui_rect(wnd, 4, 0, 0, 80, 25);
 	//gentui_str(wnd, 1, 0, 0, (void*)"fuck", 4);
@@ -185,7 +185,7 @@ int tuinode_take(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, vo
 	}
 	return 0;
 }
-int tuinode_give(_obj* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int tuinode_give(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	return 0;
 }

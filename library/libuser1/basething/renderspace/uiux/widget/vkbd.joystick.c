@@ -228,7 +228,7 @@ static void vjoy_write_bywnd(_obj* ent,void* foot, _syn* stack,int sp, struct ev
 
 
 
-static int vjoy_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vjoy_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
@@ -239,7 +239,7 @@ static int vjoy_taking(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int k
 	}
 	return 0;
 }
-static int vjoy_giving(_obj* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vjoy_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* wnd = stack[sp-2].pchip;
 	switch(wnd->hfmt){
