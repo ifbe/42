@@ -551,8 +551,10 @@ static int fatclient_ontake(_obj* art,void* foot, _syn* stack,int sp, p64 arg, i
 		return fat_showinfo(art);
 	}
 
-	//if(_path_ == cmd){
-	void* name = (void*)foot;
+	if(_path_ == cmd){
+		if(arg)say("path=%s\n",(void*)arg);
+	}
+	void* name = (void*)arg;
 	u32 clus = fat_name2clus(art, name);
 	say("name=%s,fat=%x\n", name, clus);
 	if(0 == clus){

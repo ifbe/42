@@ -1,4 +1,5 @@
 #include "libhard.h"
+#define debug_controltransfer 0
 #define debug_bulktransfer 0
 #define debug_transfer 0
 #define debug_waitevent 0
@@ -1549,7 +1550,7 @@ int xhci_ControlTransfer(struct item* xhci, int slot, struct UsbRequest* req, in
 	int DCI = 1;
 	slot &= 0xff;
 
-	xhci_print("ControlTransfer slot=%x,dci=%x: (bm=%x,br=%x,val=%x,idx=%x,len=%x){\n",
+	if(debug_controltransfer)xhci_print("ControlTransfer slot=%x,dci=%x: (bm=%x,br=%x,val=%x,idx=%x,len=%x){\n",
 		slot, DCI,
 		req->bmRequestType,req->bRequest,req->wValue,req->wIndex,req->wLength
 	);
@@ -1558,6 +1559,7 @@ int xhci_ControlTransfer(struct item* xhci, int slot, struct UsbRequest* req, in
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
 	u8* cmdenq = slotdata->cmdring[DCI] + slotdata->myctx.epnctx[DCI].myenq;
 	slotdata->myctx.epnctx[DCI].myenq += maketrb_controltransfer(cmdenq,0, req,slen, recvbuf, recvlen);
+	if(debug_controltransfer)printmemory(cmdenq, 16);
 
 	u32 contextsize = 0x20;
 	if(0x4 == (xhcidata->capreg->CAPPARAMS1 & 0x4))contextsize = 0x40;
@@ -1584,7 +1586,7 @@ byebye:
 		xhci_ResetEndpoint(xhci, slot, 1);
 	}*/
 
-	xhci_print("}ControlTransfer\n");
+	if(debug_controltransfer)xhci_print("}ControlTransfer\n");
 	return recvlen;
 }
 int xhci_BulkTransfer(struct item* xhci, int slotendp, void* sendbuf, int sendlen, void* recvbuf, int recvlen)
@@ -1597,6 +1599,7 @@ int xhci_BulkTransfer(struct item* xhci, int slotendp, void* sendbuf, int sendle
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
 	void* cmdenq = slotdata->cmdring[DCI] + slotdata->myctx.epnctx[DCI].myenq;
 	slotdata->myctx.epnctx[DCI].myenq += maketrb_bulktransfer(cmdenq, 0, sendbuf, sendlen);
+	if(debug_bulktransfer)printmemory(cmdenq, 16);
 	if(slotdata->myctx.epnctx[DCI].myenq >= 0x1000)slotdata->myctx.epnctx[DCI].myenq = 0;
 
 	xhci_giveorder(xhci, slot | (DCI<<8));

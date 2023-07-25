@@ -222,6 +222,59 @@ int usbstor_ZeroMemory(void* buf, int len)
 
 
 
+int scsi_cmd_inquery(u8* ptr)
+{
+	int j;
+	ptr[0] = scsi_Inquiry;	//SCSI operation code
+	ptr[1] =            0;	//SCSI reserved
+	ptr[2] =            0;	//SCSI page or operation code
+	ptr[3] =            0;	//SCSI reserved
+	ptr[4] =         0x24;	//SCSI allocation length
+	ptr[5] =            0;	//SCSI control
+	for(j=6;j<16;j++)ptr[j] = 0;
+	return 6;
+}
+int scsi_cmd_testunitready(u8* ptr)
+{
+	int j;
+	ptr[0] = scsi_TestUnitReady;
+	for(j=1;j<16;j++)ptr[j] = 0;
+	return 6;
+}
+int scsi_cmd_readcapacity10(u8* ptr)
+{
+	int j;
+	ptr[0]   = scsi_ReadCapacity;
+	for(j=1;j<16;j++)ptr[j] = 0;
+	return 10;
+}
+int scsi_cmd_readcapacity16(u8* ptr)
+{
+	return 16;
+}
+int scsi_cmd_readdata10(u8* ptr, u64 blocklba, int blockcnt)
+{
+	int j;
+	ptr[0]   = scsi_Read10;
+	ptr[1]   = 0;
+	ptr[2]   = (blocklba>>24) & 0xff;
+	ptr[3]   = (blocklba>>16) & 0xff;
+	ptr[4]   = (blocklba>> 8) & 0xff;
+	ptr[5]   = (blocklba    ) & 0xff;
+	ptr[6]   = 0;
+	ptr[7]   = blockcnt >> 8;
+	ptr[8]   = blockcnt & 0xff;
+	for(j=9;j<16;j++)ptr[j] = 0;
+	return 10;
+}
+int scsi_cmd_readdata16(u8* ptr, u64 blocklba, int blockcnt)
+{
+	return 16;
+}
+
+
+
+
 struct perstor{
 	struct item* host;
 	int slot;
@@ -230,6 +283,242 @@ struct perstor{
 	u64 blocksize;
 	u64 totalsize;
 };
+static int usbstor_inquery(struct item* usb,int xxx, struct item* xhci,int slot, int inaddr,int outaddr)
+{
+	struct perusb* perusb = usb->priv_ptr;
+	if(0 == perusb)return 0;
+
+	struct perstor* perstor = (void*)perusb->perfunc;
+
+	struct CommandBlockWrapper* inqcbw = (void*)perstor + 0x100;
+	struct INQUERY_Reply* inqrep = (void*)perstor + 0x300;
+	struct CommandStatusWrapper* inqcsw = (void*)perstor + 0x200;
+	usbstor_ZeroMemory(inqcbw, 0x1f);	//31byte
+	usbstor_ZeroMemory(inqrep, 0x24);	//36byte
+	usbstor_ZeroMemory(inqcsw, 0x0d);	//14byte
+
+	inqcbw->Signature    = 0x43425355;
+	inqcbw->Tag          = hex32('i','n','q',0);
+	inqcbw->DataLen      = 0x24;
+	inqcbw->DataDir      = 0x80;
+	inqcbw->LogicUnitNum = 0;
+	inqcbw->CmdLen       = scsi_cmd_inquery(inqcbw->CmdData);
+
+	int ret = xhci->give_pxpxpxpx(
+		xhci,slot|(outaddr<<8),
+		0,0,
+		(p64)inqcbw, 0x1f,
+		0,0
+	);
+
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot|(inaddr<<8),
+		0,0,
+		(p64)inqrep, 0x24,
+		0,0
+	);
+	printmemory(inqrep, 0x24);
+
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot|(inaddr<<8),
+		0,0,
+		(p64)inqcsw, 0x0d,
+		0,0
+	);
+
+	printmemory(inqcsw, 0x0d);
+	if(0 != inqcsw->Status){
+		say("[usbdisk]csw.status=%x\n", inqcsw->Status);
+		return -1;
+	}
+	return 0;
+}
+static int usbstor_testunitready(struct item* usb,int xxx, struct item* xhci,int slot, int inaddr,int outaddr)
+{
+	struct perusb* perusb = usb->priv_ptr;
+	if(0 == perusb)return 0;
+
+	struct perstor* perstor = (void*)perusb->perfunc;
+
+	struct CommandBlockWrapper* turcbw = (void*)perstor + 0x100;
+	struct CommandStatusWrapper* turcsw = (void*)perstor + 0x200;
+	usbstor_ZeroMemory(turcbw, 0x1f);
+	usbstor_ZeroMemory(turcsw, 0x0d);
+
+	turcbw->Signature    = 0x43425355;
+	turcbw->Tag          = hex32('t','u','r',0);
+	turcbw->DataLen      = 0;
+	turcbw->DataDir      = 0x80;
+	turcbw->LogicUnitNum = 0;
+	turcbw->CmdLen       = scsi_cmd_testunitready(turcbw->CmdData);
+
+	int ret = xhci->give_pxpxpxpx(
+		xhci,slot|(outaddr<<8),
+		0,0,
+		(p64)turcbw, 0x1f,
+		0,0
+	);
+
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot|(inaddr<<8),
+		0,0,
+		(p64)turcsw, 0x0d,
+		0,0
+	);
+
+	printmemory(turcsw, 0x0d);
+	if(0 != turcsw->Status){
+		say("[usbdisk]csw.status=%x\n", turcsw->Status);
+		return -1;
+	}
+	return 0;
+}
+static int usbstor_readcapacity(struct item* usb,int xxx, struct item* xhci,int slot, int inaddr,int outaddr)
+{
+	struct perusb* perusb = usb->priv_ptr;
+	if(0 == perusb)return 0;
+
+	struct perstor* perstor = (void*)perusb->perfunc;
+
+	struct CommandBlockWrapper* capcbw = (void*)perstor + 0x100;
+	struct READ_CAPACITY_Reply* caprep = (void*)perstor + 0x300;
+	struct CommandStatusWrapper* capcsw = (void*)perstor + 0x200;
+	usbstor_ZeroMemory(capcbw, 0x1f);
+	usbstor_ZeroMemory(caprep, 8);
+	usbstor_ZeroMemory(capcsw, 0x0d);
+	capcbw->Signature    = 0x43425355;
+	capcbw->Tag          = hex32('c','a','p',0);
+	capcbw->DataLen      = 8;
+	capcbw->DataDir      = 0x80;
+	capcbw->LogicUnitNum = 0;
+	capcbw->CmdLen       = scsi_cmd_readcapacity10(capcbw->CmdData);
+
+	int ret = xhci->give_pxpxpxpx(
+		xhci,slot|(outaddr<<8),
+		0,0,
+		(p64)capcbw, 0x1f,
+		0,0
+	);
+
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot|(inaddr<<8),
+		0,0,
+		(p64)caprep, 8,
+		0,0
+	);
+
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot|(inaddr<<8),
+		0,0,
+		(p64)capcsw, 0x0d,
+		0,0
+	);
+
+	printmemory(caprep, 8);
+	printmemory(capcsw, 0x0d);
+	if(0 != capcsw->Status){
+		say("[usbdisk]csw.status=%x\n", capcsw->Status);
+		return -1;
+	}
+	return 0;
+}
+//in: bytecur and bytecnt, must be integer multiple of blocksize
+//out:
+static int usbstor_readdata_piece(struct item* usb, u8* buf, u64 bytecur, int bytecnt)
+{
+	struct perusb* perusb = usb->priv_ptr;
+	if(0 == perusb)return 0;
+
+	struct perstor* info = (void*)(perusb->perfunc);
+	if(0 == info)return 0;
+
+	struct item* xhci = info->host;
+	int slot = info->slot;
+	int bulkin = info->bulkin;
+	int bulkout = info->bulkout;
+
+	u64 blocklba = bytecur / (info->blocksize);
+	int blockcnt = bytecnt / (info->blocksize);
+	say("lba=%x,cnt=%x\n",blocklba,blockcnt);
+
+	struct CommandBlockWrapper cbw;
+	struct CommandStatusWrapper rsw;
+	usbstor_ZeroMemory(&cbw, 0x1f);
+	usbstor_ZeroMemory(&rsw, 0x0d);
+	cbw.Signature    = 0x43425355;
+	cbw.Tag          = blocklba;
+	cbw.DataLen      = bytecnt;
+	cbw.DataDir      = 0x80;
+	cbw.LogicUnitNum = 0;
+	cbw.CmdLen       = scsi_cmd_readdata10(cbw.CmdData, blocklba, blockcnt);
+
+	int ret = xhci->give_pxpxpxpx(
+		xhci,slot|(info->bulkout<<8),
+		0,0,
+		(p64)&cbw, 0x1f,
+		0,0
+	);
+	if(ret < 0){
+		say("[usbdisk]error@send cbw\n");
+		return -1;
+	}
+
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot|(info->bulkin<<8),
+		0,0,
+		(p64)buf, bytecnt,
+		0,0
+	);
+	if(ret < 0){
+		say("[usbdisk]error@recv dat\n");
+		return -2;
+	}
+
+	ret = xhci->give_pxpxpxpx(
+		xhci,slot|(info->bulkin<<8),
+		0,0,
+		(p64)&rsw, 0x0d,
+		0,0
+	);
+	if(ret < 0){
+		say("[usbdisk]error@recv csw\n");
+		return -3;
+	}
+	if(0 != rsw.Status){
+		say("[usbdisk]error@csw.status=%x\n", rsw.Status);
+		return -4;
+	}
+	return bytecnt;
+}
+
+
+
+
+static int usbstor_readinfo(struct item* usb,void* foot,struct halfrel* stack,int sp, void* buf,int len)
+{
+	//say("@usbstor_readinfo: %p,%p\n",usb,foot);
+
+	struct perusb* perusb = usb->priv_ptr;
+	if(0 == perusb)return 0;
+
+	struct perstor* info = (void*)(perusb->perfunc);
+	if(0 == info->host){
+		say("host=0?\n");
+		return 0;
+	}
+	if(0 == info->blocksize){
+		say("blocksize=0?\n");
+		return 0;
+	}
+
+	u32 blocksize = info->blocksize;
+	u64 totalsize = info->totalsize;
+	int sh = usbstor_shift(totalsize);
+	say("type=usbdisk\n"
+		"blocksize=0x%x\n"
+		"totalsize=0x%llx(%d%cB)\n", blocksize, totalsize, totalsize>>sh, KMGTPE[sh/10]);
+	return 0;
+}
 static int usbstor_readdata(struct item* usb,void* foot,struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	say("@usbstor_readdata: %p,%p,%p,%x,%llx,%x,%p,%x\n",usb,foot,stack,sp,arg,cmd,buf,len);
@@ -244,98 +533,17 @@ static int usbstor_readdata(struct item* usb,void* foot,struct halfrel* stack,in
 	u64 off = arg;
 	u64 bytecur = off;	//byte cur
 	int bytecnt =   0;	//byte cnt
-	u64 blocklba;
-	int blockcnt;
-	struct CommandBlockWrapper cbw;
-	struct CommandStatusWrapper rsw;
 	while(1){
 		if(bytecur >= off+len)break;
 
 		bytecnt = off+len-bytecur;
 		if(bytecnt > 0x10000)bytecnt = 0x10000;
 
-		blocklba = bytecur / (info->blocksize);
-		blockcnt = bytecnt / (info->blocksize);
-		say("lba=%x,cnt=%x\n",blocklba,blockcnt);
-
-		usbstor_ZeroMemory(&cbw, 0x1f);
-		usbstor_ZeroMemory(&rsw, 0x0d);
-		cbw.Signature    = 0x43425355;
-		cbw.Tag          = blocklba;
-		cbw.DataLen      = bytecnt;
-		cbw.DataDir      = 0x80;
-		cbw.LogicUnitNum = 0;
-		cbw.CmdLen       = 6;
-		cbw.CmdData[0]   = scsi_Read10;
-		cbw.CmdData[1]   = 0;
-		cbw.CmdData[2]   = (blocklba>>24) & 0xff;
-		cbw.CmdData[3]   = (blocklba>>16) & 0xff;
-		cbw.CmdData[4]   = (blocklba>> 8) & 0xff;
-		cbw.CmdData[5]   = (blocklba    ) & 0xff;
-		cbw.CmdData[6]   = 0;
-		cbw.CmdData[7]   = blockcnt >> 8;
-		cbw.CmdData[8]   = blockcnt & 0xff;
-		for(j=9;j<16;j++)cbw.CmdData[j] = 0;
-
-		ret = info->host->give_pxpxpxpx(
-			info->host,info->slot|(info->bulkout<<8),
-			0,0,
-			(p64)&cbw, 0x1f,
-			0,0
-		);
-		if(ret < 0){
-			say("[usbdisk]error@send cbw\n");
-			break;
-		}
-
-		ret = info->host->give_pxpxpxpx(
-			info->host,info->slot|(info->bulkin<<8),
-			0,0,
-			(p64)buf+bytecur-off, bytecnt,
-			0,0
-		);
-		if(ret < 0){
-			say("[usbdisk]error@recv dat\n");
-			break;
-		}
-
-		ret = info->host->give_pxpxpxpx(
-			info->host,info->slot|(info->bulkin<<8),
-			0,0,
-			(p64)&rsw, 0x0d,
-			0,0
-		);
-		if(ret < 0){
-			say("[usbdisk]error@recv csw\n");
-			break;
-		}
-		if(0 != rsw.Status){
-			say("[usbdisk]error@csw.status=%x\n", rsw.Status);
-			break;
-		}
+		usbstor_readdata_piece(usb, buf+bytecur-off, bytecur, bytecnt);
 
 		bytecur += bytecnt;
 	}
 	return bytecur-off;
-}
-static int usbstor_readinfo(struct item* usb,void* foot,struct halfrel* stack,int sp, void* buf,int len)
-{
-	//say("@usbstor_readinfo: %p,%p\n",usb,foot);
-
-	struct perusb* perusb = usb->priv_ptr;
-	if(0 == perusb)return 0;
-
-	struct perstor* info = (void*)(perusb->perfunc);
-	if(0 == info->host)return 0;
-	if(0 == info->blocksize)return 0;
-
-	u32 blocksize = info->blocksize;
-	u64 totalsize = info->totalsize;
-	int sh = usbstor_shift(totalsize);
-	say("type=usbdisk\n"
-		"blocksize=0x%x\n"
-		"totalsize=0x%llx(%d%cB)\n", blocksize, totalsize, totalsize>>sh, KMGTPE[sh/10]);
-	return 0;
 }
 
 
@@ -465,132 +673,22 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 
 //------------------------send INQUERY------------------------
 	say("[usbdisk]Inquiry...\n");
-	struct CommandBlockWrapper* inqcbw = (void*)perstor + 0x100;
-	struct CommandStatusWrapper* inqcsw = (void*)perstor + 0x200;
-	struct INQUERY_Reply* inqrep = (void*)perstor + 0x300;
-	usbstor_ZeroMemory(inqcbw, 0x1f);	//31byte
-	usbstor_ZeroMemory(inqcsw, 0x0d);	//14byte
-	usbstor_ZeroMemory(inqrep, 0x24);	//36byte
-
-	inqcbw->Signature    = 0x43425355;
-	inqcbw->Tag          = hex32('i','n','q',0);
-	inqcbw->DataLen      = 0x24;
-	inqcbw->DataDir      = 0x80;
-	inqcbw->LogicUnitNum = 0;
-	inqcbw->CmdLen       = 6;
-	inqcbw->CmdData[0] = scsi_Inquiry;	//SCSI operation code
-	inqcbw->CmdData[1] =    0;	//SCSI reserved
-	inqcbw->CmdData[2] =    0;	//SCSI page or operation code
-	inqcbw->CmdData[3] =    0;	//SCSI reserved
-	inqcbw->CmdData[4] = 0x24;	//SCSI allocation length
-	inqcbw->CmdData[5] =    0;	//SCSI control
-	for(j=6;j<16;j++)inqcbw->CmdData[j] = 0;
-	ret = xhci->give_pxpxpxpx(
-		xhci,slot|(outaddr<<8),
-		0,0,
-		(p64)inqcbw, 0x1f,
-		0,0
-	);
-
-	ret = xhci->give_pxpxpxpx(
-		xhci,slot|(inaddr<<8),
-		0,0,
-		(p64)inqrep, 0x24,
-		0,0
-	);
-	printmemory(inqrep, 0x24);
-
-	ret = xhci->give_pxpxpxpx(
-		xhci,slot|(inaddr<<8),
-		0,0,
-		(p64)inqcsw, 0x0d,
-		0,0
-	);
-
-	printmemory(inqcsw, 0x0d);
-	if(0 != inqcsw->Status)say("[usbdisk]csw.status=%x\n", inqcsw->Status);
-
+	usbstor_inquery(usb,xxx, xhci,slot, inaddr,outaddr);
 
 //------------------------send TestUnitReady------------------------
 	say("[usbdisk]Test Unit Ready...\n");
-	struct CommandBlockWrapper* turcbw = (void*)perstor + 0x100;
-	struct CommandStatusWrapper* turcsw = (void*)perstor + 0x200;
-	usbstor_ZeroMemory(turcbw, 0x1f);
-	usbstor_ZeroMemory(turcsw, 0x0d);
-
-	turcbw->Signature    = 0x43425355;
-	turcbw->Tag          = hex32('t','u','r',0);
-	turcbw->DataLen      = 0;
-	turcbw->DataDir      = 0x80;
-	turcbw->LogicUnitNum = 0;
-	turcbw->CmdLen       = 6;
-	turcbw->CmdData[0] = scsi_TestUnitReady;
-	for(j=1;j<16;j++)turcbw->CmdData[j] = 0;
-	ret = xhci->give_pxpxpxpx(
-		xhci,slot|(outaddr<<8),
-		0,0,
-		(p64)turcbw, 0x1f,
-		0,0
-	);
-
-	ret = xhci->give_pxpxpxpx(
-		xhci,slot|(inaddr<<8),
-		0,0,
-		(p64)turcsw, 0x0d,
-		0,0
-	);
-
-	printmemory(turcsw, 0x0d);
-	if(0 != turcsw->Status)say("[usbdisk]csw.status=%x\n", turcsw->Status);
-
+	usbstor_testunitready(usb,xxx, xhci,slot, inaddr,outaddr);
 
 //------------------------send ReadCapacity------------------------
 	say("[usbdisk]Read Capacity...\n");
-	struct CommandBlockWrapper* capcbw = (void*)perstor + 0x100;
-	struct CommandStatusWrapper* capcsw = (void*)perstor + 0x200;
+	usbstor_readcapacity(usb,xxx, xhci,slot, inaddr,outaddr);
+
 	struct READ_CAPACITY_Reply* caprep = (void*)perstor + 0x300;
-	usbstor_ZeroMemory(capcbw, 0x1f);
-	usbstor_ZeroMemory(capcsw, 0x0d);
-	usbstor_ZeroMemory(caprep, 8);
-	capcbw->Signature    = 0x43425355;
-	capcbw->Tag          = hex32('c','a','p',0);
-	capcbw->DataLen      = 8;
-	capcbw->DataDir      = 0x80;
-	capcbw->LogicUnitNum = 0;
-	capcbw->CmdLen       = 6;
-	capcbw->CmdData[0]   = scsi_ReadCapacity;
-	for(j=1;j<16;j++)capcbw->CmdData[j] = 0;
-	ret = xhci->give_pxpxpxpx(
-		xhci,slot|(outaddr<<8),
-		0,0,
-		(p64)capcbw, 0x1f,
-		0,0
-	);
-
-	ret = xhci->give_pxpxpxpx(
-		xhci,slot|(inaddr<<8),
-		0,0,
-		(p64)caprep, 8,
-		0,0
-	);
-
-	printmemory(caprep, 8);
 	u32 blocklast = usbstor_endian(caprep->LastLBA_MsbNotLsb);
 	u32 blocksize = usbstor_endian(caprep->BlockSz_MsbNotLsb);
 	u64 totalsize = (1 + (u64)blocklast) * blocksize;
 	int sh = usbstor_shift(totalsize);
 	say("blocklast=0x%x,blocksize=0x%x,totalsize=0x%llx(%d%cB)\n", blocklast, blocksize, totalsize, totalsize>>sh, KMGTPE[sh/10]);
-
-	ret = xhci->give_pxpxpxpx(
-		xhci,slot|(inaddr<<8),
-		0,0,
-		(p64)capcsw, 0x0d,
-		0,0
-	);
-
-	printmemory(capcsw, 0x0d);
-	if(0 != capcsw->Status)say("[usbdisk]csw.status=%x\n", capcsw->Status);
-
 
 //------------------------serve for the people------------------------
 	usbstor_ZeroMemory(perstor, 0x100);

@@ -115,8 +115,9 @@ vhd2img:
 qemu-mouse:
 	../../../live/virt/qemu/ovmf.sh "qemu-system-x86_64" $(shell pwd)/test.img $(shell pwd)/test.vhd
 qemu-tablet:
-qemu:
 	../../../live/virt/qemu/usb-tablet.sh "qemu-system-x86_64" $(shell pwd)/test.img $(shell pwd)/test.vhd
+qemu:
+	make qemu-tablet
 
 clean:
 	rm -rf lib*/*.o
