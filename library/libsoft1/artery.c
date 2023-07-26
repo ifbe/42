@@ -1897,7 +1897,12 @@ int artery_attach(struct halfrel* self, struct halfrel* peer)
 	case _mbr_:return mbrclient_attach(self, peer);break;
 
 	case _fat_:return fatclient_attach(self, peer);break;
+	case _ntfs_:return ntfsclient_attach(self, peer);break;
+
+	case _ext_:return extclient_attach(self, peer);break;
+
 	case _hfs_:return hfsclient_attach(self, peer);break;
+	//case _apfs_:return apfsclient_attach(self, peer);break;
 
 	case _pcmfmt_:return pcmfmt_attach(self, peer);break;
 	case _picfmt_:return picfmt_attach(self, peer);break;
@@ -1989,7 +1994,12 @@ int artery_detach(struct halfrel* self, struct halfrel* peer)
 	case _mbr_:return mbrclient_detach(self, peer);break;
 
 	case _fat_:return fatclient_detach(self, peer);break;
+	case _ntfs_:return ntfsclient_detach(self, peer);break;
+
+	case _ext_:return extclient_detach(self, peer);break;
+
 	case _hfs_:return hfsclient_detach(self, peer);break;
+	//case _apfs_:return apfsclient_detach(self, peer);break;
 
 	case _pcmfmt_:return pcmfmt_detach(self, peer);break;
 	case _picfmt_:return picfmt_detach(self, peer);break;
@@ -2066,7 +2076,7 @@ int artery_takeby(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, vo
 	//case _mbr_:return mbrclient_take(art,foot, stack,sp, arg,idx, buf,len);break;
 
 	//case _fat_:return fatclient_read(art,foot, stack,sp, arg,idx, buf,len);break;
-	case _hfs_:return hfsclient_read(art,foot, stack,sp, arg,idx, buf,len);break;
+	//case _hfs_:return hfsclient_read(art,foot, stack,sp, arg,idx, buf,len);break;
 
 	case _ann_:ann_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	//case _cnn_:cnn_read(art,foot, stack,sp, arg,idx, buf,len);break;
@@ -2194,7 +2204,7 @@ int artery_giveby(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, vo
 	//case _mbr_:return mbrclient_give(art,foot, stack,sp, arg,idx, buf,len);break;
 
 	//case _fat_:return fatclient_write(art,foot, stack,sp, arg,idx, buf,len);break;
-	case _hfs_:return hfsclient_write(art,foot, stack,sp, arg,idx, buf,len);break;
+	//case _hfs_:return hfsclient_write(art,foot, stack,sp, arg,idx, buf,len);break;
 
 	case _ann_:return ann_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	//case _cnn_:return cnn_write(art,foot, stack,sp, arg,idx, buf,len);break;

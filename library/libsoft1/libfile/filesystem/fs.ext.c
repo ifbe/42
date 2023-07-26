@@ -21,6 +21,20 @@ static u64 inodesize;
 //
 static u64 firstinodeincache;
 static u8 blockrecord[512];
+struct perfs{
+	//@[1m,2m): todo: filenodes
+	u8 datahome[0x100000];
+
+	//@[512k,1m): todo: dirtree
+	u8 dirhome[0x80000];
+
+	//@[256k,512k)
+	u8 fatbuffer[0x40000];
+
+	//@[128k,256k)
+	u8 pbrbuffer[0x20000];
+
+}__attribute__((packed));
 
 
 
@@ -267,7 +281,7 @@ static void explaindirectory()
 		rdi+=0x40;
 	}
 }
-int explainexthead()
+int explainexthead(u8* pbr)
 {
 	//变量们
 	blocksize=*(u32*)(pbr+0x418);
@@ -327,8 +341,40 @@ static int ext_write(u64 id,u64 offset,u64 size)
 }
 static int ext_start(u64 sector)
 {
-	int ret=0;
 	block0 = sector;
+
+	return 0;
+}
+
+
+
+
+static int extclient_ontake(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, u8* buf, int len)
+{
+	say("@extclient_ontake\n");
+	return 0;
+}
+static int extclient_ongive(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
+{
+	return 0;
+}
+int extclient_attach(struct halfrel* self, struct halfrel* peer)
+{
+	say("@extclient_attach\n");
+	if(_src_ != self->foottype)return 0;
+
+	_obj* art = self->pchip;
+	if(0 == art)return 0;
+
+	struct perfs* per = art->priv_ptr;
+	if(0 == per)return 0;
+
+	u8* pbr = per->pbrbuffer;
+	int ret = take_data_from_peer(art,_src_, 0,0, 0,_pos_, pbr,0x1000);
+	if(ret < 0x200){
+		say("fail@read:%d\n",ret);
+		return 0;
+	}
 
 	//读分区前8扇区，检查magic值
 	//ret = file_take(0, 0, "", block0*0x200, pbr, 0x1000);
@@ -336,51 +382,46 @@ static int ext_start(u64 sector)
 	if(ret == 0)return -1;
 
 	//读出关键数据
-	ret = explainexthead();
+	ret = explainexthead(pbr);
 	if(ret < 0)return ret;
 
+/*
 	//cd /
 	firstinodeincache = 0xffffffff;
 	ext_choose(2);
-
+*/
 	return 0;
 }
-static int ext_stop()
-{
-	return 0;
-}
-void ext_create(void* base, u64* this)
-{
-	//
-	fshome = base+0x100000;
-		pbr = fshome+0x10000;
-		inodebuffer = fshome+0x20000;
-	dirhome = base+0x200000;
-	datahome = base+0x300000;
-
-	//
-	this[2] = (u64)ext_start;
-	this[3] = (u64)ext_stop;
-	this[4] = (u64)ext_list;
-	this[5] = (u64)ext_choose;
-	this[6] = (u64)ext_read;
-	this[7] = (u64)ext_write;
-}
-void ext_delete()
-{
-}
-
-
-
-
-int extclient_write(
-	_obj* ele, void* sty,
-	_obj* obj, void* pin,
-	u8* buf, int len)
+int extclient_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int extclient_create(_obj* ele, u8* url)
+
+
+
+
+static int extclient_reader(_obj* art,int xxx, void* arg,int cmd, void* buf,int len)
+{
+	say("@extclient_reader\n");
+	return 0;
+}
+static int extclient_writer(_obj* art,int xxx, void* arg,int cmd, void* buf,int len)
+{
+	return 0;
+}
+int extclient_create(_obj* art)
+{
+	say("@extclient_create\n");
+
+	struct perfs* per = memorycreate(0x200000, 0);
+	art->priv_ptr = per;
+
+	art->onreader = (void*)extclient_reader;
+	art->onwriter = (void*)extclient_writer;
+	art->ongiving = (void*)extclient_ongive;
+	art->ontaking = (void*)extclient_ontake;
+}
+int extclient_delete(_obj* art)
 {
 	return 0;
 }

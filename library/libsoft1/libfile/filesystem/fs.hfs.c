@@ -22,6 +22,20 @@ static u64 catalogsector;	//catalog扇区位置，每个节点多少扇区
 static u64 nodesize;
 static u64 rootnode;		//记下几个节点号
 static u64 firstleafnode;
+struct perfs{
+	//@[1m,2m): todo: filenodes
+	u8 datahome[0x100000];
+
+	//@[512k,1m): todo: dirtree
+	u8 dirhome[0x80000];
+
+	//@[256k,512k)
+	u8 fatbuffer[0x40000];
+
+	//@[128k,256k)
+	u8 pbrbuffer[0x20000];
+
+}__attribute__((packed));
 
 
 
@@ -622,11 +636,12 @@ int check_hfs(u8* addr)
 
 
 
-int hfsclient_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+static int hfsclient_ontake(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, u8* buf, int len)
 {
+	say("@hfsclient_ontake\n");
 	return 0;
 }
-int hfsclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+static int hfsclient_ongive(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
@@ -654,16 +669,30 @@ int hfsclient_attach(struct halfrel* self, struct halfrel* peer)
 	hfs_choose(2);*/
 	return 0;
 }
+
+
+
+
+int hfsclient_reader(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+{
+	return 0;
+}
+int hfsclient_writer(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+{
+	return 0;
+}
 int hfsclient_delete(_obj* art)
 {
 	return 0;
 }
 int hfsclient_create(_obj* art)
 {
-	fshome = memorycreate(0x100000, 0);
-		pbr = fshome+0x10000;
-		catabuf = fshome+0x20000;
-	dirhome = memorycreate(0x100000, 0);
-	datahome = memorycreate(0x100000, 0);
+	struct perfs* per = memorycreate(0x200000, 0);
+	art->priv_ptr = per;
+
+	art->onreader = (void*)hfsclient_reader;
+	art->onwriter = (void*)hfsclient_writer;
+	art->ongiving = (void*)hfsclient_ongive;
+	art->ontaking = (void*)hfsclient_ontake;
 	return 0;
 }

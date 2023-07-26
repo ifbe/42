@@ -23,6 +23,20 @@ static int ntfspwd;
 static u64 firstmftincache;
 //
 static u8 here[1024];
+struct perfs{
+	//@[1m,2m): todo: filenodes
+	u8 datahome[0x100000];
+
+	//@[512k,1m): todo: dirtree
+	u8 dirhome[0x80000];
+
+	//@[256k,512k)
+	u8 fatbuffer[0x40000];
+
+	//@[128k,256k)
+	u8 pbrbuffer[0x20000];
+
+}__attribute__((packed));
 
 
 
@@ -562,10 +576,10 @@ void explainmft(u64 mftnum,u64 want)
 
 
 
-int explainntfshead()
+int explainntfshead(u8* pbr)
 {
 	int i;
-	for(i=0;i<0x10000;i++)fshome[i]=0;
+	//for(i=0;i<0x10000;i++)fshome[i]=0;
 
 	//[d,d]
 	clustersize=(u64)( *(u8*)(pbr+0xd) );
@@ -641,8 +655,40 @@ static int ntfs_write(u64 id)
 }
 static int ntfs_start(u64 sector)
 {
-	int ret=0;
 	ntfssector=sector;
+
+	return 1;
+}
+
+
+
+
+static int ntfsclient_ontake(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, u8* buf, int len)
+{
+	say("@ntfsclient_ontake\n");
+	return 0;
+}
+static int ntfsclient_ongive(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
+{
+	return 0;
+}
+int ntfsclient_attach(struct halfrel* self, struct halfrel* peer)
+{
+	say("@ntfsclient_attach\n");
+	if(_src_ != self->foottype)return 0;
+
+	_obj* art = self->pchip;
+	if(0 == art)return 0;
+
+	struct perfs* per = art->priv_ptr;
+	if(0 == per)return 0;
+
+	u8* pbr = per->pbrbuffer;
+	int ret = take_data_from_peer(art,_src_, 0,0, 0,_pos_, pbr,0x200);
+	if(ret < 0x200){
+		say("fail@read:%d\n",ret);
+		return 0;
+	}
 
 	//读PBR，检查失败就返回
 	//ret = file_take(0, 0, "", ntfssector*0x200, pbr, 0x200);
@@ -650,53 +696,47 @@ static int ntfs_start(u64 sector)
 	if(ret==0)return -1;
 
 	//解释分区头(拿出并保存几个重要变量)
-	ret=explainntfshead();
+	ret = explainntfshead(pbr);
 	if(ret < 0)return ret;
-
+/*
 	//cd /
 	firstmftincache=0xffffffff;
 	pwd[0]=5;
 	ntfspwd=0;
 	ntfs_choose(5);
-
-	return 1;
+*/
+	return 0;
 }
-static void ntfs_stop()
-{
-}
-void ntfs_create(void* base, u64* this)
-{
-	//
-	fshome = base+0x100000;
-		pbr=fshome+0x10000;
-		mft0=fshome+0x20000;
-		mftbuffer=fshome+0x40000;
-	dirhome = base+0x200000;
-	datahome = base+0x300000;
-
-	//
-	this[2] = (u64)ntfs_start;
-	this[3] = (u64)ntfs_stop;
-	this[4] = (u64)ntfs_list;
-	this[5] = (u64)ntfs_choose;
-	this[6] = (u64)ntfs_read;
-	this[7] = (u64)ntfs_write;
-}
-void ntfs_delete()
-{
-}
-
-
-
-
-int ntfsclient_write(
-	_obj* ele, void* sty,
-	_obj* obj, void* pin,
-	u8* buf, int len)
+int ntfsclient_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int ntfsclient_create(_obj* ele, u8* url)
+
+
+
+
+static int ntfsclient_reader(_obj* art,int xxx, void* arg,int cmd, void* buf,int len)
+{
+	say("@ntfsclient_reader\n");
+	return 0;
+}
+static int ntfsclient_writer(_obj* art,int xxx, void* arg,int cmd, void* buf,int len)
+{
+	return 0;
+}
+int ntfsclient_create(_obj* art)
+{
+	say("@ntfsclient_create\n");
+
+	struct perfs* per = memorycreate(0x200000, 0);
+	art->priv_ptr = per;
+
+	art->onreader = (void*)ntfsclient_reader;
+	art->onwriter = (void*)ntfsclient_writer;
+	art->ongiving = (void*)ntfsclient_ongive;
+	art->ontaking = (void*)ntfsclient_ontake;
+}
+int ntfsclient_delete(_obj* art)
 {
 	return 0;
 }

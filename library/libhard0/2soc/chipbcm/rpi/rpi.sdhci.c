@@ -12,7 +12,7 @@ u32 mbox_getbaseclock();
 void wait_msec(int);
 void wait_cycles(int);
 //
-void filemanager_registersupplier(void*,void*);
+void filemanager_registerdisk(void*,void*);
 
 
 
@@ -720,7 +720,7 @@ int initsdhci_bcm283xsdcard(struct item* dev, int offs)
 	//file
 	dev->ontaking = (void*)sdhci_ontake;
 	dev->ongiving = (void*)sdhci_ongive;
-	filemanager_registersupplier(dev, 0);
+	filemanager_registerdisk(dev, 0);
 
 	say("\n");
 	return 0;
@@ -738,7 +738,7 @@ int initsdhci_bcm2711sdcard(struct item* dev, int offs)
 	//file
 	dev->ontaking = (void*)sdhci_ontake;
 	dev->ongiving = (void*)sdhci_ongive;
-	filemanager_registersupplier(dev, 0);
+	filemanager_registerdisk(dev, 0);
 
 	say("\n");
 	return 0;

@@ -826,7 +826,7 @@ int xhci_parseevent(struct item* xhci, u32* ev)
 		cbslot = endpdata->cbslot;
 		if(cbnode){
 			if(cbnode->ongiving){
-				cbnode->ongiving(cbnode,cbslot, xhci,endp, *(u8**)ev,0, 0,0);
+				cbnode->ongiving(cbnode,(void*)cbslot, xhci,endp, *(p64*)ev,0, 0,0);
 				break;
 			}
 		}
@@ -1904,19 +1904,19 @@ static int xhci_writer(struct item* xhci,u32 SlotEndp, p64 arg,int cmd, void* bu
 		int slot = SlotEndp & 0xff;
 		int DCI =(SlotEndp>>8) & 0xff;
 		if(DCI <= 1){		//to ep0
-			return xhci_ControlTransfer(xhci, SlotEndp, arg, cmd, buf, len);
+			return xhci_ControlTransfer(xhci, SlotEndp, (void*)arg, cmd, buf, len);
 		}
 
 		struct perxhci* xhcidata = (void*)(xhci->priv_256b);
 		struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
 		switch(slotdata->myctx.epnctx[DCI].eptype){
 		case EPType_InterruptOut:
-			return xhci_InterruptTransferOut(xhci, SlotEndp, arg, cmd, buf, len);
+			return xhci_InterruptTransferOut(xhci, SlotEndp, (void*)arg, cmd, buf, len);
 		case EPType_InterruptIn:
-			return xhci_InterruptTransferIn(xhci, SlotEndp, arg, cmd, buf, len);
+			return xhci_InterruptTransferIn(xhci, SlotEndp, (void*)arg, cmd, buf, len);
 		case EPType_BulkOut:
 		case EPType_BulkIn:
-			return xhci_BulkTransfer(xhci, SlotEndp, arg, cmd, buf, len);
+			return xhci_BulkTransfer(xhci, SlotEndp, (void*)arg, cmd, buf, len);
 		}
 	}//to device
 

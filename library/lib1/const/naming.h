@@ -96,6 +96,7 @@
 #define _efi_ hex32('e','f','i',0)
 #define _fat_ hex32('f','a','t',0)
 #define _ntfs_ hex32('n','t','f','s')
+#define _rsvd_ hex32('r','s','v','d')
 #define _hfs_ hex32('h','f','s',0)
 #define _apfs_ hex32('a','p','f','s')
 #define _ext_ hex32('e','x','t',0)

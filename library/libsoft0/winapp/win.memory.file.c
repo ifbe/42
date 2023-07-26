@@ -15,7 +15,7 @@ void initfilemgr()
 void freefilemgr()
 {
 }
-void filemanager_registersupplier()
+void filemanager_registerdisk()
 {
 }
 _obj* getobjfromhandle(HANDLE hh)

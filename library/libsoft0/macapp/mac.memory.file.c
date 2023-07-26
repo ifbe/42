@@ -29,7 +29,7 @@ void initfilemgr(void* addr)
 void freefilemgr()
 {
 }
-void filemanager_registersupplier()
+void filemanager_registerdisk()
 {
 }
 int file_search(void* buf, int len)

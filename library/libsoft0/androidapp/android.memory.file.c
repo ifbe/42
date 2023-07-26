@@ -34,7 +34,7 @@ void initfilemgr(void* addr)
 void freefilemgr()
 {
 }
-void filemanager_registersupplier()
+void filemanager_registerdisk()
 {
 }
 

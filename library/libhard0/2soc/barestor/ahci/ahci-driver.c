@@ -2,7 +2,7 @@
 #define ahci_print(fmt, ...) say("<%08lld,ahci>" fmt, timeread_us(), ##__VA_ARGS__)
 u32 in32(u16 port);
 void out32(u16 port, u32 data);
-void filemanager_registersupplier(void*,void*);
+void filemanager_registerdisk(void*,void*);
 
 
 
@@ -730,7 +730,7 @@ int ahci_contractor(struct item* dev, int who, u8* buf, int len)
 	int ret = ahci_identify(port, (void*)buf);
 	if(ret < 0)return -1;
 
-	filemanager_registersupplier(dev,port);
+	filemanager_registerdisk(dev,port);
 	return 0;
 }
 int ahci_list(struct item* dev, int total, u8* ptr, int max, u8* buf, int len)

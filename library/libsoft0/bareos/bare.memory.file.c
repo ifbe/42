@@ -45,20 +45,24 @@ int filemanager_registerpart(_obj* node, void* foot)
 	ptblfoot[ptblcount] = foot;
 	ptblcount += 1;
 
-	//2.find first fat16 or fat32
+	//2.get inner fs list
 	if(0 == node->ontaking)return 0;
 
 	ret = node->ontaking((void*)node,foot, 0,0, 0,_part_, tmp,0);
 	say("filemgr.ret=%x\n",ret);
 	if(ret <= 0)return 0;
 
-	//3.contractor
+	//3.mount all i know
 	_obj* fsys;
 	struct relation* rel;
 	for(j=0;j<ret;j++){
 		say("%d: %llx,%llx,%llx,%llx\n", j, tmp[j].type, tmp[j].name, tmp[j].start, tmp[j].count);
-		if(_fat_ == tmp[j].type){
-			fsys = artery_create(_fat_,0,0,0);
+		switch(tmp[j].type){
+		case _fat_:
+		case _ntfs_:
+		case _ext_:
+		case _hfs_:
+			fsys = artery_create(tmp[j].type,0,0,0);
 			if(0 == fsys)continue;
 
 			rel = relationcreate(fsys,0,_art_,_src_, node,(void*)(tmp[j].start<<9),_art_,_dst_);
@@ -71,9 +75,9 @@ int filemanager_registerpart(_obj* node, void* foot)
 	}
 	return 0;
 }
-int filemanager_registersupplier(void* node, void* foot)
+int filemanager_registerdisk(void* node, void* foot)
 {
-	say("@filemanager_registersupplier: [%d]=%p\n", diskcount, node);
+	say("@filemanager_registerdisk: [%d]=%p\n", diskcount, node);
 
 	//1.remember
 	disknode[diskcount] = node;
@@ -82,20 +86,23 @@ int filemanager_registersupplier(void* node, void* foot)
 
 	//2.check
 
-	//3.contractor
+	//3.check what is in the disk
 	_obj* tmp = artery_create(_fileauto_,0,0,0);
 	if(0 == tmp)return -1;
 	struct relation* rel = relationcreate(tmp,0,_art_,_src_, node,foot,_dev_,_dst_);
 	if(0 == rel)return -2;
 	artery_attach((void*)&rel->dst, (void*)&rel->src);
 
-	//4.next
+	//4.mount it
 	switch(tmp->type){
 	case _mbr_:
 	case _gpt_:
 		filemanager_registerpart(tmp, 0);
 		break;
 	case _fat_:
+	case _ntfs_:
+	case _ext_:
+	case _hfs_:
 		filemanager_registerfsys(tmp, 0);
 		break;
 	}

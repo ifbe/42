@@ -12,6 +12,18 @@ int fatclient_create(_obj* ele, void* arg, int argc, u8** argv);
 int fatclient_delete(_obj* ele, void* arg);
 int fatclient_attach(struct halfrel* self, struct halfrel* peer);
 int fatclient_detach(struct halfrel* self, struct halfrel* peer);
+int ntfsclient_create(_obj* ele, void* arg, int argc, u8** argv);
+int ntfsclient_delete(_obj* ele, void* arg);
+int ntfsclient_attach(struct halfrel* self, struct halfrel* peer);
+int ntfsclient_detach(struct halfrel* self, struct halfrel* peer);
+int extclient_create(_obj* ele, void* arg, int argc, u8** argv);
+int extclient_delete(_obj* ele, void* arg);
+int extclient_attach(struct halfrel* self, struct halfrel* peer);
+int extclient_detach(struct halfrel* self, struct halfrel* peer);
+int hfsclient_create(_obj* ele, void* arg, int argc, u8** argv);
+int hfsclient_delete(_obj* ele, void* arg);
+int hfsclient_attach(struct halfrel* self, struct halfrel* peer);
+int hfsclient_detach(struct halfrel* self, struct halfrel* peer);
 
 
 
@@ -187,6 +199,15 @@ int fileauto_attach(struct halfrel* self, struct halfrel* peer)
 	case _fat_:
 		fatclient_create(ele,0,0,0);
 		fatclient_attach(self,peer);
+	case _ntfs_:
+		ntfsclient_create(ele,0,0,0);
+		ntfsclient_attach(self,peer);
+	case _ext_:
+		extclient_create(ele,0,0,0);
+		extclient_attach(self,peer);
+	case _hfs_:
+		hfsclient_create(ele,0,0,0);
+		hfsclient_attach(self,peer);
 	}
 	return 0;
 }

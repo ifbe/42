@@ -201,10 +201,6 @@ static int mbrclient_ongive(_obj* art,void* foot, _syn* stack,int sp, p64 arg, i
 {
 	return 0;
 }
-
-
-
-
 int mbrclient_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
@@ -237,6 +233,18 @@ int mbrclient_attach(struct halfrel* self, struct halfrel* peer)
 
 	//check self type, parse or mount
 	parse_mbr(buf, 0);
+	return 0;
+}
+
+
+
+
+int mbrclient_reader(_obj* art,void* foot, p64 arg,int idx, u8* buf,int len)
+{
+	return 0;
+}
+int mbrclient_writer(_obj* art,void* foot, p64 arg,int idx, u8* buf,int len)
+{
 	return 0;
 }
 int mbrclient_delete(_obj* art)

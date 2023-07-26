@@ -1,7 +1,7 @@
 #include "libhard.h"
 #include "drv/usb.h"
 void H2D_STD_DEV_SETCONF(void* req, u16 conf);
-void filemanager_registersupplier(void*, void*);
+void filemanager_registerdisk(void*, void*);
 
 int usbdesc_addr2offs(struct perusb* perusb, void* desc);
 void* usbdesc_offs2addr(struct perusb* perusb, int offs);
@@ -703,7 +703,7 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 
 
 //------------------------file prober------------------------
-	filemanager_registersupplier(usb, 0);
+	filemanager_registerdisk(usb, 0);
 /*	struct artery* probe = arterycreate(_fileauto_,0,0,0);
 	if(0 == probe)return 0;
 	struct relation* rel = relationcreate(probe,0,_art_,_src_, usb,0,_dev_,0);
