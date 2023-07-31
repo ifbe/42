@@ -52,12 +52,14 @@ int parsefmt(u8* buf, u8* str)
 }
 int parsenameandtype(u8* buf, int len, u8* name, u8* type)
 {
+	//say("parsenameandtype:%.16s\n",buf);
 	parsefmt(name, buf);
 
 	int j;
 	for(j=1;j<16;j++){
 		if(':' == buf[j]){
 			parsefmt(type, buf+j+1);
+			break;
 		}
 	}
 	return 0;

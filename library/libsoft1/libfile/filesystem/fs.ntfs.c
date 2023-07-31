@@ -735,6 +735,7 @@ int ntfsclient_create(_obj* art)
 	art->onwriter = (void*)ntfsclient_writer;
 	art->ongiving = (void*)ntfsclient_ongive;
 	art->ontaking = (void*)ntfsclient_ontake;
+	return 0;
 }
 int ntfsclient_delete(_obj* art)
 {

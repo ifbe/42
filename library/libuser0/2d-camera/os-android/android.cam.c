@@ -100,7 +100,7 @@ static void imageCallback(void* context, AImageReader* reader)
 			len = 640*480/4;
 			kv[3].val = 'v';
 		}
-		give_data_into_peer_temp_stack(cam,_dst_, kv,_kv88_, buf,len);
+		give_data_into_peer_temp_stack(cam,_dst_, (p64)kv,_kv88_, buf,len);
 	}
 
 	AImage_delete(image);

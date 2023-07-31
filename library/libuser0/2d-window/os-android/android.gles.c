@@ -32,8 +32,8 @@ void initvertex(void*);
 //
 void fullwindow_create(_obj* ogl, void* arg, int argc, char** argv);
 void fullwindow_delete(void*);
-void fullwindow_take(void*,void*, void*,int, void*,int, void*,int);
-void fullwindow_give(void*,void*, void*,int, void*,int, void*,int);
+void fullwindow_take(void*,void*, void*,int, p64,int, void*,int);
+void fullwindow_give(void*,void*, void*,int, p64,int, void*,int);
 
 
 

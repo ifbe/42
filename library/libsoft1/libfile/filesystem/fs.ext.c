@@ -420,6 +420,7 @@ int extclient_create(_obj* art)
 	art->onwriter = (void*)extclient_writer;
 	art->ongiving = (void*)extclient_ongive;
 	art->ontaking = (void*)extclient_ontake;
+	return 0;
 }
 int extclient_delete(_obj* art)
 {

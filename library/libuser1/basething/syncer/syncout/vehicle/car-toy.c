@@ -27,7 +27,7 @@ static int name[16] = {
 static char table[16];
 static char value[16];
 static void toycar_update(int L, int R, int el, int er)
-{
+{/*
 	int j;
 
 	value[0] = value[2] = L;
@@ -39,7 +39,7 @@ static void toycar_update(int L, int R, int el, int er)
 	value[ 8] = value[ 9] = el;
 	value[10] = value[11] = er;
 
-	for(j=0;j<12;j++)gpiowrite(_gpio_, table[j], 0, value[j]);
+	for(j=0;j<12;j++)gpiowrite(_gpio_, table[j], 0, value[j]);*/
 }
 
 
@@ -64,7 +64,7 @@ int toycar_read_byhttp(_obj* ent,void* foot, struct halfrel* stack,int sp)
 	}
 
 	ret += mysnprintf(buf+ret, 999-ret, "</body></html>");
-	give_data_into_peer(ent,stack[sp-1].foottype, stack,sp, "text/html",0, buf,ret);
+	give_data_into_peer(ent,stack[sp-1].foottype, stack,sp, (p64)"text/html",0, buf,ret);
 	return ret;
 }
 int toycar_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,int key, u8* buf,int len)
@@ -87,7 +87,7 @@ int toycar_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,in
 {
 	say("@toycar_write\n");
 	//printmemory(buf, len);
-
+/*
 	//do work
 	switch(buf[0])
 	{
@@ -117,7 +117,7 @@ int toycar_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,in
 	tmp[ret] = '\n';
 	ret++;
 
-	give_data_into_peer(ent,stack[sp-1].foottype, stack,sp, 0,0, tmp,ret);
+	give_data_into_peer(ent,stack[sp-1].foottype, stack,sp, 0,0, tmp,ret);*/
 	return 0;
 }
 void toycar_detach(struct halfrel* self, struct halfrel* peer)
@@ -127,12 +127,12 @@ void toycar_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 void toycar_delete(_obj* win)
-{
+{/*
 	int j;
-	for(j=0;j<12;j++)gpiostop(table[j]);
+	for(j=0;j<12;j++)gpiostop(table[j]);*/
 }
 void toycar_create(_obj* win)
-{
+{/*
 	int j;
-	for(j=0;j<12;j++)table[j] = gpiostart(name[j], 'o');
+	for(j=0;j<12;j++)table[j] = gpiostart(name[j], 'o');*/
 }

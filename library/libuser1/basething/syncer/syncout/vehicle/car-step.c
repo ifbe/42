@@ -29,7 +29,7 @@ static int expect[9];
 
 
 static void stepcar_test(int a)
-{
+{/*
 	int j;
 	gpiowrite(_gpio_, table[a], 0, 0);
 
@@ -40,7 +40,7 @@ static void stepcar_test(int a)
 
 		gpiowrite(_gpio_, table[a+1], 0, 0);
 		sleep_us(100);
-	}
+	}*/
 }
 static void stepcar_update(int a, int b, int c, int d)
 {
@@ -50,7 +50,7 @@ static void stepcar_update(int a, int b, int c, int d)
 	actual[2] = b;
 	actual[4] = c;
 	actual[6] = d;
-
+/*
 	for(j=0;j<8;j+=2)gpiowrite(_gpio_, table[j], 0, actual[j]);
 	for(k=0;k<200*32;k++)
 	{
@@ -59,12 +59,12 @@ static void stepcar_update(int a, int b, int c, int d)
 
 		for(j=1;j<8;j+=2)gpiowrite(_gpio_, table[j], 0, 0);
 		sleep_us(100);
-	}
+	}*/
 }
 static void stepcar_status(int EN)
 {
 	actual[8] = EN;
-	gpiowrite(_gpio_, table[8], 0, EN);
+	//gpiowrite(_gpio_, table[8], 0, EN);
 }
 
 
@@ -132,14 +132,14 @@ void stepcar_attach(struct halfrel* self, struct halfrel* peer)
 {
 }
 int stepcar_delete(_obj* win)
-{
+{/*
 	int j;
-	for(j=0;j<9;j++)gpiostop(table[j]);
+	for(j=0;j<9;j++)gpiostop(table[j]);*/
 	return 0;
 }
 int stepcar_create(_obj* win)
-{
+{/*
 	int j;
-	for(j=0;j<9;j++)table[j] = gpiostart(name[j], 'o');
+	for(j=0;j<9;j++)table[j] = gpiostart(name[j], 'o');*/
 	return 0;
 }
