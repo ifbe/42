@@ -368,6 +368,7 @@ static void stl3d_rgba_raster(
 	mat4 m,world_from_local;
 	local2world(world_from_local, &part->fs, &geom->fs);
 	mat4_multiplyfrom(m, clip_from_world, world_from_local);
+	//printmat4(world_from_local);
 
 	rastersolid_triangle(
 		wnd, area, stl3d_position, stl3d_fragment,

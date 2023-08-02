@@ -1,11 +1,13 @@
 #include "libuser.h"
+void pixel_clearcolor(void*);
+void pixel_cleardepth(void*);
 
 
 
 
 int rgbanode_draw(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	//pixel_clearcolor(wnd);
+	pixel_clearcolor(wnd);
 
 	struct relation* rel = wnd->orel0;
 	while(1){

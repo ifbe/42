@@ -36,7 +36,24 @@ int virtual_takeall(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key)
 			stack[sp+0].pfoot = rel->psrcfoot;
 			stack[sp+1].pchip = rel->pdstchip;
 			stack[sp+1].pfoot = rel->pdstfoot;
-			entity_takeby(rel->pdstchip,0, stack,sp+2, arg,key, 0,0);
+			entity_takeby(rel->pdstchip,rel->pdstfoot, stack,sp+2, arg,key, 0,0);
+		}
+		rel = samesrcnextdst(rel);
+	}
+
+	return 0;
+}
+int virtual_bycam_byrgba_take(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key)
+{
+	struct relation* rel = ent->orel0;
+	while(1){
+		if(0 == rel)break;
+		if(_ent_ == rel->dstnodetype){
+			stack[sp+0].pchip = rel->psrcchip;
+			stack[sp+0].pfoot = rel->psrcfoot;
+			stack[sp+1].pchip = rel->pdstchip;
+			stack[sp+1].pfoot = rel->pdstfoot;
+			entity_takeby(rel->pdstchip,rel->pdstfoot, stack,sp+2, arg,key, 0,0);
 		}
 		rel = samesrcnextdst(rel);
 	}
@@ -47,7 +64,7 @@ int virtual_takeall(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key)
 
 
 
-int virtual_ongive_bywnd(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
+int virtual_bywnd_ongive(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//say("@%s\n",__FUNCTION__);
 	struct event* ev = buf;
@@ -88,21 +105,30 @@ int virtual_ongive_bywnd(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 
 int virtual_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	_obj* wnd = stack[sp-2].pchip;
-	if(0 == wnd)return 0;
+	_obj* caller_1 = stack[sp-2].pchip;
+	if(0 == caller_1)return 0;
 
-	switch(wnd->type){
+	_obj* caller_2 = stack[sp-4].pchip;
+	//if(caller_2)
+
+	//say("%.8s,%.8s\n", &caller_1->type, &caller_1->hfmt);
+	switch(caller_1->type){
 	case _camrts_:
-		wnd = stack[sp-4].pchip;
+		caller_1 = stack[sp-4].pchip;
 		//fallthrough
 	case _wnd_:
-		gl41data_before(wnd);
-		gl41data_01cam(wnd);
+		gl41data_before(caller_1);
+		gl41data_01cam(caller_1);
 		virtual_takeall(ent,foot, stack,sp, arg,key);
-		gl41data_after(wnd);
+		gl41data_after(caller_1);
 		break;
 	default:
-		virtual_takeall(ent,foot, stack,sp, arg,key);
+		if(caller_2 && (_wnd_ == caller_2->type) && (_rgba_ == caller_2->hfmt) ){
+			virtual_bycam_byrgba_take(ent,foot, stack,sp, arg,key);
+		}
+		else{
+			virtual_takeall(ent,foot, stack,sp, arg,key);
+		}
 		break;
 	}//switch
 	return 0;
@@ -123,7 +149,7 @@ int virtual_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, vo
 	int ret = 0;
 	if(_wnd_ == caller->type){
 		if(_01_ == per->camtype){
-			return virtual_ongive_bywnd(ent,foot, stack,sp, arg,key, buf,len);
+			return virtual_bywnd_ongive(ent,foot, stack,sp, arg,key, buf,len);
 		}
 	}
 

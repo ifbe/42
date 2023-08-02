@@ -22,6 +22,6 @@ void pixel_cleardepth(_obj* wnd)
 
 	stride = wnd->whdf.fbwidth>>2;
 	for(y=0;y<wnd->whdf.height;y++){
-		for(x=0;x<wnd->whdf.width;x++)depth[y*stride+x] = 1000.0;
+		for(x=0;x<wnd->whdf.width;x++)depth[y*stride+x] = 1000*1000.0;
 	}
 }

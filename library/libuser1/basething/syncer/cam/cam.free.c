@@ -9,6 +9,7 @@
 #define RASTER 0
 #define RAYTRACE 1
 //myown, directx, metal
+void world2clip_projz0z1(mat4 mat, struct fstyle* frus);
 void world2clip_projz0z1_transpose(mat4 mat, struct fstyle* frus);
 void clip2world_projz0z1_transpose(mat4 mat, struct fstyle* frus);
 //opengl
@@ -829,7 +830,7 @@ static int freecam_generate(_obj* ent,void* slot, _syn* stack,int sp, _obj* wor,
 		//printstyle(&geom->frus);
 
 		mat4 m;
-		world2clip_projz0z1_transpose(m, &geom->frus);
+		world2clip_projz0z1(m, &geom->frus);
 		//printmat4(m);
 
 		pixel_cleardepth(wnd);
