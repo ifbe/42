@@ -16,14 +16,19 @@ typedef long long i64;
 //pointer
 //typedef ??? p8;
 //typedef ??? p16;
-typedef unsigned int       p32;      //on 32bit cpu, sizeof(void*)=4
-typedef unsigned long long p64;      //on 64bit cpu, sizeof(void*)=8
+typedef unsigned int       p32;		//on 32bit cpu, sizeof(void*)=4
+typedef unsigned long long p64;		//on 64bit cpu, sizeof(void*)=8
 
 //float
 //typedef ??? f8;
+//typedef ??? f8_s1e3m4;		//mini float8
 //typedef ??? f16;
+//typedef _Float16 f16_s1e5m10;	//ieee764 float16
+//typedef __bf16 f16_s1e8m7;	//brain float16
 typedef float f32;
+//typedef float f32_s1e8m23;	//ieee754 float32
 typedef double f64;
+//typedef double f64_s1e11m52;	//ieee764 float64
 
 //f32x4
 typedef float vec1[1];

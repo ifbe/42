@@ -467,7 +467,7 @@ int lowlevel_input()
 
 	while(1)
 	{
-		if(!ReadConsoleInput(hStdin, irInBuf, 2, &num))
+		if(!ReadConsoleInput(hStdin, irInBuf, 1, &num))
 		{
 			printf("ReadConsoleInput");
 			return 0;
@@ -477,15 +477,10 @@ int lowlevel_input()
 //printmemory(&irInBuf[1], sizeof(INPUT_RECORD));
 
 		k0 = irInBuf[0].Event.KeyEvent;
-		k1 = irInBuf[1].Event.KeyEvent;
 		if(0 == k0.bKeyDown)continue;
 //printf("%x,%x,%x,%x\n", k0.wVirtualKeyCode, k0.uChar.UnicodeChar, k1.wVirtualKeyCode, k1.uChar.UnicodeChar);
 
-		if((2 == num)&&(0x10 == k0.wVirtualKeyCode))
-		{
-			return k1.uChar.UnicodeChar;
-		}
-		else if(k0.uChar.AsciiChar == 0)
+		if(k0.uChar.AsciiChar == 0)
 		{
 			ret = k0.wVirtualKeyCode;
 
@@ -499,12 +494,20 @@ int lowlevel_input()
 				continue;
 			}
 		}
+		else if(k0.uChar.UnicodeChar < 0x80)
+		{
+			if( (4 == k0.uChar.UnicodeChar) && (k0.dwControlKeyState&8) )return 0;
+			return k0.uChar.UnicodeChar;
+		}
 		else
 		{
-			ret = k0.uChar.UnicodeChar;
-			if(ret < 0x80)return ret;
-
+			if(!ReadConsoleInput(hStdin, &irInBuf[1], 1, &num)){
+				printf("read unicode error\n");
+				return 0;
+			}
 			k1 = irInBuf[1].Event.KeyEvent;
+			if(0x10 == k0.wVirtualKeyCode)return k1.uChar.UnicodeChar;
+
 			ret = ret | (k1.uChar.UnicodeChar << 8);
 			//printf("%x\n", ret);
 
