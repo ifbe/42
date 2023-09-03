@@ -5,9 +5,20 @@ void gl41data_01cam(_obj* wnd);
 void gl41data_convert(_obj* wnd, struct style* area, struct event* ev, vec3 v);
 //
 void drawarrorkey2d(void*, u32, int x0, int y0, int x1, int y1, u8*, int);
-void carvearrorkey(void*, u32, vec3 vc, vec3 vr, vec3 vf, u8*, int);
+void carvearrorkey(void*, u32, vec3 vc, vec3 vr, vec3 vf, u16*, int);
 
 
+struct privdata{
+	u16 lx;
+	u16 ly;
+	u16 lz;
+	u16 lw;
+
+	u16 rx;
+	u16 ry;
+	u16 rz;
+	u16 rw;
+};
 
 
 static int vjoy_search(_obj* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
@@ -80,45 +91,30 @@ void vjoy_draw_gl41(
 	_obj* scn, struct style* geom,
 	_obj* wnd, struct style* area)
 {
-	u8 ch[8];
-	int x,y,j;
+	int j;
 	vec3 tc,tr,tf;
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vt = geom->fs.vt;
-	int w = wnd->whdf.fbwidth * area->fs.vq[0];
-	int h = wnd->whdf.fbheight * area->fs.vq[1];
+	//int w = wnd->whdf.fbwidth * area->fs.vq[0];
+	//int h = wnd->whdf.fbheight * area->fs.vq[1];
 
-	ch[0] = 'l';
-	ch[1] = 'r';
-	ch[2] = 'n';
-	ch[3] = 'f';
-	ch[4] = 't';
-	ch[5] = 'b';
-	ch[6] = 's';
-	ch[7] = '-';
+	struct privdata* priv = (void*)act->priv_256b;
+
 	for(j=0;j<3;j++){
 		tr[j] = vr[j]/4;
 		tf[j] = vf[j];
 		tc[j] = vc[j] - vr[j]+tr[j];
 	}
-	carvearrorkey(wnd, 0xff00ff, tc, tr, tf, ch,-1);
+	carvearrorkey(wnd, 0xff00ff, tc, tr, tf, &priv->lx,-1);
 
-	ch[0] = 'x';
-	ch[1] = 'b';
-	ch[2] = 'a';
-	ch[3] = 'y';
-	ch[4] = 't';
-	ch[5] = 'b';
-	ch[6] = 's';
-	ch[7] = '+';
 	for(j=0;j<3;j++){
 		tr[j] = vr[j]/4;
 		tf[j] = vf[j];
 		tc[j] = vc[j] + vr[j]-tr[j];
 	}
-	carvearrorkey(wnd, 0xff00ff, tc, tr, tf, ch, 1);
+	carvearrorkey(wnd, 0xff00ff, tc, tr, tf, &priv->rx, 1);
 }
 void vjoy_draw_html(_obj* win, struct style* sty)
 {
@@ -191,9 +187,19 @@ static void vjoy_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style
 }
 static void vjoy_write_bywnd(_obj* ent,void* foot, _syn* stack,int sp, struct event* ev,int len)
 {
-	_obj* wnd;struct style* area;
-	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+	_obj* wnd = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+	struct privdata* priv = (void*)ent->priv_256b;
+	printmemory(ev,16);
 
+	if(joy_left == (ev->what&joy_mask) ){
+		*(u64*)&priv->lx = ev->why;
+	}
+	if(joy_right == (ev->what&joy_mask) ){
+		*(u64*)&priv->rx = ev->why;
+	}
+
+return;
 	if('p' == (ev->what&0xff)){
 		int ww,hh,x0,y0,dx,dy;
 		ww = wnd->whdf.width;hh = wnd->whdf.height;

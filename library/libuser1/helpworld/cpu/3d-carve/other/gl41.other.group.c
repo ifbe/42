@@ -711,83 +711,105 @@ void gl41solid_bodypart(_obj* ctx, u32 rgb, vec3 t0, vec3 t1)
 
 void carvearrorkey(_obj* ctx, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf,
-	u8* buf, int t)
+	u16* buf, int t)
 {
 	int j;
 	u32 c;
 	vec3 tc;
 	vec3 tr;
 	vec3 tf;
-	gl41opaque_rect(ctx, 0x80808080, vc,vr,vf);
+	//gl41line_rect(ctx, 0xffffff, vc, vr, vf);
 
-	//gl41opaque_circle(ctx, 0x7f404040, vc, vr, vf);
+	//thumb
 	for(j=0;j<3;j++){
-		tr[j] = vr[j]/4;
-		tf[j] = vf[j]/4;
+		tc[j] = vc[j] + t*vr[j]/2 + vf[j]/2;
+		tr[j] = vr[j]*3/6;
+		tf[j] = vf[j]*3/6;
 	}
+	gl41line_circle(ctx, 0xff0000, tc, tr, tf);
 
+	short* ss = (short*)buf;
+	for(j=0;j<3;j++){
+		tr[j] = tc[j] + vr[j]/2 * ss[0]/32768.0 + vf[j]*3/4 * ss[1]/32768.0;
+	}
+	tf[0] = 0.0;
+	tf[1] = 0.0;
+	tf[2] = 1.0;
+	gl41line_arrow(ctx, 0xff00ff, tc, tr, tf);
+
+	//button
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] + t*vr[j]/2 - vf[j]/2;
+		tr[j] = vr[j]*3/6;
+		tf[j] = vf[j]*3/6;
+	}
+	gl41line_rect(ctx, 0xff00ff, tc,tr,tf);
+
+	for(j=0;j<3;j++){
+		tr[j] = vr[j]/6;
+		tf[j] = vf[j]/6;
+	}
 	//x-: left
-	if(buf[0]&0x80)c = 0x7fff00ff;
+	if(buf[3]&1)c = 0x7fff00ff;
 	else c = 0x7f808080;
-	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(t-2)/4 -vf[j]*1/4;
-	gl41opaque_circle(ctx, c, tc, tr, tf);
+	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(3*t-2)/6 -vf[j]*3/6;
+	gl41opaque_rect(ctx, 0x80808080, tc, tr, tf);
 	tc[2] += 0.1;
-	gl41ascii_center(ctx, 0xffffff, tc, tr, tf, buf[0]&0x7f);
-		
+	gl41ascii_center(ctx, c, tc, tr, tf, 'l');
 
 	//x+: right
-	if(buf[1]&0x80)c = 0x7fff00ff;
+	if(buf[3]&2)c = 0x7fff00ff;
 	else c = 0x7f808080;
-	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(t+2)/4 -vf[j]*1/4;
-	gl41opaque_circle(ctx, c, tc, tr, tf);
+	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(3*t+2)/6 -vf[j]*3/6;
+	gl41opaque_rect(ctx, 0x80808080, tc, tr, tf);
 	tc[2] += 0.1;
-	gl41ascii_center(ctx, 0xffffff, tc, tr, tf, buf[1]&0x7f);
+	gl41ascii_center(ctx, c, tc, tr, tf, 'r');
 
 	//y-: near
-	if(buf[2]&0x80)c = 0x7fff00ff;
+	if(buf[3]&4)c = 0x7fff00ff;
 	else c = 0x7f808080;
-	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*t/4 -vf[j]*3/4;
-	gl41opaque_circle(ctx, c, tc, tr, tf);
+	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(3*t)/6 -vf[j]*5/6;
+	gl41opaque_rect(ctx, 0x80808080, tc, tr, tf);
 	tc[2] += -0.1;
-	gl41ascii_center(ctx, 0xffffff, tc, tr, tf, buf[2]&0x7f);
+	gl41ascii_center(ctx, c, tc, tr, tf, 'n');
 
 	//y+: far
-	if(buf[3]&0x80)c = 0x7fff00ff;
+	if(buf[3]&8)c = 0x7fff00ff;
 	else c = 0x7f808080;
-	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*t/4 +vf[j]*1/4;
-	gl41opaque_circle(ctx, c, tc, tr, tf);
+	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(3*t)/6 -vf[j]*1/6;
+	gl41opaque_rect(ctx, 0x80808080, tc, tr, tf);
 	tc[2] += 0.1;
-	gl41ascii_center(ctx, 0xffffff, tc, tr, tf, buf[3]&0x7f);
+	gl41ascii_center(ctx, c, tc, tr, tf, 'f');
 
 	//z-: trigger
-	if(buf[4]&0x80)c = 0x7fff00ff;
+	if(buf[3]&0x10)c = 0x7fff00ff;
 	else c = 0x7f808080;
-	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(t-2)/4 +vf[j]*3/4;
-	gl41opaque_circle(ctx, c, tc, tr, tf);
+	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(-t)/6 +vf[j]*1/6;
+	gl41opaque_rect(ctx, 0x80808080, tc, tr, tf);
 	tc[2] += 0.1;
-	gl41ascii_center(ctx, 0xffffff, tc, tr, tf, buf[4]&0x7f);
+	gl41ascii_center(ctx, c, tc, tr, tf, 't');
 
 	//z+: bumper
-	if(buf[5]&0x80)c = 0x7fff00ff;
+	if(buf[3]&0x20)c = 0x7fff00ff;
 	else c = 0x7f808080;
-	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(t+2)/4 +vf[j]*3/4;
-	gl41opaque_circle(ctx, c, tc, tr, tf);
+	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(-t)/6 +vf[j]*5/6;
+	gl41opaque_rect(ctx, 0x80808080, tc, tr, tf);
 	tc[2] += 0.1;
-	gl41ascii_center(ctx, 0xffffff, tc, tr, tf, buf[5]&0x7f);
+	gl41ascii_center(ctx, c, tc, tr, tf, 'b');
 
 	//press
-	if(buf[6]&0x80)c = 0x7fff00ff;
+	if(buf[3]&0x40)c = 0x7fff00ff;
 	else c = 0x7f808080;
-	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*t/4 -vf[j]*1/4;
-	gl41opaque_circle(ctx, c, tc, tr, tf);
+	for(j=0;j<3;j++)tc[j] = vc[j] +t*vr[j]/2 +vf[j]/2;
+	gl41opaque_rect(ctx, 0x80808080, tc, tr, tf);
 	tc[2] += 0.1;
-	gl41ascii_center(ctx, 0xffffff, tc, tr, tf, buf[6]&0x7f);
+	gl41ascii_center(ctx, c, tc, tr, tf, 's');
 
 	//select or start
-	if(buf[7]&0x80)c = 0x7fff00ff;
+	if(buf[3]&0x80)c = 0x7fff00ff;
 	else c = 0x7f808080;
-	for(j=0;j<3;j++)tc[j] = vc[j] -vr[j]*t*3/4 +vf[j]*1/4;
-	gl41opaque_circle(ctx, c, tc, tr, tf);
+	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(-t)/6 -vf[j]*5/6;
+	gl41opaque_rect(ctx, 0x80808080, tc, tr, tf);
 	tc[2] += 0.1;
-	gl41ascii_center(ctx, 0xffffff, tc, tr, tf, buf[7]&0x7f);
+	gl41ascii_center(ctx, c, tc, tr, tf, '*');
 }
