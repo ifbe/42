@@ -1,3 +1,5 @@
+#include "libsoft.h"
+
 struct wakeonlan
 {
 	u8 dstmac[6];

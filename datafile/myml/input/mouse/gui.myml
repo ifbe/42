@@ -1,0 +1,29 @@
+<entity>
+vmouse{
+fmt:vmouse
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<style>
+rect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<relation>
+(@opengl, @rect) -> (@vmouse, @0)
+</relation>

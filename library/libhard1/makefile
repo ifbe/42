@@ -35,6 +35,5 @@ target: $(OBJ)
 		$(CC) $(CF) -o $(DIR)/$(notdir $@) $<;\
 	fi
 
-
 clean:
 	rm -f *.o

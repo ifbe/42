@@ -18,8 +18,8 @@ float complex_angle(float* d)
 }
 void complex_power_real(float* d, float e)
 {
-	float mod = complexmodulus(d);
-	float ang = complexangle(d);
+	float mod = complex_modulus(d);
+	float ang = complex_angle(d);
 	float ppp = power(mod, e);
 	d[0] = ppp * getcos(ang * e);
 	d[1] = ppp * getsin(ang * e);
@@ -72,7 +72,7 @@ void complex_div(float* d, float* s)
 	t[0] = s[0];
 	t[1] = -s[1];
 
-	complexmulply(d, t);
+	complex_mul(d, t);
 	d[0] /= a;
 	d[1] /= a;
 }

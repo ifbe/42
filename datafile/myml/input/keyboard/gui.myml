@@ -1,0 +1,33 @@
+<entity>
+vkbd{
+fmt:vkbd
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+player{
+fmt:joy
+}
+</supply>
+
+
+<style>
+rect{
+c:0.0, 0.0
+q:1.0, 0.25
+}
+</style>
+
+
+<relation>
+(@opengl, @rect) -> (@vkbd, @0)
+(@player, dst@0) -> (@opengl, @0)
+</relation>
