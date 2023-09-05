@@ -1,13 +1,19 @@
 <entity>
-satellite{
+gps{
 fmt:satelli
-arg:datafile/jpg/texball-earth.jpg
 }
-freecam{
-fmt:freecam
+station{
+fmt:satelli
+}
+earth{
+fmt:texball
+arg:datafile/jpg/texball-earth.jpg
 }
 virtual{
 fmt:virtual
+}
+freecam{
+fmt:freecam
 }
 cam3rd{
 fmt:cam3rd
@@ -42,19 +48,37 @@ arg:0.0.0.0:9999
 
 
 <style>
-rabhaha{
+satehaha{
 }
-rabgeom{
+sategeom{
 c: 0.0, 0.0, 0.0
-r: 500.0, 0.0, 0.0
-f: 0.0, 500.0, 0.0
-t: 0.0, 0.0, 500.0
+r: 20200.0, 0.0, 0.0
+f: 0.0, 20200.0, 0.0
+t: 0.0, 0.0, 20200.0
+}
+
+stahaha{
+}
+stageom{
+c: 0.0, 0.0, 0.0
+r: 6788.0, 0.0, 0.0
+f: 0.0, 6788.0, 0.0
+t: 0.0, 0.0, 6788.0
+}
+
+earthhaha{
+}
+earthgeom{
+c: 0.0, 0.0, 0.0
+r: 6400.0, 0.0, 0.0
+f: 0.0, 6400.0, 0.0
+t: 0.0, 0.0, 6400.0
 }
 
 freemodl{
 }
 freegeom{
-c: 0.0, -2000.0, 0.0
+c: 0.0, -20000.0, 0.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
@@ -75,17 +99,19 @@ q:1.0, 1.0
 
 <relation>
 #ev
-(cam3rd, 0, tar) -> (satellite, 0, evby)
-(cam3rd, 0, cam) -> (freecam, 0, evto)
+(@cam3rd, tar@0) -> (@earth, evby@0)
+(@cam3rd, cam@0) -> (@freecam, evto@0)
 
 #input
-(listen, 0, dst) -> (str2vec, 0, str)
-(str2vec, 0, vec) -> (satellite, 0, evin)
+(@listen, dst) -> (@str2vec, str)
+(@str2vec, vec) -> (@gps, evin)
 
 #virtual depends on inner objects
-(virtual, rabgeom, 0) -> (satellite, rabhaha, geom)
-(virtual, freegeom, 0) -> (freecam, freemodl, geom)
+(@virtual, @sategeom) -> (@gps, geom@satehaha)
+(@virtual, @stageom) -> (@station, geom@stahaha)
+(@virtual, @earthgeom) -> (@earth, geom@earthhaha)
+(@virtual, @freegeom) -> (@freecam, geom@freemodl)
 
 #glwnd depends on cam
-(opengl, freerect, 0) -> (freecam, 0, a)
+(@opengl, @freerect) -> (@freecam, a@0)
 </relation>

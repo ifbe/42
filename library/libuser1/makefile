@@ -13,6 +13,7 @@ target: $(OBJ)
 		echo libuser1/$<;\
 		$(CC) $(CF) -o $(DIR)/$(notdir $@) $<;\
 	fi
-
+list:
+	find .|grep "\.c" |sort > makelist
 clean:
 	rm -f *.o *.a
