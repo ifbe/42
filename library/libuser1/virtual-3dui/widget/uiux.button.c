@@ -1,5 +1,4 @@
 #include "libuser.h"
-#define STRBUF buflen.buf
 void dx11data_01cam(_obj* wnd);
 //
 void gl41data_before(_obj* wnd);
@@ -8,6 +7,9 @@ void gl41data_01cam(_obj* wnd);
 void gl41data_convert(_obj* wnd, struct style* area, struct event* ev, vec3 v);
 
 
+struct privdata{
+	u8 str[0];
+};
 
 
 void button_draw_pixel(
@@ -37,15 +39,21 @@ void button_draw_gl41(
 	_obj* win, struct style* geom,
 	_obj* ctx, struct style* area)
 {
-	int j;
-	vec3 tc;
 	float* vc = geom->fshape.vc;
 	float* vr = geom->fshape.vr;
 	float* vf = geom->fshape.vf;
 	float* vt = geom->fshape.vt;
-	for(j=0;j<3;j++)tc[j] = vc[j]-vt[j]/64;
-	gl41opaque_rect(ctx, 0x40ffd010, tc, vr, vf);
-	gl41string_center(ctx, 0xff0000, vc, vr ,vf, act->STRBUF, 0);
+	gl41solid_rect(ctx, 0x40ffd010, vc, vr, vf);
+
+	int j;
+	vec3 tc,tr,tf;
+	struct privdata* priv = (void*)act->priv_256b;
+	for(j=0;j<3;j++){
+		tc[j] = vc[j]+vt[j]/4;
+		tr[j] = vr[j]/2;
+		tf[j] = vf[j]/2;
+	}
+	gl41string_center(ctx, 0xff0000, tc, tr ,tf, priv->str, 0);
 }
 static void button_read_byworld_bycam_bywnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
@@ -78,7 +86,7 @@ static void button_read_byworld_bywnd(_obj* ent,struct style* slot, _syn* stack,
 	fs.vc[0] =   x;fs.vc[1] =   y;fs.vc[2] = 0.0;
 	fs.vr[0] =   r;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
 	fs.vf[0] = 0.0;fs.vf[1] =   f;fs.vf[2] = 0.0;
-	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 0.0;
+	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 0.5;
 	button_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
 }
 static void button_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
@@ -89,12 +97,15 @@ static void button_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct sty
 	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
 	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-0.5;
 
-	gl41data_before(wnd);
-	button_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_after(wnd);
-
-	if(_dx11list_ == wnd->hfmt)dx11data_nocam(wnd);
-	else gl41data_nocam(wnd);
+	if(_dx11list_ == wnd->hfmt){
+		dx11data_nocam(wnd);
+	}
+	else{
+		gl41data_before(wnd);
+		button_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+		gl41data_nocam(wnd);
+		gl41data_after(wnd);
+	}
 }
 
 
@@ -152,7 +163,8 @@ static void button_create(_obj* act, u8* arg, int argc, u8** argv)
 	if(0 == arg)arg = (void*)"button";
 
 	int j;
-	u8* dst = act->priv_256b;
+	struct privdata* priv = (void*)act->priv_256b;
+	u8* dst = priv->str;
 	for(j=0;j<0x100;j++){
 		if(arg[j] < 0x20)break;
 		dst[j] = arg[j];
