@@ -1,0 +1,117 @@
+<entity>
+drone1{
+fmt:drone
+}
+scene1{
+fmt:scene3d
+}
+
+world{
+fmt:virtual
+}
+
+virtimu{
+fmt:virtimu
+}
+gravity{
+fmt:gravtest
+}
+</entity>
+
+
+<artery>
+easyag{
+fmt:easyag
+}
+qu2eu{
+fmt:qu2eu
+}
+dbgf32{
+fmt:dbgf32
+}
+</artery>
+
+
+<bootup>
+pulser{
+fmt:pulser
+}
+</bootup>
+
+
+<style>
+s1d1slot{
+}
+s1d1geom{
+r: 0.25, 0.0, 0.0, 0.25
+f: 0.0, 0.25, 0.0, 0.25
+t: 0.0, 0.0, 0.05, 0.05
+
+j: 0.0, 0.0, 0.0
+a: 0.0, 0.0, 0.0
+v: 0.0, 0.0, 20.0
+x:-1.0, 0.0, 0.0
+0: 0.0, 0.0, 0.0, 1.0
+1: 0.0, 0.5, 0.8660254037844387, 2.0
+}
+
+skypart{
+}
+skygeom{
+c: 0.0, 0.0, 0.0
+r: 10000.0, 0.0, 0.0
+f: 0.0, 10000.0, 0.0
+t: 0.0, 0.0, 10000.0
+}
+
+gndpart{
+}
+gndgeom{
+c: 0.0, 0.0, 0.0
+r: 50.0, 0.0, 0.0
+f: 0.0, 50.0, 0.0
+t: 0.0, 0.0, 1.0
+}
+
+aaaapart{
+}
+aaaageom{
+c: 0.0, -2.0, 1.0
+r: 1.0, 0.0, 0.0
+f: 0.0, 1.0, 0.0
+t: 0.0, 0.0, 1.0
+
+L: 0.0, 0.0, 0.0,-0.01
+R: 0.0, 0.0, 0.0, 0.01
+B: 0.0, 0.0, 0.0,-0.01
+T: 0.0, 0.0, 0.0, 0.01
+N: 0.0, 0.0, 0.0, 0.01
+F: 0.0, 0.0, 0.0, 1000000000.0
+}
+
+aaaarect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+butnrect{
+c:0.0, 0.3
+q:0.1, 0.1
+}
+</style>
+
+
+<relation>
+#scene
+(@scene1, @s1d1geom) -> (@drone1, real@s1d1slot)
+(@world, 0) -> (@scene1, 0)
+
+#rigidbody
+(@gravity, 0) -> (@scene1, 0)
+
+#imu
+(@drone1, con) -> (@virtimu, src)
+
+#
+(@pulser, clk) -> (@virtimu, clk)
+(@pulser, clk) -> (@gravity, clk)
+</relation>

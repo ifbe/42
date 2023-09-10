@@ -68,7 +68,7 @@ static void planet_draw_gl41(
 	_obj* wrl, struct style* geom,
 	_obj* wnd, struct style* area)
 {
-	int j;
+	int j,k;
 	float l, r;
 	float a, c, s;
 	vec3 tc, tr, tf, tu, f;
@@ -76,31 +76,26 @@ static void planet_draw_gl41(
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vu = geom->fs.vt;
-	u64 t = timeread_us() / 10000;
+	u64 t = timeread_ms() / 100;
 
 	for(j=0;j<9;j++)
 	{
 		l = data[j].distance/data[8].distance;
-		tr[0] = vr[0]*l;
-		tr[1] = vr[1]*l;
-		tr[2] = vr[2]*l;
-		tf[0] = vf[0]*l;
-		tf[1] = vf[1]*l;
-		tf[2] = vf[2]*l;
+		for(k=0;k<3;k++){
+			tr[k] = vr[k]*l;
+			tf[k] = vf[k]*l;
+		}
 		gl41line_circle(wnd, 0x404040, vc, tr, tf);
 
 		r = data[j].diameter/data[8].distance/2;
 		//if(j>0)r *= 1024;
-		tr[0] = vr[0]*r;
-		tr[1] = vr[1]*r;
-		tr[2] = vr[2]*r;
-		tf[0] = vf[0]*r;
-		tf[1] = vf[1]*r;
-		tf[2] = vf[2]*r;
-		tu[0] = vu[0]*r;
-		tu[1] = vu[1]*r;
-		tu[2] = vu[2]*r;
+		for(k=0;k<3;k++){
+			tr[k] = vr[k]*r;
+			tf[k] = vf[k]*r;
+			tu[k] = vu[k]*r;
+		}
 
+		//real size
 		a = tau*t/data[j].period;
 		c = getcos(a);
 		s = getsin(a);
@@ -108,6 +103,15 @@ static void planet_draw_gl41(
 		tc[1] = vc[1] + (vr[1]*c + vf[1]*s)*l;
 		tc[2] = vc[2] + (vr[2]*c + vf[2]*s)*l;
 		gl41solid_sphere(wnd, data[j].color, tc, tr, tf, tu);
+
+		//size*1000, otherwise too small to see
+		if(j==0)continue;
+		for(k=0;k<3;k++){
+			tr[k] = tr[k]*1000;
+			tf[k] = tf[k]*1000;
+			tu[k] = tu[k]*1000;
+		}
+		gl41line_sphere(wnd, data[j].color, tc, tr, tf, tu);
 	}
 }
 static void planet_draw_json(

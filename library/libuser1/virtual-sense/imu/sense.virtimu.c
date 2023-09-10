@@ -1,4 +1,5 @@
 #include "libuser.h"
+#define DEBUG 0
 #define REL_WORLD listptr.buf0
 #define REL_DRONE listptr.buf1
 void quaternion_rotatefrom(float* o, float* v, float* q);
@@ -28,7 +29,7 @@ void virtimu_checkplace(_obj* ent)
 		rel = samedstnextsrc(rel);
 	}
 }
-void virtimu_senseforce(_obj* ent)
+void virtimu_senseforce(_obj* ent, float* out)
 {
 	struct halfrel* rel = ent->REL_WORLD;
 	if(0 == rel)return;
@@ -44,17 +45,15 @@ void virtimu_senseforce(_obj* ent)
 		tmp[j+0] = sty->actual.angular_v[j] * k;
 		tmp[j+3] = sty->actual.displace_a[j];
 	}
-	say("world: %f,%f,%f,%f,%f,%f\n",tmp[0],tmp[1],tmp[2],tmp[3],tmp[4],tmp[5]);
+	if(DEBUG)say("world: %f,%f,%f,%f,%f,%f\n",tmp[0],tmp[1],tmp[2],tmp[3],tmp[4],tmp[5]);
 
 	vec4 quat;
 	for(j=0;j<3;j++)quat[j] = -sty->actual.angular_x[j];
 	quat[3] = sty->actual.angular_x[3];
 
-	float out[6];
 	quaternion_rotatefrom(&out[0], &tmp[0], quat);
 	quaternion_rotatefrom(&out[3], &tmp[3], quat);
 	say("local: %f,%f,%f,%f,%f,%f\n",out[0],out[1],out[2],out[3],out[4],out[5]);
-	give_data_into_peer(ent,_dst_, 0,0, 0,0, out, 6);
 }
 
 
@@ -69,8 +68,10 @@ int virtimu_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8
 {
 	//say("@virtimu_write:%.4s\n",&foot);
 	if(_clk_ == stack[sp=1].foottype){
+		float out[6];
 		virtimu_checkplace(ent);
-		virtimu_senseforce(ent);
+		virtimu_senseforce(ent, out);
+		give_data_into_peer(ent,_dst_, stack,sp, 0,0, out, 6);
 	}
 	return 0;
 }

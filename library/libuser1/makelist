@@ -66,11 +66,11 @@
 ./electric-part/cmos/stor-ram/chip.ram.static.c
 ./electric-part/generator/control.generator.c
 ./electric-part/inverter/control.inverter.c
-./electric-robot/air-aerobat/robo.drone.c
 ./electric-robot/air-aerobat/robo.plane.c
 ./electric-robot/air-copter/copter-hexa.c
 ./electric-robot/air-copter/copter-octo.c
 ./electric-robot/air-copter/copter-quad.c
+./electric-robot/air-copter/robo.drone.c
 ./electric-robot/bionic-animal/robot-dog.c
 ./electric-robot/bionic-animal/robot-snake.c
 ./electric-robot/bionic-humanoid/robo.otto.c

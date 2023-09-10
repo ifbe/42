@@ -80,18 +80,18 @@ int easyag_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
 }
 int easyag_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	say("@easyag_write: foot=%.4s, len=0x%x\n", &foot, len);
+	//say("@easyag_write: stack=%p, foot=%.4s, len=0x%x\n", stack, &foot, len);
 	if((6 != len) && (9 != len)){
 		say("err@easyag_write:len=%d\n",len);
 		return 0;
 	}
 
 	float* f = (void*)buf;
-	say("	ii: %f,%f,%f,%f,%f,%f\n",f[0],f[1],f[2], f[3],f[4],f[5]);
+	//say("	ii: %f,%f,%f,%f,%f,%f\n",f[0],f[1],f[2], f[3],f[4],f[5]);
 
 	struct perimu* per = (void*)art->priv_256b;
 	imuupdate(per, f[0],f[1],f[2], f[3],f[4],f[5]);
-	say("	oo: %f,%f,%f,%f\n",qx,qy,qz,qw);
+	//say("	oo: %f,%f,%f,%f\n",qx,qy,qz,qw);
 
 	give_data_into_peer(art,_dst_, stack,sp, 0,0, per->q,4);
 	return 0;

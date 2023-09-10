@@ -1,5 +1,7 @@
 #include "libuser.h"
+#define _euler_ hex32('e','u','l','r')
 #define _quat_ hex32('q','u','a','t')
+#define _real_ hex32('r','e','a','l')
 #define _imag_ hex32('i','m','a','g')
 
 
@@ -18,6 +20,7 @@ static void drone_forgl41_actual(
 	float* vr = geom->fshape.vr;
 	float* vf = geom->fshape.vf;
 	float* vt = geom->fshape.vt;
+	gl41line_rect(ctx, 0x0000ff, vc, vr, vf);
 
 
 	//debug position
@@ -29,7 +32,7 @@ static void drone_forgl41_actual(
 	for(j=0;j<3;j++){tc[j] = vc[j] + geom->desire.displace_a[j];}
 	gl41line(ctx, 0xffffff, vc, tc);
 
-
+/*
 	//debug rotation
 	float* q = geom->desire.angular_x;
 	tr[0] = 1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0;
@@ -41,7 +44,7 @@ static void drone_forgl41_actual(
 	tf[2] = 2.0 * (q[1]*q[2] + q[0]*q[3]);
 	vec3_setlen(tf, vf[3]);
 	gl41line_rect(ctx, 0x0000ff, vc, tr, tf);
-
+*/
 	for(j=0;j<3;j++){tc[j] = vc[j] + geom->desire.angular_v[j];}
 	gl41line(ctx, 0x00ff00, vc, tc);
 
@@ -126,6 +129,27 @@ static void drone_forgl41_estimate(
 	float* vr = geom->fshape.vr;
 	float* vf = geom->fshape.vf;
 	float* vt = geom->fshape.vt;
+	gl41line_rect(ctx, 0x0000ff, vc, vr, vf);
+
+/*
+	//debug rotation
+	float* q = geom->desire.angular_x;
+	tr[0] = 1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0;
+	tr[1] = 2.0 * (q[0]*q[1] + q[2]*q[3]);
+	tr[2] = 2.0 * (q[0]*q[2] - q[1]*q[3]);
+	vec3_setlen(tr, vr[3]);
+	tf[0] = 2.0 * (q[0]*q[1] - q[2]*q[3]);
+	tf[1] = 1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0;
+	tf[2] = 2.0 * (q[1]*q[2] + q[0]*q[3]);
+	vec3_setlen(tf, vf[3]);
+	gl41line_rect(ctx, 0x0000ff, vc, tr, tf);
+*/
+	for(j=0;j<3;j++){tc[j] = vc[j] + geom->desire.angular_v[j];}
+	gl41line(ctx, 0x00ff00, vc, tc);
+
+	for(j=0;j<3;j++){tc[j] = vc[j] + geom->desire.angular_a[j];}
+	gl41line(ctx, 0xff0000, vc, tc);
+
 
 
 	//board
@@ -241,7 +265,7 @@ void drone_write_quaternion(_obj* act, float* q)
 	struct relation* rel;
 	_obj* world;
 	struct style* sty = 0;
-	say("drone_quat: %f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
+	//say("drone_quat: %f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
 
 	rel = act->irel0;
 	while(1){
@@ -332,8 +356,15 @@ static void drone_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 }
 static void drone_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	if(_quat_ == stack[sp-1].foottype)drone_write_quaternion(ent, buf);
-	else drone_write_euler(ent, buf);
+	//say("ent=%p,stack=%p,buf=%p\n",ent,stack,buf);
+	switch(stack[sp-1].foottype){
+	case _quat_:
+		drone_write_quaternion(ent, buf);
+		break;
+	case _euler_:
+		drone_write_euler(ent, buf);
+		break;
+	}
 }
 static void drone_detach(struct halfrel* self, struct halfrel* peer)
 {

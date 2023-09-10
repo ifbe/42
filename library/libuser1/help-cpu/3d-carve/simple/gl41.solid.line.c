@@ -1424,7 +1424,7 @@ void gl41line_sphere(_obj* win, u32 rgb,
 	float bb = (float)(rgb&0xff) / 255.0;
 	float gg = (float)((rgb>>8)&0xff) / 255.0;
 	float rr = (float)((rgb>>16)&0xff) / 255.0;
-	for(j=0;j<6*(accx*accy+2);j++){
+	for(j=0;j<6*(accx*accy+2);j+=6){
 		vbuf[j + 3] = rr;
 		vbuf[j + 4] = gg;
 		vbuf[j + 5] = bb;
