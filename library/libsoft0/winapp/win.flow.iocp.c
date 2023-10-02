@@ -133,7 +133,6 @@ DWORD WINAPI iocpthread(LPVOID pM)
 			printf("accept: fd=%x, parent=%x\n", cc, fd);
 
 			child->type = _Tcp_;
-			memcpy(child->sockinfo.peer, oo->sockinfo.peer, 32);
 			child->sockinfo.parent = oo;
 			child->sockinfo.child = 0;
 			child->sockinfo.fd = cc;
@@ -141,7 +140,14 @@ DWORD WINAPI iocpthread(LPVOID pM)
 			//oo->sockinfo.parent = 0;
 			oo->sockinfo.child = child;
 
-			//peername
+			//self
+			memcpy(child->sockinfo.self, oo->sockinfo.self, 32);
+			printmemory(child->sockinfo.self, 32);
+
+			//must call to getpeername
+			ret = setsockopt(cc, SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT, (char*)&fd, sizeof(SOCKET));
+			printmemory(child->sockinfo.peer, 32);
+
 			iocp_add(cc, _Tcp_);
 			iocp_mod(cc, _Tcp_);
 			continue;

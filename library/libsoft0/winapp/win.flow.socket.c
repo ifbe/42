@@ -379,6 +379,8 @@ if(my){
 		return 0;
 	}
 
+	ret = setsockopt(fd, SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT, NULL, 0);
+
 	//self
 	union addrv4v6* self = (void*)oo->sockinfo.self;
 	socklen_t len = socklen;
@@ -386,7 +388,7 @@ if(my){
 	printmemory(self, 32);
 
 	//peer
-	union addrv4v6* peer = (void*)oo->sockinfo.self;
+	union addrv4v6* peer = (void*)oo->sockinfo.peer;
 	memcpy((void*)peer, to, socklen);
 
 	iocp_add(fd, _udp_);
@@ -549,6 +551,8 @@ if(my){
 		return 0;
 	}
 
+	ret = setsockopt(fd, SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT, NULL, 0);
+
 	//self
 	union addrv4v6* self = (void*)oo->sockinfo.self;
 	socklen_t len = socklen;
@@ -556,7 +560,7 @@ if(my){
 	printmemory(self, 32);
 
 	//peer
-	union addrv4v6* peer = (void*)oo->sockinfo.self;
+	union addrv4v6* peer = (void*)oo->sockinfo.peer;
 	memcpy((void*)peer, to, socklen);
 
 	//
