@@ -479,6 +479,78 @@ void corner_gl41_rightbot(
 		gl41solid_circle(win, 0x00ffff, vc, vr, vf);
 	}
 }
+void corner_gl41_tearpaper(
+	_obj* ent, struct style* pin,
+	_obj* win, struct style* sty,
+	_syn* stack,int sp)
+{
+	struct privdata* priv = (void*)ent->priv_256b;
+	if(0 == priv->mouse[0].z0)return;
+
+	float evw = win->whdf.width;
+	float evh = win->whdf.height;
+	float fbw = win->whdf.fbwidth;
+	float fbh = win->whdf.fbheight;
+
+	//left,bot = 0,0
+	float x0 = 0;
+	float y0 = 0;
+	if( (priv->mouse[0].x0<32) && (priv->mouse[0].y0<32) ){
+		//left top
+		x0 = 0;
+		y0 = evh;
+	}
+	else if( (priv->mouse[0].x0 > evw-32) && (priv->mouse[0].y0<32) ){
+		//right top
+		x0 = evw;
+		y0 = evh;
+	}
+	else if( (priv->mouse[0].x0<32) && (priv->mouse[0].y0 > evh-32) ){
+		//left bot
+		x0 = 0;
+		y0 = 0;
+	}
+	else if( (priv->mouse[0].x0 > evw-32) && (priv->mouse[0].y0 > evh-32) ){
+		//right bot
+		x0 = evw;
+		y0 = 0;
+	}
+	else return;
+	//drag point = xn,yn
+	float xn = priv->mouse[0].xn;
+	float yn = evh - priv->mouse[0].yn;
+	//center of them
+	float xmid=(x0+xn)/2;
+	float ymid=(y0+yn)/2;
+	say("0=%f,%f,1=%f,%f,c=%f,%f\n",x0,y0,xn,yn,xmid,ymid);
+
+	//linear equation: (y-ymid)/(x-xmid) = -(xn-x0)/(yn-y0);
+	float py = y0;
+	float px = xmid-(y0-ymid)*(yn-y0)/(xn-x0);
+	float qx = x0;
+	float qy = ymid-(x0-xmid)*(xn-x0)/(yn-y0);
+	say("%f,%f->%f,%f\n",px,py,qx,qy);
+
+	//eventspace[0,1024] -> renderspace[-2048/2,2048/2]
+	vec3 v0,v1;
+	v0[0] = fbw*(x0/evw-0.5);
+	v0[1] = fbh*(y0/evh-0.5);
+	v0[2] = 0.0;
+	v1[0] = fbw*(xn/evw-0.5);
+	v1[1] = fbh*(yn/evh-0.5);
+	v1[2] = 0.0;
+	vec3 va,vb;
+	va[0] = fbw*(px/evw-0.5);
+	va[1] = fbh*(py/evh-0.5);
+	va[2] = 0.0;
+	vb[0] = fbw*(qx/evw-0.5);
+	vb[1] = fbh*(qy/evh-0.5);
+	vb[2] = 0.0;
+	gl41line(win, 0x00ffff, v0, v1);
+	gl41line(win, 0x00ffff, va, vb);
+	gl41solid_triangle(win, 0x000000, v0,va,vb);
+	gl41solid_triangle(win, 0xff0000, v1,va,vb);
+}
 void corner_wnd(
 	_obj* ent, struct style* slot,
 	_obj* wnd, struct style* area,
@@ -491,6 +563,8 @@ void corner_wnd(
 	corner_gl41_rightbot(ent,slot, wnd,area, stack,sp);
 	corner_gl41_lefttop(ent,slot, wnd,area, stack,sp);
 	corner_gl41_righttop(ent,slot, wnd,area, stack,sp);
+
+	corner_gl41_tearpaper(ent,slot, wnd,area, stack,sp);
 
 	gl41data_after(wnd);
 }
@@ -739,7 +813,7 @@ static int corner_event(
 		break;
 	case 0x2d70:
 		say("-%d,%d\n", d[0], d[1]);
-		priv->mouse[0].z0 = 1;
+		priv->mouse[0].z0 = 0;
 		goto handlepointer;
 	case 0x2b74:
 		say("+(%d,%d), (%d,%d,%d)\n", d[0],d[1], w,h,c);
@@ -754,7 +828,7 @@ static int corner_event(
 		break;
 	case 0x2d74:
 		say("-%d,%d\n", d[0], d[1]);
-		priv->mouse[0].z0 = 1;
+		priv->mouse[0].z0 = 0;
 		goto handlepointer;
 	}
 	return 0;
