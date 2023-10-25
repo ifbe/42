@@ -29,13 +29,16 @@ void gl41data_nocam(_obj* wnd)
 	for(y=0;y<4;y++){
 		for(x=0;x<4;x++)m[y][x] = 0.0;
 	}
+
+	//x@[-1,1], y@[-1,1], z@[1.0,-1.0]
+	v[0] = 0.0;
+	v[1] = 0.0;
+	v[2] =-2.0;
 	m[0][0] = 1.0;
 	m[1][1] = 1.0;
 	m[2][2] = 1.0;
 	m[3][3] = 1.0;
-	v[0] = 0.0;
-	v[1] = 0.0;
-	v[2] =-1.0;
+	//mat4_transpose(m);	//not necessary
 
 	data->dst.arg[0].fmt = 'm';
 	data->dst.arg[0].name = "cammvp";
@@ -46,7 +49,7 @@ void gl41data_nocam(_obj* wnd)
 	wnd->gl41list.world[0].camera[0] = data;
 }
 void gl41data_01cam(_obj* wnd)
-{//left,bot: (0,0), right,top: (1,1)
+{
 	int x,y;
 	void* trick = wnd->gl41list.world[0].camera;
 	struct gl41data* data = trick + 0x400;
@@ -56,6 +59,11 @@ void gl41data_01cam(_obj* wnd)
 		for(x=0;x<4;x++)m[y][x] = 0.0;
 		v[y] = 0.0;
 	}
+
+	//x@[0,1), y@[0,1), z@[0,1) -> x@[-1,1], y@[-1,1], z@[1.0,0.0]
+	v[0] = 0.0;
+	v[1] = 0.0;
+	v[2] = 2.0;
 	m[0][0] = 2.0;
 	m[0][3] =-1.0;
 	m[1][1] = 2.0;
@@ -73,7 +81,7 @@ void gl41data_01cam(_obj* wnd)
 	wnd->gl41list.world[0].camera[0] = data;
 }
 void gl41data_whcam(_obj* wnd, struct fstyle* area)
-{//left,bot: (-w,-h), right,top: (w,h)
+{
 	int x,y;
 	void* trick = wnd->gl41list.world[0].camera;
 	struct gl41data* data = trick + 0x400;
@@ -83,11 +91,19 @@ void gl41data_whcam(_obj* wnd, struct fstyle* area)
 		for(x=0;x<4;x++)m[y][x] = 0.0;
 		v[y] = 0.0;
 	}
-	m[0][0] = 2.0 / (area->vq[0] * wnd->whdf.fbwidth);
-	m[1][1] = 2.0 / (area->vq[1] * wnd->whdf.fbheight);
-	m[2][2] =-0.5;
-	m[2][3] = 0.5;
+
+	//x@[0,w), y@[0,h), z@[0,1024) -> x@[-1,1], y@[-1,1], z@[0.9,0.1]
+	v[0] = 0.0;
+	v[1] = 0.0;
+	v[2] = 2.0;
+	m[0][0] = 2.0 / ((area->vq[0]-area->vc[0]) * wnd->whdf.fbwidth);
+	m[0][3] =-1.0;
+	m[1][1] = 2.0 / ((area->vq[1]-area->vc[1]) * wnd->whdf.fbheight);
+	m[1][3] =-1.0;
+	m[2][2] =-0.8 / 2;
+	m[2][3] = 0.9;
 	m[3][3] = 1.0;
+	mat4_transpose(m);
 	//say("%f,%f\n", m[0][0], m[1][1]);
 
 	data->dst.arg[0].fmt = 'm';

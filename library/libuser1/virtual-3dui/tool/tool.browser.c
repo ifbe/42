@@ -248,13 +248,15 @@ static void browser_bywnd_read(_obj* ent,struct style* slot, _obj* wnd,struct st
 	int j;
 	struct fstyle fs;
 	for(j=0;j<3;j++)fs.vc[j] = fs.vr[j] = fs.vf[j] = fs.vt[j] = 0.0;
-	fs.vr[0] = area->fs.vq[0] * wnd->whdf.fbwidth / 2.0;
-	fs.vf[1] = area->fs.vq[1] * wnd->whdf.fbheight/ 2.0;
+	fs.vc[0] = (area->fs.vc[0]+area->fs.vq[0]) * wnd->whdf.fbwidth / 2.0;
+	fs.vc[1] = (area->fs.vc[1]+area->fs.vq[1]) * wnd->whdf.fbheight / 2.0;
+	fs.vr[0] = (area->fs.vq[0]-area->fs.vc[0]) * wnd->whdf.fbwidth / 2.0;
+	fs.vf[1] = (area->fs.vq[1]-area->fs.vc[1]) * wnd->whdf.fbheight/ 2.0;
 	fs.vt[2] = 1.0;
 
 	gl41data_before(wnd);
-	browser_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
 	gl41data_whcam(wnd, area);
+	browser_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
 	gl41data_after(wnd);
 }
 

@@ -38,6 +38,11 @@ void dx11data_nocam(_obj* wnd)
 		for(x=0;x<4;x++)m[y][x] = 0.0;
 		v[y] = 0.0;
 	}
+
+	//x@[-1,1], y@[-1,1], z@[1.0,-1.0]
+	v[0] = 0.0;
+	v[1] = 0.0;
+	v[2] =-2.0;
 	m[0][0] = 1.0;
 	m[1][1] = 1.0;
 	m[2][2] = 1.0;
@@ -60,6 +65,11 @@ void dx11data_01cam(_obj* wnd)
 		for(x=0;x<4;x++)m[y][x] = 0.0;
 		v[y] = 0.0;
 	}
+
+	//x@[0,1), y@[0,1), z@[0,1) -> x@[-1,1], y@[-1,1], z@[1.0,0.0]
+	v[0] = 0.0;
+	v[1] = 0.0;
+	v[2] = 2.0;
 	m[0][0] = 2.0;
 	m[0][3] =-1.0;
 	m[1][1] = 2.0;
@@ -84,11 +94,19 @@ void dx11data_whcam(_obj* wnd, struct fstyle* area)
 		for(x=0;x<4;x++)m[y][x] = 0.0;
 		v[y] = 0.0;
 	}
-	m[0][0] = 2.0 / (area->vq[0] * wnd->whdf.fbwidth);
-	m[1][1] = 2.0 / (area->vq[1] * wnd->whdf.fbheight);
-	m[2][2] =-0.5;
-	m[3][2] = 0.5;
+
+	//x@[0,w), y@[0,h), z@[0,1024) -> x@[-1,1], y@[-1,1], z@[0.9,0.1]
+	v[0] = 0.0;
+	v[1] = 0.0;
+	v[2] = 2.0;
+	m[0][0] = 2.0 / ((area->vq[0]-area->vc[0]) * wnd->whdf.fbwidth);
+	m[0][3] =-1.0;
+	m[1][1] = 2.0 / ((area->vq[1]-area->vc[1]) * wnd->whdf.fbheight);
+	m[1][3] =-1.0;
+	m[2][2] =-0.8 / 2;
+	m[2][3] = 0.9;
 	m[3][3] = 1.0;
+	//no transpose
 
 	wnd->dx11list.world[0].camera[0] = data;
 }

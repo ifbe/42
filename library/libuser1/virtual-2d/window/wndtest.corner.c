@@ -374,8 +374,8 @@ void corner_gl41_lefttop(
 	//say("w=%d,h=%d,c=%d\n",w,h,c);
 
 	vec3 vc, vr, vf;
-	vc[0] =-w/2.0;
-	vc[1] = h/2.0;
+	vc[0] = 0.0;
+	vc[1] = h;
 	vc[2] = 0;
 	vr[0] = c;
 	vr[1] = 0.0;
@@ -403,8 +403,8 @@ void corner_gl41_righttop(
 	//say("w=%d,h=%d,c=%d\n",w,h,c);
 
 	vec3 vc, vr, vf;
-	vc[0] = w/2.0;
-	vc[1] = h/2.0;
+	vc[0] = w;
+	vc[1] = h;
 	vc[2] = 0;
 	vr[0] = c;
 	vr[1] = 0.0;
@@ -432,9 +432,9 @@ void corner_gl41_leftbot(
 	//say("w=%d,h=%d,c=%d\n",w,h,c);
 
 	vec3 vc, vr, vf;
-	vc[0] =-w/2.0;
-	vc[1] =-h/2.0;
-	vc[2] = 0;
+	vc[0] = 0.0;
+	vc[1] = 0.0;
+	vc[2] = 0.0;
 	vr[0] = c;
 	vr[1] = 0.0;
 	vr[2] = 0.0;
@@ -461,9 +461,9 @@ void corner_gl41_rightbot(
 	//say("w=%d,h=%d,c=%d\n",w,h,c);
 
 	vec3 vc, vr, vf;
-	vc[0] = w/2.0;
-	vc[1] =-h/2.0;
-	vc[2] = 0;
+	vc[0] = w;
+	vc[1] = 0.0;
+	vc[2] = 0.0;
 	vr[0] = c;
 	vr[1] = 0.0;
 	vr[2] = 0.0;
@@ -533,18 +533,18 @@ void corner_gl41_tearpaper(
 
 	//eventspace[0,1024] -> renderspace[-2048/2,2048/2]
 	vec3 v0,v1;
-	v0[0] = fbw*(x0/evw-0.5);
-	v0[1] = fbh*(y0/evh-0.5);
+	v0[0] = fbw*(x0/evw);
+	v0[1] = fbh*(y0/evh);
 	v0[2] = 0.0;
-	v1[0] = fbw*(xn/evw-0.5);
-	v1[1] = fbh*(yn/evh-0.5);
+	v1[0] = fbw*(xn/evw);
+	v1[1] = fbh*(yn/evh);
 	v1[2] = 0.0;
 	vec3 va,vb;
-	va[0] = fbw*(px/evw-0.5);
-	va[1] = fbh*(py/evh-0.5);
+	va[0] = fbw*(px/evw);
+	va[1] = fbh*(py/evh);
 	va[2] = 0.0;
-	vb[0] = fbw*(qx/evw-0.5);
-	vb[1] = fbh*(qy/evh-0.5);
+	vb[0] = fbw*(qx/evw);
+	vb[1] = fbh*(qy/evh);
 	vb[2] = 0.0;
 	gl41line(win, 0x00ffff, v0, v1);
 	gl41line(win, 0x00ffff, va, vb);

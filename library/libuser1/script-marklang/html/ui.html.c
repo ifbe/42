@@ -123,48 +123,29 @@ int htmlroot_sendtext(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key,
 
 
 
-int htmlroot_draw_gl41_nocam(
+int htmlroot_draw_gl41(
+	_obj* ent, struct style* slot,
+	_obj* win, struct style* geom,
+	_obj* wnd, struct style* area)
+{
+	return 0;
+}
+int htmlroot_draw_gl41_whcam(
 	_obj* ent, struct style* part,
 	_obj* wnd, struct style* area)
 {
-	struct str** ctx = ent->html.ctx;
-
-	float x0 = area->fs.vc[0]*2-1.0;
-	float y0 = area->fs.vc[1]*2-1.0;
-	float xn = area->fs.vq[0]*2-1.0;
-	float yn = area->fs.vq[1]*2-1.0;
-	//say("%f,%f,%f,%f\n",x0,y0,xn,yn);
-
+	int j;
 	struct fstyle fs;
+	for(j=0;j<3;j++)fs.vc[j] = fs.vr[j] = fs.vf[j] = fs.vt[j] = 0.0;
+	fs.vc[0] = (area->fs.vc[0]+area->fs.vq[0]) * wnd->whdf.fbwidth / 2.0;
+	fs.vc[1] = (area->fs.vc[1]+area->fs.vq[1]) * wnd->whdf.fbheight / 2.0;
+	fs.vr[0] = (area->fs.vq[0]-area->fs.vc[0]) * wnd->whdf.fbwidth / 2.0;
+	fs.vf[1] = (area->fs.vq[1]-area->fs.vc[1]) * wnd->whdf.fbheight/ 2.0;
 
 	gl41data_before(wnd);
 	gl41data_whcam(wnd, area);
 
-	fs.vc[0] = wnd->whdf.fbwidth*(x0+xn)/2;fs.vc[1] = wnd->whdf.fbheight*(y0+yn)/2;fs.vc[2] = 0.0;
-	fs.vr[0] = wnd->whdf.fbwidth*(xn-x0)/4;fs.vr[1] = 0.0;                    fs.vr[2] = 0.0;
-	fs.vf[0] = 0.0;                   fs.vf[1] = wnd->whdf.fbheight*(yn-y0)/4;fs.vf[2] = 0.0;
-	fs.vt[0] = 0.0;                   fs.vt[1] = 0.0;                    fs.vt[2] = 1.0;
-
-	fs.vf[1] = wnd->whdf.fbheight*(yn-y0)/16;
-	fs.vc[1] = wnd->whdf.fbheight*(y0+yn)/2 + fs.vf[1]*3;
-	gl41line_rect(wnd, 0x0000ff, fs.vc, fs.vr, fs.vf);
-	gl41text(wnd, 0x00ff00, fs.vc, fs.vr, fs.vf, ctx[0]->buf, ctx[0]->len);
-
-	fs.vf[1] = wnd->whdf.fbheight*(yn-y0)/16;
-	fs.vc[1] = wnd->whdf.fbheight*(y0+yn)/2 + fs.vf[1]*1;
-	gl41line_rect(wnd, 0x00ff00, fs.vc, fs.vr, fs.vf);
-	gl41text(wnd, 0x00ff00, fs.vc, fs.vr, fs.vf, ctx[1]->buf, ctx[1]->len);
-
-	fs.vf[1] = wnd->whdf.fbheight*(yn-y0)/16;
-	fs.vc[1] = wnd->whdf.fbheight*(y0+yn)/2 - fs.vf[1]*1;
-	gl41line_rect(wnd, 0xff0000, fs.vc, fs.vr, fs.vf);
-	gl41text(wnd, 0x00ff00, fs.vc, fs.vr, fs.vf, ctx[2]->buf, ctx[2]->len);
-
-	fs.vf[1] = wnd->whdf.fbheight*(yn-y0)/16;
-	fs.vc[1] = wnd->whdf.fbheight*(y0+yn)/2 - fs.vf[1]*3;
-	gl41line_rect(wnd, 0x00ffff, fs.vc, fs.vr, fs.vf);
-	gl41text(wnd, 0x00ff00, fs.vc, fs.vr, fs.vf, ctx[3]->buf, ctx[3]->len);
-
+	htmlroot_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
 	gl41data_after(wnd);
 	return 0;
 }
@@ -186,7 +167,7 @@ int htmlroot_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, v
 	switch(caller->hfmt){
 	case _gl41list_:
 		htmlroot_taketext(ent,slot, stack,sp);
-		htmlroot_draw_gl41_nocam(ent,slot, caller,area);
+		htmlroot_draw_gl41_whcam(ent,slot, caller,area);
 		break;
 	case _http_:
 		say("byhttp\n");
