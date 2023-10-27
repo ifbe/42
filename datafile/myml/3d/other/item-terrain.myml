@@ -1,6 +1,6 @@
 <entity>
-texball{
-fmt:texball
+equirect{
+fmt:equirect
 arg:datafile/jpg/texball-skysphere.jpg
 }
 terrain{
@@ -78,7 +78,7 @@ q:0.3, 0.4
 
 <relation>
 #virtual depends on inner objects
-(virtual, skygeom, 0) -> (texball, skyhaha, 0)
+(virtual, skygeom, 0) -> (equirect, skyhaha, 0)
 (virtual, gndgeom, 0) -> (terrain, gndhaha, 0)
 (virtual, freegeom, 0) -> (freecam, freemodl, 0)
 

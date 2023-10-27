@@ -101,6 +101,7 @@
 ./entity.c
 ./file-bio/file.biology.dna.c
 ./file-bio/file.biology.fasta.c
+./file-model/file.model.ball.c
 ./file-model/file.model.geometry.c
 ./file-model/file.model.obj.c
 ./file-model/file.model.scad.c

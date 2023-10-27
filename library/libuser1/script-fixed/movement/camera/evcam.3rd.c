@@ -230,6 +230,10 @@ int cam3rd_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, str
 		own->tarinworld = targeom;
 	}
 
+	int j;
+	for(j=0;j<3;j++)own->cam2tar[j] = targeom->fs.vc[j] - camgeom->fs.vc[j];
+	own->cam2tar[3] = vec3_getlen(own->cam2tar);
+
 	if(0x2d70 == ev->what){
 		own->mousedown_flag = 0;
 		return 0;

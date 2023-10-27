@@ -1,7 +1,7 @@
 #include "libuser.h"
 #define CTXBUF listptr.buf0
 #define LITBUF listptr.buf1
-void carveplanet(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carveplanet_verttex(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 
 
@@ -97,7 +97,7 @@ static void imagelight_draw_gl41(
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vu = geom->fs.vt;
-	carveplanet(vbuf, ibuf, vc, vr, vf, vu);
+	carveplanet_verttex(vbuf, ibuf, vc, vr, vf, vu);
 	src->vbuf_enq += 1;
 	src->ibuf_enq += 1;
 

@@ -14,7 +14,7 @@ drone{
 fmt:drone
 }
 sky{
-fmt:texball
+fmt:equirect
 arg:datafile/jpg/texball-skysphere.jpg
 }
 world{

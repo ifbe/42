@@ -1,6 +1,6 @@
 #include "libuser.h"
 #define OWNBUF listptr.buf0
-void carveplanet_verttex(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carveplanet_verttexnorm(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 void dx11data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 
@@ -12,7 +12,7 @@ struct own{
 	struct dx11data dx11;
 	struct gl41data gl41;
 };
-static void equirect_prep(struct own* my, char* str)
+static void texball_prep(struct own* my, char* str)
 {
 	my->tex.data = memorycreate(4096*2048*4, 4);
 	if(0 == my->tex.data)return;
@@ -39,7 +39,7 @@ static void equirect_prep(struct own* my, char* str)
 
 
 
-char* equirect_hlsl_vs =
+char* texball_hlsl_vs =
 "cbuffer VSConstantBuffer : register(b0){\n"
 	"matrix matmvp;\n"
 "};\n"
@@ -57,7 +57,7 @@ char* equirect_hlsl_vs =
 	"output.color = float4(input.t, 1.0);\n"
 	"return output;\n"
 "}\n";
-char* equirect_hlsl_ps =
+char* texball_hlsl_ps =
 "Texture2D    b8g8r8 : register(t0);\n"
 "SamplerState status : register(s0);\n"
 "struct PSin{\n"
@@ -69,13 +69,13 @@ char* equirect_hlsl_ps =
 "	float3 bgr = b8g8r8.Sample(status, uvw);\n"
 "	return float4(bgr, 1.0);\n"
 "}";
-static void equirect_dx11prep(struct own* my)
+static void texball_dx11prep(struct own* my)
 {
 	struct mysrc* src = &my->dx11.src;
 
 	//shader
-	src->vs = equirect_hlsl_vs;
-	src->fs = equirect_hlsl_ps;
+	src->vs = texball_hlsl_vs;
+	src->fs = texball_hlsl_ps;
 	src->shader_enq = 42;
 
 	//texture
@@ -92,8 +92,8 @@ static void equirect_dx11prep(struct own* my)
 	vtx->geometry = 3;
 	vtx->opaque = 0;
 
-	vtx->vbuf_fmt = vbuffmt_33;
-	vtx->vbuf_w = 4*6;
+	vtx->vbuf_fmt = vbuffmt_333;
+	vtx->vbuf_w = 4*9;
 	vtx->vbuf_h = accx*accy+(accx-1)*2;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
 	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
@@ -106,7 +106,7 @@ static void equirect_dx11prep(struct own* my)
 	vtx->ibuf = memorycreate(vtx->ibuf_len, 0);
 	src->ibuf_enq = 0;
 }
-static void equirect_dx11draw(
+static void texball_dx11draw(
 	_obj* act, struct style* part,
 	_obj* win, struct style* geom,
 	_obj* ctx, struct style* none)
@@ -123,7 +123,7 @@ static void equirect_dx11draw(
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vu = geom->fs.vt;
-	carveplanet_verttex(vbuf, ibuf, vc, vr, vf, vu);
+	carveplanet_verttexnorm(vbuf, ibuf, vc, vr, vf, vu);
 	src->vbuf_enq += 1;
 	src->ibuf_enq += 1;
 
@@ -133,43 +133,53 @@ static void equirect_dx11draw(
 
 
 
-char* equirect_glsl_vs =
+char* texball_glsl_vs =
 GLSL_VERSION
 GLSL_PRECISION
 "layout(location = 0)in vec3 vertex;\n"
 "layout(location = 1)in vec2 texuvw;\n"
+"layout(location = 2)in vec3 normal;\n"
 "uniform mat4 cammvp;\n"
+"uniform sampler2D heightmap;\n"
 "out vec2 uvw;\n"
 "void main(){\n"
 	"uvw = texuvw;\n"
-	"gl_Position = cammvp * vec4(vertex, 1.0);\n"
+	"vec3 tmpxyz = vertex + normal*texture(heightmap, texuvw).b/20.0;\n"
+	"gl_Position = cammvp * vec4(tmpxyz, 1.0);\n"
 "}\n";
-char* equirect_glsl_fs =
+char* texball_glsl_fs =
 GLSL_VERSION
 GLSL_PRECISION
 "in vec2 uvw;\n"
 "out vec4 FragColor;\n"
-"uniform sampler2D tex0;\n"
+"uniform sampler2D albedomap;\n"
 "void main(){\n"
-	"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
+	"FragColor = vec4(texture(albedomap, uvw).bgr, 1.0);\n"
 	//"FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n"
 "}\n";
-static void equirect_gl41prep(struct own* my)
+static void texball_gl41prep(struct own* my)
 {
 	struct gl41data* data = &my->gl41;
 
 	//shader
-	data->src.vs = equirect_glsl_vs;
-	data->src.fs = equirect_glsl_fs;
+	data->src.vs = texball_glsl_vs;
+	data->src.fs = texball_glsl_fs;
 	data->src.shader_enq = 42;
 
 	//texture
-	struct texture* tex = &data->src.tex[0];
-	tex->fmt  = hex32('r','g','b','a');
-	tex->data = my->tex.data;
-	tex->w    = my->tex.w;
-	tex->h    = my->tex.h;
-	data->dst.texname[0] = "tex0";
+	struct texture* heightmap = &data->src.tex[0];
+	heightmap->fmt  = hex32('r','g','b','a');
+	heightmap->data = my->tex.data;
+	heightmap->w    = my->tex.w;
+	heightmap->h    = my->tex.h;
+	data->dst.texname[0] = "heightmap";
+	data->src.tex_enq[0] = 42;
+	struct texture* albedomap = &data->src.tex[1];
+	albedomap->fmt  = hex32('r','g','b','a');
+	albedomap->data = my->tex.data;
+	albedomap->w    = my->tex.w;
+	albedomap->h    = my->tex.h;
+	data->dst.texname[0] = "albedomap";
 	data->src.tex_enq[0] = 42;
 	//say("w=%d,h=%d\n",data->src.tex[0].w, data->src.tex[0].h);
 
@@ -179,8 +189,8 @@ static void equirect_gl41prep(struct own* my)
 	vtx->geometry = 3;
 	vtx->opaque = 0;
 
-	vtx->vbuf_fmt = vbuffmt_33;
-	vtx->vbuf_w = 4*6;
+	vtx->vbuf_fmt = vbuffmt_333;
+	vtx->vbuf_w = 4*9;
 	vtx->vbuf_h = accx*accy+(accx-1)*2;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
 	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
@@ -193,7 +203,7 @@ static void equirect_gl41prep(struct own* my)
 	vtx->ibuf = memorycreate(vtx->ibuf_len, 0);
 	data->src.ibuf_enq = 0;
 }
-static void equirect_gl41draw(
+static void texball_gl41draw(
 	_obj* act, struct style* part,
 	_obj* win, struct style* geom,
 	_obj* ctx, struct style* none)
@@ -214,7 +224,7 @@ static void equirect_gl41draw(
 
 	void* vbuf = src->vtx[0].vbuf;
 	void* ibuf = src->vtx[0].ibuf;
-	carveplanet_verttex(vbuf, ibuf, vc, vr, vf, vu);
+	carveplanet_verttexnorm(vbuf, ibuf, vc, vr, vf, vu);
 	src->vbuf_enq += 1;
 	src->ibuf_enq += 1;
 	gl41data_insert(ctx, 's', src, 1);
@@ -223,7 +233,7 @@ static void equirect_gl41draw(
 
 
 
-static void equirect_draw_pixel(
+static void texball_draw_pixel(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {/*
@@ -271,28 +281,28 @@ static void equirect_draw_pixel(
 		}
 	}*/
 }
-static void equirect_draw_json(
+static void texball_draw_json(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
 }
-static void equirect_draw_html(
+static void texball_draw_html(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
 }
-static void equirect_draw_tui(
+static void texball_draw_tui(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
 }
-static void equirect_draw_cli(
+static void texball_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("equirect(%x,%x,%x)\n",win,act,sty);
+	say("texball(%x,%x,%x)\n",win,act,sty);
 }
-static void equirect_event(
+static void texball_event(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty,
 	struct event* ev, int len)
@@ -302,7 +312,7 @@ static void equirect_event(
 
 
 
-static void equirect_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void texball_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -310,21 +320,21 @@ static void equirect_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	switch(wnd->hfmt){
-	case _dx11list_:equirect_dx11draw(ent,slot, wor,geom, wnd,area);break;
-	case _gl41list_:equirect_gl41draw(ent,slot, wor,geom, wnd,area);break;
+	case _dx11list_:texball_dx11draw(ent,slot, wor,geom, wnd,area);break;
+	case _gl41list_:texball_gl41draw(ent,slot, wor,geom, wnd,area);break;
 	}
 }
-static void equirect_wrl_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void texball_wrl_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 }
-static void equirect_wnd(_obj* ent,void* slot, _obj* wnd,void* area)
+static void texball_wnd(_obj* ent,void* slot, _obj* wnd,void* area)
 {
 }
 
 
 
 
-static void equirect_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
+static void texball_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -340,38 +350,38 @@ static void equirect_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,in
 	case _rgba_:
 		break;
 	case _gl41list_:
-		equirect_wnd(ent,slot, caller,area);
+		texball_wnd(ent,slot, caller,area);
 		break;
 	default:
-		equirect_wrl_cam_wnd(ent,slot, stack,sp);
+		texball_wrl_cam_wnd(ent,slot, stack,sp);
 		break;
 	}
 }
-static void equirect_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
+static void texball_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 }
-static void equirect_detach(struct halfrel* self, struct halfrel* peer)
+static void texball_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void equirect_attach(struct halfrel* self, struct halfrel* peer)
+static void texball_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@equirect_attach\n");
+	say("@texball_attach\n");
 }
 
 
 
 
-static void equirect_search(_obj* act)
+static void texball_search(_obj* act)
 {
 }
-static void equirect_modify(_obj* act)
+static void texball_modify(_obj* act)
 {
 }
-static void equirect_delete(_obj* act)
+static void texball_delete(_obj* act)
 {
 	if(0 == act)return;
 }
-static void equirect_create(_obj* act, void* str)
+static void texball_create(_obj* act, void* str)
 {
 	if(0 == act)return;
 
@@ -379,27 +389,27 @@ static void equirect_create(_obj* act, void* str)
 	if(0 == my)return;
 
 	if(0 == str)str = "datafile/jpg/texball-earth.jpg";
-	equirect_prep(my, str);
+	texball_prep(my, str);
 
-	equirect_dx11prep(my);
-	equirect_gl41prep(my);
+	texball_dx11prep(my);
+	texball_gl41prep(my);
 }
 
 
 
 
-void equirect_register(_obj* p)
+void texball_register(_obj* p)
 {
 	p->type = _orig_;
-	p->hfmt = hex64('e', 'q', 'u', 'i', 'r', 'e', 'c', 't');
+	p->hfmt = hex64('t', 'e', 'x', 'b', 'a', 'l', 'l', 0);
 
-	p->oncreate = (void*)equirect_create;
-	p->ondelete = (void*)equirect_delete;
-	p->onreader = (void*)equirect_search;
-	p->onwriter = (void*)equirect_modify;
+	p->oncreate = (void*)texball_create;
+	p->ondelete = (void*)texball_delete;
+	p->onreader = (void*)texball_search;
+	p->onwriter = (void*)texball_modify;
 
-	p->onattach = (void*)equirect_attach;
-	p->ondetach = (void*)equirect_detach;
-	p->ontaking = (void*)equirect_taking;
-	p->ongiving = (void*)equirect_giving;
+	p->onattach = (void*)texball_attach;
+	p->ondetach = (void*)texball_detach;
+	p->ontaking = (void*)texball_taking;
+	p->ongiving = (void*)texball_giving;
 }

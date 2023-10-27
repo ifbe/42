@@ -9,7 +9,7 @@ scene{
 fmt:scene3d
 }
 sky{
-fmt:texball
+fmt:equirect
 arg:datafile/jpg/texball-skysphere.jpg
 }
 gnd{

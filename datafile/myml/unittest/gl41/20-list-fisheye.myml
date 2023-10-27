@@ -12,7 +12,7 @@ cam3{
 fmt:freecam
 }
 sky{
-fmt:texball
+fmt:equirect
 arg:datafile/jpg/texball-skysphere.jpg
 }
 world{

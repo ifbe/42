@@ -1,6 +1,6 @@
 <entity>
 sky{
-fmt:texball
+fmt:equirect
 arg:datafile/jpg/texball-warehouse.jpg
 }
 dancemat{

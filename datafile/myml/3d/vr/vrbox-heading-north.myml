@@ -1,7 +1,7 @@
 <entity>
 texball{
 fmt:texball
-arg:datafile/jpg/texball-dessert.jpg
+arg:datafile/jpg/texball-earth.jpg
 }
 virtual{
 fmt:virtual

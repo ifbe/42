@@ -63,16 +63,19 @@ void imagelight_register(void*);
 void pointlight_register(void*);
 void projector_register(void*);
 void spotlight_register(void*);
+//.sky
+void skydome_register(void*);
+void equirect_register(void*);
+void texbox_register(void*);
+//.terrain
+void ground_register(void*);
+void terrain_register(void*);
 //.else
 void curtain_register(void*);
 void field_register(void*);
-void ground_register(void*);
 void particle_register(void*);
-void skydome_register(void*);
-void terrain_register(void*);
-void texball_register(void*);
-void texbox_register(void*);
 void weather_register(void*);
+void texball_register(void*);
 
 //algo
 void algorithm_register(void*);
@@ -388,6 +391,23 @@ void thing_init(void* addr)
 	spotlight_register(tmp);
 	tmp -= sizeof(_obj);
 
+//.sky
+	skydome_register(tmp);
+	tmp -= sizeof(_obj);
+
+	equirect_register(tmp);
+	tmp -= sizeof(_obj);
+
+	texbox_register(tmp);
+	tmp -= sizeof(_obj);
+
+//.terrain
+	ground_register(tmp);
+	tmp -= sizeof(_obj);
+
+	terrain_register(tmp);
+	tmp -= sizeof(_obj);
+
 //.else
 	curtain_register(tmp);
 	tmp -= sizeof(_obj);
@@ -395,25 +415,13 @@ void thing_init(void* addr)
 	field_register(tmp);
 	tmp -= sizeof(_obj);
 
-	ground_register(tmp);
-	tmp -= sizeof(_obj);
-
 	particle_register(tmp);
 	tmp -= sizeof(_obj);
 
-	skydome_register(tmp);
-	tmp -= sizeof(_obj);
-
-	terrain_register(tmp);
+	weather_register(tmp);
 	tmp -= sizeof(_obj);
 
 	texball_register(tmp);
-	tmp -= sizeof(_obj);
-
-	texbox_register(tmp);
-	tmp -= sizeof(_obj);
-
-	weather_register(tmp);
 	tmp -= sizeof(_obj);
 
 

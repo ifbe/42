@@ -9,7 +9,7 @@ rubik{
 fmt:rubik
 }
 sky{
-fmt:texball
+fmt:equirect
 arg:datafile/jpg/texball-skysphere.jpg
 }
 cam0{
