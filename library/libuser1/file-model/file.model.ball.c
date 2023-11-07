@@ -8,20 +8,34 @@ void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 
 
 struct own{
-	struct texture tex;
+	struct texture albedotex;
+	struct texture heighttex;
 	struct dx11data dx11;
 	struct gl41data gl41;
 };
-static void texball_prep(struct own* my, char* str)
+static void texball_prep(struct own* my, char* albedo, char* height)
 {
-	my->tex.data = memorycreate(4096*2048*4, 4);
-	if(0 == my->tex.data)return;
+	//albedo
+	my->albedotex.data = memorycreate(4096*2048*4, 4);
+	if(0 == my->albedotex.data)return;
 
-	int j = loadtexfromfile(&my->tex, str);
-	if(j >= 0)return;
+	int ret = loadtexfromfile(&my->albedotex, albedo);
+	if(ret < 0){
+		say("texball: failed to load albedo\n");
+	}
 
+
+	//height
+	my->heighttex.data = memorycreate(4096*2048*4, 4);
+	if(0 == my->heighttex.data)return;
+
+	ret = loadtexfromfile(&my->heighttex, height);
+	if(ret < 0){
+		say("texball: failed to load height\n");
+	}
+/*
 	int x,y;
-	u32* buf = my->tex.data;
+	u32* buf = my->albedotex.data;
 	for(y=0;y<1024;y++){
 		for(x=0;x<2048;x++){
 			buf[y*2048+x] = ((y&0x3f)<<18) | ((x&0x3f)<<10);
@@ -32,8 +46,9 @@ static void texball_prep(struct own* my, char* str)
 			buf[y*2048+x] = ((y&0x3f)<<10) | ((x&0x3f)<<2);
 		}
 	}
-	my->tex.w = 2048;
-	my->tex.h = 2048;
+	my->albedotex.w = 2048;
+	my->albedotex.h = 2048;
+*/
 }
 
 
@@ -79,12 +94,20 @@ static void texball_dx11prep(struct own* my)
 	src->shader_enq = 42;
 
 	//texture
-	struct texture* tex = &src->tex[0];
-	tex->fmt  = hex32('r','g','b','a');
-	tex->data = my->tex.data;
-	tex->w    = my->tex.w;
-	tex->h    = my->tex.h;
+	struct texture* albedotex = &src->tex[0];
+	albedotex->fmt  = hex32('r','g','b','a');
+	albedotex->data = my->albedotex.data;
+	albedotex->w    = my->albedotex.w;
+	albedotex->h    = my->albedotex.h;
 	src->tex_enq[0] = 42;
+
+	struct texture* heighttex = &src->tex[1];
+	heighttex->fmt  = hex32('r','g','b','a');
+	heighttex->data = my->heighttex.data;
+	heighttex->w    = my->heighttex.w;
+	heighttex->h    = my->heighttex.h;
+	src->tex_enq[1] = 42;
+
 
 #define accx 64
 #define accy 63
@@ -144,7 +167,7 @@ GLSL_PRECISION
 "out vec2 uvw;\n"
 "void main(){\n"
 	"uvw = texuvw;\n"
-	"vec3 tmpxyz = vertex + normal*texture(heightmap, texuvw).b/20.0;\n"
+	"vec3 tmpxyz = vertex + normal*texture(heightmap, texuvw).b/10.0;\n"
 	"gl_Position = cammvp * vec4(tmpxyz, 1.0);\n"
 "}\n";
 char* texball_glsl_fs =
@@ -167,20 +190,20 @@ static void texball_gl41prep(struct own* my)
 	data->src.shader_enq = 42;
 
 	//texture
-	struct texture* heightmap = &data->src.tex[0];
-	heightmap->fmt  = hex32('r','g','b','a');
-	heightmap->data = my->tex.data;
-	heightmap->w    = my->tex.w;
-	heightmap->h    = my->tex.h;
-	data->dst.texname[0] = "heightmap";
-	data->src.tex_enq[0] = 42;
-	struct texture* albedomap = &data->src.tex[1];
+	struct texture* albedomap = &data->src.tex[0];
 	albedomap->fmt  = hex32('r','g','b','a');
-	albedomap->data = my->tex.data;
-	albedomap->w    = my->tex.w;
-	albedomap->h    = my->tex.h;
+	albedomap->data = my->albedotex.data;
+	albedomap->w    = my->albedotex.w;
+	albedomap->h    = my->albedotex.h;
 	data->dst.texname[0] = "albedomap";
 	data->src.tex_enq[0] = 42;
+	struct texture* heightmap = &data->src.tex[1];
+	heightmap->fmt  = hex32('r','g','b','a');
+	heightmap->data = my->heighttex.data;
+	heightmap->w    = my->heighttex.w;
+	heightmap->h    = my->heighttex.h;
+	data->dst.texname[1] = "heightmap";
+	data->src.tex_enq[1] = 42;
 	//say("w=%d,h=%d\n",data->src.tex[0].w, data->src.tex[0].h);
 
 #define accx 64
@@ -388,8 +411,10 @@ static void texball_create(_obj* act, void* str)
 	struct own* my = act->OWNBUF = memorycreate(0x1000, 0);
 	if(0 == my)return;
 
+	char* albedo = str;
 	if(0 == str)str = "datafile/jpg/texball-earth.jpg";
-	texball_prep(my, str);
+	char* height = "datafile/jpg/texball-earth-height.jpg";
+	texball_prep(my, albedo, height);
 
 	texball_dx11prep(my);
 	texball_gl41prep(my);
