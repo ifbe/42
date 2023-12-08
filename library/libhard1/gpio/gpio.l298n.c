@@ -5,6 +5,28 @@ int sleep_us(int);
 
 
 
+/*
+3v3             ----________----5v
+g02-sda         ----________----5v
+g03-scl         ----________----0v
+g04-motor-rf-en ----________----g14-motor-rf-p
+0v              ----________----g15-motor-rf-n
+g17-motor-rn-n  ----________----g18-pcm-clk
+g27-motor-rn-p  ----________----0v
+g22-motor-rn-en ----________----g23-sensehat-imu-int1
+3v3             ----____r___----g24-sensehat-imu-int2
+g10-spi0-mosi   ----____p___----0v
+g09-spi0-miso   ----____i___----g25-sensehat-atmel-chip-reset
+g11-spi0-sclk   ----____x___--- g08-sensehat-atmel-chip-select(spi0-ce0)
+0v              ----________----g07-spi0-ce1
+g00-eeprom-sda  ----________----g01-eeprom-scl
+g05-motor-ln-n  ----________----0v
+g06-motor-ln-p  ----________----g12-motor-lf-e
+g13-motor-ln-en ----________----0v
+g19-pcm-fs      ----________----g16-motor-lf-e
+g26-motor-lf-e  ----________----g20-pcm-din
+0v              ----________----g21-pcm-dout
+*/
 char pintable[4][3] = {
 	{13, 5, 6},	//left,front
 	{26,12,16},	//left,back

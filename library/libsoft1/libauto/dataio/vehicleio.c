@@ -218,10 +218,15 @@ static void pollerthread(_obj* ele)
 
 		//2.volt
 		take_data_from_peer_temp_stack(ele, _volt_, 0,0, v, 4);
-		say("%f,%f,%f,%f\n", v[0], v[1], v[2], v[3]);
+
+		//v[0] *= 1.0;
+		v[1] *= 2.0;
+		v[2] *= 2.0;
+		v[3] *= 3.2;
+		say("volt=%f,%f,%f,%f\n", v[0], v[1], v[2], v[3]);
 
 		*(u32*)(buf+0) = _v0v2_;
-		*(u32*)(buf+4) = *(u32*)&v[0];
+		*(u32*)(buf+4) = *(u32*)&v[3];
 		give_data_into_peer_temp_stack(ele, _sock_, 0,0, buf, 8);
 
 		*(u32*)(buf+0) = _v0v1_;

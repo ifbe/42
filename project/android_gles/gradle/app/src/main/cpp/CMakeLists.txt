@@ -625,6 +625,7 @@ ${LIB42}/libuser1/electric-robot/water-inner/submarine.c
 ${LIB42}/libuser1/electric-robot/water-top/ship.c
 ${LIB42}/libuser1/file-bio/file.biology.dna.c
 ${LIB42}/libuser1/file-bio/file.biology.fasta.c
+${LIB42}/libuser1/file-model/file.model.ball.c
 ${LIB42}/libuser1/file-model/file.model.geometry.c
 ${LIB42}/libuser1/file-model/file.model.obj.c
 ${LIB42}/libuser1/file-model/file.model.scad.c

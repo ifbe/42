@@ -156,12 +156,13 @@ float readadc(_obj* ele, int chan)
 
 int ads1115_take(_obj* obj,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
-	say("@ads1115_take\n");
+	//say("@ads1115_take\n");
 	float* v = buf;
-	v[0] = readadc(obj, 0) * 3.2;
-	v[1] = readadc(obj, 1) * 2.0;
+	v[0] = readadc(obj, 0);
+	v[1] = readadc(obj, 1);
 	v[2] = readadc(obj, 2);
-	v[3] = readadc(obj, 3) * 2.0;
+	v[3] = readadc(obj, 3);
+	say("@ads1115_take: %f,%f,%f,%f\n", v[0], v[1], v[2], v[3]);
 
 	return 0;
 }
