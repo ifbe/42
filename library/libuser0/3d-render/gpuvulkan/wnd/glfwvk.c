@@ -190,7 +190,7 @@ void window_delete(_obj* ogl)
 void window_take(_obj* ogl,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 	struct perobj* per = (void*)ogl->priv_256b;
-	drawframe();
+	//drawframe();
 
 	if(glfwWindowShouldClose(per->window)){
 		eventwrite(0,0,(u64)ogl,0);

@@ -82,7 +82,10 @@ void algorithm_register(void*);
 void bintree_register(void*);
 void bplus_register(void*);
 void graph_register(void*);
+
+//deeplearn
 void mnist_register(void*);
+void transformer_register(void*);
 
 //file
 //.biology
@@ -440,7 +443,14 @@ void thing_init(void* addr)
 	graph_register(tmp);
 	tmp -= sizeof(_obj);
 
+
+
+
+//----------------------deeplearn----------------------
 	mnist_register(tmp);
+	tmp -= sizeof(_obj);
+
+	transformer_register(tmp);
 	tmp -= sizeof(_obj);
 
 

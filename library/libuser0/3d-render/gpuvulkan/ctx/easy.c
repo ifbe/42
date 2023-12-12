@@ -578,13 +578,6 @@ if(0 == swapChain){
 void vulkan_myctx_delete()
 {
 	vkDeviceWaitIdle(logicaldevice);
-
-	freesyncobject();
-
-	freedrawcmdbuffer();
-	freeframebuffer();
-	freepipeline();
-	freerenderpass();
 }
 void vulkan_myctx_create()
 {
@@ -603,7 +596,13 @@ void vulkan_myctx_create()
 		initcolortarget();
 		initcolordest();
 	}
+}
 
+
+
+
+void vulkan_pipeline_create()
+{
 	//pipeline <- renderpass
 	//framebuffer <- imageview, renderpass
 	//commandbuffer <- renderpass, pipeline, framebuffer, vertex
@@ -617,6 +616,15 @@ void vulkan_myctx_create()
 
 	//fence
 	initsyncobject();
+}
+void vulkan_pipeline_delete()
+{
+	freesyncobject();
+
+	freedrawcmdbuffer();
+	freeframebuffer();
+	freepipeline();
+	freerenderpass();
 }
 
 
