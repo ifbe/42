@@ -29,6 +29,9 @@ struct uartterm
 
 	int curx;
 	int cury;
+
+	int scrolling;
+	u64 tick;
 };
 //
 void drawterm(_obj* win, void* term, int x0, int y0, int x1, int y1);
@@ -372,9 +375,21 @@ static void terminal_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,in
 		terminal_wrl_cam_wnd(ent,slot, stack,sp);
 		break;
 	}
+
+	struct uartterm* term = (void*)ent->priv_256b;
+	if(0 == term->scrolling)return;
+
+	u64 tick = dateread();
+	if(tick != term->tick){
+		ent->whdf.iy0 += 10;
+		term->tick = tick;
+	}
 }
 static void terminal_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
+	struct uartterm* term = (void*)ent->priv_256b;
+	term->scrolling = 0;
+
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 	switch(stack[sp-1].foottype){
@@ -432,7 +447,7 @@ static void terminal_create(_obj* act, void* arg, int argc, u8** argv)
 	act->SERVER = 0;
 
 	act->whdf.ix0 = 0;
-	act->whdf.iy0 = 100;
+	act->whdf.iy0 = 0;
 
 	//struct str* dat = act->RAWBUF = memorycreate(0x100000, 0);
 	//dat->len = 0;
@@ -452,6 +467,9 @@ static void terminal_create(_obj* act, void* arg, int argc, u8** argv)
 	term->fg = 7;
 	term->len = 0x100000;
 	term->buf = memorycreate(0x100000, 0);
+
+	term->scrolling = 1;
+	term->tick = dateread();
 }
 
 

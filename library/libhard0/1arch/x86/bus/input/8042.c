@@ -123,8 +123,10 @@ void* read8042(struct event* ev)
 void init8042()
 {
 	say("@init8042\n");
-	if(0 == acpi_have8042())enablepolling = 0;
-	say("enablepoll=%d\n\n", enablepolling);
+	if(0 == acpi_have8042()){
+		enablepolling = 0;
+		say("no 8042 found, enablepoll=%d\n\n", enablepolling);
+	}
 }
 
 

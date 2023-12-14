@@ -1,14 +1,9 @@
-#define s8 char
-#define s16 short
-#define s32 int
-#define s64 long long
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
+#include "libboot.h"
 int myvsnprintf(u8* buf, int len, u8* fmt, __builtin_va_list arg);
 int mysnprintf(u8* buf, int len, u8* fmt, ...);
+//
 void lowlevel_output(void*, int);
+//void boardserial_write(void*,int, void*,int, void*,int);
 void window_give(void*,void*, void*,int, void*,int, void*,int);
 
 
@@ -41,12 +36,17 @@ int getcurout()
 
 
 
-static void* serialnode = (void*)1;
-static void* dbglognode = 0;
-static void* windownode = 0;
-void stdout_setseiral(void* node)
+static void* helpserialnode = (void*)1;
+static struct item* boardserialnode = 0;
+static void* logfilenode = 0;
+static struct item* windownode = 0;
+void stdout_sethelpseiral(void* node)
 {
-	serialnode = node;
+	helpserialnode = node;
+}
+void stdout_setboardseiral(void* node)
+{
+	boardserialnode = node;
 }
 void stdout_setwindow(void* node)
 {
@@ -88,7 +88,7 @@ void dbg(u8* fmt, ...)
 	}
 
 }
-void say(u8* fmt, ...)
+int say(void* fmt, ...)
 {
 	int j,k,len;
 	__builtin_va_list arg;
@@ -123,15 +123,21 @@ void say(u8* fmt, ...)
 		}
 	}
 
+//----------------write to every thing that can help debug----------------
 	//write debugport
-	if(serialnode){
+	if(helpserialnode){
 		lowlevel_output(ptr, len);
 	}
 
+	if(boardserialnode){
+		boardserialnode->onwriter(boardserialnode,0, 0,0, ptr, len);
+	}
+/*
 	//write logfile
-/*	if(dbglognode){
-	}*/
-
+	if(logfilenode){
+		logfile_write(boardserialnode,0, 0,0, ptr, len);
+	}
+*/
 	//write screen
 	if(windownode){
 		for(j=1;j<MAXLINE;j++){
@@ -143,6 +149,7 @@ void say(u8* fmt, ...)
 			);
 		}
 	}
+	return 0;
 }
 
 
@@ -156,9 +163,10 @@ void printbigint(u8* buf, int len)
 	say((void*)"0x");
 	for(j=len-1;j>=0;j--)say((void*)"%02x", buf[j]);
 }
-void printmmio(u8* buf, int len)
+int printmmio(void* ptr, int len)
 {
-	if((u64)buf & 3)return;
+	u8* buf = ptr;
+	if((u64)buf & 3)return 0;
 
 	int j,k;
 	for(j=0;j<len;j+=4){
@@ -171,9 +179,11 @@ void printmmio(u8* buf, int len)
 		say((u8*)"%c", (0xc == (j&0xf)) ? '\n' : ' ');
 	}
 	say((u8*)"\n");
+	return 0;
 }
-void printmemory(u8* buf, int len)
+int printmemory(void* ptr, int len)
 {
+	u8* buf = ptr;
 	u8 c;
 	int j,k;
 	u8 tmp[128];
@@ -206,4 +216,5 @@ void printmemory(u8* buf, int len)
 		buf += 16;
 		len -= 16;
 	}
+	return 0;
 }

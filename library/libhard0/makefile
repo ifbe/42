@@ -186,6 +186,7 @@ barex64_c = \
 1arch/x86/bus/pciport/pciport.xhci.c \
 1arch/x86/bus/pciport/pciport.usb4hia.c \
 1arch/x86/bus/pcimmio/pcimmio.c \
+1arch/x86/bus/serial/8250.c \
 1arch/x86/irq/irq.c \
 1arch/x86/irq/8259/8259.c \
 1arch/x86/irq/apic/apic.io.c \

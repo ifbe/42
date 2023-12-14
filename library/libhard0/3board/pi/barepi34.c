@@ -31,15 +31,6 @@ void rpiextxhci_init();
 
 
 
-void initdbg()
-{
-	//debug serial
-	//debug framebuffer
-}
-
-
-
-
 void initmemmap()
 {
 }
@@ -54,6 +45,18 @@ void initmap()
 {
 	initmemmap();
 	initdevmap();
+}
+
+
+
+
+void initdbg()
+{
+	//debug serial
+
+	//debug framebuffer
+
+	//print all pending log
 }
 
 
@@ -208,8 +211,8 @@ void freehardware()
 }
 void inithardware()
 {
-	initdbg();
 	initmap();
+	initdbg();
 
 
 	initcpu0();

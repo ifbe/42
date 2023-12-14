@@ -1,9 +1,10 @@
 #include "libuser.h"
+u8 in8(u16 port);
+//
 u8* getoemid();
 //
 void initps2kbd();
 void initps2mouse();
-u8 in8(u16 port);
 //
 int percpu_enableint(int apicid, int intvec, void* isr, int flag);
 //

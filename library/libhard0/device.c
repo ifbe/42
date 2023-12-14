@@ -75,6 +75,12 @@ void* device_create(u64 type, void* name, int argc, u8** argv)
 	if(0 == type){
 		return device_alloc();
 	}
+	if(_uart_ == type){
+		struct item* p = device_alloc();
+		p->type = _uart_;
+		p->hfmt = _uart_;
+		return p;
+	}
 	if(_cpu_ == type){
 		struct item* p = device_alloc();
 		p->type = _cpu_;

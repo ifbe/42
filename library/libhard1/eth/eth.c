@@ -10,16 +10,24 @@ struct _mac{
 	u16     type;           //[0xc,0xd]
 }__attribute__((packed));
 struct _ipv4{
-	u8      iphead;         //[0xe]
-	u8         tos;         //[0xf]
-	u16     length;         //[0x10,0x11]
-	u16         id;         //[0x12,0x13]
-	u16 fragoffset;         //[0x14,0x15]
-	u8         ttl;         //[0x16]
-	u8    protocol;         //[0x17]
-	u16   checksum;         //[0x18,0x19]
-	u8    ipsrc[4];         //[0x1a,0x1d]
-	u8    ipdst[4];         //[0x1e,0x21]
+	u8      iphead;         //[0]
+	u8         tos;         //[1]
+	u16     length;         //[2,3]
+	u16         id;         //[4,5]
+	u16 fragoffset;         //[6,7]
+	u8         ttl;         //[8]
+	u8    protocol;         //[9]
+	u16   checksum;         //[0xa,0xb]
+	u8    ipsrc[4];         //[0xc,0xf]
+	u8    ipdst[4];         //[0x10,0x13]
+}__attribute__((packed));
+struct _ipv6{
+	u32   ipv6head;         //[0,3]
+	u16     length;         //[4,5]
+	u8       proto;         //[6]
+	u8    hoplimit;         //[7]
+	u8   ipsrc[16];         //[0x08,0x17]
+	u8   ipdst[16];         //[0x18,0x27]
 }__attribute__((packed));
 struct _udp{
 	u16 srcport;
@@ -55,7 +63,7 @@ struct _dhcp{
 	u8 sname[64];
 	u8 file[128];
 }__attribute__((packed));
-struct _packet{
+struct _fullpkt_dhcp4{
 	struct _mac mac;
 
 	struct _ipv4 ipv4;
@@ -101,7 +109,7 @@ static u16 checksum(u16 *buf, int len)
 
 
 
-int dhcprequest(struct _packet* pkt)
+int dhcprequest(struct _fullpkt_dhcp4* pkt)
 {
 	int len;
 
@@ -179,7 +187,27 @@ int udppacket_parse(u8* buf, int len)
 	//int len = swap16(p->udplen);
 	say("srcport=%d,dstport=%d\n", src, dst);
 	if((67 == src)&&(68 == dst))dhcppacket_parse(buf+8, len-8);
-	else printmemory(buf+8, len-8);
+	//else printmemory(buf+8, len-8);
+	return 0;
+}
+
+
+
+
+int protocol_parse(u8* buf, int len, int proto)
+{
+	switch(proto){
+	case 0x11:
+		udppacket_parse(buf, len);
+		break;
+/*	case 0x6:
+		tcppacket_parse(buf, len);
+		break;
+*/
+	default:
+		//printmemory(buf+headlen, len-headlen);
+		break;
+	}
 	return 0;
 }
 int ipv4packet_parse(u8* buf, int len)
@@ -192,23 +220,94 @@ int ipv4packet_parse(u8* buf, int len)
 	say("srcaddr=%d.%d.%d.%d, dstaddr=%d.%d.%d.%d\n",
 		p->ipsrc[0],p->ipsrc[1],p->ipsrc[2],p->ipsrc[3],
 		p->ipdst[0],p->ipdst[1],p->ipdst[2],p->ipdst[3]);
-	switch(proto){
-	case 0x11:udppacket_parse(buf+headlen, len-headlen);break;
-	default:printmemory(buf+headlen, len-headlen);
+
+	protocol_parse(buf+headlen, len-headlen, proto);
+	return 0;
+}
+int ipv6packet_parse(u8* buf, int len)
+{
+	struct _ipv6* p = (void*)buf;
+	u32 ipv6head = p->ipv6head;
+	u32 length = swap16(p->length);
+	u8 proto = p->proto;
+	u8 hoplimit = p->hoplimit;
+	say("ipv6head=%x,length=%x,proto=%x,hoplimit=%x,ipsrc and ipdst:\n", ipv6head, length, proto, hoplimit);
+	printmemory(p->ipsrc, 0x10*2);
+
+	int headlen = 0x28;
+	protocol_parse(buf+headlen, len-headlen, proto);
+	return 0;
+}
+/*
+int arppacket_parse()
+{
+	return 0;
+}
+*/
+
+
+
+
+/*
+struct vlanpacket{
+	u16 tag;
+	u16 pricfivid;
+	struct normalpacket;
+};
+*/
+int vlanpacket_parse(u8* buf, int len)
+{
+	//u16 tag = (buf[0]<<8) + buf[1];
+	u16 pricfivid = (buf[2]<<8) + buf[3];
+	u16 type = (buf[4]<<8) + buf[5];
+	switch(type){
+	case 0x0800:ipv4packet_parse(buf+4, len-4);break;
+	case 0x86dd:ipv6packet_parse(buf+4, len-4);break;
 	}
 	return 0;
 }
 int macpacket_parse(u8* buf, int len)
 {
-	int ret = 6+6+2;
-	printmemory(buf, ret);
-
+	int headlen = 6+6+2;
 	int type = (buf[12]<<8) + buf[13];
 	switch(type){
-	case 0x0800:ipv4packet_parse(buf+ret, len-ret);break;
-	default:printmemory(buf+ret, len-ret);
+	case 0x0800:
+		ipv4packet_parse(buf+headlen, len-headlen);
+		break;
+	case 0x86dd:
+		ipv6packet_parse(buf+headlen, len-headlen);
+		break;
+/*	case 0x0806:
+		arppacket_parse(buf+headlen, len-headlen);
+		break;
+	case 0x8100:
+		vlanpacket_parse(buf+headlen, len-headlen);
+		break;*/
+	default:
+		say("macpacket_parse: unknown packet\n");
+		printmemory(buf, len < 16 ? len : 16);
 	}
-	return ret;
+	return 0;
+}
+
+
+
+
+int eth_reader(struct item* e1000,void* foot, p64 arg,int cmd, void* buf,int len)
+{
+	return 0;
+}
+int eth_writer(struct item* e1000,void* foot, p64 arg,int cmd, void* buf,int len)
+{
+	return 0;
+}
+int eth_delete(struct item* eth,int xxx)
+{
+	return 0;
+}
+int eth_create(struct item* eth,int xxx)
+{
+	return 0;
 }
 
 
@@ -220,16 +319,12 @@ int eth_take(struct item* e1000,void* foot, void* stack,int sp, p64 arg,int cmd,
 }
 int eth_give(struct item* e1000,void* foot, void* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
-	say("@eth_give\n");
+	//say("@eth_give\n");
 	//printmemory(buf,len);
 
 	macpacket_parse(buf, len);
 	return 0;
 }
-
-
-
-
 int eth_discon(struct item* eth,int xxx, struct item* card,int slot)
 {
 	return 0;
@@ -241,8 +336,8 @@ int eth_linkup(struct item* eth,int xxx, struct item* card,int slot)
 	eth->take = (void*)eth_take;
 	eth->give = (void*)eth_give;
 
-	struct _packet pkt;
+	struct _fullpkt_dhcp4 pkt;
 	dhcprequest(&pkt);
-	card->give(card,0, 0,0, 0,0, &pkt, sizeof(struct _packet));
+	card->give(card,0, 0,0, 0,0, &pkt, sizeof(struct _fullpkt_dhcp4));
 	return 0;
 }

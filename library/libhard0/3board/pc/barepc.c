@@ -21,26 +21,13 @@ void inittimer();
 //
 void init8042();
 //
+void initboarddebug(void*);
 void initvmtool();
 
 
 
 
-void initdbg()
-{
-	//debug serial
-
-	//debug framebuffer
-	_obj* wnd = supply_prep(0, _wnd_, 0, 0);
-	supply_create(wnd, 0, 0, 0);
-}
-
-
-
-
-void exitmap()
-{
-}
+//must run before every thing else, (this cant print to serial or screen)
 void initmap()
 {
 	//mem
@@ -53,6 +40,24 @@ void initmap()
 
 
 
+//we need to debug, init these as soon as possiable
+void initdbg()
+{
+	//debug serial
+	struct item* uart = device_create(_uart_, 0, 0, 0);
+	initboarddebug(uart);
+
+	//debug framebuffer
+	_obj* wnd = supply_prep(0, _wnd_, 0, 0);
+	supply_create(wnd, 0, 0, 0);
+
+	//print all pending log
+}
+
+
+
+
+//init boot cpu into 64bit mode
 void initcpu0()
 {
 	struct item* p;
@@ -68,6 +73,7 @@ void initcpu0()
 
 
 
+//init apic and non-boot cpu
 void exitarch()
 {
 }
@@ -90,6 +96,7 @@ void initarch()
 
 
 
+//init soc device: 8042, pci
 void exitsoc()
 {
 }
@@ -109,6 +116,7 @@ void initsoc()
 
 
 
+//init board device: vm special device, i2c, spi, ...
 void exitboard()
 {
 }
@@ -126,8 +134,8 @@ void freehardware()
 }
 void inithardware()
 {
-	initdbg();
 	initmap();
+	initdbg();
 
 
 	initcpu0();

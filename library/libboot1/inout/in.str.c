@@ -39,6 +39,20 @@ int getcurin()
 
 
 
+/*
+static void* helpserialnode = (void*)1;
+static void* boardserialnode = 0;
+void stdin_sethelpseiral(void* node)
+{
+	helpserialnode = node;
+}
+void stdin_setboardseiral(void* node)
+{
+	boardserialnode = node;
+}
+*/
+
+
 
 int autocomplete_subcmd(u8* buf, int len)
 {
