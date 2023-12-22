@@ -140,13 +140,56 @@ DWORD WINAPI iocpthread(LPVOID pM)
 			//oo->sockinfo.parent = 0;
 			oo->sockinfo.child = child;
 
-			//self
-			memcpy(child->sockinfo.self, oo->sockinfo.self, 32);
-			printmemory(child->sockinfo.self, 32);
+			DWORD dwret = 0;
+			LPFN_GETACCEPTEXSOCKADDRS getacceptexsockaddrs = NULL;
+			GUID guid_GetAcceptExSockaddrs = WSAID_GETACCEPTEXSOCKADDRS;
+			ret = WSAIoctl(
+				fd,
+				SIO_GET_EXTENSION_FUNCTION_POINTER,
+				&guid_GetAcceptExSockaddrs,
+				sizeof(guid_GetAcceptExSockaddrs),
+				&getacceptexsockaddrs,
+				sizeof(getacceptexsockaddrs),
+				&dwret,
+				NULL,
+				NULL
+			);
+			if(ret != 0){
+				printf("errno=%d@WSAIoctl WSAID_ACCEPTEX\n",GetLastError());
+				return 0;
+			}
+
+			struct sockaddr_in* localaddr;
+			int localsize;
+			struct sockaddr_in* remoteaddr;
+			int remotesize;
+			getacceptexsockaddrs(
+				(void*)(child->sockinfo.self), 0, 0x20, 0x20,
+				(struct sockaddr**)&localaddr, &localsize,
+				(struct sockaddr**)&remoteaddr, &remotesize
+			);
+			printf("GetAcceptExSockaddrs: %p,%x,%p,%x\n",
+				localaddr, localsize,
+				remoteaddr, remotesize
+			);
+
+			if(localaddr){
+				u8* pp = (u8*)&localaddr->sin_addr;
+				printf("self: port=%d,addr=%d.%d.%d.%d\n", localaddr->sin_port,
+					pp[0], pp[1], pp[2], pp[3]
+				);
+				memcpy(child->sockinfo.self, localaddr, localsize);
+			}
+			if(remoteaddr){
+				u8* pp = (u8*)&remoteaddr->sin_addr;
+				printf("peer: port=%d,addr=%d.%d.%d.%d\n", remoteaddr->sin_port,
+					pp[0], pp[1], pp[2], pp[3]
+				);
+				memcpy(child->sockinfo.self, remoteaddr, localsize);
+			}
 
 			//must call to getpeername
 			ret = setsockopt(cc, SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT, (char*)&fd, sizeof(SOCKET));
-			printmemory(child->sockinfo.peer, 32);
 
 			iocp_add(cc, _Tcp_);
 			iocp_mod(cc, _Tcp_);

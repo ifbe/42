@@ -442,14 +442,15 @@ _obj* createsocket_tcpserver(union addrv4v6* my)
 	}
 
 	//ioctl
-	LPFN_ACCEPTEX acceptex = NULL;
-	GUID guidacceptex = WSAID_ACCEPTEX;
 	DWORD dwret = 0;
+
+	LPFN_ACCEPTEX acceptex = NULL;
+	GUID guid_AcceptEx = WSAID_ACCEPTEX;
 	ret = WSAIoctl(
 		fd,
 		SIO_GET_EXTENSION_FUNCTION_POINTER,
-		&guidacceptex,
-		sizeof(guidacceptex),
+		&guid_AcceptEx,
+		sizeof(guid_AcceptEx),
 		&acceptex,
 		sizeof(acceptex),
 		&dwret,
@@ -460,7 +461,25 @@ _obj* createsocket_tcpserver(union addrv4v6* my)
 		printf("errno=%d@WSAIoctl\n",GetLastError());
 		return 0;
 	}
-
+/*
+	LPFN_GETACCEPTEXSOCKADDRS getacceptexsockaddrs = NULL;
+	GUID guid_GetAcceptExSockaddrs = WSAID_GETACCEPTEXSOCKADDRS;
+	ret = WSAIoctl(
+		listenperfd.sock,
+		SIO_GET_EXTENSION_FUNCTION_POINTER,
+		&guid_GetAcceptExSockaddrs,
+		sizeof(guid_GetAcceptExSockaddrs),
+		&getacceptexsockaddrs,
+		sizeof(getacceptexsockaddrs),
+		&dwret,
+		NULL,
+		NULL
+	);
+	if(ret != 0){
+		printf("errno=%d@WSAIoctl WSAID_ACCEPTEX\n",GetLastError());
+		return 0;
+	}
+*/
 	//acceptex
 	int j;
 	SOCKET childsock;

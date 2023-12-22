@@ -11,7 +11,7 @@ g02-sda         ----________----5v
 g03-scl         ----________----0v
 g04-motor-rf-en ----________----g14-motor-rf-p
 0v              ----________----g15-motor-rf-n
-g17-motor-rn-n  ----________----g18-pcm-clk
+g17-motor-rn-n  ----________----g18-i2s-clk
 g27-motor-rn-p  ----________----0v
 g22-motor-rn-en ----________----g23-sensehat-imu-int1
 3v3             ----____r___----g24-sensehat-imu-int2
@@ -23,9 +23,9 @@ g00-eeprom-sda  ----________----g01-eeprom-scl
 g05-motor-ln-n  ----________----0v
 g06-motor-ln-p  ----________----g12-motor-lf-e
 g13-motor-ln-en ----________----0v
-g19-pcm-fs      ----________----g16-motor-lf-e
-g26-motor-lf-e  ----________----g20-pcm-din
-0v              ----________----g21-pcm-dout
+g19-i2s-fs      ----________----g16-motor-lf-e
+g26-motor-lf-e  ----________----g20-i2s-din
+0v              ----________----g21-i2s-dout
 */
 char pintable[4][3] = {
 	{13, 5, 6},	//left,front
