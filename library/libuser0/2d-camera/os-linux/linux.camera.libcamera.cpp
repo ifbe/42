@@ -261,8 +261,10 @@ int createcamera(struct mydata* my){
 		return 0;
 	}
 
+	int idx = 0;
 	for (auto const &camera : list){
-		std::cout << cameraName(camera.get())<< " @ " << camera->id() << std::endl;
+		std::cout << idx << ": " << cameraName(camera.get())<< " @ " << camera->id() << std::endl;
+		idx += 1;
 	}
 
 	std::string id = list[0]->id();

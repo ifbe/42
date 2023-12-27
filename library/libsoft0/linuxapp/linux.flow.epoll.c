@@ -172,22 +172,27 @@ static void* epollthread(void* p)
 					{
 						socklen_t len = sizeof(union addrv4v6);
 						cc = accept(fd, (struct sockaddr*)(here->sockinfo.peer), &len);
-						printf("cc=%x,errno=%d\n",cc,errno);
+						//printf("cc=%x,errno=%d\n",cc,errno);
 						if(cc <= 0)break;
 
 						if(cc >= MAXSIZE){
-							printf("fd>MAXSIZE\n");
+							printf("accept: fd>MAXSIZE\n");
 							close(cc);
 						}
 						else{
-							//printf("fd=%x,cc=%x,here=%llx,child=%llx\n",fd,cc,here,child);
-
 							child = &obj[cc];
+							printf("accept: fd=%x,cc=%x,here=%p,child=%p\n",fd,cc,here,child);
+
 							child->type = _Tcp_;
-							memcpy(child->sockinfo.peer, here->sockinfo.peer, 32);
 							child->sockinfo.parent = here;
 							child->sockinfo.child = 0;
 							child->sockinfo.fd = cc;
+
+							union addrv4v6* peerinfo = (void*)child->sockinfo.peer;
+							memcpy(peerinfo, here->sockinfo.peer, 32);
+
+							u8* pp = (u8*)&peerinfo->v4.sin_addr;
+							printf("accept: port=%d,addr=%d.%d.%d.%d\n", peerinfo->v4.sin_port, pp[0],pp[1],pp[2],pp[3]);
 
 							//here->sockinfo.parent = 0;
 							here->sockinfo.child = child;

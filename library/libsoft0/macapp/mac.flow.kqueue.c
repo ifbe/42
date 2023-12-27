@@ -160,15 +160,19 @@ int kqueue_thread(int argc, const char * argv[])
 					break;
 				}
 				else{
-					say("accept:listen=%d,incoming=%d\n", fd, cc);
-					printmemory(here->sockinfo.peer, sizeof(union addrv4v6));
-
 					child = &obj[cc];
+					printf("accept: fd=%x,cc=%x,here=%p,child=%p\n",fd,cc,here,child);
+
 					child->type = _Tcp_;
-					memcpy(child->sockinfo.peer, here->sockinfo.peer, 32);
 					child->sockinfo.parent = here;
 					child->sockinfo.child = 0;
 					child->sockinfo.fd = cc;
+
+					union addrv4v6* peeraddr = (void*)child->sockinfo.peer;
+					memcpy(peeraddr, here->sockinfo.peer, 32);
+
+					u8* pp = (u8*)&peeraddr->v4.sin_addr;
+					printf("accept: port=%d,addr=%d.%d.%d.%d\n", peeraddr->v4.sin_port, pp[0],pp[1],pp[2],pp[3]);
 
 					//here->sockinfo.parent = 0;
 					here->sockinfo.child = child;
