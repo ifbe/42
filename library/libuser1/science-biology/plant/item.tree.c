@@ -12,13 +12,13 @@ static void tree_modify(_obj* act)
 static void tree_delete(_obj* act)
 {
 	if(0 == act)return;
-	//if(_copy_ == act->type)memorydelete(act->buf);
+	//if(_copy_ == act->type)memoryfree(act->buf);
 }
 static void tree_create(_obj* act)
 {
 	if(0 == act)return;
 	//if(_orig_ == act->type)act->buf = buffer;
-	//if(_copy_ == act->type)act->buf = memorycreate(256, 0);
+	//if(_copy_ == act->type)act->buf = memoryalloc(256, 0);
 }
 
 

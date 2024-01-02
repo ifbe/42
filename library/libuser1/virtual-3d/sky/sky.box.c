@@ -154,7 +154,7 @@ static void texbox_delete(_obj* act)
 {
 	if(0 == act)return;
 	if(0 == act->listptr.buf0){
-		memorydelete(act->listptr.buf0);
+		memoryfree(act->listptr.buf0);
 		act->listptr.buf0 = 0;
 	}
 }
@@ -162,7 +162,7 @@ static void texbox_create(_obj* act, void* str)
 {
 	if(0 == act)return;
 
-	struct gl41data* data = act->listptr.buf0 = memorycreate(0x1000, 0);
+	struct gl41data* data = act->listptr.buf0 = memoryalloc(0x1000, 0);
 	if(0 == data)return;
 
 	//shader
@@ -172,7 +172,7 @@ static void texbox_create(_obj* act, void* str)
 
 	//texture
 	data->src.tex[0].fmt = hex32('r','g','b','a');
-	data->src.tex[0].data = memorycreate(2048*2048*4, 0);
+	data->src.tex[0].data = memoryalloc(2048*2048*4, 0);
 	if(0 == str)str = "datafile/jpg/earth.jpg";
 	loadtexfromfile(&data->src.tex[0], str);
 
@@ -188,14 +188,14 @@ static void texbox_create(_obj* act, void* str)
 	vtx->vbuf_w = 4*6;
 	vtx->vbuf_h = 24;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 	data->src.vbuf_enq = 0;
 
 	vtx->ibuf_fmt = 0x222;
 	vtx->ibuf_w = 2*3;
 	vtx->ibuf_h = 36;
 	vtx->ibuf_len = (vtx->ibuf_w) * (vtx->ibuf_h);
-	vtx->ibuf = memorycreate(vtx->ibuf_len, 0);
+	vtx->ibuf = memoryalloc(vtx->ibuf_len, 0);
 	data->src.ibuf_enq = 0;
 }
 

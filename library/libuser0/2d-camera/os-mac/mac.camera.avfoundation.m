@@ -245,7 +245,7 @@ int avfcam_create(_obj* win, void* arg, int argc, u8** argv)
 		position:AVCaptureDevicePositionUnspecified
 	];
 	AVCaptureDeviceDiscoverySession* audio_discovery = [AVCaptureDeviceDiscoverySession
-		discoverySessionWithDeviceTypes:@[AVCaptureDeviceTypeBuiltInMicrophone]
+		discoverySessionWithDeviceTypes:@[AVCaptureDeviceTypeMicrophone]	//AVCaptureDeviceTypeBuiltInMicrophone is deprecated
 		mediaType:AVMediaTypeAudio
 		position:AVCaptureDevicePositionUnspecified
 	];/*

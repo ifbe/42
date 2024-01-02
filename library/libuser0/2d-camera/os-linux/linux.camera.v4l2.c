@@ -430,7 +430,7 @@ int v4l2cam_delete(_obj* cam)
 	//while(-1 != pcam->alive)
 
 	//free data
-	memorydelete(cam->priv_ptr);
+	memoryfree(cam->priv_ptr);
 	cam->priv_ptr = 0;
 	return 0;
 }
@@ -483,7 +483,7 @@ int v4l2cam_create(_obj* cam, void* arg, int argc, u8** argv)
 	}//for
 
 	//percam data
-	struct percam* pcam = cam->priv_ptr = memorycreate(0x1000, 4);
+	struct percam* pcam = cam->priv_ptr = memoryalloc(0x1000, 4);
 	if(0 == pcam){
 		say("oom@alloc pcam\n");
 		return -1;

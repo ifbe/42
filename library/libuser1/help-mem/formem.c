@@ -24,14 +24,14 @@ void asset_create()
 	if(0 == utf8data)
 	{
 		//malloc
-		utf8data = memorycreate(0x200000, 0);
+		utf8data = memoryalloc(0x200000, 0);
 		if(0 == utf8data)return;
 
 		//read
 		j = openreadclose("datafile/unicode.raw", 0, utf8data, 0x200000);
 		if(j < 0x200000){
 			say("error@unicode\n");
-			memorydelete(utf8data);
+			memoryfree(utf8data);
 			return;
 		}
 

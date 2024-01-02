@@ -30,8 +30,8 @@ int img2pbr_create(_obj* ele, u8* arg)
 	//testing: merge albedo,normal,amocc into ppm
 	int j;
 	struct texture tex[3];
-	u8* to = memorycreate(2048*2048*4, 0);
-	u8* tt = memorycreate(2048*2048*4, 0);
+	u8* to = memoryalloc(2048*2048*4, 0);
+	u8* tt = memoryalloc(2048*2048*4, 0);
 
 	tex[0].data = tt;
 	loadtexfromfile(&tex[0], "/Users/ifbe/Downloads/rustiron/_metal.png");
@@ -52,7 +52,7 @@ int img2pbr_create(_obj* ele, u8* arg)
 	}
 
     saveppmfromimg("/Users/ifbe/Downloads/rustiron/matter.ppm", 0, to, 4, 2048, 2048);
-	memorydelete(tt);
-	memorydelete(to);
+	memoryfree(tt);
+	memoryfree(to);
 	return 1;
 }

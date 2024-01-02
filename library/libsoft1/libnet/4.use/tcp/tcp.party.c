@@ -311,7 +311,7 @@ int partyclient_create(_obj* ele, void* arg, int argc, u8** argv)
 	struct perobj* perobj = (void*)ele->priv_256b;
 	perobj->recver = to;
 	perobj->sender = by;
-	perobj->peruser = memorycreate(0x1000, 0);
+	perobj->peruser = memoryalloc(0x1000, 0);
 
 	ele->vfmt = 0;
 	return 0;
@@ -569,6 +569,6 @@ int partymaster_delete(_obj* ele)
 int partymaster_create(_obj* ele, u8* url)
 {
 	struct perobj* perobj = (void*)ele->priv_256b;
-	perobj->peruser = memorycreate(0x100000, 0);
+	perobj->peruser = memoryalloc(0x100000, 0);
 	return 0;
 }

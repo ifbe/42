@@ -46,9 +46,9 @@ static double scale = 0.0;
 static void sketchpad_ctxforwnd(struct mysrc* src, char* vs, char* fs)
 {
 	//shader
-	src->vs = memorycreate(0x1000, 0);
+	src->vs = memoryalloc(0x1000, 0);
 	loadglslfromfile(vs, 0, src->vs, 0x1000);
-	src->fs = memorycreate(0x1000, 0);
+	src->fs = memoryalloc(0x1000, 0);
 	loadglslfromfile(fs, 0, src->fs, 0x1000);
 	src->shader_enq = 42;
 
@@ -61,7 +61,7 @@ static void sketchpad_ctxforwnd(struct mysrc* src, char* vs, char* fs)
 	vtx->vbuf_w = 6*4;
 	vtx->vbuf_h = 6;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 }
 static void sketchpad_draw_gl41(
 	_obj* act, struct style* slot,
@@ -591,10 +591,10 @@ static void sketchpad_create(_obj* act, void* str, int argc, u8** argv)
 	if(0 == vs)vs = "datafile/shader/sketchpad/vert.glsl";
 	if(0 == fs)fs = "datafile/shader/sketchpad/frag.glsl";
 
-	act->CTXBUF = memorycreate(0x1000, 0);
+	act->CTXBUF = memoryalloc(0x1000, 0);
 	sketchpad_ctxforwnd(act->CTXBUF, vs, fs);
 
-	act->DATBUF = memorycreate(0x100000, 0);
+	act->DATBUF = memoryalloc(0x100000, 0);
 	centerx = 0.00;
 	centery = 0.00;
 	scale = 1.00;

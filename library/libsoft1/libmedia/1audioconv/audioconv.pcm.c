@@ -58,7 +58,7 @@ int pcmfmt_give(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, void
 	if( (_s32_ == per->srcfmt) && (_s16_ == per->dstfmt) ){
 		if(0 == per->dstbuf[0]){
 			per->dstlen = 0x100000;
-			per->dstbuf[0] = memorycreate(per->dstlen, 4);
+			per->dstbuf[0] = memoryalloc(per->dstlen, 4);
 		}
 		outlen = pcmfmt_s32tos16(buf,len, per->dstbuf[0], per->dstlen);
 		give_data_into_peer(art,_dst_, stack,sp, arg,cmd, per->dstbuf[0],outlen);
@@ -161,5 +161,5 @@ int pcmfmt_free(void* obj)
 void* pcmfmt_alloc()
 {
 	//return artery_alloc();
-	return memorycreate(sizeof(struct item), sizeof(struct item));
+	return memoryalloc(sizeof(struct item), sizeof(struct item));
 }

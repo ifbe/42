@@ -72,7 +72,7 @@ int fakecam_delete(_obj* win)
 }
 int fakecam_create(_obj* win)
 {
-	ibuf = memorycreate(0x100000, 0);
+	ibuf = memoryalloc(0x100000, 0);
 	for(icur=0;icur<640*48082;icur++)ibuf[icur] = 0x66;
 	icur = 0;
 

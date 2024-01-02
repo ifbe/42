@@ -716,10 +716,10 @@ void window_create(_obj* wnd)
 	wnd->whdf.fbwidth = 1024;
 	wnd->whdf.fbheight = 768;
 
-	wnd->mt20list.world[0].camera = (struct mt20data**)memorycreate(0x10000, 0);
-	wnd->mt20list.world[0].light  = (struct mt20data**)memorycreate(0x10000, 0);
-	wnd->mt20list.world[0].solid  = (struct mt20data**)memorycreate(0x10000, 0);
-	wnd->mt20list.world[0].opaque = (struct mt20data**)memorycreate(0x10000, 0);
+	wnd->mt20list.world[0].camera = (struct mt20data**)memoryalloc(0x10000, 0);
+	wnd->mt20list.world[0].light  = (struct mt20data**)memoryalloc(0x10000, 0);
+	wnd->mt20list.world[0].solid  = (struct mt20data**)memoryalloc(0x10000, 0);
+	wnd->mt20list.world[0].opaque = (struct mt20data**)memoryalloc(0x10000, 0);
 	thewnd = wnd;
 
 

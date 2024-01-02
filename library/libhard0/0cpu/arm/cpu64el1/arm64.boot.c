@@ -272,7 +272,7 @@ void initcpu_bsp()
 	initexception(vectors);
 
 //----------------pagetable----------------
-	void* pt = memorycreate(0x100000, 0x100000);
+	void* pt = memoryalloc(0x100000, 0x100000);
 	pagetable_makekern(pt, 0x100000);
 	initpaging(pt);
 	//printmemory((void*)0xffffffffffe00000, 16);

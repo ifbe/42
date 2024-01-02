@@ -703,7 +703,7 @@ static void xiangqi_delete(_obj* act, u8* buf)
 {
 	if(0 == act)return;
 	if(act->listptr.buf0){
-		memorydelete(act->listptr.buf0);
+		memoryfree(act->listptr.buf0);
 		act->listptr.buf0 = 0;
 	}
 }
@@ -714,7 +714,7 @@ static void xiangqi_create(_obj* act, void* str)
 	if(0 == act)return;
 say("@xiangqi_create:%llx\n",str);
 
-	buf = memorycreate(sizeof(struct perxiangqi), 0);
+	buf = memoryalloc(sizeof(struct perxiangqi), 0);
 	act->listptr.buf0 = buf;
 
 	if(str)ret = xiangqi_import(buf, str);

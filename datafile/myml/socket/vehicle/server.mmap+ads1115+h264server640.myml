@@ -13,9 +13,21 @@ arg:/dev/i2c-1
 <driver>
 ads1115{
 fmt:ads1115
+adc0:5v
+adc1:
+adc2:3.7v
+adc3:7.4v
 }
 l298n{
 fmt:l298n
+lfe:13
+lf:5,6
+lbe:26
+lb:12,16
+rfe:22
+rf:17,27
+rbe:4
+rb:14,15
 }
 </driver>
 
@@ -41,10 +53,6 @@ fmt:dbghex
 }
 vehicle{
 fmt:Vehicle
-lf:13,5,6
-lb:26,12,16
-rf:22,17,27
-rb:4,14,15
 }
 picfmt{
 fmt:picfmt

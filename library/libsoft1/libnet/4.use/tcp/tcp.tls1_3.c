@@ -469,7 +469,7 @@ int tls1v3client_dartte(_obj* art)
 int tls1v3client_create(_obj* art, u8* url)
 {
 	say("@tls1v3client_create\n");
-	art->priv_ptr = memorycreate(0x100000, 0);
+	art->priv_ptr = memoryalloc(0x100000, 0);
 	return 0;
 }
 

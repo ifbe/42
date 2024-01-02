@@ -78,15 +78,15 @@ static void ground_self_prep(struct privdata* per, char* albedo, char* normal, c
 static void ground_dx11_prep(struct dx11data* data, char* tex0, char* tex1, char* tex2, char* vs, char* ps)
 {
 	//shader
-	data->src.vs = memorycreate(0x10000, 0);
+	data->src.vs = memoryalloc(0x10000, 0);
 	loadhlslfromfile(vs, 0, data->src.vs, 0x10000);
-	data->src.fs = memorycreate(0x10000, 0);
+	data->src.fs = memoryalloc(0x10000, 0);
 	loadhlslfromfile(ps, 0, data->src.fs, 0x10000);
 	data->src.shader_enq = 42;
 
 	//texture
 	data->src.tex[0].fmt = hex32('r','g','b','a');
-	data->src.tex[0].data = memorycreate(2048*2048*4, 0);
+	data->src.tex[0].data = memoryalloc(2048*2048*4, 0);
 	loadtexfromfile(&data->src.tex[0], tex0);
 	data->src.tex_enq[0] = 42;
 
@@ -99,7 +99,7 @@ static void ground_dx11_prep(struct dx11data* data, char* tex0, char* tex1, char
 	vtx->vbuf_w = 4*3*2;	//sizeof(float) * float_per_attr * attr_per_trigon
 	vtx->vbuf_h = 6*PIECE*PIECE;	//6point_per_block * blockx * blocky
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 }
 static void ground_dx11_draw(
 	_obj* act, struct style* part,
@@ -140,9 +140,9 @@ static void ground_gl41_prep(struct gl41data* data, char* tex0, char* tex1, char
 	say("%s\n%s\n%s\n%s\n%s\n",tex0,tex1,tex2,vs,fs);
 
 	//shader
-	data->src.vs = memorycreate(0x10000, 0);
+	data->src.vs = memoryalloc(0x10000, 0);
 	loadglslfromfile(vs, 0, data->src.vs, 0x10000);
-	data->src.fs = memorycreate(0x10000, 0);
+	data->src.fs = memoryalloc(0x10000, 0);
 	loadglslfromfile(fs, 0, data->src.fs, 0x10000);
 	data->src.shader_enq = 42;
 
@@ -152,19 +152,19 @@ static void ground_gl41_prep(struct gl41data* data, char* tex0, char* tex1, char
 
 	//albedo
 	data->src.tex[0].fmt = hex32('r','g','b','a');
-	data->src.tex[0].data = memorycreate(2048*2048*4, 0);
+	data->src.tex[0].data = memoryalloc(2048*2048*4, 0);
 	loadtexfromfile(&data->src.tex[0], tex0);
 	data->src.tex_enq[0] = 42;
 
 	//normal
 	data->src.tex[1].fmt = hex32('r','g','b','a');
-	data->src.tex[1].data = memorycreate(2048*2048*4, 0);
+	data->src.tex[1].data = memoryalloc(2048*2048*4, 0);
 	loadtexfromfile(&data->src.tex[1], tex1);
 	data->src.tex_enq[1] = 42;
 
 	//matter
 	data->src.tex[2].fmt = hex32('r','g','b','a');
-	data->src.tex[2].data = memorycreate(2048*2048*4, 0);
+	data->src.tex[2].data = memoryalloc(2048*2048*4, 0);
 	loadtexfromfile(&data->src.tex[2], tex2);
 	data->src.tex_enq[2] = 42;
 
@@ -177,7 +177,7 @@ static void ground_gl41_prep(struct gl41data* data, char* tex0, char* tex1, char
 	vtx->vbuf_w = 4*3*2;	//sizeof(float) * float_per_attr * attr_per_trigon
 	vtx->vbuf_h = 6*PIECE*PIECE;	//6point_per_block * blockx * blocky
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 }
 static void ground_gl41_draw(
 	_obj* act, struct style* part,
@@ -326,7 +326,7 @@ static void ground_create(_obj* act, void* str, int argc, u8** argv)
 	int j;
 	if(0 == act)return;
 
-	struct privdata* own = act->OWNBUF = memorycreate(0x10000, 0);
+	struct privdata* own = act->OWNBUF = memoryalloc(0x10000, 0);
 	if(0 == own)return;
 
 	char* dxvs = 0;

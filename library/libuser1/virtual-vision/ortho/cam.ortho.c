@@ -40,7 +40,7 @@ static void orthcam_create(_obj* act, void* arg)
 {
     say("@orthcam_create\n");
 	struct privdata* priv = (void*)act->priv_256b;
-	priv->gl41cam = memorycreate(0x1000, 0);
+	priv->gl41cam = memoryalloc(0x1000, 0);
 	priv->evtype = 0;
 }
 

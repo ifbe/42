@@ -45,7 +45,7 @@ static void curtain_delete(_obj* act)
 }
 static void curtain_create(_obj* act, void* str)
 {
-	struct mysrc* src = act->listptr.buf0 = memorycreate(0x1000, 0);
+	struct mysrc* src = act->listptr.buf0 = memoryalloc(0x1000, 0);
 	if(0 == src)return;
 
 	//shader
@@ -62,7 +62,7 @@ static void curtain_create(_obj* act, void* str)
 	vtx->vbuf_w = 6*4;
 	vtx->vbuf_h = 6;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 }
 
 

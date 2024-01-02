@@ -755,7 +755,7 @@ int usbany_linkup(struct item* usb, int xxx, struct item* xhci, int slot)
 	usbhost_print("@usblinkup: %p,%x,%p,%x\n",usb,xxx,xhci,slot);
 
 	int j,num,ret;
-	struct perusb* perusb = usb->priv_ptr = memorycreate(0x100000, 0);
+	struct perusb* perusb = usb->priv_ptr = memoryalloc(0x100000, 0);
 
 	//clear memory
 	u8* tmp = (void*)perusb;

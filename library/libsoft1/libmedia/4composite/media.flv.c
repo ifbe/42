@@ -932,7 +932,7 @@ int flvserver_create(_obj* obj, void* arg, int argc, u8** argv)
 	priv->audiocount = 0;
 	priv->videocount = 0;
 
-	priv->tmp = memorycreate(0x100000, 0);
+	priv->tmp = memoryalloc(0x100000, 0);
 	priv->offs = 0;
 
 	priv->spsbuf = priv->tmp+0xf0000;

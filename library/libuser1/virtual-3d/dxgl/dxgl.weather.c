@@ -39,7 +39,7 @@ static void weather_ctxforwnd(struct mysrc* src)
 	vtx->vbuf_w = 6*4;
 	vtx->vbuf_h = 6;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 	src->vbuf_enq = 0;
 }
 
@@ -166,12 +166,12 @@ static void weather_modify(_obj* act)
 static void weather_delete(_obj* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->listptr.buf0);
+	if(_copy_ == act->type)memoryfree(act->listptr.buf0);
 }
 static void weather_create(_obj* act)
 {
 	if(0 == act)return;
-	act->listptr.buf0 = memorycreate(0x1000, 0);
+	act->listptr.buf0 = memoryalloc(0x1000, 0);
 	weather_ctxforwnd(act->listptr.buf0);
 }
 

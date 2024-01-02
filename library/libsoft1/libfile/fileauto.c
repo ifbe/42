@@ -141,14 +141,14 @@ void cleverwrite(
 int fileauto_delete(_obj* ele)
 {
 	if(ele->listptr.buf0){
-		memorydelete(ele->listptr.buf0);
+		memoryfree(ele->listptr.buf0);
 		ele->listptr.buf0 = 0;
 	}
 	return 0;
 }
 int fileauto_create(_obj* ele, u8* arg)
 {
-	ele->listptr.buf0 = memorycreate(0x10000, 0);
+	ele->listptr.buf0 = memoryalloc(0x10000, 0);
 	return 0;
 }
 int fileauto_detach(struct halfrel* self, struct halfrel* peer)

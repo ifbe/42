@@ -1,0 +1,96 @@
+<device>
+gpio{
+fmt:gpio
+arg:/dev/gpiomem
+}
+i2chost{
+fmt:i2c
+arg:/dev/i2c-1
+}
+</device>
+
+
+<driver>
+ads1115{
+fmt:ads1115
+adc0:5v
+adc1:
+adc2:3.7v
+adc3:7.4v
+}
+l298n{
+fmt:l298n
+lfe:13
+lf:5,6
+lbe:26
+lb:12,16
+rfe:22
+rf:17,27
+rbe:4
+rb:14,15
+}
+</driver>
+
+
+<system>
+tcpsrv{
+fmt:TCP
+arg:``:10000
+}
+vserver{
+fmt:TCP
+arg:``:9999
+}
+</system>
+
+
+<artery>
+goslow{
+fmt:goslow
+}
+dbghex{
+fmt:dbghex
+}
+vehicle{
+fmt:Vehicle
+}
+picfmt{
+fmt:picfmt
+zerocopy:1
+srcfmt:pBAA
+srcw:1280
+srch:720
+dstfmt:y4,u,v
+dstw:1280
+dsth:720
+}
+</artery>
+
+
+<supply>
+usbcam{
+fmt:cam
+#format:pBAA
+width:1280
+height:720
+}
+codec{
+fmt:enc
+width:1280
+height:720
+}
+</supply>
+
+
+<relation>
+(@i2chost, dst@0) -> (@ads1115, i2c@0)
+(@gpio, dst@0) -> (@l298n, gpio@0)
+
+(@l298n, dst@0) -> (@vehicle, drv@0)
+(@ads1115, dst@0) -> (@vehicle, volt@0)
+(@tcpsrv, dst@0) -> (@vehicle, sock@0)
+
+(usbcam, 0, dst) -> (picfmt, 0, src)
+(picfmt, 0, dst) -> (codec, 0, img)
+(codec, 0, bs) -> (vserver, 0, src)
+</relation>

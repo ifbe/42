@@ -302,7 +302,7 @@ static void fractal_create(_obj* act)
 	struct mysrc* src;
 	if(0 == act)return;
 
-	src = act->GL41BUF = memorycreate(0x1000, 0);
+	src = act->GL41BUF = memoryalloc(0x1000, 0);
 	if(0 == src)return;
 
 	//shader
@@ -319,7 +319,7 @@ static void fractal_create(_obj* act)
 	vtx->vbuf_w = 6*4;
 	vtx->vbuf_h = 6;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 }
 
 

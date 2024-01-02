@@ -1,4 +1,5 @@
 #include "libsoft.h"
+#define _pin_mode_value_ hex32('p','m','v', 0)
 #define _volt_ hex32('v','o','l','t')
 int sleep_us(int);
 
@@ -32,6 +33,20 @@ char pintable[4][3] = {
 	{26,12,16},	//left,back
 	{22,17,27},	//right,front
 	{ 4,15,14},	//right,back
+};
+char pin_mode_value[12][3] = {
+	{13, 'o', 0},	//left, front, en
+	{ 5, 'o', 0},
+	{ 6, 'o', 0},
+	{26, 'o', 0},	//left, near, en
+	{12, 'o', 0},
+	{16, 'o', 0},
+	{22, 'o', 0},	//right, front, en
+	{17, 'o', 0},
+	{27, 'o', 0},
+	{ 4, 'o', 0},	//right, back, en
+	{15, 'o', 0},
+	{14, 'o', 0}
 };
 
 
@@ -111,18 +126,23 @@ int l298n_give(_obj* obj,void* foot, _syn* stack,int sp, p64 arg, int idx, void*
 int l298n_attach(struct halfrel* self, struct halfrel* peer)
 {
 	int j;
-	u8 f[12];
-	for(j=0;j<12;j++)f[j] = 1;
-
 	switch(self->foottype){
 	case _gpio_:
-		writing_data_into_peer(self->pchip, _gpio_, (p64)pintable,_func_, f, 12);
+		for(j=0;j<12;j++)pin_mode_value[j][1] = 'o';
+		writing_data_into_peer(self->pchip, _gpio_, (p64)pin_mode_value,_pin_mode_value_, 0, 0);
 		break;
 	}
     return 0;
 }
 int l298n_detach(struct halfrel* self, struct halfrel* peer)
 {
+	int j;
+	switch(self->foottype){
+	case _gpio_:
+		for(j=0;j<12;j++)pin_mode_value[j][1] = 'i';
+		writing_data_into_peer(self->pchip, _gpio_, (p64)pin_mode_value,_pin_mode_value_, 0, 0);
+		break;
+	}
     return 0;
 }
 

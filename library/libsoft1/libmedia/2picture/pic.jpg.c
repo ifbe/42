@@ -210,12 +210,12 @@ void njDone(void);
 #endif
 
 #if 1
-	void memorydelete(void*);
-	void* memorycreate(int);
+	void memoryfree(void*);
+	void* memoryalloc(int);
 	void* memorysetup(void*,int,int);
 	void* memorycopy(void*,void*,int);
-    #define njAllocMem memorycreate
-    #define njFreeMem  memorydelete
+    #define njAllocMem memoryalloc
+    #define njFreeMem  memoryfree
     #define njFillMem  memorysetup
     #define njCopyMem  memorycopy
 	#define NULL 0

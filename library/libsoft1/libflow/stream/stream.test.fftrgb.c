@@ -88,8 +88,8 @@ int fftrgb_create(_obj* ele, u8* arg)
 	say("@fftrgb_create\n");
 
 	struct perobj* perobj = (void*)ele->priv_256b;
-	perobj->buf0 = memorycreate(0x100000, 0);
-	perobj->buf1 = memorycreate(0x100000, 0);
+	perobj->buf0 = memoryalloc(0x100000, 0);
+	perobj->buf1 = memoryalloc(0x100000, 0);
 	perobj->len = 0;
 	return 1;
 }

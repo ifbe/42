@@ -34,7 +34,7 @@ int memory_ensure(int j, int cnt)
 
 
 
-void* memorycreate(int size, int align)
+void* memoryalloc(int size, int align)
 {
 	u64 j,k;
 	u8* buf;
@@ -56,7 +56,7 @@ void* memorycreate(int size, int align)
 
 	return 0;
 }
-int memorydelete(void* addr)
+int memoryfree(void* addr)
 {
 	u64 j,k;
 

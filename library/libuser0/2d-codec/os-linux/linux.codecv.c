@@ -215,12 +215,12 @@ int codecv_delete(_obj* cam)
 		close(priv->fd);
 		priv->fd = 0;
 	}
-	memorydelete(cam->priv_ptr);
+	memoryfree(cam->priv_ptr);
 	return 0;
 }
 int codecv_create(_obj* cam, void* arg, int argc, u8** argv)
 {
-	struct privdata* priv = cam->priv_ptr = memorycreate(0x1000, 4);
+	struct privdata* priv = cam->priv_ptr = memoryalloc(0x1000, 4);
 	priv->log = 0;
 
 	int j;

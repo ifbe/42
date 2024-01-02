@@ -318,11 +318,11 @@ static void browser_delete(_obj* act)
 	if(0 == act)return;
 	struct privdata* priv = (void*)(act->priv_256b);
 	if(priv->url){
-		memorydelete(priv->url);
+		memoryfree(priv->url);
 		priv->url = 0;
 	}
 	if(priv->dat){
-		memorydelete(priv->dat);
+		memoryfree(priv->dat);
 		priv->dat = 0;
 	}
 }
@@ -334,11 +334,11 @@ static void browser_create(_obj* act)
 
 	int j;
 	u8* buf;
-	buf = memorycreate(0x1000, 0);
+	buf = memoryalloc(0x1000, 0);
 	for(j=0;j<0x1000;j++)buf[j] = 0;
 	priv->url = (void*)buf;
 
-	buf = memorycreate(0x100000, 0);
+	buf = memoryalloc(0x100000, 0);
 	for(j=0;j<0x1000;j++)buf[j] = 0;
 	priv->dat = (void*)buf;
 }

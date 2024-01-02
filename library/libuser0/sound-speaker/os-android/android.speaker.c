@@ -97,7 +97,7 @@ void speaker_create(_obj* spk, void* arg, int argc, u8** argv)
 
 	AAudioStreamBuilder_delete(builder);
 
-	short* pcm = memorycreate(0x100000, 0);
+	short* pcm = memoryalloc(0x100000, 0);
 	int j;
 	for(j=0;j<48000*2;j++){
 		pcm[j] = 32767*sin(j*tau*440/48000);

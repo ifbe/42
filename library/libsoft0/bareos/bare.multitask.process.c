@@ -116,7 +116,7 @@ static __attribute__((noinline)) void proctest_end()
 
 static void process_malloc(u64* twomega, u64* onemega)
 {
-	u8* mem = memorycreate(0x300000, 0);
+	u8* mem = memoryalloc(0x300000, 0);
 	u64 tmp = (u64)mem;
 	if(tmp&0x1fffff){
 		*twomega = tmp+0x100000;

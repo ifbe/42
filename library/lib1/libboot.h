@@ -22,8 +22,8 @@ u64 timeread_us();
 void* eventread();
 void* eventwrite(u64,u64,u64,u64);
 //
-int memorydelete(void*);
-void* memorycreate(int size, int flag);
+int memoryfree(void*);
+void* memoryalloc(int size, int flag);
 //
 int threaddelete(void*);
 void* threadcreate(void*, void*);

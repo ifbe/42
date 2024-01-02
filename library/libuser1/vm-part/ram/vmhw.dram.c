@@ -19,7 +19,7 @@ static void vmddr_delete(_obj* act, u8* buf)
 static void vmddr_create(_obj* act, void* arg, int argc, u8** argv)
 {
 	//alloc 64m
-	act->listptr.buf0 = memorycreate(0x100000*64, 0);
+	act->listptr.buf0 = memoryalloc(0x100000*64, 0);
 	if(0 == act->listptr.buf0)return;
 
 	//read mem from file

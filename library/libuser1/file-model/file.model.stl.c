@@ -112,7 +112,7 @@ static u32 stl3d_fragment(vec4 out[], vec4 in[], vec4 uni[])
 static void stl3d_readdata(struct privdata* own, char* str)
 {
 	own->vbuf_len = 0x1000000;
-	own->vbuf = memorycreate(own->vbuf_len, 0);
+	own->vbuf = memoryalloc(own->vbuf_len, 0);
 	openreadclose(str, 0, own->vbuf, own->vbuf_len);
 }
 static void stl3d_modify_matter(_obj* act, int* src, int len)
@@ -204,9 +204,9 @@ static void stl3d_dx11prep(struct privdata* own, char* vs, char* fs)
 	struct mysrc* src = &own->dx11.src;
 
 	//shader
-	src->vs = memorycreate(0x10000, 0);
+	src->vs = memoryalloc(0x10000, 0);
 	loadhlslfromfile(vs, 0, src->vs, 0x10000);
-	src->fs = memorycreate(0x10000, 0);
+	src->fs = memoryalloc(0x10000, 0);
 	loadhlslfromfile(fs, 0, src->fs, 0x10000);
 	src->shader_enq = 42;
 
@@ -248,9 +248,9 @@ static void stl3d_gl41prep(struct privdata* own, char* vs, char* fs)
 	struct mysrc* src = &data->src;
 
 	//shader
-	src->vs = memorycreate(0x10000, 0);
+	src->vs = memoryalloc(0x10000, 0);
 	loadglslfromfile(vs, 0, src->vs, 0x10000);
-	src->fs = memorycreate(0x10000, 0);
+	src->fs = memoryalloc(0x10000, 0);
 	loadglslfromfile(fs, 0, src->fs, 0x10000);
 	src->shader_enq = 42;
 
@@ -650,7 +650,7 @@ static void stl3d_create(_obj* act, void* str, int argc, u8** argv)
 	u8 dxpspath[128];
 	if(0 == act)return;
 
-	struct privdata* own = act->CTXBUF = memorycreate(0x1000, 0);
+	struct privdata* own = act->CTXBUF = memoryalloc(0x1000, 0);
 	if(0 == own)return;
 
 	for(j=0;j<argc;j++){

@@ -95,7 +95,7 @@ static int aidfont_load()
 	if(buf)return 0;
 	say("@loadbuf\n");
 
-	buf = memorycreate(2048*2048*4, 0);
+	buf = memoryalloc(2048*2048*4, 0);
 	if(0 == buf)return -1;
 
 	//clean
@@ -168,7 +168,7 @@ static int aidfont_fill(_obj* win, struct gl41data* data, int id)
 
 	if(0 == vtx->ibuf){
 		vtx->ibuf_len = 0x100000;
-		vtx->ibuf = memorycreate(vtx->ibuf_len, 0);
+		vtx->ibuf = memoryalloc(vtx->ibuf_len, 0);
 		if(0 == vtx->ibuf)return -2;
 
 		vtx->ibuf_w = 2*3;
@@ -179,7 +179,7 @@ static int aidfont_fill(_obj* win, struct gl41data* data, int id)
 
 	if(0 == vtx->vbuf){
 		vtx->vbuf_len = 65536*4*9;
-		vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+		vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 		if(0 == vtx->vbuf)return -1;
 
 		vtx->vbuf_w = 4*3*3;
@@ -197,7 +197,7 @@ int ascii3d_vars(_obj* win, int id, float** vbuf, u16** ibuf, int vcnt, int icnt
 
 	struct gl41data* p = win->gl41list.world[0].opaque[font3d0 + id];
 	if(0 == p){
-		p = win->gl41list.world[0].opaque[font3d0 + id] = memorycreate(0x1000, 0);
+		p = win->gl41list.world[0].opaque[font3d0 + id] = memoryalloc(0x1000, 0);
 		if(0 == p)return -3;
 	}
 

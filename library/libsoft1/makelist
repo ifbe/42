@@ -82,6 +82,10 @@
 ./libalgo/tree/tree.loser.c
 ./libalgo/tree/tree.montecarlo.c
 ./libalgo/tree/tree.redblack.c
+./libauto/compute/flight/flight.stable.c
+./libauto/compute/road/road.keepcenter.c
+./libauto/compute/script/script.dance.c
+./libauto/compute/script/script.wander.c
 ./libauto/control/control.lqr.c
 ./libauto/control/control.mpc.c
 ./libauto/control/control.pid.c
@@ -94,7 +98,6 @@
 ./libauto/estimate/filter/filter.lowpass.c
 ./libauto/estimate/filter/filter.median.c
 ./libauto/estimate/fusion/fusion.c
-./libauto/script/script.c
 ./libchem/chem.equation.c
 ./libfile/certificate/cert.pem.c
 ./libfile/certificate/cert.x509.c

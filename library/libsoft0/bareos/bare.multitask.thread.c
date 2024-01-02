@@ -128,7 +128,7 @@ u64 threadcreate(void* ip, void* arg)
 	struct threadstate* tasktable = percputasktable[that];
 	struct threadstate* task = &tasktable[taskcount];
 
-	void* sp = memorycreate(0x100000, 0) + 0xffe00;
+	void* sp = memoryalloc(0x100000, 0) + 0xffe00;
 	percpu_makekern(&task->cpu, &arg, ip, sp);
 	percpu_savefpu(&task->fpu);
 
@@ -298,7 +298,7 @@ void initthread()
 	say("@initthread\n");
 
 	int j;
-	u8* tmp = memorycreate(0x100000, 0);
+	u8* tmp = memoryalloc(0x100000, 0);
 	for(j=0;j<0x100000;j++)tmp[j] = 0;
 
 	cpubuffer = (void*)tmp;

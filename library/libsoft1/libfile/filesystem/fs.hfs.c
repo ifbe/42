@@ -687,7 +687,7 @@ int hfsclient_delete(_obj* art)
 }
 int hfsclient_create(_obj* art)
 {
-	struct perfs* per = memorycreate(0x200000, 0);
+	struct perfs* per = memoryalloc(0x200000, 0);
 	art->priv_ptr = per;
 
 	art->onreader = (void*)hfsclient_reader;

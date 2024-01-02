@@ -86,7 +86,7 @@ int renalu_create(_obj* ele, void* arg, int argc, u8** argv)
 
 	struct perobj* perobj = (void*)ele->priv_256b;
 
-	perobj->buf = memorycreate(0x100000, 0);
+	perobj->buf = memoryalloc(0x100000, 0);
 	perobj->enq = 0x10000;
 	perobj->deq = 0;
 	return 1;

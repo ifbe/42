@@ -295,9 +295,9 @@ int gl41data_delete(_obj* win)
 }
 int gl41data_create(_obj* act, void* flag)
 {
-	act->gl41list.world[0].camera = memorycreate(0x10000, 0);
-	act->gl41list.world[0].light  = memorycreate(0x10000, 0);
-	act->gl41list.world[0].solid  = memorycreate(0x10000, 0);
-	act->gl41list.world[0].opaque = memorycreate(0x10000, 0);
+	act->gl41list.world[0].camera = memoryalloc(0x10000, 0);
+	act->gl41list.world[0].light  = memoryalloc(0x10000, 0);
+	act->gl41list.world[0].solid  = memoryalloc(0x10000, 0);
+	act->gl41list.world[0].opaque = memoryalloc(0x10000, 0);
 	return 0;
 }

@@ -182,7 +182,7 @@ static void voxel_delete(_obj* act)
 }
 static void voxel_create(_obj* act)
 {
-	act->TABBUF = memorycreate(0x1000, 0);
+	act->TABBUF = memoryalloc(0x1000, 0);
 	act->TABLEN = 0;
 }
 

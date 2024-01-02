@@ -253,7 +253,7 @@ void e1000_mmioinit(struct item* dev, u8* mmio)
 
 
 	//
-	u8* tmp = memorycreate(0x100000, 0x100000);
+	u8* tmp = memoryalloc(0x100000, 0x100000);
 	per->rxdesc = tmp+0x40000;
 	per->txdesc = tmp+0x50000;
 	per->rxbuffer = tmp+0x80000;

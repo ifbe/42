@@ -108,6 +108,14 @@ linuxpi64_c = \
 2soc/inlinux/hardware.c
 linuxpi64_o = $(patsubst %.c, %.o, $(linuxpi64_c))
 
+wiringpi_c = \
+2soc/libwiringpi/rpi.wiringpi.c
+wiringpi_o = $(patsubst %.c, %.o, $(wiringpi_c))
+
+gpiod_c = \
+2soc/libgpiod/gpiod.c
+gpiod_o = $(patsubst %.c, %.o, $(gpiod_c))
+
 barepi64:$(arm64_o) $(barepi64_o)
 	$(AS) -c 0cpu/arm/cpu64el1/arm64.boothelp.s -o $(DIR)/arm64.boothelp.o
 	$(AS) -c 0cpu/arm/cpu64el1/arm64.exchelp.s -o $(DIR)/arm64.exchelp.o
@@ -117,6 +125,10 @@ myospi64:$(arm64_o) $(myospi64_o)
 linuxarm64:$(arm64_o) $(linuxarm64_o)
 
 linuxpi64:$(arm64_o) $(linuxpi64_o)
+
+linuxpi64_wiringpi:$(arm64_o) $(linuxpi64_o) $(wiringpi_o)
+
+linuxpi64_gpiod:$(arm64_o) $(linuxpi64_o) $(gpiod_o)
 
 
 

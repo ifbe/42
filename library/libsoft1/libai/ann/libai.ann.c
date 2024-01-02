@@ -117,9 +117,9 @@ int ann_create(_obj* ele, u8* url)
 	float* result;
 	say("@ann_create\n");
 
-	weight = ele->WEIGHT = memorycreate(sizeof(float)*28*28*10 * 2, 0);
+	weight = ele->WEIGHT = memoryalloc(sizeof(float)*28*28*10 * 2, 0);
 	for(j=0;j<28*28*10*2;j++)weight[j] = (random_read()&0xfff)/1024.0;
 
-	result = ele->RESULT = memorycreate(4*10, 0);
+	result = ele->RESULT = memoryalloc(4*10, 0);
 	return 1;
 }

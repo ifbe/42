@@ -279,7 +279,7 @@ static void oscillo_create(_obj* act, u8* arg)
 	struct peroscillo* per = (void*)act->priv_256b;
 
 	per->datlen = 0x10000;
-	per->datbuf = memorycreate(0x100000, 0);
+	per->datbuf = memoryalloc(0x100000, 0);
 	//say("size=%x\n",sizeof(struct peroscillo));
 
 	int j;

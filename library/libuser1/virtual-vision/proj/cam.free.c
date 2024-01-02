@@ -481,9 +481,9 @@ static void freecam_gl41gbuf_world2_prep(_obj* act)
 	say("vs=%s,fs=%s\n", vs, fs);
 
 	//shader
-	data->src.vs = memorycreate(0x1000, 0);
+	data->src.vs = memoryalloc(0x1000, 0);
 	loadglslfromfile(vs, 0, data->src.vs, 0x1000);
-	data->src.fs = memorycreate(0x1000, 0);
+	data->src.fs = memoryalloc(0x1000, 0);
 	loadglslfromfile(fs, 0, data->src.fs, 0x1000);
 	data->src.shader_enq = 42;
 
@@ -496,7 +496,7 @@ static void freecam_gl41gbuf_world2_prep(_obj* act)
 	vtx->vbuf_w = 6*4;
 	vtx->vbuf_h = 6;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 
 	//texture
 	data->dst.texname[0] = "tex0";
@@ -643,9 +643,9 @@ static void freecam_gl41ppll_world2_prep(_obj* act)
 	say("vs=%s,fs=%s\n", vs, fs);
 
 	//shader
-	data->src.vs = memorycreate(0x1000, 0);
+	data->src.vs = memoryalloc(0x1000, 0);
 	loadglslfromfile(vs, 0, data->src.vs, 0x1000);
-	data->src.fs = memorycreate(0x1000, 0);
+	data->src.fs = memoryalloc(0x1000, 0);
 	loadglslfromfile(fs, 0, data->src.fs, 0x1000);
 	data->src.shader_enq = 42;
 
@@ -658,7 +658,7 @@ static void freecam_gl41ppll_world2_prep(_obj* act)
 	vtx->vbuf_w = 6*4;
 	vtx->vbuf_h = 6;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 
 	data->src.vbuf_enq = 42;
 }
@@ -1077,7 +1077,7 @@ static void freecam_create(_obj* act, void* arg, int argc, u8** argv)
 	act->whdf.fz0 = 0.0;
 
 	//privdata
-	struct privdata* own = act->OWNBUF = memorycreate(0x2000, 0);
+	struct privdata* own = act->OWNBUF = memoryalloc(0x2000, 0);
 
 	//script
 	own->evtype = 0;

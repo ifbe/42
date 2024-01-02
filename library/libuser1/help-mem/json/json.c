@@ -18,6 +18,6 @@ int jsonnode_delete(_obj* win)
 int jsonnode_create(_obj* win, void* str)
 {
 	win->json.len = 0;
-	win->json.buf = memorycreate(0x100000, 0);
+	win->json.buf = memoryalloc(0x100000, 0);
 	return 0;
 }

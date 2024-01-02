@@ -307,11 +307,11 @@ static void fslist_delete(_obj* act)
 	struct privdata* priv = (void*)act->priv_256b;
 
 	if(priv->pathbuf){
-		memorydelete(priv->pathbuf);
+		memoryfree(priv->pathbuf);
 		priv->pathbuf = 0;
 	}
 	if(priv->listbuf){
-		memorydelete(priv->listbuf);
+		memoryfree(priv->listbuf);
 		priv->listbuf = 0;
 	}
 }
@@ -321,10 +321,10 @@ static void fslist_create(_obj* act, void* arg, int argc, u8** argv)
 
 	struct privdata* priv = (void*)act->priv_256b;
 
-	struct str* path = priv->pathbuf = memorycreate(0x10000, 0);
+	struct str* path = priv->pathbuf = memoryalloc(0x10000, 0);
 	path->len = copypath(path->buf, arg);
 
-	struct str* list = priv->listbuf = memorycreate(0x10000, 0);
+	struct str* list = priv->listbuf = memoryalloc(0x10000, 0);
 	list->len = readfolder(path->buf,0, 0,0, list->buf,0x10000);
 //say("%d,%s\n", list->len, list->buf);
 }

@@ -2026,7 +2026,7 @@ int xhci_mmioinit(struct item* xhci, u8* xhciaddr)
 
 //---------------clear home---------------------
 	int j,k;
-	u8* ptr = memorycreate(0x200000, 0);
+	u8* ptr = memoryalloc(0x200000, 0);
 	for(j=0;j<0x200000;j++)ptr[j] = 0;
 
 	u64 dcbahome      = (u64)(ptr + 0x000000);	//64k*[ 0, 1)

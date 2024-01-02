@@ -34,14 +34,16 @@ void device_init(u8* addr)
 	say("[4,6):device initing\n");
 
 	int j;
-	dev = (void*)(addr+0x000000);
-	aaa = (void*)(addr+0x100000);
-	devlen = 0;
-	aaalen = 0;
-
-#define max (0x100000/sizeof(struct item))
 	for(j=0;j<0x200000;j++)addr[j]=0;
-	for(j=0;j<max;j++)dev[j].tier = _dev_;
+
+#define maxdevlen (0x100000/sizeof(struct item))
+	dev = (void*)(addr+0x000000);
+	devlen = maxdevlen-1;
+	for(j=0;j<maxdevlen;j++)dev[j].tier = _dev_;
+
+//#define maxaaalen
+	aaa = (void*)(addr+0x100000);
+	aaalen = 0;
 
 	say("[4,6):device inited\n");
 }
@@ -56,7 +58,7 @@ void device_exit()
 void* device_alloc()
 {
 	void* addr = &dev[devlen];
-	devlen += 1;
+	devlen -= 1;
 	return addr;
 }
 void device_recycle()
@@ -246,8 +248,13 @@ int device_search(u8* buf, int len)
 {
 	int j,k=0;
 	struct item* p;
-	for(j=0;j<64;j++)
-	{
+	for(j=maxdevlen;j>=0;j--){
+		p = &dev[j];
+		if(0 == p->type)continue;
+		say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j, &p->tier, &p->type, &p->hfmt, &p->vfmt);
+		k++;
+	}
+	for(j=0;j<64;j++){
 		p = &dev[j];
 		if(0 == p->type)continue;
 		say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j, &p->tier, &p->type, &p->hfmt, &p->vfmt);

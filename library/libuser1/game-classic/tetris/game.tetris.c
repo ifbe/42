@@ -297,7 +297,7 @@ static void tetris_delete(_obj* act)
 {
 	if(0 == act)return;
 	if(act->listptr.buf0){
-		memorydelete(act->listptr.buf0);
+		memoryfree(act->listptr.buf0);
 		act->listptr.buf0 = 0;
 	}
 }
@@ -305,7 +305,7 @@ static void tetris_create(_obj* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->listptr.buf0 = data;
-	if(_copy_ == act->type)act->listptr.buf0 = memorycreate(WIDTH*HEIGHT, 0);
+	if(_copy_ == act->type)act->listptr.buf0 = memoryalloc(WIDTH*HEIGHT, 0);
 
 	tetris_generate(act->listptr.buf0, WIDTH, HEIGHT);
 }

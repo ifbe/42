@@ -1068,10 +1068,10 @@ int window_create(_obj* wnd)
 
 	wnd->whdf.width = wnd->whdf.fbwidth = 1024;
 	wnd->whdf.height= wnd->whdf.fbheight= 768;
-	wnd->dx11list.world[0].camera = (struct dx11data**)memorycreate(0x10000, 0);
-	wnd->dx11list.world[0].light  = (struct dx11data**)memorycreate(0x10000, 0);
-	wnd->dx11list.world[0].solid  = (struct dx11data**)memorycreate(0x10000, 0);
-	wnd->dx11list.world[0].opaque = (struct dx11data**)memorycreate(0x10000, 0);
+	wnd->dx11list.world[0].camera = (struct dx11data**)memoryalloc(0x10000, 0);
+	wnd->dx11list.world[0].light  = (struct dx11data**)memoryalloc(0x10000, 0);
+	wnd->dx11list.world[0].solid  = (struct dx11data**)memoryalloc(0x10000, 0);
+	wnd->dx11list.world[0].opaque = (struct dx11data**)memoryalloc(0x10000, 0);
 
 	if(!InitWin32(wnd))return -1;
 	if(!InitD3D11(wnd))return -1;

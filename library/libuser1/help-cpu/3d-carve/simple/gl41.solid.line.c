@@ -120,7 +120,7 @@ static int line3d_fill(_obj* win, struct mysrc* src)
 
 	if(0 == vtx->ibuf){
 		vtx->ibuf_len = 0x100000;
-		vtx->ibuf = memorycreate(vtx->ibuf_len, 0);
+		vtx->ibuf = memoryalloc(vtx->ibuf_len, 0);
 		if(0 == vtx->ibuf)return -1;
 
 		vtx->ibuf_w = 2*2;
@@ -131,7 +131,7 @@ static int line3d_fill(_obj* win, struct mysrc* src)
 
 	if(0 == vtx->vbuf){
 		vtx->vbuf_len = 65536*4*6;
-		vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+		vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 		if(0 == vtx->vbuf)return -2;
 
 		vtx->vbuf_w = 4*3*2;
@@ -149,7 +149,7 @@ int line3d_vars(_obj* win, int unused, float** vbuf, u16** ibuf, int vcnt, int i
 
 	struct gl41data* p = win->gl41list.world[0].solid[line3d];
 	if(0 == p){
-		p = win->gl41list.world[0].solid[line3d] = memorycreate(0x1000, 0);
+		p = win->gl41list.world[0].solid[line3d] = memoryalloc(0x1000, 0);
 		if(0 == p)return -3;
 	}
 

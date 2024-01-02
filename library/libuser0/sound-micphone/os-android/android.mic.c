@@ -123,7 +123,7 @@ void micphone_create(_obj* mic, void* arg, int argc, u8** argv)
 
 	AAudioStreamBuilder_delete(builder);
 
-	short* pcm = memorycreate(0x100000, 0);
+	short* pcm = memoryalloc(0x100000, 0);
 
 	struct privdata* priv = (void*)mic->priv_256b;
 	priv->pcm = pcm;

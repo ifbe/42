@@ -94,7 +94,7 @@ int reline_create(_obj* ele, u8* arg)
 	say("@reline_create\n");
 
 	struct perobj* perobj = (void*)ele->priv_256b;
-	perobj->buf = memorycreate(0x1000, 0);
+	perobj->buf = memoryalloc(0x1000, 0);
 	perobj->len = 0;
 	return 1;
 }

@@ -131,7 +131,7 @@ static void grass_delete(_obj* act)
 static void grass_create(_obj* act)
 {
 	int j,k;
-	float* f = act->listptr.buf0 = memorycreate(4*6*0x10000, 0);
+	float* f = act->listptr.buf0 = memoryalloc(4*6*0x10000, 0);
 	for(j=0;j<2048;j++){
 		f[j*24+0] = (random_read()&0xffff)/32768.0 - 1.0;
 		f[j*24+1] = (random_read()&0xffff)/32768.0 - 1.0;

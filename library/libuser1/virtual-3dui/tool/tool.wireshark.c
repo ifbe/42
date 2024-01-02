@@ -90,19 +90,19 @@ static void rawdump_delete(_obj* act, u8* buf)
 {
 	if(0 == act)return;
 	if(act->listptr.buf0){
-		memorydelete(act->listptr.buf0);
+		memoryfree(act->listptr.buf0);
 		act->listptr.buf0 = 0;
 	}
 	if(act->listptr.buf1){
-		memorydelete(act->listptr.buf1);
+		memoryfree(act->listptr.buf1);
 		act->listptr.buf1 = 0;
 	}
 }
 static void rawdump_create(_obj* act, u8* buf)
 {
 	if(0 == act)return;
-	act->listptr.buf1 = memorycreate(0x10000, 0);
-	act->listptr.buf0 = memorycreate(0x100000, 0);
+	act->listptr.buf1 = memoryalloc(0x10000, 0);
+	act->listptr.buf0 = memoryalloc(0x100000, 0);
 }
 
 

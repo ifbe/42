@@ -37,21 +37,21 @@ static void terrain_vtxprep(struct privdata* own)
 	vtx->vbuf_w = 4*9;
 	vtx->vbuf_h = 256*255;
 	vtx->vbuf_len = (vtx->vbuf_w) * 256*256;
-	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 
 	vtx->ibuf_fmt = 0x222;
 	vtx->ibuf_w = 2*3;
 	vtx->ibuf_h = 254*254*2;
 	vtx->ibuf_len = (vtx->ibuf_w) * 256*256*2;
-	vtx->ibuf = memorycreate(vtx->ibuf_len, 0);
+	vtx->ibuf = memoryalloc(vtx->ibuf_len, 0);
 }
 static void terrain_texprep(struct privdata* own, char* rgb, char* dep)
 {
-	own->color.data = memorycreate(2048*2048*4, 0);
+	own->color.data = memoryalloc(2048*2048*4, 0);
 	if(0 == own->color.data)return;
 	loadtexfromfile(&own->color, rgb);
 
-	own->depth.data = memorycreate(2048*2048*4, 0);
+	own->depth.data = memoryalloc(2048*2048*4, 0);
 	if(0 == own->depth.data)return;
 	loadtexfromfile(&own->depth, dep);
 
@@ -243,9 +243,9 @@ static void terrain_dx11prep(struct privdata* own, char* vs, char* ps)
 	struct mysrc* src = &own->dx11.src;
 
 	//shader
-	src->vs = memorycreate(0x10000, 0);
+	src->vs = memoryalloc(0x10000, 0);
 	loadhlslfromfile(vs, 0, src->vs, 0x10000);
-	src->fs = memorycreate(0x10000, 0);
+	src->fs = memoryalloc(0x10000, 0);
 	loadhlslfromfile(ps, 0, src->fs, 0x10000);
 	src->shader_enq = 42;
 
@@ -346,9 +346,9 @@ static void terrain_gl41prep(struct privdata* own, char* vs, char* fs)
 	struct gldst* dst = &data->dst;
 
 	//shader
-	src->vs = memorycreate(0x10000, 0);
+	src->vs = memoryalloc(0x10000, 0);
 	loadglslfromfile(vs, 0, src->vs, 0x10000);
-	src->fs = memorycreate(0x10000, 0);
+	src->fs = memoryalloc(0x10000, 0);
 	loadglslfromfile(fs, 0, src->fs, 0x10000);
 	src->shader_enq = 42;
 
@@ -569,7 +569,7 @@ static void terrain_create(_obj* act, void* arg, int argc, u8** argv)
 	act->whdf.fy0 = -2.0;
 	act->whdf.fz0 = -2.0;
 
-	struct privdata* own = act->OWNBUF = memorycreate(0x10000, 0);
+	struct privdata* own = act->OWNBUF = memoryalloc(0x10000, 0);
 	if(0 == own)return;
 
 	char* rgb = 0;

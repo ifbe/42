@@ -33,7 +33,7 @@ static void mahjong_delete(_obj* act)
 {
 	if(0 == act)return;
 	if(act->listptr.buf0){
-		memorydelete(act->listptr.buf0);
+		memoryfree(act->listptr.buf0);
 		act->listptr.buf0 = 0;
 	}
 }
@@ -41,7 +41,7 @@ static void mahjong_create(_obj* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->listptr.buf0 = data;
-	if(_copy_ == act->type)act->listptr.buf0 = memorycreate(144, 0);
+	if(_copy_ == act->type)act->listptr.buf0 = memoryalloc(144, 0);
 }
 
 

@@ -229,7 +229,7 @@ int gptclient_writer(_obj* art,void* foot, p64 arg,int idx, u8* buf,int len)
 int gptclient_delete(_obj* ele)
 {
 	if(ele->listptr.buf0){
-		memorydelete(ele->listptr.buf0);
+		memoryfree(ele->listptr.buf0);
 		ele->listptr.buf0 = 0;
 	}
 	return 0;
@@ -237,7 +237,7 @@ int gptclient_delete(_obj* ele)
 int gptclient_create(_obj* art, u8* url)
 {
 	say("@gptclient_create\n");
-	art->listptr.buf0 = memorycreate(0x10000, 0);
+	art->listptr.buf0 = memoryalloc(0x10000, 0);
 
 	art->ongiving = (void*)gptclient_ongive;
 	art->ontaking = (void*)gptclient_ontake;

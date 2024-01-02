@@ -45,12 +45,12 @@ void texmix_ctxforwnd(struct gl41data* data)
 
 	tex = &data->src.tex[0];
 	tex->fmt = hex32('r','g','b','a');
-	tex->data = memorycreate(2048*2048*4, 0);
+	tex->data = memoryalloc(2048*2048*4, 0);
 	loadtexfromfile(tex, "datafile/jpg/wall.jpg");
 
 	tex = &data->src.tex[1];
 	tex->fmt = hex32('r','g','b','a');
-	tex->data = memorycreate(2048*2048*4, 0);
+	tex->data = memoryalloc(2048*2048*4, 0);
 	loadtexfromfile(tex, "datafile/jpg/cartoon.jpg");
 
 	data->src.tex_enq[0] = 42;
@@ -66,7 +66,7 @@ void texmix_ctxforwnd(struct gl41data* data)
 	vtx->vbuf_w = 6*4;
 	vtx->vbuf_h = 6;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 
 	data->src.vbuf_enq = 42;
 }
@@ -164,7 +164,7 @@ static void texmix_create(_obj* act, void* str)
 {
 	if(0 == act)return;
 
-	act->CTXBUF = memorycreate(0x1000, 0);
+	act->CTXBUF = memoryalloc(0x1000, 0);
 	texmix_ctxforwnd(act->CTXBUF);
 }
 

@@ -291,7 +291,7 @@ void mirror_gl41geom_prepare(struct mysrc* src)
 	vtx->vbuf_w = 6*4;
 	vtx->vbuf_h = 6;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 	src->vbuf_enq = 0;
 }
 
@@ -377,7 +377,7 @@ static void mirror_create(_obj* act, void* str)
 {
 	if(0 == act)return;
 
-	struct mirrbuf* mirr = act->CTXBUF = memorycreate(0x10000, 0);
+	struct mirrbuf* mirr = act->CTXBUF = memoryalloc(0x10000, 0);
 	if(0 == mirr)return;
 
 	mirror_gl41fbo_prepare(&mirr->dest.src);

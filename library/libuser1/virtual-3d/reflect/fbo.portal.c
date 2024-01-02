@@ -360,9 +360,9 @@ static void portal_mesh_prepare(struct gl41data* data)
 	struct mysrc* src = &data->src;
 
 	//
-	src->vs = memorycreate(0x1000, 0);
+	src->vs = memoryalloc(0x1000, 0);
 	loadglslfromfile("datafile/shader/portal/vert.glsl", 0, src->vs, 0x1000);
-	src->fs = memorycreate(0x1000, 0);
+	src->fs = memoryalloc(0x1000, 0);
 	loadglslfromfile("datafile/shader/portal/frag.glsl", 0, src->fs, 0x1000);
 	src->shader_enq = 42;
 
@@ -375,7 +375,7 @@ static void portal_mesh_prepare(struct gl41data* data)
 	vtx->vbuf_w = 6*4;
 	vtx->vbuf_h = 6;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 }
 
 
@@ -496,7 +496,7 @@ static void portal_delete(_obj* act)
 }
 static void portal_create(_obj* act, void* str)
 {
-	struct portalbuf* aa = act->mybuf = memorycreate(0x10000, 0);
+	struct portalbuf* aa = act->mybuf = memoryalloc(0x10000, 0);
 	if(0 == aa)return;
 
 	portal_fbo_prepare(&aa->fbo);

@@ -51,7 +51,7 @@ static void hexedit_create(_obj* act, void* arg, int argc, u8** argv)
 
 	if(0 == arg)act->listptr.buf0 = universe;
 	else{
-		act->listptr.buf0 = memorycreate(0x100000, 0);
+		act->listptr.buf0 = memoryalloc(0x100000, 0);
 		openreadclose(arg, 0, act->listptr.buf0, 0x100000);
 	}
 }

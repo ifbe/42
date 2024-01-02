@@ -170,11 +170,11 @@ static void gerber_create(_obj* act, void* arg)
 	if(0 == act)return;
 
 	if(arg){
-		buf = act->GERBUF = memorycreate(0x100000, 0);
+		buf = act->GERBUF = memoryalloc(0x100000, 0);
 		openreadclose(arg, 0, buf, 0x100000);
 		//printmemory(buf, 0x100);
 
-		dst = act->DSTBUF = memorycreate(0x100000, 0);
+		dst = act->DSTBUF = memoryalloc(0x100000, 0);
 		cnt = rs274x_parse(dst, buf);
 
 		act->CNTBUF = cnt;

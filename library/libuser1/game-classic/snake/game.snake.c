@@ -210,7 +210,7 @@ static void snake_delete(_obj* act)
 {
 	if(0 == act)return;
 	if(act->listptr.buf0){
-		memorydelete(act->listptr.buf0);
+		memoryfree(act->listptr.buf0);
 		act->listptr.buf0 = 0;
 	}
 }
@@ -218,7 +218,7 @@ static void snake_create(_obj* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->listptr.buf0 = buf;
-	if(_copy_ == act->type)act->listptr.buf0 = memorycreate(WIDTH*HEIGHT*4, 0);
+	if(_copy_ == act->type)act->listptr.buf0 = memoryalloc(WIDTH*HEIGHT*4, 0);
 
 	snake_generate(buf, WIDTH, HEIGHT);
 }

@@ -264,9 +264,9 @@ void water_gl41geom_prepare(struct gl41data* data, struct waterbuf* water, char*
 	struct gldst* dst = &data->dst;
 
 	//
-	src->vs = memorycreate(0x1000, 0);
+	src->vs = memoryalloc(0x1000, 0);
 	loadglslfromfile("datafile/shader/water/vert.glsl", 0, src->vs, 0x1000);
-	src->fs = memorycreate(0x1000, 0);
+	src->fs = memoryalloc(0x1000, 0);
 	loadglslfromfile("datafile/shader/water/frag.glsl", 0, src->fs, 0x1000);
 	src->shader_enq = 42;
 
@@ -278,7 +278,7 @@ void water_gl41geom_prepare(struct gl41data* data, struct waterbuf* water, char*
 	//texture0
 	dst->texname[0] = "dudvmap";
 	src->tex[0].fmt = hex32('r','g','b','a');
-	src->tex[0].data = memorycreate(2048*2048*4, 0);
+	src->tex[0].data = memoryalloc(2048*2048*4, 0);
 	loadtexfromfile(&src->tex[0], str);
 	src->tex_enq[0] = 42;
 
@@ -287,12 +287,12 @@ void water_gl41geom_prepare(struct gl41data* data, struct waterbuf* water, char*
 	vtx->geometry = 3;
 	vtx->opaque = 1;
 
-	vtx->vbuf = memorycreate(4*6*6, 0);
+	vtx->vbuf = memoryalloc(4*6*6, 0);
 	vtx->vbuf_fmt = vbuffmt_33;
 	vtx->vbuf_w = 6*4;
 	vtx->vbuf_h = 6;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 }
 
 
@@ -393,7 +393,7 @@ static void water_create(_obj* act, char* str)
 {
 	if(0 == act)return;
 
-	struct waterbuf* water = act->CTXBUF = memorycreate(0x10000, 0);
+	struct waterbuf* water = act->CTXBUF = memoryalloc(0x10000, 0);
 	if(0 == water)return;
 
 	if(0 == str)str = "datafile/jpg/dudvmap.jpg";

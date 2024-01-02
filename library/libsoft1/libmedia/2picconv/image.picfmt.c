@@ -163,7 +163,7 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, void
 	if(ispart){
 		if(0 == per->srcbuf[0]){
 			per->srclen = srcw * srch * 3/2;
-			per->srcbuf[0] = memorycreate(per->srclen*2, 0);
+			per->srcbuf[0] = memoryalloc(per->srclen*2, 0);
 		}
 		if('y' == ispart){
 			picfmt_copy_y(per->srcbuf[0], buf);
@@ -193,7 +193,7 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, void
 	}
 	if(0 == per->dstbuf[0]){
 		per->dstlen = 4 * per->dstw * per->dsth;
-		per->dstbuf[0] = memorycreate(per->dstlen, 0);
+		per->dstbuf[0] = memoryalloc(per->dstlen, 0);
 	}
 
 	if((_yuyv_ == srcfmt)&&(_yuvx_ == per->dstfmt)){
@@ -357,5 +357,5 @@ int picfmt_free(void* obj)
 void* picfmt_alloc()
 {
 	//return artery_alloc();
-	return memorycreate(sizeof(struct item), sizeof(struct item));
+	return memoryalloc(sizeof(struct item), sizeof(struct item));
 }

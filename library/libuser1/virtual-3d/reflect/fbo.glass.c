@@ -302,7 +302,7 @@ void glass_forwnd_prepare(struct gl41data* data)
 	vtx->vbuf_w = 6*4;
 	vtx->vbuf_h = 6;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 
 	data->src.vbuf_enq = 0;
 }
@@ -391,11 +391,11 @@ static void glass_delete(_obj* act)
 {
 	if(0 == act)return;
 	if(act->CTXBUF){
-		memorydelete(act->CTXBUF);
+		memoryfree(act->CTXBUF);
 		act->CTXBUF = 0;
 	}
 	if(act->CAMBUF){
-		memorydelete(act->CAMBUF);
+		memoryfree(act->CAMBUF);
 		act->CAMBUF = 0;
 	}
 }
@@ -405,12 +405,12 @@ static void glass_create(_obj* act, void* str)
 	struct gl41data* data;
 	if(0 == act)return;
 
-	glass = act->CTXBUF = memorycreate(0x1000, 0);
+	glass = act->CTXBUF = memoryalloc(0x1000, 0);
 	if(0 == glass)return;
 	data = (void*)(glass->data);
 	glass_forwnd_prepare(data);
 
-	glass = act->CAMBUF = memorycreate(0x1000, 0);
+	glass = act->CAMBUF = memoryalloc(0x1000, 0);
 	if(0 == glass)return;
 	data = (void*)(glass->data);
 	glass_forfbo_prepare(data);

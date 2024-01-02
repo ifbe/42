@@ -25,7 +25,7 @@ static int slider_delete(_obj* act)
 static int slider_create(_obj* act, u8* str)
 {
 	int j;
-	int* list = act->LISTBUF = memorycreate(0x1000, 0);
+	int* list = act->LISTBUF = memoryalloc(0x1000, 0);
 	for(j=0;j<12;j++)list[j] = 50;
 
 	act->whdf.iw0 = -1;

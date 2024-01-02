@@ -69,7 +69,7 @@ void* origin_create(u64 type, void* func, int argc, u8** argv)
 	case _main_:
 	case _win32_:
 	case _ndkmain_:{
-		tmp = memorycreate(0x1000000, 0);
+		tmp = memoryalloc(0x1000000, 0);
 		//openreadclose("universe.bin", 0, ori, 0x1000000);
 		birth(tmp);
 		say("type=%.8s, func@%p, argc=%d, argv@%p\n", &type, func, argc, argv);
@@ -120,7 +120,7 @@ int origin_delete(_obj* tmp)
 		death();
 
 		//openwriteclose("universe.bin", 0, ori, 0x1000000);
-		memorydelete(ori);
+		memoryfree(ori);
 	}
 	}
 	return 0;

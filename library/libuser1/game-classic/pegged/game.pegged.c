@@ -194,14 +194,14 @@ static void pegged_modify(_obj* act)
 static void pegged_delete(_obj* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->listptr.buf0);
+	if(_copy_ == act->type)memoryfree(act->listptr.buf0);
 }
 static void pegged_create(_obj* act)
 {
 	int x,y;
 	if(0 == act)return;
 	if(_orig_ == act->type)act->listptr.buf0 = data;
-	if(_copy_ == act->type)act->listptr.buf0 = memorycreate(49, 0);
+	if(_copy_ == act->type)act->listptr.buf0 = memoryalloc(49, 0);
 
 	for(y=0;y<7;y++)
 	{

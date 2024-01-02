@@ -111,7 +111,7 @@ int lookat_delete(_obj* win)
 }
 int lookat_create(_obj* act, void* flag)
 {
-	struct privdata* own = act->priv_ptr = memorycreate(0x1000, 0);
+	struct privdata* own = act->priv_ptr = memoryalloc(0x1000, 0);
 	own->self = 0;
 	own->selfgeom = 0;
 	own->that = 0;

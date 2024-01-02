@@ -646,7 +646,7 @@ int fatclient_create(_obj* art)
 {
 	say("@fatclient_create\n");
 
-	struct perfs* per = memorycreate(0x200000, 0);
+	struct perfs* per = memoryalloc(0x200000, 0);
 	art->priv_ptr = per;
 
 	art->onreader = (void*)fatclient_reader;

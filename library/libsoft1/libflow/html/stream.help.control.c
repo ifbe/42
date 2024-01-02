@@ -46,7 +46,7 @@ int control_create(_obj* ele, u8* url)
 {
 	say("@control_create\n");
 /*
-	ele->buf0 = memorycreate(0x1000, 0);
+	ele->buf0 = memoryalloc(0x1000, 0);
 	ele->len = openreadclose(url, 0, ele->buf0, 0x1000);*/
 	return 1;
 }

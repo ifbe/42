@@ -336,7 +336,7 @@ int cam3rd_delete(_obj* win)
 }
 int cam3rd_create(_obj* act, void* flag)
 {
-	struct privdata* own = act->priv_ptr = memorycreate(0x1000, 0);
+	struct privdata* own = act->priv_ptr = memoryalloc(0x1000, 0);
 	own->cam2tar[0] = 0.0;
 	own->cam2tar[1] = 7.07;
 	own->cam2tar[2] =-7.07;

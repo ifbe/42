@@ -300,7 +300,7 @@ static void dirlight_mesh_prep(struct mysrc* src)
 	vtx->vbuf_w = 6*4;
 	vtx->vbuf_h = 6;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 }
 
 
@@ -394,7 +394,7 @@ static void dirlight_create(_obj* act, void* str)
 {
 	if(0 == act)return;
 
-	struct sunbuf* sun = act->OWNBUF = memorycreate(0x10000, 0);
+	struct sunbuf* sun = act->OWNBUF = memoryalloc(0x10000, 0);
 	sun->u_rgb = 0xffff00;
 	sun->rgb[0] = ((sun->u_rgb >>16) & 0xff) / 255.0;
 	sun->rgb[1] = ((sun->u_rgb >> 8) & 0xff) / 255.0;

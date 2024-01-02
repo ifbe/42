@@ -44,7 +44,7 @@ static void arm64_delete(_obj* act, u8* buf)
 static void arm64_create(_obj* act, void* arg, int argc, u8** argv)
 {
 	//alloc 64m
-	struct cpu* cpu = act->listptr.buf0 = memorycreate(0x100000, 0);
+	struct cpu* cpu = act->listptr.buf0 = memoryalloc(0x100000, 0);
 	if(0 == cpu)return;
 
 	//default value

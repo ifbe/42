@@ -169,7 +169,7 @@ static void projector_lit_prepare(struct gl41data* data)
 	data->dst.texname[1] = "prjtormap";
 
 	data->src.tex[1].fmt = hex32('r','g','b','a');
-	data->src.tex[1].data = memorycreate(2048*2048*4, 0);
+	data->src.tex[1].data = memoryalloc(2048*2048*4, 0);
 	loadtexfromfile(&data->src.tex[1], "datafile/jpg/cartoon.jpg");
 	data->src.tex_enq[1] = 42;
 }
@@ -298,7 +298,7 @@ static void projector_mesh_prepare(struct mysrc* src)
 	vtx->vbuf_w = 6*4;
 	vtx->vbuf_h = 6;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 }
 
 
@@ -391,7 +391,7 @@ static void projector_create(_obj* act, void* str)
 	struct sunbuf* sun;
 	if(0 == act)return;
 
-	sun = act->OWNBUF = memorycreate(0x10000, 0);
+	sun = act->OWNBUF = memoryalloc(0x10000, 0);
 	sun->rgb[0] = 1.0;
 	sun->rgb[1] = 1.0;
 	sun->rgb[2] = 1.0;

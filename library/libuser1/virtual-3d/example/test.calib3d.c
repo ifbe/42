@@ -225,11 +225,11 @@ static void calib3d_delete(_obj* act)
 
 	struct perobj* perobj = (void*)act->priv_256b;
 	if(perobj->ibuf){
-		memorydelete(perobj->ibuf);
+		memoryfree(perobj->ibuf);
 		perobj->ibuf = 0;
 	}
 	if(perobj->vbuf){
-		memorydelete(perobj->vbuf);
+		memoryfree(perobj->vbuf);
 		perobj->vbuf = 0;
 	}
 }
@@ -247,14 +247,14 @@ static void calib3d_create(_obj* act, void* str)
 
 	perobj->vlen = 0;
 
-	ff = perobj->vbuf = memorycreate(4*3*0x10000, 0);
+	ff = perobj->vbuf = memoryalloc(4*3*0x10000, 0);
 	for(j=0;j<0x10000;j++){
 		ff[j*3 + 0] = 0.0;
 		ff[j*3 + 1] = 0.0;
 		ff[j*3 + 2] = j;
 	}
 
-	uu = perobj->ibuf = memorycreate(2*2*0x10000, 0);
+	uu = perobj->ibuf = memoryalloc(2*2*0x10000, 0);
 	for(j=0;j<0xffff;j++){
 		uu[j*2 + 0] = j;
 		uu[j*2 + 1] = j+1;

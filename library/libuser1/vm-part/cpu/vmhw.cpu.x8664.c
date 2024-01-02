@@ -18,7 +18,7 @@ static void x8664_delete(_obj* act, u8* buf)
 static void x8664_create(_obj* act, void* arg, int argc, u8** argv)
 {
 	//alloc 64m
-	act->listptr.buf0 = memorycreate(0x100000, 0);
+	act->listptr.buf0 = memoryalloc(0x100000, 0);
 	if(0 == act->listptr.buf0)return;
 
 	//read cpustat from file

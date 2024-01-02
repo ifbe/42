@@ -63,14 +63,14 @@ static void sokoban_delete(_obj* act)
 {
 	if(0 == act)return;
 	if(act->listptr.buf0){
-		memorydelete(act->listptr.buf0);
+		memoryfree(act->listptr.buf0);
 		act->listptr.buf0 = 0;
 	}
 }
 static void sokoban_create(_obj* act)
 {
 	if(0 == act)return;
-	//act->buf = memorycreate(WIDTH*HEIGHT, 0);
+	//act->buf = memoryalloc(WIDTH*HEIGHT, 0);
 }
 
 

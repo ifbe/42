@@ -43,7 +43,7 @@ static void picture_ctxforwnd(struct gl41data* data, char* str, float* angle)
 	//texture
 	struct texture* tex = data->src.tex;
 	tex->fmt = hex32('r','g','b','a');
-	tex->data = memorycreate(2048*2048*4, 0);
+	tex->data = memoryalloc(2048*2048*4, 0);
 	loadtexfromfile(tex, str);
 
 	data->dst.texname[0] = "tex0";
@@ -58,7 +58,7 @@ static void picture_ctxforwnd(struct gl41data* data, char* str, float* angle)
 	vtx->vbuf_w = 6*4;
 	vtx->vbuf_h = 6;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 
 	data->src.vbuf_enq = 42;
 }
@@ -194,14 +194,14 @@ static void picture_modify(_obj* act)
 static void picture_delete(_obj* act)
 {
 	if(0 == act)return;
-	memorydelete(act->CTXBUF);
+	memoryfree(act->CTXBUF);
 	act->CTXBUF = 0;
 }
 static void picture_create(_obj* act, void* str)
 {
 	if(0 == act)return;
 
-	act->CTXBUF = memorycreate(0x1000, 0);
+	act->CTXBUF = memoryalloc(0x1000, 0);
 	if(0 == act->CTXBUF)return;
 
 	if(0 == str)str = "datafile/jpg/cartoon.jpg";

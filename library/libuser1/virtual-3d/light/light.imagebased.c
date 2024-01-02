@@ -41,7 +41,7 @@ void imagelight_litforwnd(struct gl41data* data, char* str)
 	//texture
 	data->dst.texname[0] = "iblenvmap";
 	data->src.tex[0].fmt = hex32('r','g','b','a');
-	data->src.tex[0].data = memorycreate(2048*2048*4, 0);
+	data->src.tex[0].data = memoryalloc(2048*2048*4, 0);
 	loadtexfromfile(&data->src.tex[0], str);
 	data->src.tex_enq[0] = 42;
 	//say("w=%d,h=%d\n",data->src.tex[0].w, data->src.tex[0].h);
@@ -72,13 +72,13 @@ void imagelight_ctxforwnd(struct mysrc* src, char* str)
 	vtx->vbuf_w = 4*6;
 	vtx->vbuf_h = accx*accy+(accx-1)*2;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 
 	vtx->ibuf_fmt = 0x222;
 	vtx->ibuf_w = 2*3;
 	vtx->ibuf_h = accy*(accx-1)*2;
 	vtx->ibuf_len = (vtx->ibuf_w) * (vtx->ibuf_h);
-	vtx->ibuf = memorycreate(vtx->ibuf_len, 0);
+	vtx->ibuf = memoryalloc(vtx->ibuf_len, 0);
 
 	src->vbuf_enq = 0;
 	src->ibuf_enq = 0;
@@ -255,7 +255,7 @@ static void imagelight_create(_obj* act, void* str)
 	void* buf;
 	if(0 == act)return;
 
-	buf = memorycreate(0x1000, 0);
+	buf = memoryalloc(0x1000, 0);
 	if(0 == buf)return;
 
 	act->CTXBUF = buf;

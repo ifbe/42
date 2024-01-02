@@ -760,15 +760,15 @@ void fullwindow_create(_obj* ogl, void* arg, int argc, char** argv)
 	//ogl->vfmt= _gbuf_;
 
 	struct gl41world* world = ogl->gl41list.world;
-	world[0].camera = memorycreate(0x10000, 0);
-	world[0].light  = memorycreate(0x10000, 0);
-	world[0].solid  = memorycreate(0x10000, 0);
-	world[0].opaque = memorycreate(0x10000, 0);
+	world[0].camera = memoryalloc(0x10000, 0);
+	world[0].light  = memoryalloc(0x10000, 0);
+	world[0].solid  = memoryalloc(0x10000, 0);
+	world[0].opaque = memoryalloc(0x10000, 0);
 
 	if((_gbuf_ == ogl->vfmt)|(_ppll_ == ogl->vfmt)){
-		world[1].camera = memorycreate(0x10000, 0);
-		world[1].light  = memorycreate(0x10000, 0);
-		world[1].solid  = memorycreate(0x10000, 0);
-		world[1].opaque = memorycreate(0x10000, 0);
+		world[1].camera = memoryalloc(0x10000, 0);
+		world[1].light  = memoryalloc(0x10000, 0);
+		world[1].solid  = memoryalloc(0x10000, 0);
+		world[1].opaque = memoryalloc(0x10000, 0);
 	}
 }

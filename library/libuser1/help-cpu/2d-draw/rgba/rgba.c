@@ -18,7 +18,7 @@ void pixel_cleardepth(_obj* wnd)
 {
 	int x,y,w,h,stride;
 	float* depth = wnd->rgbanode.depthbuf;
-	if(0 == depth){depth = wnd->rgbanode.depthbuf = memorycreate(2048*2048*4, 0);}
+	if(0 == depth){depth = wnd->rgbanode.depthbuf = memoryalloc(2048*2048*4, 0);}
 
 	stride = wnd->whdf.fbwidth>>2;
 	for(y=0;y<wnd->whdf.height;y++){

@@ -183,12 +183,12 @@ static void qrcode_modify(_obj* act)
 static void qrcode_delete(_obj* act)
 {
 	if(0 == act)return;
-	if(act->DATBUF)memorydelete(act->DATBUF);
+	if(act->DATBUF)memoryfree(act->DATBUF);
 }
 static void qrcode_create(_obj* act)
 {
 	if(0 == act)return;
-	act->DATBUF = memorycreate(49*49, 0);
+	act->DATBUF = memoryalloc(49*49, 0);
 	act->DATLEN = 49;
 	qrcode_generate("haha", act->DATBUF, act->DATLEN);
 }

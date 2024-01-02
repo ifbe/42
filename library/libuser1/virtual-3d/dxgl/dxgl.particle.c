@@ -78,7 +78,7 @@ void particle_ctxforwnd(struct gl41data* data, float* vbuf)
 
 	//argument
 	dst->arg[0].name = "objmat";
-	dst->arg[0].data = memorycreate(4*4*4, 0);
+	dst->arg[0].data = memoryalloc(4*4*4, 0);
 	dst->arg[0].fmt = 'm';
 }
 
@@ -243,7 +243,7 @@ static void particle_create(_obj* act)
 	if(0 == act)return;
 
 	int j;
-	float* vbuf = act->F32BUF = memorycreate(4*9 * COUNT, 0);
+	float* vbuf = act->F32BUF = memoryalloc(4*9 * COUNT, 0);
 	if(0 == vbuf)return;
 	for(j=0;j<COUNT;j++)
 	{
@@ -263,7 +263,7 @@ static void particle_create(_obj* act)
 		vbuf[9*j + 8] = (random_read()%8192)/8192.0;
 	}
 
-	struct gl41data* data = act->CTXBUF = memorycreate(0x1000, 0);
+	struct gl41data* data = act->CTXBUF = memoryalloc(0x1000, 0);
 	particle_ctxforwnd(data, vbuf);
 }
 

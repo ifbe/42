@@ -14,9 +14,9 @@ int copypath(u8* path, u8* data);
 void gbuffer_ctxforwnd(struct mysrc* src, char* vs, char* fs)
 {
 	//shader
-	src->vs = memorycreate(0x1000, 0);
+	src->vs = memoryalloc(0x1000, 0);
 	loadglslfromfile(vs, 0, src->vs, 0x1000);
-	src->fs = memorycreate(0x1000, 0);
+	src->fs = memoryalloc(0x1000, 0);
 	loadglslfromfile(fs, 0, src->fs, 0x1000);
 	src->shader_enq = 42;
 
@@ -29,7 +29,7 @@ void gbuffer_ctxforwnd(struct mysrc* src, char* vs, char* fs)
 	vtx->vbuf_w = 6*4;
 	vtx->vbuf_h = 6;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 	src->vbuf_enq = 42;
 }
 static void gbuffer_readfrom_gbuffer(_obj* ent, struct gl41data* data)
@@ -202,7 +202,7 @@ static void gbuffer_create(_obj* act, void* arg, int argc, u8** argv)
 	if(0 == vs)vs = "datafile/shader/deferred/vert.glsl";
 	if(0 == fs)fs = "datafile/shader/deferred/frag.glsl";
 
-	act->CTXBUF = memorycreate(0x1000, 0);
+	act->CTXBUF = memoryalloc(0x1000, 0);
 	gbuffer_ctxforwnd(act->CTXBUF, vs, fs);
 }
 

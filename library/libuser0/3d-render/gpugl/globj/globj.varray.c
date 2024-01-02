@@ -147,9 +147,9 @@ void coopwindow_create(_obj* win)
 	int j;
 	u8* buf;
 
-	win->gl_solid = buf = memorycreate(0x10000);
+	win->gl_solid = buf = memoryalloc(0x10000);
 	for(j=0;j<0x10000;j++)buf[j] = 0;
 
-	win->gl_opaque = buf = memorycreate(0x10000);
+	win->gl_opaque = buf = memoryalloc(0x10000);
 	for(j=0;j<0x10000;j++)buf[j] = 0;
 }*/

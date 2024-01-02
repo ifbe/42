@@ -303,7 +303,7 @@ static void calculator_create(_obj* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->listptr.buf0 = buffer;
-	if(_copy_ == act->type)act->listptr.buf0 = memorycreate(128, 0);
+	if(_copy_ == act->type)act->listptr.buf0 = memoryalloc(128, 0);
 
 	buffer[0] = '1';
 	buffer[1] = '+';

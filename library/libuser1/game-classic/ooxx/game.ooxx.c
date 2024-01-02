@@ -230,7 +230,7 @@ static void ooxx_delete(_obj* act)
 {
 	if(0 == act)return;
 	if(act->listptr.buf0){
-		memorydelete(act->listptr.buf0);
+		memoryfree(act->listptr.buf0);
 		act->listptr.buf0 = 0;
 	}
 }
@@ -238,7 +238,7 @@ static void ooxx_create(_obj* act)
 {
 	int x,y;
 	if(0 == act)return;
-	act->listptr.buf0 = memorycreate(16, 0);
+	act->listptr.buf0 = memoryalloc(16, 0);
 
 	turn = 0;
 	for(y=0;y<3;y++){

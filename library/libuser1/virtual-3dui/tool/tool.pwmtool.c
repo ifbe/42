@@ -137,14 +137,14 @@ static void pwmtool_delete(_obj* act)
 {
 	if(0 == act)return;
 	if(act->listptr.buf0){
-		//memorydelete(act->buf);
+		//memoryfree(act->buf);
 		act->listptr.buf0 = 0;
 	}
 }
 static void pwmtool_create(_obj* act)
 {
 	if(0 == act)return;
-	//act->buf = memorycreate();
+	//act->buf = memoryalloc();
 }
 
 

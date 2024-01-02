@@ -240,14 +240,14 @@ static void robodog_search(_obj* act)
 static void robodog_delete(_obj* act)
 {
 	if(0 == act)return;
-	//if(_copy_ == act->type)memorydelete(act->buf);
+	//if(_copy_ == act->type)memoryfree(act->buf);
 }
 static void robodog_create(_obj* act, u8* arg, int argc, u8** argv)
 {
 	float* f;
 	if(0 == act)return;
 
-	f = act->listptr.buf0 = memorycreate(0x1000, 0);
+	f = act->listptr.buf0 = memoryalloc(0x1000, 0);
 	f[ 0] = 0.0;
 	f[ 1] = PI/12;
 	f[ 2] = PI*0.7;

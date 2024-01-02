@@ -14,7 +14,7 @@ struct own{
 };
 static void equirect_prep(struct own* my, char* str)
 {
-	my->tex.data = memorycreate(4096*2048*4, 4);
+	my->tex.data = memoryalloc(4096*2048*4, 4);
 	if(0 == my->tex.data)return;
 
 	int j = loadtexfromfile(&my->tex, str);
@@ -96,14 +96,14 @@ static void equirect_dx11prep(struct own* my)
 	vtx->vbuf_w = 4*6;
 	vtx->vbuf_h = accx*accy+(accx-1)*2;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 	src->vbuf_enq = 0;
 
 	vtx->ibuf_fmt = 0x222;
 	vtx->ibuf_w = 2*3;
 	vtx->ibuf_h = accy*(accx-1)*2;
 	vtx->ibuf_len = (vtx->ibuf_w) * (vtx->ibuf_h);
-	vtx->ibuf = memorycreate(vtx->ibuf_len, 0);
+	vtx->ibuf = memoryalloc(vtx->ibuf_len, 0);
 	src->ibuf_enq = 0;
 }
 static void equirect_dx11draw(
@@ -183,14 +183,14 @@ static void equirect_gl41prep(struct own* my)
 	vtx->vbuf_w = 4*6;
 	vtx->vbuf_h = accx*accy+(accx-1)*2;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 	data->src.vbuf_enq = 0;
 
 	vtx->ibuf_fmt = 0x222;
 	vtx->ibuf_w = 2*3;
 	vtx->ibuf_h = accy*(accx-1)*2;
 	vtx->ibuf_len = (vtx->ibuf_w) * (vtx->ibuf_h);
-	vtx->ibuf = memorycreate(vtx->ibuf_len, 0);
+	vtx->ibuf = memoryalloc(vtx->ibuf_len, 0);
 	data->src.ibuf_enq = 0;
 }
 static void equirect_gl41draw(
@@ -375,7 +375,7 @@ static void equirect_create(_obj* act, void* str)
 {
 	if(0 == act)return;
 
-	struct own* my = act->OWNBUF = memorycreate(0x1000, 0);
+	struct own* my = act->OWNBUF = memoryalloc(0x1000, 0);
 	if(0 == my)return;
 
 	if(0 == str)str = "datafile/jpg/texball-earth.jpg";

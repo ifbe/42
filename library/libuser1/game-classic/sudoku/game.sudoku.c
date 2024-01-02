@@ -333,7 +333,7 @@ static void sudoku_create(_obj* act, void* str)
 	if(0 == act)return;
 
 	//malloc
-	buf = act->listptr.buf0 = memorycreate(81, 0);
+	buf = act->listptr.buf0 = memoryalloc(81, 0);
 	if(0 == buf)return;
 
 	//read

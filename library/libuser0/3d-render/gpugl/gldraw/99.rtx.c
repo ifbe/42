@@ -78,6 +78,6 @@ void cmdqwindow_create(_obj* ogl)
 	ogl->hfmt = _gl41cmdq_;
 	ogl->vfmt = _gl41cmdq_;
 
-	ogl->gl41cmdq.data = memorycreate(0x100000, 0);
-	ogl->gl41cmdq.code = memorycreate(0x100000, 0);
+	ogl->gl41cmdq.data = memoryalloc(0x100000, 0);
+	ogl->gl41cmdq.code = memoryalloc(0x100000, 0);
 }

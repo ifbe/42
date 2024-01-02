@@ -263,9 +263,9 @@ int dx11data_delete(_obj* win)
 }
 int dx11data_create(_obj* act, void* flag)
 {
-	act->dx11list.world[0].camera = memorycreate(0x10000, 0);
-	act->dx11list.world[0].light  = memorycreate(0x10000, 0);
-	act->dx11list.world[0].solid  = memorycreate(0x10000, 0);
-	act->dx11list.world[0].opaque = memorycreate(0x10000, 0);
+	act->dx11list.world[0].camera = memoryalloc(0x10000, 0);
+	act->dx11list.world[0].light  = memoryalloc(0x10000, 0);
+	act->dx11list.world[0].solid  = memoryalloc(0x10000, 0);
+	act->dx11list.world[0].opaque = memoryalloc(0x10000, 0);
 	return 0;
 }

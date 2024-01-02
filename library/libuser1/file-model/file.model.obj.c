@@ -96,7 +96,7 @@ static u32 obj3d_fragment(vec4 out[], vec4 in[], struct privdata* own)
 static void obj3d_cpuctx_prep(struct privdata* own, char* albedo, char* matter, char* normal, void* arg)
 {
 	if(0 == arg)arg = "datafile/obj/cube.obj";
-	own->objbuf = memorycreate(0x200000, 0);
+	own->objbuf = memoryalloc(0x200000, 0);
 	own->objlen = openreadclose(arg, 0, own->objbuf, 0x200000);
 }
 static void obj3d_gl41_prep(struct privdata* own, char* albedo, char* matter, char* normal, char* vs, char* fs)
@@ -107,9 +107,9 @@ static void obj3d_gl41_prep(struct privdata* own, char* albedo, char* matter, ch
 //say("%s\n%s\n%s\n%s\n%s\n",albedo,matter,normal,vs,fs);
 
 	//shader
-	src->vs = memorycreate(0x10000, 0);
+	src->vs = memoryalloc(0x10000, 0);
 	loadglslfromfile(vs, 0, src->vs, 0x10000);
-	src->fs = memorycreate(0x10000, 0);
+	src->fs = memoryalloc(0x10000, 0);
 	loadglslfromfile(fs, 0, src->fs, 0x10000);
 	src->shader_enq = 42;
 
@@ -121,14 +121,14 @@ static void obj3d_gl41_prep(struct privdata* own, char* albedo, char* matter, ch
 	//albedo
 	dst->texname[0] = "albedomap";
 	src->tex[0].fmt = hex32('r','g','b','a');
-	src->tex[0].data = memorycreate(2048*2048*4, 0);
+	src->tex[0].data = memoryalloc(2048*2048*4, 0);
 	loadtexfromfile(&src->tex[0], albedo);
 	src->tex_enq[0] = 42;
 
 	//matter
 	dst->texname[1] = "mattermap";
 	src->tex[1].fmt = hex32('r','g','b','a');
-	src->tex[1].data = memorycreate(2048*2048*4, 0);
+	src->tex[1].data = memoryalloc(2048*2048*4, 0);
 	if(matter)loadtexfromfile(&src->tex[1], matter);
 	else loadtexfromcolor(&src->tex[1], 0xff8001, 2048, 2048);
 	src->tex_enq[1] = 42;
@@ -136,7 +136,7 @@ static void obj3d_gl41_prep(struct privdata* own, char* albedo, char* matter, ch
 	//normal
 	dst->texname[2] = "normalmap";
 	src->tex[2].fmt = hex32('r','g','b','a');
-	src->tex[2].data = memorycreate(2048*2048*4, 0);
+	src->tex[2].data = memoryalloc(2048*2048*4, 0);
 	if(normal)loadtexfromfile(&src->tex[2], normal);
 	else loadtexfromcolor(&src->tex[2], 0x0000ff, 2048, 2048);
 	src->tex_enq[2] = 42;
@@ -349,7 +349,7 @@ static void obj3d_attach(struct halfrel* self, struct halfrel* peer)
 	//vertex
 	struct mysrc* src = &own->gl41.src;
 	src->vtx[0].vbuf_len = 0x200000;
-	src->vtx[0].vbuf = memorycreate(src->vtx[0].vbuf_len, 0);
+	src->vtx[0].vbuf = memoryalloc(src->vtx[0].vbuf_len, 0);
 	src->vtx[0].vbuf_fmt = vbuffmt_3333;
 	src->vtx[0].vbuf_w = 4*12;
 	parsevertfromobj(&src->vtx[0], &pin->fs, own->objbuf, own->objlen, own->objbuf+0x100000, 0x100000);
@@ -374,7 +374,7 @@ static void obj3d_create(_obj* act, void* arg, int argc, u8** argv)
 	int j;
 	if(0 == act)return;
 
-	struct privdata* own = act->OWNBUF = memorycreate(0x10000, 0);
+	struct privdata* own = act->OWNBUF = memoryalloc(0x10000, 0);
 	if(0 == own)return;
 
 	//char* dxvs = 0;

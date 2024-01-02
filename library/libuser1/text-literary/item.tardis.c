@@ -136,13 +136,13 @@ static void tardis_modify(_obj* act)
 static void tardis_delete(_obj* act)
 {
 	if(0 == act)return;
-	//if(_copy_ == act->type)memorydelete(act->buf);
+	//if(_copy_ == act->type)memoryfree(act->buf);
 }
 static void tardis_create(_obj* act, void* arg)
 {
 	if(0 == act)return;
 
-	act->listptr.buf0 = memorycreate(0x100000, 0);
+	act->listptr.buf0 = memoryalloc(0x100000, 0);
 	if(0 == act->listptr.buf0)return;
 
 	if(0 == arg)arg = "datafile/wav/tardis.wav";

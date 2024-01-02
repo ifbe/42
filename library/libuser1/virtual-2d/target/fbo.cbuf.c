@@ -54,7 +54,7 @@ void cbuffer_ctxforwnd(struct mysrc* src)
 	vtx->vbuf_w = 6*4;
 	vtx->vbuf_h = 6;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 	src->vbuf_enq = 42;
 }
 static void cbuffer_readfrom_cbuffer(_obj* ent, struct gl41data* data)
@@ -168,7 +168,7 @@ static void cbuffer_delete(_obj* act)
 }
 static void cbuffer_create(_obj* act, void* arg, int argc, u8** argv)
 {
-	act->CTXBUF = memorycreate(0x1000, 0);
+	act->CTXBUF = memoryalloc(0x1000, 0);
 	cbuffer_ctxforwnd(act->CTXBUF);
 }
 

@@ -148,8 +148,8 @@ u64 dateread();
 int threaddelete(u64);
 u64 threadcreate(void*, void*);
 //
-int memorydelete(void*);
-void* memorycreate(int, int);
+int memoryfree(void*);
+void* memoryalloc(int, int);
 //
 void* eventread();
 void* eventwrite(u64,u64,u64,u64);

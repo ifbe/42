@@ -278,7 +278,7 @@ void initcpu_bsp(struct item* p)
 
 //----------------prep descs----------------
 	//paging mapping: 1T space=[0,0x100,0000,0000)
-	u8* pdir = memorycreate(0x400000, 0x100000);
+	u8* pdir = memoryalloc(0x400000, 0x100000);
 	initpaging((void*)CR3BUF, 0x10000, pdir, 0x400000);
 
 	//gdt
@@ -487,7 +487,7 @@ failreturn:
 
 givecmdtoap:
 	*(volatile u64*)FromBsp_rip = (u64)trampoline_appcpu;
-	*(volatile u64*)FromBsp_rsp = (u64)memorycreate(0x100000, 0) + 0x100000 - 0x100;
+	*(volatile u64*)FromBsp_rsp = (u64)memoryalloc(0x100000, 0) + 0x100000 - 0x100;
 	say("rip=%llx,rsp=%llx\n", *(volatile u64*)FromBsp_rip, *(volatile u64*)FromBsp_rsp);
 	*(volatile u64*)BspToAp_command = hex32('g','o','g','o');		//must after rip & rsp
 

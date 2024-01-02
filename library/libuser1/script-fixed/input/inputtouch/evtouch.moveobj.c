@@ -99,6 +99,6 @@ int touchobj_delete(_obj* win)
 }
 int touchobj_create(_obj* act, void* flag)
 {
-	act->priv_ptr = memorycreate(0x1000, 0);
+	act->priv_ptr = memoryalloc(0x1000, 0);
 	return 0;
 }

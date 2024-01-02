@@ -799,7 +799,7 @@ void ahci_mmioinit(struct item* dev, struct HBA_MEM* abar)
 
 	//clear home
 	int j,k;
-	u8* ptr = memorycreate(0x100000, 0);
+	u8* ptr = memoryalloc(0x100000, 0);
 	for(j=0;j<0x100000;j++)ptr[j] = 0;
 
 	ahci_print("ghc=%x\n", abar->ghc);

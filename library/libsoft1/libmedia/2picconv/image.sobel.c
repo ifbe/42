@@ -98,7 +98,7 @@ int sobel_give(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, void*
 	}
 	if(0 == per->dstbuf[0]){
 		per->dstlen = 4 * per->dstw * per->dsth;
-		per->dstbuf[0] = memorycreate(per->dstlen, 4);
+		per->dstbuf[0] = memoryalloc(per->dstlen, 4);
 	}
 
 	sobel_convert(buf, per->dstbuf[0]);
@@ -154,5 +154,5 @@ int sobel_free(void* obj)
 void* sobel_alloc()
 {
 	//return artery_alloc();
-	return memorycreate(sizeof(struct item), sizeof(struct item));
+	return memoryalloc(sizeof(struct item), sizeof(struct item));
 }

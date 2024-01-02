@@ -23,8 +23,8 @@ freely, subject to the following restrictions:
 		3. This notice may not be removed or altered from any source
 		distribution.
 */
-void memorydelete(void*);
-void* memorycreate(int);
+void memoryfree(void*);
+void* memoryalloc(int);
 void* memorysetup(void*,int,int);
 void* memorycopy(void*,void*,int);
 
@@ -977,7 +977,7 @@ static upng_format determine_format(upng_t* upng) {
 static void upng_free_source(upng_t* upng)
 {
 	if (upng->source.owning != 0) {
-		memorydelete((void*)upng->source.buffer);
+		memoryfree((void*)upng->source.buffer);
 	}
 
 	upng->source.buffer = 0;
@@ -1081,7 +1081,7 @@ upng_error upng_decode(upng_t* upng)
 
 	/* release old result, if any */
 	if (upng->buffer != 0) {
-		memorydelete(upng->buffer);
+		memoryfree(upng->buffer);
 		upng->buffer = 0;
 		upng->size = 0;
 	}
@@ -1131,7 +1131,7 @@ upng_error upng_decode(upng_t* upng)
 	}
 
 	/* allocate enough space for the (compressed and filtered) image data */
-	compressed = memorycreate(compressed_size);
+	compressed = memoryalloc(compressed_size);
 	if (compressed == 0) {
 		SET_ERROR(upng, UPNG_ENOMEM);
 		return upng->error;
@@ -1160,9 +1160,9 @@ upng_error upng_decode(upng_t* upng)
 
 	/* allocate space to store inflated (but still filtered) data */
 	inflated_size = ((upng->width * (upng->height * upng_get_bpp(upng) + 7)) / 8) + upng->height;
-	inflated = memorycreate(inflated_size);
+	inflated = memoryalloc(inflated_size);
 	if (inflated == 0) {
-		memorydelete(compressed);
+		memoryfree(compressed);
 		SET_ERROR(upng, UPNG_ENOMEM);
 		return upng->error;
 	}
@@ -1170,19 +1170,19 @@ upng_error upng_decode(upng_t* upng)
 	/* decompress image data */
 	error = uz_inflate(upng, inflated, inflated_size, compressed, compressed_size);
 	if (error != UPNG_EOK) {
-		memorydelete(compressed);
-		memorydelete(inflated);
+		memoryfree(compressed);
+		memoryfree(inflated);
 		return upng->error;
 	}
 
 	/* free the compressed compressed data */
-	memorydelete(compressed);
+	memoryfree(compressed);
 
 	/* allocate final image buffer */
 	upng->size = (upng->height * upng->width * upng_get_bpp(upng) + 7) / 8;
-	upng->buffer = memorycreate(upng->size);
+	upng->buffer = memoryalloc(upng->size);
 	if (upng->buffer == 0) {
-		memorydelete(inflated);
+		memoryfree(inflated);
 		upng->size = 0;
 		SET_ERROR(upng, UPNG_ENOMEM);
 		return upng->error;
@@ -1190,10 +1190,10 @@ upng_error upng_decode(upng_t* upng)
 
 	/* unfilter scanlines */
 	post_process_scanlines(upng, upng->buffer, inflated, upng);
-	memorydelete(inflated);
+	memoryfree(inflated);
 
 	if (upng->error != UPNG_EOK) {
-		memorydelete(upng->buffer);
+		memoryfree(upng->buffer);
 		upng->buffer = 0;
 		upng->size = 0;
 	} else {
@@ -1210,7 +1210,7 @@ static upng_t* upng_new(void)
 {
 	upng_t* upng;
 
-	upng = memorycreate(sizeof(upng_t));
+	upng = memoryalloc(sizeof(upng_t));
 	if (upng == 0) {
 		return 0;
 	}
@@ -1240,14 +1240,14 @@ void upng_free(upng_t* upng)
 {
 	/* deallocate image buffer */
 	if (upng->buffer != 0) {
-		memorydelete(upng->buffer);
+		memoryfree(upng->buffer);
 	}
 
 	/* deallocate source buffer, if necessary */
 	upng_free_source(upng);
 
 	/* deallocate struct itself */
-	memorydelete(upng);
+	memoryfree(upng);
 }
 
 upng_t* upng_new_from_bytes(unsigned char* buffer, unsigned long size)

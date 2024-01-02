@@ -356,7 +356,7 @@ static void codeimg_create(_obj* act)
 	if(0 == act)return;
 
 	//own
-	rgba = act->RGBABUF = memorycreate(1024*1024*4, 0);
+	rgba = act->RGBABUF = memoryalloc(1024*1024*4, 0);
 	act->whdf.width = 1024;
 	act->whdf.height = 1024;
 	for(y=0;y<1024;y++){
@@ -369,7 +369,7 @@ static void codeimg_create(_obj* act)
 	}
 
 	//gl
-	struct gl41data* data = act->GL41BUF = memorycreate(0x1000, 0);
+	struct gl41data* data = act->GL41BUF = memoryalloc(0x1000, 0);
 	if(0 == data)return;
 
 	//shader
@@ -396,7 +396,7 @@ static void codeimg_create(_obj* act)
 	vtx->vbuf_w = 6*4;
 	vtx->vbuf_h = 6;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 }
 
 

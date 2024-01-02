@@ -193,7 +193,7 @@ int nema0183client_delete(_obj* ele)
 }
 int nema0183client_create(_obj* ele, u8* arg)
 {
-	struct str* tmp = ele->priv_ptr = memorycreate(0x1000, 0);
+	struct str* tmp = ele->priv_ptr = memoryalloc(0x1000, 0);
 	return 0;
 }
 

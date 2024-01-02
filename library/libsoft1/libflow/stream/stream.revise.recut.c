@@ -79,7 +79,7 @@ int recut_create(_obj* ele, void* arg, int argc, u8** argv)
 	perobj->max = 640*480*2;
 	if(arg)decstr2u64(arg, &perobj->max);
 
-	perobj->buf = memorycreate(perobj->max*2, 0);
+	perobj->buf = memoryalloc(perobj->max*2, 0);
 	perobj->enq = 0;
 	perobj->deq = 0;
 	return 1;
