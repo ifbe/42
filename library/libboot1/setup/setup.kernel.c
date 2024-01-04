@@ -254,7 +254,7 @@ int kernel_create(struct item* wrk, void* arg, int argc, u8** argv)
 	inithardware();
 
 	//
-	_obj* wnd = wrk->priv_ptr = supply_prep(0, _wnd_, 0, 0);
+	_obj* wnd = wrk->priv_ptr = supply_alloc_prep(0, _wnd_, 0, 0);
 	supply_create(wnd, 0, 0, 0);
 	kernel_wndctx(wnd);
 

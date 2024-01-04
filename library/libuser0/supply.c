@@ -115,24 +115,6 @@ void supply_exit()
 
 
 
-void* supply_alloc()
-{
-	int j;
-	_obj* obj;
-	for(j=0;j<0x100;j++)
-	{
-		if(0 == supply[j].type)break;
-	}
-	if(j >= 0x100)return 0;
-
-	obj = &supply[j];
-	obj->irel0 = obj->ireln = 0;
-	obj->orel0 = obj->oreln = 0;
-	return obj;
-}
-void supply_recycle()
-{
-}
 void* pinid_alloc()
 {
 #define maxlen 0x200
@@ -152,9 +134,27 @@ void pinid_recycle()
 
 
 
-void* supply_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt)
+void supply_recycle()
 {
-	//say("supply_prep:%.8s\n",&type);
+}
+void* supply_alloc()
+{
+	int j;
+	_obj* obj;
+	for(j=0;j<0x100;j++)
+	{
+		if(0 == supply[j].type)break;
+	}
+	if(j >= 0x100)return 0;
+
+	obj = &supply[j];
+	obj->irel0 = obj->ireln = 0;
+	obj->orel0 = obj->oreln = 0;
+	return obj;
+}
+void* supply_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt)
+{
+	//say("supply_alloc_prep:%.8s\n",&type);
 	int j = 0;
 	_obj* obj;
 

@@ -5,6 +5,7 @@ CF="-c -O2 -fno-stack-protector -Wno-address-of-packed-member -I../lib1"
 all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	make -s exe
 	make -s lib
+	make -s dylib
 	cp a.out ../..
 .PHONY:libboot0
 libboot0:
@@ -46,12 +47,16 @@ lib:
 	libsoft0/*.o libsoft1/*.o \
 	libuser0/*.o libuser1/*.o 2>/dev/null
 dylib:
-	libtool -dynamic -macosx_version_min 11.0 -o 42.dylib \
-	$(library)/libboot0/*.o $(library)/libboot1/*.o \
-	$(library)/libhard0/*.o $(library)/libhard1/*.o \
-	$(library)/libsoft0/*.o $(library)/libsoft1/*.o \
-	$(library)/libuser0/*.o $(library)/libuser1/*.o \
-	-lGLEW -lglfw -lc -lm -framework OpenGL -framework AudioToolbox
+	clang -dynamiclib -o 42.dylib \
+	-current_version 1.0 -compatibility_version 1.0 -fvisibility=hidden \
+	-lGLEW -lglfw -framework OpenGL \
+	libboot0/*.o libboot1/*.o \
+	libhard0/*.o libhard1/*.o \
+	libsoft0/*.o libsoft1/*.o \
+	libuser0/*.o libuser1/*.o \
+	-framework AVFoundation -framework CoreVideo -framework CoreMedia \
+	-framework AudioToolbox \
+	-framework Foundation -lm
 exe:
 	clang \
 	libboot0/*.o libboot1/*.o \

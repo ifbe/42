@@ -316,6 +316,8 @@ void windowopen_root(_obj* w)
 	//initshader(w);
 	//inittexture(w);
 	//initvertex(w);
+
+	glfwPollEvents();		//window will show after this func
 }
 void windowopen_coop(_obj* w, _obj* r)
 {

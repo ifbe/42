@@ -557,7 +557,7 @@ int entity_detach(struct halfrel* self, struct halfrel* peer);
 int entity_takeby(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
 int entity_giveby(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
 //
-void* supply_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt);
+void* supply_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt);
 int supply_create(_obj*, void* addr, int argc, u8** argv);
 int supply_delete(_obj*);
 int supply_reader(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
