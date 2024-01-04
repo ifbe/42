@@ -42,7 +42,11 @@ int str2arg(u8* buf, int len, u8* tmp, int cnt, u8** argv, int max)
 "card=wlan0" -> "card" , "wlan0"
 "user=name" -> "user" , "name"
 */
-int buf2optval(u8* buf, int len, u8** type, u8** name)
+int buf2keyval(
+	u8* buf, int len,
+	u8* cutstr, u8 cutchr,
+	u8** key, int* keylen,
+	u8** val, int* vallen)
 {
 	int j;
 	for(j=0;j<len;j++)
@@ -53,15 +57,15 @@ int buf2optval(u8* buf, int len, u8** type, u8** name)
 
 	if( buf[j] != '=' )
 	{
-		*type = 0;
-		*name = 0;
+		*key = 0;
+		*val = 0;
 	}
 	else
 	{
 		buf[j]=0;
 
-		*type = buf;
-		*name = buf+j+1;
+		*key = buf;
+		*val = buf+j+1;
 	}
 	return j;
 }

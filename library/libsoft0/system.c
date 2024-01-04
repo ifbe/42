@@ -58,17 +58,20 @@ static int ppplen = 0;
 
 
 
+#define maxitem (0x100000/sizeof(struct item))
+//#define maxfoot 
 void system_init(u8* addr)
 {
 	say("[8,a):system initing\n");
 
 	int j;
-	obj = (void*)(addr+0x000000);
-	ppp = (void*)(addr+0x100000);
-
-#define max (0x100000/sizeof(struct item))
 	for(j=0;j<0x200000;j++)addr[j]=0;
-	for(j=0;j<max;j++)obj[j].tier = _sys_;
+
+	obj = (void*)(addr+0x000000);
+	objlen = maxitem-1;
+	for(j=0;j<maxitem;j++)obj[j].tier = _sys_;
+
+	ppp = (void*)(addr+0x100000);
 
 	initrandom(addr);
 	initsignal(addr);
@@ -96,17 +99,22 @@ void system_exit()
 
 	say("[8,a):system exited\n");
 }
-void* system_alloc()
-{
-	void* addr = 0;
-	if(1){		//windows uses this function
-		addr = &obj[objlen];
-		objlen += 1;
-	}
-	return addr;
-}
+
+
+
+
 void system_recycle()
 {
+}
+void* system_alloc()
+{
+	void* addr = &obj[objlen];
+	objlen -= 1;
+	return addr;
+}
+void* system_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt)
+{
+	return 0;
 }
 
 

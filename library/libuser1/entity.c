@@ -263,17 +263,23 @@ static _obj* entity = 0;
 static int actlen = 0;
 static struct style* style = 0;
 static int stylen = 0;
+
+
+
+
+#define maxsz (0x100000/sizeof(_obj))
 void entity_init(u8* addr)
 {
 	say("[e,f):entity initing\n");
 
 	int j;
-	entity = (void*)(addr+0x000000);
-	style = (void*)(addr+0x100000);
-
-#define maxsz (0x100000/sizeof(_obj))
 	for(j=0;j<0x200000;j++)addr[j] = 0;
+
+	entity = (void*)(addr+0x000000);
+	actlen = maxsz-1;
 	for(j=0;j<maxsz;j++)entity[j].tier = _ent_;
+
+	style = (void*)(addr+0x100000);
 
 	formem_init(addr);
 	forcpu_init(addr);
@@ -298,21 +304,6 @@ void entity_exit()
 
 	say("[e,f):entity exited\n");
 }
-void* entity_alloc()
-{
-	int j,max;
-	_obj* act;
-
-	max = 0x100000 / sizeof(_obj);
-	for(j=0;j<max;j++){
-		act = &entity[j];
-		if(0 == act->hfmt)return act;
-	}
-	return 0;
-}
-void entity_recycle()
-{
-}
 
 
 
@@ -336,37 +327,25 @@ void style_recycle()
 
 
 
-/*
-void entityinput_touch(_obj* win, struct event* ev)
+void entity_recycle()
 {
-	int x,y,z,btn;
-	if('p' != (ev->what & 0xff))return;
+}
+void* entity_alloc()
+{
+	int j,max;
+	_obj* act;
 
-	x = (ev->why)&0xffff;
-	y = ((ev->why)>>16)&0xffff;
-	z = ((ev->why)>>32)&0xffff;
-	btn = ((ev->why)>>48)&0xffff;
-
-	if('l' == btn)btn = 10;
-	else if('r' == btn)btn = 11;
-	else if(10 < btn)return;
-
-	if(hex32('p','@',0,0) == ev->what)
-	{
-		win->touch[btn].xn = x;
-		win->touch[btn].yn = y;
+	max = 0x100000 / sizeof(_obj);
+	for(j=0;j<max;j++){
+		act = &entity[j];
+		if(0 == act->hfmt)return act;
 	}
-	else if(hex32('p','+',0,0) == ev->what)
-	{
-		win->touch[btn].x0 = win->touch[btn].xn = x;
-		win->touch[btn].y0 = win->touch[btn].yn = y;
-		win->touch[btn].z0 = 1;
-	}
-	else if(hex32('p','-',0,0) == ev->what)
-	{
-		win->touch[btn].z0 = 0;
-	}
-}*/
+	return 0;
+}
+void* entity_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt)
+{
+	return 0;
+}
 
 
 
@@ -412,6 +391,7 @@ void* entity_createfromfile(u64 fmt, u8* arg, int argc, u8** argv)
 {
 	return 0;
 }
+
 
 
 

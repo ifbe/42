@@ -19,14 +19,21 @@ int openwriteclose(void*, int, void*, int);
 
 static struct item* ori;
 static int orilen = 0;
+
+
+
+
+#define maxitem (0x100000/sizeof(struct item))
 void origin_init(u8* addr)
 {
-	int j;
-	ori = (void*)(addr+0x000000);
+	//say("[0,2):origin initing\n");		//dont uncomment, wont output before init stdout
 
-#define max (0x100000/sizeof(struct item))
+	int j;
 	for(j=0;j<0x200000;j++)addr[j]=0;
-	for(j=0;j<max;j++)ori[j].tier = _ori_;
+
+	ori = (void*)(addr+0x000000);
+	orilen = maxitem-1;
+	for(j=0;j<maxitem;j++)ori[j].tier = _ori_;
 
 	initstdout(addr+0x180000);
 	initstdin( addr+0x100000);
@@ -45,15 +52,25 @@ void origin_exit()
 
 	freestdin();
 	freestdout();
+
+	//say("[0,2):origin exitex\n");		//dont uncomment, wont output after free stdout
+}
+
+
+
+
+void origin_recycle()
+{
 }
 void* origin_alloc()
 {
 	void* addr = &ori[orilen];
-	orilen += 1;
+	orilen -= 1;
 	return addr;
 }
-void origin_recycle()
+void* origin_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt)
 {
+	return 0;
 }
 
 

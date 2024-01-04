@@ -78,20 +78,27 @@ int window_give(void*,void*, void*,int, p64,int, void*,int);
 
 //
 static _obj* supply = 0;
-static int winlen = 0;
+static int suplen = 0;
 static struct style* pinid = 0;
 static int pinlen = 0;
+
+
+
+
+#define maxitem (0x100000/sizeof(_obj))
 void supply_init(u8* addr)
 {
 	say("[c,e):supply initing\n");
 
 	int j;
-	supply = (void*)(addr+0x000000);
-	pinid = (void*)(addr+0x100000);
-
-#define max (0x100000/sizeof(_obj))
 	for(j=0;j<0x200000;j++)addr[j]=0;
-	for(j=0;j<max;j++)supply[j].tier = _sup_;
+
+	supply = (void*)(addr+0x000000);
+	suplen = maxitem-1;
+	for(j=0;j<maxitem;j++)supply[j].tier = _sup_;
+
+//#define maxfoot 
+	pinid = (void*)(addr+0x100000);
 
 	initstd(supply);
 	initwindow(supply);

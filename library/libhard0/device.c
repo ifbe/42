@@ -29,6 +29,7 @@ static int aaalen = 0;
 
 
 
+#define maxdevlen (0x100000/sizeof(struct item))
 void device_init(u8* addr)
 {
 	say("[4,6):device initing\n");
@@ -36,7 +37,6 @@ void device_init(u8* addr)
 	int j;
 	for(j=0;j<0x200000;j++)addr[j]=0;
 
-#define maxdevlen (0x100000/sizeof(struct item))
 	dev = (void*)(addr+0x000000);
 	devlen = maxdevlen-1;
 	for(j=0;j<maxdevlen;j++)dev[j].tier = _dev_;

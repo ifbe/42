@@ -735,33 +735,36 @@ int partymaster_detach(struct halfrel* self, struct halfrel* peer);
 int partymaster_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len);
 int partymaster_read( _obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len);
 //
+int parsetypefromurl(u8* url, u8* type);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 
 
 
 #define datahome qqq
-static struct item* obj = 0;
-static void* ppp = 0;
+//static struct item* obj = 0;
+//static void* ppp = 0;
 static struct item* ele = 0;
-static void* qqq = 0;
 static int elelen = 0;
-static int qqqlen = 0;
+//static void* qqq = 0;
+//static int qqqlen = 0;
 
 
 
 
+#define maxitem (0x100000/sizeof(_obj))
 void artery_init(u8* addr)
 {
 	say("[a,c):artery initing\n");
 
 	int j;
-	ele = (void*)(addr+0x000000);
-	qqq = (void*)(addr+0x100000);
-
-#define max (0x100000/sizeof(_obj))
 	for(j=0;j<0x200000;j++)addr[j] = 0;
-	for(j=0;j<max;j++)ele[j].tier = _art_;
+
+	ele = (void*)(addr+0x000000);
+	elelen = maxitem-1;
+	for(j=0;j<maxitem;j++)ele[j].tier = _art_;
+
+	//qqq = (void*)(addr+0x100000);
 
 	//artery_create(0, (u8*)"HACK://0.0.0.0:2222");
 	//artery_create(0, (u8*)"QUIC://0.0.0.0:4444");
@@ -774,32 +777,26 @@ void artery_exit()
 {
 	say("[a,c):artery exiting\n");
 
-	qqq = 0;
+	//qqq = 0;
 	ele = 0;
 
 	say("[a,c):artery exited\n");
 }
-void* artery_alloc()
-{
-	void* addr = &ele[elelen];
-	elelen += 1;
-	return addr;
-}
+
+
+
+
 void artery_recycle()
 {
 }
-int parsetypefromurl(u8* url, u8* type)
+void* artery_alloc()
 {
-	int j,k;
-	for(k=0;k<8;k++)type[k] = 0;
-	for(j=0;j<16;j++)
-	{
-		if(0 == ncmp(url+j, "://", 3))
-		{
-			for(k=0;k<j;k++)type[k] = url[k];
-			return j+3;
-		}
-	}
+	void* addr = &ele[elelen];
+	elelen -= 1;
+	return addr;
+}
+void* artery_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt)
+{
 	return 0;
 }
 

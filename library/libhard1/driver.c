@@ -56,17 +56,19 @@ static int bbblen = 0;
 
 
 
+#define maxitem (0x100000/sizeof(struct item))
 void driver_init(u8* addr)
 {
 	say("[6,8):driver initing\n");
 
 	int j;
-	dri = (void*)(addr+0x000000);
-	bbb = (void*)(addr+0x100000);
-
-#define max (0x100000/sizeof(struct item))
 	for(j=0;j<0x200000;j++)addr[j] = 0;
-	for(j=0;j<max;j++)dri[j].tier = _dri_;
+
+	dri = (void*)(addr+0x000000);
+	drilen = maxitem-1;
+	for(j=0;j<maxitem;j++)dri[j].tier = _dri_;
+
+	bbb = (void*)(addr+0x100000);
 
 	//drivercreate(_usb_, 0);
 	say("[6,8):driver inited\n");
@@ -77,14 +79,22 @@ void driver_exit()
 
 	say("[6,8):driver exited\n");
 }
+
+
+
+
 void* driver_alloc()
 {
 	void* addr = &dri[drilen];
-	drilen += 1;
+	drilen -= 1;
 	return addr;
 }
 void driver_recycle()
 {
+}
+void* driver_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt)
+{
+	return 0;
 }
 
 

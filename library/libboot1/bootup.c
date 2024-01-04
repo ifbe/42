@@ -51,16 +51,17 @@ static int wrklen = 0;
 
 
 
+#define maxitem (0x100000/sizeof(struct item))
 void bootup_init(u8* addr)
 {
 	say("[2,4):bootup initing\n");
 
 	int j;
-	wrk = (void*)(addr+0x000000);
-
-#define max (0x100000/sizeof(struct item))
 	for(j=0;j<0x200000;j++)addr[j]=0;
-	for(j=0;j<max;j++)wrk[j].tier = _wrk_;
+
+	wrk = (void*)(addr+0x000000);
+	wrklen = maxitem-1;
+	for(j=0;j<maxitem;j++)wrk[j].tier = _wrk_;
 
 	initstdev( addr+0x100000);
 	initstdrel(addr+0x180000);
@@ -82,14 +83,22 @@ void bootup_exit()
 
 	say("[2,4):bootup exited\n");
 }
+
+
+
+
+void bootup_recycle()
+{
+}
 void* bootup_alloc()
 {
 	void* addr = &wrk[wrklen];
-	wrklen += 1;
+	wrklen -= 1;
 	return addr;
 }
-void bootup_recycle()
+void* bootup_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt)
 {
+	return 0;
 }
 
 

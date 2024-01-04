@@ -3,6 +3,8 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 int decstr2data(void*, void*);
+int ncmp(void*, void*, int);
+//
 void printmemory(char*, int);
 void say(char*, ...);
 
@@ -130,6 +132,24 @@ int parseurl(u8* buf, int len, u8* addr, int* port)
 	addr[j] = 0;
 	return j;
 }
+int parsetypefromurl(u8* url, u8* type)
+{
+	int j,k;
+	for(k=0;k<8;k++)type[k] = 0;
+	for(j=0;j<16;j++)
+	{
+		if(0 == ncmp(url+j, "://", 3))
+		{
+			for(k=0;k<j;k++)type[k] = url[k];
+			return j+3;
+		}
+	}
+	return 0;
+}
+
+
+
+
 int parsemyandto(u8* url,int len, u8* tmp,int max,
 	u8** myaddr, int* myport, u8** toaddr, int* toport)
 {
