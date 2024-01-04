@@ -1,0 +1,5 @@
+<device>
+gpio:gpio{
+arg:/dev/gpiochip0
+}
+</device>

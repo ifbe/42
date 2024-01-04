@@ -20,7 +20,7 @@ libboot1:
 .PHONY:libhard0
 libhard0:
 	mkdir -p $@
-	+make -s -C $(library)/$@ DIR=$(project)/$@ CF=$(CF) CPPF=$(CPPF) linuxpi32
+	+make -s -C $(library)/$@ DIR=$(project)/$@ CF=$(CF) CPPF=$(CPPF) pi32linux
 .PHONY:libhard1
 libhard1:
 	mkdir -p $@

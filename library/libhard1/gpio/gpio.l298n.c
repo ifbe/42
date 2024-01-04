@@ -28,13 +28,15 @@ g19-i2s-fs      ----________----g16-motor-lf-e
 g26-motor-lf-e  ----________----g20-i2s-din
 0v              ----________----g21-i2s-dout
 */
-char pintable[4][3] = {
+static char pintable[4][3] = {
 	{13, 5, 6},	//left,front
 	{26,12,16},	//left,back
 	{22,17,27},	//right,front
 	{ 4,15,14},	//right,back
 };
-char pin_mode_value[12][3] = {
+static char pin_value[12][2] = {
+};
+static char pin_mode_value[12][3] = {
 	{13, 'o', 0},	//left, front, en
 	{ 5, 'o', 0},
 	{ 6, 'o', 0},

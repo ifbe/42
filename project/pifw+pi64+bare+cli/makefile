@@ -23,7 +23,7 @@ libboot0:
 libboot1:
 	make -s -C $(library)/libboot1 AS=$(AS) CC=$(CC) CF=$(CF)
 libhard0:
-	make -s -C $(library)/libhard0 AS=$(AS) CC=$(CC) CF=$(CF) barepi64
+	make -s -C $(library)/libhard0 AS=$(AS) CC=$(CC) CF=$(CF) pi64bare
 libhard1:
 	make -s -C $(library)/libhard1 AS=$(AS) CC=$(CC) CF=$(CF)
 libsoft0:

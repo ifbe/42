@@ -4,6 +4,7 @@
 #include "libhard.h"
 #define _pin_mode_value_ hex32('p','m','v', 0)
 #define _volt_ hex32('v','o','l','t')
+void* device_alloc_prep(u64,u64,u64,u64);
 
 
 struct privdata{
@@ -85,6 +86,7 @@ int gpio_attach(struct halfrel* st, struct halfrel* peer)
 int gpio_read(_obj* obj,void* foot, p64 arg,int cmd, u8* buf,int len)
 {
 	say("@gpioread:%p,%x,%p,%x\n", arg, cmd, buf, len);
+	struct privdata* priv = (void*)obj->priv_256b;
 	/*
 		input: arg=u8list{pin}, buf=list{val}
 	*/
@@ -149,14 +151,17 @@ int gpio_delete(_obj* obj, void* arg)
 int gpio_create(_obj* obj, void* arg, int argc, void** argv)
 {
 	//parse arg
+	char* path = arg;
+	say("path=%s\n", path);
 
 	//chip open
 	struct gpiod_chip* gpiochip = gpiod_chip_open(path);
-	if (gpiochip == NULL)goto errorchip;
-	say("gpiod_chip_open ok\n");
+	if (gpiochip == NULL){
+		say("gpiod_chip_open failed: %s\n", path);
+	}
 
 	//my device
-	if(0 == obj)obj = device_alloc(_dev_mem);
+	if(0 == obj)obj = device_alloc_prep(0, _gpio_, 0, 0);
 	struct privdata* priv = (void*)obj->priv_256b;
 	priv->chip = gpiochip;
 	priv->pin = memoryalloc(0x1000, 0);

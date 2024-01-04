@@ -20,7 +20,7 @@ libboot1:
 .PHONY:libhard0
 libhard0:
 	mkdir -p $@
-	+make -s -C $(library)/$@ DIR=$(project)/$@ CF=$(CF) CPPF=$(CPPF) linuxpi64
+	+make -s -C $(library)/$@ DIR=$(project)/$@ CF=$(CF) CPPF=$(CPPF) pi64linux_gpiod
 .PHONY:libhard1
 libhard1:
 	mkdir -p $@
@@ -60,7 +60,9 @@ program:
 	libsoft0/*.o libsoft1/*.o \
 	libuser0/*.o libuser1/*.o \
 	-lcamera -lcamera-base -lstdc++ \
-	-lasound -lpthread -lm
+	-lasound \
+	-lgpiod \
+	-lpthread -lm
 clean:
 	rm -f *.o *.a *.so
 	rm -f */*.o

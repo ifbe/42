@@ -18,7 +18,7 @@ libboot1:
 .PHONY:libhard0
 libhard0:
 	mkdir -p $@
-	+make -s -C $(library)/$@ DIR=$(project)/$@ CF=$(CF) linuxarm64
+	+make -s -C $(library)/$@ DIR=$(project)/$@ CF=$(CF) arm64linux
 .PHONY:libhard1
 libhard1:
 	mkdir -p $@

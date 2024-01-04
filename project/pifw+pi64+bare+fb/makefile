@@ -25,7 +25,7 @@ libboot1:
 .PHONY:libhard0
 libhard0:
 	mkdir -p $@
-	make -s -C $(library)/$@ DIR=$(project)/$@ AS=$(AS) CC=$(CC) CF=$(CF) barepi64
+	make -s -C $(library)/$@ DIR=$(project)/$@ AS=$(AS) CC=$(CC) CF=$(CF) pi64bare
 .PHONY:libhard1
 libhard1:
 	mkdir -p $@

@@ -3,6 +3,7 @@ CF:="-c -O2 -fPIC -I.."
 DIR:=$(shell pwd)
 SRC= \
 eth/eth.c \
+gpio/gpio.test.c \
 gpio/gpio.l298n.c \
 map/acpi/devmap.acpi.c \
 map/dts/devmap.dts.c \

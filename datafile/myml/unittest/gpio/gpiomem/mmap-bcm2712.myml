@@ -1,0 +1,5 @@
+<device>
+gpio:gpio{
+arg:/dev/gpiomem4
+}
+</device>

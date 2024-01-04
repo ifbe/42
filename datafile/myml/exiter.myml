@@ -1,5 +1,4 @@
 <bootup>
-exiter{
-fmt:exiter
+dummy:exiter{
 }
 </bootup>

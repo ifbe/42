@@ -55,18 +55,36 @@ void device_exit()
 
 	say("[4,6):device exited\n");
 }
-void* device_alloc()
-{
-	void* addr = &dev[devlen];
-	devlen -= 1;
-	return addr;
-}
+
+
+
+
 void device_recycle()
 {
 }
 void* device_fd2obj(int fd)
 {
 	return &dev[fd];
+}
+void* device_alloc()
+{
+	void* addr = &dev[devlen];
+	devlen -= 1;
+	return addr;
+}
+void* device_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt)
+{
+	_obj* obj;
+	switch(type){
+	case _gpio_:
+		obj = device_alloc();
+		if(0 == obj)return 0;
+
+		obj->type = _gpio_;
+		return obj;
+	default:
+		return 0;
+	}
 }
 
 

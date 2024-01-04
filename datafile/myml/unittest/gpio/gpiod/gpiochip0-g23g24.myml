@@ -1,0 +1,13 @@
+<device>
+gpiochip:gpio{
+arg:/dev/gpiochip0
+}
+</device>
+
+
+<driver>
+tester:gpiotest{
+in=23
+out=24
+}
+</driver>

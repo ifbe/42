@@ -9,7 +9,7 @@ libboot0:
 libboot1:
 	+make -s -C $(library)/libboot1 CF=$(CF)
 libhard0:
-	+make -s -C $(library)/libhard0 CF=$(CF) linuxpi32
+	+make -s -C $(library)/libhard0 CF=$(CF) pi32linux
 libhard1:
 	+make -s -C $(library)/libhard1 CF=$(CF)
 libsoft0:
