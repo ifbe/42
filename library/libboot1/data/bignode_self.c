@@ -26,6 +26,7 @@ int relation_read(struct item* item,void* foot, p64 arg, int cmd, void* buf, int
 }
 int reading_data_from_peer(void* chip,int ftype, p64 arg,int cmd, void* buf,int len)
 {
+	//say("reading_data_from_peer\n");
 	struct item* item;
 	struct relation* rel;
 
@@ -35,6 +36,7 @@ int reading_data_from_peer(void* chip,int ftype, p64 arg,int cmd, void* buf,int 
 	rel = item->irel0;
 	while(1){
 		if(0 == rel)break;
+		//say("irel:%.8s\n",&rel->dstfoottype);
 		if(ftype == rel->dstfoottype){
 			return relation_read(rel->psrcchip, rel->psrcfoot, arg,cmd, buf,len);
 		}
@@ -44,6 +46,7 @@ int reading_data_from_peer(void* chip,int ftype, p64 arg,int cmd, void* buf,int 
 	rel = item->orel0;
 	while(1){
 		if(0 == rel)break;
+		//say("orel:%.8s\n",&rel->srcfoottype);
 		if(ftype == rel->srcfoottype){
 			return relation_read(rel->pdstchip, rel->pdstfoot, arg,cmd, buf,len);
 		}
@@ -75,6 +78,7 @@ int relation_write(struct item* item,void* foot, p64 arg,int cmd, void* buf,int 
 }
 int writing_data_into_peer(void* chip,int ftype, p64 arg,int cmd, void* buf,int len)
 {
+	//say("writing_data_into_peer ftype=%.4s\n", &ftype);
 	struct item* item;
 	struct relation* rel;
 

@@ -62,6 +62,12 @@ void device_exit()
 void device_recycle()
 {
 }
+int device_obj2fd(_obj* obj)
+{
+	u8* a0 = (u8*)dev;
+	u8* a1 = (u8*)obj;
+	return (a1-a0)/sizeof(struct item);
+}
 void* device_fd2obj(int fd)
 {
 	return &dev[fd];
@@ -92,6 +98,7 @@ void* device_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt)
 
 void* device_create(u64 type, void* name, int argc, u8** argv)
 {
+	void* obj;
 	if(0 == type){
 		return device_alloc();
 	}
@@ -173,13 +180,9 @@ void* device_create(u64 type, void* name, int argc, u8** argv)
 		return &dev[fd];
 	}
 	if(_gpio_ == type){
-		int fd = gpio_create(0, name, argc, argv);
-		if(fd <= 0)return 0;
-
-		dev[fd].type = _gpio_;
-		dev[fd].priv_fd = fd;
-		say("return:%p\n",&dev[fd]);
-		return &dev[fd];
+		obj = device_alloc_prep(0, _gpio_, 0, 0);
+		gpio_create(obj, name, argc, argv);
+		return obj;
 	}
 	return 0;
 }
@@ -189,6 +192,7 @@ int device_delete(_obj* this)
 }
 int device_reader(struct item* dev,void* foot, p64 arg,int cmd, void* buf,int len)
 {
+	//say("@device_reader\n");
 	int fd = dev->priv_fd;
 	switch(dev->type){
 		case _gpio_:return gpio_read(dev,foot, arg,cmd, buf,len);break;
@@ -197,6 +201,7 @@ int device_reader(struct item* dev,void* foot, p64 arg,int cmd, void* buf,int le
 }
 int device_writer(struct item* dev,void* foot, p64 arg,int cmd, void* buf,int len)
 {
+	//say("@device_writer\n");
 	int fd = dev->priv_fd;
 	switch(dev->type){
 		case _gpio_:return gpio_write(dev,foot, arg,cmd, buf,len);break;

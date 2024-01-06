@@ -2,8 +2,9 @@
 #include <unistd.h>
 #include <gpiod.h>
 #include "libhard.h"
-#define _pin_mode_value_ hex32('p','m','v', 0)
 #define _volt_ hex32('v','o','l','t')
+#define _pin_value_ hex32('p','v', 0, 0)
+#define _pin_mode_value_ hex32('p','m','v', 0)
 void* device_alloc_prep(u64,u64,u64,u64);
 
 
@@ -16,11 +17,11 @@ void setpin_input(struct privdata* priv, int id)
 {
 	struct gpiod_line* gpioline = gpiod_chip_get_line(priv->chip, id);
 	if (gpioline == NULL)return;
-	say("gpiod_chip_get_line ok\n");
+	say("gpiod_chip_get_line %d ok\n", id);
 
 	int ret = gpiod_line_request_input(gpioline, "gpioin");
 	if(ret != 0)return;
-	say("gpiod_line_request_input: ret=%d\n", ret);
+	say("gpiod_line_request_input %d ok\n", id);
 
 	priv->pin[id] = gpioline;
 }
@@ -28,14 +29,14 @@ void setpin_output(struct privdata* priv, int id, int val)
 {
 	struct gpiod_line* gpioline = gpiod_chip_get_line(priv->chip, id);
 	if (gpioline == NULL)return;
-	say("gpiod_chip_get_line ok\n");
+	say("gpiod_chip_get_line %d ok\n", id);
 
 	int ret = gpiod_line_request_output(gpioline, "gpioout", val);
 	if (ret != 0)return;
-	say("gpiod_line_request_output ok\n");
+	say("gpiod_line_request_output %d ok\n", id);
 
 	if (gpiod_line_is_used(gpioline)){
-		say("gpiod_line_is_used\n");
+		say("gpiod_line_is_used %d\n", id);
 		//goto errorline;
 	}
 
@@ -51,7 +52,7 @@ int getvalue(struct privdata* priv, int id)
 	if(0 == priv->pin[id])return -2;
 
 	int val = gpiod_line_get_value(priv->pin[id]);
-	say("gpiod_line_get_value: val=%d\n", val);
+	say("gpiod_line_get_value: gpio=%d, val=%d\n", id, val);
 	return val;
 }
 int setvalue(struct privdata* priv, int id, int val)
@@ -60,7 +61,7 @@ int setvalue(struct privdata* priv, int id, int val)
 	if(0 == priv->pin[id])return -2;
 
 	int ret = gpiod_line_set_value(priv->pin[id], val);
-	say("gpiod_line_set_value: val=%d, ret=%d\n", val, ret);
+	say("gpiod_line_set_value: gpio=%d, val=%d, ret=%d\n", id, val, ret);
 	return 0;
 }
 
@@ -69,10 +70,12 @@ int setvalue(struct privdata* priv, int id, int val)
 
 int gpio_takeby(struct halfrel* st,int sp, p64 arg,int cmd, void* buf,int len)
 {
+	say("@gpio_takeby:%p,%x,%p,%x\n", arg, cmd, buf, len);
 	return 0;
 }
 int gpio_giveby(struct halfrel* st,int sp, p64 arg,int cmd, void* buf,int len)
 {
+	say("@gpio_giveby:%p,%x,%p,%x\n", arg, cmd, buf, len);
 	return 0;
 }
 int gpio_detach(struct halfrel* st, struct halfrel* peer)
@@ -87,11 +90,18 @@ int gpio_read(_obj* obj,void* foot, p64 arg,int cmd, u8* buf,int len)
 {
 	say("@gpioread:%p,%x,%p,%x\n", arg, cmd, buf, len);
 	struct privdata* priv = (void*)obj->priv_256b;
-	/*
-		input: arg=u8list{pin}, buf=list{val}
-	*/
+
 	int j;
-	for(j=0;j<len;j++)buf[j] = getvalue(priv, j);
+	switch(cmd){
+	case _pin_value_:
+	/*
+		input: buf=u8list{pin,value}
+	*/
+		for(j=0;j<len;j++){
+			buf[j*2+1] = getvalue(priv, buf[j*2+0]);
+		}
+		break;
+	}
 	return 0;
 }
 int gpio_write(_obj* obj,void* foot, u8* arg,int cmd, u8* buf,int len)
@@ -100,27 +110,30 @@ int gpio_write(_obj* obj,void* foot, u8* arg,int cmd, u8* buf,int len)
 	struct privdata* priv = (void*)obj->priv_256b;
 
 	int j;
-	int pin,mode;
+	int pin,mode,value;
 	switch(cmd){
-	case _volt_:
+	case _pin_value_:
 	/*
-		input: arg=u8list{pin}, buf=list{val}
+		input: buf=u8list{pin,value}
 	*/
 		for(j=0;j<len;j++){
-			pin = arg[j];
-			setvalue(priv, pin, buf[j]);
+			pin = buf[j*2+0];
+			value = buf[j*2+1];
+			say("pin=%d,value=%d\n", pin, value);
+			setvalue(priv, pin, value);
 		}
 		break;
 	case _pin_mode_value_:
 	/*
-		input: arg=u8list{pin,mode,value}, buf=list{val}
+		input: buf=u8list{pin,mode,value}
 	*/
 		for(j=0;j<len;j++){
-			pin = arg[j*3+0];
-			mode = arg[j*3+1];
+			pin = buf[j*3+0];
+			mode = buf[j*3+1];
 			switch(mode){
 			case 'i':
 				setpin_input(priv, pin);
+				break;
 			case 'o':
 				setpin_output(priv, pin, 0);
 				break;

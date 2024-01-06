@@ -11,3 +11,15 @@ in=23
 out=24
 }
 </driver>
+
+
+<supply>
+stdio:std{
+}
+</supply>
+
+
+<relation>
+(@gpiochip, 0) @ (@tester, chip)
+(@stdio, dst) @ (@tester, con)
+</relation>
