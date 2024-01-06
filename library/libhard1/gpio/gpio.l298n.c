@@ -1,6 +1,7 @@
 #include "libsoft.h"
+#define _chip_ hex32('c','h','i','p')
+#define _pin_value_ hex32('p','v', 0, 0)
 #define _pin_mode_value_ hex32('p','m','v', 0)
-#define _volt_ hex32('v','o','l','t')
 int sleep_us(int);
 
 
@@ -29,26 +30,38 @@ g26-motor-lf-e  ----________----g20-i2s-din
 0v              ----________----g21-i2s-dout
 */
 static char pintable[4][3] = {
-	{13, 5, 6},	//left,front
-	{26,12,16},	//left,back
-	{22,17,27},	//right,front
-	{ 4,15,14},	//right,back
+	{22,17,27},	//left,front
+	{13, 5, 6},	//left,back
+	{ 4,15,14},	//right,front
+	{26,12,16},	//right,back
 };
 static char pin_value[12][2] = {
+	{22, 0},
+	{17, 0},
+	{27, 0},
+	{13, 0},
+	{ 5, 0},
+	{ 6, 0},
+	{ 4, 0},
+	{15, 0},
+	{14, 0},
+	{26, 0},
+	{12, 0},
+	{16, 0},
 };
 static char pin_mode_value[12][3] = {
-	{13, 'o', 0},	//left, front, en
-	{ 5, 'o', 0},
-	{ 6, 'o', 0},
-	{26, 'o', 0},	//left, near, en
-	{12, 'o', 0},
-	{16, 'o', 0},
-	{22, 'o', 0},	//right, front, en
+	{22, 'o', 0},	//left, front, en
 	{17, 'o', 0},
 	{27, 'o', 0},
-	{ 4, 'o', 0},	//right, back, en
+	{13, 'o', 0},	//left, near, en
+	{ 5, 'o', 0},
+	{ 6, 'o', 0},
+	{ 4, 'o', 0},	//right, front, en
 	{15, 'o', 0},
-	{14, 'o', 0}
+	{14, 'o', 0},
+	{26, 'o', 0},	//right, near, en
+	{12, 'o', 0},
+	{16, 'o', 0},
 };
 
 
@@ -58,94 +71,91 @@ int l298n_take(_obj* obj,void* foot, _syn* stack,int sp, p64 arg, int idx, void*
 {
 	say("@l298n_take\n");
 
-    return 0;
+	return 0;
 }
 int l298n_give(_obj* obj,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
 	int k;
-	u8 u[4][3];
-
-	u32 in = *(u32*)buf;
+	u32 in = *(u8*)buf;
 	say("vehicleserver_sock:%x\n",in);
 	switch(in){
 	case 'w':
 		for(k=0;k<4;k++){
-			u[k][0] = 1;
-			u[k][1] = 0;
-			u[k][2] = 1;
+			pin_value[k*3+0][1] = 1;
+			pin_value[k*3+1][1] = 0;
+			pin_value[k*3+2][1] = 1;
 		}
-		printmemory(u,12);
-		writing_data_into_peer(obj, _gpio_, (p64)pintable,_volt_, u,12);
-		sleep_us(100*1000);
+		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
+		sleep_us(500*1000);
 		break;
 	case 's':
 		for(k=0;k<4;k++){
-			u[k][0] = 1;
-			u[k][1] = 1;
-			u[k][2] = 0;
+			pin_value[k*3+0][1] = 1;
+			pin_value[k*3+1][1] = 1;
+			pin_value[k*3+2][1] = 0;
 		}
-		printmemory(u,12);
-		writing_data_into_peer(obj, _gpio_, (p64)pintable,_volt_, u,12);
-		sleep_us(100*1000);
+		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
+		sleep_us(500*1000);
 		break;
 	case 'a':
 		for(k=0;k<2;k++){
-			u[k][0] = 1;
-			u[k][1] = 1;
-			u[k][2] = 0;
+			pin_value[k*3+0][1] = 1;
+			pin_value[k*3+1][1] = 1;
+			pin_value[k*3+2][1] = 0;
 		}
 		for(k=2;k<4;k++){
-			u[k][0] = 1;
-			u[k][1] = 0;
-			u[k][2] = 1;
+			pin_value[k*3+0][1] = 1;
+			pin_value[k*3+1][1] = 0;
+			pin_value[k*3+2][1] = 1;
 		}
-		printmemory(u,12);
-		writing_data_into_peer(obj, _gpio_, (p64)pintable,_volt_, u,12);
-		sleep_us(100*1000);
+		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
+		sleep_us(500*1000);
 		break;
 	case 'd':
 		for(k=0;k<2;k++){
-			u[k][0] = 1;
-			u[k][1] = 0;
-			u[k][2] = 1;
+			pin_value[k*3+0][1] = 1;
+			pin_value[k*3+1][1] = 0;
+			pin_value[k*3+2][1] = 1;
 		}
 		for(k=2;k<4;k++){
-			u[k][0] = 1;
-			u[k][1] = 1;
-			u[k][2] = 0;
+			pin_value[k*3+0][1] = 1;
+			pin_value[k*3+1][1] = 1;
+			pin_value[k*3+2][1] = 0;
 		}
-		printmemory(u,12);
-		writing_data_into_peer(obj, _gpio_, (p64)pintable,_volt_, u,12);
-		sleep_us(100*1000);
+		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
+		sleep_us(500*1000);
 		break;
 	}
 
-	for(k=0;k<4;k++)u[k][0] = 0;
-	printmemory(u,12);
-	writing_data_into_peer(obj, _gpio_, (p64)pintable,_volt_, u,12);
-    return 0;
+	for(k=0;k<4;k++){
+		pin_value[k*3+0][1] = 0;
+		pin_value[k*3+1][1] = 0;
+		pin_value[k*3+2][1] = 0;
+	}
+	writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
+	return 0;
 }
 int l298n_attach(struct halfrel* self, struct halfrel* peer)
 {
 	int j;
 	switch(self->foottype){
-	case _gpio_:
+	case _chip_:
 		for(j=0;j<12;j++)pin_mode_value[j][1] = 'o';
-		writing_data_into_peer(self->pchip, _gpio_, (p64)pin_mode_value,_pin_mode_value_, 0, 0);
+		writing_data_into_peer(self->pchip, _chip_, 0, _pin_mode_value_, pin_mode_value, 12);
 		break;
 	}
-    return 0;
+	return 0;
 }
 int l298n_detach(struct halfrel* self, struct halfrel* peer)
 {
 	int j;
 	switch(self->foottype){
-	case _gpio_:
+	case _chip_:
 		for(j=0;j<12;j++)pin_mode_value[j][1] = 'i';
-		writing_data_into_peer(self->pchip, _gpio_, (p64)pin_mode_value,_pin_mode_value_, 0, 0);
+		writing_data_into_peer(self->pchip, _chip_, 0, _pin_mode_value_, pin_mode_value, 12);
 		break;
 	}
-    return 0;
+	return 0;
 }
 
 
