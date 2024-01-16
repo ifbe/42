@@ -62,7 +62,7 @@ static void mario_draw_pixel(
 	{
 		dst = (win->rgbanode.buf) + (cy-hh+y)*stride*4 + (cx-ww)*4;
 		src = (act->listptr.buf0) + 4*y*(act->whdf.width);
-		//say("y=%d,%llx,%llx\n",y,dst,src);
+		//logtoall("y=%d,%llx,%llx\n",y,dst,src);
 		if('b' == ((win->hfmt)&0xff))
 		{
 			for(x=0;x<xmax;x++)dst[x] = src[x];
@@ -342,7 +342,7 @@ static void mario_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("mario(%x,%x,%x)\n",win,act,sty);
+	logtoall("mario(%x,%x,%x)\n",win,act,sty);
 }
 
 

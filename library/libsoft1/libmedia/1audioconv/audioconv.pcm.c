@@ -52,7 +52,7 @@ int pcmfmt_take(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, void
 int pcmfmt_give(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, void* buf, int len)
 {
 	struct perobj* per = (void*)art->priv_256b;
-	if(per->log)say("@pcmfmt_give:len=%x\n",len);
+	if(per->log)logtoall("@pcmfmt_give:len=%x\n",len);
 
 	int outlen;
 	if( (_s32_ == per->srcfmt) && (_s16_ == per->dstfmt) ){
@@ -84,7 +84,7 @@ int pcmfmt_delete(_obj* ele)
 }
 int pcmfmt_create(_obj* ele, u8* arg, int argc, char** argv)
 {
-	say("@pcmfmt_create\n");
+	logtoall("@pcmfmt_create\n");
 
 	struct perobj* per = (void*)ele->priv_256b;
 	per->log = 0;
@@ -96,7 +96,7 @@ int pcmfmt_create(_obj* ele, u8* arg, int argc, char** argv)
 
 	int j;
 	for(j=0;j<argc;j++){
-		say("%d:%.8s\n", j, argv[j]);
+		logtoall("%d:%.8s\n", j, argv[j]);
 		if(0 == ncmp(argv[j], "zerocopy", 8)){
 			per->zerocopy = 1;
 			continue;
@@ -145,8 +145,8 @@ int pcmfmt_create(_obj* ele, u8* arg, int argc, char** argv)
 	per->dstbuf[0] = 0;
 	per->dstlen = 0;
 
-	say("src:fmt=%.4s,endian=%c,chan=%d,freq=%d\n", &per->srcfmt, per->srcendian, per->srcchan, per->srcfreq);
-	say("dst:fmt=%.4s,endian=%c,chan=%d,freq=%d\n", &per->dstfmt, per->dstendian, per->dstchan, per->dstfreq);
+	logtoall("src:fmt=%.4s,endian=%c,chan=%d,freq=%d\n", &per->srcfmt, per->srcendian, per->srcchan, per->srcfreq);
+	logtoall("dst:fmt=%.4s,endian=%c,chan=%d,freq=%d\n", &per->dstfmt, per->dstendian, per->dstchan, per->dstfreq);
 
 	return 1;
 }

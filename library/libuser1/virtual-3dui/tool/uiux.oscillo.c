@@ -161,7 +161,7 @@ static void oscillo_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("oscillo(%x,%x,%x)\n",win,act,sty);
+	logtoall("oscillo(%x,%x,%x)\n",win,act,sty);
 }
 void oscillo_getpcm(_obj* ent, _obj* sup)
 {
@@ -169,7 +169,7 @@ void oscillo_getpcm(_obj* ent, _obj* sup)
 	if(0 == per->datbuf)return;
 
 	struct pcmdata* pcm;
-//say("@oscillo_getpcm\n");
+//logtoall("@oscillo_getpcm\n");
 	pcm = per->datbuf + 44 - 0x10;
 	pcm->fmt = hex32('s','1','6',0);
 	pcm->chan = 1;
@@ -184,7 +184,7 @@ void oscillo_getpcm(_obj* ent, _obj* sup)
 
 void oscillo_data(_obj* act, int type, void* buf, int len)
 {
-	say("@oscillo_write.pcm: %d\n", len);
+	logtoall("@oscillo_write.pcm: %d\n", len);
 	struct peroscillo* per = (void*)act->priv_256b;
 
 	int j;
@@ -230,7 +230,7 @@ static void oscillo_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 {
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
-//say("fmt=%.8s\n", &sup->hfmt);
+//logtoall("fmt=%.8s\n", &sup->hfmt);
 
 	switch(wnd->hfmt){
 	case _pcm_:
@@ -259,7 +259,7 @@ static void oscillo_detach(struct halfrel* self, struct halfrel* peer)
 }
 static void oscillo_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@oscillo_attach\n");
+	logtoall("@oscillo_attach\n");
 }
 
 
@@ -280,7 +280,7 @@ static void oscillo_create(_obj* act, u8* arg)
 
 	per->datlen = 0x10000;
 	per->datbuf = memoryalloc(0x100000, 0);
-	//say("size=%x\n",sizeof(struct peroscillo));
+	//logtoall("size=%x\n",sizeof(struct peroscillo));
 
 	int j;
 	per->tablen = 0;

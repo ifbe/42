@@ -69,7 +69,7 @@ static char pin_mode_value[12][3] = {
 
 int l298n_take(_obj* obj,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
-	say("@l298n_take\n");
+	logtoall("@l298n_take\n");
 
 	return 0;
 }
@@ -77,7 +77,7 @@ int l298n_give(_obj* obj,void* foot, _syn* stack,int sp, p64 arg, int idx, void*
 {
 	int k;
 	u32 in = *(u8*)buf;
-	say("vehicleserver_sock:%x\n",in);
+	logtoall("vehicleserver_sock:%x\n",in);
 	switch(in){
 	case 'w':
 		for(k=0;k<4;k++){
@@ -171,7 +171,7 @@ int l298n_write(_obj* obj,void* foot,p64 arg, int idx, u8* buf, int len)
 }
 int l298n_create(_obj* obj, void* arg, int argc, u8** argv)
 {
-	say("@l298n_create\n");
+	logtoall("@l298n_create\n");
 	return 1;
 }
 int l298n_delete(_obj* ele)

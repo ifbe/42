@@ -55,7 +55,7 @@ void nonewindow_give(_obj* win,void* foot, _syn* stack,int sp, p64 arg,int idx, 
 		short* t = (void*)ev;
 		win->whdf.ix0 = t[0];
 		win->whdf.iy0 = t[1];
-		//say("%d,%d\n",t[0],t[1]);
+		//logtoall("%d,%d\n",t[0],t[1]);
 	}
 }
 void nonewindow_delete(_obj* win)

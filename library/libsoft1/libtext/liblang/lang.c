@@ -14,7 +14,7 @@ int openreadclose(void*, u64, void*, u64);
 int openwriteclose(void*, u64, void*, u64);
 //
 int printmemory(void* addr, int count);
-int say(void* str, ...);
+int logtoall(void* str, ...);
 
 
 

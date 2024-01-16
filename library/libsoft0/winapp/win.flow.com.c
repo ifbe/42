@@ -136,34 +136,34 @@ _obj* uart_create(char* p, int speed)
 	);
 	if(hcom == INVALID_HANDLE_VALUE)
 	{
-		say("err:%d@open\n",GetLastError());
+		logtoall("err:%d@open\n",GetLastError());
 		return 0;
 	}
-	else say("name=%s, hcom=%llx\n", buf, hcom);
+	else logtoall("name=%s, hcom=%llx\n", buf, hcom);
 
 	//
 	ret = uart_designate();
 	struct item* oo = &g_obj[ret];
-	say("hcom=%p,obj=%p\n", hcom, oo);
+	logtoall("hcom=%p,obj=%p\n", hcom, oo);
 	struct percom* per = (void*)oo->priv_256b;
 	per->hcom = hcom;
 
 	//
 	COMMTIMEOUTS timeouts;
 	ret = GetCommTimeouts(hcom, &timeouts);
-	say("GetCommTimeouts:%d\n", ret);
+	logtoall("GetCommTimeouts:%d\n", ret);
 	timeouts.ReadIntervalTimeout = 0xffffffff;
 	timeouts.ReadTotalTimeoutMultiplier = 0;
 	timeouts.ReadTotalTimeoutConstant = 0;
 	timeouts.WriteTotalTimeoutMultiplier = 0;
 	timeouts.WriteTotalTimeoutConstant = 100;
 	ret = SetCommTimeouts(hcom, &timeouts);
-	say("SetCommTimeouts:%d\n", ret);
+	logtoall("SetCommTimeouts:%d\n", ret);
 
 	//
 	DCB dcb;
 	ret = GetCommState(hcom,&dcb);
-	say("GetCommState:%d\n", ret);
+	logtoall("GetCommState:%d\n", ret);
 	dcb.DCBlength = sizeof(DCB);
 	dcb.BaudRate = speed;	//波特率
 	dcb.ByteSize = 8;		//数据位
@@ -171,16 +171,16 @@ _obj* uart_create(char* p, int speed)
 	dcb.Parity = NOPARITY;	//奇偶校验方式
 	dcb.StopBits = ONESTOPBIT;	//停止位
 	ret = SetCommState(hcom,&dcb);
-	say("SetCommState:%d\n", ret);
+	logtoall("SetCommState:%d\n", ret);
 
 	//
 	ret = SetupComm(hcom, 0x1000, 0x1000);
-	say("SetupComm:%d\n", ret);
+	logtoall("SetupComm:%d\n", ret);
 	ret = PurgeComm(
 		hcom,
 		PURGE_RXCLEAR|PURGE_TXCLEAR|PURGE_RXABORT|PURGE_TXABORT
 	);
-	say("PurgeComm:%d\n", ret);
+	logtoall("PurgeComm:%d\n", ret);
 
 	//
 	per->alive = 1;
@@ -215,6 +215,6 @@ int uart_writer(_obj* oo,int xx, p64 arg,int off, void* buf,int len)
 
 	u32 cnt = 0;
 	int ret = WriteFile(hcom, buf,  len, (void*)&cnt, 0);
-	//say("write:ret=%d,cnt=%d,errno=%d\n", ret, cnt, GetLastError());
+	//logtoall("write:ret=%d,cnt=%d,errno=%d\n", ret, cnt, GetLastError());
 	return ret;
 }

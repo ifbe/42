@@ -64,7 +64,7 @@ u64 timeread_us();
 //
 void printmmio(void*, int);
 void printmemory(void*, int);
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 
@@ -73,12 +73,12 @@ static volatile u8* addr_localapic = 0;
 static volatile u8* addr_irqioapic = 0;
 void localapic_check()
 {
-	say("@localapic_check\n");
+	logtoall("@localapic_check\n");
 
 	addr_localapic = acpi_getlocalapic();
-	say("apic@%p\n", addr_localapic);
+	logtoall("apic@%p\n", addr_localapic);
 
-	say("\n\n");
+	logtoall("\n\n");
 }
 
 
@@ -117,19 +117,19 @@ void localapic_write(u32 reg, u32 data)
 {
 	volatile u32* addr = (volatile u32*)(addr_localapic + reg);
     *addr = data;
-	say("write %x to %p\n", data, addr);
+	logtoall("write %x to %p\n", data, addr);
 }
 int localapic_sendinit(u32 apic_id)
 {
-	say("@localapic_sendinit: apic@%p, apicid=%x\n", addr_localapic, apic_id);
+	logtoall("@localapic_sendinit: apic@%p, apicid=%x\n", addr_localapic, apic_id);
     localapic_write(LAPIC_ICRHI, apic_id << ICR_DESTINATION_SHIFT);
     localapic_write(LAPIC_ICRLO, ICR_INIT | ICR_PHYSICAL | ICR_ASSERT | ICR_EDGE | ICR_NO_SHORTHAND);
 
-	say("waiting: ICRLO.ICR_SEND_PENDING\n",addr_localapic);
+	logtoall("waiting: ICRLO.ICR_SEND_PENDING\n",addr_localapic);
 	int endcycle = 0xfffff;
 	u64 endtime = timeread_us() + 3000*1000;
 	while(1){
-		//say("time=%llx,cycle=%llx\n",timeread_us(), endcycle);
+		//logtoall("time=%llx,cycle=%llx\n",timeread_us(), endcycle);
 		if(0 == (localapic_read(LAPIC_ICRLO) & ICR_SEND_PENDING))break;
 
 		if(timeread_us() > endtime)return -1;
@@ -141,15 +141,15 @@ int localapic_sendinit(u32 apic_id)
 }
 int localapic_sendstart(u32 apic_id, u32 vector)
 {
-	say("@localapic_sendstart: apic@%p, apicid=%x, vector=%x\n", addr_localapic, apic_id, vector);
+	logtoall("@localapic_sendstart: apic@%p, apicid=%x, vector=%x\n", addr_localapic, apic_id, vector);
     localapic_write(LAPIC_ICRHI, apic_id << ICR_DESTINATION_SHIFT);
     localapic_write(LAPIC_ICRLO, vector | ICR_STARTUP | ICR_PHYSICAL | ICR_ASSERT | ICR_EDGE | ICR_NO_SHORTHAND);
 
-	say("waiting: ICRLO.ICR_SEND_PENDING\n",addr_localapic);
+	logtoall("waiting: ICRLO.ICR_SEND_PENDING\n",addr_localapic);
 	int endcycle = 0xfffff;
 	u64 endtime = timeread_us() + 3000*1000;
 	while(1){
-		//say("time=%llx,cycle=%llx\n",timeread_us(), endcycle);
+		//logtoall("time=%llx,cycle=%llx\n",timeread_us(), endcycle);
 		if(0 == (localapic_read(LAPIC_ICRLO) & ICR_SEND_PENDING))break;
 
 		if(timeread_us() > endtime)return -1;
@@ -161,10 +161,10 @@ int localapic_sendstart(u32 apic_id, u32 vector)
 }
 void localapic_init()
 {
-	say("@initapic\n");
+	logtoall("@initapic\n");
 
 	//printmmio((void*)addr_localapic, 0x400);
-	say("lapic: id=%x,ver=%x\n", localapic_coreid(), localapic_version());		//wrong
+	logtoall("lapic: id=%x,ver=%x\n", localapic_coreid(), localapic_version());		//wrong
 
 	//Clear task priority to enable all interrupts
 	volatile u32* tmp;
@@ -184,7 +184,7 @@ void localapic_init()
 	*tmp = 0x100 | 0xff;
 
 	//done
-	say("\n\n");
+	logtoall("\n\n");
 }
 /*
 	//timer interrupt = disable
@@ -293,19 +293,19 @@ void ioapic_init()
 {
 	int j,off,lo32,hi32;
 	u32* addr;
-	say("@initioapic\n");
+	logtoall("@initioapic\n");
 
 	//register dump
 	for(j=0;j<0x10+24*2;j++){
-		say(" %08x", ioapic_read(j));
-		if(7 == (j%8))say("\n");
+		logtoall(" %08x", ioapic_read(j));
+		if(7 == (j%8))logtoall("\n");
 	}
 	j = ioapic_read(0);
-	say("id=%x\n", (j>>24)&0xf);
+	logtoall("id=%x\n", (j>>24)&0xf);
 	j = ioapic_read(1);
-	say("ver=%x,cnt=%x\n", j&0xff, (j>>16)&0xff);
+	logtoall("ver=%x,cnt=%x\n", j&0xff, (j>>16)&0xff);
 	j = ioapic_read(2);
-	say("priority=%x\n", (j>>24)&0xf);
+	logtoall("priority=%x\n", (j>>24)&0xf);
 
 	//configure perirq
 	addr = (u32*)IOAPIC_BASE;

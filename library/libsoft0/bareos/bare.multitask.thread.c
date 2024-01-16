@@ -82,7 +82,7 @@ u64 thread_forthisprocess(int core, int proc, u64 pa, u64 va)
 }
 int thread_registerprocessor(int coreid, int procid)
 {
-	say("incoming thread: from coreid=%d\n", coreid);
+	logtoall("incoming thread: from coreid=%d\n", coreid);
 
 	int queueid = cpucount;
 
@@ -151,22 +151,22 @@ int threadsearch(void* buf, int len)
 	int j,k;
 	struct threadstate* tasktable;
 	struct threadstate* task;
-	say("@threadsearch\n");
-	say("%p,%p,%d\n", percputasktable, percputaskcount, cpucount);
+	logtoall("@threadsearch\n");
+	logtoall("%p,%p,%d\n", percputasktable, percputaskcount, cpucount);
 
 	for(j=0;j<cpucount;j++){
-		say("cpu[%d]:\n", j);
+		logtoall("cpu[%d]:\n", j);
 		tasktable = percputasktable[j];
 		for(k=0;k<percputaskcount[j];k++){
 			task = &tasktable[k];
-/*			say("%d@%p: want=%d,core=%d, proc=%d,vmcb=%d, cs=%x,ip=%llx, ss=%x,sp=%llx\n",
+/*			logtoall("%d@%p: want=%d,core=%d, proc=%d,vmcb=%d, cs=%x,ip=%llx, ss=%x,sp=%llx\n",
 				k, task,
 				task->info.BindToCoreId, task->info.CoreRunThisTask,
 				task->info.procid, task->info.vmcbid,
 				task->cpu.cs, task->cpu.ip,
 				task->cpu.ss, task->cpu.sp
 			);*/
-			say("%d@%p: type=%d,stat=%d, want=%d,core=%d, proc=%d,vmcb=%d\n",
+			logtoall("%d@%p: type=%d,stat=%d, want=%d,core=%d, proc=%d,vmcb=%d\n",
 				k, task,
 				task->info.type, task->info.state,
 				task->info.BindToCoreId, task->info.CoreRunThisTask,
@@ -295,7 +295,7 @@ void thread_switchto(int queueid, int curr, int queueid2, int next, int coreid, 
 
 void initthread()
 {
-	say("@initthread\n");
+	logtoall("@initthread\n");
 
 	int j;
 	u8* tmp = memoryalloc(0x100000, 0);

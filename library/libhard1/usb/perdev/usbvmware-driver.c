@@ -47,7 +47,7 @@ int usbvmware_perintf(struct item* usb,int xxx, struct item* xhci,int slot, stru
 
 	int need_to_set_configuration = 1;
 	if(need_to_set_configuration){
-		say("[vmmouse]set_config\n");
+		logtoall("[vmmouse]set_config\n");
 		H2D_STD_DEV_SETCONF(&req, confdesc->bConfigurationValue);
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
@@ -60,7 +60,7 @@ int usbvmware_perintf(struct item* usb,int xxx, struct item* xhci,int slot, stru
 
 	int need_to_set_idle = 1;
 	if(need_to_set_idle){
-		say("set idle\n");
+		logtoall("set idle\n");
 		H2D_CLASS_INTF_SETIDLE(&req,
 			intfdesc->bInterfaceNumber,
 			0
@@ -100,7 +100,7 @@ int usbvmware_perintf(struct item* usb,int xxx, struct item* xhci,int slot, stru
 			}
 
 			pktlen = endpdesc->wMaxPacketSize;
-			say("[vmmouse]endpdesc: addr=%x, attr=%x, pktlen=%x, interval=%x\n",
+			logtoall("[vmmouse]endpdesc: addr=%x, attr=%x, pktlen=%x, interval=%x\n",
 				endpdesc->bEndpointAddress, endpdesc->bmAttributes,
 				endpdesc->wMaxPacketSize, endpdesc->bInterval
 			);
@@ -123,13 +123,13 @@ int usbvmware_perintf(struct item* usb,int xxx, struct item* xhci,int slot, stru
 		case 0x21:{
 			hidnode = (void*)endpnode;
 			hiddesc = (void*)endpdesc;
-			say("[vmmouse]hiddesc: country=%x, numdesc=%x, reportdesctype=%x, reportdesclen=%x\n",
+			logtoall("[vmmouse]hiddesc: country=%x, numdesc=%x, reportdesctype=%x, reportdesclen=%x\n",
 				hiddesc->bCountryCode, hiddesc->bNumDescriptors,
 				hiddesc->bReportDescType, hiddesc->wReportDescLength
 			);
 
 			if( (0x0e0f == devdesc->idVendor) && (0x0003 == devdesc->idProduct) ){
-				say("get reportdesc\n");
+				logtoall("get reportdesc\n");
 				void* temp = usbdesc_offs2addr(perusb, perusb->origin.byteused);
 				D2H_STD_INTF_GETDESC(&req,
 					intfdesc->bInterfaceNumber,
@@ -150,7 +150,7 @@ int usbvmware_perintf(struct item* usb,int xxx, struct item* xhci,int slot, stru
 			break;
 		}//hid desc
 		default:{
-			say("[vmmouse]desctype=%x\n", endpdesc->bDescriptorType);
+			logtoall("[vmmouse]desctype=%x\n", endpdesc->bDescriptorType);
 		}//report desc?
 		}//switch
 
@@ -163,7 +163,7 @@ int usbvmware_perintf(struct item* usb,int xxx, struct item* xhci,int slot, stru
 	if(need_to_get_report){
 		void* rrrr = usbdesc_offs2addr(perusb, perusb->origin.byteused);
 
-		say("get report1\n");
+		logtoall("get report1\n");
 		D2H_CLASS_INTF_GETREPORT(&req, intfdesc->bInterfaceNumber, 0x40);
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
@@ -173,7 +173,7 @@ int usbvmware_perintf(struct item* usb,int xxx, struct item* xhci,int slot, stru
 		);
 		printmemory(rrrr, 0x40);
 
-		say("get report2\n");
+		logtoall("get report2\n");
 		D2H_CLASS_INTF_GETREPORT(&req, intfdesc->bInterfaceNumber, 0x40);
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
@@ -188,7 +188,7 @@ int usbvmware_perintf(struct item* usb,int xxx, struct item* xhci,int slot, stru
 	usb->ongiving = (void*)vmmouse_ongive;
 
 //------------------------transfer ring------------------------
-	say("[vmmouse]making trb@%p\n", perfunc->trb);
+	logtoall("[vmmouse]making trb@%p\n", perfunc->trb);
 	if(pktlen > 0x40)pktlen = 0x40;
 	ret = xhci->give_pxpxpxpx(
 		xhci, slot|(inaddr<<8),
@@ -207,7 +207,7 @@ int usbvmware_driver(struct item* usb,int xxx, struct item* xhci,int slot)
 
 	struct DeviceDescriptor* devdesc = &perusb->origin.devdesc;
 	if( (0x0e0f == devdesc->idVendor) && (0x0003 == devdesc->idProduct) ){
-		say("vmware virtual mouse\n");
+		logtoall("vmware virtual mouse\n");
 	}
 
 	struct descnode* confnode = &perusb->parsed.node[0];

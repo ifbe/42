@@ -131,9 +131,9 @@ static int xboxhid_ongive(struct item* usb,int xxx, struct item* xhci,int endp, 
 	case 0x07:	//guide button status
 		break;
 	case 0x20:	//button data
-		//say("l=%x,r=%x,d=%x,u=%x,a=%x,b=%x,x=%x,y=%x\n",data->dpad_l,data->dpad_r,data->dpad_d,data->dpad_u,data->kpad_a,data->kpad_b,data->kpad_x,data->kpad_y);
-		//say("lb=%d,rb=%d,ls=%d,rs=%d,back=%d,start=%d\n",data->lb,data->rb,data->ls,data->rs,data->back,data->start);
-		//say("lx=%d,ly=%d,rx=%d,ry=%d,lt=%d,rt=%d\n",data->lx,data->ly,data->rx,data->ry,data->lt,data->rt);
+		//logtoall("l=%x,r=%x,d=%x,u=%x,a=%x,b=%x,x=%x,y=%x\n",data->dpad_l,data->dpad_r,data->dpad_d,data->dpad_u,data->kpad_a,data->kpad_b,data->kpad_x,data->kpad_y);
+		//logtoall("lb=%d,rb=%d,ls=%d,rs=%d,back=%d,start=%d\n",data->lb,data->rb,data->ls,data->rs,data->back,data->start);
+		//logtoall("lx=%d,ly=%d,rx=%d,ry=%d,lt=%d,rt=%d\n",data->lx,data->ly,data->rx,data->ry,data->lt,data->rt);
 
 		//key
 		notold = ~perhid->stat;
@@ -170,9 +170,9 @@ int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	struct descnode* confnode = &perusb->parsed.node[0];
 	struct ConfigurationDescriptor* confdesc = usbdesc_offs2addr(perusb, confnode->real);
 
-	say("[xbox]intf=%x,alt=%x,epcnt=%x\n",intfdesc->bInterfaceNumber, intfdesc->bAlternateSetting, intfdesc->bNumEndpoints);
+	logtoall("[xbox]intf=%x,alt=%x,epcnt=%x\n",intfdesc->bInterfaceNumber, intfdesc->bAlternateSetting, intfdesc->bNumEndpoints);
 	if(0 == intfdesc->bNumEndpoints){
-		say("[xbox]bNumEndpoints=0, trying next\n");
+		logtoall("[xbox]bNumEndpoints=0, trying next\n");
 		return 0;
 	}
 
@@ -196,7 +196,7 @@ int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 		switch(endpdesc->bDescriptorType){
 		case 5:{
 			if(3 != endpdesc->bmAttributes){
-				say("[xbox]bmAttributes=%x, trying next\n", endpdesc->bmAttributes);
+				logtoall("[xbox]bmAttributes=%x, trying next\n", endpdesc->bmAttributes);
 				return 0;
 			}
 
@@ -209,7 +209,7 @@ int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 			}
 
 			pktlen = endpdesc->wMaxPacketSize;
-			say("[xboxhid]endpdesc: addr=%x, attr=%x, pktlen=%x, interval=%x\n",
+			logtoall("[xboxhid]endpdesc: addr=%x, attr=%x, pktlen=%x, interval=%x\n",
 				endpdesc->bEndpointAddress, endpdesc->bmAttributes,
 				endpdesc->wMaxPacketSize, endpdesc->bInterval
 			);
@@ -231,7 +231,7 @@ int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 			break;
 		}//ep desc
 		default:{
-			say("[xboxhid]desctype=%x\n", endpdesc->bDescriptorType);
+			logtoall("[xboxhid]desctype=%x\n", endpdesc->bDescriptorType);
 		}//report desc?
 		}//switch
 
@@ -240,7 +240,7 @@ int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 
 
 //------------------------device side------------------------
-	say("[xboxhid]set_config\n");
+	logtoall("[xboxhid]set_config\n");
 	H2D_STD_DEV_SETCONF(&req, confdesc->bConfigurationValue);
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
@@ -252,7 +252,7 @@ int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 
 
 //------------------------start work------------------------
-	say("[xboxhid]start_work\n");
+	logtoall("[xboxhid]start_work\n");
 	u8 tmp[8];
 	tmp[0] = 0x05;
 	tmp[1] = 0x20;
@@ -268,7 +268,7 @@ int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 
 
 //------------------------transfer ring------------------------
-	say("[xboxhid]making trb\n");
+	logtoall("[xboxhid]making trb\n");
 	usb->ongiving = (void*)xboxhid_ongive;
 
 	if(pktlen > 0x40)pktlen = 0x40;
@@ -296,21 +296,21 @@ int usbxbox_driver(struct item* usb, int xxx, struct item* xhci, int slot)
 
 	//check version
 	switch(devdesc->idProduct){
-	case 0x0202:say("xbox\n");break;
+	case 0x0202:logtoall("xbox\n");break;
 	case 0x0285:
-	case 0x0289:say("xbox-s\n");break;
-	case 0x028e:say("xbox360\n");break;
-	case 0x028f:say("xbox360-wireless\n");break;
-	case 0x02d1:say("xboxone\n");break;
-	case 0x02dd:say("xboxone-2015\n");break;
-	case 0x02e3:say("xboxone-elite\n");break;
-	case 0x02e6:say("xbox-dongle\n");break;
-	case 0x02ea:say("xboxones\n");break;
+	case 0x0289:logtoall("xbox-s\n");break;
+	case 0x028e:logtoall("xbox360\n");break;
+	case 0x028f:logtoall("xbox360-wireless\n");break;
+	case 0x02d1:logtoall("xboxone\n");break;
+	case 0x02dd:logtoall("xboxone-2015\n");break;
+	case 0x02e3:logtoall("xboxone-elite\n");break;
+	case 0x02e6:logtoall("xbox-dongle\n");break;
+	case 0x02ea:logtoall("xboxones\n");break;
 	}
 
 	//composite device, all interface
 	while(1){
-		say("[xbox]interface: node=%p,desc=%p, num=%x, alt=%x, c=%x,s=%x,p=%x\n",
+		logtoall("[xbox]interface: node=%p,desc=%p, num=%x, alt=%x, c=%x,s=%x,p=%x\n",
 			intfnode,intfdesc, intfdesc->bInterfaceNumber, intfdesc->bAlternateSetting,
 			intfdesc->bInterfaceClass, intfdesc->bInterfaceSubClass, intfdesc->bInterfaceProtocol);
 

@@ -63,7 +63,7 @@ void dbgpid_draw_gl41(
 }
 static void dbgpid_read_byworld_bywnd(_obj* ent,struct style* slot, _syn* stack,int sp)
 {
-	//say("@%s\n",__func__);
+	//logtoall("@%s\n",__func__);
 	if(0 == stack)return;
 
 	_obj* wor = stack[sp-2].pchip;
@@ -116,7 +116,7 @@ static void dbgpid_reader(_obj* act)
 }
 static void dbgpid_writer(_obj* ent,void* foot, void* arg,int key, void* buf,int len)
 {
-	//say("%s: %p, %p\n",__func__, ent, buf);
+	//logtoall("%s: %p, %p\n",__func__, ent, buf);
 	ent->priv_ptr = buf;
 }
 static void dbgpid_delete(_obj* act)

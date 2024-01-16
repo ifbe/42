@@ -148,10 +148,10 @@ static void calculator_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("calc(%x,%x,%x)\n",win,act,sty);
-	say("buffer:%s\n", infix);
-	say("postfix:%s\n", postfix);
-	say("result:%s\n", result);
+	logtoall("calc(%x,%x,%x)\n",win,act,sty);
+	logtoall("buffer:%s\n", infix);
+	logtoall("postfix:%s\n", postfix);
+	logtoall("result:%s\n", result);
 }
 
 
@@ -178,14 +178,14 @@ void calculator_char(_obj* ent, struct style* slot, int key)
 		}
 		infix[count] = 0;
 		count=0;
-		say("buffer:%s\n", infix);
+		logtoall("buffer:%s\n", infix);
 
 		infix2postfix(infix, postfix);
-		say("postfix:%s\n", postfix);
+		logtoall("postfix:%s\n", postfix);
 
 		final = calculator(postfix, 0, 0);
 		double2decstr(final, result);
-		say("result:%s\n", result);
+		logtoall("result:%s\n", result);
 	}
 	else
 	{
@@ -201,13 +201,13 @@ static void calculator_write_bywnd(_obj* ent,struct style* slot, _obj* wnd,struc
 	if('p' == (ev->what&0xff)){
 		vec3 xyz;
 		gl41data_convert(wnd, area, ev, xyz);
-		//say("%f,%f\n",xyz[0], xyz[1]);
+		//logtoall("%f,%f\n",xyz[0], xyz[1]);
 
 		if(0x2b70 == ev->what){
 			int x = (int)(xyz[0]*8);
 			int y = (int)(xyz[1]*8);
 			y = 3-y;
-			//say("%d,%d\n",x,y);
+			//logtoall("%d,%d\n",x,y);
 			if((y>=0)&&(y<=3))calculator_char(ent,slot, table[y][x]);
 		}
 	}

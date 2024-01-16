@@ -5,7 +5,7 @@
 
 int search_read(_obj* art,void* foot, _syn* stack,int sp, u8* arg, int idx, void** buf, int len)
 {
-	say("@search_read\n");
+	logtoall("@search_read\n");
 
 	int j;
 	struct str* str = (void*)art->priv_256b;
@@ -20,7 +20,7 @@ int search_read(_obj* art,void* foot, _syn* stack,int sp, u8* arg, int idx, void
 }
 int search_write(_obj* art,void* foot, _syn* stack,int sp, u8* arg, int idx, void* buf, int len)
 {
-	say("@search_write\n");
+	logtoall("@search_write\n");
 	if(0 == arg)return 0;
 
 	int j;
@@ -48,6 +48,6 @@ int search_delete(_obj* ele)
 }
 int search_create(_obj* ele, u8* arg)
 {
-	say("@search_create\n");
+	logtoall("@search_create\n");
 	return 1;
 }

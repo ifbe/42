@@ -16,7 +16,7 @@ void forcedirected_2d(
 {
 	int j,k;
 	float x,y,t;
-	//say("vlen=%d\n",vlen);
+	//logtoall("vlen=%d\n",vlen);
 
 	//coulomb force
 	for(j=0;j<vlen;j++)
@@ -38,7 +38,7 @@ void forcedirected_2d(
 
 			obuf[j][0] += x;
 			obuf[j][1] += y;
-			//say("%d,%d,%f,%f\n",j,k,x,y);
+			//logtoall("%d,%d,%f,%f\n",j,k,x,y);
 		}
 	}
 
@@ -64,7 +64,7 @@ void forcedirected_2d(
 	for(j=0;j<vlen;j++)
 	{
 /*
-		say("%f,%f -> %f,%f\n",
+		logtoall("%f,%f -> %f,%f\n",
 			vbuf[j][0], vbuf[j][1],
 			obuf[j][0], obuf[j][1]
 		);
@@ -72,7 +72,7 @@ void forcedirected_2d(
 		vbuf[j][0] += obuf[j][0] / 50.0;
 		vbuf[j][1] += obuf[j][1] / 50.0;
 	}
-	//say("\n");
+	//logtoall("\n");
 }
 void forcedirected_3d(
 	vec3 obuf[], int olen,
@@ -133,7 +133,7 @@ void forcedirected_3d(
 	for(j=0;j<vlen;j++)
 	{
 /*
-		say("%f,%f,%f -> %f,%f,%f\n",
+		logtoall("%f,%f,%f -> %f,%f,%f\n",
 			vbuf[j][0], vbuf[j][1], vbuf[j][2],
 			obuf[j][0], obuf[j][1], obuf[j][2]
 		);
@@ -142,5 +142,5 @@ void forcedirected_3d(
 		vbuf[j][1] += obuf[j][1] / 50.0;
 		vbuf[j][2] += obuf[j][2] / 50.0;
 	}
-	//say("\n");
+	//logtoall("\n");
 }

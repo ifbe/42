@@ -17,7 +17,7 @@ int acpi_getpcie(struct MCFG_CONFSPACE** addr, int* size);
 
 void initpci_mmio()
 {
-	say("@initpci_mmio\n");
+	logtoall("@initpci_mmio\n");
 
 	struct MCFG_CONFSPACE* conf = 0;
 	int size = 0;
@@ -25,14 +25,14 @@ void initpci_mmio()
 	if(0 == ret)return;
 	if(0 == conf)return;
 	if(0 == size)return;
-	say("acpi mcfg: conf=%p, size=%x\n", conf, size);
+	logtoall("acpi mcfg: conf=%p, size=%x\n", conf, size);
 
 	int j,cnt;
 	u32* addr;
 	u32 bus,dev,fun;
 	u32 idid,type;
 	for(j=0;j<size;j++){
-		say("#%d: addr=%p, group=%x, busstart=%x, busend=%x\n", j,
+		logtoall("#%d: addr=%p, group=%x, busstart=%x, busend=%x\n", j,
 			conf[j].BaseAddr, conf[j].GroupNum, conf[j].BusNum_start, conf[j].BusNum_end);
 
 		cnt = conf[j].BusNum_end - conf[j].BusNum_start;
@@ -44,18 +44,18 @@ void initpci_mmio()
 
 			idid = addr[0];
 			type = addr[2];
-			say("(%x,%x,%x,%x)@%p: idid=%08x, type=%08x\n",
+			logtoall("(%x,%x,%x,%x)@%p: idid=%08x, type=%08x\n",
 				conf[j].GroupNum, conf[j].BusNum_start+bus, dev, fun,
 				addr, idid, type);
 
 			switch(type >> 16){
 			case 0x0101:
-				say("ide\n");
+				logtoall("ide\n");
 				break;
 
 			case 0x0106:
 				if(0x01 == ((type>>8)&0xff)){
-					say("ahci\n");
+					logtoall("ahci\n");
 				}
 				break;
 
@@ -63,36 +63,36 @@ void initpci_mmio()
 				switch((type>>8)&0xff){
 				case 0x02:
 				case 0x03:
-					say("nvme\n");
+					logtoall("nvme\n");
 					break;
 				}
 				break;
 
 			case 0x0200:
 				if(0x100e8086 == idid){
-					say("eth.e1000\n");
+					logtoall("eth.e1000\n");
 				}
 				else{
-					say("eth\n");
+					logtoall("eth\n");
 				}
 				break;
 
 			case 0x0c03:
 				switch((type>>8)&0xff){
 				case 0x00:
-					say("uhci\n");
+					logtoall("uhci\n");
 					break;
 				case 0x10:
-					say("ohci\n");
+					logtoall("ohci\n");
 					break;
 				case 0x20:
-					say("ehci\n");
+					logtoall("ehci\n");
 					break;
 				case 0x30:
-					say("xhci\n");
+					logtoall("xhci\n");
 					break;
 				case 0x40:
-					say("usb4hia\n");
+					logtoall("usb4hia\n");
 					break;
 				}//usbver
 				break;

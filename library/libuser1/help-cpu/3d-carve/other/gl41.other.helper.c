@@ -94,9 +94,9 @@ void gl41frustum(_obj* ctx, struct fstyle* frus)
 	gl41line(ctx, 0, rbn, rbf);
 	gl41line(ctx, 0, ltn, ltf);
 	gl41line(ctx, 0, rtn, rtf);
-	//say("(%f,%f,%f)->(%f,%f,%f)\n",lbf[0],lbf[1],lbf[2],rtf[0],rtf[1],rtf[2]);
-	//say("(%f,%f,%f)->(%f,%f,%f)->(%f,%f,%f)\n",vc[0],vc[1],vc[2],lbn[0],lbn[1],lbn[2],rtn[0],rtn[1],rtn[2]);
-	//say("(%f,%f,%f)->(%f,%f,%f)->(%f,%f,%f)\n",vc[0],vc[1],vc[2],lbf[0],lbf[1],lbf[2],rtf[0],rtf[1],rtf[2]);
+	//logtoall("(%f,%f,%f)->(%f,%f,%f)\n",lbf[0],lbf[1],lbf[2],rtf[0],rtf[1],rtf[2]);
+	//logtoall("(%f,%f,%f)->(%f,%f,%f)->(%f,%f,%f)\n",vc[0],vc[1],vc[2],lbn[0],lbn[1],lbn[2],rtn[0],rtn[1],rtn[2]);
+	//logtoall("(%f,%f,%f)->(%f,%f,%f)->(%f,%f,%f)\n",vc[0],vc[1],vc[2],lbf[0],lbf[1],lbf[2],rtf[0],rtf[1],rtf[2]);
 }/*
 void gl41frustum(_obj* win, struct fstyle* sty)
 {

@@ -85,14 +85,14 @@ int kqueue_thread(int argc, const char * argv[])
 		{
 			here = events[j].udata;
 			fd = events[j].ident;
-			//say("here=%llx,fd=%x\n", here, fd);
+			//logtoall("here=%llx,fd=%x\n", here, fd);
 
 			switch(here->type){
 			case _ptmx_:
 			case _uart_:{
 				cnt = read(fd, tmpbuf, BUFFER_SIZE);
 				if(0 == cnt){
-					say("error@%.4s:len=%x\n", &here->type, cnt);
+					logtoall("error@%.4s:len=%x\n", &here->type, cnt);
 					system_delete(here);
 					break;
 				}
@@ -106,7 +106,7 @@ int kqueue_thread(int argc, const char * argv[])
 				cnt = socket_reader(here,0, (p64)here->sockinfo.peer,0, tmpbuf,BUFFER_SIZE);
 				if(cnt >= 0)
 				{
-					//say("@kqueuethread: %.4s\n", &obj[cc].type);
+					//logtoall("@kqueuethread: %.4s\n", &obj[cc].type);
 					if((0==here->irel0)&&(0==here->orel0))printmemory(tmpbuf, cnt);
 					else give_data_into_peer(here,_dst_, stack,0, (p64)here->sockinfo.peer,0, tmpbuf,cnt);
 				}
@@ -136,7 +136,7 @@ int kqueue_thread(int argc, const char * argv[])
 						here = parent;
 					}
 
-					//say("@kqueuethread: %.4s\n", &here->type);
+					//logtoall("@kqueuethread: %.4s\n", &here->type);
 					give_data_into_peer(here,_dst_, stack,0, 0,0, tmpbuf,cnt);
 				}
 				if(cnt <= 0)

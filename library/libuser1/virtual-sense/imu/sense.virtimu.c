@@ -45,7 +45,7 @@ void virtimu_senseforce(_obj* ent, float* out)
 		tmp[j+0] = sty->actual.angular_v[j] * k;
 		tmp[j+3] = sty->actual.displace_a[j];
 	}
-	if(DEBUG)say("world: %f,%f,%f,%f,%f,%f\n",tmp[0],tmp[1],tmp[2],tmp[3],tmp[4],tmp[5]);
+	if(DEBUG)logtoall("world: %f,%f,%f,%f,%f,%f\n",tmp[0],tmp[1],tmp[2],tmp[3],tmp[4],tmp[5]);
 
 	vec4 quat;
 	for(j=0;j<3;j++)quat[j] = -sty->actual.angular_x[j];
@@ -53,7 +53,7 @@ void virtimu_senseforce(_obj* ent, float* out)
 
 	quaternion_rotatefrom(&out[0], &tmp[0], quat);
 	quaternion_rotatefrom(&out[3], &tmp[3], quat);
-	say("local: %f,%f,%f,%f,%f,%f\n",out[0],out[1],out[2],out[3],out[4],out[5]);
+	logtoall("local: %f,%f,%f,%f,%f,%f\n",out[0],out[1],out[2],out[3],out[4],out[5]);
 }
 
 
@@ -61,12 +61,12 @@ void virtimu_senseforce(_obj* ent, float* out)
 
 int virtimu_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	say("@virtimu_read:%p,%p\n", ent, foot);
+	logtoall("@virtimu_read:%p,%p\n", ent, foot);
 	return 0;
 }
 int virtimu_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
-	//say("@virtimu_write:%.4s\n",&foot);
+	//logtoall("@virtimu_write:%.4s\n",&foot);
 	if(_clk_ == stack[sp=1].foottype){
 		float out[6];
 		virtimu_checkplace(ent);
@@ -101,7 +101,7 @@ int virtimu_delete(_obj* ent)
 }
 int virtimu_create(_obj* ent, void* str)
 {
-	say("@virtimu_create\n");
+	logtoall("@virtimu_create\n");
 	ent->REL_WORLD = 0;
 	ent->REL_DRONE = 0;
 	return 0;

@@ -34,7 +34,7 @@ void loadimgfromjpg(u8* buf, int len, int* width, int* height, int* depth, int* 
 	ret = njDecode(buf, len);
 	if(0 != ret)
 	{
-		say("error@njDecode:%d\n", ret);
+		logtoall("error@njDecode:%d\n", ret);
 		return;
 	}
 
@@ -72,7 +72,7 @@ void loadimgfrompng(u8* buf, int len, int* width, int* height, int* depth, int* 
 	ret = upng_get_error(upng);
 	if(0 != ret)
 	{
-		say("upng_new_from_bytes: %d\n", ret);
+		logtoall("upng_new_from_bytes: %d\n", ret);
 		return;
 	}
 
@@ -80,7 +80,7 @@ void loadimgfrompng(u8* buf, int len, int* width, int* height, int* depth, int* 
 	ret = upng_get_error(upng);
 	if(0 != ret)
 	{
-		say("upng_decode: %d\n", ret);
+		logtoall("upng_decode: %d\n", ret);
 		return;
 	}
 
@@ -91,7 +91,7 @@ void loadimgfrompng(u8* buf, int len, int* width, int* height, int* depth, int* 
 	w = *width;
 	h = *height;
 	d = *depth;
-	say("%d,%d,%d\n",w,h,d);
+	logtoall("%d,%d,%d\n",w,h,d);
 
 	src = upng_get_buffer(upng);
 	dst = buf;
@@ -168,7 +168,7 @@ int loadtexfromfile(struct texture* tex, char* name)
 
 	len = openreadclose(name, 0, buf, 0x1000000);
 	if(len <= 0){
-		say("len=%d, %s\n", len, name);
+		logtoall("len=%d, %s\n", len, name);
 		return -5;
 	}
 

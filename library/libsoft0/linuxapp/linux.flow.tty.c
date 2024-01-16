@@ -55,14 +55,14 @@ _obj* uart_create(char* p, int speed)
 	int fd = open(p , O_RDWR|O_NOCTTY|O_NDELAY);
 	if(fd <= 0)
 	{
-		say("error:%d@open:%s\n",errno,p);
+		logtoall("error:%d@open:%s\n",errno,p);
 		return 0;
 	}
 
 	//obj
 	struct item* oo = &obj[fd];
 	oo->sockinfo.fd = fd;
-	say("fd=%d,obj=%p\n", fd, oo);
+	logtoall("fd=%d,obj=%p\n", fd, oo);
 
 	struct termios2 options;
 	ioctl(fd, TCGETS2, &options);
@@ -117,7 +117,7 @@ int uart_delete(_obj* oo)
 int uart_reader(_obj* oo,int xx, p64 arg,int off, void* buf,int len)
 {
 	int fd = oo->sockinfo.fd;
-	//say("fd=%d,obj=%p\n", fd, oo);
+	//logtoall("fd=%d,obj=%p\n", fd, oo);
 
 	int ret;
 	ret = read(fd, buf, len);
@@ -126,7 +126,7 @@ int uart_reader(_obj* oo,int xx, p64 arg,int off, void* buf,int len)
 int uart_writer(_obj* oo,int xx, p64 arg,int off, void* buf,int len)
 {
 	int fd = oo->sockinfo.fd;
-	//say("fd=%d,obj=%p\n", fd, oo);
+	//logtoall("fd=%d,obj=%p\n", fd, oo);
 
 	int ret = write(fd, buf, len);
 	if(ret != len){

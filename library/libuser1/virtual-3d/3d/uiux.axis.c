@@ -37,7 +37,7 @@ static void axis3d_perobj(_obj* wnd, float* vc, float* vr, float* vf, float* vt)
 }
 void axis3d_draw_gl41(_obj* scene, _obj* wnd)
 {
-	//say("@axis3d_read: %.8s\n", &scene->hfmt);
+	//logtoall("@axis3d_read: %.8s\n", &scene->hfmt);
 
 	vec3 tc,tr,tf,tt;
 	tc[0] = tc[1] = tc[2] = 0.0;
@@ -107,7 +107,7 @@ int axis3d_detach(struct halfrel* self, struct halfrel* peer)
 }
 int axis3d_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@axis3d_attach\n");
+	logtoall("@axis3d_attach\n");
 	return 0;
 }
 
@@ -128,6 +128,6 @@ int axis3d_delete(_obj* scene)
 }
 int axis3d_create(_obj* scene, void* str)
 {
-	say("@axis3d_create\n");
+	logtoall("@axis3d_create\n");
 	return 0;
 }

@@ -7,7 +7,7 @@ void quaternion2eulerian(float* q, float* a);
 void quaternion_multiplyfrom(float* o, float* l, float* r);
 
 
-#define balancelog say
+#define balancelog logtoall
 
 
 void balancer_measure(_obj* ent)
@@ -31,22 +31,22 @@ void balancer_measure(_obj* ent)
 
 	vec4 vv;
 	quaternion2axisandangle(ax, vv, &vv[3]);
-	say("%s: axis,angle=%f,%f,%f,%f\n",__func__, vv[0],vv[1],vv[2],vv[3]);
+	logtoall("%s: axis,angle=%f,%f,%f,%f\n",__func__, vv[0],vv[1],vv[2],vv[3]);
 
 	vec4 ve;
 	quaternion2eulerian(ax, ve);
-	say("%s: eulerian=%f,%f,%f,%f\n",__func__, ve[0],ve[1],ve[2],ve[3]);
+	logtoall("%s: eulerian=%f,%f,%f,%f\n",__func__, ve[0],ve[1],ve[2],ve[3]);
 
 	float x_ang = ve[0]*PI/180;
 	float x_cos = getcos(x_ang);
 	float x_sin = getsin(x_ang);
-	say("a=%f,cos=%f,sin=%f\n",x_ang,x_cos,x_sin);
+	logtoall("a=%f,cos=%f,sin=%f\n",x_ang,x_cos,x_sin);
 
 	//basis: {masscenter, bodyright, topXright, worldtop}
 	//vector: masscenter to touchdown point
 	vec3 pl = {-lr, lt*x_sin, lt+lt*x_cos};
 	vec3 pr = {lr, lt*x_sin, lt+lt*x_cos};
-	say("pl=(%f,%f,%f), pr=(%f,%f,%f)\n", pl[0],pl[1],pl[2], pr[0],pr[1],pr[2]);
+	logtoall("pl=(%f,%f,%f), pr=(%f,%f,%f)\n", pl[0],pl[1],pl[2], pr[0],pr[1],pr[2]);
 }
 void balancer_compute(_obj* ent)
 {
@@ -56,7 +56,7 @@ void balancer_compute(_obj* ent)
 	struct style* sty = rel->pfoot;
 	if(0 == sty)return;
 
-	say("%s\n",__func__);
+	logtoall("%s\n",__func__);
 }
 void balancer_operate(_obj* ent)
 {
@@ -66,7 +66,7 @@ void balancer_operate(_obj* ent)
 	struct style* sty = rel->pfoot;
 	if(0 == sty)return;
 
-	say("%s\n",__func__);
+	logtoall("%s\n",__func__);
 }
 
 
@@ -140,7 +140,7 @@ void balancer_report(_obj* ent)
 	_obj* dbg = ent->ENT_DBGUI;
 	if(0 == dbg)return;
 
-	//say("%s\n",__func__);
+	//logtoall("%s\n",__func__);
 	dbg->onwriter(dbg, 0, 0, 0, sty, 0);
 }
 
@@ -179,7 +179,7 @@ int balancer_attach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ent = self->pchip;
 	_obj* dbg = peer->pchip;
-	say("%s: %.4s, %.8s\n", __func__, &self->foottype, &dbg->type);
+	logtoall("%s: %.4s, %.8s\n", __func__, &self->foottype, &dbg->type);
 
 	switch(self->foottype){
 	case _dbg_:

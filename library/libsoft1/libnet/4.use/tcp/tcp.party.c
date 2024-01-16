@@ -116,10 +116,10 @@ int partyclient_write_sent(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf, i
 
 	//success or error
 	if(0 == ncmp(buf, "HTTP", 4)){
-		say("@partyclient error:<<<\n%.*s>>>\n",len,buf);
+		logtoall("@partyclient error:<<<\n%.*s>>>\n",len,buf);
 	}
 	else{
-		say("@partyclient success:<<<\n%.*s\n>>>\n",len,buf);
+		logtoall("@partyclient success:<<<\n%.*s\n>>>\n",len,buf);
 	}
 	return 0;
 }
@@ -138,7 +138,7 @@ while(1){
 		u32 cnt = 0;
 		u32 sum = 0;
 		int ret = party_parse(buf,len, &to, &by, &cnt, &sum);
-		//say("to=%x,by=%x,cnt=%x,ret=%x,len=%x\n",to,by,cnt,ret,len);
+		//logtoall("to=%x,by=%x,cnt=%x,ret=%x,len=%x\n",to,by,cnt,ret,len);
 
 		if(len == ret+cnt){		//complete packet
 			give_data_into_peer(art,_dst_, stack,sp, 0,0, buf+ret,cnt);
@@ -196,7 +196,7 @@ while(1){
 	u64 by = 0;
 	u32 cnt = 0;
 	int ret = party_parse(buf,len, &to, &by, &cnt);
-	say("to=%x,by=%x,cnt=%x,ret=%x,len=%x\n",to,by,cnt,ret,len);
+	logtoall("to=%x,by=%x,cnt=%x,ret=%x,len=%x\n",to,by,cnt,ret,len);
 	if(to != art->SENDER)ret = 0;
 
 	give_data_into_peer(art,_std_, 0,0, buf+ret,len-ret);
@@ -207,7 +207,7 @@ int partyclient_write_bydst(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf,i
 {
 	u8 tmp[64];
 	if(len <= 0){
-		say("len=%x\n", len);
+		logtoall("len=%x\n", len);
 		return 0;
 	}
 
@@ -222,7 +222,7 @@ int partyclient_write_bystd(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf,i
 {
 	u8 tmp[64];
 	if(len <= 0){
-		say("len=%x\n", len);
+		logtoall("len=%x\n", len);
 		return 0;
 	}
 
@@ -239,7 +239,7 @@ int partyclient_write_bystd(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf,i
 
 int partyclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	//say("@partyclient_write: %.4s\n", &self->foottype);
+	//logtoall("@partyclient_write: %.4s\n", &self->foottype);
 	//printmemory(buf,len);
 
 	if(0==stack|sp<2)return 0;
@@ -258,7 +258,7 @@ int partyclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 			partyclient_write_sent(self,peer, stack,sp, buf,len);
 			break;
 		}
-		say("error@partyclient_write\n");
+		logtoall("error@partyclient_write\n");
 		break;
 	}
 	}
@@ -306,7 +306,7 @@ int partyclient_create(_obj* ele, void* arg, int argc, u8** argv)
 		if(0 == ncmp(argv[j], "to:", 3))to = str2val(argv[j]+3);
 		if(0 == ncmp(argv[j], "by:", 3))by = str2val(argv[j]+3);
 	}
-	say("to=%llx,by=%llx\n", to, by);
+	logtoall("to=%llx,by=%llx\n", to, by);
 
 	struct perobj* perobj = (void*)ele->priv_256b;
 	perobj->recver = to;
@@ -322,7 +322,7 @@ int partyclient_create(_obj* ele, void* arg, int argc, u8** argv)
 
 int partyserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
-	say("@partyserver_write\n");
+	logtoall("@partyserver_write\n");
 	return 0;
 }
 int partyserver_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
@@ -343,7 +343,7 @@ int partyserver_create(_obj* ele, u8* url)
 
 int partymaster_write_other(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf, int len)
 {
-	say("@partymaster_write_other: foot=%.4s,len=%x\n", &self->foottype, len);
+	logtoall("@partymaster_write_other: foot=%.4s,len=%x\n", &self->foottype, len);
 	printmemory(buf, 0x20);
 
 	_obj* art = self->pchip;
@@ -353,7 +353,7 @@ int partymaster_write_other(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf, 
 	//printmemory(per, 0x20);
 
 while(1){
-	say("sts=%x,len=%x\n", per->sts, per->len);
+	logtoall("sts=%x,len=%x\n", per->sts, per->len);
 	printmemory(buf, 0x20);
 
 	if(0 == per->sts){		//no packet yet
@@ -362,7 +362,7 @@ while(1){
 		u32 cnt = 0;
 		u32 sum = 0;
 		int ret = party_parse(buf,len, &to, &by, &cnt, &sum);
-		say("to=%x,by=%x,cnt=%x,sum=%x,ret=%x,len=%x\n", to,by,cnt,sum, ret,len);
+		logtoall("to=%x,by=%x,cnt=%x,sum=%x,ret=%x,len=%x\n", to,by,cnt,sum, ret,len);
 
 		if(ret < 8){
 			give_data_into_peer(art,peer->foottype, stack,sp, 0,0, "wrong head\n", 10);
@@ -371,19 +371,19 @@ while(1){
 		}
 
 		if(len == ret+cnt){		//complete packet
-say("dbg1\n");
+logtoall("dbg1\n");
 			give_data_into_peer(art,to, stack,sp, 0,0, buf,len);
 			return 0;
 		}
 		if(len > ret+cnt){		//complete packet + next packet
-say("dbg2\n");
+logtoall("dbg2\n");
 			give_data_into_peer(art,to, stack,sp, 0,0, buf,ret+cnt);
 			buf += ret+cnt;
 			len -= ret+cnt;
 			continue;
 		}
 		if(len < ret+cnt){		//head ok, body not
-say("dbg3\n");
+logtoall("dbg3\n");
 			give_data_into_peer(art,to, stack,sp, 0,0, buf,len);
 			//per->sta_name = by;
 			//per->sta_user = 0;
@@ -400,11 +400,11 @@ say("dbg3\n");
 	//}
 	else if(_data_ == per->sts){		//data still not complete
 		if(len == per->len){
-say("dbg4\n");
+logtoall("dbg4\n");
 			give_data_into_peer(art,per->dst_name, stack,sp, 0,0, buf,len);
 			per->hash_cur += party_sum(buf, len);
 			if(per->hash_all != per->hash_cur){
-				say("%x nequal %x\n", per->hash_all, per->hash_cur);
+				logtoall("%x nequal %x\n", per->hash_all, per->hash_cur);
 				system_delete(peer->pchip);
 			}
 
@@ -412,11 +412,11 @@ say("dbg4\n");
 			return 0;
 		}
 		if(len > per->len){
-say("dbg5\n");
+logtoall("dbg5\n");
 			give_data_into_peer(art,per->dst_name, stack,sp, 0,0, buf,per->len);
 			per->hash_cur += party_sum(buf, per->len);
 			if(per->hash_all != per->hash_cur){
-				say("%x nequal %x\n", per->hash_all, per->hash_cur);
+				logtoall("%x nequal %x\n", per->hash_all, per->hash_cur);
 				system_delete(peer->pchip);
 			}
 
@@ -426,7 +426,7 @@ say("dbg5\n");
 			continue;
 		}
 		if(len < per->len){
-say("dbg6\n");
+logtoall("dbg6\n");
 			give_data_into_peer(art,per->dst_name, stack,sp, 0,0, buf,len);
 			per->hash_cur += party_sum(buf, len);
 
@@ -435,7 +435,7 @@ say("dbg6\n");
 		}
 	}
 	else{
-		say("error@partymaster_write_other:unknown per->sts\n");
+		logtoall("error@partymaster_write_other:unknown per->sts\n");
 		system_delete(peer->pchip);
 		return 0;
 	}
@@ -448,7 +448,7 @@ say("dbg6\n");
 		if(0 == to)return 0;
 	}
 	else self->foot = to;
-	say("to=%llx,by=%llx\n", to, by);
+	logtoall("to=%llx,by=%llx\n", to, by);
 
 	give_data_into_peer(art,to, 0,0, buf,len);
 */
@@ -525,14 +525,14 @@ fail:
 
 int partymaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
-	//say("@partymaster_write\n");
+	//logtoall("@partymaster_write\n");
 	if(0==stack|sp<2)return 0;
 	struct halfrel* self = &stack[sp-1];
 	struct halfrel* peer = &stack[sp-2];
 	_obj* sys = peer->pchip;
 
 	//printmemory(buf, len);
-	//say("valid message:%.*s", len, buf);
+	//logtoall("valid message:%.*s", len, buf);
 
 	//only handle socket
 	if(_sys_ != sys->tier)return 0;
@@ -550,7 +550,7 @@ int partymaster_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int id
 }
 int partymaster_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@partymaster_detach\n");
+	logtoall("@partymaster_detach\n");
 	_obj* art = self->pchip;
 	struct perobj* perobj = (void*)art->priv_256b;
 	struct peruser* peruser = perobj->peruser;
@@ -559,7 +559,7 @@ int partymaster_detach(struct halfrel* self, struct halfrel* peer)
 }
 int partymaster_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@partymaster_attach\n");
+	logtoall("@partymaster_attach\n");
 	return 0;
 }
 int partymaster_delete(_obj* ele)

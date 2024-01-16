@@ -39,7 +39,7 @@ void drawvt100_create()
 	for(b=0;b<6;b++){
 		j = 16+(36*r)+(6*g)+b;
 		getcolor[j] = (0x280000*r)|(0x2800*g)|(0x28*b);
-		//say("%x:%x\n",j,getcolor[j]);
+		//logtoall("%x:%x\n",j,getcolor[j]);
 	}
 	}
 	}

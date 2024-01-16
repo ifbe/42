@@ -178,7 +178,7 @@ void areauv2worldxyz(vec3 vec, struct fstyle* frus)
 	t[0] = vec[0]*2.0 - 1.0;
 	t[1] = vec[1]*2.0 - 1.0;
 	t[2] = 0.9;
-	//say("%f,%f\n",xyz[0],xyz[1]);
+	//logtoall("%f,%f\n",xyz[0],xyz[1]);
 
 	mat4 m;
 	clip2world_projznzp(m, frus);

@@ -3,7 +3,7 @@
 #include<string.h>
 #include<windows.h>
 #include "const/def.h"
-void say(char*,...);
+void logtoall(char*,...);
 void printmemory(char*,int);
 
 
@@ -78,13 +78,13 @@ int startfolder(char* name)
 
 	if(folderbody==INVALID_HANDLE_VALUE)
 	{
-		//say("(startfolder error)findfirstfile\n");
+		//logtoall("(startfolder error)findfirstfile\n");
 		return 0;
 	}
 
 	//if( ! (finddata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) )
 	//{
-	//	//say("not directory\n");
+	//	//logtoall("not directory\n");
 	//	return 0;
 	//}
 
@@ -112,7 +112,7 @@ void listfolder()
 	while(1)
 	{
 		//printmemory(finddata.cFileName,16);
-		say("%s\n",finddata.cFileName);
+		logtoall("%s\n",finddata.cFileName);
 
 		//
 		ret=FindNextFile(folderbody,&finddata);

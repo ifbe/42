@@ -13,7 +13,7 @@ void view2clip_orthznzp(mat4 m, struct fstyle* s)
 	float t = s->vt[3];
 	float n = s->vn[3];
 	float f = s->vf[3];
-	//say("%f,%f,%f,%f,%f,%f\n",l,r,b,t,n,f);
+	//logtoall("%f,%f,%f,%f,%f,%f\n",l,r,b,t,n,f);
 
 	m[0][0] = 2.0 / (r-l);
 	m[0][1] = 0.0;
@@ -52,7 +52,7 @@ void view2clip_orthz0z1(mat4 m, struct fstyle* s)
 	float t = s->vt[3];
 	float n = s->vn[3];
 	float f = s->vf[3];
-	//say("%f,%f,%f,%f,%f,%f\n",l,r,b,t,n,f);
+	//logtoall("%f,%f,%f,%f,%f,%f\n",l,r,b,t,n,f);
 
 	m[0][0] = 2.0 / (r-l);
 	m[0][1] = 0.0;
@@ -91,7 +91,7 @@ void view2clip_projznzp(mat4 proj, struct fstyle* sty)
 	float t = sty->vt[3];
 	float n = sty->vn[3];
 	float f = sty->vf[3];
-	//say("%f,%f,%f,%f,%f,%f\n",l,r,b,t,n,f);
+	//logtoall("%f,%f,%f,%f,%f,%f\n",l,r,b,t,n,f);
 
 	proj[0][0] = 2 * n / (r-l);
 	proj[0][1] = 0.0;
@@ -156,7 +156,7 @@ void view2clip_projz0z1(mat4 proj, struct fstyle* sty)
 	float t = sty->vt[3];
 	float n = sty->vn[3];
 	float f = sty->vf[3];
-	//say("%f,%f,%f,%f,%f,%f\n",l,r,b,t,n,f);
+	//logtoall("%f,%f,%f,%f,%f,%f\n",l,r,b,t,n,f);
 
 	proj[0][0] = 2 * n / (r-l);
 	proj[0][1] = 0.0;

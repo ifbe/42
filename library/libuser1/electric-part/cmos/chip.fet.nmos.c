@@ -293,7 +293,7 @@ static void nmos_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int ke
 }
 static void nmos_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
-	say("nmos_write: %llx, %.4s=%x\n", ent, &foot, buf[0]);
+	logtoall("nmos_write: %llx, %.4s=%x\n", ent, &foot, buf[0]);
 	switch(stack[sp-1].foottype){
 		case 'D':nmos_write_D(ent,key, stack,sp, buf,len);return;
 		case 'S':nmos_write_S(ent,key, stack,sp, buf,len);return;

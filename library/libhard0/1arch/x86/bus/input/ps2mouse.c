@@ -80,7 +80,7 @@ byte mouse_read()
 
 void initps2()
 {
-	say("@initps2\n");
+	logtoall("@initps2\n");
 	return;
 
 	byte _status;	//unsigned char

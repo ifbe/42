@@ -39,7 +39,7 @@ void setidt(void* buf, int len);
 //
 void eventwrite(u64,u64,u64,u64);
 void printmemory(void*, int);
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 
@@ -72,74 +72,74 @@ static void anchorpoint()
 
 
 __attribute__((interrupt)) static void allcpu_isr00(void* p){
-	say("int00#DE\n");
+	logtoall("int00#DE\n");
 	asm("cli");
 	asm("hlt");
 }//Divide-by-zero
 __attribute__((interrupt)) static void allcpu_isr01(void* p){
-	say("int01#DB\n");
+	logtoall("int01#DB\n");
 	asm("cli");
 	asm("hlt");
 }//Debug
 __attribute__((interrupt)) static void allcpu_isr02(void* p){
-	say("int02!\n");
+	logtoall("int02!\n");
 	asm("cli");
 	asm("hlt");
 }//Non-maskable Interrupt
 __attribute__((interrupt)) static void allcpu_isr03(struct int_frame* p){
-	say("int03#BP: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
+	logtoall("int03#BP: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
 }//Breakpoint
 __attribute__((interrupt)) static void allcpu_isr04(void* p){
-	say("int04#OF\n");
+	logtoall("int04#OF\n");
 	asm("cli");
 	asm("hlt");
 }//Overflow
 __attribute__((interrupt)) static void allcpu_isr05(void* p){
-	say("int05#BR\n");
+	logtoall("int05#BR\n");
 	asm("cli");
 	asm("hlt");
 }//Bound Range Exceeded
 __attribute__((interrupt)) static void allcpu_isr06(struct int_frame* p){
-	say("int06#UD: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
+	logtoall("int06#UD: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
 	printmemory((void*)(p->ip), 0x10);
 	asm("cli");
 	asm("hlt");
 }//Invalid Opcode
 __attribute__((interrupt)) static void allcpu_isr07(struct int_frame* p){
-	say("int07#NM@%x\n", localapic_coreid());
+	logtoall("int07#NM@%x\n", localapic_coreid());
 	printmemory((void*)(p->ip-0x10), 0x20);
 	//asm("cli");
 	//asm("hlt");
 }//Device Not Available
 __attribute__((interrupt)) static void allcpu_isr08(void* p, u64 e){
-	say("int08#DF:%llx\n", e);
+	logtoall("int08#DF:%llx\n", e);
 	asm("cli");
 	asm("hlt");
 }//Double Fault
 __attribute__((interrupt)) static void allcpu_isr09(void* p){
-	say("int09!\n");
+	logtoall("int09!\n");
 	asm("cli");
 	asm("hlt");
 }//Coprocessor Segment Overrun
 __attribute__((interrupt)) static void allcpu_isr0a(void* p, u64 e){
-	say("int0a#TS:%llx\n", e);
+	logtoall("int0a#TS:%llx\n", e);
 	asm("cli");
 	asm("hlt");
 }//Invalid TSS
 __attribute__((interrupt)) static void allcpu_isr0b(void* p, u64 e){
-	say("int0b#NP:%llx\n", e);
+	logtoall("int0b#NP:%llx\n", e);
 	asm("cli");
 	asm("hlt");
 }//Segment Not Present
 __attribute__((interrupt)) static void allcpu_isr0c(void* p, u64 e){
-	say("int0c#SS:%llx\n", e);
+	logtoall("int0c#SS:%llx\n", e);
 	asm("cli");
 	asm("hlt");
 }//Stack-Segment Fault
 __attribute__((interrupt)) static void allcpu_isr0d(struct int_frame* p, u64 e){
 	printmemory((u8*)p-0x18, 0x80);
-	say("int0d#GP@core%x: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx, err=%llx\n", localapic_coreid(), p->flag, p->cs, p->ip, p->ss, p->sp, e);
-	say("index=%x,type=%x,internal=%x\n", e>>3, (e>>1)&3, e&1);
+	logtoall("int0d#GP@core%x: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx, err=%llx\n", localapic_coreid(), p->flag, p->cs, p->ip, p->ss, p->sp, e);
+	logtoall("index=%x,type=%x,internal=%x\n", e>>3, (e>>1)&3, e&1);
 	printmemory((void*)(p->ip), 0x10);
 	asm("cli");
 	asm("hlt");
@@ -149,94 +149,94 @@ __attribute__((interrupt)) static void allcpu_isr0e(struct int_frame* p, u64 e){
 	asm volatile("mov %%cr2, %0" : "=r"(cr2) );
 
 	printmemory(p, 0x60);
-	say("int0e#PF@core%x: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx, err=%llx, cr2=%llx\n", localapic_coreid(), p->flag, p->cs, p->ip, p->ss, p->sp, e, cr2);
-	say("anchor@%p,offset=%llx\n", anchorpoint, p->ip - (u64)anchorpoint);
+	logtoall("int0e#PF@core%x: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx, err=%llx, cr2=%llx\n", localapic_coreid(), p->flag, p->cs, p->ip, p->ss, p->sp, e, cr2);
+	logtoall("anchor@%p,offset=%llx\n", anchorpoint, p->ip - (u64)anchorpoint);
 	printmemory((void*)(p->ip), 0x10);
 	asm("cli");
 	asm("hlt");
 }//Page Fault
 __attribute__((interrupt)) static void allcpu_isr0f(void* p){
-	say("int0f!\n");
+	logtoall("int0f!\n");
 	asm("cli");
 	asm("hlt");
 }//Reserved
 __attribute__((interrupt)) static void allcpu_isr10(void* p){
-	say("int10#MF\n");
+	logtoall("int10#MF\n");
 	asm("cli");
 	asm("hlt");
 }//x87 Floating-Point Exception
 __attribute__((interrupt)) static void allcpu_isr11(void* p, u64 e){
-	say("int11#AC:%llx\n", e);
+	logtoall("int11#AC:%llx\n", e);
 	asm("cli");
 	asm("hlt");
 }//Alignment Check
 __attribute__((interrupt)) static void allcpu_isr12(void* p){
-	say("int12#MC\n");
+	logtoall("int12#MC\n");
 	asm("cli");
 	asm("hlt");
 }//Machine Check
 __attribute__((interrupt)) static void allcpu_isr13(void* p){
-	say("int13#XF\n");
+	logtoall("int13#XF\n");
 	asm("cli");
 	asm("hlt");
 }//SIMD Floating-Point Exception
 __attribute__((interrupt)) static void allcpu_isr14(void* p){
-	say("int14#VE\n");
+	logtoall("int14#VE\n");
 	asm("cli");
 	asm("hlt");
 }//Virtualization Exception
 __attribute__((interrupt)) static void allcpu_isr15(void* p){
-	say("int15!\n");
+	logtoall("int15!\n");
 	asm("cli");
 	asm("hlt");
 }//Reserved
 __attribute__((interrupt)) static void allcpu_isr16(void* p){
-	say("int16!\n");
+	logtoall("int16!\n");
 	asm("cli");
 	asm("hlt");
 }//Reserved
 __attribute__((interrupt)) static void allcpu_isr17(void* p){
-	say("int17!\n");
+	logtoall("int17!\n");
 	asm("cli");
 	asm("hlt");
 }//Reserved
 __attribute__((interrupt)) static void allcpu_isr18(void* p){
-	say("int18!\n");
+	logtoall("int18!\n");
 	asm("cli");
 	asm("hlt");
 }//Reserved
 __attribute__((interrupt)) static void allcpu_isr19(void* p){
-	say("int19!\n");
+	logtoall("int19!\n");
 	asm("cli");
 	asm("hlt");
 }//Reserved
 __attribute__((interrupt)) static void allcpu_isr1a(void* p){
-	say("int1a!\n");
+	logtoall("int1a!\n");
 	asm("cli");
 	asm("hlt");
 }//Reserved
 __attribute__((interrupt)) static void allcpu_isr1b(void* p){
-	say("int1b!\n");
+	logtoall("int1b!\n");
 	asm("cli");
 	asm("hlt");
 }//Reserved
 __attribute__((interrupt)) static void allcpu_isr1c(void* p){
-	say("int1c!\n");
+	logtoall("int1c!\n");
 	asm("cli");
 	asm("hlt");
 }//Reserved
 __attribute__((interrupt)) static void allcpu_isr1d(void* p){
-	say("int1d!\n");
+	logtoall("int1d!\n");
 	asm("cli");
 	asm("hlt");
 }//Reserved
 __attribute__((interrupt)) static void allcpu_isr1e(void* p, u64 e){
-	say("int1e#SX:%llx\n", e);
+	logtoall("int1e#SX:%llx\n", e);
 	asm("cli");
 	asm("hlt");
 }//Security Exception
 __attribute__((interrupt)) static void allcpu_isr1f(void* p){
-	say("int1f!\n");
+	logtoall("int1f!\n");
 	asm("cli");
 	asm("hlt");
 }//Reserved
@@ -245,18 +245,18 @@ __attribute__((interrupt)) static void allcpu_isr1f(void* p){
 
 
 __attribute__((interrupt)) static void allcpu_isr20(void* p){
-	//say("timer!\n");
+	//logtoall("timer!\n");
 	if(isr20_later)isr20_later(p);
 	else isr_825x();
 	irqchip_endofirq(0);
 }
 __attribute__((interrupt)) static void allcpu_isr21(void* p){
-	say("ps2kbd!\n");
+	logtoall("ps2kbd!\n");
 	//isr_8042();
 	irqchip_endofirq(1);
 }
 __attribute__((interrupt)) static void allcpu_isr27(struct int_frame* p){
-	//say("int27: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
+	//logtoall("int27: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
 /*
 	out8(0x20, 0x0b);
 	u8 irr = in8(0x20);
@@ -266,12 +266,12 @@ __attribute__((interrupt)) static void allcpu_isr27(struct int_frame* p){
 	}*/
 }
 __attribute__((interrupt)) static void allcpu_isr28(void* p){
-	//say("rtc!\n");
+	//logtoall("rtc!\n");
 	isr_rtc();
 	irqchip_endofirq(8);
 }
 __attribute__((interrupt)) static void allcpu_isr2c(void* p){
-	say("ps2mouse!\n");
+	logtoall("ps2mouse!\n");
 	irqchip_endofirq(12);
 }
 
@@ -279,17 +279,17 @@ __attribute__((interrupt)) static void allcpu_isr2c(void* p){
 
 
 __attribute__((interrupt)) static void bspcpu_isr80(struct int_frame* p){
-	say("int80: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
+	logtoall("int80: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
 }
 __attribute__((interrupt)) static void bspcpu_isrff(struct int_frame* p){
-	say("intff: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
+	logtoall("intff: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
 }
 
 
 
 
 __attribute__((interrupt)) static void appcpu_isrff(struct int_frame* p){
-	say("appcpu_isrff: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
+	logtoall("appcpu_isrff: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
 }
 
 
@@ -324,7 +324,7 @@ int percpu_enableint(int apicid, int intvec, void* isr, int flag)
 }
 void initidt_bsp()
 {
-	say("@initidt_bsp\n");
+	logtoall("@initidt_bsp\n");
 
 	int j;
 	u8* idt = (void*)BSPCPU_IDT;
@@ -387,7 +387,7 @@ void initidt_bsp()
 }
 void initidt_ap(int coreid)
 {
-	say("@initidt_ap: %d\n", coreid);
+	logtoall("@initidt_ap: %d\n", coreid);
 
 	int j;
 	u8* idt = (void*)APPCPU_IDT;

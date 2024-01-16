@@ -11,7 +11,7 @@ void guide3d_draw_gl41(_obj* scene, _obj* wnd)
 	struct fstyle* sty;
 	vec3 at = {0.0, 0.0, 0.0};
 	vec3 up = {0.0, 0.0, 1.0};
-	//say("@guide3d_read: %.8s\n", &scene->hfmt);
+	//logtoall("@guide3d_read: %.8s\n", &scene->hfmt);
 
 	rel = scene->orel0;
 	while(1){
@@ -74,7 +74,7 @@ int guide3d_detach(struct halfrel* self, struct halfrel* peer)
 }
 int guide3d_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@guide3d_attach\n");
+	logtoall("@guide3d_attach\n");
 	return 0;
 }
 
@@ -95,6 +95,6 @@ int guide3d_delete(_obj* scene)
 }
 int guide3d_create(_obj* scene, void* str)
 {
-	say("@guide3d_create\n");
+	logtoall("@guide3d_create\n");
 	return 0;
 }

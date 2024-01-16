@@ -31,7 +31,7 @@ void uploadvertex(struct gldst* dst, struct mysrc* src)
 	//vbo
 	if((dst->vbo_deq != src->vbuf_enq) && (0 != vtx->vbuf))
 	{
-		//say("@2: %d\n", dst->vao);
+		//logtoall("@2: %d\n", dst->vao);
 		w = vtx->vbuf_w;
 		h = vtx->vbuf_h;
 		if(dst->vbo)
@@ -126,7 +126,7 @@ void uploadvertex(struct gldst* dst, struct mysrc* src)
 	//idx
 	if((dst->vbo_deq != src->vbuf_enq) && (0 != vtx->ibuf))
 	{
-		//say("@1: %d\n", dst->vao);
+		//logtoall("@1: %d\n", dst->vao);
 		w = vtx->ibuf_w;
 		h = vtx->ibuf_h;
 		if(dst->ibo)

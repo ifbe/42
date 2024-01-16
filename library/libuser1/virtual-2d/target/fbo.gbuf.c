@@ -68,7 +68,7 @@ static void gbuffer_readfrom_gbuffer(_obj* ent, struct gl41data* data)
 	data->src.tex[4].glfd = fbo->gl41list.dep;
 	data->src.tex[4].fmt = '!';
 	data->src.tex_enq[4] += 1;
-	//say("%d,%d,%d,%d\n", data->src.tex[0].glfd, data->src.tex[1].glfd, data->src.tex[2].glfd, data->src.tex[3].glfd);
+	//logtoall("%d,%d,%d,%d\n", data->src.tex[0].glfd, data->src.tex[1].glfd, data->src.tex[2].glfd, data->src.tex[3].glfd);
 */
 }
 static void gbuffer_draw_gl41(
@@ -189,7 +189,7 @@ static void gbuffer_create(_obj* act, void* arg, int argc, u8** argv)
 	if(0 == act)return;
 
 	for(j=0;j<argc;j++){
-		//say("%d:%.8s\n", j, argv[j]);
+		//logtoall("%d:%.8s\n", j, argv[j]);
 		if(0 == ncmp(argv[j], "vs:", 3)){
 			copypath(vspath, argv[j]+3);
 			vs = (void*)vspath;
@@ -234,7 +234,7 @@ static void gbuffer_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("gbuffer(%x,%x,%x)\n",win,act,sty);
+	logtoall("gbuffer(%x,%x,%x)\n",win,act,sty);
 }
 
 
@@ -294,7 +294,7 @@ static void gbuffer_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 }
 static void gbuffer_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	//say("@gbuffer_write\n");
+	//logtoall("@gbuffer_write\n");
 	if(_wnd_ == stack[sp-1].foottype){
 		give_data_into_peer(ent,_fbog_, stack,sp, arg,key, buf,len);
 	}

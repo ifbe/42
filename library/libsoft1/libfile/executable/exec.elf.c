@@ -4,7 +4,7 @@
 #define u64 unsigned long long
 //
 void printmemory(void*, int);
-void say(void*, ...);
+void logtoall(void*, ...);
 #define u8 unsigned char
 #define u16 unsigned short
 #define u32 unsigned int
@@ -106,7 +106,7 @@ int parse_elf(void* buf,int len)
 	struct elf64_hdr* h = buf;
 	if(2 != h->e_ident[4])return 0;	//not 64bit
 
-	say(
+	logtoall(
 "head@[0,?):\n"
 "type=%x\n"
 "machine=%x\n"
@@ -139,8 +139,8 @@ h->e_shstrndx
 
 	if(h->e_phoff){
 		struct elf64_phdr* ph = buf + h->e_phoff;
-		say("ph@[%llx,?):\n", h->e_phoff);
-say(
+		logtoall("ph@[%llx,?):\n", h->e_phoff);
+logtoall(
 "type=%x\n"
 "flags=%x\n"
 "offset=%llx\n"
@@ -163,11 +163,11 @@ ph->p_align
 	if(h->e_shoff){
 		int j;
 		struct elf64_shdr* sh = buf + h->e_shoff;
-		say("sh@[%llx,?):\n", h->e_shoff);
-		say("name    type    flag    addr    offs    size    link    info    align   entsize\n");
+		logtoall("sh@[%llx,?):\n", h->e_shoff);
+		logtoall("name    type    flag    addr    offs    size    link    info    align   entsize\n");
 
 		for(j=0;j<h->e_shnum;j++){
-say("%-8x%-8x%-8llx%-8llx%-8llx%-8llx%-8x%-8x%-8llx%-8llx\n",
+logtoall("%-8x%-8x%-8llx%-8llx%-8llx%-8llx%-8x%-8x%-8llx%-8llx\n",
 sh[j].sh_name,
 sh[j].sh_type,
 sh[j].sh_flags,

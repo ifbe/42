@@ -46,7 +46,7 @@ int gl41fbod_create(struct gl41data* tar)
 #endif
 
 	// Always check that our framebuffer is ok
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)say("err@fbod!!!\n");
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)logtoall("err@fbod!!!\n");
 	return 0;
 }//d
 int gl41fboc_create(struct gl41data* tar)
@@ -85,7 +85,7 @@ int gl41fboc_create(struct gl41data* tar)
 	glDrawBuffers(1, DrawBuffers);
 
 	//check
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)say("err@fboc!!!\n");
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)logtoall("err@fboc!!!\n");
 	return 0;
 }//c
 int gl41fbog_create(struct gl41data* tar)
@@ -116,7 +116,7 @@ int gl41fbog_create(struct gl41data* tar)
 	int j;
 	GLenum gbuffer[4];
 	for(j=0;j<4;j++){
-		//say("w=%d,h=%d\n",w,h);
+		//logtoall("w=%d,h=%d\n",w,h);
 		//geometry buffer
 		glGenTextures(1, &tar->dst.tex[j]);
 		glBindTexture(GL_TEXTURE_2D, tar->dst.tex[j]);
@@ -137,12 +137,12 @@ int gl41fbog_create(struct gl41data* tar)
 	glDrawBuffers(4, gbuffer);
 
 	//check
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)say("err@fbog!!!\n");
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)logtoall("err@fbog!!!\n");
 	return 0;
 }//g
 int gl41fbo_create(struct gl41data* tar)
 {
-	//say("type=%c\n",tar->src.type);
+	//logtoall("type=%c\n",tar->src.type);
 	switch(tar->src.type){
 	case 'c':return gl41fboc_create(tar);
 	case 'd':return gl41fbod_create(tar);
@@ -173,7 +173,7 @@ int fbocreate_d(_obj* tar, int arg)
 #endif
 
 	// Always check that our framebuffer is ok
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)say("err@fbod!!!\n");
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)logtoall("err@fbod!!!\n");
 	return 0;
 }//d
 
@@ -205,7 +205,7 @@ int fbocreate_c(_obj* tar, int arg)
 	glDrawBuffers(1, DrawBuffers);
 
 	//check
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)say("err@fboc!!!\n");
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)logtoall("err@fboc!!!\n");
 	return 0;
 }//c
 
@@ -239,7 +239,7 @@ int fbocreate_6(_obj* tar, int arg)
 #endif
 
 	//check
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)say("err@fbo6!!!\n");
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)logtoall("err@fbo6!!!\n");
 	return 0;
 }//c
 
@@ -290,7 +290,7 @@ int fbocreate_g(_obj* tar, int arg)
 	glDrawBuffers(4, gbuffer);
 
 	//check
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)say("err@fbog!!!\n");
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)logtoall("err@fbog!!!\n");
 	return 0;
 }
 int fbocreate(_obj* tar, int arg)

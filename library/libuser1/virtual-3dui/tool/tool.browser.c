@@ -130,7 +130,7 @@ static void browser_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("browser(%x,%x,%x)\n",win,act,sty);
+	logtoall("browser(%x,%x,%x)\n",win,act,sty);
 }
 
 
@@ -170,30 +170,30 @@ static void browser_event(
 
 			_obj* http = artery_create(_http_, buf+7, 0, 0);
 			if(0 == http){
-				say("err@http\n");
+				logtoall("err@http\n");
 				return;
 			}
 			struct relation* rel1 = relationcreate(act, 0, _ent_, _http_, http, 0, _art_, _dst_);
 			if(0 == rel1){
-				say("err@rel1\n");
+				logtoall("err@rel1\n");
 				return;
 			}
 			relationattach((void*)rel1->dst, (void*)rel1->src);
 
 			_obj* sock = system_create(_tcp_, buf+7, 0, 0);
 			if(0 == sock){
-				say("err@sock\n");
+				logtoall("err@sock\n");
 				return;
 			}
 			struct relation* rel2 = relationcreate(http, 0, _art_, _src_, sock, 0, _sys_, _dst_);
 			if(0 == rel2){
-				say("err@rel2\n");
+				logtoall("err@rel2\n");
 				return;
 			}
 			relationattach((void*)rel2->dst, (void*)rel2->src);
 			return;
 		}
-		say("not support: %s\n", url->buf);
+		logtoall("not support: %s\n", url->buf);
 	}
 	else if(0x8 == ev->why)
 	{

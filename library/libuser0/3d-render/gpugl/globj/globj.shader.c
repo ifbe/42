@@ -38,7 +38,7 @@ GLuint compileShader(GLenum type, const char* source)
 		if (infoLog)
 		{
 			glGetShaderInfoLog(shader, infoLogLength, NULL, infoLog);
-			say("Could not compile shader %d:\n%s", type, infoLog);
+			logtoall("Could not compile shader %d:\n%s", type, infoLog);
 			free(infoLog);
 		}
 		glDeleteShader(shader);
@@ -49,38 +49,38 @@ GLuint shaderprogram(void* v, void* f, void* g, void* tc, void* te, void* c)
 {
 	GLuint vShader = compileShader(GL_VERTEX_SHADER, v);
 	if(!vShader){
-		say("fail@compileShader: %s\n", v);
+		logtoall("fail@compileShader: %s\n", v);
 		return 0;
 	}
 
 	GLuint fShader = compileShader(GL_FRAGMENT_SHADER, f);
 	if(!fShader){
-		say("fail@compileShader: %s\n", f);
+		logtoall("fail@compileShader: %s\n", f);
 		return 0;
 	}
 
 	GLuint gShader = 0;
 	if(g){
 		gShader = compileShader(GL_GEOMETRY_SHADER, g);
-		if(!gShader)say("fail@compileShader: %s\n", g);
+		if(!gShader)logtoall("fail@compileShader: %s\n", g);
 	}
 /*
 	GLuint tcShader = 0;
 	if(tc){
 		compileShader(GL_TESS_CONTROL_SHADER, tc);
-		if(!tcShader)say("fail@compileShader: %s\n", tc);
+		if(!tcShader)logtoall("fail@compileShader: %s\n", tc);
 	}
 
 	GLuint teShader = 0;
 	if(te){
 		compileShader(GL_TESS_EVALUATION_SHADER, te);
-		if(!teShader)say("fail@compileShader: %s\n", te);
+		if(!teShader)logtoall("fail@compileShader: %s\n", te);
 	}
 
 	GLuint cShader = 0;
 	if(c){
 		compileShader(GL_COMPUTE_SHADER, c);
-		if(!cShader)say("fail@compileShader: %s\n", c);
+		if(!cShader)logtoall("fail@compileShader: %s\n", c);
 	}
 */
 

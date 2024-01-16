@@ -26,13 +26,13 @@ int cnn_backward()
 
 int cnn_read(_obj* art,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* image, int label)
 {
-	//say("@cnn_read\n");
+	//logtoall("@cnn_read\n");
 	cnn_forward();
 	return 0;
 }
 int cnn_write(_obj* art,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* image, int label)
 {
-	//say("@cnn_read\n");
+	//logtoall("@cnn_read\n");
 	cnn_forward();
 	cnn_backward();
 	return 0;
@@ -43,7 +43,7 @@ int cnn_detach(struct halfrel* self, struct halfrel* peer)
 }
 int cnn_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@cnn_attach\n");
+	logtoall("@cnn_attach\n");
 	return 0;
 }
 

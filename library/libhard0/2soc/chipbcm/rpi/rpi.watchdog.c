@@ -11,7 +11,7 @@ void* mmiobase();
 void poweroff()
 {
 	unsigned long r;
-	say("@poweroff\n");
+	logtoall("@poweroff\n");
 
 	// power off devices one by one
  /*	for(r=0;r<16;r++) {

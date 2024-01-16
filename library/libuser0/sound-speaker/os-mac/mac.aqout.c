@@ -28,11 +28,11 @@ static void speakercallback(void* ptr, AudioQueueRef aqref, AudioQueueBufferRef 
 	_obj* spk = ptr;
 	spk->appleaq.aqdeq = (spk->appleaq.aqdeq+1)%BUFCNT;
 
-	say("@aqout.callback: spk=%p,enq=%d,deq=%d, aqref=%p,aqbufref=%p\n",
+	logtoall("@aqout.callback: spk=%p,enq=%d,deq=%d, aqref=%p,aqbufref=%p\n",
 		spk, spk->appleaq.aqenq, spk->appleaq.aqdeq, aqref, aqbufref);
 
 	if(spk->appleaq.aqenq == spk->appleaq.aqdeq){
-		say("aqout hungry\n");
+		logtoall("aqout hungry\n");
 		AudioQueueEnqueueBuffer(aqref, (void*)spk->appleaq.zero10ms, 0, NULL);
 		spk->appleaq.aqenq = (spk->appleaq.aqenq+1)%BUFCNT;
 	}
@@ -47,7 +47,7 @@ int speaker_take(_obj* spk,void* foot, _syn* stack,int sp, p64 arg, int idx, voi
 
 	struct pcmdata* pcm = spk->appleaq.data;
 	if(0 == pcm)return 0;
-	say("fmt=%x,chan=%d,rate=%d,count=%d,buf=%llx\n", pcm->fmt, pcm->chan, pcm->rate, pcm->count, pcm->buf);
+	logtoall("fmt=%x,chan=%d,rate=%d,count=%d,buf=%llx\n", pcm->fmt, pcm->chan, pcm->rate, pcm->count, pcm->buf);
 
 	AudioQueueRef aqref = spk->appleaq.aqref;
 	AudioQueueBufferRef* aqbufref = (void*)spk->appleaq.aqbufref;
@@ -69,7 +69,7 @@ int speaker_take(_obj* spk,void* foot, _syn* stack,int sp, p64 arg, int idx, voi
 int speaker_give(_obj* spk,void* foot, _syn* stack,int sp, p64 arg, int idx, short* buf, int len)
 {
 	int j;
-	//say("@speakerwrite: len=%x\n", len);
+	//logtoall("@speakerwrite: len=%x\n", len);
 
 	int enq = spk->appleaq.aqenq;
 	int deq = spk->appleaq.aqdeq;
@@ -81,7 +81,7 @@ int speaker_give(_obj* spk,void* foot, _syn* stack,int sp, p64 arg, int idx, sho
 	aqbufref->mAudioDataByteSize = len;
 
 	j = AudioQueueEnqueueBuffer(aqref, aqbufref, 0, NULL);
-	say("@AudioQueueEnqueueBuffer: spk=%p,enq=%d,deq=%d, aqref=%p,aqbufref=%p,ret=%d\n",
+	logtoall("@AudioQueueEnqueueBuffer: spk=%p,enq=%d,deq=%d, aqref=%p,aqbufref=%p,ret=%d\n",
 		spk,enq,deq, aqref,aqbufref, j);
 
 	spk->appleaq.aqenq = (enq+1)%BUFCNT;
@@ -115,7 +115,7 @@ int spaker_makezero10ms(_obj* spk, AudioQueueRef aqref)
 	OSStatus status = AudioQueueAllocateBuffer(aqref, SAMPLE_10ms*2, (void*)&spk->appleaq.zero10ms);
 
 	AudioQueueBufferRef zero10ms = spk->appleaq.zero10ms;
-	say("[x]status=%d,buffer=%p\n", status, zero10ms);
+	logtoall("[x]status=%d,buffer=%p\n", status, zero10ms);
 
 	int j;
 	short* dst = zero10ms->mAudioData;

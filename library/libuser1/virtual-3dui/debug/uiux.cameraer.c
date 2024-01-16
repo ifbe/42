@@ -220,7 +220,7 @@ static int camman_event(
 	if(0x2b70 == ev->what){
 		x = t[0] * 8 / (win->whdf.width);
 		y = t[1] * 32 / (win->whdf.height);
-		say("x=%d,y=%d\n",x,y);
+		logtoall("x=%d,y=%d\n",x,y);
 
 		if((y >= 8) && (y <= 23)){
 			if(x <= 0)return 1;

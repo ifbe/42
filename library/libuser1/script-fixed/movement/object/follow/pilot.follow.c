@@ -27,7 +27,7 @@ void* follow_where(_obj* ent)
 }
 void follow_doit(struct fstyle* this, struct fstyle* that)
 {
-	say("at(%f,%f,%f), to(%f,%f,%f)\n",
+	logtoall("at(%f,%f,%f), to(%f,%f,%f)\n",
 		this->vc[0], this->vc[1], this->vc[2],
 		that->vc[0], that->vc[1], that->vc[2]
 	);
@@ -66,7 +66,7 @@ int follow_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, voi
 }
 int follow_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
-	say("@follow_write:%.4s\n",&foot);
+	logtoall("@follow_write:%.4s\n",&foot);
 	if(_clk_ == stack[sp-1].foottype){
 		struct privdata* own = ent->priv_ptr;
 		if(0 == own->that)return 0;
@@ -86,14 +86,14 @@ int follow_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, voi
 }
 int follow_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@follow_detach\n");
+	logtoall("@follow_detach\n");
 	return 0;
 }
 int follow_attach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ent = self->pchip;
 	struct privdata* own = ent->priv_ptr;
-	say("@follow_attach: %.4s\n", &self->foottype);
+	logtoall("@follow_attach: %.4s\n", &self->foottype);
 
 	switch(self->foottype){
 	case _self_:own->self = peer->pchip;break;

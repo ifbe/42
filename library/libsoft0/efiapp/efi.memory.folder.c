@@ -1,4 +1,4 @@
-void say(char*,...);
+void logtoall(char*,...);
 
 
 

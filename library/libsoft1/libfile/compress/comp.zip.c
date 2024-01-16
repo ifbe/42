@@ -1,4 +1,4 @@
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 
@@ -15,6 +15,6 @@ int check_zip(char* addr)
 }
 int parse_zip(char* addr)
 {
-	say("zip\n");
+	logtoall("zip\n");
 	return 0;
 }

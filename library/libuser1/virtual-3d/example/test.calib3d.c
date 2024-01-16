@@ -103,7 +103,7 @@ static void calib3d_data(
 	struct perobj* perobj = (void*)act->priv_256b;
 	int t = perobj->vlen;
 	float* f = perobj->vbuf;
-	//say("@calib3d_data:%d\n", len);
+	//logtoall("@calib3d_data:%d\n", len);
 
 	for(j=0;j<len;j+=3){
 		f[3*t + j+0] = buf[j+0];
@@ -118,7 +118,7 @@ static void calib3d_data(
 	if(buf[1] > perobj->ymax)perobj->ymax = buf[1];
 	if(buf[2] < perobj->zmin)perobj->zmin = buf[2];
 	if(buf[2] > perobj->zmax)perobj->zmax = buf[2];
-	say("%f,%f,%f,%f,%f,%f\n",perobj->xmin,perobj->xmax,perobj->ymin,perobj->ymax,perobj->zmin,perobj->zmax);
+	logtoall("%f,%f,%f,%f,%f,%f\n",perobj->xmin,perobj->xmax,perobj->ymin,perobj->ymax,perobj->zmin,perobj->zmax);
 }
 
 

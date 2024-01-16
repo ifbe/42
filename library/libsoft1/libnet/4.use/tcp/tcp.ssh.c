@@ -161,14 +161,14 @@ static void printalgorithm(u8* buf, int len)
 			k++;
 			if(k>60)
 			{
-				say("error@algorithm\n");
+				logtoall("error@algorithm\n");
 				break;
 			}
 		}
 		else
 		{
 			temp[k]=0;
-			say("	%s\n",temp);
+			logtoall("	%s\n",temp);
 
 			k=0;
 		}
@@ -184,7 +184,7 @@ int secureshell_read_0x14(u8* buf, int len, u8* dst, int cnt)
 	if(0x14 != buf[5])return 0;
 
 	j = (buf[0]<<24) + (buf[1]<<16) + (buf[2]<<8) + buf[3];
-	say(
+	logtoall(
 		"[0,5]SSH_MSG_KEXINIT\n"
 		"	total=%x\n"
 		"	plen=%x\n"
@@ -193,72 +193,64 @@ int secureshell_read_0x14(u8* buf, int len, u8* dst, int cnt)
 	);
 
 	//cookie
-	say("[6,15]cookie\n	");
-	for(j=0;j<16;j++)say("%02x ", buf[6+j]);
-	say("\n");
+	logtoall("[6,15]cookie\n	");
+	for(j=0;j<16;j++)logtoall("%02x ", buf[6+j]);
+	logtoall("\n");
 	off = 0x16;
 
 	//
 	j = buf[off+2];
 	j = (j<<8) + buf[off+3];
-	say("[%x,%x]key_exchange_algorithm\n", off, off+j-1);
+	logtoall("[%x,%x]key_exchange_algorithm\n", off, off+j-1);
 	printalgorithm(buf+off, j+4);
 	off += 4 + j;
 
 	//
 	j = buf[off+2];
 	j = (j<<8) + buf[off+3];
-	say("[%x,%x]server_host_key_algorithm\n", off, off+j-1);
+	logtoall("[%x,%x]server_host_key_algorithm\n", off, off+j-1);
 	printalgorithm(buf+off, j+4);
 	off += 4 + j;
 
 	//
 	j = buf[off+2];
 	j = (j<<8) + buf[off+3];
-	say("[%x,%x]enc_alg_c2s\n", off, off+j-1);
+	logtoall("[%x,%x]enc_alg_c2s\n", off, off+j-1);
 	printalgorithm(buf+off, j+4);
 	off += 4 + j;
 
 	//
 	j = buf[off+2];
 	j = (j<<8) + buf[off+3];
-	say("[%x,%x]enc_alg_s2c\n", off, off+j-1);
+	logtoall("[%x,%x]enc_alg_s2c\n", off, off+j-1);
 	printalgorithm(buf+off, j+4);
 	off += 4 + j;
 
 	//
 	j = buf[off+2];
 	j = (j<<8) + buf[off+3];
-	say("[%x,%x]mac_alg_c2s\n", off, off+j-1);
+	logtoall("[%x,%x]mac_alg_c2s\n", off, off+j-1);
 	printalgorithm(buf+off, j+4);
 	off += 4 + j;
 
 	//
 	j = buf[off+2];
 	j = (j<<8) + buf[off+3];
-	say("[%x,%x]mac_alg_s2c\n", off, off+j-1);
+	logtoall("[%x,%x]mac_alg_s2c\n", off, off+j-1);
 	printalgorithm(buf+off, j+4);
 	off += 4 + j;
 
 	//
 	j = buf[off+2];
 	j = (j<<8) + buf[off+3];
-	say("[%x,%x]comp_alg_c2s\n", off, off+j-1);
+	logtoall("[%x,%x]comp_alg_c2s\n", off, off+j-1);
 	printalgorithm(buf+off, j+4);
 	off += 4 + j;
 
 	//
 	j = buf[off+2];
 	j = (j<<8) + buf[off+3];
-	say("[%x,%x]comp_alg_s2c\n", off, off+j-1);
-	printalgorithm(buf+off, j+4);
-	off += 4 + j;
-
-	//
-	j = buf[off+2];
-	j = (j<<8) + buf[off+3];
-	if(j <= 0)goto byebye;
-	say("[%x,%x]lang_c2s\n", off, off+j-1);
+	logtoall("[%x,%x]comp_alg_s2c\n", off, off+j-1);
 	printalgorithm(buf+off, j+4);
 	off += 4 + j;
 
@@ -266,7 +258,7 @@ int secureshell_read_0x14(u8* buf, int len, u8* dst, int cnt)
 	j = buf[off+2];
 	j = (j<<8) + buf[off+3];
 	if(j <= 0)goto byebye;
-	say("[%x,%x]lang_s2c\n", off, off+j-1);
+	logtoall("[%x,%x]lang_c2s\n", off, off+j-1);
 	printalgorithm(buf+off, j+4);
 	off += 4 + j;
 
@@ -274,7 +266,15 @@ int secureshell_read_0x14(u8* buf, int len, u8* dst, int cnt)
 	j = buf[off+2];
 	j = (j<<8) + buf[off+3];
 	if(j <= 0)goto byebye;
-	say("[%x,%x]first_kex\n", off, off+j-1);
+	logtoall("[%x,%x]lang_s2c\n", off, off+j-1);
+	printalgorithm(buf+off, j+4);
+	off += 4 + j;
+
+	//
+	j = buf[off+2];
+	j = (j<<8) + buf[off+3];
+	if(j <= 0)goto byebye;
+	logtoall("[%x,%x]first_kex\n", off, off+j-1);
 	printalgorithm(buf+off, j+4);
 
 byebye:
@@ -413,13 +413,13 @@ int secureshell_clientread_handshake0x1f(u8* buf, int len, u8* dst, int cnt)
 
 	//P
 	j = (p[2]<<8)+p[3];
-	say("(%04x)dh.P=\n", j);
+	logtoall("(%04x)dh.P=\n", j);
 	sshstr2bigint((void*)p, (void*)t);
 	p += 4+j;
 
 	//G
 	j = (p[2]<<8)+p[3];
-	say("(%04x)dh.G=\n", j);
+	logtoall("(%04x)dh.G=\n", j);
 	sshstr2bigint((void*)p, (void*)t);
 	p += 4+j;
 
@@ -477,32 +477,32 @@ int secureshell_clientread_handshake0x21(u8* buf, int len, u8* dst, int cnt)
 	//ssh-rsa
 	j = (p[2]<<8)+p[3];
 	p += 4;
-	say("(%04x)server.alg=\n", j);
-	say("%.*s\n", j, p);
+	logtoall("(%04x)server.alg=\n", j);
+	logtoall("%.*s\n", j, p);
 	p += 7;
 
 	//e
 	j = (p[2]<<8)+p[3];
-	say("(%04x)server.rsa.E=\n", j);
+	logtoall("(%04x)server.rsa.E=\n", j);
 	sshstr2bigint((void*)p, (void*)t);
 	p += 4+j;
 
 	//n
 	j = (p[2]<<8)+p[3];
-	say("(%04x)server.rsa.N=\n", j);
+	logtoall("(%04x)server.rsa.N=\n", j);
 	sshstr2bigint((void*)p, (void*)t);
 	p += 4+j;
 
 	//f
 	j = (p[2]<<8)+p[3];
-	say("(%04x)server.dhval=\n", j);
+	logtoall("(%04x)server.dhval=\n", j);
 	sshstr2bigint((void*)p, (void*)t);
 	p += 4+j;
 
 
 	//h
 	j = (p[2]<<8)+p[3];
-	say("(%04x)signature=\n", j);
+	logtoall("(%04x)signature=\n", j);
 	sshstr2bigint((void*)p, (void*)t);
 	p += 4+j;
 
@@ -534,7 +534,7 @@ int sshclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx
 	int ret;
 	u8 tmp[0x1000];
 
-	say("@sshclient_write\n");
+	logtoall("@sshclient_write\n");
 	printmemory(buf, len);
 
 	if(0 == art->vfmt)
@@ -583,7 +583,7 @@ int sshclient_attach(struct halfrel* self, struct halfrel* peer)
 {
 	int ret;
 	u8 buf[0x100];
-	say("@sshclient_attach\n");
+	logtoall("@sshclient_attach\n");
 
 	ret = secureshell_clientwrite_handshake(buf, 0x100);
 	ret = give_data_into_peer(self->pchip,_src_, 0,0, 0,0, buf,ret);
@@ -617,7 +617,7 @@ int secureshell_serverread_handshake0x22(u8* buf, int len, u8* dst, int cnt)
 	if(0x14 != buf[5])return 0;
 
 	j = (buf[0]<<24) + (buf[1]<<16) + (buf[2]<<8) + buf[3];
-	say(
+	logtoall(
 		"[0,5]SSH_MSG_KEXINIT\n"
 		"	total=%x\n"
 		"	plen=%x\n"
@@ -629,10 +629,10 @@ int secureshell_serverread_handshake0x22(u8* buf, int len, u8* dst, int cnt)
 	max = (buf[0x10]<<8) + buf[0x11];
 	prefer = (buf[0xc]<<8) + buf[0xd];
 
-	say("[6,11]DH GEX\n");
-	say("	min=%d\n", min);
-	say("	max=%d\n", max);
-	say("	prefer=%d\n", prefer);
+	logtoall("[6,11]DH GEX\n");
+	logtoall("	min=%d\n", min);
+	logtoall("	max=%d\n", max);
+	logtoall("	prefer=%d\n", prefer);
 
 	return 0;
 }
@@ -680,7 +680,7 @@ int secureshell_serverread_handshake0x20(u8* buf, int len, u8* dst, int cnt)
 
 	//E
 	j = (p[0]<<24)+(p[1]<<16)+(p[2]<<8)+p[3];
-	say("(%04x)client.dhval=\n", j);
+	logtoall("(%04x)client.dhval=\n", j);
 	sshstr2bigint((void*)p, (void*)t);
 	p += j;
 
@@ -781,7 +781,7 @@ int sshserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx
 	int ret;
 	u8 tmp[0x1000];
 
-	say("@sshserver_write\n");
+	logtoall("@sshserver_write\n");
 	printmemory(buf, len);
 
 	if(0 == art->vfmt)
@@ -857,7 +857,7 @@ int sshmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx
 	int ret;
 	u8 tmp[0x100];
 
-	say("@sshmaster_write\n");
+	logtoall("@sshmaster_write\n");
 	printmemory(buf, len);
 
 	//check if it's ssh

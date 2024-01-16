@@ -32,12 +32,12 @@ int gpio_attach(struct halfrel* st, struct halfrel* peer)
 }
 int gpio_read(_obj* obj,void* foot, p64 arg,int cmd, u8* buf,int len)
 {
-	say("@gpioread:%p,%x,%p,%x\n", arg, cmd, buf, len);
+	logtoall("@gpioread:%p,%x,%p,%x\n", arg, cmd, buf, len);
 	return 0;
 }
 int gpio_write(_obj* obj,void* foot, u8* arg,int cmd, u8* buf,int len)
 {
-	say("@gpiowrite:%p,%x,%p,%x\n", arg, cmd, buf, len);
+	logtoall("@gpiowrite:%p,%x,%p,%x\n", arg, cmd, buf, len);
 	return 0;
 }
 int gpio_delete(_obj* obj, void* arg)

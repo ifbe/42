@@ -3,7 +3,7 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 void printmemory(void*, int);
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 

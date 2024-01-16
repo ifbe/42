@@ -123,7 +123,7 @@ static void stl3d_modify_matter(_obj* act, int* src, int len)
 	f[0] = src[0]*0.01;
 	f[1] = src[1]*0.01;
 	f[2] = src[2]*0.01;
-	say("%f,%f,%f\n",f[0],f[1],f[2]);
+	logtoall("%f,%f,%f\n",f[0],f[1],f[2]);
 }
 
 
@@ -143,8 +143,8 @@ static int stl3d_intersect_local(float* out, float* vbuf, int cnt, vec3 ro, vec3
 		if(ret <= 0)continue;
 
 		tmp[3] = (tmp[0]-ro[0])*(tmp[0]-ro[0]) + (tmp[1]-ro[1])*(tmp[1]-ro[1]) + (tmp[2]-ro[2])*(tmp[2]-ro[2]);
-		//say("%d=(%f,%f,%f),(%f,%f,%f),(%f,%f,%f)\n", j,f[0],f[1],f[2], f[6],f[7],f[8], f[12],f[13],f[14]);
-		//say("%d@(%f,%f,%f),%f\n", j,tmp[0],tmp[1],tmp[2],tmp[3]);
+		//logtoall("%d=(%f,%f,%f),(%f,%f,%f),(%f,%f,%f)\n", j,f[0],f[1],f[2], f[6],f[7],f[8], f[12],f[13],f[14]);
+		//logtoall("%d@(%f,%f,%f),%f\n", j,tmp[0],tmp[1],tmp[2],tmp[3]);
 		if(out[3] > tmp[3]){
 			out[0] = tmp[0];
 			out[1] = tmp[1];
@@ -157,7 +157,7 @@ static int stl3d_intersect_local(float* out, float* vbuf, int cnt, vec3 ro, vec3
 }
 static int stl3d_intersect_world(float* out, float* vbuf, int cnt, vec3 w_ro, vec3 w_rd, mat4 mat)
 {
-	//say("world ray: %f,%f,%f -> %f,%f,%f\n",w_ro[0],w_ro[1],w_ro[2], w_rd[0],w_rd[1],w_rd[2]);
+	//logtoall("world ray: %f,%f,%f -> %f,%f,%f\n",w_ro[0],w_ro[1],w_ro[2], w_rd[0],w_rd[1],w_rd[2]);
 
 	int j;
 	vec3 l_ro,l_rd;
@@ -165,7 +165,7 @@ static int stl3d_intersect_world(float* out, float* vbuf, int cnt, vec3 w_ro, ve
 	stl3d_mat4vec3(l_rd, mat, l_ro);
 	stl3d_mat4vec3(l_ro, mat, w_ro);
 	for(j=0;j<3;j++)l_rd[j]-= l_ro[j];
-	//say("local ray: %f,%f,%f -> %f,%f,%f\n",l_ro[0],l_ro[1],l_ro[2], l_rd[0],l_rd[1],l_rd[2]);
+	//logtoall("local ray: %f,%f,%f -> %f,%f,%f\n",l_ro[0],l_ro[1],l_ro[2], l_rd[0],l_rd[1],l_rd[2]);
 
 	//todo: return worldxyz, not localxyz
 	return stl3d_intersect_local(out, vbuf, cnt, l_ro,l_rd);
@@ -182,14 +182,14 @@ static void stl3d_modify_ray(_obj* act, vec3 ray[])
 	if(ret < 0)return;
 
 	//save id
-	say("hit:%d\n",ret);
+	logtoall("hit:%d\n",ret);
 	own->chosen = 4*6*3*ret;
 
 	//on hit
 	vec3 to;
 	float* at = own->vbuf + 4*6*3*ret;
 	vec3_normalizefrom(to, &at[3]);
-	say("%f,%f,%f\n",to[0],to[1],to[2]);
+	logtoall("%f,%f,%f\n",to[0],to[1],to[2]);
 	at[ 0] += to[0];at[ 1] += to[1];at[ 2] += to[2];
 	at[ 6] += to[0];at[ 7] += to[1];at[ 8] += to[2];
 	at[12] += to[0];at[13] += to[1];at[14] += to[2];
@@ -326,7 +326,7 @@ void stl3d_rgba_theone(_obj* wnd, struct style* area, float* point, float* primi
 	int dy = wnd->whdf.height* area->fs.vq[1] / 2;
 	int cx = wnd->whdf.width * area->fs.vc[0] + dx;
 	int cy = wnd->whdf.height* area->fs.vc[1] + dy;
-	//say("%d,%d,%d,%d\n", cx,cy, dx,dy);
+	//logtoall("%d,%d,%d,%d\n", cx,cy, dx,dy);
 
 	int x0,y0, x1,y1, x2,y2;
 	vec3 t0,t1,t2;
@@ -361,7 +361,7 @@ static void stl3d_rgba_raster(
 	_obj* wnd, struct style* area,
 	mat4 clip_from_world)
 {
-	//say("@stl3d: raster\n");
+	//logtoall("@stl3d: raster\n");
 	struct privdata* own = act->CTXBUF;
 	if(0 == own)return;
 
@@ -391,7 +391,7 @@ static void stl3d_rgba_raytrace(
 	int y0 = h * area->fs.vc[1];
 	int xn = x0+dx;
 	int yn = y0+dy;
-	//say("%d,%d,%d,%d\n", x0,y0, xn,yn);
+	//logtoall("%d,%d,%d,%d\n", x0,y0, xn,yn);
 
 	struct privdata* own = act->CTXBUF;
 	if(0 == own)return;
@@ -411,7 +411,7 @@ static void stl3d_rgba_raytrace(
 			vv[0] = 2.0*(x     - x0) / dx - 1.0;
 			vv[1] = 2.0*(h-1-y - y0) / dy - 1.0;
 			vv[2] = 0.5;
-			//say("%f,%f,%f\n",v[0],v[1],v[2]);
+			//logtoall("%f,%f,%f\n",v[0],v[1],v[2]);
 
 			stl3d_mat4vec3(rd, inv, vv);
 			for(j=0;j<3;j++)rd[j] -= ro[j];
@@ -460,7 +460,7 @@ static void stl3d_tui_raytrace(
 	int www = wnd->whdf.width;
 	int hhh = wnd->whdf.height;
 	u8* buf = (u8*)(wnd->tuitext.buf);
-	//say("%d,%d,%d,%d\n", x0,y0, xn,yn);
+	//logtoall("%d,%d,%d,%d\n", x0,y0, xn,yn);
 
 	struct privdata* own = act->CTXBUF;
 	if(0 == own)return;
@@ -529,7 +529,7 @@ static void stl3d_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("stl3d(%x,%x,%x)\n",win,act,sty);
+	logtoall("stl3d(%x,%x,%x)\n",win,act,sty);
 }
 
 

@@ -70,7 +70,7 @@ void* mmiobase();
 //must del: otg_mode=1
 void brcmdwc2_init()
 {
-    say("@brcmdwc2_init\n");
+    logtoall("@brcmdwc2_init\n");
 
     printmmio(mmiobase()+DWC2BASE+GOTGCTL, 0x80);
 

@@ -1,6 +1,6 @@
 #define u8 unsigned char
 int base64_decode(u8* o, u8* in);
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 

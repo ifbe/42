@@ -202,7 +202,7 @@ static void mem_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key
 static void mem_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
 	u8 tmp;
-	say("@memgate_write:%x\n",buf[0]);
+	logtoall("@memgate_write:%x\n",buf[0]);
 
 	if('0' == buf[0])ent->whdf.ix0 = 0;
 	else if('1' == buf[0])ent->whdf.ix0 = 1;

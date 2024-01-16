@@ -30,72 +30,72 @@ static struct android_app* theapp;
 
 static void handle_cmd(struct android_app* app, int32_t cmd)
 {
-	say("app=%llx,cmd=%x\n", (u64)app, cmd);
+	logtoall("app=%llx,cmd=%x\n", (u64)app, cmd);
 	switch(cmd){
 	case APP_CMD_DESTROY:
-		say("APP_CMD_DESTROY\n");
+		logtoall("APP_CMD_DESTROY\n");
 		eventwrite(0,0,0,0);
 		break;
 	case APP_CMD_SAVE_STATE:
-		say("APP_CMD_SAVE_STATE\n");
+		logtoall("APP_CMD_SAVE_STATE\n");
 		//app->savedState = malloc(sizeof(SavedState));
 		//app->savedStateSize = sizeof(SavedState);
 		//app->savedState = appState->savedState;
 		break;
 
 	case APP_CMD_START:
-		say("APP_CMD_START\n");
+		logtoall("APP_CMD_START\n");
 		break;
 	case APP_CMD_STOP:
-		say("APP_CMD_STOP\n");
+		logtoall("APP_CMD_STOP\n");
 		break;
 
 	case APP_CMD_RESUME:
-		say("APP_CMD_RESUME\n");
+		logtoall("APP_CMD_RESUME\n");
 		break;
 	case APP_CMD_PAUSE:
-		say("APP_CMD_PAUSE\n");
+		logtoall("APP_CMD_PAUSE\n");
 		break;
 
 	case APP_CMD_INIT_WINDOW:
-		say("APP_CMD_INIT_WINDOW\n");
+		logtoall("APP_CMD_INIT_WINDOW\n");
 		openwindow(theapp);
 		break;
 	case APP_CMD_TERM_WINDOW:
-		say("APP_CMD_TERM_WINDOW\n");
+		logtoall("APP_CMD_TERM_WINDOW\n");
 		closewindow(theapp);
 		break;
 
 	case APP_CMD_GAINED_FOCUS:
-		say("APP_CMD_GAINED_FOCUS\n");
+		logtoall("APP_CMD_GAINED_FOCUS\n");
 		androidsensor_start();
 		break;
 	case APP_CMD_LOST_FOCUS:
-		say("APP_CMD_LOST_FOCUS\n");
+		logtoall("APP_CMD_LOST_FOCUS\n");
 		androidsensor_stop();
 		break;
 
 	case APP_CMD_WINDOW_RESIZED:
-		say("APP_CMD_WINDOW_RESIZED\n");
+		logtoall("APP_CMD_WINDOW_RESIZED\n");
 		break;
 	case APP_CMD_CONFIG_CHANGED:
-		say("APP_CMD_CONFIG_CHANGED\n");
+		logtoall("APP_CMD_CONFIG_CHANGED\n");
 		break;
 	case APP_CMD_INPUT_CHANGED:
-		say("APP_CMD_INPUT_CHANGED\n");
+		logtoall("APP_CMD_INPUT_CHANGED\n");
 		break;
 	case APP_CMD_WINDOW_REDRAW_NEEDED:
-		say("APP_CMD_WINDOW_REDRAW_NEEDED\n");
+		logtoall("APP_CMD_WINDOW_REDRAW_NEEDED\n");
 		break;
 	case APP_CMD_CONTENT_RECT_CHANGED:
-		say("APP_CMD_CONTENT_RECT_CHANGED\n");
+		logtoall("APP_CMD_CONTENT_RECT_CHANGED\n");
 		break;
 	case APP_CMD_LOW_MEMORY:
-		say("APP_CMD_LOW_MEMORY\n");
+		logtoall("APP_CMD_LOW_MEMORY\n");
 		break;
 
 	default:
-		say("Unknown CMD: %d\n", cmd);
+		logtoall("Unknown CMD: %d\n", cmd);
 	}
 	//appState->running = (appState->resumed && appState->windowInitialized && appState->focused);
 }
@@ -106,13 +106,13 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 	int act,cnt,index,pointerid;
 	int32_t type;
 	int32_t source;
-	//say("app=%llx,ev=%llx\n", (u64)app, (u64)ev);
+	//logtoall("app=%llx,ev=%llx\n", (u64)app, (u64)ev);
 
 	type = AInputEvent_getType(ev);
 	switch(type){
 	case AINPUT_EVENT_TYPE_KEY:
 		act = AKeyEvent_getKeyCode(ev);
-		say("AINPUT_EVENT_TYPE_KEY:%x\n", act);
+		logtoall("AINPUT_EVENT_TYPE_KEY:%x\n", act);
 		//app->destroyRequested = 1;
 		break;
 	case AINPUT_EVENT_TYPE_MOTION:
@@ -126,7 +126,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 					x = AMotionEvent_getX(ev, index);
 					y = AMotionEvent_getY(ev, index);
 					pointerid = AMotionEvent_getPointerId(ev, index);
-					say("move(act=%x,cnt=%x,index=%x,pointerid=%x)x=%x,y=%x\n", act,cnt,index,pointerid, x,y);
+					logtoall("move(act=%x,cnt=%x,index=%x,pointerid=%x)x=%x,y=%x\n", act,cnt,index,pointerid, x,y);
 
 					why[0] = pointerid;
 					why[0] = x+(y<<16)+(why[0]<<48);
@@ -145,7 +145,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 				why[1] = touch_away;
 				break;
 			default:
-				say("AMotionEvent_getAction=%x\n",act);
+				logtoall("AMotionEvent_getAction=%x\n",act);
 				return 0;
 			}
 
@@ -153,7 +153,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 			x = AMotionEvent_getX(ev, index);
 			y = AMotionEvent_getY(ev, index);
 			pointerid = AMotionEvent_getPointerId(ev, index);
-			say("other(act=%x,cnt=%x,index=%x,pointerid=%x)x=%x,y=%x\n", act,cnt,index,pointerid, x,y);
+			logtoall("other(act=%x,cnt=%x,index=%x,pointerid=%x)x=%x,y=%x\n", act,cnt,index,pointerid, x,y);
 
 			why[0] = pointerid;
 			why[0] = x+(y<<16)+(why[0]<<48);
@@ -163,11 +163,11 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 			//eventwrite(why[0], why[1], why[2], why[3]);
 		}//AINPUT_SOURCE_TOUCHSCREEN
 		else if(AINPUT_SOURCE_TRACKBALL == source){
-			say("AINPUT_SOURCE_TRACKBALL\n");
+			logtoall("AINPUT_SOURCE_TRACKBALL\n");
 		}
 		break;
 	default:
-		say("AInputEvent_getType=%x\n",type);
+		logtoall("AInputEvent_getType=%x\n",type);
 	}//switch
 
 	return 1;

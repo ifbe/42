@@ -134,7 +134,7 @@ static int queue_1b_parsewh(struct uartterm* term, u8* p)
 		v = (v*10) + p[j] - 0x30;
 	}
 
-	say("region:%d,%d\n", u, v);
+	logtoall("region:%d,%d\n", u, v);
 	term->vimw = u-1;
 	term->vimh = v-1;
 	return 1;
@@ -165,7 +165,7 @@ static int queue_1b_parsexy(struct uartterm* term, u8* p)
 		x = (x*10) + p[j] - 0x30;
 	}
 
-	//say("position:%d,%d,%d,%d\n",x-1,y-1,term->top, term->cury);
+	//logtoall("position:%d,%d,%d,%d\n",x-1,y-1,term->top, term->cury);
 	term->curx = x-1;
 	term->cury = (term->top)+y-1;
 	return 1;
@@ -280,7 +280,7 @@ static int queue_1b(struct uartterm* term, u8* p)
 	if(p[3] == 'd')
 	{
 		j = p[2]-0x30;
-		say("%dd\n",j);
+		logtoall("%dd\n",j);
 		return 4;
 	}
 
@@ -414,7 +414,7 @@ static int queue_1b(struct uartterm* term, u8* p)
 	if(p[4] == 'd')
 	{
 		j = (p[2]-0x30)*10 + (p[3]-0x30);
-		say("%xd\n",j);
+		logtoall("%xd\n",j);
 		return 5;
 	}
 
@@ -508,7 +508,7 @@ void terminal_serverinput(struct uartterm* term, u8* buf, int len)
 
 	for(j=0;j<len;j++)
 	{
-		//say("%02x\n",buf[j]);
+		//logtoall("%02x\n",buf[j]);
 		if(buf[j] == 0)continue;
 		if(buf[j] == 0x7)continue;
 
@@ -532,7 +532,7 @@ void terminal_serverinput(struct uartterm* term, u8* buf, int len)
 				y = k*(term->vimh);
 				for(;x<y;x++)q[x] = q[x+k];
 				for(;x<y+k;x++)q[x] = 0;
-				//say("scrolling:%d\n",term->vimh);
+				//logtoall("scrolling:%d\n",term->vimh);
 			}
 			else
 			{
@@ -556,7 +556,7 @@ void terminal_serverinput(struct uartterm* term, u8* buf, int len)
 			else if(buf[j+1] == 0x5b)
 			{
 				k = queue_1b(term, buf+j);
-				//say("k=%d\n",k);
+				//logtoall("k=%d\n",k);
 
 				if(k>2)j += k - 1;
 			}
@@ -581,7 +581,7 @@ void terminal_serverinput(struct uartterm* term, u8* buf, int len)
 		else
 		{
 			y = 4*(term->width*term->cury + term->curx);
-			//say("(w=%d)\n",w);
+			//logtoall("(w=%d)\n",w);
 			dst[y + 3] = term->bg;
 			dst[y + 2] = term->fg;
 			dst[y + 0] = buf[j];

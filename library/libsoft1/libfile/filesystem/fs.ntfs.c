@@ -102,7 +102,7 @@ void datarun(u8* targetaddr,u8* runaddr,u64 want,u64 max)
 
 		//拿到这一大块的扇区号和扇区数量
 		explainrun(runaddr,&offset,&count);
-		say("sector=%llx,count=%llx\n",ntfssector+offset,count);
+		logtoall("sector=%llx,count=%llx\n",ntfssector+offset,count);
 
 		//要是这个不要，看看下一个怎么样
 		if(logicpos+count>want)
@@ -131,7 +131,7 @@ void datarun(u8* targetaddr,u8* runaddr,u64 want,u64 max)
 //保证包含mftnum的那个1M大小的数据块在我们定义的1M大小的缓冲区里
 u8* checkcacheformft(u64 mftnum)
 {
-	//say("checkcacheformft:%x\n",mftnum);
+	//logtoall("checkcacheformft:%x\n",mftnum);
 	//内存里已经是这几个的话就直接返回
 	//0xffffff00:0x100个,0x40000
 	u64 thistime=mftnum&0xffffffffffffff00;
@@ -141,7 +141,7 @@ u8* checkcacheformft(u64 mftnum)
 	}
 
 	//开始找那一块地址并且读取
-	say("reloading mft:[%x,%x]\n",thistime,thistime+0xff);
+	logtoall("reloading mft:[%x,%x]\n",thistime,thistime+0xff);
 	u64 offset=*(u16*)(mft0+0x14);
 	while(1)
 	{
@@ -151,7 +151,7 @@ u8* checkcacheformft(u64 mftnum)
 		if(property == 0xffffffff)
 		{
 			//结束了，mft0里面没有80属性
-			say("can't find bakcuped mft\n",0);
+			logtoall("can't find bakcuped mft\n",0);
 			break;
 		}
 		if(property==0x80)
@@ -202,7 +202,7 @@ u8* explainindex(u8* rdi, u8* rsi, u8* end)
 			if(property == 0xffffffff)
 			{
 				//结束了，mft0里面没有80属性
-				say("error mft\n",0);
+				logtoall("error mft\n",0);
 				break;
 			}
 			if(property==0x30)
@@ -235,7 +235,7 @@ u8* explainindex(u8* rdi, u8* rsi, u8* end)
 			if(buffer[0x20+i]==0) break;
 			if(i>=0x20) break;
 		}
-		say
+		logtoall
 		(
 			"%llx,%llx,%llx,%s\n",
 			*(u64*)buffer,*(u64*)(buffer+8),*(u64*)(buffer+0x10),buffer+0x20
@@ -350,7 +350,7 @@ void explain80(u8* addr,u64 want)	//file data
 {
 	if( addr[8] == 0 )
 	{
-		say("resident80@%x\n",addr);
+		logtoall("resident80@%x\n",addr);
 		u32 length = *(u32*)(addr+0x10);
 		u8* rsi=(u8*)(addr + (u64)(*(u32*)(addr+0x14)) );
 		u8* rdi=(u8*)datahome;
@@ -361,7 +361,7 @@ void explain80(u8* addr,u64 want)	//file data
 	}
 	else
 	{
-		say("non resident80@%x\n",addr);
+		logtoall("non resident80@%x\n",addr);
 		datarun(datahome,addr + (*(u16*)(addr+0x20)) ,want,0x80000);
 	}
 }
@@ -436,7 +436,7 @@ void explaina0(u8* addr)	//index allocation
 	u8* rdi=dirhome;
 	while( *(u32*)p ==0x58444e49 )	//INDX
 	{
-		say("INDX@%x,vcn:%x\n",p,*(u64*)(p+0x10));
+		logtoall("INDX@%x,vcn:%x\n",p,*(u64*)(p+0x10));
 		u8* start=p + 0x18 + ( *(u32*)(p+0x18) );
 		u8* end=p + ( *(u32*)(p+0x1c) );
 
@@ -474,7 +474,7 @@ void explainmft(u64 mftnum,u64 want)
 	u8* mft=checkcacheformft(mftnum);
 	if( *(u32*)mft !=0x454c4946 )
 	{
-		say("[mft]wrong:%x\n",mftnum);
+		logtoall("[mft]wrong:%x\n",mftnum);
 		return;
 	}
 
@@ -496,75 +496,75 @@ void explainmft(u64 mftnum,u64 want)
 		switch(property)
 		{
 			case 0x10:{	//standard information	//权限，时间，硬链接数量
-				say("10@%x\n",offset);
+				logtoall("10@%x\n",offset);
 				break;
 			}
 			case 0x20:{	//attribute list//需要多个文件记录时用来描述属性列表
-				say("20@%x\n",offset);
+				logtoall("20@%x\n",offset);
 				break;
 			}
 			case 0x30:{	//unicode name//文件名，unicode
-				say("30@%x\n",offset);
+				logtoall("30@%x\n",offset);
 				break;
 			}
 			case 0x40:{	//object id	//早起ntfs1.2中为卷版本
-				say("40@%x\n",offset);
+				logtoall("40@%x\n",offset);
 				break;
 			}
 			case 0x50:{	//security descriptor
-				say("50@%x\n",offset);
+				logtoall("50@%x\n",offset);
 				break;
 			}
 			case 0x60:{	//volume name	//只存在于$volume中
-				say("60@%x\n",offset);
+				logtoall("60@%x\n",offset);
 				break;
 			}
 			case 0x70:{	//volume information	//只存在于$volume中
-				say("70@%x\n",offset);
+				logtoall("70@%x\n",offset);
 				break;
 			}
 			case 0x80:{	//data
-				say("80@%x\n",offset);
+				logtoall("80@%x\n",offset);
 				explain80(here+offset,want);
 				break;
 			}
 			case 0x90:{	//index root
-				say("90@%x\n",offset);
+				logtoall("90@%x\n",offset);
 				explain90(here+offset);
 				break;
 			}
 			case 0xa0:	//index allocation
 			{
-				say("a0@%x\n",offset);
+				logtoall("a0@%x\n",offset);
 				explaina0(here+offset);
 				break;
 			}
 			case 0xb0:{	//bitmap
-				say("b0@%x\n",offset);
+				logtoall("b0@%x\n",offset);
 				break;
 			}
 			case 0xc0:{	//reparse point	//早期ntfs1.2中为符号链接
-				say("c0@%x\n",offset);
+				logtoall("c0@%x\n",offset);
 				break;
 			}
 			case 0xd0:{	//ea information	//扩充属性信息
-				say("d0@%x\n",offset);
+				logtoall("d0@%x\n",offset);
 				break;
 			}
 			case 0xe0:{	//ea			//扩充属性
-				say("e0@%x\n",offset);
+				logtoall("e0@%x\n",offset);
 				break;
 			}
 			case 0xf0:{	//property set		//早期ntfs1.2中才有
-				say("f0@%x\n",offset);
+				logtoall("f0@%x\n",offset);
 				break;
 			}
 			case 0x100:{	//logged utility stream	//efs加密属性
-				say("100@%x\n",offset);
+				logtoall("100@%x\n",offset);
 				break;
 			}
 			default:{
-				say("unknown@%x\n",offset);
+				logtoall("unknown@%x\n",offset);
 				break;
 			}
 		}
@@ -583,16 +583,16 @@ int explainntfshead(u8* pbr)
 
 	//[d,d]
 	clustersize=(u64)( *(u8*)(pbr+0xd) );
-	say("clustersize:%x\n",clustersize);
+	logtoall("clustersize:%x\n",clustersize);
 
 	//[0x30,0x37]
 	mftcluster= *(u64*)(pbr+0x30);
-	say("mftcluster:%x\n",mftcluster);
+	logtoall("mftcluster:%x\n",mftcluster);
 
 	//[0x44,0x44]
 	u64 indexsize=(u64)( *(u8*)(pbr+0x44) );
 	indexsize=clustersize * indexsize;
-	say("indexsize:%x\n",indexsize);
+	logtoall("indexsize:%x\n",indexsize);
 
 	//保存开头几个mft,然后开始	//32个扇区=16个mft=0x4000
 /*	file_take(0, 0,
@@ -665,7 +665,7 @@ static int ntfs_start(u64 sector)
 
 static int ntfsclient_ontake(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, u8* buf, int len)
 {
-	say("@ntfsclient_ontake\n");
+	logtoall("@ntfsclient_ontake\n");
 	return 0;
 }
 static int ntfsclient_ongive(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
@@ -674,7 +674,7 @@ static int ntfsclient_ongive(_obj* art,void* foot, _syn* stack,int sp, p64 arg, 
 }
 int ntfsclient_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@ntfsclient_attach\n");
+	logtoall("@ntfsclient_attach\n");
 	if(_src_ != self->foottype)return 0;
 
 	_obj* art = self->pchip;
@@ -686,7 +686,7 @@ int ntfsclient_attach(struct halfrel* self, struct halfrel* peer)
 	u8* pbr = per->pbrbuffer;
 	int ret = take_data_from_peer(art,_src_, 0,0, 0,_pos_, pbr,0x200);
 	if(ret < 0x200){
-		say("fail@read:%d\n",ret);
+		logtoall("fail@read:%d\n",ret);
 		return 0;
 	}
 
@@ -717,7 +717,7 @@ int ntfsclient_detach(struct halfrel* self, struct halfrel* peer)
 
 static int ntfsclient_reader(_obj* art,int xxx, void* arg,int cmd, void* buf,int len)
 {
-	say("@ntfsclient_reader\n");
+	logtoall("@ntfsclient_reader\n");
 	return 0;
 }
 static int ntfsclient_writer(_obj* art,int xxx, void* arg,int cmd, void* buf,int len)
@@ -726,7 +726,7 @@ static int ntfsclient_writer(_obj* art,int xxx, void* arg,int cmd, void* buf,int
 }
 int ntfsclient_create(_obj* art)
 {
-	say("@ntfsclient_create\n");
+	logtoall("@ntfsclient_create\n");
 
 	struct perfs* per = memoryalloc(0x200000, 0);
 	art->priv_ptr = per;

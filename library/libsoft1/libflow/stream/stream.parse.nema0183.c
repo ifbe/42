@@ -24,7 +24,7 @@ int nema0183client_parse(u8* buf, int len)
 
 	if(0 == ncmp(buf, "$GPRMC", 6))
 	{
-		say("gprmc: %.*s", len, buf);
+		logtoall("gprmc: %.*s", len, buf);
 
 		k = 0;
 		t = 0;
@@ -32,18 +32,18 @@ int nema0183client_parse(u8* buf, int len)
 		{
 			if(',' == buf[j])
 			{
-				if(1 == t)say("1:time=%.*s\n",            j-k-1, buf+k+1);
-				else if(2 == t)say("2:valid=%.*s\n",      j-k-1, buf+k+1);
-				else if(3 == t)say("3:latitude=%f\n",     nema183_convert(buf+k+1, j-k-1));
-				else if(4 == t)say("4:%.*s\n",            j-k-1, buf+k+1);
-				else if(5 == t)say("5:longtitude=%f\n",   nema183_convert(buf+k+1, j-k-1));
-				else if(6 == t)say("6:%.*s\n",            j-k-1, buf+k+1);
-				else if(7 == t)say("7:speed=%.*s\n",      j-k-1, buf+k+1);
-				else if(8 == t)say("8:angle=%.*s\n",      j-k-1, buf+k+1);
-				else if(9 == t)say("9:date=%.*s\n",       j-k-1, buf+k+1);
-				else if(10 == t)say("10:magang=%.*s\n",   j-k-1, buf+k+1);
-				else if(11 == t)say("11:%.*s\n",          j-k-1, buf+k+1);
-				else if(12 == t)say("12:mode=%.*s\n",     j-k-1, buf+k+1);
+				if(1 == t)logtoall("1:time=%.*s\n",            j-k-1, buf+k+1);
+				else if(2 == t)logtoall("2:valid=%.*s\n",      j-k-1, buf+k+1);
+				else if(3 == t)logtoall("3:latitude=%f\n",     nema183_convert(buf+k+1, j-k-1));
+				else if(4 == t)logtoall("4:%.*s\n",            j-k-1, buf+k+1);
+				else if(5 == t)logtoall("5:longtitude=%f\n",   nema183_convert(buf+k+1, j-k-1));
+				else if(6 == t)logtoall("6:%.*s\n",            j-k-1, buf+k+1);
+				else if(7 == t)logtoall("7:speed=%.*s\n",      j-k-1, buf+k+1);
+				else if(8 == t)logtoall("8:angle=%.*s\n",      j-k-1, buf+k+1);
+				else if(9 == t)logtoall("9:date=%.*s\n",       j-k-1, buf+k+1);
+				else if(10 == t)logtoall("10:magang=%.*s\n",   j-k-1, buf+k+1);
+				else if(11 == t)logtoall("11:%.*s\n",          j-k-1, buf+k+1);
+				else if(12 == t)logtoall("12:mode=%.*s\n",     j-k-1, buf+k+1);
 				k=j;
 				t++;
 			}
@@ -51,7 +51,7 @@ int nema0183client_parse(u8* buf, int len)
 	}
 	else if(0 == ncmp(buf, "$GPVTG", 6))
 	{
-		say("gpvtg: %.*s", len, buf);
+		logtoall("gpvtg: %.*s", len, buf);
 
 		k = 0;
 		t = 0;
@@ -59,11 +59,11 @@ int nema0183client_parse(u8* buf, int len)
 		{
 			if(',' == buf[j])
 			{
-				if(1 == t)say("1:rnangle=%.*s\n",      j-k-1, buf+k+1);
-				else if(3 == t)say("4:mnangle=%.*s\n", j-k-1, buf+k+1);
-				else if(5 == t)say("6:kn=%.*s\n",      j-k-1, buf+k+1);
-				else if(7 == t)say("7:km/h=%.*s\n",    j-k-1, buf+k+1);
-				else if(9 == t)say("9:mode=%.*s\n",    j-k-1, buf+k+1);
+				if(1 == t)logtoall("1:rnangle=%.*s\n",      j-k-1, buf+k+1);
+				else if(3 == t)logtoall("4:mnangle=%.*s\n", j-k-1, buf+k+1);
+				else if(5 == t)logtoall("6:kn=%.*s\n",      j-k-1, buf+k+1);
+				else if(7 == t)logtoall("7:km/h=%.*s\n",    j-k-1, buf+k+1);
+				else if(9 == t)logtoall("9:mode=%.*s\n",    j-k-1, buf+k+1);
 				k=j;
 				t++;
 			}
@@ -71,7 +71,7 @@ int nema0183client_parse(u8* buf, int len)
 	}
 	else if(0 == ncmp(buf, "$GPGGA", 6))
 	{
-		say("gpgga: %.*s", len, buf);
+		logtoall("gpgga: %.*s", len, buf);
 
 		k = 0;
 		t = 0;
@@ -79,25 +79,25 @@ int nema0183client_parse(u8* buf, int len)
 		{
 			if(',' == buf[j])
 			{
-				if(1 == t)say("1:time=%.*s\n",            j-k-1, buf+k+1);
+				if(1 == t)logtoall("1:time=%.*s\n",            j-k-1, buf+k+1);
 				else if(2 == t){
-					say("3:latitude=%f\n", nema183_convert(buf+k+1, j-k-1));
+					logtoall("3:latitude=%f\n", nema183_convert(buf+k+1, j-k-1));
 				}
-				else if(3 == t)say("4:%.*s\n",            j-k-1, buf+k+1);
+				else if(3 == t)logtoall("4:%.*s\n",            j-k-1, buf+k+1);
 				else if(4 == t){
-					say("5:longtitude=%f\n", nema183_convert(buf+k+1, j-k-1));
+					logtoall("5:longtitude=%f\n", nema183_convert(buf+k+1, j-k-1));
 				}
-				else if(5 == t)say("6:%.*s\n",            j-k-1, buf+k+1);
-				else if(6 == t)say("2:state=%.*s\n",      j-k-1, buf+k+1);
-				else if(7 == t)say("7:count=%.*s\n",      j-k-1, buf+k+1);
-				else if(8 == t)say("8:hdop=%.*s\n",       j-k-1, buf+k+1);
+				else if(5 == t)logtoall("6:%.*s\n",            j-k-1, buf+k+1);
+				else if(6 == t)logtoall("2:state=%.*s\n",      j-k-1, buf+k+1);
+				else if(7 == t)logtoall("7:count=%.*s\n",      j-k-1, buf+k+1);
+				else if(8 == t)logtoall("8:hdop=%.*s\n",       j-k-1, buf+k+1);
 				else if(9 == t){
 					decstr2double(buf+k+1, &tmp);
-					say("9:altitude=%f\n", tmp);
+					logtoall("9:altitude=%f\n", tmp);
 				}
-				else if(10 == t)say("10:height=%.*s\n",   j-k-1, buf+k+1);
-				else if(11 == t)say("11:dt=%.*s\n",       j-k-1, buf+k+1);
-				else if(12 == t)say("12:id=%.*s\n",       j-k-1, buf+k+1);
+				else if(10 == t)logtoall("10:height=%.*s\n",   j-k-1, buf+k+1);
+				else if(11 == t)logtoall("11:dt=%.*s\n",       j-k-1, buf+k+1);
+				else if(12 == t)logtoall("12:id=%.*s\n",       j-k-1, buf+k+1);
 				k=j;
 				t++;
 			}
@@ -105,21 +105,21 @@ int nema0183client_parse(u8* buf, int len)
 	}
 	else if(0 == ncmp(buf, "$GPGSA", 6))
 	{
-		say("gpgsa: %.*s", len, buf);
+		logtoall("gpgsa: %.*s", len, buf);
 
 	}
 	else if(0 == ncmp(buf, "$GPGSV", 6))
 	{
-		say("gpgsv: %.*s", len, buf);
+		logtoall("gpgsv: %.*s", len, buf);
 
 	}
 	else if(0 == ncmp(buf, "$GPGLL", 6))
 	{
-		say("gpgll: %.*s", len, buf);
+		logtoall("gpgll: %.*s", len, buf);
 	}
 	else
 	{
-		say("unknown: %.*s", len, buf);
+		logtoall("unknown: %.*s", len, buf);
 	}
 	return 0;
 }
@@ -136,7 +136,7 @@ int nema0183client_write(struct halfrel* self, struct halfrel* peer, void* arg, 
 	int j,k;
 	struct str* str;
 	_obj* ele;
-	//say("%.*s", len, buf);
+	//logtoall("%.*s", len, buf);
 	//printmemory(buf, len);
 
 	ele = (void*)(self->chip);

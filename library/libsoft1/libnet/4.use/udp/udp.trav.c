@@ -30,7 +30,7 @@ int udptravclient_read(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int id
 }
 int udptravclient_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
-	//say("@udptravclient_write: %.4s\n", &foot);
+	//logtoall("@udptravclient_write: %.4s\n", &foot);
 
 	if(_std_ == stack[sp-1].foottype){
 		if(' ' == buf[0])give_data_into_peer(art,_src_, stack,sp, (p64)&art->listu64.data0,0, buf, 1);
@@ -51,13 +51,13 @@ int udptravclient_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int i
 	//from server
 	if( (p_port == s_port) && (p_addr == s_addr) ) {
 		u8* t = (void*)arg;
-		say("server: %d.%d.%d.%d:%d\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
+		logtoall("server: %d.%d.%d.%d:%d\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
 		t = buf;
-		say("myself: %d.%d.%d.%d:%d\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
+		logtoall("myself: %d.%d.%d.%d:%d\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
 
 		if(len < 16)return 0;
 		t = buf+8;
-		say("friend: %d.%d.%d.%d:%d\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
+		logtoall("friend: %d.%d.%d.%d:%d\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
 
 		art->listu64.data1 = *(u64*)(buf+8);
 		return 0;
@@ -66,13 +66,13 @@ int udptravclient_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int i
 	//from friend
 	if( (p_port == f_port) && (p_addr == f_addr) ) {
 		u8* t = (void*)arg;
-		say("from %d.%d.%d.%d:%d->\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
+		logtoall("from %d.%d.%d.%d:%d->\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
 		printmemory(buf, len);
 		return 0;
 	}
 
 	//from unknown
-	say("from unknown:\n");
+	logtoall("from unknown:\n");
 	printmemory(buf,len);
 	return 0;
 }
@@ -82,7 +82,7 @@ int udptravclient_detach(struct halfrel* self, struct halfrel* peer)
 }
 int udptravclient_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@udptravclient_attach: %.4s\n", &self->foottype);
+	logtoall("@udptravclient_attach: %.4s\n", &self->foottype);
 	return 0;
 }
 int udptravclient_delete(_obj* art)
@@ -143,12 +143,12 @@ int udptravmaster_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int i
 
 	if( (_UDP_ == sys->type) | (_udp_ == sys->type) ) {
 		if(0 == arg){
-			say("error@udptravmaster_write\n");
+			logtoall("error@udptravmaster_write\n");
 			return 0;
 		}
 
 		u8* t = (void*)arg;
-		say("from %d.%d.%d.%d:%d->\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
+		logtoall("from %d.%d.%d.%d:%d->\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
 		printmemory(buf, len);
 
 		u64* list = &art->listu64.data0;
@@ -164,12 +164,12 @@ int udptravmaster_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int i
 }
 int udptravmaster_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@udptravmaster_attach: %.4s\n", &self->foottype);
+	logtoall("@udptravmaster_attach: %.4s\n", &self->foottype);
 	return 0;
 }
 int udptravmaster_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@udptravmaster_detach: %.4s\n", &self->foottype);
+	logtoall("@udptravmaster_detach: %.4s\n", &self->foottype);
 	return 0;
 }
 int udptravmaster_delete(_obj* art)

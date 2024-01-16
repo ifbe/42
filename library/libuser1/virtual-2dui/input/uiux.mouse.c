@@ -137,12 +137,12 @@ static void vmouse_bywnd_event(_obj* ent,void* foot, _syn* stack,int sp, struct 
 {
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
-	//say("vmouse_bywnd_event\n");
+	//logtoall("vmouse_bywnd_event\n");
 	printmemory(ev,16);
 
 	int type = (ev->what&0xff);
 	int subt = (ev->what>>8)&0xff;
-	//say("type=%x,subt=%x\n",type,subt);
+	//logtoall("type=%x,subt=%x\n",type,subt);
 	if( ('t'==type) | ('p'==type) ){
 		struct privdata* priv = (void*)ent->priv_256b;
 		*(u64*)priv->curr = ev->why;

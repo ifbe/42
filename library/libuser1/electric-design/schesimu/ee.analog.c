@@ -15,7 +15,7 @@ struct wireindex{
 static int parsewiring_oneline(u8* buf, int len, float* dat, int cnt)
 {
 	//printmemory(buf,len);
-	//say("%llx,%llx\n",dat,sts);
+	//logtoall("%llx,%llx\n",dat,sts);
 	int j,k,ret=0;
 	float* cur;
 	for(j=0;j<len;j++){
@@ -23,11 +23,11 @@ static int parsewiring_oneline(u8* buf, int len, float* dat, int cnt)
 		if(')' == buf[j]){
 			cur = &dat[6*(cnt+ret)];
 			parsefv(cur, 6, buf+k,j-k);
-			//say("%f,%f,%f,%f,%f,%f\n",cur[0],cur[1],cur[2],cur[3],cur[4],cur[5]);
+			//logtoall("%f,%f,%f,%f,%f,%f\n",cur[0],cur[1],cur[2],cur[3],cur[4],cur[5]);
 			ret++;
 		}
 	}
-	//say("ret=%d\n",ret);
+	//logtoall("ret=%d\n",ret);
 	return ret;
 }
 static int parsewiring(u8* buf, float* dat)
@@ -44,7 +44,7 @@ static int parsewiring(u8* buf, float* dat)
 			sts[ioff].grad = 0.0;
 			sts[ioff].sure = 1;
 			sts[ioff].temp = 0;
-			//say("%d,%d\n", sts[ioff].off, sts[ioff].cnt);
+			//logtoall("%d,%d\n", sts[ioff].off, sts[ioff].cnt);
 
 			if(buf[j] < 0xa)break;
 			foff += sts[ioff].cnt;
@@ -94,7 +94,7 @@ static void analog_decent_V(_obj* ent, struct wireindex* sts)
 		if(0 != sts[j].sure)continue;
 
 		sts[j].volt -= sts[j].grad;
-		say("%f\n",sts[j].volt);
+		logtoall("%f\n",sts[j].volt);
 	}
 }
 static void analog_decent_R(_obj* ent, struct wireindex* sts)
@@ -112,7 +112,7 @@ static void analog_decent_R(_obj* ent, struct wireindex* sts)
 		if(0 != sts[j].sure)continue;
 
 		sts[j].volt -= sts[j].grad;
-		say("%f\n",sts[j].volt);
+		logtoall("%f\n",sts[j].volt);
 	}
 }
 
@@ -153,7 +153,7 @@ static void analog_draw_gl41(
 		off = sts[k].off;
 		rgb = 0xffffff;
 		for(j=6*off;j<6*(off+cnt);j+=6){
-			//say("j=%d\n",j);
+			//logtoall("j=%d\n",j);
 			ta[0] = vc[0]+dat[j+0];
 			ta[1] = vc[1]+dat[j+1];
 			ta[2] = vc[2]+dat[j+2];
@@ -224,7 +224,7 @@ int analog_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, voi
 
 	struct event* ev;
 	int id;
-say("analog_write: %.4s\n", &foot);
+logtoall("analog_write: %.4s\n", &foot);
 	switch(stack[sp-1].foottype){
 	case _evby_:
 		ev = buf;
@@ -251,7 +251,7 @@ int analog_detach(struct halfrel* self, struct halfrel* peer)
 }
 int analog_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@analog_attach: %.4s\n", &self->foottype);
+	logtoall("@analog_attach: %.4s\n", &self->foottype);
 	return 0;
 }
 
@@ -273,7 +273,7 @@ int analog_delete(_obj* scene)
 int analog_create(_obj* scene, void* arg, int argc, u8** argv)
 {
 	int ret;
-	say("@analog_create\n");
+	logtoall("@analog_create\n");
 	if(0 == arg)return 0;
 
 	scene->listptr.buf0 = memoryalloc(0x10000, 0);

@@ -198,7 +198,7 @@ static void fractal_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("fractal(%x,%x,%x)\n",win,act,sty);
+	logtoall("fractal(%x,%x,%x)\n",win,act,sty);
 }
 
 
@@ -209,7 +209,7 @@ static void fractal_event(
 	_obj* win, struct style* sty,
 	struct event* ev, int len)
 {
-	//say("%llx,%llx\n",ev->why, ev->what);
+	//logtoall("%llx,%llx\n",ev->why, ev->what);
 	u64 why = ev->why;
 	u64 what = ev->what;
 /*

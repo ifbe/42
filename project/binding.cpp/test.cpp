@@ -13,7 +13,7 @@ extern "C" {
 	void supply_delete(void*);
 
 	void sleep_us(int);
-	void say(const void*, ...);
+	void logtoall(const void*, ...);
 }
 
 int main(int argc, char** argv)
@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 	void* wnd = supply_alloc_prep(0, _wnd_, 0, 0);
 	supply_create(wnd, 0, argc, argv);
 
-	say("sleep 3s\n");
+	logtoall("sleep 3s\n");
 	sleep_us(3*1000*1000);
 
 	supply_delete(wnd);

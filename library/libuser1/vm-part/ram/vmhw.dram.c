@@ -31,11 +31,11 @@ static void vmddr_create(_obj* act, void* arg, int argc, u8** argv)
 		p = argv[j];
 		if(('0' == p[0]) && ('x' == p[1])){
 			k = hexstr2u32(p+2, &off);
-			say("off=%x\n", off);
+			logtoall("off=%x\n", off);
 
 			q = act->listptr.buf0 + 0x100000*63;
 			copypath(q, p+3+k);
-			say("url=%s\n", q);
+			logtoall("url=%s\n", q);
 
 			p = act->listptr.buf0 + off;
 			openreadclose(q, 0, p, 0x100000);

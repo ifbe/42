@@ -19,7 +19,7 @@ static AAsset* asset[16] = {0};
 
 void initfilemgr(void* addr)
 {
-	say("@initfilemgr\n");
+	logtoall("@initfilemgr\n");
 	obj = addr;
 	assetMgr = getassetmgr();
 
@@ -27,7 +27,7 @@ void initfilemgr(void* addr)
 	const char* file_list;
 	do{
 		file_list=AAssetDir_getNextFileName(assetDir);
-		if(file_list)say("%s\n",file_list);
+		if(file_list)logtoall("%s\n",file_list);
 	}while (file_list);
 	AAssetDir_close(assetDir);
 }
@@ -43,12 +43,12 @@ void filemanager_registerdisk()
 
 _obj* file_create(void* path, int flag)
 {
-	say("@startfile:%s\n",path);
+	logtoall("@startfile:%s\n",path);
 
 	int j;
 	for(j=0;j<16;j++){
 		if(0 == asset[j]){
-			say("@AAssetManager_open:%s\n",path);
+			logtoall("@AAssetManager_open:%s\n",path);
 			asset[j] = AAssetManager_open(assetMgr, path, 0);
 			if(asset[j])goto good;
 			break;
@@ -86,7 +86,7 @@ int file_writer(_obj* oo,int xx, p64 arg,int cmd, void* buf,int len)
 
 int file_search()
 {
-	say("@filesearch\n");
+	logtoall("@filesearch\n");
 	return 0;
 }
 int file_modify()
@@ -101,9 +101,9 @@ int notinhashlist(u32* hashbuf, int hashcnt, const char* name)
 {
 	int j;
 	u32 h = djb2hash((void*)name, strlen(name));
-	say("notinhashlist:hash=%x\n",h);
+	logtoall("notinhashlist:hash=%x\n",h);
 	for(j=2;j<hashcnt;j++){
-	say("notinhashlist:j=%x\n",j);
+	logtoall("notinhashlist:j=%x\n",j);
 		if(h == hashbuf[j])return 0;
 	}
 	return 1;
@@ -120,7 +120,7 @@ int readfolder(void* url, int fd, p64 arg, int off, void* buf, int len)
 	do{
 		file_list=AAssetDir_getNextFileName(assetDir);
 		if(file_list){
-			//say("%s\n",file_list);
+			//logtoall("%s\n",file_list);
 			olen += snprintf(buf+olen, len-olen, "%s\n", file_list);
 			ocnt++;
 		}
@@ -139,40 +139,40 @@ int readfolder(void* url, int fd, p64 arg, int off, void* buf, int len)
 	}
 
 	//dir and non-dir
-	//say("@readfolder\n");
+	//logtoall("@readfolder\n");
 	struct android_app* app = getapp();
 
-	//say("@AttachCurrentThread\n");
+	//logtoall("@AttachCurrentThread\n");
     JNIEnv* env = 0;
     (*app->activity->vm)->AttachCurrentThread(app->activity->vm, &env, 0);
 
-	//say("@activity\n");
+	//logtoall("@activity\n");
     jclass activity_class = (*env)->GetObjectClass(env, app->activity->clazz);
 	jmethodID getAssets_method = (*env)->GetMethodID(env, activity_class, "getAssets", "()Landroid/content/res/AssetManager;");
 
-	//say("@assetmanager\n");
+	//logtoall("@assetmanager\n");
 	void* assetmanager_obj = (*env)->CallObjectMethod(env, app->activity->clazz, getAssets_method);
-	//say("@assetmanager.1\n");
+	//logtoall("@assetmanager.1\n");
 	jclass assetmanager_class = (*env)->GetObjectClass(env, assetmanager_obj);
-	//say("@assetmanager.2\n");
+	//logtoall("@assetmanager.2\n");
     jmethodID list_method = (*env)->GetMethodID(env, assetmanager_class, "list", "(Ljava/lang/String;)[Ljava/lang/String;");
 
-	//say("@path\n");
+	//logtoall("@path\n");
 	jstring path_obj = (*env)->NewStringUTF(env, url);
-	//say("@path.1\n");
+	//logtoall("@path.1\n");
 	void* file_obj = (jobjectArray)(*env)->CallObjectMethod(env, assetmanager_obj, list_method, path_obj);
-	//say("@path.2\n");
+	//logtoall("@path.2\n");
 	(*env)->DeleteLocalRef(env, path_obj);
 
-	//say("@GetArrayLength\n");
+	//logtoall("@GetArrayLength\n");
 	int cnt = (*env)->GetArrayLength(env, file_obj);
-	say("cnt=%d\n", cnt);
+	logtoall("cnt=%d\n", cnt);
 
 	for(int j=0;j<cnt;j++){
 		jstring jstr = (jstring)(*env)->GetObjectArrayElement(env, file_obj, j);
 		const char* name = (*env)->GetStringUTFChars(env, jstr, 0);
 		if(name){
-			say("%d:%s\n", j, name);
+			logtoall("%d:%s\n", j, name);
 			if(notinhashlist(hashbuf, hashcnt, name)){
 				olen += snprintf(buf+olen, len-olen, "%s/\n", name);
 			}
@@ -180,7 +180,7 @@ int readfolder(void* url, int fd, p64 arg, int off, void* buf, int len)
 		(*env)->DeleteLocalRef(env, jstr);
 	}
 
-	say("@DetachCurrentThread\n");
+	logtoall("@DetachCurrentThread\n");
     (*app->activity->vm)->DetachCurrentThread(app->activity->vm);
 	return olen;
 }

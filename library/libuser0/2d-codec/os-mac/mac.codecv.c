@@ -5,12 +5,12 @@
 
 int codecv_take(_obj* cam,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len)
 {
-    say("codecv_take\n");
+    logtoall("codecv_take\n");
 	return 0;
 }
 int codecv_give(_obj* cam,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len)
 {
-    say("codecv_give\n");
+    logtoall("codecv_give\n");
 	return 0;
 }
 int codecv_attach()

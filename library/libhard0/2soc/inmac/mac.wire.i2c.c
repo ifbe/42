@@ -30,6 +30,6 @@ void i2c_delete()
 }
 int i2c_create(u8* name, int flag, int argc, u8** argv)
 {
-    say("@i2c_create:%s\n", name);
+    logtoall("@i2c_create:%s\n", name);
     return 0;
 }

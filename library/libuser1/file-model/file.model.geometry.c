@@ -28,7 +28,7 @@ static void geometry_draw_gl41(
 	int dimen = act->whdf.iw0;
 	int shape = act->whdf.iwn;
 	u32 color = act->whdf.ix0;
-	//say("%d,%d\n",dimen,shape);
+	//logtoall("%d,%d\n",dimen,shape);
 
 	if('q' == shape){
 		gl41point(wnd, color, vc);

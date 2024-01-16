@@ -56,15 +56,15 @@ void* uart_create(char* path, int speed)
 	//fd
 	int fd = open(path , O_RDWR|O_NOCTTY|O_NDELAY);
 	if(fd <= 0){
-		say("error:%d@open:%s\n", errno, path);
+		logtoall("error:%d@open:%s\n", errno, path);
 		return 0;
 	}
-	//else say("open: %s, %d\n", path, speed);
+	//else logtoall("open: %s, %d\n", path, speed);
 
 	//obj
 	struct item* oo = &obj[fd];
 	oo->sockinfo.fd = fd;
-	say("fd=%d,obj=%p\n", fd, oo);
+	logtoall("fd=%d,obj=%p\n", fd, oo);
 
 	//speed
 	switch(speed){
@@ -134,7 +134,7 @@ int uart_delete(struct item* oo)
 int uart_reader(_obj* oo,int xx, p64 arg,int off, void* buf,int len)
 {
 	int fd = oo->sockinfo.fd;
-	//say("fd=%d,obj=%p\n", fd, oo);
+	//logtoall("fd=%d,obj=%p\n", fd, oo);
 
 	int ret = read(fd, buf, len);
 	if(ret != len){
@@ -145,7 +145,7 @@ int uart_reader(_obj* oo,int xx, p64 arg,int off, void* buf,int len)
 int uart_writer(_obj* oo,int xx, p64 arg,int off, void* buf,int len)
 {
 	int fd = oo->sockinfo.fd;
-	//say("fd=%d,obj=%p\n", fd, oo);
+	//logtoall("fd=%d,obj=%p\n", fd, oo);
 
 	int ret = write(fd, buf, len);
 	if(ret != len){

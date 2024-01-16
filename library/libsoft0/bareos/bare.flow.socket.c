@@ -3,7 +3,7 @@
 #define u16 unsigned short
 #define u8 unsigned char
 void printmemory(char*,int);
-void say(char*,...);
+void logtoall(char*,...);
 
 
 

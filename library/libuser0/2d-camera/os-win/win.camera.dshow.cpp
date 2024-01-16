@@ -466,10 +466,10 @@ int dshowcam_create(_obj* win, void* arg, int argc, u8** argv)
 
 	for(j=1;j<argc;j++){
 		arg = argv[j];
-		//say("%d->%.16s\n",j,arg;
+		//logtoall("%d->%.16s\n",j,arg;
 		if(0 == ncmp(arg, (void*)"format:", 7)){
 			arg = argv[j]+7;
-			//say("format=%.5s\n",arg);
+			//logtoall("format=%.5s\n",arg);
 			if(0 == ncmp(arg, (void*)"mjpeg", 5))win->FORMAT = _mjpg_;
 		}
 		if(0 == ncmp(arg, (void*)"width:", 6)){

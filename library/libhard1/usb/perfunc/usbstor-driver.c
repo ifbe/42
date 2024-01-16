@@ -328,7 +328,7 @@ static int usbstor_inquery(struct item* usb,int xxx, struct item* xhci,int slot,
 
 	printmemory(inqcsw, 0x0d);
 	if(0 != inqcsw->Status){
-		say("[usbdisk]csw.status=%x\n", inqcsw->Status);
+		logtoall("[usbdisk]csw.status=%x\n", inqcsw->Status);
 		return -1;
 	}
 	return 0;
@@ -368,7 +368,7 @@ static int usbstor_testunitready(struct item* usb,int xxx, struct item* xhci,int
 
 	printmemory(turcsw, 0x0d);
 	if(0 != turcsw->Status){
-		say("[usbdisk]csw.status=%x\n", turcsw->Status);
+		logtoall("[usbdisk]csw.status=%x\n", turcsw->Status);
 		return -1;
 	}
 	return 0;
@@ -417,7 +417,7 @@ static int usbstor_readcapacity(struct item* usb,int xxx, struct item* xhci,int 
 	printmemory(caprep, 8);
 	printmemory(capcsw, 0x0d);
 	if(0 != capcsw->Status){
-		say("[usbdisk]csw.status=%x\n", capcsw->Status);
+		logtoall("[usbdisk]csw.status=%x\n", capcsw->Status);
 		return -1;
 	}
 	return 0;
@@ -439,7 +439,7 @@ static int usbstor_readdata_piece(struct item* usb, u8* buf, u64 bytecur, int by
 
 	u64 blocklba = bytecur / (info->blocksize);
 	int blockcnt = bytecnt / (info->blocksize);
-	say("lba=%x,cnt=%x\n",blocklba,blockcnt);
+	logtoall("lba=%x,cnt=%x\n",blocklba,blockcnt);
 
 	struct CommandBlockWrapper cbw;
 	struct CommandStatusWrapper rsw;
@@ -459,7 +459,7 @@ static int usbstor_readdata_piece(struct item* usb, u8* buf, u64 bytecur, int by
 		0,0
 	);
 	if(ret < 0){
-		say("[usbdisk]error@send cbw\n");
+		logtoall("[usbdisk]error@send cbw\n");
 		return -1;
 	}
 
@@ -470,7 +470,7 @@ static int usbstor_readdata_piece(struct item* usb, u8* buf, u64 bytecur, int by
 		0,0
 	);
 	if(ret < 0){
-		say("[usbdisk]error@recv dat\n");
+		logtoall("[usbdisk]error@recv dat\n");
 		return -2;
 	}
 
@@ -481,11 +481,11 @@ static int usbstor_readdata_piece(struct item* usb, u8* buf, u64 bytecur, int by
 		0,0
 	);
 	if(ret < 0){
-		say("[usbdisk]error@recv csw\n");
+		logtoall("[usbdisk]error@recv csw\n");
 		return -3;
 	}
 	if(0 != rsw.Status){
-		say("[usbdisk]error@csw.status=%x\n", rsw.Status);
+		logtoall("[usbdisk]error@csw.status=%x\n", rsw.Status);
 		return -4;
 	}
 	return bytecnt;
@@ -496,32 +496,32 @@ static int usbstor_readdata_piece(struct item* usb, u8* buf, u64 bytecur, int by
 
 static int usbstor_readinfo(struct item* usb,void* foot,struct halfrel* stack,int sp, void* buf,int len)
 {
-	//say("@usbstor_readinfo: %p,%p\n",usb,foot);
+	//logtoall("@usbstor_readinfo: %p,%p\n",usb,foot);
 
 	struct perusb* perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
 
 	struct perstor* info = (void*)(perusb->perfunc);
 	if(0 == info->host){
-		say("host=0?\n");
+		logtoall("host=0?\n");
 		return 0;
 	}
 	if(0 == info->blocksize){
-		say("blocksize=0?\n");
+		logtoall("blocksize=0?\n");
 		return 0;
 	}
 
 	u32 blocksize = info->blocksize;
 	u64 totalsize = info->totalsize;
 	int sh = usbstor_shift(totalsize);
-	say("type=usbdisk\n"
+	logtoall("type=usbdisk\n"
 		"blocksize=0x%x\n"
 		"totalsize=0x%llx(%d%cB)\n", blocksize, totalsize, totalsize>>sh, KMGTPE[sh/10]);
 	return 0;
 }
 static int usbstor_readdata(struct item* usb,void* foot,struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
-	say("@usbstor_readdata: %p,%p,%p,%x,%llx,%x,%p,%x\n",usb,foot,stack,sp,arg,cmd,buf,len);
+	logtoall("@usbstor_readdata: %p,%p,%p,%x,%llx,%x,%p,%x\n",usb,foot,stack,sp,arg,cmd,buf,len);
 	struct perusb* perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
 
@@ -551,22 +551,22 @@ static int usbstor_readdata(struct item* usb,void* foot,struct halfrel* stack,in
 
 static int usbstor_ontake(struct item* usb,void* foot,struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
-	//say("usbstor_readfile:%llx,%x,%p,%x\n",arg,cmd,buf,len);
+	//logtoall("usbstor_readfile:%llx,%x,%p,%x\n",arg,cmd,buf,len);
 	if(_info_ == cmd)return usbstor_readinfo(usb,foot, stack,sp, buf,len);
 
 	if(0 == buf){
-		say("error: buf=0\n");
+		logtoall("error: buf=0\n");
 		return 0;
 	}
 	if(0 == len){
-		say("error: len=0\n");
+		logtoall("error: len=0\n");
 		return 0;
 	}
 	return usbstor_readdata(usb,foot, stack,sp, arg,cmd, buf,len);
 }
 static int usbstor_ongive(struct item* usb,void* foot,struct halfrel* stack,int sp, p64 arg,int off, void* buf,int len)
 {
-	say("@ahci_ongive: %p,%p\n", usb,foot);
+	logtoall("@ahci_ongive: %p,%p\n", usb,foot);
 	return 0;
 }
 
@@ -575,7 +575,7 @@ static int usbstor_ongive(struct item* usb,void* foot,struct halfrel* stack,int 
 
 int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct descnode* intfnode, struct InterfaceDescriptor* intfdesc)
 {
-	say("[usbdisk]begin...\n");
+	logtoall("[usbdisk]begin...\n");
 
 	//per device
 	struct perusb* perusb = usb->priv_ptr;
@@ -590,19 +590,19 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 
 //------------------------check type------------------------
 	if(subclass_SCSI != intfdesc->bInterfaceSubClass){
-		say("[usbdisk]not SCSI, bye bye\n");
+		logtoall("[usbdisk]not SCSI, bye bye\n");
 		return -1;
 	}
 	if(interface_BBB == intfdesc->bInterfaceProtocol){
-		say("[usbdisk]bulk only\n");
+		logtoall("[usbdisk]bulk only\n");
 		//lets go
 	}
 	else if(interface_UAS == intfdesc->bInterfaceProtocol){
-		say("[usbdisk]UASP, bye bye\n");
+		logtoall("[usbdisk]UASP, bye bye\n");
 		return -2;
 	}
 	else{
-		say("[usbdisk]proto=%x, bye bye\n", intfdesc->bInterfaceProtocol);
+		logtoall("[usbdisk]proto=%x, bye bye\n", intfdesc->bInterfaceProtocol);
 		return -2;
 	}
 
@@ -624,7 +624,7 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 
 		switch(endpdesc->bDescriptorType){
 		case 5:{
-			say("[usbdisk]endpdesc: addr=%x, attr=%x, pktlen=%x, interval=%x\n",
+			logtoall("[usbdisk]endpdesc: addr=%x, attr=%x, pktlen=%x, interval=%x\n",
 				endpdesc->bEndpointAddress, endpdesc->bmAttributes,
 				endpdesc->wMaxPacketSize, endpdesc->bInterval
 			);
@@ -651,17 +651,17 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 			break;
 		}//ep desc
 		default:{
-			say("[usbdisk]desctype=%x\n", endpdesc->bDescriptorType);
+			logtoall("[usbdisk]desctype=%x\n", endpdesc->bDescriptorType);
 		}//report desc?
 		}//switch
 
 		j = endpnode->rfellow;
 	}
-	say("[usbdisk]in@%x, out@%x\n", inaddr, outaddr);
+	logtoall("[usbdisk]in@%x, out@%x\n", inaddr, outaddr);
 
 
 //------------------------set configuration------------------------
-	say("[usbdisk]set_config\n");
+	logtoall("[usbdisk]set_config\n");
 	H2D_STD_DEV_SETCONF(&req, confdesc->bConfigurationValue);
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
@@ -672,15 +672,15 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 
 
 //------------------------send INQUERY------------------------
-	say("[usbdisk]Inquiry...\n");
+	logtoall("[usbdisk]Inquiry...\n");
 	usbstor_inquery(usb,xxx, xhci,slot, inaddr,outaddr);
 
 //------------------------send TestUnitReady------------------------
-	say("[usbdisk]Test Unit Ready...\n");
+	logtoall("[usbdisk]Test Unit Ready...\n");
 	usbstor_testunitready(usb,xxx, xhci,slot, inaddr,outaddr);
 
 //------------------------send ReadCapacity------------------------
-	say("[usbdisk]Read Capacity...\n");
+	logtoall("[usbdisk]Read Capacity...\n");
 	usbstor_readcapacity(usb,xxx, xhci,slot, inaddr,outaddr);
 
 	struct READ_CAPACITY_Reply* caprep = (void*)perstor + 0x300;
@@ -688,7 +688,7 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	u32 blocksize = usbstor_endian(caprep->BlockSz_MsbNotLsb);
 	u64 totalsize = (1 + (u64)blocklast) * blocksize;
 	int sh = usbstor_shift(totalsize);
-	say("blocklast=0x%x,blocksize=0x%x,totalsize=0x%llx(%d%cB)\n", blocklast, blocksize, totalsize, totalsize>>sh, KMGTPE[sh/10]);
+	logtoall("blocklast=0x%x,blocksize=0x%x,totalsize=0x%llx(%d%cB)\n", blocklast, blocksize, totalsize, totalsize>>sh, KMGTPE[sh/10]);
 
 //------------------------serve for the people------------------------
 	usbstor_ZeroMemory(perstor, 0x100);

@@ -34,7 +34,7 @@ char* val2str[8] = {
 
 static int setfunc(void* gpio, int pin, int func)
 {
-	say("setfunc:virt=%p,pin=%d,func=%d\n",gpio,pin,func);
+	logtoall("setfunc:virt=%p,pin=%d,func=%d\n",gpio,pin,func);
 	if(pin < 0)return 0;
 	if(pin > 45)return 0;
 
@@ -50,7 +50,7 @@ static int setfunc(void* gpio, int pin, int func)
 
 static int setvolt(void* gpio, int pin, int volt)
 {
-	say("setvolt:virt=%p,pin=%d,volt=%d\n",gpio,pin,volt);
+	logtoall("setvolt:virt=%p,pin=%d,volt=%d\n",gpio,pin,volt);
 	if(pin < 0)return 0;
 	if(pin > 45)return 0;
 
@@ -90,7 +90,7 @@ int gpio_read(_obj* obj,void* foot, p64 arg,int cmd, u8* buf,int len)
 }
 int gpio_write(_obj* obj,void* foot, u8* pin,int cmd, u8* val,int len)
 {
-	say("@gpiowrite:%p,%x,%p,%x\n", pin, cmd, val, len);
+	logtoall("@gpiowrite:%p,%x,%p,%x\n", pin, cmd, val, len);
 	printmemory(pin,len);
 	printmemory(val,len);
 

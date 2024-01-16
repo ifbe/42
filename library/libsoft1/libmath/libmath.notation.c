@@ -3,7 +3,7 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 void printmemory(char*,int);
-void say(char*,...);
+void logtoall(char*,...);
 
 
 
@@ -33,7 +33,7 @@ void kexuejishufa(double* haha,int* counter)
 	{
 		while( haha[0] < 1.00 )
 		{
-			//say("%lf,%d\n",haha[0],counter[0]);
+			//logtoall("%lf,%d\n",haha[0],counter[0]);
 			haha[0] *= 10.00;
 			counter[0] --;
 		}
@@ -44,7 +44,7 @@ void kexuejishufa(double* haha,int* counter)
 	{
 		while( haha[0] > 10.00 )
 		{
-			//say("%lf,%d\n",haha[0],counter[0]);
+			//logtoall("%lf,%d\n",haha[0],counter[0]);
 			haha[0] /= 10.00;
 			counter[0] ++;
 		}

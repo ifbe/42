@@ -6,7 +6,7 @@ int decstr2data(void*, void*);
 int ncmp(void*, void*, int);
 //
 void printmemory(char*, int);
-void say(char*, ...);
+void logtoall(char*, ...);
 
 
 
@@ -72,7 +72,7 @@ int parseipv6addr(u8* buf, u8* out)
 		}
 	}
 stage2:
-	//say("stage2:%d,%d,%d,%d\n",j,head,lcnt,rcnt);
+	//logtoall("stage2:%d,%d,%d,%d\n",j,head,lcnt,rcnt);
 	for(;j<4*8+8;j++){
 		if(buf[j]<=0x20){
 			if(0 == j-head){		//		::\n
@@ -90,7 +90,7 @@ stage2:
 		}
 	}
 final:
-	//say("final:%d,%d,%d,%d\n",j,head,lcnt,rcnt);
+	//logtoall("final:%d,%d,%d,%d\n",j,head,lcnt,rcnt);
 	//printmemory(right, 4);
 	while(lcnt+rcnt < 8){		//fill 0 for ::
 		out[lcnt*2+0] = 0;
@@ -103,7 +103,7 @@ final:
 	}
 	return j;		//input byte count;
 error:
-	say("parseipv6addr:wrong l=%d,r=%d\n", lcnt, rcnt);
+	logtoall("parseipv6addr:wrong l=%d,r=%d\n", lcnt, rcnt);
 	return 0;
 }
 

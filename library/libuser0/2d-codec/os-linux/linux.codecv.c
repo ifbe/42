@@ -59,9 +59,9 @@ static void bsthread(_obj* obj)
 		for(j=0;j<2;j++){
 			if(_v4l2_ == priv->bs[j].own)continue;
 
-			if(priv->log)say("bs.enq: id=%d,j=%d\n",enq,j);
+			if(priv->log)logtoall("bs.enq: id=%d,j=%d\n",enq,j);
 			ret = ioctl(fd, VIDIOC_QBUF, &priv->bs[j].buf);
-			if(priv->log)say("bs.enq: id=%d,ret=%d\n",enq,ret);
+			if(priv->log)logtoall("bs.enq: id=%d,ret=%d\n",enq,ret);
 
 			priv->bs[j].own = _v4l2_;
 			priv->bs[j].seq = enq;
@@ -72,13 +72,13 @@ static void bsthread(_obj* obj)
 			if(_v4l2_ != priv->bs[j].own)continue;
 			if(deq != priv->bs[j].seq)continue;
 
-			if(priv->log)say("bs.deq: id=%d,j=%d\n", deq, j);
+			if(priv->log)logtoall("bs.deq: id=%d,j=%d\n", deq, j);
 			priv->bs[j].buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
 			ret = ioctl(priv->fd, VIDIOC_DQBUF, &priv->bs[j].buf);
 
 			u64 ts = (u64)priv->bs[j].buf.timestamp.tv_sec*1000*1000*1000 + priv->bs[j].buf.timestamp.tv_usec*1000;
 			int len = priv->bs[j].buf.m.planes[0].bytesused;
-			if(priv->log)say("bs.deq: id=%d, ret=%d, len=%d, ts=%lld\n", deq, ret, len, ts);
+			if(priv->log)logtoall("bs.deq: id=%d, ret=%d, len=%d, ts=%lld\n", deq, ret, len, ts);
 
 			priv->bs[j].own = _node_;
 			deq++;
@@ -96,7 +96,7 @@ static void bsthread(_obj* obj)
 
 int codecv_take(_obj* cam,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len)
 {
-	say("codecv_take\n");
+	logtoall("codecv_take\n");
 	return 0;
 }
 int codecv_give(_obj* cam,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len)
@@ -104,7 +104,7 @@ int codecv_give(_obj* cam,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* b
 	struct privdata* priv = (void*)cam->priv_ptr;
 	int w = priv->width;
 	int h = priv->height;
-	if(priv->log)say("codecv_give\n");
+	if(priv->log)logtoall("codecv_give\n");
 	if(priv->log)printmemory(buf + w*4, 16);
 	if(priv->log)printmemory(buf + w*h + w, 16);
 	if(priv->log)printmemory(buf + w*h*5/4 + w, 16);
@@ -122,23 +122,23 @@ int codecv_give(_obj* cam,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* b
 		}
 	}
 	//printmemory(arg, 0x40);
-	if(priv->log)say("encoder: capturetime=%lld, receivetime=%lld\n", capturetime, receivetime);
+	if(priv->log)logtoall("encoder: capturetime=%lld, receivetime=%lld\n", capturetime, receivetime);
 
 	int j,ret;
 	for(j=0;j<2;j++){
 			if(_read_ != priv->img[j].own)continue;
 			if(buf != priv->img[j].mem)continue;
 
-			if(priv->log)say("img.enq:j=%d\n",j);
+			if(priv->log)logtoall("img.enq:j=%d\n",j);
 			priv->img[j].plane.bytesused = priv->img[j].buf.m.planes[0].length;
 			priv->img[j].buf.timestamp.tv_sec = capturetime/1000/1000/1000;
 			priv->img[j].buf.timestamp.tv_usec = (capturetime/1000)%1000000;
 			ret = ioctl(priv->fd, VIDIOC_QBUF, &priv->img[j].buf);
 			if(-1 != ret){
-				if(priv->log)say("img.enq end\n");
+				if(priv->log)logtoall("img.enq end\n");
 			}
 			else{
-				if(priv->log)say("img.enq:ret=%d,errno=%d\n",ret,errno);
+				if(priv->log)logtoall("img.enq:ret=%d,errno=%d\n",ret,errno);
 			}
 
 			priv->img[j].own = _v4l2_;
@@ -146,7 +146,7 @@ int codecv_give(_obj* cam,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* b
 			priv->imgenq++;
 			return 0;
 	}
-	if(priv->log)say("codecv_give unknown:%p\n",buf);
+	if(priv->log)logtoall("codecv_give unknown:%p\n",buf);
 	return 0;
 }
 int codecv_attach()
@@ -171,32 +171,32 @@ int codecv_reader(_obj* cam,void* foot, p64 arg,int idx, u8* buf,int len)
 		if(_v4l2_ != priv->img[j].own)continue;
 		if(priv->imgdeq != priv->img[j].seq)continue;
 
-		if(priv->log)say("img.deq:j=%d\n",j);
+		if(priv->log)logtoall("img.deq:j=%d\n",j);
 		priv->img[j].buf.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
 		ret = ioctl(priv->fd, VIDIOC_DQBUF, &priv->img[j].buf);
 		if(-1 != ret){
-			if(priv->log)say("img.deq end\n");
+			if(priv->log)logtoall("img.deq end\n");
 		}
 		else{
-			if(priv->log)say("img.deq:ret=%d,errno=%d\n",ret,errno);
+			if(priv->log)logtoall("img.deq:ret=%d,errno=%d\n",ret,errno);
 		}
 
 		priv->img[j].own = _node_;
 		priv->imgdeq++;
 		goto find;
 	}
-	if(priv->log)say("codecv_read nobuf\n");
+	if(priv->log)logtoall("codecv_read nobuf\n");
 	return 0;
 
 find:
 	priv->img[j].own = _read_;
 	*(void**)buf = priv->img[j].mem;
-	if(priv->log)say("codecv_read:%p,j=%d\n",priv->img[j].mem,j);
+	if(priv->log)logtoall("codecv_read:%p,j=%d\n",priv->img[j].mem,j);
 	return 0;
 }
 int codecv_writer(_obj* cam,void* foot, p64 arg,int idx, u8* buf,int len)
 {
-	say("codecv_write\n");
+	logtoall("codecv_write\n");
 	printmemory(buf, 16);
 
 	return 0;
@@ -231,7 +231,7 @@ int codecv_create(_obj* cam, void* arg, int argc, u8** argv)
 		if(0 == ncmp(argv[j], "height:", 7))decstr2u32(argv[j]+7, &height);
 		if(0 == ncmp(argv[j], "log:", 4))priv->log = 1;
 	}
-	say("video encoder:width=%d,height=%d\n",width,height);
+	logtoall("video encoder:width=%d,height=%d\n",width,height);
 
 	priv->width = width;
 	priv->height = height;
@@ -346,7 +346,7 @@ int codecv_create(_obj* cam, void* arg, int argc, u8** argv)
 	if(ret<0)printf("bs.streamon:ret=%d,errno=%d\n", ret, errno);
 	else printf("bs.streamon\n");
 
-	say("sizeof codecv=%x\n", sizeof(struct privdata));
+	logtoall("sizeof codecv=%x\n", sizeof(struct privdata));
 	threadcreate(bsthread, cam);
 	return 0;
 }

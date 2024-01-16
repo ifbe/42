@@ -3,7 +3,7 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 void printmemory(void*, int);
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 
@@ -76,10 +76,10 @@ int buf2keyval(
 /*
 "%d%16s%3.5f\n" 71 "wertyui" 3.14159
 */
-int buf2say(u8* buf, int len)
+int buf2logtoall(u8* buf, int len)
 {
 	u64 list[64];
-	say(buf,
+	logtoall(buf,
 		list[0], list[1], list[2], list[3],
 		list[4], list[5], list[6], list[7]
 	);

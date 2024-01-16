@@ -99,13 +99,13 @@ void window_delete(_obj* wnd)
 }
 void window_create(_obj* wnd, void* arg)
 {
-	say("@windowcreate\n");
+	logtoall("@windowcreate\n");
 	switch(wnd->hfmt){
 	default:{
 		thewnd = wnd;
 		wnd->whdf.fbwidth = wnd->whdf.width = width;
 		wnd->whdf.fbheight= wnd->whdf.height= height;
-		say("w=%d,h=%d\n", width, height);
+		logtoall("w=%d,h=%d\n", width, height);
 
 		fullwindow_create(wnd, 0, 0, 0);
 		break;
@@ -174,19 +174,19 @@ void openwindow(struct android_app* theapp)
 	};
 	context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttribs);
 	if (context == EGL_NO_CONTEXT) {
-		say("eglCreateContext failed with error 0x%04x\n", eglGetError());
+		logtoall("eglCreateContext failed with error 0x%04x\n", eglGetError());
 		return;
 	}
 
 	if (eglMakeCurrent(display, surface, surface, context) == EGL_FALSE) {
-		say("eglMakeCurrent failed with error 0x%04x\n", eglGetError());
+		logtoall("eglMakeCurrent failed with error 0x%04x\n", eglGetError());
 		return;
 	}
 
-	say("GL Version = %s\n", glGetString(GL_VERSION));
-	say("GL Vendor = %s\n", glGetString(GL_VENDOR));
-	say("GL Renderer = %s\n", glGetString(GL_RENDERER));
-	say("GL Extensions = %s\n", glGetString(GL_EXTENSIONS));
+	logtoall("GL Version = %s\n", glGetString(GL_VERSION));
+	logtoall("GL Vendor = %s\n", glGetString(GL_VENDOR));
+	logtoall("GL Renderer = %s\n", glGetString(GL_RENDERER));
+	logtoall("GL Extensions = %s\n", glGetString(GL_EXTENSIONS));
 
 	if(thewnd)thewnd->gl41list.ctxage += 1;
 	candraw = 1;
@@ -242,7 +242,7 @@ void closewindow(struct android_app* theapp)
 
 void sendtowindow_sensor(int k, float* v)
 {
-	//say("%c: %f,%f,%f\n", k, v[0],v[1],v[2]);
+	//logtoall("%c: %f,%f,%f\n", k, v[0],v[1],v[2]);
 	switch(k){
 	case 'g':
 		sensor[0][0] = v[0];
@@ -257,7 +257,7 @@ void sendtowindow_sensor(int k, float* v)
 		age[1] = 1;
 		return;		//record only
 	case 'm':
-		//say("%f,%f,%f\n", v[0],v[1],v[2]);
+		//logtoall("%f,%f,%f\n", v[0],v[1],v[2]);
 		sensor[2][0] = v[0];
 		sensor[2][1] = v[1];
 		sensor[2][2] = v[2];
@@ -277,7 +277,7 @@ void sendtowindow_sensor(int k, float* v)
 		if(0 == fusion_madgwick)return;
 		madgwick_modify(fusion_madgwick,0, sensor,0, quaternion,0);
 	}
-	//say("q=%f,%f,%f,%f\n",quaternion[0],quaternion[1],quaternion[2],quaternion[3]);
+	//logtoall("q=%f,%f,%f,%f\n",quaternion[0],quaternion[1],quaternion[2],quaternion[3]);
 
 	struct halfrel st[32];
 	window_give(thewnd,0, st,0, 0,_quat_, quaternion,6);

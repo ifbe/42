@@ -15,7 +15,7 @@ struct perobj{
 
 int reline_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	say("@reline_read\n");
+	logtoall("@reline_read\n");
 
 	float f[10];
 	take_data_from_peer(art,_src_, stack,sp, 0,0, f,10);
@@ -26,7 +26,7 @@ int reline_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u
 	int j,k,cur;
 	u8* tmp;
 	struct perobj* perobj = (void*)art->priv_256b;
-	//say("@reline_write:%.4s\n", &self->foottype);
+	//logtoall("@reline_write:%.4s\n", &self->foottype);
 
 	switch(stack[sp-1].foottype){
 	case _dst_:
@@ -42,7 +42,7 @@ int reline_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u
 				cur++;
 
 				if('\n' == buf[j]){
-					//say("@reline_write:%.*s", cur, tmp);
+					//logtoall("@reline_write:%.*s", cur, tmp);
 					give_data_into_peer(art,_dst_, stack,sp, 0,0, tmp,cur-1);
 					cur = 0;
 
@@ -61,7 +61,7 @@ int reline_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u
 		k = 0;
 		for(j=0;j<len;j++){
 			if('\n' == buf[j]){
-				//say("@reline_write:%.*s", j-k+1, buf+k);
+				//logtoall("@reline_write:%.*s", j-k+1, buf+k);
 				give_data_into_peer(art,_dst_, stack,sp, 0,0, buf+k,j-k+1);
 				k = j+1;
 			}
@@ -91,7 +91,7 @@ int reline_attach(struct halfrel* self, struct halfrel* peer)
 
 int reline_create(_obj* ele, u8* arg)
 {
-	say("@reline_create\n");
+	logtoall("@reline_create\n");
 
 	struct perobj* perobj = (void*)ele->priv_256b;
 	perobj->buf = memoryalloc(0x1000, 0);

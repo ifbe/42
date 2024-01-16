@@ -20,12 +20,12 @@ int dns_read_query(u8* buf, int len)
 int dns_read_answer(u8* buf, int len)
 {
 	int j,k;
-	say("answer{\n");
-	say("name=%02x%02x\n", buf[0], buf[1]);
-	say("type=%02x%02x\n", buf[2], buf[3]);
-	say("class=%02x%02x\n", buf[4], buf[5]);
-	say("ttl=\n");
-	say("len=%x\n",buf[11]);
+	logtoall("answer{\n");
+	logtoall("name=%02x%02x\n", buf[0], buf[1]);
+	logtoall("type=%02x%02x\n", buf[2], buf[3]);
+	logtoall("class=%02x%02x\n", buf[4], buf[5]);
+	logtoall("ttl=\n");
+	logtoall("len=%x\n",buf[11]);
 	j = 12;
 /*
 	j += 12;
@@ -34,18 +34,18 @@ int dns_read_answer(u8* buf, int len)
 		k = buf[j];
 		if(k > 100)break;
 
-		say("%.*s", k, buf+j+1);
+		logtoall("%.*s", k, buf+j+1);
 
 		j += k+1;
 		if(0 == buf[j])break;
-		else say(".");
+		else logtoall(".");
 	}
 */
-	if(4 == buf[11])say("%d.%d.%d.%d\n",buf[j],buf[j+1],buf[j+2],buf[j+3]);
+	if(4 == buf[11])logtoall("%d.%d.%d.%d\n",buf[j],buf[j+1],buf[j+2],buf[j+3]);
 	j += buf[11];
 
 	printmemory(buf, j);
-	say("}\n");
+	logtoall("}\n");
 	return j;
 }
 int dns_query_fixurl(u8* dst, int max, u8* buf, int len)
@@ -139,7 +139,7 @@ int dnsclient_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 }
 int dnsclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
-	//say("@dnsclient_rootwrite\n");
+	//logtoall("@dnsclient_rootwrite\n");
 	//printmemory(buf, len);
 	int j,k;
 	j = 12;
@@ -148,18 +148,18 @@ int dnsclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx
 		k = buf[j];
 		if(k > 100)return 0;
 
-		say("%.*s", k, buf+j+1);
+		logtoall("%.*s", k, buf+j+1);
 
 		j += k+1;
 		if(0 == buf[j])break;
-		else say(".");
+		else logtoall(".");
 	}
-	say("{\n");
+	logtoall("{\n");
 
 	j += 5;
 	for(k=0;k<buf[j];k++)j += dns_read_answer(buf+j, 0);
 
-	say("}\n");
+	logtoall("}\n");
 	return 0;
 }
 int dnsclient_detach(struct halfrel* self, struct halfrel* peer)
@@ -168,7 +168,7 @@ int dnsclient_detach(struct halfrel* self, struct halfrel* peer)
 }
 int dnsclient_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("dnsclient_attach:%.4s\n", &self->foottype);
+	logtoall("dnsclient_attach:%.4s\n", &self->foottype);
 	if(_src_ == self->foottype){
 		int ret;
 		u8 tmp[0x100];
@@ -199,7 +199,7 @@ int dnsserver_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 }
 int dnsserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
-	say("@dnsserver_rootwrite\n");
+	logtoall("@dnsserver_rootwrite\n");
 	printmemory(buf, len);
 	return 0;
 }

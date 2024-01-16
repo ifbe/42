@@ -136,7 +136,7 @@ int printboard_detach(struct halfrel* self, struct halfrel* peer)
 }
 int printboard_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@printboard_attach: %.4s\n", &self->foottype);
+	logtoall("@printboard_attach: %.4s\n", &self->foottype);
 	return 0;
 }
 

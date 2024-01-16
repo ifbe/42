@@ -216,7 +216,7 @@ void mahonyupdate9(
 	//gx = arctanyx(2*(qw*qx+qy*qz),1-2*(qx*qx+qy*qy))*180/3.141592653;
 	//gy = arcsin(2*qw*qy - 2*qx*qz)*180/3.141592653;
 	//gz = arctanyx(2*(qw*qz+qx*qy),1-2*(qy*qy+qz*qz))*180/3.141592653;
-	//say("euler:	%f	%f	%f\n", gx, gy, gz);
+	//logtoall("euler:	%f	%f	%f\n", gx, gy, gz);
 }
 
 
@@ -224,7 +224,7 @@ void mahonyupdate9(
 
 int mahony_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	say("@mahony_read\n");
+	logtoall("@mahony_read\n");
 
 	float f[10];
 	take_data_from_peer(art,_src_, stack,sp, 0,0, f,10);
@@ -232,13 +232,13 @@ int mahony_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
 }
 int mahony_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	say("@mahony_write\n");
+	logtoall("@mahony_write\n");
 
 	float* f = (void*)buf;
 	switch(len){
 		case 9:mahonyupdate9(f[0],f[1],f[2], f[3],f[4],f[5], f[6],f[7],f[8]);break;
 		case 6:mahonyupdate6(f[0],f[1],f[2], f[3],f[4],f[5]);break;
-		default:say("err@mahony_write:len=%d\n", len);return 0;
+		default:logtoall("err@mahony_write:len=%d\n", len);return 0;
 	}
 
 	give_data_into_peer(art,_dst_, stack,sp, 0,0, q,4);
@@ -246,12 +246,12 @@ int mahony_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, v
 }
 int mahony_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@mahony_detach\n");
+	logtoall("@mahony_detach\n");
 	return 0;
 }
 int mahony_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@mahony_attach\n");
+	logtoall("@mahony_attach\n");
 	return 0;
 }
 
@@ -276,7 +276,7 @@ int mahony_delete(_obj* ele)
 }
 int mahony_create(_obj* ele, u8* arg)
 {
-	say("@mahony_create\n");
+	logtoall("@mahony_create\n");
 
 	qw = 1.0;
 	qx = qy = qz = 0.0;

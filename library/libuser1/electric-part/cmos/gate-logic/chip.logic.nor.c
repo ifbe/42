@@ -71,7 +71,7 @@ static void nor_draw_gl41(
 	else        {pstatus[0] = 1;nstatus[0] = 0;}
 	if(act->whdf.iy0){pstatus[1] = 0;nstatus[1] = 1;}
 	else        {pstatus[1] = 1;nstatus[1] = 0;}
-	//say("%d,%d,%d,%d,%d,%d\n",act->whdf.ix0,act->whdf.iy0, pstatus[0],pstatus[1], nstatus[0],nstatus[1]);
+	//logtoall("%d,%d,%d,%d,%d,%d\n",act->whdf.ix0,act->whdf.iy0, pstatus[0],pstatus[1], nstatus[0],nstatus[1]);
 
 	u32 xcolor = act->whdf.ix0 ? 0xff0000 : 0x0000ff;
 	u32 ycolor = act->whdf.iy0 ? 0xff0000 : 0x0000ff;
@@ -208,7 +208,7 @@ static void nor_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key
 static void nor_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
 	u8 tmp;
-	say("@norgate_write:%x\n",buf[0]);
+	logtoall("@norgate_write:%x\n",buf[0]);
 
 	if('a' == stack[sp-1].foottype){
 		if('0' == buf[0])ent->whdf.ix0 = 0;

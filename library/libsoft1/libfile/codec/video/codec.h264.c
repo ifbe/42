@@ -20,13 +20,13 @@ int h264_headsize(u8* buf, int len)
 int h264_ebsp2rbsp(u8* buf, int len)
 {
     int type = buf[0]&0x1f;
-    say("f=%d,nri=%d,type=%d\n", buf[0]>>7, (buf[0]>>5)&3, type);
+    logtoall("f=%d,nri=%d,type=%d\n", buf[0]>>7, (buf[0]>>5)&3, type);
     switch(type){
-    case 6:say("sei\n");break;
-    case 7:say("sps\n");break;
-    case 8:say("pps\n");break;
-    case 5:say("idr\n");break;
-    case 1:say("dat\n");break;
+    case 6:logtoall("sei\n");break;
+    case 7:logtoall("sps\n");break;
+    case 8:logtoall("pps\n");break;
+    case 5:logtoall("idr\n");break;
+    case 1:logtoall("dat\n");break;
     }
     return 0;
 }

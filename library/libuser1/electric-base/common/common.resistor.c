@@ -87,10 +87,10 @@ static void resistor_read_a(_obj* ent, int key, struct wireindex* sts, int thiso
 
 	float vthat = sts[theother].volt;
 	float vthis = sts[thisone].volt;
-	say("@a: %d,%f, %d,%f\n",thisone,vthis, theother,vthat);
+	logtoall("@a: %d,%f, %d,%f\n",thisone,vthis, theother,vthat);
 
 	float delta = (2*vthis - 2*vthat) / (ent->whdf.fx0);
-	say("resistor_read_a: %f,%f\n", sts[thisone].grad, delta);
+	logtoall("resistor_read_a: %f,%f\n", sts[thisone].grad, delta);
 	sts[thisone].grad += delta;
 }
 static void resistor_read_b(_obj* ent, int key, struct wireindex* sts, int thisone)
@@ -103,10 +103,10 @@ static void resistor_read_b(_obj* ent, int key, struct wireindex* sts, int thiso
 
 	float vthat = sts[theother].volt;
 	float vthis = sts[thisone].volt;
-	say("@b: %d,%f, %d,%f\n",thisone,vthis, theother,vthat);
+	logtoall("@b: %d,%f, %d,%f\n",thisone,vthis, theother,vthat);
 
 	float delta = (2*vthis - 2*vthat) / (ent->whdf.fx0);
-	say("resistor_read_b: %f,%f\n", sts[thisone].grad, delta);
+	logtoall("resistor_read_b: %f,%f\n", sts[thisone].grad, delta);
 	sts[thisone].grad += delta;
 }
 
@@ -143,8 +143,8 @@ static void resistor_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,in
 static void resistor_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	struct wireindex* sts = buf;
-	say("@resistor_write: %.4s\n", &foot);
-	say("%d, %f\n", sts->sure, sts->volt);
+	logtoall("@resistor_write: %.4s\n", &foot);
+	logtoall("%d, %f\n", sts->sure, sts->volt);
 }
 static void resistor_detach(struct halfrel* self, struct halfrel* peer)
 {
@@ -174,7 +174,7 @@ static void resistor_create(_obj* act, void* arg, int argc, u8** argv)
 {
 	if(0 == arg)return;
 	decstr2float(arg, &act->whdf.fx0);
-	say("R=%f\n",act->whdf.fx0);
+	logtoall("R=%f\n",act->whdf.fx0);
 }
 
 

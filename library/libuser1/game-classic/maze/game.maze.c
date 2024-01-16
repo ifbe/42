@@ -323,12 +323,12 @@ static void maze_draw_cli(
 	{
 		for(x=0;x<WIDTH;x++)
 		{
-			if(buf[WIDTH*y+x] != 0)say("⬛");	//██
-			else say("  ");
+			if(buf[WIDTH*y+x] != 0)logtoall("⬛");	//██
+			else logtoall("  ");
 		}
-		say("\n");
+		logtoall("\n");
 	}
-	say("\n\n\n\n");
+	logtoall("\n\n\n\n");
 }
 static void maze_event(
 	_obj* act, struct style* pin,

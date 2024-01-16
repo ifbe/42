@@ -59,7 +59,7 @@ static int bbblen = 0;
 #define maxitem (0x100000/sizeof(struct item))
 void driver_init(u8* addr)
 {
-	say("[6,8):driver initing\n");
+	logtoall("[6,8):driver initing\n");
 
 	int j;
 	for(j=0;j<0x200000;j++)addr[j] = 0;
@@ -71,13 +71,13 @@ void driver_init(u8* addr)
 	bbb = (void*)(addr+0x100000);
 
 	//drivercreate(_usb_, 0);
-	say("[6,8):driver inited\n");
+	logtoall("[6,8):driver inited\n");
 }
 void driver_exit()
 {
-	say("[6,8):driver exiting\n");
+	logtoall("[6,8):driver exiting\n");
 
-	say("[6,8):driver exited\n");
+	logtoall("[6,8):driver exited\n");
 }
 
 
@@ -103,7 +103,7 @@ void* driver_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt)
 void* driver_create(u64 type, void* arg, int argc, u8** argv)
 {
 	struct item* dr;
-	say("@drivercreate: %.8s\n", &type);
+	logtoall("@drivercreate: %.8s\n", &type);
 
 	switch(type){
 	case _mpu9250_:
@@ -164,7 +164,7 @@ int driver_writer(struct item* dri,void* foot, p64 arg, int idx, void* buf, int 
 int driver_attach(struct halfrel* self, struct halfrel* peer)
 {
 	struct item* ele = (void*)(self->chip);
-	say("@driverattach\n");
+	logtoall("@driverattach\n");
 	switch(ele->type){
 		case _mpu9250_:return mpu9250_attach(self, peer);break;
 		case _lsm9ds1_:return lsm9ds1_attach(self, peer);break;
@@ -177,7 +177,7 @@ int driver_attach(struct halfrel* self, struct halfrel* peer)
 int driver_detach(struct halfrel* self, struct halfrel* peer)
 {
 	struct item* ele = (void*)(self->chip);
-	say("@driverdetach\n");
+	logtoall("@driverdetach\n");
 	switch(ele->type){
 		case _mpu9250_:return mpu9250_detach(self, peer);break;
 		case _lsm9ds1_:return lsm9ds1_detach(self, peer);break;
@@ -200,7 +200,7 @@ int driver_takeby(struct item* dri,void* foot, _syn* stack,int sp, p64 arg, int 
 }
 int driver_giveby(struct item* dri,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
-	//say("@driverwrite\n");
+	//logtoall("@driverwrite\n");
 	switch(dri->type){
 		case _mpu9250_:return mpu9250_write(dri,foot, stack,sp, arg,idx, buf,len);break;
 		case _lsm9ds1_:return lsm9ds1_write(dri,foot, stack,sp, arg,idx, buf,len);break;
@@ -228,11 +228,11 @@ int driver_search(u8* buf, int len)
 	for(j=0;j<64;j++)
 	{
 		if(0 == dri[j].type)continue;
-		say("[%04x]: %.8s\n", j, &dri[j].type);
+		logtoall("[%04x]: %.8s\n", j, &dri[j].type);
 		k++;
 	}
 
-	if(0 == k)say("empth driver\n");
+	if(0 == k)logtoall("empth driver\n");
 	return 0;
 }
 int driver_modify(int argc, u8** argv)
@@ -241,7 +241,7 @@ int driver_modify(int argc, u8** argv)
 	u64 name = 0;
 	u8* tmp = (u8*)&name;
 	if(argc < 2)return 0;
-//say("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
+//logtoall("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
 	if(0 == ncmp(argv[1], "create", 6))
 	{
 		for(j=0;j<8;j++)
@@ -249,7 +249,7 @@ int driver_modify(int argc, u8** argv)
 			if(argv[2][j] <= 0x20)break;
 			tmp[j] = argv[2][j];
 		}
-		say("%llx,%llx\n",name, argv[3]);
+		logtoall("%llx,%llx\n",name, argv[3]);
 		driver_create(name, argv[3], argc-3, &argv[3]);
 	}
 	return 0;

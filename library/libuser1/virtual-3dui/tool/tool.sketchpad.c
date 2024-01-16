@@ -243,7 +243,7 @@ static void tuxiang(_obj* win)
 			if( databuf[ value1+width+1 + x ] == 1 )counter++;
 			else counter--;
 
-			//say("@%d,%d:%d\n",x,y,counter);
+			//logtoall("@%d,%d:%d\n",x,y,counter);
 			//上下左右四点符号完全一样，说明没有点穿过//否则白色
 			if( (counter!=4) && (counter!=-4) )
 			{
@@ -298,7 +298,7 @@ static void sketchpad_draw_pixel(
 		w = (2*hh-1-y)*ww*2;
 		for(x=1;x<2*ww-1;x++)
 		{
-//say("%d,%d\n",x,y);
+//logtoall("%d,%d\n",x,y);
 			counter=0;
 
 			if(databuf[w+x - 1] == 1)counter++;
@@ -397,7 +397,7 @@ static void sketchpad_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("sketchpad(%x,%x,%x)\n",win,act,sty);
+	logtoall("sketchpad(%x,%x,%x)\n",win,act,sty);
 }
 static void sketchpad_event(
 	_obj* act, struct style* pin,
@@ -446,15 +446,15 @@ static void sketchpad_event(
 			}
 			infix[count] = 0;
 			count = 0;
-			say("infix:%s\n", infix);
+			logtoall("infix:%s\n", infix);
 
 			//
 			infix2postfix(infix, postfix);
-			say("postfix:%s\n", postfix);
+			logtoall("postfix:%s\n", postfix);
 
 			//
 			postfix2binarytree(postfix, node);
-			say("node:%x,%x\n", node[0].left, node[0].right);
+			logtoall("node:%x,%x\n", node[0].left, node[0].right);
 		}
 		else
 		{
@@ -538,7 +538,7 @@ static void sketchpad_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,i
 	case _dx11list_:
 	case _mt20list_:
 	case _vk12list_:
-		say("caller@%p\n", caller);
+		logtoall("caller@%p\n", caller);
 		break;
 	default:
 		sketchpad_take_bycam(ent,slot, stack,sp);

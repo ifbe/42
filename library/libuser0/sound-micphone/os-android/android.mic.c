@@ -17,7 +17,7 @@ struct privdata{
 static aaudio_data_callback_result_t dataCallback(AAudioStream *stream, void *userData, void *audioData, int32_t numFrames)
 {
 	short* in = audioData;
-	//say((void*)"recordDataCallback: stream=%p,userData=%p,audiodata=%p,numFrames=%x: %d,%d,%d,%d\n", stream, userData, audioData, numFrames, in[0], in[1], in[2], in[3]);
+	//logtoall((void*)"recordDataCallback: stream=%p,userData=%p,audiodata=%p,numFrames=%x: %d,%d,%d,%d\n", stream, userData, audioData, numFrames, in[0], in[1], in[2], in[3]);
 
 	_obj* mic = userData;
 	struct privdata* priv = (void*)mic->priv_256b;
@@ -51,7 +51,7 @@ static aaudio_data_callback_result_t dataCallback(AAudioStream *stream, void *us
 	goto byebye;
 
 found:
-	say((void*)"now=%d,done=[%d,%d)\n", priv->now, todo_done, priv->todo);
+	logtoall((void*)"now=%d,done=[%d,%d)\n", priv->now, todo_done, priv->todo);
 	give_data_into_peer_temp_stack(mic,_dst_, 0,0, &pcm[todo_done],1024*2);
 	priv->todo = todo_end;
 
@@ -60,7 +60,7 @@ byebye:
 }
 static void errorCallback(AAudioStream *stream, void *userData, aaudio_result_t error)
 {
-	say((void*)"recordErrorCallback: stream=%p,userData=%p,error=%s\n", stream, userData, AAudio_convertResultToText(error));
+	logtoall((void*)"recordErrorCallback: stream=%p,userData=%p,error=%s\n", stream, userData, AAudio_convertResultToText(error));
 }
 
 
@@ -95,12 +95,12 @@ void micphone_delete(_obj* mic, void* arg, int argc, u8** argv)
 }
 void micphone_create(_obj* mic, void* arg, int argc, u8** argv)
 {
-	say((void*)"micphonecreate\n");
+	logtoall((void*)"micphonecreate\n");
 
 	AAudioStreamBuilder *builder;
 	aaudio_result_t res = AAudio_createStreamBuilder(&builder);
 	if(AAUDIO_OK != res){
-		say((void*)"AAudio_createStreamBuilder: error=%s\n", AAudio_convertResultToText(res));
+		logtoall((void*)"AAudio_createStreamBuilder: error=%s\n", AAudio_convertResultToText(res));
 		return;
 	}
 
@@ -117,7 +117,7 @@ void micphone_create(_obj* mic, void* arg, int argc, u8** argv)
 	AAudioStream* stream;
 	res = AAudioStreamBuilder_openStream(builder, &stream);
 	if(AAUDIO_OK != res){
-		say((void*)"AAudioStreamBuilder_openStream: error=%s, internal error usually mean permission denied\n", AAudio_convertResultToText(res));
+		logtoall((void*)"AAudioStreamBuilder_openStream: error=%s, internal error usually mean permission denied\n", AAudio_convertResultToText(res));
 		return;
 	}
 

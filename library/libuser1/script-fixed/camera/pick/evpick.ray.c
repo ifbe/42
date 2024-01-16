@@ -28,7 +28,7 @@ static int clickray_convert(_obj* cam, struct style* xxx, float* xyz, vec3 ray[]
 found:
 	//xyz(world) from xy(screen) and frustum
 	areauv2worldxyz(xyz, &geom->frus);
-	//say("%f,%f,%f\n", xyz[0],xyz[1],xyz[2]);
+	//logtoall("%f,%f,%f\n", xyz[0],xyz[1],xyz[2]);
 
 	//put it into cam.rayslot
 	cam->whdf.fx0 = xyz[0];
@@ -51,7 +51,7 @@ static int clickray_intersect(_obj* handler,void* foot,
 	struct halfrel* totar[2];
 	ret = relationsearch(handler, _tar_, &totar[0], &totar[1]);
 	if(ret <= 0)return 0;
-//say("(%f,%f,%f)->(%f,%f,%f)\n", ray[0][0],ray[0][1],ray[0][2], ray[1][0],ray[1][1],ray[1][2]);
+//logtoall("(%f,%f,%f)->(%f,%f,%f)\n", ray[0][0],ray[0][1],ray[0][2], ray[1][0],ray[1][1],ray[1][2]);
 
 	_obj* scene = totar[1]->pchip;
 	if(0 == scene)return 0;
@@ -75,7 +75,7 @@ static int clickray_intersect(_obj* handler,void* foot,
 		rel = samesrcnextdst(rel);
 	}
 
-	say("clickray_send: miss\n");
+	logtoall("clickray_send: miss\n");
 	entity_giveby(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, 0, 0, ray, 0);
 	return 0;
 }
@@ -119,7 +119,7 @@ int clickray_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, v
 	struct style* xxxx = stack[sp-2].pfoot;
 	_obj* wnd = stack[sp-4].pchip;
 	struct style* area = stack[sp-4].pfoot;
-say("%.8s->%.8s->%.8s\n",&wnd->hfmt, &cam->hfmt, &ent->hfmt);
+logtoall("%.8s->%.8s->%.8s\n",&wnd->hfmt, &cam->hfmt, &ent->hfmt);
 /*	switch(wnd->hfmt){
 	case _gl41list_:
 	case _dx11list_:
@@ -144,7 +144,7 @@ say("%.8s->%.8s->%.8s\n",&wnd->hfmt, &cam->hfmt, &ent->hfmt);
 
 		//screen to ndc
 		ret = gl41data_convert(wnd, area, ev, xyz);
-		//say("%f,%f\n",xyz[0],xyz[1]);
+		//logtoall("%f,%f\n",xyz[0],xyz[1]);
 
 		//ndc to ray
 		ret = clickray_convert(cam, xxxx, xyz, ray);

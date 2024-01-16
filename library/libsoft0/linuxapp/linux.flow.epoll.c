@@ -92,7 +92,7 @@ static void* epollthread(void* p)
 			here = ev[j].data.ptr;
 			fd = here->sockinfo.fd;
 			//printmemory(&ev[j], sizeof(struct epoll_event));
-			//say("fd=%x, here=%llx\n", fd, here);
+			//logtoall("fd=%x, here=%llx\n", fd, here);
 			//printf("fd=%x, here=%llx\n", fd, here);
 			//printf("fd=%x, here=%x\n", fd, here);
 
@@ -108,7 +108,7 @@ static void* epollthread(void* p)
 				case _uart_:{
 					cnt = read(fd, tmpbuf, BUFFER_SIZE);
 					if(0 == cnt){
-						say("error@%.4s:len=%x\n", &here->type, cnt);
+						logtoall("error@%.4s:len=%x\n", &here->type, cnt);
 						system_delete(here);
 						break;
 					}
@@ -122,7 +122,7 @@ static void* epollthread(void* p)
 					cnt = socket_reader(here,fd, (p64)here->sockinfo.peer,0, tmpbuf,BUFFER_SIZE);
 					if(cnt >= 0)
 					{
-						//say("@epollthread: %.4s\n", &obj[cc].type);
+						//logtoall("@epollthread: %.4s\n", &obj[cc].type);
 						if((0==here->irel0)&&(0==here->orel0))printmemory(tmpbuf, cnt);
 						else give_data_into_peer(here,_dst_, stack,0, (p64)here->sockinfo.peer,0, tmpbuf,cnt);
 					}
@@ -153,7 +153,7 @@ static void* epollthread(void* p)
 							here = parent;
 						}
 
-						//say("@kqueuethread: %.4s\n", &obj[cc].type);
+						//logtoall("@kqueuethread: %.4s\n", &obj[cc].type);
 						give_data_into_peer(here,_dst_, stack,0, 0,0, tmpbuf,cnt);
 					}
 					if(cnt <= 0)

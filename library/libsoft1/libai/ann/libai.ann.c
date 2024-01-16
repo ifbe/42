@@ -57,7 +57,7 @@ int ann_backward(u8* image, int label, float* weight, float* result)
 
 int ann_read(_obj* art,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* image, int label)
 {
-	//say("@ann_read\n");
+	//logtoall("@ann_read\n");
 	float* weight = art->WEIGHT;
 	float* result = art->RESULT;
 	ann_forward(image, label, weight, result);
@@ -65,11 +65,11 @@ int ann_read(_obj* art,void* foot, struct halfrel* stack,int sp, void* arg,int k
 }
 int ann_write(_obj* art,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* image, int label)
 {
-	//say("@ann_read\n");
+	//logtoall("@ann_read\n");
 	float* weight = art->WEIGHT;
 	float* result = art->RESULT;
 	if(_ev_ == key){
-		say("onevent:%x\n",image[0]);
+		logtoall("onevent:%x\n",image[0]);
 		switch(image[0]){
 		case 'r':
 			openreadclose("myvar.bin", 0, weight, 4*28*28*10*2);
@@ -91,7 +91,7 @@ int ann_detach(struct halfrel* self, struct halfrel* peer)
 }
 int ann_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@ann_attach\n");
+	logtoall("@ann_attach\n");
 	return 0;
 }
 
@@ -115,7 +115,7 @@ int ann_create(_obj* ele, u8* url)
 	int j;
 	float* weight;
 	float* result;
-	say("@ann_create\n");
+	logtoall("@ann_create\n");
 
 	weight = ele->WEIGHT = memoryalloc(sizeof(float)*28*28*10 * 2, 0);
 	for(j=0;j<28*28*10*2;j++)weight[j] = (random_read()&0xfff)/1024.0;

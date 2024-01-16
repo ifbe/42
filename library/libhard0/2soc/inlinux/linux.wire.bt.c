@@ -7,7 +7,7 @@
 #include<fcntl.h>
 #include<unistd.h>
 #include<sys/ioctl.h>
-void say(char*,...);
+void logtoall(char*,...);
 
 
 

@@ -101,11 +101,11 @@ void cleverread(
 	}
 */
 /*
-	say(
+	logtoall(
 		"(%llx,%llx,%llx)->(%llx,%llx,%llx)\n",
 		src,count,where,    buf,len,want
 	);
-	say(
+	logtoall(
 		"rdi=%llx,rsi=%llx,rcx=%llx\n",
 		rdi,rsi,rcx
 	);
@@ -157,7 +157,7 @@ int fileauto_detach(struct halfrel* self, struct halfrel* peer)
 }
 int fileauto_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@fileauto_attach\n");
+	logtoall("@fileauto_attach\n");
 	_obj* ele = self->pchip;
 	if(0 == ele)return 0;
 	void* buf = ele->listptr.buf0;
@@ -179,7 +179,7 @@ int fileauto_attach(struct halfrel* self, struct halfrel* peer)
 	u64 type = file_check(buf, 0x10000);
 	if(0 == type)return -2;
 
-	say("filetype = %.8s\n", &type);
+	logtoall("filetype = %.8s\n", &type);
 	if(0 == type)return 0;
 
 	//remove myself

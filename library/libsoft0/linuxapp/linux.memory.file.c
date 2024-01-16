@@ -57,7 +57,7 @@ static int trythis(char* src,char* dest)
 	int ret;
 	struct stat st;
 
-	//say("%s\n",src);
+	//logtoall("%s\n",src);
 	ret=stat(src , &st);
 	if(ret<0)return 0;
 
@@ -118,7 +118,7 @@ void choosefile()
 }
 int file_search()
 {
-	say("@filesearch\n");
+	logtoall("@filesearch\n");
 	return 0;
 }
 int file_modify()
@@ -148,7 +148,7 @@ _obj* file_create(void* path, int flag)
 	return &obj[fd];
 
 fail:
-	say("@open:fd=%d,err=%d,path=%s\n", fd, errno, pp);
+	logtoall("@open:fd=%d,err=%d,path=%s\n", fd, errno, pp);
 	return 0;
 }
 int file_delete(_obj* oo)
@@ -164,14 +164,14 @@ int file_reader(_obj* oo, int xx, p64 arg, int cmd, void* buf, int len)
 	if(_pos_ == cmd){
 		ret = lseek64(fd, arg, SEEK_SET);
 		if(-1 == ret){
-			//say("lseek64: offs=%llx, errno=%d\n", arg, errno);
+			//logtoall("lseek64: offs=%llx, errno=%d\n", arg, errno);
 			return -2;
 		}
 	}//from head
 
 	ret = read(fd, buf, len);
 	if(-1 == ret){
-		//say("read: offs=%llx, len=%x, errno=%d\n", arg, len, errno);
+		//logtoall("read: offs=%llx, len=%x, errno=%d\n", arg, len, errno);
 		return -1;
 	}
 
@@ -185,14 +185,14 @@ int file_writer(_obj* oo, int xx, p64 arg, int cmd, void* buf, int len)
 	if(_pos_ == cmd){
 		ret = lseek64(fd, arg, SEEK_SET);
 		if(-1 == ret){
-			//say("lseek64: offs=%llx, errno=%d\n", arg, errno);
+			//logtoall("lseek64: offs=%llx, errno=%d\n", arg, errno);
 			return -2;
 		}
 	}//from head
 
 	ret = write(fd, buf, len);
 	if(-1 == ret){
-		//say("write: offs=%llx, len=%x, errno=%d\n", arg, len, errno);
+		//logtoall("write: offs=%llx, len=%x, errno=%d\n", arg, len, errno);
 		return -1;
 	}
 

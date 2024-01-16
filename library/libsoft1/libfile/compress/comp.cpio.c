@@ -1,4 +1,4 @@
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 
@@ -25,6 +25,6 @@ int check_cpio(char* addr)
 }
 int parse_cpio(char* addr)
 {
-	say("cpio\n");
+	logtoall("cpio\n");
 	return 0;
 }

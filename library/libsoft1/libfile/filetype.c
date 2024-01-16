@@ -163,19 +163,19 @@ u64 file_check(u8* buf, int len)
 	//filesystem
 	else if(check_ext(buf) != 0){
 		type = _ext_;
-		//say("ext\n");
+		//logtoall("ext\n");
 	}
 	else if(fat_check(buf) != 0){
 		type = _fat_;
-		//say("fat\n");
+		//logtoall("fat\n");
 	}
 	else if(check_hfs(buf) != 0){
 		type = _hfs_;
-		//say("hfs\n");
+		//logtoall("hfs\n");
 	}
 	else if(check_ntfs(buf) != 0){
 		type = _ntfs_;
-		//say("ntfs\n");
+		//logtoall("ntfs\n");
 	}
 
 	//parttable
@@ -207,7 +207,7 @@ int filetype_detach(struct halfrel* self, struct halfrel* peer)
 }
 int filetype_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@filetype_attach\n");
+	logtoall("@filetype_attach\n");
 	_obj* ele = self->pchip;
 	if(0 == ele)return 0;
 	void* buf = ele->listptr.buf0;
@@ -229,7 +229,7 @@ int filetype_attach(struct halfrel* self, struct halfrel* peer)
 	u64 type = file_check(buf, 0x10000);
 	if(0 == type)return -2;
 
-	say("filetype = %.8s\n", &type);
+	logtoall("filetype = %.8s\n", &type);
 
 	return 0;
 }

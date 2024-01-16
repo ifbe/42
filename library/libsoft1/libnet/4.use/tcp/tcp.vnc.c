@@ -9,7 +9,7 @@ int vncclient_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 }
 int vncclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	say("@vncclient_write: %llx,%.4s\n", art, &foot);
+	logtoall("@vncclient_write: %llx,%.4s\n", art, &foot);
 	printmemory(buf, len);
 	return 0;
 }

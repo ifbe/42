@@ -2,7 +2,7 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-void say(void*, ...);
+void logtoall(void*, ...);
 int ncmp(void*,void*,int);
 
 
@@ -98,21 +98,21 @@ void disasm_macho64_seg19(void* buf,int len, struct command_19* cmd,int max)
 	int cnt = cmd->nsects;
 	if(0 == cnt)return;
 
-	say("cnt=%x{\n",cnt);
+	logtoall("cnt=%x{\n",cnt);
 	int j;
 	struct section_64* pp = (void*)cmd + sizeof(struct command_19);
 	for(j=0;j<cnt;j++){
-		say("%16llx,%8x,%s.%s\n", pp[j].addr, pp[j].offset, pp[j].seg_name, pp[j].sec_name);
+		logtoall("%16llx,%8x,%s.%s\n", pp[j].addr, pp[j].offset, pp[j].seg_name, pp[j].sec_name);
 		if(0==ncmp(pp[j].sec_name, "__text", 16)){
 			//disasm_x8664_all(buf+pp[j].offset, pp[j].size, pp[j].addr);
 		}
 	}
-	say("}\n");
+	logtoall("}\n");
 }
 void parse_macho(void* buf,int len)
 {
 	struct mach_header_64* head = buf;
-	say(
+	logtoall(
 "magic=%x\n"
 "cputype_hi=%x\n"
 "cputype_lo=%x\n"
@@ -131,7 +131,7 @@ void parse_macho(void* buf,int len)
 
 	if(0xfeedfacf != head->magic)return;
 	if(0x01000007 != head->cputype)return;
-	//say("shit\n");
+	//logtoall("shit\n");
 
 	int j,k;
 	u32* here;
@@ -139,7 +139,7 @@ void parse_macho(void* buf,int len)
 	k=0x20;;
 	for(j=0;j<head->ncmds;j++){
 		here = buf+k;
-		say("%08x: type=%08x, size=%08x\n", k, here[0], here[1]);
+		logtoall("%08x: type=%08x, size=%08x\n", k, here[0], here[1]);
 
 		if(0x19 == here[0])disasm_macho64_seg19(buf,len, buf+k,here[1]);
 

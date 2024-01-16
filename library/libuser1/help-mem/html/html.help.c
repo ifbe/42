@@ -56,7 +56,7 @@ void parsestyle(struct style* sty, u8* buf, int len)
 			break;
 		}
 	}
-	//say("%.*s\n",len,buf);
+	//logtoall("%.*s\n",len,buf);
 
 	for(j=0;j<len;j++)
 	{
@@ -66,38 +66,38 @@ void parsestyle(struct style* sty, u8* buf, int len)
 			if(0 == ncmp(buf+k, "width:", 6))
 			{
 				decstr2double(buf+k+6, &f);
-				//say("w=%f\n", f);
+				//logtoall("w=%f\n", f);
 			}
 			else if(0 == ncmp(buf+k, "height:", 7))
 			{
 				decstr2double(buf+k+7, &f);
-				//say("h=%f\n", f);
+				//logtoall("h=%f\n", f);
 			}
 			else if(0 == ncmp(buf+k, "left:", 5))
 			{
 				decstr2double(buf+k+5, &f);
-				//say("l=%f\n", f);
+				//logtoall("l=%f\n", f);
 
 				sty->fs.vl[0] = f;
 			}
 			else if(0 == ncmp(buf+k, "right:", 6))
 			{
 				decstr2double(buf+k+6, &f);
-				//say("r=%f\n", f);
+				//logtoall("r=%f\n", f);
 
 				sty->fs.vr[0] = f;
 			}
 			else if(0 == ncmp(buf+k, "bottom:", 7))
 			{
 				decstr2double(buf+k+7, &f);
-				//say("b=%f\n", f);
+				//logtoall("b=%f\n", f);
 
 				sty->fs.vn[1] = f;
 			}
 			else if(0 == ncmp(buf+k, "top:", 4))
 			{
 				decstr2double(buf+k+4, &f);
-				//say("t=%f\n", f);
+				//logtoall("t=%f\n", f);
 
 				sty->fs.vf[1] = f;
 			}
@@ -152,7 +152,7 @@ void parsestyle(struct style* sty, u8* buf, int len)
 		}
 	}
 
-	//say("(%f,%f,%f)\n", sty->rx, sty->fy, sty->uz);
+	//logtoall("(%f,%f,%f)\n", sty->rx, sty->fy, sty->uz);
 }
 
 
@@ -187,7 +187,7 @@ void printhtmlbody(u8* buf, int len)
 				break;
 			}
 		}
-		//say("%.*s\n", k-1, buf+j+1);
+		//logtoall("%.*s\n", k-1, buf+j+1);
 
 		if('/' == buf[j+1])
 		{
@@ -196,11 +196,11 @@ void printhtmlbody(u8* buf, int len)
 		}
 		else
 		{
-			if(sp>1)say("%.*s", (sp-1)*4, space);
-			if(sp>0)say("└───");
-			say("%.*s", k-1, buf+j+1);
-			if(t)say(" %.*s", t-k-1, buf+j+k+1);
-			say("\n");
+			if(sp>1)logtoall("%.*s", (sp-1)*4, space);
+			if(sp>0)logtoall("└───");
+			logtoall("%.*s", k-1, buf+j+1);
+			if(t)logtoall(" %.*s", t-k-1, buf+j+k+1);
+			logtoall("\n");
 
 			if(flag)continue;
 			if(0 == ncmp(buf+j+1, "meta", 4))continue;

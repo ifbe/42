@@ -64,7 +64,7 @@ u64 timeread_us()
 	int ret = QueryPerformanceFrequency(&freq);
 	if(ret && freq.QuadPart){
 		ret = QueryPerformanceCounter(&count);
-		//say("count=%lld,freq=%lld,time=%lld\n", count.QuadPart, freq.QuadPart, (u64)count.QuadPart*1000*1000 / freq.QuadPart);
+		//logtoall("count=%lld,freq=%lld,time=%lld\n", count.QuadPart, freq.QuadPart, (u64)count.QuadPart*1000*1000 / freq.QuadPart);
 		if(ret && count.QuadPart)return (u64)count.QuadPart*1000*1000 / freq.QuadPart;
 	}
 
@@ -76,7 +76,7 @@ u64 timeread_ns()
 	int ret = QueryPerformanceFrequency(&freq);
 	if(ret && freq.QuadPart){
 		ret = QueryPerformanceCounter(&count);
-		//say("count=%lld,freq=%lld,time=%lld\n", count.QuadPart, freq.QuadPart, (u64)count.QuadPart*1000*1000 / (freq.QuadPart/1000));
+		//logtoall("count=%lld,freq=%lld,time=%lld\n", count.QuadPart, freq.QuadPart, (u64)count.QuadPart*1000*1000 / (freq.QuadPart/1000));
 		if(ret && count.QuadPart)return (u64)count.QuadPart*1000*1000 / (freq.QuadPart/1000);		//without (u64)=overflow, 10^9*count/freq = overflow
 	}
 

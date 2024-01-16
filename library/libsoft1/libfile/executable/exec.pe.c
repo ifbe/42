@@ -4,7 +4,7 @@
 #define u64 unsigned long long
 //
 void printmemory(char* addr,u64 size);
-void say(char* fmt,...);
+void logtoall(char* fmt,...);
 
 
 
@@ -176,7 +176,7 @@ u64 disasm_pe64_nt(struct pe* pe,int len)
 	struct dirtab* dir;
 
 	//------------pe.part0-----------
-	say(
+	logtoall(
 "machine=%x\n"
 "symtab=%x\n"
 "symnum=%x\n"
@@ -192,7 +192,7 @@ pe->szopthdr
 
 	//------------pe.part1-----------
 	opt = (void*)pe+24;
-	say(
+	logtoall(
 "codesize=%x\n"
 "datasize=%x\n"
 "bsssize=%x\n"
@@ -213,7 +213,7 @@ opt->codebase
 		dir = (void*)opt + 96;
 
 		imagebase = opt32->imagebase;
-		say(
+		logtoall(
 "database=%x\n"
 "imagebase=%x\n"
 "imagesize=%x\n"
@@ -239,7 +239,7 @@ opt32->heapcommit
 		dir = (void*)opt + 108;
 
 		imagebase = opt64->imagebase;
-		say(
+		logtoall(
 "imagebase=%llx\n"
 "imagesize=%x\n"
 "headersize=%x\n"
@@ -258,12 +258,12 @@ opt64->heapcommit
 		);
 	}
 	else{
-		say("wrong magic=%x\n",opt->magic);
+		logtoall("wrong magic=%x\n",opt->magic);
 		return 0;
 	}
 
 	//---------------pe.part2-------------
-	say(
+	logtoall(
 "export@%x$%x\n"
 "import@%x$%x\n"
 "resource@%x$%x\n"
@@ -331,13 +331,13 @@ int parse_pe(void* pe, int len)
 //------------mz head-------------
 	mz = pe;
 	mzsz = mz->addr;
-	say("mz@[0,%x)\n", mzsz);
+	logtoall("mz@[0,%x)\n", mzsz);
 
 
 //------------pe head-------------
 	nt = (void*)(pe+mzsz);
 	ntsz = 24 + nt->szopthdr;
-	say("nt@[%x,%x)\n", mzsz, mzsz+ntsz);
+	logtoall("nt@[%x,%x)\n", mzsz, mzsz+ntsz);
 
 	base = disasm_pe64_nt(nt, ntsz);
 
@@ -345,10 +345,10 @@ int parse_pe(void* pe, int len)
 //-----------section table--------
 	sec = (void*)nt + ntsz;
 	num = nt->numsec;
-	say("section@[%x,%x)\n", mzsz+ntsz, mzsz+ntsz + num*0x28);
+	logtoall("section@[%x,%x)\n", mzsz+ntsz, mzsz+ntsz + num*0x28);
 
 	for(j=0;j<num;j++){
-		say("%8x,%8x,%8x,%8x:	%.8s\n",
+		logtoall("%8x,%8x,%8x,%8x:	%.8s\n",
         		sec[j].PointerToRawData,
         		sec[j].SizeOfRawData,
 			sec[j].VirtualAddress,

@@ -284,7 +284,7 @@ int navmenu_event(_obj* win, struct style* sty, struct event* ev)
 	else if(_char_ == ret)
 	{
 		ret = ev->why;
-		say("%x\n",ret);
+		logtoall("%x\n",ret);
 		if(0x445b1b == ret)x = 0x4b;
 		else if(0x435b1b == ret)x = 0x4d;
 		else

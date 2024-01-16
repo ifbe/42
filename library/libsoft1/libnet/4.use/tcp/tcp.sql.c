@@ -16,33 +16,33 @@ int sql_read_serverhello(u8* buf, int len)
 
 	p = buf;
 	sz = (*(u32*)p)&0xffffff;
-	say("len=%x,num=%d,protocol=%d\n", sz, p[3], p[4]);
+	logtoall("len=%x,num=%d,protocol=%d\n", sz, p[3], p[4]);
 	p += 5;
 
-	say("version=%s\n", p);
+	logtoall("version=%s\n", p);
 	while(*p != 0)p++;
 	p++;
 
-	say("thid=%x\n", *(u32*)p);
+	logtoall("thid=%x\n", *(u32*)p);
 	p += 4;
 
-	say("salt=%s\n", p);
+	logtoall("salt=%s\n", p);
 	while(*p != 0)p++;
 	p++;
 
-	say(	"srvcap=%x,sevlang=%x,srvsts=%x,extcap=%x\n",
+	logtoall(	"srvcap=%x,sevlang=%x,srvsts=%x,extcap=%x\n",
 		*(u16*)p, p[2], *(u16*)(p+3), *(u16*)(p+5)	);
 	p += 7;
 
-	say("plginlen=%x\n", *p);
+	logtoall("plginlen=%x\n", *p);
 	p++;
 	while(*p == 0)p++;
 
-	say("salt=%s\n", p);
+	logtoall("salt=%s\n", p);
 	while(*p != 0)p++;
 	p++;
 
-	say("%s\n", p);
+	logtoall("%s\n", p);
 	return len;
 }
 int sql_write_loginrequest(u8* buf, int len)
@@ -111,7 +111,7 @@ int sql_client(_obj* ele, int fd, u8* buf, int len)
 	}
 	else
 	{
-		say("error@serve_sql\n");
+		logtoall("error@serve_sql\n");
 	}
 	return sql;
 }

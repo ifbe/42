@@ -58,7 +58,7 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Read(JNIEnv*
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Write(JNIEnv* env, jobject obj, jlong type, jlong data)
 {
 	u64 p[4] = {data, type, (u64)&supply[1], 0};
-	say("@Write:%x,%x\n", type, data);
+	logtoall("@Write:%x,%x\n", type, data);
 	entitywrite(p);
 }
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Start(JNIEnv* env, jobject obj, jobject bitmap)

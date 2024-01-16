@@ -79,7 +79,7 @@ static void algorithm_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("algorithm(%x,%x,%x)\n",win,act,sty);
+	logtoall("algorithm(%x,%x,%x)\n",win,act,sty);
 }
 
 

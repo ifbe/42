@@ -15,7 +15,7 @@ struct wireindex{
 static int parsewiring_oneline(u8* buf, int len, float* dat, int cnt)
 {
 	//printmemory(buf,len);
-	//say("%llx,%llx\n",dat,sts);
+	//logtoall("%llx,%llx\n",dat,sts);
 	int j,k,ret=0;
 	float* cur;
 	for(j=0;j<len;j++){
@@ -23,11 +23,11 @@ static int parsewiring_oneline(u8* buf, int len, float* dat, int cnt)
 		if(')' == buf[j]){
 			cur = &dat[6*(cnt+ret)];
 			parsefv(cur, 6, buf+k,j-k);
-			//say("%f,%f,%f,%f,%f,%f\n",cur[0],cur[1],cur[2],cur[3],cur[4],cur[5]);
+			//logtoall("%f,%f,%f,%f,%f,%f\n",cur[0],cur[1],cur[2],cur[3],cur[4],cur[5]);
 			ret++;
 		}
 	}
-	//say("ret=%d\n",ret);
+	//logtoall("ret=%d\n",ret);
 	return ret;
 }
 static int parsewiring(u8* buf, float* dat)
@@ -42,7 +42,7 @@ static int parsewiring(u8* buf, float* dat)
 			sts[ioff].cnt = parsewiring_oneline(buf+k, j-k, dat,foff);
 			sts[ioff].val = 0;
 			sts[ioff].off = foff;
-			//say("%d,%d\n", sts[ioff].off, sts[ioff].cnt);
+			//logtoall("%d,%d\n", sts[ioff].off, sts[ioff].cnt);
 
 			foff += sts[ioff].cnt;
 			ioff += 1;
@@ -186,7 +186,7 @@ void digital_complex(_obj* ent,struct wireindex* sts, _syn* stack,int sp, u8* bu
 				digital_broadcast(ent,'a'+j, stack,sp, &negative,1);
 			}
 		}
-		say("k=%d,err=%d\n", k,err);
+		logtoall("k=%d,err=%d\n", k,err);
 		if(k == 0)break;	//all done
 		if(k >= err)break;	//can not
 		err = k;
@@ -228,7 +228,7 @@ static void digital_draw_gl41(
 		off = sts[k].off;
 		rgb = digital_color(sts[k].val);
 		for(j=6*off;j<6*(off+cnt);j+=6){
-			//say("j=%d\n",j);
+			//logtoall("j=%d\n",j);
 			ta[0] = vc[0]+dat[j+0];
 			ta[1] = vc[1]+dat[j+1];
 			ta[2] = vc[2]+dat[j+2];
@@ -291,7 +291,7 @@ int digital_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8
 		if(ev->why > '3')return 0;
 		//not break
 	case _ioby_:
-		say("digital_event: %.4s=%x\n", &foot, buf[0]);
+		logtoall("digital_event: %.4s=%x\n", &foot, buf[0]);
 		ent->STAMP += 1;
 		digital_complex(ent,sts, stack,sp, buf,len);
 		break;
@@ -299,7 +299,7 @@ int digital_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8
 	case 'b':
 	case 'c':
 	case 'd':
-		say("digital_write: %.4s=%x\n", &foot, buf[0]);
+		logtoall("digital_write: %.4s=%x\n", &foot, buf[0]);
 		id = foottype - 'a';
 		if('p' == buf[0])sts[id].val = 1;
 		if('n' == buf[0])sts[id].val =-1;
@@ -314,7 +314,7 @@ int digital_detach(struct halfrel* self, struct halfrel* peer)
 }
 int digital_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@digital_attach: %.4s\n", &self->foottype);
+	logtoall("@digital_attach: %.4s\n", &self->foottype);
 	return 0;
 }
 
@@ -336,7 +336,7 @@ int digital_delete(_obj* scene)
 int digital_create(_obj* scene, void* arg, int argc, u8** argv)
 {
 	int ret;
-	say("@digital_create\n");
+	logtoall("@digital_create\n");
 	if(0 == arg)return 0;
 
 	//borrow this as filebuf

@@ -52,7 +52,7 @@ int rgbanode_take(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int key, voi
 }
 int rgbanode_give(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	//say("@rgbanode_write:%p,%x\n", wnd,foot);
+	//logtoall("@rgbanode_write:%p,%x\n", wnd,foot);
 	//printmemory(buf,16);
 
 	float max = -1.0;
@@ -64,7 +64,7 @@ int rgbanode_give(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int key, voi
 		if(_ent_ == rel->dstnodetype){
 			struct style* sty = (void*)(rel->srcfoot);
 			if(sty){
-				//say("%f\n", sty->fs.vc[3]);
+				//logtoall("%f\n", sty->fs.vc[3]);
 				if(max < sty->fs.vc[3]){
 					the = rel;
 					max = sty->fs.vc[3];
@@ -75,7 +75,7 @@ int rgbanode_give(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int key, voi
 		rel = samesrcprevdst(rel);
 	}
 
-//say("max=%f,the=%p\n",max,the);
+//logtoall("max=%f,the=%p\n",max,the);
 	if(the){
 		stack[sp+0].pchip = the->psrcchip;
 		stack[sp+0].pfoot = the->psrcfoot;

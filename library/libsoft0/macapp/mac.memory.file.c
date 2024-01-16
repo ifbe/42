@@ -34,7 +34,7 @@ void filemanager_registerdisk()
 }
 int file_search(void* buf, int len)
 {
-	say("@filesearch\n");
+	logtoall("@filesearch\n");
 	return 0;
 }
 int file_modify(void* buf, int len)
@@ -47,7 +47,7 @@ int file_modify(void* buf, int len)
 
 _obj* file_create(void* path, int flag)
 {
-	//say("@startfile:%s,%x\n", path, flag);
+	//logtoall("@startfile:%s,%x\n", path, flag);
 	int fd;
 	char* pp = path;
 	if(0 == pp){fd = -0xfff;goto fail;}
@@ -61,7 +61,7 @@ _obj* file_create(void* path, int flag)
 	}
 	if(fd < 0)goto fail;
 
-	//say("file_create:obj=%p,fd=%d\n",&obj[fd], fd);
+	//logtoall("file_create:obj=%p,fd=%d\n",&obj[fd], fd);
 	obj[fd].fileinfo.fd = fd;
 	return &obj[fd];
 
@@ -78,19 +78,19 @@ int file_reader(_obj* oo, int xx, p64 arg, int cmd, void* buf, int len)
 {
 	int ret;
 	int fd = oo->fileinfo.fd;
-	//say("obj=%p,fd=%d\n", oo, fd);
+	//logtoall("obj=%p,fd=%d\n", oo, fd);
 
 	if(_pos_ == cmd){
 		ret = lseek(fd, arg, SEEK_SET);
 		if(-1 == ret){
-			//say("lseek64: offs=%llx, errno=%d\n", arg, errno);
+			//logtoall("lseek64: offs=%llx, errno=%d\n", arg, errno);
 			return -2;
 		}
 	}//from head
 
 	ret = read(fd, buf, len);
 	if(-1 == ret){
-		//say("read: offs=%llx, len=%x, errno=%d\n", arg, len, errno);
+		//logtoall("read: offs=%llx, len=%x, errno=%d\n", arg, len, errno);
 		return -1;
 	}
 
@@ -104,14 +104,14 @@ int file_writer(_obj* oo, int xx, p64 arg, int cmd, void* buf, int len)
 	if(_pos_ == cmd){
 		ret = lseek(fd, arg, SEEK_SET);
 		if(-1 == ret){
-			//say("lseek64: offs=%llx, errno=%d\n", arg, errno);
+			//logtoall("lseek64: offs=%llx, errno=%d\n", arg, errno);
 			return -2;
 		}
 	}//from head
 
 	ret = write(fd, buf, len);
 	if(-1 == ret){
-		//say("write: offs=%llx, len=%x, errno=%d\n", arg, len, errno);
+		//logtoall("write: offs=%llx, len=%x, errno=%d\n", arg, len, errno);
 		return -1;
 	}
 

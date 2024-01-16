@@ -41,7 +41,7 @@ _obj* shell_create(char* p)
 }
 int shell_delete(_obj* fd)
 {
-	say("!!!this func is wrong!!!\n");
+	logtoall("!!!this func is wrong!!!\n");
 	return 0;
 }
 int shell_reader(_obj* oo,int xx, p64 arg,int off, void* buf,int len)

@@ -11,7 +11,7 @@ void border3d_draw_gl41(_obj* scene, _obj* wnd)
 	struct fstyle* sty;
 	vec3 tc,tr,tf,tt;
 	int j;
-	//say("@border3d_read: %.8s\n", &scene->hfmt);
+	//logtoall("@border3d_read: %.8s\n", &scene->hfmt);
 
 	rel = scene->orel0;
 	while(1){
@@ -19,7 +19,7 @@ void border3d_draw_gl41(_obj* scene, _obj* wnd)
 		ent = rel->pdstchip;
 		sty = rel->psrcfoot;
 		if(sty){
-			//say("%llx,%llx\n",ent,sty);
+			//logtoall("%llx,%llx\n",ent,sty);
 			for(j=0;j<3;j++){
 				tr[j] = sty->vr[j];
 				tf[j] = sty->vf[j];
@@ -86,7 +86,7 @@ int border3d_detach(struct halfrel* self, struct halfrel* peer)
 }
 int border3d_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@border3d_attach\n");
+	logtoall("@border3d_attach\n");
 	return 0;
 }
 
@@ -107,6 +107,6 @@ int border3d_delete(_obj* scene)
 }
 int border3d_create(_obj* scene, void* str)
 {
-	say("@border3d_create\n");
+	logtoall("@border3d_create\n");
 	return 0;
 }

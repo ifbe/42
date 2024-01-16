@@ -270,7 +270,7 @@ static int stylen = 0;
 #define maxsz (0x100000/sizeof(_obj))
 void entity_init(u8* addr)
 {
-	say("[e,f):entity initing\n");
+	logtoall("[e,f):entity initing\n");
 
 	int j;
 	for(j=0;j<0x200000;j++)addr[j] = 0;
@@ -287,11 +287,11 @@ void entity_init(u8* addr)
 	world_init(addr);
 	thing_init(addr);
 
-	say("[e,f):entity inited\n");
+	logtoall("[e,f):entity inited\n");
 }
 void entity_exit()
 {
-	say("[e,f):entity exiting\n");
+	logtoall("[e,f):entity exiting\n");
 
 	thing_exit();
 	world_exit();
@@ -302,7 +302,7 @@ void entity_exit()
 	style = 0;
 	entity = 0;
 
-	say("[e,f):entity exited\n");
+	logtoall("[e,f):entity exited\n");
 }
 
 
@@ -398,7 +398,7 @@ void* entity_createfromfile(u64 fmt, u8* arg, int argc, u8** argv)
 void* entity_create(u64 type, void* buf, int argc, u8** argv)
 {
 	_obj* act;
-	//say("%llx,%llx\n", type, buf);
+	//logtoall("%llx,%llx\n", type, buf);
 
 	switch(type){
 //----------------world----------------
@@ -722,7 +722,7 @@ int entity_attach(struct halfrel* self, struct halfrel* peer)
 	_obj* act = self->pchip;
 	if(0 == act)return 0;
 
-	//say("@entity_attach\n");
+	//logtoall("@entity_attach\n");
 	switch(act->type){
 	case _cam1rd_:return cam1rd_attach(self, peer);
 	case _cam3rd_:return cam3rd_attach(self, peer);
@@ -784,7 +784,7 @@ int entity_detach(struct halfrel* self, struct halfrel* peer)
 	_obj* act = self->pchip;
 	if(0 == act)return 0;
 
-	//say("@entity_detach\n");
+	//logtoall("@entity_detach\n");
 	switch(act->type){
 	case _cam1rd_:return cam1rd_detach(self, peer);
 	case _cam3rd_:return cam3rd_detach(self, peer);
@@ -975,10 +975,10 @@ void* entity_search(u8* buf, int len)
 		{
 			act = &entity[j];
 			if(0 == act->hfmt)break;
-			say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
+			logtoall("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
 				&act->tier, &act->type, &act->hfmt, &act->hfmt);
 		}
-		if(0 == j)say("empty entity\n");
+		if(0 == j)logtoall("empty entity\n");
 	}
 	else
 	{
@@ -1002,7 +1002,7 @@ void* entity_modify(int argc, u8** argv)
 	u64 name = 0;
 	u8* tmp = (u8*)&name;
 	if(argc < 2)return 0;
-//say("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
+//logtoall("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
 	if(0 == ncmp(argv[1], "create", 6))
 	{
 		for(j=0;j<8;j++)
@@ -1010,7 +1010,7 @@ void* entity_modify(int argc, u8** argv)
 			if(argv[2][j] <= 0x20)break;
 			tmp[j] = argv[2][j];
 		}
-		say("%llx,%llx\n",name, argv[3]);
+		logtoall("%llx,%llx\n",name, argv[3]);
 		entity_create(name, argv[3], argc-3, &argv[3]);
 	}
 

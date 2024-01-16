@@ -416,7 +416,7 @@ int entityinput_editor_target(_obj* win, struct event* ev)
 
 			sty->vc[0] += ty*ax - tx*ay;
 			sty->vc[1] -= sign*(tx*ax + ty*ay);
-			//say("%x,%x\n", sty->vc[0], sty->vc[1]);
+			//logtoall("%x,%x\n", sty->vc[0], sty->vc[1]);
 		}
 		else if(11 == id)
 		{
@@ -470,7 +470,7 @@ int playwith3d_pick(_obj* root, _obj* twig, _obj* act, int x, int y)
 	ray[1][2] = 0.0;
 
 	invmvp(ray[1], &root->camera);
-	say("(%f,%f,%f) -> (%f,%f,%f)\n",
+	logtoall("(%f,%f,%f) -> (%f,%f,%f)\n",
 		ray[0][0], ray[0][1], ray[0][2],
 		ray[1][0], ray[1][1], ray[1][2]
 	);
@@ -491,7 +491,7 @@ int playwith3d_pick(_obj* root, _obj* twig, _obj* act, int x, int y)
 		{
 			sty = (void*)(rel->srcfoot);
 			ret = obb_ray(sty, ray, out);
-			say("rel=%llx, ret=%d\n", rel, ret);
+			logtoall("rel=%llx, ret=%d\n", rel, ret);
 			if(ret > 0)break;
 		}
 
@@ -544,7 +544,7 @@ int playwith3d_move(_obj* root, _obj* twig, int x0, int y0, int xn, int yn)
 	   - (rayn[0][0] - rayn[1][0]*rayn[0][2]/rayn[1][2]);
 	dy = (ray0[0][1] - ray0[1][1]*ray0[0][2]/ray0[1][2])
 	   - (rayn[0][1] - rayn[1][1]*rayn[0][2]/rayn[1][2]);
-	say("%f,%f\n", dx, dy);
+	logtoall("%f,%f\n", dx, dy);
 
 	rel = twig->oreln;
 	while(1)
@@ -586,7 +586,7 @@ static int picker_draw(
 	tc[1] = act->target.vc[1];
 	tc[2] = act->target.vc[2] + 1000.0*1000.0;
 	gl41line(win, 0xff00ff, act->target.vc, tc);
-//say(">>>>>%f,%f,%f\n", tc[0], tc[1], tc[2]);
+//logtoall(">>>>>%f,%f,%f\n", tc[0], tc[1], tc[2]);
 */
 	www = 0;
 	rel = win->orel0;
@@ -633,7 +633,7 @@ static int picker_event(
 	short* t;
 	_obj* www = 0;
 	struct relation* rel = win->orel0;
-	//say("@picker_swrite:%llx,%llx\n", ev->what, ev->why);
+	//logtoall("@picker_swrite:%llx,%llx\n", ev->what, ev->why);
 
 	while(1)
 	{
@@ -683,7 +683,7 @@ static void picker_detach(struct halfrel* self, struct halfrel* peer)
 }
 static void picker_attach(struct halfrel* self, struct halfrel* peer)
 {
-    say("@picker_attach\n");
+    logtoall("@picker_attach\n");
 }
 
 
@@ -700,7 +700,7 @@ static void picker_delete(_obj* act)
 }
 static void picker_create(_obj* act, void* addr)
 {
-    say("@picker_create\n");
+    logtoall("@picker_create\n");
 }
 
 

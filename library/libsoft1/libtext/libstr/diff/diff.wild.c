@@ -1,4 +1,4 @@
-void say(char* fmt , ...);
+void logtoall(char* fmt , ...);
 
 
 

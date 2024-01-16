@@ -3,7 +3,7 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 void printmemory(void*, int);
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 
@@ -170,7 +170,7 @@ void* bplus_indexadd(struct bplusindex* this, struct indexdata* data)
 	{
 		if(hash < this->node[j].hash)break;
 	}
-	//say("j=%d,k=%d,hash=%c\n", j, k, hash);
+	//logtoall("j=%d,k=%d,hash=%c\n", j, k, hash);
 
 	//move
 	for(;k>j;k--)
@@ -447,7 +447,7 @@ void* bplus_search(struct bplushead* head, struct bplusindex* this, u64 hash)
 	child = bplus_getchild(head, this, j);
 	if(child == 0)return 0;
 
-	//say("j=%d,child=%llx\n",j,child);
+	//logtoall("j=%d,child=%llx\n",j,child);
 	return bplus_search(head, child, hash);
 }
 void* bplus_change(struct bplushead* head)
@@ -517,25 +517,25 @@ void bplus_debug_leftright(struct bplushead* head, u64 addr)
 	index = bplus_logic2memory(head, addr);
 	while(1)
 	{
-		say("%04x->%04x<-%04x:",
+		logtoall("%04x->%04x<-%04x:",
 			index->head.left, addr, index->head.right);
 
 		if(index->head.type == '?')
 		{
 			for(j=0;j<index->head.len;j++)
 			{
-				say(" %c", index->node[j].hash);
+				logtoall(" %c", index->node[j].hash);
 			}
-			say("\n");
+			logtoall("\n");
 		}
 		else
 		{
 			leaf = (void*)index;
 			for(j=0;j<leaf->head.len;j++)
 			{
-				say(" %c", leaf->node[j].hash);
+				logtoall(" %c", leaf->node[j].hash);
 			}
-			say("\n");
+			logtoall("\n");
 		}
 
 		addr = index->head.right;
@@ -553,22 +553,22 @@ void bplus_debug_traverse(struct bplushead* head, u64 addr)
 	index = bplus_logic2memory(head, addr);
 	if(index->head.type == '?')
 	{
-		say("?%04x: ", addr);
+		logtoall("?%04x: ", addr);
 		for(j=0;j<index->head.len;j++)
 		{
-			say(" %c", index->node[j].hash);
+			logtoall(" %c", index->node[j].hash);
 		}
-		say("\n");
+		logtoall("\n");
 	}
 	else
 	{
 		leaf = (void*)index;
-		say("!%04x: ", addr);
+		logtoall("!%04x: ", addr);
 		for(j=0;j<leaf->head.len;j++)
 		{
-			say(" %c", leaf->node[j].hash);
+			logtoall(" %c", leaf->node[j].hash);
 		}
-		say("\n");
+		logtoall("\n");
 	}
 
 	bplus_debug_traverse(head, index->head.child);
@@ -586,7 +586,7 @@ void bplus_debug(struct bplushead* head)
 	{
 		if(addr == 0)break;
 
-		say("depth=%d\n", depth);
+		logtoall("depth=%d\n", depth);
 		bplus_debug_leftright(head, addr);
 
 		if(here->head.type != '?')break;

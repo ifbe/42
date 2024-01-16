@@ -9,7 +9,7 @@ int bigpow(		//ans = (base^exp)%mod
         u8* mod, int ml);
 void printbigint(u8* p, int i);
 void printmemory(u8* p, int i);
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 
@@ -29,13 +29,13 @@ void rsa2048(		//dst = (src^key)%mod
 	for(j=0;j<256;j++)expbuf[j] = keybuf[j];
 	for(j=256;j<0x800;j++)expbuf[j] = 0;
 
-say("hex(pow(");
+logtoall("hex(pow(");
 printbigint(bsebuf,srclen);
-say(",");
+logtoall(",");
 printbigint(expbuf,keylen);
-say(",");
+logtoall(",");
 printbigint(modbuf,modlen);
-say("))\n");
+logtoall("))\n");
 	k = bigpow(
 		dstbuf, dstlen,
 		bsebuf, srclen,
@@ -49,7 +49,7 @@ say("))\n");
 		dstbuf[j] = dstbuf[k-1-j];
 		dstbuf[k-1-j] = tmp;
 	}
-say("k=%d\n",k);
+logtoall("k=%d\n",k);
 printbigint(dstbuf, k);
-say("\n");
+logtoall("\n");
 }

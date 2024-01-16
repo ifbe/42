@@ -81,8 +81,8 @@ static void palette_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("palette(%x,%x,%x)\n",win,act,sty);
-	say("r=%02x,g=%02x,b=%02x\n",red,green,blue);
+	logtoall("palette(%x,%x,%x)\n",win,act,sty);
+	logtoall("r=%02x,g=%02x,b=%02x\n",red,green,blue);
 }
 static void palette_event(
 	_obj* act, struct style* pin,

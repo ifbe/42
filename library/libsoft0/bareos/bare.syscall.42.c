@@ -19,18 +19,18 @@ void syscall_want(u64* arg)
 	int flag = arg[1];
 
 	u64 pa = process_virt2phys(va);
-	//say("@want: va=%llx, pa=%llx\n", va, pa);
+	//logtoall("@want: va=%llx, pa=%llx\n", va, pa);
 	if(0 == pa){
 		arg[0] = 0;
 		return;
 	}
 
-	say("@want: %s\n", pa);
+	logtoall("@want: %s\n", pa);
 }
 void syscall_done(u64* arg)
 {
 	u64 fd = arg[0];
-	say("@done: %llx\n", fd);
+	logtoall("@done: %llx\n", fd);
 }
 void syscall_take(u64* arg)
 {
@@ -44,13 +44,13 @@ void syscall_take(u64* arg)
 	}
 
 	u64 pa = process_virt2phys(buf);
-	//say("@want: va=%llx, pa=%llx\n", va, pa);
+	//logtoall("@want: va=%llx, pa=%llx\n", va, pa);
 	if(0 == pa){
 		arg[0] = 0;
 		return;
 	}
 
-	say("@take: %s\n", pa);
+	logtoall("@take: %s\n", pa);
 	arg[0] = len;
 }
 void syscall_give(u64* arg)
@@ -65,13 +65,13 @@ void syscall_give(u64* arg)
 	}
 
 	u64 pa = process_virt2phys(buf);
-	//say("@want: va=%llx, pa=%llx\n", va, pa);
+	//logtoall("@want: va=%llx, pa=%llx\n", va, pa);
 	if(0 == pa){
 		arg[0] = 0;
 		return;
 	}
 
-	say("@give: %s\n", pa);
+	logtoall("@give: %s\n", pa);
 	arg[0] = len;
 }
 void syscall_ioctl()
@@ -92,7 +92,7 @@ void system_handler(u64 req, u64* arg)
 	case _done_:syscall_done(arg);return;
 	case _take_:syscall_take(arg);return;
 	case _give_:syscall_give(arg);return;
-	default:say("unknown@system_handler: %llx{%llx,%llx...}\n", req, arg[0], arg[1]);
+	default:logtoall("unknown@system_handler: %llx{%llx,%llx...}\n", req, arg[0], arg[1]);
     }
 }
 

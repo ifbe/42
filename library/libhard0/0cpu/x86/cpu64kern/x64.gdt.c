@@ -15,7 +15,7 @@ void loadtss();
 void loadtss_ap();
 //
 void printmemory(void*, int);
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 
@@ -101,7 +101,7 @@ void fillgdt(u8* buf)
 	struct tss* tss = (void*)(buf+OFFS_TSS);
 	tss->rsp0 = (u64)buf + OFFS_RSP;
 	tss->iopb = 0x68;
-	say("tss:\n");
+	logtoall("tss:\n");
 	printmemory(tss, 0x68);
 
 	struct gdt* gdt = (void*)buf;
@@ -124,11 +124,11 @@ void fillgdt(u8* buf)
 }
 void initgdt(u8* newgdt)
 {
-	say("@initgdt\n");
+	logtoall("@initgdt\n");
 
 	//old
-	//say("oldtr@%x\n", gettss());
-	say("oldgdt:\n");
+	//logtoall("oldtr@%x\n", gettss());
+	logtoall("oldgdt:\n");
 	u8 map[16];
 	getgdt(map);
 	printmemory(map, 16);
@@ -138,7 +138,7 @@ void initgdt(u8* newgdt)
 	fillgdt(newgdt);
 
 	//new
-	say("bspgdt:\n");
+	logtoall("bspgdt:\n");
 	printmemory(newgdt, 0x40);
 
 	//run
@@ -147,18 +147,18 @@ void initgdt(u8* newgdt)
 }
 void initgdt_ap(u8* newgdt)
 {
-	say("@initgdt_ap\n");
+	logtoall("@initgdt_ap\n");
 
 	//set
 	fillgdt(newgdt);
 
 	//new
-	say("appgdt:\n");
+	logtoall("appgdt:\n");
 	printmemory(newgdt, 0x40);
 
 	//run
 	loadgdt_ap();
 	loadtss_ap();
 
-	say("\n\n");
+	logtoall("\n\n");
 }

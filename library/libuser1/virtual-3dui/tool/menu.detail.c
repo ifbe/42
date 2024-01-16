@@ -219,7 +219,7 @@ static void detail_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int 
 	case _dx11list_:
 	case _mt20list_:
 	case _vk12list_:
-		say("caller@%p\n", caller);
+		logtoall("caller@%p\n", caller);
 		break;
 	default:
 		detail_take_bycam(ent,slot, stack,sp);
@@ -235,7 +235,7 @@ static void detail_detach(struct halfrel* self, struct halfrel* peer)
 }
 static void detail_attach(struct halfrel* self, struct halfrel* peer)
 {
-    say("@detail_attach\n");
+    logtoall("@detail_attach\n");
 }
 
 
@@ -252,7 +252,7 @@ void detail_delete(_obj* act)
 }
 void detail_create(_obj* act, void* str)
 {
-    say("@detail_create\n");
+    logtoall("@detail_create\n");
 }
 
 

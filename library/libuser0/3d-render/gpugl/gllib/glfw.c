@@ -49,7 +49,7 @@ int window_take(_obj* ogl,void* foot, _syn* stack,int sp, p64 arg,int idx, void*
 {
 	u64 t0,t1,t2,t3;
 	GLFWwindow* fw;
-	//say("@windowread\n");
+	//logtoall("@windowread\n");
 t0 = ogl->gl41list.gltime;
 
 	//0: context current
@@ -107,7 +107,7 @@ void window_attach(struct halfrel* self, struct halfrel* peer)
 }
 void window_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@windowlinkup:%llx\n", self->pchip);
+	logtoall("@windowlinkup:%llx\n", self->pchip);
 }
 
 
@@ -241,7 +241,7 @@ static void callback_move(GLFWwindow* fw, double xpos, double ypos)
 }
 static void callback_drop(GLFWwindow* fw, int count, const char** paths)
 {
-	say("drop: %p,%d,%p\n",fw, count, paths);
+	logtoall("drop: %p,%d,%p\n",fw, count, paths);
 	//char dragdata[0x1000];
 /*	int j,ret=0;
 	for(j=0;j<count;j++)

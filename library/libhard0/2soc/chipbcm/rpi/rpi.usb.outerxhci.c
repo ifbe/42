@@ -7,7 +7,7 @@ void* mmiobase();
 //must after pcie probe
 void rpiextxhci_init()
 {
-    say("@rpiextxhci_init\n");
+    logtoall("@rpiextxhci_init\n");
 }
 void rpiextxhci_exit()
 {

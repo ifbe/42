@@ -12,7 +12,7 @@ u64 archtimer_us();
 u64 archtimer_ns();
 //
 void eventwrite(u64,u64,u64,u64);
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 
@@ -28,7 +28,7 @@ void datewrite(u64 x)
 	date = x;
 	//eventwrite(x, __date__, 0, 0);
 /*	char* p = (void*)&x;
-	say("%02d:%02d:%02d:%02d:%02d:%02d:%02d:%02d\n",
+	logtoall("%02d:%02d:%02d:%02d:%02d:%02d:%02d:%02d\n",
 		p[7],p[6],p[5],p[4],p[3],p[2],p[1],p[0]
 	);*/
 }
@@ -71,7 +71,7 @@ void sleep_ns(int t)
 void sleep_us(int t)
 {
 	u64 deadline = archtimer_us() + t;
-	if(deadline == t)say("warning: timer maybe failed\n");
+	if(deadline == t)logtoall("warning: timer maybe failed\n");
 	while(archtimer_us() < deadline);
 }
 void sleep_ms(int t)

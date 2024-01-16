@@ -108,10 +108,10 @@ static void vsrc_read_p(_obj* ent, int key, struct wireindex* sts, int thisone)
 
 	float vthat = sts[theother].volt;
 	float vthis = sts[thisone].volt;
-	say("@n: %d,%f, %d,%f\n",thisone,vthis, theother,vthat);
+	logtoall("@n: %d,%f, %d,%f\n",thisone,vthis, theother,vthat);
 
 	float delta = vthis/2 - (vthat + ent->whdf.fx0)/2;
-	say("vsrc_read_p: %f,%f\n", sts[thisone].grad, delta);
+	logtoall("vsrc_read_p: %f,%f\n", sts[thisone].grad, delta);
 	sts[thisone].grad += delta;
 }
 static void vsrc_read_n(_obj* ent, int key, struct wireindex* sts, int thisone)
@@ -124,10 +124,10 @@ static void vsrc_read_n(_obj* ent, int key, struct wireindex* sts, int thisone)
 
 	float vthat = sts[theother].volt;
 	float vthis = sts[thisone].volt;
-	say("@n: %d,%f, %d,%f\n",thisone,vthis, theother,vthat);
+	logtoall("@n: %d,%f, %d,%f\n",thisone,vthis, theother,vthat);
 
 	float delta = vthis/2 - (vthat - ent->whdf.fx0)/2;
-	say("vsrc_read_n: %f,%f\n", sts[thisone].grad, delta);
+	logtoall("vsrc_read_n: %f,%f\n", sts[thisone].grad, delta);
 	sts[thisone].grad += delta;
 }
 
@@ -144,7 +144,7 @@ static void vsrc_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int ke
 }
 static void vsrc_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	say("@vsrc_write: %.4s\n", &foot);
+	logtoall("@vsrc_write: %.4s\n", &foot);
 	if('n' == stack[sp-1].foottype){
 		struct wireindex* sts = buf;
 		float volt = sts->volt + ent->whdf.fx0;
@@ -179,7 +179,7 @@ static void vsrc_create(_obj* act, void* arg, int argc, u8** argv)
 {
 	if(0 == arg)return;
 	decstr2float(arg, &act->whdf.fx0);
-	say("V=%f\n",act->whdf.fx0);
+	logtoall("V=%f\n",act->whdf.fx0);
 }
 
 

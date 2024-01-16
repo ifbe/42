@@ -97,7 +97,7 @@ static void printnode(_obj* win, struct bintree* this, int x, int y,
 
 		offset >>= 1;
 	}
-	//say("offset=%d\n",offset);
+	//logtoall("offset=%d\n",offset);
 
 	//left
 	if(left!=0&&left<128)
@@ -112,7 +112,7 @@ static void printnode(_obj* win, struct bintree* this, int x, int y,
 		drawline(win, 0xffffff, x, 64*y+16, x+offset, 64*y+64);
 		printnode(win, x+offset , y+1 , right );
 	}
-	//say("this=%d,left=%d,right=%d\n",num,left,right);
+	//logtoall("this=%d,left=%d,right=%d\n",num,left,right);
 */
 }
 static void bintree_draw_pixel(
@@ -162,7 +162,7 @@ static void bintree_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("tree(%x,%x,%x)\n",win,act,sty);
+	logtoall("tree(%x,%x,%x)\n",win,act,sty);
 }
 
 
@@ -189,10 +189,10 @@ static void bintree_event(
 			char* p=(char*)node;
 			for(i=0;i<0x1000;i++)p[i]=0;
 			
-			say("infix2postfix:%s\n",postfix);
+			logtoall("infix2postfix:%s\n",postfix);
 			infix2postfix(buffer,postfix);
 
-			say("postfix2binarytree......\n");
+			logtoall("postfix2binarytree......\n");
 			postfix2binarytree(postfix,node);
 
 			for(count=0;count<127;count++) buffer[count]=0;

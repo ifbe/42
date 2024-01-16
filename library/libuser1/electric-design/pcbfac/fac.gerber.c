@@ -29,7 +29,7 @@ int rs274x_edge(float* vbuf, int vlen)
 	vbuf[(vlen+1)*stride+0] = rx;
 	vbuf[(vlen+1)*stride+1] = ry;
 	vbuf[(vlen+1)*stride+2] = 0.0;
-	say("%f,%f,    %f,%f\n", lx, ly, rx, ry);
+	logtoall("%f,%f,    %f,%f\n", lx, ly, rx, ry);
 	return 0;
 }
 int rs274x_line(float* vbuf, int vlen, u8* str, int len)
@@ -70,7 +70,7 @@ int rs274x_line(float* vbuf, int vlen, u8* str, int len)
 	else decstr2float(str+d, &vbuf[vlen*stride+3]);
 
 	vbuf[vlen*stride+2] = 0.0;
-	say("%f,%f,%f,%f\n", vbuf[vlen*stride+0], vbuf[vlen*stride+1], vbuf[vlen*stride+2], vbuf[vlen*stride+3]);
+	logtoall("%f,%f,%f,%f\n", vbuf[vlen*stride+0], vbuf[vlen*stride+1], vbuf[vlen*stride+2], vbuf[vlen*stride+3]);
 	return 1;
 }
 int rs274x_parse(float* dst, u8* buf)
@@ -96,7 +96,7 @@ int rs274x_parse(float* dst, u8* buf)
 int rs274x_parse(float* vbuf, int vlen, u8* str, int len)
 {
 	int j;
-	//say("%.*s\n", len, str);
+	//logtoall("%.*s\n", len, str);
 	if('X' == str[0]){
 		j = 1+decstr2float(str+1, &vbuf[vlen*stride]);
 		vbuf[vlen*stride+0] /= 1000.0;
@@ -145,7 +145,7 @@ int rs274x_parse(float* vbuf, int vlen, u8* str, int len)
 	else return 0;
 
 	vbuf[vlen*stride+2] = 0.0;
-	say("%f,%f,%f,%f\n", vbuf[vlen*stride+0], vbuf[vlen*stride+1], vbuf[vlen*stride+2], vbuf[vlen*stride+3]);
+	logtoall("%f,%f,%f,%f\n", vbuf[vlen*stride+0], vbuf[vlen*stride+1], vbuf[vlen*stride+2], vbuf[vlen*stride+3]);
 	return 1;
 }*/
 
@@ -178,7 +178,7 @@ static void gerber_create(_obj* act, void* arg)
 		cnt = rs274x_parse(dst, buf);
 
 		act->CNTBUF = cnt;
-		say("len=%x\n", 4*4*cnt);
+		logtoall("len=%x\n", 4*4*cnt);
 
 		rs274x_edge(dst, cnt);
 	}
@@ -209,7 +209,7 @@ static void gerber_draw_gl41(
 	}
 	tr[0] = (buf[(cnt+1)*stride+0] - buf[(cnt+0)*stride+0])/2;
 	tf[1] = (buf[(cnt+1)*stride+1] - buf[(cnt+0)*stride+1])/2;
-	//say("%f,%f,%f,  %f,%f,%f,  %f,%f,%f\n", tc[0],tc[1],tc[2], tr[0],tr[1],tr[2], tf[0],tf[1],tf[2]);
+	//logtoall("%f,%f,%f,  %f,%f,%f,  %f,%f,%f\n", tc[0],tc[1],tc[2], tr[0],tr[1],tr[2], tf[0],tf[1],tf[2]);
 	gl41solid_rect(ctx, 0x004000, tc, tr, tf);
 
 	for(j=0;j<cnt-1;j++){

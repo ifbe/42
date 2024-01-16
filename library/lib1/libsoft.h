@@ -47,4 +47,4 @@ int mysnprintf(void*, int, void*, ...);
 //
 int printmemory(void*, int);
 int printmmmio(void*, int);
-int say(void*, ...);
+int logtoall(void*, ...);

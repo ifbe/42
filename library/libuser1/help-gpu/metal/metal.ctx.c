@@ -91,7 +91,7 @@ void mt20data_whcam(_obj* wnd, struct fstyle* area)
 	m[2][3] = 0.9;
 	m[3][3] = 1.0;
 	//no transpose
-	//say("%f,%f\n", m[0][0], m[1][1]);
+	//logtoall("%f,%f\n", m[0][0], m[1][1]);
 
 	wnd->mt20list.world[0].camera[0] = data;
 }
@@ -173,7 +173,7 @@ void mt20data_after(_obj* ctx)
 void mt20data_insert(_obj* ctx, int type, struct mt20data* src, int cnt)
 {
 	int j;
-	//say("@mt20data_insert:%llx,%x,%llx,%x\n", ctx,type,src,cnt);
+	//logtoall("@mt20data_insert:%llx,%x,%llx,%x\n", ctx,type,src,cnt);
 
 	if('s' == type){
 		for(j=solidaid_max;j<64;j++){

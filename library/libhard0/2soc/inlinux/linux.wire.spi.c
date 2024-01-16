@@ -7,7 +7,7 @@
 #include <linux/spi/spidev.h>	//Needed for SPI port
 #define u8 unsigned char
 #define u64 unsigned long long
-void say(char*,...);
+void logtoall(char*,...);
 
 
 

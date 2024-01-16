@@ -28,7 +28,7 @@ void cmdqwindow_execute(_obj* wnd)
 	u64* data = wnd->gl41cmdq.data;
 	u64* code = wnd->gl41cmdq.code;
 	for(j=0;j<1;j++){
-		say("code[0] = %.4s\n", &code[0]);
+		logtoall("code[0] = %.4s\n", &code[0]);
 		switch(code[0]){
 		case _clr_:
 

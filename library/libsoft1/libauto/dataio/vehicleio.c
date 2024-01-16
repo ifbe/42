@@ -33,13 +33,13 @@ int vehicleclient_sock(_obj* art,void* foot, u8* buf, int len)
 	struct msg* msg = (void*)buf;
 	switch(msg->type){
 	case _time_:
-		say("day=%d,hour=%d,minute=%d,second=%d\n", msg->_u8[3], msg->_u8[2], msg->_u8[1], msg->_u8[0]);
+		logtoall("day=%d,hour=%d,minute=%d,second=%d\n", msg->_u8[3], msg->_u8[2], msg->_u8[1], msg->_u8[0]);
 		break;
 	case _v0v1_:
-		say("v0v1=%f\n", msg->_f32);
+		logtoall("v0v1=%f\n", msg->_f32);
 		break;
 	case _v0v2_:
-		say("v0v2=%f\n", msg->_f32);
+		logtoall("v0v2=%f\n", msg->_f32);
 		break;
 	}
 	return 0;
@@ -53,26 +53,26 @@ int vehicleclient_std(_obj* art,void* foot, u8* buf, int len)
 	switch(ch[1]){
 	case 'w':
 	case 0x415b1b:
-		say("front\n");
+		logtoall("front\n");
 		ch[1] = 'w';
 		break;
 	case 's':
 	case 0x425b1b:
-		say("back\n");
+		logtoall("back\n");
 		ch[1] = 's';
 		break;
 	case 'a':
 	case 0x445b1b:
-		say("left\n");
+		logtoall("left\n");
 		ch[1] = 'a';
 		break;
 	case 'd':
 	case 0x435b1b:
-		say("right\n");
+		logtoall("right\n");
 		ch[1] = 'd';
 		break;
 	default:
-		say("other\n");
+		logtoall("other\n");
 		ch[1] = 0;
 	}
 
@@ -88,7 +88,7 @@ int vehicleclient_takeby(_obj* art,void* foot, _syn* stack,int sp, void* arg, in
 int vehicleclient_giveby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	struct perobj* perobj = (void*)art->priv_256b;
-	//say("@vehicleclient_giveby:len=%x,foot=%.4s\n",len,&stack[sp-1].foottype);
+	//logtoall("@vehicleclient_giveby:len=%x,foot=%.4s\n",len,&stack[sp-1].foottype);
 	//printmemory(buf,len>8?8:len);
 
 	switch(stack[sp-1].foottype){
@@ -123,7 +123,7 @@ int vehicleclient_write(_obj* art,void* foot,void* arg, int idx, u8* buf, int le
 }
 int vehicleclient_create(_obj* ele, void* arg, int argc, u8** argv)
 {
-	say("@vehicleclient_create\n");
+	logtoall("@vehicleclient_create\n");
 
 	struct perobj* perobj = (void*)ele->priv_256b;
 
@@ -155,7 +155,7 @@ int vehicleserver_takeby(_obj* art,void* foot, _syn* stack,int sp, void* arg, in
 int vehicleserver_giveby(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	struct perobj* perobj = (void*)art->priv_256b;
-	//say("@vehicleserver_giveby:len=%x,foot=%.4s\n",len,&stack[sp-1].foottype);
+	//logtoall("@vehicleserver_giveby:len=%x,foot=%.4s\n",len,&stack[sp-1].foottype);
 	switch(stack[sp-1].foottype){
 	case _sock_:
 		vehicleserver_sock(art,0, stack,sp, buf,len);
@@ -169,7 +169,7 @@ int vehicleserver_detach(struct halfrel* self, struct halfrel* peer)
 }
 int vehicleserver_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@vehicleserver_attach\n");
+	logtoall("@vehicleserver_attach\n");
 	return 0;
 }
 
@@ -187,7 +187,7 @@ int vehicleserver_write(_obj* art,void* foot,void* arg, int idx, u8* buf, int le
 }
 int vehicleserver_create(_obj* ele, void* arg, int argc, u8** argv)
 {
-	say("@vehicleserver_create\n");
+	logtoall("@vehicleserver_create\n");
 
 	struct perobj* perobj = (void*)ele->priv_256b;
 
@@ -210,7 +210,7 @@ static void pollerthread(_obj* ele)
 	while(1){
 		//1.time
 		time = dateread();
-		say("time=%llx\n", time);
+		logtoall("time=%llx\n", time);
 
 		*(u32*)(buf+0) = _time_;
 		*(u32*)(buf+4) = time&0xffffffff;
@@ -223,7 +223,7 @@ static void pollerthread(_obj* ele)
 		v[1] *= 2.0;
 		v[2] *= 2.0;
 		v[3] *= 3.2;
-		say("volt=%f,%f,%f,%f\n", v[0], v[1], v[2], v[3]);
+		logtoall("volt=%f,%f,%f,%f\n", v[0], v[1], v[2], v[3]);
 
 		*(u32*)(buf+0) = _v0v2_;
 		*(u32*)(buf+4) = *(u32*)&v[3];

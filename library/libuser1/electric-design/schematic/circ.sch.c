@@ -90,7 +90,7 @@ int schematic_detach(struct halfrel* self, struct halfrel* peer)
 }
 int schematic_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@schematic_attach: %.4s\n", &self->foottype);
+	logtoall("@schematic_attach: %.4s\n", &self->foottype);
 	return 0;
 }
 

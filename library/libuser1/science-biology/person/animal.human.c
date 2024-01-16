@@ -82,7 +82,7 @@ static void human_search(_obj* act, u32 foot, struct halfrel* self[], struct hal
 	struct relation* rel;
 	_obj* world;
 	struct fstyle* obb = 0;
-	//say("human_search\n");
+	//logtoall("human_search\n");
 
 	rel = act->irel0;
 	while(1){
@@ -215,11 +215,11 @@ static int human_event(
 	struct halfrel* self;
 	struct halfrel* peer;
 	struct fstyle* obb;
-	//say("act=%llx\n", act);
+	//logtoall("act=%llx\n", act);
 
 	human_search(act, 0, &self, &peer);
 	obb = peer->pfoot;
-	//say("@human_event:%llx\n", obb);
+	//logtoall("@human_event:%llx\n", obb);
 
 	if(_char_ == ev->what)
 	{
@@ -240,7 +240,7 @@ static int human_event(
 	else if(joy_left == (ev->what & joy_mask))
 	{
 		t = (void*)ev;
-		say("@human_swrite:%x\n", t[2]);
+		logtoall("@human_swrite:%x\n", t[2]);
 		if(t[3] & joyl_left   )sty->fs.vc[0] -= 10;
 		if(t[3] & joyl_right  )sty->fs.vc[0] += 10;
 		if(t[3] & joyl_down   )sty->fs.vc[1] -= 10;

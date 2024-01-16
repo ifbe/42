@@ -10,7 +10,7 @@ int speaker_take(_obj* spk,void* foot, _syn* stack,int sp, p64 arg, int idx, voi
 	struct pcmdata* pcm = spk->pcmeasy_data;
 	if(0 == pcm)return 0;
 
-	say("fmt=%x,chan=%d,rate=%d,count=%d,buf=%llx\n", pcm->fmt, pcm->chan, pcm->rate, pcm->count, pcm->buf);
+	logtoall("fmt=%x,chan=%d,rate=%d,count=%d,buf=%llx\n", pcm->fmt, pcm->chan, pcm->rate, pcm->count, pcm->buf);
 	return 0;
 }
 int speaker_give(_obj* spk,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)

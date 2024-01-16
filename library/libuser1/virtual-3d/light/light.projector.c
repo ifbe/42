@@ -366,7 +366,7 @@ static void projector_search(_obj* act, u32 foot, struct halfrel* self[], struct
 	struct relation* rel;
 	_obj* world;
 	struct fstyle* obb = 0;
-	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
+	//logtoall("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
 	rel = act->irel0;
 	while(1){

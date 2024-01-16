@@ -26,7 +26,7 @@ static int orilen = 0;
 #define maxitem (0x100000/sizeof(struct item))
 void origin_init(u8* addr)
 {
-	//say("[0,2):origin initing\n");		//dont uncomment, wont output before init stdout
+	//logtoall("[0,2):origin initing\n");		//dont uncomment, wont output before init stdout
 
 	int j;
 	for(j=0;j<0x200000;j++)addr[j]=0;
@@ -41,11 +41,11 @@ void origin_init(u8* addr)
 	initserial();
 	initrunenv();
 
-	say("[0,2):origin inited\n");
+	logtoall("[0,2):origin inited\n");
 }
 void origin_exit()
 {
-	say("[0,2):origin exiting\n");
+	logtoall("[0,2):origin exiting\n");
 
 	freerunenv();
 	freeserial();
@@ -53,7 +53,7 @@ void origin_exit()
 	freestdin();
 	freestdout();
 
-	//say("[0,2):origin exitex\n");		//dont uncomment, wont output after free stdout
+	//logtoall("[0,2):origin exitex\n");		//dont uncomment, wont output after free stdout
 }
 
 
@@ -89,7 +89,7 @@ void* origin_create(u64 type, void* func, int argc, u8** argv)
 		tmp = memoryalloc(0x1000000, 0);
 		//openreadclose("universe.bin", 0, ori, 0x1000000);
 		birth(tmp);
-		say("type=%.8s, func@%p, argc=%d, argv@%p\n", &type, func, argc, argv);
+		logtoall("type=%.8s, func@%p, argc=%d, argv@%p\n", &type, func, argc, argv);
 		tmp->type = type;
 		return tmp;
 	}
@@ -99,7 +99,7 @@ void* origin_create(u64 type, void* func, int argc, u8** argv)
 	case _efimain_:{
 		tmp = (void*)(0x1000000);
 		birth(tmp);
-		say("type=%.8s, func@%p, argc=%d, argv@%p\n", &type, func, argc, argv);
+		logtoall("type=%.8s, func@%p, argc=%d, argv@%p\n", &type, func, argc, argv);
 
 		tmp->type = type;
 		tmp->priv_ptr = argv;
@@ -123,7 +123,7 @@ void* origin_create(u64 type, void* func, int argc, u8** argv)
 int origin_delete(_obj* tmp)
 {
 	if(0 == tmp)return 0;
-	say("origin_delete:%.8s\n", &tmp->type);
+	logtoall("origin_delete:%.8s\n", &tmp->type);
 
 	switch(tmp->type){
 	case _start_:
@@ -156,12 +156,12 @@ int origin_writer(struct item* ori,void* foot, p64 arg, int idx, void* buf, int 
 
 int origin_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@originattach\n");
+	logtoall("@originattach\n");
 	return 0;
 }
 int origin_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@origindetach\n");
+	logtoall("@origindetach\n");
 	return 0;
 }
 int origin_takeby(struct item* ori,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
@@ -190,11 +190,11 @@ int origin_search(u8* buf, int len)
 	for(j=0;j<64;j++)
 	{
 		if(0 == ori[j].type)continue;
-		say("[%04x]: %.8s\n", j, &ori[j].type);
+		logtoall("[%04x]: %.8s\n", j, &ori[j].type);
 		k++;
 	}
 
-	if(0 == k)say("empth origin\n");
+	if(0 == k)logtoall("empth origin\n");
 	return 0;
 }
 int origin_modify(int argc, u8** argv)
@@ -203,7 +203,7 @@ int origin_modify(int argc, u8** argv)
 	u64 name = 0;
 	u8* tmp = (u8*)&name;
 	if(argc < 2)return 0;
-//say("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
+//logtoall("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
 	if(0 == ncmp(argv[1], "create", 6))
 	{
 		for(j=0;j<8;j++)
@@ -211,7 +211,7 @@ int origin_modify(int argc, u8** argv)
 			if(argv[2][j] <= 0x20)break;
 			tmp[j] = argv[2][j];
 		}
-		say("%llx,%llx\n",name, argv[3]);
+		logtoall("%llx,%llx\n",name, argv[3]);
 		origin_create(name, argv[3], argc-3, &argv[3]);
 	}
 	return 0;

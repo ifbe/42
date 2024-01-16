@@ -196,7 +196,7 @@ static void texmix_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("texmix(%x,%x,%x)\n",win,act,sty);
+	logtoall("texmix(%x,%x,%x)\n",win,act,sty);
 }
 
 
@@ -211,7 +211,7 @@ static void texmix_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	texmix_draw_gl41(ent,slot, wor,geom, wnd,area);
-//say("@freecam_read_byeye.end\n");
+//logtoall("@freecam_read_byeye.end\n");
 }
 static void texmix_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
 {

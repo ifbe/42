@@ -41,7 +41,7 @@ int checkevent()
 				while (ASensorEventQueue_getEvents(sensorEventQueue, &ev, 1) > 0) {
 					switch(ev.type){
 					case ASENSOR_TYPE_GYROSCOPE:
-						//say("gyr: x=%f,y=%f,z=%f,time=%lld\n", iv[0], iv[1], iv[2], ev.timestamp);
+						//logtoall("gyr: x=%f,y=%f,z=%f,time=%lld\n", iv[0], iv[1], iv[2], ev.timestamp);
                         ov[0] = iv[0];
                         ov[1] = iv[1];
                         ov[2] = iv[2];
@@ -49,7 +49,7 @@ int checkevent()
 						sendtowindow_sensor('g', ov);
 						break;
 					case ASENSOR_TYPE_ACCELEROMETER:
-						//say("acc: x=%f,y=%f,z=%f,time=%lld\n", iv[0], iv[1], iv[2], ev.timestamp);
+						//logtoall("acc: x=%f,y=%f,z=%f,time=%lld\n", iv[0], iv[1], iv[2], ev.timestamp);
                         ov[0] = iv[0];
                         ov[1] = iv[1];
                         ov[2] = iv[2];
@@ -57,7 +57,7 @@ int checkevent()
 						sendtowindow_sensor('a', ov);
 						break;
 					case ASENSOR_TYPE_MAGNETIC_FIELD:
-						//say("mag: x=%f,y=%f,z=%f,time=%lld\n", iv[0], iv[1], iv[2], ev.timestamp);
+						//logtoall("mag: x=%f,y=%f,z=%f,time=%lld\n", iv[0], iv[1], iv[2], ev.timestamp);
                         ov[0] = iv[0];
                         ov[1] = iv[1];
                         ov[2] = iv[2];

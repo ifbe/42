@@ -87,7 +87,7 @@ int sobel_give(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, void*
 		}
 	}
 	if((0 == srcw)|(0 == srch)){
-		say("wrong srcw or srch\n");
+		logtoall("wrong srcw or srch\n");
 		return 0;
 	}
 
@@ -128,13 +128,13 @@ int sobel_delete(_obj* ele)
 int sobel_create(_obj* ele, u8* arg, int argc, char** argv)
 {
 	int j;
-	say("@sobel_create\n");
+	logtoall("@sobel_create\n");
 
 	struct perobj* per = (void*)ele->priv_256b;
 	per->dstw = per->dsth = 0;
 
 	for(j=0;j<argc;j++){
-		say("%d:%.8s\n", j, argv[j]);
+		logtoall("%d:%.8s\n", j, argv[j]);
 		if(0 == ncmp(argv[j], "srcfmt:", 7)){
 			copyfourcc(&per->srcfmt, argv[j]+7);
 			continue;

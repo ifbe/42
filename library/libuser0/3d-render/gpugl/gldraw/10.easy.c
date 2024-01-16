@@ -81,7 +81,7 @@ void easywindow_drawthis(struct gl41data* pair)
 {
 	struct mysrc* src = &pair->src;
 	struct gldst* dst = &pair->dst;
-	//say("src=%llx,dst=%llx\n", src, dst);
+	//logtoall("src=%llx,dst=%llx\n", src, dst);
 
 	//shader
 	if(dst->shader_deq != src->shader_enq)
@@ -151,7 +151,7 @@ void easywindow_take(_obj* win,void* foot, _syn* stack,int sp, p64 arg,int idx, 
 }
 void easywindow_give(_obj* win,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
-	say("@easywindow_event\n");
+	logtoall("@easywindow_event\n");
 }
 void easywindow_delete(_obj* win)
 {

@@ -265,88 +265,88 @@ void printreport(u8* buf, int len)
 		size = buf[j] & 0x3;
 		switch(type){
 		case 0x04:
-			say("USAGE_PAGE%d: %x\n", size, buf[j+1]);
+			logtoall("USAGE_PAGE%d: %x\n", size, buf[j+1]);
 			break;
 		case 0x08:
-			say("USAGE%d: %x\n", size, buf[j+1]);
+			logtoall("USAGE%d: %x\n", size, buf[j+1]);
 			break;
 		case 0x14:
-			say("LOGICAL_MINIMUM%d: %x\n", size, printreport_getvalue(buf+j+1, size));
+			logtoall("LOGICAL_MINIMUM%d: %x\n", size, printreport_getvalue(buf+j+1, size));
 			break;
 		case 0x18:
-			say("USAGE_MINIMUM%d: %x\n", size, printreport_getvalue(buf+j+1, size));
+			logtoall("USAGE_MINIMUM%d: %x\n", size, printreport_getvalue(buf+j+1, size));
 			break;
 		case 0x24:
-			say("LOGICAL_MAXIMUM%d: %x\n", size, printreport_getvalue(buf+j+1, size));
+			logtoall("LOGICAL_MAXIMUM%d: %x\n", size, printreport_getvalue(buf+j+1, size));
 			break;
 		case 0x28:
-			say("USAGE_MAXIMUM%d: %x\n", size, printreport_getvalue(buf+j+1, size));
+			logtoall("USAGE_MAXIMUM%d: %x\n", size, printreport_getvalue(buf+j+1, size));
 			break;
 		case 0x34:
-			say("PHYSICAL_MINIMUM%d: %x\n", size, printreport_getvalue(buf+j+1, size));
+			logtoall("PHYSICAL_MINIMUM%d: %x\n", size, printreport_getvalue(buf+j+1, size));
 			break;
 		case 0x38:
-			say("DESINATOR_INDEX%d: %x\n", size, buf[j+1]);
+			logtoall("DESINATOR_INDEX%d: %x\n", size, buf[j+1]);
 			break;
 		case 0x44:
-			say("PHYSICAL_MAXIMUM%d: %x\n", size, printreport_getvalue(buf+j+1, size));
+			logtoall("PHYSICAL_MAXIMUM%d: %x\n", size, printreport_getvalue(buf+j+1, size));
 			break;
 		case 0x48:
-			say("DESINATOR_MINIMUM%d: %x\n", size, buf[j+1]);
+			logtoall("DESINATOR_MINIMUM%d: %x\n", size, buf[j+1]);
 			break;
 		case 0x54:
-			say("UNIT_EXPONENT%d: %x\n", size, buf[j+1]);
+			logtoall("UNIT_EXPONENT%d: %x\n", size, buf[j+1]);
 			break;
 		case 0x58:
-			say("DESINATOR_MAXIMUM%d: %x\n", size, printreport_getvalue(buf+j+1, size));
+			logtoall("DESINATOR_MAXIMUM%d: %x\n", size, printreport_getvalue(buf+j+1, size));
 			break;
 		case 0x64:
-			say("UNIT%d: %x\n", size, buf[j+1]);
+			logtoall("UNIT%d: %x\n", size, buf[j+1]);
 			break;
 		case 0x74:
-			say("REPORT_SIZE%d: %x\n", size, printreport_getvalue(buf+j+1, size));
+			logtoall("REPORT_SIZE%d: %x\n", size, printreport_getvalue(buf+j+1, size));
 			break;
 		case 0x78:
-			say("STRING_INDEX%d: %x\n", size, buf[j+1]);
+			logtoall("STRING_INDEX%d: %x\n", size, buf[j+1]);
 			break;
 		case 0x80:
-			say("INPUT%d: %x\n", size, buf[j+1]);
+			logtoall("INPUT%d: %x\n", size, buf[j+1]);
 			break;
 		case 0x84:
-			say("REPORT_ID%d: %x\n", size, buf[j+1]);
+			logtoall("REPORT_ID%d: %x\n", size, buf[j+1]);
 			break;
 		case 0x88:
-			say("STRING_MINIMUM%d: %x\n", size, printreport_getvalue(buf+j+1, size));
+			logtoall("STRING_MINIMUM%d: %x\n", size, printreport_getvalue(buf+j+1, size));
 			break;
 		case 0x90:
-			say("OUTPUT%d: %x\n", size, buf[j+1]);
+			logtoall("OUTPUT%d: %x\n", size, buf[j+1]);
 			break;
 		case 0x94:
-			say("REPORT_COUNT%d: %x\n", size, buf[j+1]);
+			logtoall("REPORT_COUNT%d: %x\n", size, buf[j+1]);
 			break;
 		case 0x98:
-			say("STRING_MAXIMUM%d: %x\n", size, printreport_getvalue(buf+j+1, size));
+			logtoall("STRING_MAXIMUM%d: %x\n", size, printreport_getvalue(buf+j+1, size));
 			break;
 		case 0xa0:
-			say("COLLECTION%d: %x\n", size, buf[j+1]);
+			logtoall("COLLECTION%d: %x\n", size, buf[j+1]);
 			break;
 		case 0xa4:
-			say("PUSH%d: %x\n", size, buf[j+1]);
+			logtoall("PUSH%d: %x\n", size, buf[j+1]);
 			break;
 		case 0xa8:
-			say("DELIMITER%d: %x\n", size, buf[j+1]);
+			logtoall("DELIMITER%d: %x\n", size, buf[j+1]);
 			break;
 		case 0xb0:
-			say("FEATURE%d: %x\n", size, buf[j+1]);
+			logtoall("FEATURE%d: %x\n", size, buf[j+1]);
 			break;
 		case 0xb4:
-			say("POP%d: %x\n", size, buf[j+1]);
+			logtoall("POP%d: %x\n", size, buf[j+1]);
 			break;
 		case 0xc0:
-			say("END_COLLECTION%d: %x\n", size, buf[j+1]);
+			logtoall("END_COLLECTION%d: %x\n", size, buf[j+1]);
 			break;
 		default:
-			say("??: %02x\n", buf[j]);
+			logtoall("??: %02x\n", buf[j]);
 		}
 
 		j += 1+size;
@@ -375,14 +375,14 @@ static int parsekeyboard(struct item* usb,int xxx, struct item* xhci,int endp,
 
 		v = usb2kbd[k];
 		if(0 != v){
-			//say("[usbkbd]%x->kbd %x\n", k, v);
+			//logtoall("[usbkbd]%x->kbd %x\n", k, v);
 			eventwrite(v, _kbd_, 0, 0);
 			continue;
 		}
 
 		v = usb2char[k];
 		if(0 != v){
-			//say("[usbkbd]%x->char %x\n", k, v);
+			//logtoall("[usbkbd]%x->char %x\n", k, v);
 			eventwrite(v, _char_, 0, 0);
 			continue;
 		}
@@ -399,12 +399,12 @@ static int parsemouse(struct item* usb,int xxx, struct item* xhci,int endp,
 
 	void** sbuf = (void**)arg;
 	struct report_mouse* report = *sbuf;
-	//say("[usbmouse]btn=%x,dx=%d,dy=%d\n", report->btn, report->dx, report->dy);
+	//logtoall("[usbmouse]btn=%x,dx=%d,dy=%d\n", report->btn, report->dx, report->dy);
 	//printmemory(in, 
 
 	u64 type = point_dlt;
 	if(perfunc->permouse.button != report->btn){
-		say("mouse key: old=%x,new=%x\n",perfunc->permouse.button, report->btn);
+		logtoall("mouse key: old=%x,new=%x\n",perfunc->permouse.button, report->btn);
 		if(report->btn)type = point_onto;
 		else type = point_away;
 
@@ -427,11 +427,11 @@ static int parsemouse_g502(struct item* usb,int xxx, struct item* xhci,int endp,
 
 	void** sbuf = (void**)arg;
 	char* in = *sbuf;
-	//say("[usbmouse]btn=%x,dx=%d,dy=%d\n", in[0], in[1], in[2]);
+	//logtoall("[usbmouse]btn=%x,dx=%d,dy=%d\n", in[0], in[1], in[2]);
 
 	u64 type = point_dlt;
 	if(perfunc->permouse.button != in[0]){
-		say("mouse key: old=%x,new=%x\n",perfunc->permouse.button, in[0]);
+		logtoall("mouse key: old=%x,new=%x\n",perfunc->permouse.button, in[0]);
 		if(in[0])type = point_onto;
 		else type = point_away;
 
@@ -454,11 +454,11 @@ static int parsemouse_qemu(struct item* usb,int xxx, struct item* xhci,int endp,
 
 	void** sbuf = (void**)arg;
 	char* in = *sbuf;
-	//say("[usbmouse]btn=%x,dx=%d,dy=%d\n", in[0], in[1], in[2]);
+	//logtoall("[usbmouse]btn=%x,dx=%d,dy=%d\n", in[0], in[1], in[2]);
 
 	u64 type = point_per;
 	if(perfunc->permouse.button != in[0]){
-		say("mouse key: old=%x,new=%x\n",perfunc->permouse.button, in[0]);
+		logtoall("mouse key: old=%x,new=%x\n",perfunc->permouse.button, in[0]);
 		if(in[0])type = point_onto;
 		else type = point_away;
 
@@ -466,7 +466,7 @@ static int parsemouse_qemu(struct item* usb,int xxx, struct item* xhci,int endp,
 	}
 
 	short* pos = (void*)(in+1);
-	//say("%x,%x\n", pos[0], pos[1]);
+	//logtoall("%x,%x\n", pos[0], pos[1]);
 
 	short xx[4];
 	xx[0] = pos[0];
@@ -488,11 +488,11 @@ static int parsemouse_vbox(struct item* usb,int xxx, struct item* xhci,int endp,
 
 	void** sbuf = (void**)arg;
 	char* in = *sbuf;
-	//say("[usbmouse]btn=%x,dx=%d,dy=%d\n", in[0], in[1], in[2]);
+	//logtoall("[usbmouse]btn=%x,dx=%d,dy=%d\n", in[0], in[1], in[2]);
 
 	u64 type = point_per;
 	if(perfunc->permouse.button != in[0]){
-		say("mouse key: old=%x,new=%x\n",perfunc->permouse.button, in[0]);
+		logtoall("mouse key: old=%x,new=%x\n",perfunc->permouse.button, in[0]);
 		if(in[0])type = point_onto;
 		else type = point_away;
 
@@ -500,7 +500,7 @@ static int parsemouse_vbox(struct item* usb,int xxx, struct item* xhci,int endp,
 	}
 
 	short* pos = (void*)(in+4);
-	//say("%x,%x\n", pos[0], pos[1]);
+	//logtoall("%x,%x\n", pos[0], pos[1]);
 
 	short xx[4];
 	xx[0] = pos[0];
@@ -529,44 +529,44 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 
 //------------------------check type------------------------
 	if(3 == intfdesc->bInterfaceClass){
-		say("[usbhid]this is hid device\n");
+		logtoall("[usbhid]this is hid device\n");
 	}
 	else{
-		say("[usbhid]non-hid, byebye\n");
+		logtoall("[usbhid]non-hid, byebye\n");
 		return -4;
 	}
 
 	if(1 == intfdesc->bInterfaceProtocol){		//keyboard
-		say("[usbhid]keyboard\n");
+		logtoall("[usbhid]keyboard\n");
 	}
 	else if(2 == intfdesc->bInterfaceProtocol){	//mouse
-		say("[usbhid]mouse\n");
+		logtoall("[usbhid]mouse\n");
 	}
 	else{
 		if( (0x0627 == devdesc->idVendor) && (0x0001 == devdesc->idProduct) ){
-			say("qemu: mouse\n");
+			logtoall("qemu: mouse\n");
 		}
 		else if( (0x80ee == devdesc->idVendor) && (0x0021 == devdesc->idProduct) ){
-			say("vbox: tablet\n");
+			logtoall("vbox: tablet\n");
 		}
 		else{
-			say("[usbhid]proto=%x, unknown, byebye\n",intfdesc->bInterfaceProtocol);
+			logtoall("[usbhid]proto=%x, unknown, byebye\n",intfdesc->bInterfaceProtocol);
 			return -6;
 		}
 	}
 
 	if(1 == intfdesc->bInterfaceSubClass){
-		say("[usbhid]bootmode\n");
+		logtoall("[usbhid]bootmode\n");
 	}
 	else{
 		if( (0x0627 == devdesc->idVendor) && (0x0001 == devdesc->idProduct) ){
-			say("qemu: unknown mode\n");
+			logtoall("qemu: unknown mode\n");
 		}
 		else if( (0x80ee == devdesc->idVendor) && (0x0021 == devdesc->idProduct) ){
-			say("vbox: unknown mode\n");
+			logtoall("vbox: unknown mode\n");
 		}
 		else{
-			say("[usbhid]reportmode, byebye\n");
+			logtoall("[usbhid]reportmode, byebye\n");
 			return -5;
 		}
 	}
@@ -602,7 +602,7 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 			}
 
 			pktlen = endpdesc->wMaxPacketSize;
-			say("[usbhid]endpdesc: addr=%x, attr=%x, pktlen=%x, interval=%x\n",
+			logtoall("[usbhid]endpdesc: addr=%x, attr=%x, pktlen=%x, interval=%x\n",
 				endpdesc->bEndpointAddress, endpdesc->bmAttributes,
 				endpdesc->wMaxPacketSize, endpdesc->bInterval
 			);
@@ -625,12 +625,12 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		case 0x21:{
 			hidnode = (void*)endpnode;
 			hiddesc = (void*)endpdesc;
-			say("[usbhid]hiddesc: country=%x, numdesc=%x, reportdesctype=%x, reportdesclen=%x\n",
+			logtoall("[usbhid]hiddesc: country=%x, numdesc=%x, reportdesctype=%x, reportdesclen=%x\n",
 				hiddesc->bCountryCode, hiddesc->bNumDescriptors,
 				hiddesc->bReportDescType, hiddesc->wReportDescLength
 			);
 
-			say("get reportdesc\n");
+			logtoall("get reportdesc\n");
 			void* temp = usbdesc_offs2addr(perusb, perusb->origin.byteused);
 			D2H_STD_INTF_GETDESC(&req,
 				intfdesc->bInterfaceNumber,
@@ -650,7 +650,7 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 			break;
 		}//hid desc
 		default:{
-			say("[usbhid]desctype=%x\n", endpdesc->bDescriptorType);
+			logtoall("[usbhid]desctype=%x\n", endpdesc->bDescriptorType);
 		}//report desc?
 		}//switch
 
@@ -679,7 +679,7 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		}
 	}
 	if(need_to_set_protocol){
-		say("[usbhid]set_protocol\n");
+		logtoall("[usbhid]set_protocol\n");
 		H2D_CLASS_INTF_SETPROTOCOL(&req, intfdesc->bInterfaceNumber, 0);
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
@@ -692,7 +692,7 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 
 	int need_to_set_configuration = 1;
 	if(need_to_set_configuration){
-		say("[usbhid]set_config\n");
+		logtoall("[usbhid]set_config\n");
 		H2D_STD_DEV_SETCONF(&req, confdesc->bConfigurationValue);
 		ret = xhci->give_pxpxpxpx(
 			xhci,slot,
@@ -727,7 +727,7 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	}
 
 //------------------------transfer ring------------------------
-	say("[usbhid]making trb@%p\n", perfunc->trb);
+	logtoall("[usbhid]making trb@%p\n", perfunc->trb);
 	if(pktlen > 0x40)pktlen = 0x40;
 	ret = xhci->give_pxpxpxpx(
 		xhci, slot|(inaddr<<8),

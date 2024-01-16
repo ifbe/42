@@ -371,7 +371,7 @@ void corner_gl41_lefttop(
 	int w = win->whdf.fbwidth;
 	int h = win->whdf.fbheight;
 	int c = corner_bestfit(w,h);
-	//say("w=%d,h=%d,c=%d\n",w,h,c);
+	//logtoall("w=%d,h=%d,c=%d\n",w,h,c);
 
 	vec3 vc, vr, vf;
 	vc[0] = 0.0;
@@ -400,7 +400,7 @@ void corner_gl41_righttop(
 	int w = win->whdf.fbwidth;
 	int h = win->whdf.fbheight;
 	int c = corner_bestfit(w,h);
-	//say("w=%d,h=%d,c=%d\n",w,h,c);
+	//logtoall("w=%d,h=%d,c=%d\n",w,h,c);
 
 	vec3 vc, vr, vf;
 	vc[0] = w;
@@ -429,7 +429,7 @@ void corner_gl41_leftbot(
 	int w = win->whdf.fbwidth;
 	int h = win->whdf.fbheight;
 	int c = corner_bestfit(w,h);
-	//say("w=%d,h=%d,c=%d\n",w,h,c);
+	//logtoall("w=%d,h=%d,c=%d\n",w,h,c);
 
 	vec3 vc, vr, vf;
 	vc[0] = 0.0;
@@ -458,7 +458,7 @@ void corner_gl41_rightbot(
 	int w = win->whdf.fbwidth;
 	int h = win->whdf.fbheight;
 	int c = corner_bestfit(w,h);
-	//say("w=%d,h=%d,c=%d\n",w,h,c);
+	//logtoall("w=%d,h=%d,c=%d\n",w,h,c);
 
 	vec3 vc, vr, vf;
 	vc[0] = w;
@@ -522,14 +522,14 @@ void corner_gl41_tearpaper(
 	//center of them
 	float xmid=(x0+xn)/2;
 	float ymid=(y0+yn)/2;
-	say("0=%f,%f,1=%f,%f,c=%f,%f\n",x0,y0,xn,yn,xmid,ymid);
+	logtoall("0=%f,%f,1=%f,%f,c=%f,%f\n",x0,y0,xn,yn,xmid,ymid);
 
 	//linear equation: (y-ymid)/(x-xmid) = -(xn-x0)/(yn-y0);
 	float py = y0;
 	float px = xmid-(y0-ymid)*(yn-y0)/(xn-x0);
 	float qx = x0;
 	float qy = ymid-(x0-xmid)*(xn-x0)/(yn-y0);
-	say("%f,%f->%f,%f\n",px,py,qx,qy);
+	logtoall("%f,%f->%f,%f\n",px,py,qx,qy);
 
 	//eventspace[0,1024] -> renderspace[-2048/2,2048/2]
 	vec3 v0,v1;
@@ -801,33 +801,33 @@ static int corner_event(
 	u16* d = (u16*)&ev->why;
 	switch(ev->what){
 	case 0x2b70:
-		say("+(%d,%d), (%d,%d,%d)\n", d[0],d[1], w,h,c);
+		logtoall("+(%d,%d), (%d,%d,%d)\n", d[0],d[1], w,h,c);
 		priv->mouse[0].x0 = d[0];
 		priv->mouse[0].y0 = d[1];
 		priv->mouse[0].z0 = 1;
 		break;
 	case 0x4070:
-		//say("@%d,%d\n", d[0], d[1]);
+		//logtoall("@%d,%d\n", d[0], d[1]);
 		priv->mouse[0].xn = d[0];
 		priv->mouse[0].yn = d[1];
 		break;
 	case 0x2d70:
-		say("-%d,%d\n", d[0], d[1]);
+		logtoall("-%d,%d\n", d[0], d[1]);
 		priv->mouse[0].z0 = 0;
 		goto handlepointer;
 	case 0x2b74:
-		say("+(%d,%d), (%d,%d,%d)\n", d[0],d[1], w,h,c);
+		logtoall("+(%d,%d), (%d,%d,%d)\n", d[0],d[1], w,h,c);
 		priv->mouse[0].x0 = d[0];
 		priv->mouse[0].y0 = d[1];
 		priv->mouse[0].z0 = 1;
 		break;
 	case 0x4074:
-		//say("@%d,%d\n", d[0], d[1]);
+		//logtoall("@%d,%d\n", d[0], d[1]);
 		priv->mouse[0].xn = d[0];
 		priv->mouse[0].yn = d[1];
 		break;
 	case 0x2d74:
-		say("-%d,%d\n", d[0], d[1]);
+		logtoall("-%d,%d\n", d[0], d[1]);
 		priv->mouse[0].z0 = 0;
 		goto handlepointer;
 	}
@@ -835,19 +835,19 @@ static int corner_event(
 
 handlepointer:
 	if( (d[0] < c) && (d[1] < c) ){
-		say("lefttop");
+		logtoall("lefttop");
 		priv->lefttop = !priv->lefttop;
 	}
 	if( (d[0] > w-c) && (d[1] < c) ){
-		say("righttop");
+		logtoall("righttop");
 		priv->righttop = !priv->righttop;
 	}
 	if( (d[0] < c) && (d[1] > h-c) ){
-		say("leftbot");
+		logtoall("leftbot");
 		priv->leftbot = !priv->leftbot;
 	}
 	if( (d[0] > w-c) && (d[1] > h-c) ){
-		say("rightbot");
+		logtoall("rightbot");
 		priv->rightbot = !priv->rightbot;
 	}
 	return 0;
@@ -858,7 +858,7 @@ handlepointer:
 
 static int corner_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	//say("@corner_read\n");
+	//logtoall("@corner_read\n");
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 

@@ -89,7 +89,7 @@ void percputimer_init()
 	asm volatile("mrs %0, CNTVCT_EL0" : "=r" (vcnt));
 	asm volatile("mrs %0, CNTP_CVAL_EL0" : "=r" (cval));
 	asm volatile("mrs %0, CNTP_TVAL_EL0" : "=r" (tval));
-	say("@generictimer: ctl=%x,freq=%x, pcnt=%x,vcnt=%x, cval=%x,tval=%x\n", ctl,freq, pcnt,vcnt, cval,tval);
+	logtoall("@generictimer: ctl=%x,freq=%x, pcnt=%x,vcnt=%x, cval=%x,tval=%x\n", ctl,freq, pcnt,vcnt, cval,tval);
 
 	//stop
 	ctl = 0;

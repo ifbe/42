@@ -3,7 +3,7 @@
 u32 in32(u16 port);
 void out32(u16 port, u32 data);
 void ahci_mmioinit(struct item* dev, void* abar);
-#define ahci_print(fmt, ...) say("<%08lld,ahci>" fmt, timeread_us(), ##__VA_ARGS__)
+#define ahci_print(fmt, ...) logtoall("<%08lld,ahci>" fmt, timeread_us(), ##__VA_ARGS__)
 
 
 

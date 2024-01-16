@@ -96,7 +96,7 @@ void* pollenv()
 		}
 		else
 		{
-			//say("%x\n",ev[0]);
+			//logtoall("%x\n",ev[0]);
 			return 0;
 		}
 	}
@@ -150,7 +150,7 @@ int bootservice_graphic()
 		if(ret != EFI_SUCCESS)break;
 
 		u64 fmt = parseinfo(info->PixelFormat, info->PixelInformation);
-		say("%d: %d,%d, %d,%d, ver=%d,fmt=%.8s\n",
+		logtoall("%d: %d,%d, %d,%d, ver=%d,fmt=%.8s\n",
 			num,
 			info->HorizontalResolution, info->VerticalResolution,
 			info->PixelsPerScanLine, 0,

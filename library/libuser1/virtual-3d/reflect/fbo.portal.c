@@ -58,7 +58,7 @@ void portal_frustum(struct fstyle* frus, float* cam, struct fstyle* selfgeom, st
 {
 	float x0,y0,z0,t0;
 	float delta;
-	//say("self@(%f,%f,%f), peer@(%f,%f,%f)\n",selfgeom->vc[0],selfgeom->vc[1],selfgeom->vc[2],peergeom->vc[0],peergeom->vc[1],peergeom->vc[2]);
+	//logtoall("self@(%f,%f,%f), peer@(%f,%f,%f)\n",selfgeom->vc[0],selfgeom->vc[1],selfgeom->vc[2],peergeom->vc[0],peergeom->vc[1],peergeom->vc[2]);
 
 //-------------q---------------
 	//portal.n
@@ -84,7 +84,7 @@ void portal_frustum(struct fstyle* frus, float* cam, struct fstyle* selfgeom, st
 	frus->vc[1] = selfgeom->vc[1];
 	frus->vc[2] = selfgeom->vc[2];
 
-	//say("q,c = (%f,%f,%f), (%f,%f,%f)\n", frus->vq[0], frus->vq[1], frus->vq[2], frus->vc[0], frus->vc[1], frus->vc[2]);
+	//logtoall("q,c = (%f,%f,%f), (%f,%f,%f)\n", frus->vq[0], frus->vq[1], frus->vq[2], frus->vc[0], frus->vc[1], frus->vc[2]);
 
 
 //----------------n,f----------------
@@ -114,7 +114,7 @@ void portal_frustum(struct fstyle* frus, float* cam, struct fstyle* selfgeom, st
 
 	frus->vn[3] *= 1.001;
 
-/*	say("n,f,c = (%f,%f,%f,%f), (%f,%f,%f,%f), (%f,%f,%f)\n",
+/*	logtoall("n,f,c = (%f,%f,%f,%f), (%f,%f,%f,%f), (%f,%f,%f)\n",
 		frus->vn[0], frus->vn[1], frus->vn[2], frus->vn[3],
 		frus->vf[0], frus->vf[1], frus->vf[2], frus->vf[3],
 		frus->vc[0], frus->vc[1], frus->vc[2]);*/
@@ -168,7 +168,7 @@ void portal_frustum(struct fstyle* frus, float* cam, struct fstyle* selfgeom, st
 	frus->vc[1] += y0 * delta;
 	frus->vc[2] += z0 * delta;
 
-/*	say("l,r,c = (%f,%f,%f,%f), (%f,%f,%f,%f), (%f,%f,%f)\n",
+/*	logtoall("l,r,c = (%f,%f,%f,%f), (%f,%f,%f,%f), (%f,%f,%f)\n",
 		frus->vl[0], frus->vl[1], frus->vl[2], frus->vl[3],
 		frus->vr[0], frus->vr[1], frus->vr[2], frus->vr[3],
 		frus->vc[0], frus->vc[1], frus->vc[2]);*/
@@ -222,7 +222,7 @@ void portal_frustum(struct fstyle* frus, float* cam, struct fstyle* selfgeom, st
 	frus->vc[1] += y0 * delta;
 	frus->vc[2] += z0 * delta;
 
-/*	say("b,t,c = (%f,%f,%f,%f), (%f,%f,%f,%f), (%f,%f,%f)\n",
+/*	logtoall("b,t,c = (%f,%f,%f,%f), (%f,%f,%f,%f), (%f,%f,%f)\n",
 		frus->vb[0], frus->vb[1], frus->vb[2], frus->vb[3],
 		frus->vt[0], frus->vt[1], frus->vt[2], frus->vt[3],
 		frus->vc[0], frus->vc[1], frus->vc[2]);*/
@@ -384,7 +384,7 @@ static void portal_mesh_prepare(struct gl41data* data)
 static void portal_wrl_cam_wnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
 	if(0 == stack)return;
-	//say("@portal_read:%p,%p\n", ent,foot);
+	//logtoall("@portal_read:%p,%p\n", ent,foot);
 
 	_obj* wor;struct style* geom;
 	_obj* dup;struct style* camg;
@@ -397,11 +397,11 @@ static void portal_wrl_cam_wnd(_obj* ent,void* foot, _syn* stack,int sp)
 	struct portalbuf* peerptr = selfptr->peer_buf;
 	selfptr->peerworld_body = peerptr->selfworld_body;
 	selfptr->peerworld_geom = peerptr->selfworld_geom;
-	//say("selfptr=%p,peerptr=%p\n",selfptr,peerptr);
+	//logtoall("selfptr=%p,peerptr=%p\n",selfptr,peerptr);
 
 	struct fstyle* selfshap = &geom->fs;
 	struct fstyle* peershap = &peerptr->selfworld_geom->fshape;
-	//say("selfgeom=%p,peergeom=%p\n",selfshap,peershap);
+	//logtoall("selfgeom=%p,peergeom=%p\n",selfshap,peershap);
 
 	//
 	portal_frustum(&geom->frus, camg->frus.vc, selfshap, peershap);

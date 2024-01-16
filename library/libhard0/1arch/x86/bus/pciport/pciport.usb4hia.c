@@ -1,6 +1,6 @@
 
 #include "libhard.h"
-#define usb4_print(fmt, ...) say("<%08lld,usb4hia>"fmt, timeread_us(), ##__VA_ARGS__)
+#define usb4_print(fmt, ...) logtoall("<%08lld,usb4hia>"fmt, timeread_us(), ##__VA_ARGS__)
 u32 in32(u16 port);
 void out32(u16 port, u32 data);
 

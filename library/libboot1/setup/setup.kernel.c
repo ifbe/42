@@ -90,7 +90,7 @@ static int kernel_pollloop(struct item* wrk)
 	_obj* wnd = wrk->priv_ptr;
 	stack[0].pchip = wrk;
 	stack[1].pchip = wnd;
-	say("pollloop: stack@%p,window@%p\n", stack, wnd);
+	logtoall("pollloop: stack@%p,window@%p\n", stack, wnd);
 
 	while(1){
 		t0 = timeread_us();
@@ -107,7 +107,7 @@ static int kernel_pollloop(struct item* wrk)
 			ev = eventread();
 			if(0 == ev)break;
 			if(0 == ev->what){
-				say("exit event, ignore it@%p\n", ev);
+				logtoall("exit event, ignore it@%p\n", ev);
 				break;
 			}
 
@@ -132,7 +132,7 @@ static int kernel_drawloop(struct item* wrk)
 	_obj* wnd = wrk->priv_ptr;
 	stack[0].pchip = wrk;
 	stack[1].pchip = wnd;
-	say("drawloop: stack@%p,window@%p\n", stack, wnd);
+	logtoall("drawloop: stack@%p,window@%p\n", stack, wnd);
 
 	//loop
 	while(1){
@@ -140,8 +140,8 @@ static int kernel_drawloop(struct item* wrk)
 		heartbeat_draw = t0+1;
 
 		if(stack[0].pchip != wrk){
-			say("what fuck???\n\n\n");
-			for(j=0;j<4;j++)say("%d: %p,%p,%x,%x\n", j, stack[j].pchip, stack[j].pfoot, stack[j].nodetype, stack[j].foottype);
+			logtoall("what fuck???\n\n\n");
+			for(j=0;j<4;j++)logtoall("%d: %p,%p,%x,%x\n", j, stack[j].pchip, stack[j].pfoot, stack[j].nodetype, stack[j].foottype);
 		}
 
 		//draw frame
@@ -169,7 +169,7 @@ static int kernel_failloop(struct item* wrk)
 	struct halfrel stack[0x80];
 	stack[0].pchip = wrk;
 	stack[1].pchip = wnd;
-	say("failloop: (one core,poll mode)\n");
+	logtoall("failloop: (one core,poll mode)\n");
 
 	//loop
 	struct event* ev;
@@ -179,13 +179,13 @@ static int kernel_failloop(struct item* wrk)
 
 		//drawloop fail, i have to draw
 		if( (0 == heartbeat_draw) || (time > heartbeat_draw + 1000*1000*STALL_SEC) ){
-			//if(curr <= STALL_SEC)say("drawloop fail after %d sec\n", curr);
+			//if(curr <= STALL_SEC)logtoall("drawloop fail after %d sec\n", curr);
 			supply_takeby(wnd,0, stack,2, 0,0, 0,0);
 		}//draw
 
 		//pollloop fail, i have to poll
 		if( (0 == heartbeat_poll) || (time > heartbeat_poll + 1000*1000*STALL_SEC) ){
-			//if(curr <= STALL_SEC)say("pollloop fail after %d sec\n", curr);
+			//if(curr <= STALL_SEC)logtoall("pollloop fail after %d sec\n", curr);
 
 			//poll all
 			for(j=0;j<10;j++){
@@ -210,15 +210,15 @@ static int kernel_failloop(struct item* wrk)
 static int kernel_idleloop(struct item* wrk)
 {
 	u64 time;
-	say("idleloop(core=0), sleep wait for int\n");
+	logtoall("idleloop(core=0), sleep wait for int\n");
 
 	while(1){
 		time = timeread_us();
 		if(time > heartbeat_draw + 1000*1000*STALL_SEC){
-			say("drawloop: stall %ds\n", (time-heartbeat_draw)/1000/1000);
+			logtoall("drawloop: stall %ds\n", (time-heartbeat_draw)/1000/1000);
 		}
 		if(time > heartbeat_poll + 1000*1000*STALL_SEC){
-			say("pollloop: stall %ds\n", (time-heartbeat_poll)/1000/1000);
+			logtoall("pollloop: stall %ds\n", (time-heartbeat_poll)/1000/1000);
 			//break;
 		}
 		//

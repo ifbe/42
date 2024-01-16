@@ -1,4 +1,4 @@
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 
@@ -18,6 +18,6 @@ int check_tar(char* addr)
 }
 int parse_tar(char* addr)
 {
-	say("tar\n");
+	logtoall("tar\n");
 	return 0;
 }

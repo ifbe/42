@@ -26,7 +26,7 @@ int relation_read(struct item* item,void* foot, p64 arg, int cmd, void* buf, int
 }
 int reading_data_from_peer(void* chip,int ftype, p64 arg,int cmd, void* buf,int len)
 {
-	//say("reading_data_from_peer\n");
+	//logtoall("reading_data_from_peer\n");
 	struct item* item;
 	struct relation* rel;
 
@@ -36,7 +36,7 @@ int reading_data_from_peer(void* chip,int ftype, p64 arg,int cmd, void* buf,int 
 	rel = item->irel0;
 	while(1){
 		if(0 == rel)break;
-		//say("irel:%.8s\n",&rel->dstfoottype);
+		//logtoall("irel:%.8s\n",&rel->dstfoottype);
 		if(ftype == rel->dstfoottype){
 			return relation_read(rel->psrcchip, rel->psrcfoot, arg,cmd, buf,len);
 		}
@@ -46,7 +46,7 @@ int reading_data_from_peer(void* chip,int ftype, p64 arg,int cmd, void* buf,int 
 	rel = item->orel0;
 	while(1){
 		if(0 == rel)break;
-		//say("orel:%.8s\n",&rel->srcfoottype);
+		//logtoall("orel:%.8s\n",&rel->srcfoottype);
 		if(ftype == rel->srcfoottype){
 			return relation_read(rel->pdstchip, rel->pdstfoot, arg,cmd, buf,len);
 		}
@@ -78,7 +78,7 @@ int relation_write(struct item* item,void* foot, p64 arg,int cmd, void* buf,int 
 }
 int writing_data_into_peer(void* chip,int ftype, p64 arg,int cmd, void* buf,int len)
 {
-	//say("writing_data_into_peer ftype=%.4s\n", &ftype);
+	//logtoall("writing_data_into_peer ftype=%.4s\n", &ftype);
 	struct item* item;
 	struct relation* rel;
 
@@ -88,7 +88,7 @@ int writing_data_into_peer(void* chip,int ftype, p64 arg,int cmd, void* buf,int 
 	rel = item->irel0;
 	while(1){
 		if(0 == rel)break;
-		//say("irel:%.8s\n",&rel->dstfoottype);
+		//logtoall("irel:%.8s\n",&rel->dstfoottype);
 		if(ftype == rel->dstfoottype){
 			relation_write(rel->psrcchip, rel->psrcfoot, arg,cmd, buf,len);
 		}
@@ -98,7 +98,7 @@ int writing_data_into_peer(void* chip,int ftype, p64 arg,int cmd, void* buf,int 
 	rel = item->orel0;
 	while(1){
 		if(0 == rel)break;
-		//say("orel:%.8s\n",&rel->srcfoottype);
+		//logtoall("orel:%.8s\n",&rel->srcfoottype);
 		if(ftype == rel->srcfoottype){
 			relation_write(rel->pdstchip, rel->pdstfoot, arg,cmd, buf,len);
 		}
@@ -266,7 +266,7 @@ int give_data_into_peer(void* chip,int ftype, struct halfrel* stack,int sp, p64 
 	rel = item->irel0;
 	while(1){
 		if(0 == rel)break;
-		//say("irel:%.8s\n",&rel->dstfoottype);
+		//logtoall("irel:%.8s\n",&rel->dstfoottype);
 		if(ftype == rel->dstfoottype){
 			if(stack){
 				relcopy(&stack[sp+0], (void*)rel->dst);
@@ -280,7 +280,7 @@ int give_data_into_peer(void* chip,int ftype, struct halfrel* stack,int sp, p64 
 	rel = item->orel0;
 	while(1){
 		if(0 == rel)break;
-		//say("orel:%.8s\n",&rel->srcfoottype);
+		//logtoall("orel:%.8s\n",&rel->srcfoottype);
 		if(ftype == rel->srcfoottype){
 			if(stack){
 				relcopy(&stack[sp+0], (void*)rel->src);
@@ -304,7 +304,7 @@ int give_data_into_them(void* chip,int ftype, struct halfrel* stack,int sp, p64 
 	rel = item->irel0;
 	while(1){
 		if(0 == rel)break;
-		//say("irel:%.8s\n",&rel->dstfoottype);
+		//logtoall("irel:%.8s\n",&rel->dstfoottype);
 		if(ftype == rel->dstfoottype){
 			if(stack){
 				relcopy(&stack[sp+0], (void*)rel->dst);
@@ -318,7 +318,7 @@ int give_data_into_them(void* chip,int ftype, struct halfrel* stack,int sp, p64 
 	rel = item->orel0;
 	while(1){
 		if(0 == rel)break;
-		//say("orel:%.8s\n",&rel->srcfoottype);
+		//logtoall("orel:%.8s\n",&rel->srcfoottype);
 		if(ftype == rel->srcfoottype){
 			if(stack){
 				relcopy(&stack[sp+0], (void*)rel->src);

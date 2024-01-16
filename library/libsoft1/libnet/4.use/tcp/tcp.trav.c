@@ -42,7 +42,7 @@ int tcptravclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg,int 
 {
 	if(0==stack|sp < 2)return 0;
 	_obj* sys = stack[sp-2].pchip;
-	say("@tcptravclient_write:%.4s\n", &foot);
+	logtoall("@tcptravclient_write:%.4s\n", &foot);
 
 	switch(stack[sp-1].foottype){
 	case _std_:
@@ -53,14 +53,14 @@ int tcptravclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg,int 
 		if((buf[0]>='a') && (buf[0]<='z'))give_data_into_peer(art,_ccc_, stack,sp, 0,0, buf,1);
 		return 0;
 	case _ccc_:
-		///say("@ccc\n");
+		///logtoall("@ccc\n");
 		printmemory(buf, len < 16 ? len : 16);
 
 		if(_c_friend_ != art->vfmt)return 0;
 		give_data_into_peer(art,_dst_, stack,sp, 0,0, buf,len);
 		return 0;
 	case _sss_:
-		//say("@sss\n");
+		//logtoall("@sss\n");
 		printmemory(buf, len < 16 ? len : 16);
 		return 0;
 	case _dst_:
@@ -71,10 +71,10 @@ int tcptravclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg,int 
 		printmemory(buf, len < 16 ? len : 16);
 
 		u8* t = sys->sockinfo.self;
-		say("myaddr=%d.%d.%d.%d:%d\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
+		logtoall("myaddr=%d.%d.%d.%d:%d\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
 
 		u8* p = buf+0;
-		say("public=%d.%d.%d.%d:%d\n", p[4],p[5],p[6],p[7], (p[2]<<8)+p[3]);
+		logtoall("public=%d.%d.%d.%d:%d\n", p[4],p[5],p[6],p[7], (p[2]<<8)+p[3]);
 
 		if(_c_friend_ == art->vfmt)return 0;
 		if(len < 16){
@@ -86,7 +86,7 @@ int tcptravclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg,int 
 		int j;
 		char* tmp[64];
 		u8* r = buf+8;
-		say("remote=%d.%d.%d.%d:%d\n", r[4],r[5],r[6],r[7], (r[2]<<8)+r[3]);
+		logtoall("remote=%d.%d.%d.%d:%d\n", r[4],r[5],r[6],r[7], (r[2]<<8)+r[3]);
 
 		//connect
 		struct system* ccc;
@@ -97,7 +97,7 @@ int tcptravclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg,int 
 		);
 		for(j=0;j<10;j++){
 			ccc = system_create(_tcp_, tmp, 0, 0);
-			say("ccc=%llx\n",ccc);
+			logtoall("ccc=%llx\n",ccc);
 			if(ccc){
 				relationcreate(art, 0, _art_, _ccc_, ccc, 0, _sys_, _dst_);
 				break;
@@ -134,7 +134,7 @@ int tcptravclient_detach(struct halfrel* self, struct halfrel* peer)
 }
 int tcptravclient_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@tcptravclient_attach: %.4s\n", &self->foottype);
+	logtoall("@tcptravclient_attach: %.4s\n", &self->foottype);
 	if(_src_ == self->foottype){
 		give_data_into_peer(self->pchip, self->foottype, 0,0, 0,0, "?\n", 2);
 	}
@@ -193,7 +193,7 @@ int tcptravmaster_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg,int id
 
 	if(_TCP_ == sys->type){
 		u8* t = sys->sockinfo.peer;
-		say("from %d.%d.%d.%d:%d->\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
+		logtoall("from %d.%d.%d.%d:%d->\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
 		printmemory(buf, len);
 
 		u64* list = art->listptr.buf0;
@@ -209,12 +209,12 @@ int tcptravmaster_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg,int id
 }
 int tcptravmaster_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@tcptravmaster_attach: %.4s\n", &self->foottype);
+	logtoall("@tcptravmaster_attach: %.4s\n", &self->foottype);
 	return 0;
 }
 int tcptravmaster_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@tcptravmaster_detach: %.4s\n", &self->foottype);
+	logtoall("@tcptravmaster_detach: %.4s\n", &self->foottype);
 	return 0;
 }
 int tcptravmaster_delete(_obj* art)

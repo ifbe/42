@@ -29,7 +29,7 @@ void blur_gauss_x(u64 size,u64 radius,u8* src,u8* dst)
 	if(radius>9)radius=9;
 	sigma=(double)radius;
 	sigma/=3;
-	//say("radius=%lld,sigma=%lf\n",radius,sigma);
+	//logtoall("radius=%lld,sigma=%lf\n",radius,sigma);
 
 	//first build the "gauss table"
 	for(x=0;x<=radius;x++)
@@ -38,7 +38,7 @@ void blur_gauss_x(u64 size,u64 radius,u8* src,u8* dst)
 		temp /= 2*sigma*sigma;
 		gausstable[0][x]  = exponent(temp);
 		gausstable[0][x] /= sigma*squareroot(2*pi);
-		//say("gausstable[%d]=%lf\n",x,gausstable[0][x]);
+		//logtoall("gausstable[%d]=%lf\n",x,gausstable[0][x]);
 	}
 
 	//开始
@@ -77,7 +77,7 @@ void blur_gauss_x(u64 size,u64 radius,u8* src,u8* dst)
 			}//m
 
 			//put the result
-			//say("(%d,%d):%lf,%lf,%lf\n",x,y,b,g,r);
+			//logtoall("(%d,%d):%lf,%lf,%lf\n",x,y,b,g,r);
 			dst[((width*y+x)<<2)+0]=(int)b;
 			dst[((width*y+x)<<2)+1]=(int)g;
 			dst[((width*y+x)<<2)+2]=(int)r;
@@ -97,7 +97,7 @@ void blur_gauss_y(u64 size,u64 radius,u8* src,u8* dst)
 	if(radius>9)radius=9;
 	sigma=(double)radius;
 	sigma/=3;
-	//say("radius=%lld,sigma=%lf\n",radius,sigma);
+	//logtoall("radius=%lld,sigma=%lf\n",radius,sigma);
 
 	//first build the "gauss table"
 	for(y=0;y<=radius;y++)
@@ -106,7 +106,7 @@ void blur_gauss_y(u64 size,u64 radius,u8* src,u8* dst)
 		temp /= 2*sigma*sigma;
 		gausstable[0][y]  = exponent(temp);
 		gausstable[0][y] /= sigma*squareroot(2*pi);
-		//say("gausstable[%d]=%lf\n",y,gausstable[0][y]);
+		//logtoall("gausstable[%d]=%lf\n",y,gausstable[0][y]);
 	}
 
 	//开始
@@ -145,7 +145,7 @@ void blur_gauss_y(u64 size,u64 radius,u8* src,u8* dst)
 			}//m
 
 			//put the result
-			//say("(%d,%d):%lf,%lf,%lf\n",x,y,b,g,r);
+			//logtoall("(%d,%d):%lf,%lf,%lf\n",x,y,b,g,r);
 			dst[((width*y+x)<<2)+0]=(int)b;
 			dst[((width*y+x)<<2)+1]=(int)g;
 			dst[((width*y+x)<<2)+2]=(int)r;
@@ -166,7 +166,7 @@ void blur_gauss_xy(u64 size,u64 radius,u8* src,u8* dst)
 	if(radius>9)radius=9;
 	sigma=(double)radius;
 	sigma/=3;
-	//say("radius=%lld,sigma=%lf\n",radius,sigma);
+	//logtoall("radius=%lld,sigma=%lf\n",radius,sigma);
 
 	//first build the "gauss table"
 	for(y=0;y<=radius;y++)
@@ -175,7 +175,7 @@ void blur_gauss_xy(u64 size,u64 radius,u8* src,u8* dst)
 		temp /= 2*sigma*sigma;
 		gausstable[0][y]  = exponent(temp);
 		gausstable[0][y] /= sigma*squareroot(2*pi);
-		//say("gausstable[%d]=%lf\n",y,gausstable[0][y]);
+		//logtoall("gausstable[%d]=%lf\n",y,gausstable[0][y]);
 	}
 
 	//开始(x)
@@ -239,7 +239,7 @@ void blur_gauss_xy(u64 size,u64 radius,u8* src,u8* dst)
 			}//m
 
 			//put the result
-			//say("(%d,%d):%lf,%lf,%lf\n",x,y,b,g,r);
+			//logtoall("(%d,%d):%lf,%lf,%lf\n",x,y,b,g,r);
 			dst[((width*y+x)<<2)+0]=(int)(b/2);
 			dst[((width*y+x)<<2)+1]=(int)(g/2);
 			dst[((width*y+x)<<2)+2]=(int)(r/2);
@@ -261,7 +261,7 @@ void blur_gauss_2(u64 size,u64 radius,u8* src,u8* dst)
 	if(radius>9)radius=9;
 	sigma=(double)radius;
 	sigma/=3;
-	//say("radius=%lld,sigma=%lf\n",radius,sigma);
+	//logtoall("radius=%lld,sigma=%lf\n",radius,sigma);
 
 	//first build the "gauss table"
 	for(y=0;y<=radius;y++)
@@ -272,7 +272,7 @@ void blur_gauss_2(u64 size,u64 radius,u8* src,u8* dst)
 			temp /= 2*sigma*sigma;
 			gausstable[y][x]  = exponent(temp);
 			gausstable[y][x] /= 2*pi*sigma*sigma;
-			//say("gausstable[%d][%d]=%lf\n",y,x,gausstable[y][x]);
+			//logtoall("gausstable[%d][%d]=%lf\n",y,x,gausstable[y][x]);
 		}
 	}
 
@@ -347,7 +347,7 @@ void blur_gauss_2(u64 size,u64 radius,u8* src,u8* dst)
 			}//n
 
 			//put the result
-			//say("(%d,%d):%lf,%lf,%lf\n",x,y,b,g,r);
+			//logtoall("(%d,%d):%lf,%lf,%lf\n",x,y,b,g,r);
 			dst[((width*y+x)<<2)+0]=(int)b;
 			dst[((width*y+x)<<2)+1]=(int)g;
 			dst[((width*y+x)<<2)+2]=(int)r;
@@ -358,7 +358,7 @@ void blur_gauss_2(u64 size,u64 radius,u8* src,u8* dst)
 			{
 				for(m=-radius;m<radius;m++)
 				{
-					say("(%d,%d)(%d,%d)\n",x,y,m,n);
+					logtoall("(%d,%d)(%d,%d)\n",x,y,m,n);
 				}
 			}
 */

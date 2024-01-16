@@ -54,7 +54,7 @@ void* wndmgr_find_maxw(_obj* wnd)
 		if(_ent_ == rel->dstnodetype){
 			sty = (void*)(rel->srcfoot);
 			if(sty){
-				//say("%f\n", sty->fs.vc[3]);
+				//logtoall("%f\n", sty->fs.vc[3]);
 				if(max < sty->fs.vc[3]){
 					tar = rel;
 					max = sty->fs.vc[3];
@@ -78,7 +78,7 @@ void* wndmgr_find_hit(_obj* wnd, int x, int y)
 		if(_ent_ == rel->dstnodetype){
 			sty = (void*)(rel->srcfoot);
 			if(sty){
-				//say("%d,%d, %f,%f,%f,%f\n",x,y,sty->fs.vc[0],sty->fs.vc[1],sty->fs.vr[0],sty->fs.vf[1]);
+				//logtoall("%d,%d, %f,%f,%f,%f\n",x,y,sty->fs.vc[0],sty->fs.vc[1],sty->fs.vr[0],sty->fs.vf[1]);
 				if(	(x > sty->fs.vc[0] - sty->fs.vr[0]) &&
 					(x < sty->fs.vc[0] + sty->fs.vr[0]) &&
 					(y > sty->fs.vc[1] - sty->fs.vf[1]) &&
@@ -105,7 +105,7 @@ void* wndmgr_find_close(_obj* wnd, int x, int y)
 		if(_ent_ == rel->dstnodetype){
 			sty = (void*)(rel->srcfoot);
 			if(sty){
-				//say("%d,%d, %f,%f,%f,%f\n",x,y,sty->fs.vc[0],sty->fs.vc[1],sty->fs.vr[0],sty->fs.vf[1]);
+				//logtoall("%d,%d, %f,%f,%f,%f\n",x,y,sty->fs.vc[0],sty->fs.vc[1],sty->fs.vr[0],sty->fs.vf[1]);
 				if(	(x > sty->fs.vc[0] - sty->fs.vr[0]) &&
 					(x < sty->fs.vc[0] - sty->fs.vr[0] + 16) &&
 					(y > sty->fs.vc[1] - sty->fs.vf[1] - 16) &&
@@ -210,7 +210,7 @@ next:
 }
 int wndmgr_rgba_give(_obj* mgr,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	//say("@rgbanode_write:%p,%x\n", mgr,foot);
+	//logtoall("@rgbanode_write:%p,%x\n", mgr,foot);
 	//printmemory(buf,16);
 
 	_obj* wnd = mgr;
@@ -250,11 +250,11 @@ int wndmgr_rgba_give(_obj* mgr,void* foot, _syn* stack,int sp, p64 arg,int key, 
 			break;
 
 		case 0x2b70:
-			say("mouse dn: %d,%d\n",tx,ty);
+			logtoall("mouse dn: %d,%d\n",tx,ty);
 
 			//check close
 			hit = wndmgr_find_close(mgr, mgr->whdf.ix0, mgr->whdf.iy0);
-			//say("tar=%p,hit=%p\n",tar,hit);
+			//logtoall("tar=%p,hit=%p\n",tar,hit);
 			if(hit){
 				struct style* tmp = (void*)(hit->srcfoot);
 				tmp->fs.vr[0] /= 2;
@@ -266,7 +266,7 @@ int wndmgr_rgba_give(_obj* mgr,void* foot, _syn* stack,int sp, p64 arg,int key, 
 
 			//check choose
 			hit = wndmgr_find_hit(mgr, mgr->whdf.ix0, mgr->whdf.iy0);
-			//say("tar=%p,hit=%p\n",tar,hit);
+			//logtoall("tar=%p,hit=%p\n",tar,hit);
 			if(hit && tar && (hit != tar)){
 				struct style* hitsty = (void*)(hit->srcfoot);
 				struct style* tarsty = (void*)(tar->srcfoot);
@@ -276,12 +276,12 @@ int wndmgr_rgba_give(_obj* mgr,void* foot, _syn* stack,int sp, p64 arg,int key, 
 			break;
 
 		case 0x2d70:
-			say("mouse up: %d,%d\n",tx,ty);
+			logtoall("mouse up: %d,%d\n",tx,ty);
 			break;
 		}
 	}//mouse event
 
-//say("max=%f,tar=%p\n",max,tar);
+//logtoall("max=%f,tar=%p\n",max,tar);
 	if(tar){
 		stack[sp+0].pchip = tar->psrcchip;
 		stack[sp+0].pfoot = tar->psrcfoot;
@@ -302,7 +302,7 @@ int wndmgr_rgba_give(_obj* mgr,void* foot, _syn* stack,int sp, p64 arg,int key, 
 
 int wndmgr_gl41cmdq_take(_obj* mgr,void* foot, _obj* wnd,void* sty)
 {
-	say("wndmgr_gl41cmdq_take\n");
+	logtoall("wndmgr_gl41cmdq_take\n");
 	gl41cmdq_clear(wnd);
 	return 0;
 }

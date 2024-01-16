@@ -11,7 +11,7 @@ static void spurgear_search(_obj* act, u32 foot, struct halfrel* self[], struct 
 	struct relation* rel;
 	_obj* world;
 	struct fstyle* obb = 0;
-	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
+	//logtoall("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
 	rel = act->irel0;
 	while(1){
@@ -98,14 +98,14 @@ static void spurgear_spread(_syn* stack, int sp, _obj* gear)
 	rel = gear->irel0;
 	while(1){
 		if(0 == rel)break;
-say("@11:%.4s\n",&rel->dstfoottype);
+logtoall("@11:%.4s\n",&rel->dstfoottype);
 		if(_gear_ != rel->dstfoottype)goto next1;
-say("@12\n");
+logtoall("@12\n");
 		next = rel->psrcchip;
 		if(spurgear_recur(stack,sp, next))goto next1;
 		if(next->STAMP == gear->STAMP)goto next1;
 		next->STAMP = gear->STAMP;
-say("@14\n");
+logtoall("@14\n");
 		stack[sp+0].pchip = gear;
 		stack[sp+1].pchip = next;
 		stack[sp+1].foottype = _gear_;
@@ -117,14 +117,14 @@ next1:
 	rel = gear->orel0;
 	while(1){
 		if(0 == rel)break;
-say("@21:%.4s\n",&rel->srcfoottype);
+logtoall("@21:%.4s\n",&rel->srcfoottype);
 		if(_gear_ != rel->srcfoottype)goto next2;
-say("@22\n");
+logtoall("@22\n");
 		next = rel->pdstchip;
 		if(spurgear_recur(stack,sp, next))goto next2;
 		if(next->STAMP == gear->STAMP)goto next2;
 		next->STAMP = gear->STAMP;
-say("@24\n");
+logtoall("@24\n");
 		stack[sp+0].pchip = gear;
 		stack[sp+1].pchip = next;
 		stack[sp+1].foottype = _gear_;
@@ -144,7 +144,7 @@ static void spurgear_write_val(_obj* gear, float* val)
 }
 static void spurgear_write_ray(_obj* gear,void* foot, struct fstyle* geom, float* ray)
 {
-	say("%f,%f,%f -> %f,%f,%f\n",ray[0],ray[1],ray[2], ray[3],ray[4],ray[5]);
+	logtoall("%f,%f,%f -> %f,%f,%f\n",ray[0],ray[1],ray[2], ray[3],ray[4],ray[5]);
 
 	int j;
 	vec3 out;
@@ -155,7 +155,7 @@ static void spurgear_write_ray(_obj* gear,void* foot, struct fstyle* geom, float
 	}
 	j = ray_plane(ray, plane, out);
 	if(j <= 0)return;
-	say("%f,%f,%f\n",out[0],out[1],out[2]);
+	logtoall("%f,%f,%f\n",out[0],out[1],out[2]);
 
 	float uv[3];
 	vec3 tr,tf;
@@ -165,7 +165,7 @@ static void spurgear_write_ray(_obj* gear,void* foot, struct fstyle* geom, float
 	}
 	uv[0] = vec3_dot(tr, geom->vr) / vec3_getlen(tr) / vec3_getlen(geom->vr);
 	uv[1] = vec3_dot(tf, geom->vf) / vec3_getlen(tf) / vec3_getlen(geom->vf);
-	say("%f,%f\n", uv[0], uv[1]);
+	logtoall("%f,%f\n", uv[0], uv[1]);
 
 	gear->whdf.fz0 = arctanyx(uv[1], uv[0]);
 }
@@ -212,12 +212,12 @@ static void spurgear_giving(_obj* gear,void* foot, _syn* stack,int sp, p64 arg,i
 {
 
 	if(_gear_ == stack[sp-1].foottype){
-		say("@spurgear_gear:%llx\n", gear);
+		logtoall("@spurgear_gear:%llx\n", gear);
 		spurgear_write_val(gear, buf);
 		spurgear_spread(stack, sp, gear);
 	}
 	else{
-		say("@spurgear_mouse:%llx\n", gear);
+		logtoall("@spurgear_mouse:%llx\n", gear);
 		gear->STAMP += 1;
 		spurgear_write_ray(gear, 0, (void*)arg,buf);
 		spurgear_spread(stack, sp, gear);

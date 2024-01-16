@@ -151,7 +151,7 @@ static void field_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("field(%x,%x,%x)\n",win,act,sty);
+	logtoall("field(%x,%x,%x)\n",win,act,sty);
 }
 
 

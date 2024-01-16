@@ -44,7 +44,7 @@ static unsigned char *lfb = 0;
 
 void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	//say("wnd=%p,stack=%p\n",wnd,stack);
+	//logtoall("wnd=%p,stack=%p\n",wnd,stack);
 	wndmgr_take(wnd,foot, stack,sp, arg,key, buf,len);
 
 	int j;
@@ -167,9 +167,9 @@ void initwindow()
 		isrgb = maildata[24];		//get the actual channel order
 		lfb = (void*)((unsigned long)maildata[28]);
 
-		say("%d,%d,%d,%d,%llx\n",width,height,pitch,isrgb,lfb);
+		logtoall("%d,%d,%d,%d,%llx\n",width,height,pitch,isrgb,lfb);
 	}
 	else {
-		say("error@initwindow\n");
+		logtoall("error@initwindow\n");
 	}
 }

@@ -214,7 +214,7 @@ static void terminal_draw_cli(
 {
 	u8* p;
 	int enq, deq;
-	//say("terminal(%x,%x,%x)\n",win,act,sty);
+	//logtoall("terminal(%x,%x,%x)\n",win,act,sty);
 }
 
 
@@ -298,7 +298,7 @@ static void terminal_wrl_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 	_obj* wnd;struct style* area;
 	mgr = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-4].pchip;area = stack[sp-4].pfoot;
-	//say("mgr=%p,geom=%p,wnd=%p,area=%p\n", mgr, geom, wnd, area);
+	//logtoall("mgr=%p,geom=%p,wnd=%p,area=%p\n", mgr, geom, wnd, area);
 
 	//compute relative position from window
 	int j;

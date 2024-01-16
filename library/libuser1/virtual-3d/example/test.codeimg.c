@@ -274,7 +274,7 @@ static void codeimg_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("codeimg(%x,%x,%x)\n",win,act,sty);
+	logtoall("codeimg(%x,%x,%x)\n",win,act,sty);
 }
 
 

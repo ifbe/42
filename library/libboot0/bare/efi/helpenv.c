@@ -123,7 +123,7 @@ int bootservice_graphic()
 		&hbuf
 	);
 	if(ret != EFI_SUCCESS){
-		say("error@LocateHandleBuffer\n");
+		logtoall("error@LocateHandleBuffer\n");
 		return 0;
 	}
 
@@ -133,7 +133,7 @@ int bootservice_graphic()
 		(void**)&gop
 	);
 	if(ret != EFI_SUCCESS){
-		say("error@HandleProtocol\n");
+		logtoall("error@HandleProtocol\n");
 		return 0;
 	}
 */
@@ -150,7 +150,7 @@ int bootservice_graphic()
 		}
 */
 		fmt = parseinfo(info->PixelFormat, info->PixelInformation);
-		say("%d: %d,%d, %d,%d, ver=%d,fmt=%.8s\n",
+		logtoall("%d: %d,%d, %d,%d, ver=%d,fmt=%.8s\n",
 			num,
 			info->HorizontalResolution, info->VerticalResolution,
 			info->PixelsPerScanLine, 0,
@@ -164,13 +164,13 @@ int bootservice_graphic()
 	if(chosen < 0){
 		chosen = gop->Mode->Mode;
 	}
-	say("chosen=%d\n",chosen);
+	logtoall("chosen=%d\n",chosen);
 
 
 	//query mode
 	ret = gop->QueryMode(gop, chosen, &size, &info);
 	if(ret != EFI_SUCCESS){
-		say("error@QueryMode:0\n");
+		logtoall("error@QueryMode:0\n");
 		return 0;
 	}
 	w = info->HorizontalResolution;
@@ -182,14 +182,14 @@ int bootservice_graphic()
 	//some uefi are buggy, don't setmode!
 /*	ret = gop->SetMode(gop, chosen);
 	if(ret != EFI_SUCCESS){
-		say("error@SetMode:%d\n", chosen);
+		logtoall("error@SetMode:%d\n", chosen);
 		return 0;
 	}*/
 
 
 	//preserve infomation
 	if(gop->Mode){
-		say("buf=%llx,len=%x\n", gop->Mode->FrameBufferBase, gop->Mode->FrameBufferSize);
+		logtoall("buf=%llx,len=%x\n", gop->Mode->FrameBufferBase, gop->Mode->FrameBufferSize);
 		lfb = (void*)(gop->Mode->FrameBufferBase);
 		fbh = gop->Mode->FrameBufferSize;
 
@@ -208,7 +208,7 @@ int bootservice_graphic()
 					lfb = 0;
 			}
 
-			say("w=%d,h=%d, fbw=%d,fbh=%d, ver=%d,fmt=%.8s\n",
+			logtoall("w=%d,h=%d, fbw=%d,fbh=%d, ver=%d,fmt=%.8s\n",
 				gop->Mode->Info->HorizontalResolution, gop->Mode->Info->VerticalResolution,
 				gop->Mode->Info->PixelsPerScanLine, 0,
 				gop->Mode->Info->Version, &fmt
@@ -233,11 +233,11 @@ int bootservice_exit()
 		&ver
 	);
 	if(EFI_SUCCESS != ret){
-		say("error:%d@GetMemoryMap\n", ret);
+		logtoall("error:%d@GetMemoryMap\n", ret);
 		return -1;
 	}
 	else{
-		say("@GetMemoryMap:buf=%p,len=%x,key=%x,sz=%x,ver=%x\n",
+		logtoall("@GetMemoryMap:buf=%p,len=%x,key=%x,sz=%x,ver=%x\n",
 			memmap, byteperuefi,
 			key,
 			byteperdesc,
@@ -248,7 +248,7 @@ int bootservice_exit()
 		EFI_MEMORY_DESCRIPTOR* desc;
 		for(j=0;j<byteperuefi / byteperdesc;j++){
 			desc = (void*)(memmap + byteperdesc*j);
-			say("%04x: type=%x, pbuf=%llx, vbuf=%llx, size=%llx, attr=%llx\n",
+			logtoall("%04x: type=%x, pbuf=%llx, vbuf=%llx, size=%llx, attr=%llx\n",
 				j,
 				desc->Type,
 				desc->PhysicalStart,
@@ -273,13 +273,13 @@ int bootservice_exit()
 			&ver
 		);
 		if(EFI_SUCCESS != ret){
-			say("error:%d,retry:%d@GetMemoryMap\n", ret, j);
+			logtoall("error:%d,retry:%d@GetMemoryMap\n", ret, j);
 			continue;
 		}
 
 		ret = T->BootServices->ExitBootServices(H, key);
 		if(EFI_SUCCESS != ret){
-			say("error:%d,retry:%d@ExitBootServices\n", ret, j);
+			logtoall("error:%d,retry:%d@ExitBootServices\n", ret, j);
 			continue;
 		}
 
@@ -325,7 +325,7 @@ int bootservice_output(char* buf, int len)
 
 void uefi_version()
 {
-	say("efiver=%x\n", T->Hdr.Revision);
+	logtoall("efiver=%x\n", T->Hdr.Revision);
 }
 void uefi_tables()
 {
@@ -333,40 +333,40 @@ void uefi_tables()
 	int j;
 	for(j=0;j<T->NumberOfTableEntries;j++){
 		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_mps, 16)){
-			say("@%p: mps\n", T->ConfigurationTable[j].VendorTable);
+			logtoall("@%p: mps\n", T->ConfigurationTable[j].VendorTable);
 			printmemory(T->ConfigurationTable[j].VendorTable, 16);
 			continue;
 		}
 		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_acpi, 16)){
-			say("@%p: acpi\n", T->ConfigurationTable[j].VendorTable);
+			logtoall("@%p: acpi\n", T->ConfigurationTable[j].VendorTable);
 			printmemory(T->ConfigurationTable[j].VendorTable, 16);
 			rsdptr = T->ConfigurationTable[j].VendorTable;
 			continue;
 		}
 		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_acpi2, 16)){
-			say("@%p: acpi2\n", T->ConfigurationTable[j].VendorTable);
+			logtoall("@%p: acpi2\n", T->ConfigurationTable[j].VendorTable);
 			printmemory(T->ConfigurationTable[j].VendorTable, 16);
 			rsdptr = T->ConfigurationTable[j].VendorTable;
 			continue;
 		}
 		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_smbios, 16)){
-			say("@%p: smbios\n", T->ConfigurationTable[j].VendorTable);
+			logtoall("@%p: smbios\n", T->ConfigurationTable[j].VendorTable);
 			printmemory(T->ConfigurationTable[j].VendorTable, 16);
 			continue;
 		}
 		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_smbios3, 16)){
-			say("@%p: smbios3\n", T->ConfigurationTable[j].VendorTable);
+			logtoall("@%p: smbios3\n", T->ConfigurationTable[j].VendorTable);
 			printmemory(T->ConfigurationTable[j].VendorTable, 16);
 			continue;
 		}
 		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_sal, 16)){
-			say("@%p: sal\n", T->ConfigurationTable[j].VendorTable);
+			logtoall("@%p: sal\n", T->ConfigurationTable[j].VendorTable);
 			printmemory(T->ConfigurationTable[j].VendorTable, 16);
 			continue;
 		}
 		else{
 			u32* p = (u32*)&T->ConfigurationTable[j].VendorGuid;
-			say("@%p: unknown: 0x%x,0x%x,0x%x,0x%x\n", T->ConfigurationTable[j].VendorTable, p[0], p[1], p[2], p[3]);
+			logtoall("@%p: unknown: 0x%x,0x%x,0x%x,0x%x\n", T->ConfigurationTable[j].VendorTable, p[0], p[1], p[2], p[3]);
 			printmemory(T->ConfigurationTable[j].VendorTable, 16);
 		}
 	}

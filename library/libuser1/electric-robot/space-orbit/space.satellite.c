@@ -68,7 +68,7 @@ static void satellite_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("satellite(%x,%x,%x)\n",win,act,sty);
+	logtoall("satellite(%x,%x,%x)\n",win,act,sty);
 }
 static void satellite_event(
 	_obj* act, struct style* pin,
@@ -122,7 +122,7 @@ static void satellite_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,i
 static void satellite_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	float* f = buf;
-	say("@satellite_write: %f,%f,%f,%f\n", f[0],f[1],f[2],f[3]);
+	logtoall("@satellite_write: %f,%f,%f,%f\n", f[0],f[1],f[2],f[3]);
 
 	ent->longitude= f[0];
 	ent->latitude = f[1];
@@ -133,7 +133,7 @@ static void satellite_detach(struct halfrel* self, struct halfrel* peer)
 }
 static void satellite_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@satellite_attach\n");
+	logtoall("@satellite_attach\n");
 }
 
 

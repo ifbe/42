@@ -17,7 +17,7 @@ int collide_delete(_obj* win)
 }
 int collide_create(_obj* win, void* str)
 {
-	say("@collide_create\n");
+	logtoall("@collide_create\n");
 	return 0;
 }
 
@@ -26,12 +26,12 @@ int collide_create(_obj* win, void* str)
 
 int collide_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	say("@collide_read\n");
+	logtoall("@collide_read\n");
 	return 0;
 }
 int collide_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	say("@collide_write\n");
+	logtoall("@collide_write\n");
 	return 0;
 }
 int collide_detach(struct halfrel* self, struct halfrel* peer)

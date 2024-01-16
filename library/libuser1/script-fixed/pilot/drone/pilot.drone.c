@@ -7,7 +7,7 @@ void axismulangle2quaternion(float* a, float* q);
 void quaternion_multiplyfrom(float* o, float* l, float* r);
 
 
-#define dronelog if(0)say
+#define dronelog if(0)logtoall
 
 
 #define POS_p 1.0
@@ -369,7 +369,7 @@ void flycon_report(_obj* ent)
 	_obj* dbg = ent->ENT_DBGUI;
 	if(0 == dbg)return;
 
-	//say("%s\n",__func__);
+	//logtoall("%s\n",__func__);
 	dbg->onwriter(dbg, 0, 0, 0, sty, 0);
 }
 
@@ -408,7 +408,7 @@ int flycon_attach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ent = self->pchip;
 	_obj* dbg = peer->pchip;
-	say("%s: %.4s, %.8s\n", __func__, &self->foottype, &dbg->type);
+	logtoall("%s: %.4s, %.8s\n", __func__, &self->foottype, &dbg->type);
 
 	switch(self->foottype){
 	case _dbg_:

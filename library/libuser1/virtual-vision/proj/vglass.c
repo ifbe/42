@@ -58,7 +58,7 @@ static int vrglass_draw_gl41(
 }
 static int vrglass_where(_obj* act, struct fstyle* pin, float* f, int len)
 {
-	say("%f,%f,%f,%f\n", f[0], f[1], f[2], f[3]);
+	logtoall("%f,%f,%f,%f\n", f[0], f[1], f[2], f[3]);
 	struct fstyle* obb;
 	struct halfrel* self;
 	struct halfrel* peer;
@@ -76,7 +76,7 @@ static int vrglass_event(_obj* act, struct fstyle* pin, struct event* ev, int le
 	struct fstyle* obb;
 	struct halfrel* self;
 	struct halfrel* peer;
-	//say("vrglass_event@%llx:%x,%x\n", act, ev->why, ev->what);
+	//logtoall("vrglass_event@%llx:%x,%x\n", act, ev->why, ev->what);
 
 	relationsearch(act, _in_, &self, &peer);
 	obb = peer->pfoot;
@@ -123,7 +123,7 @@ static int vrglass_event(_obj* act, struct fstyle* pin, struct event* ev, int le
 			case 'f':obb->vq[2] -= 0.1;break;
 			case 'r':obb->vq[2] += 0.1;break;
 		}
-		say("%f,%f,%f\n", obb->vq[0], obb->vq[1], obb->vq[2]);
+		logtoall("%f,%f,%f\n", obb->vq[0], obb->vq[1], obb->vq[2]);
 	}
 	return 1;
 }
@@ -150,7 +150,7 @@ void vrglass_frustum(struct fstyle* frus, struct fstyle* plane)
 {
 	float x,y,z,n;
 	float* eye = plane->vq;
-	//say("@vrglass_frus:%llx,%llx,%llx,%f,%f,%f\n",frus,plane,eye,eye[0],eye[1],eye[2]);
+	//logtoall("@vrglass_frus:%llx,%llx,%llx,%f,%f,%f\n",frus,plane,eye,eye[0],eye[1],eye[2]);
 
 	frus->vc[0] = eye[0];
 	frus->vc[1] = eye[1];
@@ -230,7 +230,7 @@ void vrglass_frustum(struct fstyle* frus, struct fstyle* plane)
 	frus->vf[1] = y;
 	frus->vf[2] = z;
 	frus->vf[3] = 1e10;
-/*	say("vrglass_frustum: (%f,%f), (%f,%f), (%f,%f), (%f,%f,%f)\n",
+/*	logtoall("vrglass_frustum: (%f,%f), (%f,%f), (%f,%f), (%f,%f,%f)\n",
 		frus->vn[3], frus->vf[3], frus->vl[3], frus->vr[3], frus->vb[3], frus->vt[3],
 		frus->vc[0], frus->vc[1], frus->vc[2]);*/
 }

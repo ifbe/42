@@ -88,7 +88,7 @@ static int pinlen = 0;
 #define maxitem (0x100000/sizeof(_obj))
 void supply_init(u8* addr)
 {
-	say("[c,e):supply initing\n");
+	logtoall("[c,e):supply initing\n");
 
 	int j;
 	for(j=0;j<0x200000;j++)addr[j]=0;
@@ -105,18 +105,18 @@ void supply_init(u8* addr)
 	inittray(supply);
 	initjoy(supply);
 
-	say("[c,e):supply inited\n");
+	logtoall("[c,e):supply inited\n");
 }
 void supply_exit()
 {
-	say("[c,e):supply exiting\n");
+	logtoall("[c,e):supply exiting\n");
 
 	freewindow();
 	freetray();
 	freestd();
 	freejoy();
 
-	say("[c,e):supply exited\n");
+	logtoall("[c,e):supply exited\n");
 }
 
 
@@ -161,7 +161,7 @@ void* supply_alloc()
 }
 void* supply_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt)
 {
-	//say("supply_alloc_prep:%.8s\n",&type);
+	//logtoall("supply_alloc_prep:%.8s\n",&type);
 	int j = 0;
 	_obj* obj;
 
@@ -351,7 +351,7 @@ void* supply_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt)
 
 int supply_create(_obj* obj, void* arg, int argc, u8** argv)
 {
-	say("supply_create:obj=%p,arg=%p,argc=%d,argv=%p\n", obj, arg, argc, argv);
+	logtoall("supply_create:obj=%p,arg=%p,argc=%d,argv=%p\n", obj, arg, argc, argv);
 	switch(obj->type){
 	case _joy_:
 		joy_create(obj, arg, argc, argv);
@@ -404,7 +404,7 @@ int supply_create(_obj* obj, void* arg, int argc, u8** argv)
 }
 int supply_delete(_obj* obj)
 {
-	say("supply_delete\n");
+	logtoall("supply_delete\n");
 	if(0 == obj)return 0;
 
 	//1.unlink
@@ -453,7 +453,7 @@ int supply_writer(_obj* sup,void* foot, p64 arg,int idx, void* buf,int len)
 
 int supply_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@supplyattach\n");
+	logtoall("@supplyattach\n");
 
 	if(0 == self)return 0;
 
@@ -464,7 +464,7 @@ int supply_attach(struct halfrel* self, struct halfrel* peer)
 }
 int supply_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@supplydetach\n");
+	logtoall("@supplydetach\n");
 	return 0;
 }
 int supply_takeby(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
@@ -531,9 +531,9 @@ void* supply_search(u8* buf, int len)
 		{
 			obj = &supply[j];
 			if(0 == obj->type)break;
-			say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j, &obj->tier, &obj->type, &obj->hfmt, &obj->vfmt);
+			logtoall("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j, &obj->tier, &obj->type, &obj->hfmt, &obj->vfmt);
 		}
-		if(0 == j)say("empty supply\n");
+		if(0 == j)logtoall("empty supply\n");
 	}
 	else
 	{
@@ -566,7 +566,7 @@ void* supply_modify(int argc, u8** argv)
 	u64 name = 0;
 	u8* tmp = (u8*)&name;
 	if(argc < 2)return 0;
-//say("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
+//logtoall("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
 	if(0 == ncmp(argv[1], "create", 6))
 	{
 		for(j=0;j<8;j++)
@@ -574,7 +574,7 @@ void* supply_modify(int argc, u8** argv)
 			if(argv[2][j] <= 0x20)break;
 			tmp[j] = argv[2][j];
 		}
-		say("%llx,%llx\n",name, argv[3]);
+		logtoall("%llx,%llx\n",name, argv[3]);
 		//supply_create(name, argv[3], argc-3, &argv[3]);
 	}
 

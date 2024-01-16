@@ -27,18 +27,18 @@ void relation_debug(struct relation* rel)
 	struct relation* temp;
 	while(1)
 	{
-		say("%x->",rel);
+		logtoall("%x->",rel);
 
-		if(rel->samedstnextsrc == 0){say("a");break;}
+		if(rel->samedstnextsrc == 0){logtoall("a");break;}
 		next = (void*)wirebuf + (rel->samedstnextsrc);
 
-		if(next->samedstprevsrc == 0){say("b");break;}
+		if(next->samedstprevsrc == 0){logtoall("b");break;}
 		temp = (void*)wirebuf + (next->samedstprevsrc);
 
-		if(temp == rel)say("<-");
+		if(temp == rel)logtoall("<-");
 		rel = next;
 	}
-	say("\n");
+	logtoall("\n");
 }
 void relation_recycle(struct relation* rel)
 {
@@ -263,7 +263,7 @@ void* relationcreate(
 	struct relation* wc;
 	if(wirecur >= wirelen)
 	{
-		say("wire buf not enough\n");
+		logtoall("wire buf not enough\n");
 		return 0;
 	}
 

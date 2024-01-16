@@ -77,12 +77,12 @@ u32 mbox_getbaseclock()
 	mbox_call(MBOX_CH_PROP);
 
 	if(maildata[1] != MBOX_RESPONSE){
-		say("EMMC: property mailbox did not return a valid response.\n");
+		logtoall("EMMC: property mailbox did not return a valid response.\n");
 		return 0;
 	}
 
 	if(maildata[5] != 0x1){
-		say("EMMC: property mailbox did not return a valid clock id.\n");
+		logtoall("EMMC: property mailbox did not return a valid clock id.\n");
 		return 0;
 	}
 
@@ -110,17 +110,17 @@ int mbox_poweroff()
 	mbox_call(MBOX_CH_PROP);
 
 	if(maildata[1] != MBOX_RESPONSE){
-	    say("bcm_2708_power_off(): property mailbox did not return a valid response.\n");
+	    logtoall("bcm_2708_power_off(): property mailbox did not return a valid response.\n");
 	    return -1;
 	}
 
 	if(maildata[5] != 0x0){
-	    say("property mailbox did not return a valid device id.\n");
+	    logtoall("property mailbox did not return a valid device id.\n");
 	    return -1;
 	}
 
 	if((maildata[6] & 0x3) != 0){
-		say("bcm_2708_power_off(): device did not power off successfully (%08x).\n", maildata[6]);
+		logtoall("bcm_2708_power_off(): device did not power off successfully (%08x).\n", maildata[6]);
 		return 1;
 	}
 
@@ -144,17 +144,17 @@ int mbox_poweron()
 	mbox_call(MBOX_CH_PROP);
 
 	if(maildata[1] != MBOX_RESPONSE){
-	    say("bcm_2708_power_on(): property mailbox did not return a valid response.\n");
+	    logtoall("bcm_2708_power_on(): property mailbox did not return a valid response.\n");
 	    return -1;
 	}
 
 	if(maildata[5] != 0x0){
-	    say("property mailbox did not return a valid device id.\n");
+	    logtoall("property mailbox did not return a valid device id.\n");
 	    return -1;
 	}
 
 	if((maildata[6] & 0x3) != 1){
-		say("bcm_2708_power_on(): device did not power on successfully (%08x).\n", maildata[6]);
+		logtoall("bcm_2708_power_on(): device did not power on successfully (%08x).\n", maildata[6]);
 		return 1;
 	}
 
@@ -166,6 +166,6 @@ int mbox_poweron()
 
 void initmbox()
 {
-	say("@initmbox\n");
-	say("\n");
+	logtoall("@initmbox\n");
+	logtoall("\n");
 }

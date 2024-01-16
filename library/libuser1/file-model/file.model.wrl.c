@@ -38,7 +38,7 @@ static void wrl3d_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("wrl3d(%x,%x,%x)\n",win,act,sty);
+	logtoall("wrl3d(%x,%x,%x)\n",win,act,sty);
 }
 
 

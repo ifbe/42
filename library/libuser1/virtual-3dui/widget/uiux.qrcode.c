@@ -48,7 +48,7 @@ static void qrcode_draw_pixel(
 				x1, y1, x2, y2
 			);
 		}
-//say("\n");
+//logtoall("\n");
 	}
 }
 static void qrcode_draw_gl41(
@@ -127,7 +127,7 @@ static void qrcode_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("qrcode(%x,%x,%x)\n",win,act,sty);
+	logtoall("qrcode(%x,%x,%x)\n",win,act,sty);
 }
 
 

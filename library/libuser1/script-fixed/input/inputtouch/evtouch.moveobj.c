@@ -73,12 +73,12 @@ int touchobj_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, v
 }
 int touchobj_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@touchobj_detach\n");
+	logtoall("@touchobj_detach\n");
 	return 0;
 }
 int touchobj_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@touchobj_attach\n");
+	logtoall("@touchobj_attach\n");
 	return 0;
 }
 

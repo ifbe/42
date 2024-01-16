@@ -103,19 +103,19 @@ void term_ls(u8* buf, int len)
 	if(buf[3] <= 0x20)
 	{
 		origin_search(0, 0);
-		say("----------------\n");
+		logtoall("----------------\n");
 		bootup_search(0, 0);
-		say("----------------\n");
+		logtoall("----------------\n");
 		device_search(0, 0);
-		say("----------------\n");
+		logtoall("----------------\n");
 		driver_search(0, 0);
-		say("----------------\n");
+		logtoall("----------------\n");
 		system_search(0, 0);
-		say("----------------\n");
+		logtoall("----------------\n");
 		artery_search(0, 0);
-		say("----------------\n");
+		logtoall("----------------\n");
 		supply_search(0, 0);
-		say("----------------\n");
+		logtoall("----------------\n");
 		entity_search(0, 0);
 		return;
 	}
@@ -129,7 +129,7 @@ void term_ls(u8* buf, int len)
 	else if(0 == ncmp(buf, "artery", 6))artery_search(0, 0);
 	else if(0 == ncmp(buf, "supply", 6))supply_search(0, 0);
 	else if(0 == ncmp(buf, "entity", 6))entity_search(0, 0);
-	else say("ls(%s)\n", buf);
+	else logtoall("ls(%s)\n", buf);
 }
 void term_mmio(int argc, u8** argv)
 {
@@ -142,9 +142,9 @@ void term_mmio(int argc, u8** argv)
 		u32 data;
 		hexstr2u32(argv[2], &data);
 		*(u32*)addr = data;
-		say("writing: [%llx] = %08x\n", addr, data);
+		logtoall("writing: [%llx] = %08x\n", addr, data);
 	}
-	say("reading: [%llx] = %08x\n", addr, *(u32*)addr);
+	logtoall("reading: [%llx] = %08x\n", addr, *(u32*)addr);
 }
 void term_memory(int argc, u8** argv)
 {
@@ -178,7 +178,7 @@ void term_process(int argc, u8** argv)
 
 void term_prompt()
 {
-	say("[term@void]");
+	logtoall("[term@void]");
 }
 int termwrite(u8* buf, int len)
 {
@@ -233,7 +233,7 @@ int mython_fromfile(u8* str, int len)
 	int j,k = 0;
 	for(j=0;j<=len;j++){
 		if((j==len)|('\n' == buf[j])){
-			say("%.*s\n", j-k, buf);
+			logtoall("%.*s\n", j-k, buf);
 			k = j+1;
 		}
 	}
@@ -243,7 +243,7 @@ int mython_create(struct item* wrk, void* arg, int argc, u8** argv)
 {
 	int j;
 	for(j=1;j<argc;j++){
-		say("arg[%d]=%s\n", j, argv[j]);
+		logtoall("arg[%d]=%s\n", j, argv[j]);
 		mython_fromfile(argv[j], 0);
 	}
 

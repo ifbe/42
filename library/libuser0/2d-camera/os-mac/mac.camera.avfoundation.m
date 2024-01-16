@@ -185,7 +185,7 @@ int avfcam_delete(_obj* win)
 }
 int avfcam_create(_obj* win, void* arg, int argc, u8** argv)
 {
-	say("avfcam_create\n");
+	logtoall("avfcam_create\n");
 	int j;
 	u32 w = 640;
 	u32 h = 480;
@@ -204,31 +204,31 @@ int avfcam_create(_obj* win, void* arg, int argc, u8** argv)
 			decstr2u32(argv[j]+7, &h);
 		}
 	}
-	say((void*)"libcam_create fmt=%x,w=%d,h=%d\n", fmt, w, h);
+	logtoall((void*)"libcam_create fmt=%x,w=%d,h=%d\n", fmt, w, h);
 
 	//authorization
 	switch([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo]){
 	case AVAuthorizationStatusAuthorized:
 		// Has access
-		say("Authorized\n");
+		logtoall("Authorized\n");
 		break;
 	case AVAuthorizationStatusDenied:
 		// No access granted
-		say("Denied\n");
+		logtoall("Denied\n");
 		break;
 	case AVAuthorizationStatusRestricted:
 		// Microphone disabled in settings
-		say("Restricted\n");
+		logtoall("Restricted\n");
 		break;
 	case AVAuthorizationStatusNotDetermined:
 		// Didn't request access yet
-		say("NotDetermined\n");
+		logtoall("NotDetermined\n");
 
 //		[AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
 //		}];
 		break;
 	default:
-		say("default\n");
+		logtoall("default\n");
 		break;
 	}
 
@@ -263,7 +263,7 @@ int avfcam_create(_obj* win, void* arg, int argc, u8** argv)
 	for (AVCaptureDevice* device in video_devices) {
 		const char *name = [[device localizedName] UTF8String];
 		int index        = [video_devices indexOfObject:device];
-		say("video[%d] %s\n", index, name);
+		logtoall("video[%d] %s\n", index, name);
 		videodevice_enumfmt(device);
 		chosen = device;
 	}
@@ -271,26 +271,26 @@ int avfcam_create(_obj* win, void* arg, int argc, u8** argv)
 		const char *name = [[device localizedName] UTF8String];
 		int index        = [audio_devices indexOfObject:device];
 		videodevice_enumfmt(device);
-		say("audio[%d] %s\n", index, name);
+		logtoall("audio[%d] %s\n", index, name);
 	}/*
 	for (AVCaptureDevice* device in muxed_devices) {
 		const char *name = [[device localizedName] UTF8String];
 		int index        = [muxed_devices indexOfObject:device];
-		say("muxed[%d] %s\n", index, name);
+		logtoall("muxed[%d] %s\n", index, name);
 	}*/
 
 	//todo: debug
 	if(0 == chosen)return 0;
-	say("in iterm2 this works, in vscode this abort, i dont know why\n");
+	logtoall("in iterm2 this works, in vscode this abort, i dont know why\n");
 
 	//input
 	NSError *err;
 	AVCaptureDeviceInput* input = [AVCaptureDeviceInput deviceInputWithDevice:chosen error:&err];
-	//say("error code=%d\n",[err code]);
+	//logtoall("error code=%d\n",[err code]);
 
 	//output
 	AVCaptureVideoDataOutput* output = [[AVCaptureVideoDataOutput alloc]init];
-	//say("output\n");
+	//logtoall("output\n");
 
 	//output delegate
 	id delegate = [[MyDelegate alloc] init];

@@ -134,7 +134,7 @@ void pagetable_enable()
     asm volatile ("mrs %0, id_aa64mmfr0_el1" : "=r" (r));
     b=r&0xF;
     if(r&(0xF<<28) || b<1) {
-        say("ERROR: 4k granule or 36 bit address space not supported\n");
+        logtoall("ERROR: 4k granule or 36 bit address space not supported\n");
         return;
     }
 
@@ -184,7 +184,7 @@ void pagetable_disable()
 
 void initpaging(void* addr)
 {
-	say("@initpaging: table@%p\n", addr);
+	logtoall("@initpaging: table@%p\n", addr);
 
 	pagetable_use(addr);
 	pagetable_enable();

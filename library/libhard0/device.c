@@ -32,7 +32,7 @@ static int aaalen = 0;
 #define maxdevlen (0x100000/sizeof(struct item))
 void device_init(u8* addr)
 {
-	say("[4,6):device initing\n");
+	logtoall("[4,6):device initing\n");
 
 	int j;
 	for(j=0;j<0x200000;j++)addr[j]=0;
@@ -45,15 +45,15 @@ void device_init(u8* addr)
 	aaa = (void*)(addr+0x100000);
 	aaalen = 0;
 
-	say("[4,6):device inited\n");
+	logtoall("[4,6):device inited\n");
 }
 void device_exit()
 {
-	say("[4,6):device exiting\n");
+	logtoall("[4,6):device exiting\n");
 
 	freehardware();
 
-	say("[4,6):device exited\n");
+	logtoall("[4,6):device exited\n");
 }
 
 
@@ -192,7 +192,7 @@ int device_delete(_obj* this)
 }
 int device_reader(struct item* dev,void* foot, p64 arg,int cmd, void* buf,int len)
 {
-	//say("@device_reader\n");
+	//logtoall("@device_reader\n");
 	int fd = dev->priv_fd;
 	switch(dev->type){
 		case _gpio_:return gpio_read(dev,foot, arg,cmd, buf,len);break;
@@ -201,7 +201,7 @@ int device_reader(struct item* dev,void* foot, p64 arg,int cmd, void* buf,int le
 }
 int device_writer(struct item* dev,void* foot, p64 arg,int cmd, void* buf,int len)
 {
-	//say("@device_writer\n");
+	//logtoall("@device_writer\n");
 	int fd = dev->priv_fd;
 	switch(dev->type){
 		case _gpio_:return gpio_write(dev,foot, arg,cmd, buf,len);break;
@@ -214,17 +214,17 @@ int device_writer(struct item* dev,void* foot, p64 arg,int cmd, void* buf,int le
 
 int device_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@deviceattach\n");
+	logtoall("@deviceattach\n");
 	return 0;
 }
 int device_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@devicedetach\n");
+	logtoall("@devicedetach\n");
 	return 0;
 }
 int device_takeby(struct item* dev,void* foot, _syn* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
-	//say("@deviceread\n");
+	//logtoall("@deviceread\n");
 	if(dev->ontaking){
 		return dev->ontaking(dev,foot, stack,sp, arg,cmd, buf,len);
 	}
@@ -239,7 +239,7 @@ int device_takeby(struct item* dev,void* foot, _syn* stack,int sp, p64 arg,int c
 }
 int device_giveby(struct item* dev,void* foot, _syn* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
-	//say("@device_giveby\n");
+	//logtoall("@device_giveby\n");
 	u8 t[2];
 	if(0 == buf){
 		t[0] = len;
@@ -274,17 +274,17 @@ int device_search(u8* buf, int len)
 	for(j=maxdevlen;j>=0;j--){
 		p = &dev[j];
 		if(0 == p->type)continue;
-		say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j, &p->tier, &p->type, &p->hfmt, &p->vfmt);
+		logtoall("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j, &p->tier, &p->type, &p->hfmt, &p->vfmt);
 		k++;
 	}
 	for(j=0;j<64;j++){
 		p = &dev[j];
 		if(0 == p->type)continue;
-		say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j, &p->tier, &p->type, &p->hfmt, &p->vfmt);
+		logtoall("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j, &p->tier, &p->type, &p->hfmt, &p->vfmt);
 		k++;
 	}
 
-	if(0 == k)say("empth device\n");
+	if(0 == k)logtoall("empth device\n");
 	return 0;
 }
 int device_modify(int argc, u8** argv)
@@ -293,7 +293,7 @@ int device_modify(int argc, u8** argv)
 	u64 name = 0;
 	u8* tmp = (u8*)&name;
 	if(argc < 2)return 0;
-//say("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
+//logtoall("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
 	if(0 == ncmp(argv[1], "create", 6))
 	{
 		for(j=0;j<8;j++)
@@ -301,7 +301,7 @@ int device_modify(int argc, u8** argv)
 			if(argv[2][j] <= 0x20)break;
 			tmp[j] = argv[2][j];
 		}
-		say("%llx,%llx\n",name, argv[3]);
+		logtoall("%llx,%llx\n",name, argv[3]);
 		device_create(name, argv[3], argc-3, &argv[3]);
 	}
 	return 0;

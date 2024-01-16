@@ -16,7 +16,7 @@ static void orthcam_search(_obj* act, u32 foot, struct halfrel* self[], struct h
 	struct relation* rel;
 	_obj* world;
 	struct fstyle* obb = 0;
-	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
+	//logtoall("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
 	rel = act->irel0;
 	while(1){
@@ -38,7 +38,7 @@ static void orthcam_delete(_obj* act)
 }
 static void orthcam_create(_obj* act, void* arg)
 {
-    say("@orthcam_create\n");
+    logtoall("@orthcam_create\n");
 	struct privdata* priv = (void*)act->priv_256b;
 	priv->gl41cam = memoryalloc(0x1000, 0);
 	priv->evtype = 0;
@@ -100,7 +100,7 @@ static int orthcam_event(
 	_obj* wld, struct style* sty,
 	struct event* ev, int len)
 {
-	//say("orthcam_event@%llx:%x,%x\n", act, ev->why, ev->what);
+	//logtoall("orthcam_event@%llx:%x,%x\n", act, ev->why, ev->what);
 	if(_char_ == ev->what){
 		switch(ev->why){
 		case 'a':sty->fs.vc[0] -= 10;break;
@@ -279,7 +279,7 @@ static void orthcam_detach(struct halfrel* self, struct halfrel* peer)
 }
 static void orthcam_attach(struct halfrel* self, struct halfrel* peer)
 {
-    say("@orthcam_attach\n");
+    logtoall("@orthcam_attach\n");
 	if(_evto_ == self->foottype){
 		_obj* cam = self->pchip;
 		struct privdata* priv = (void*)cam->priv_256b;

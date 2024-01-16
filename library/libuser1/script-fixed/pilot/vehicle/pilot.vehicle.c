@@ -22,9 +22,9 @@ float carcon_pidloop_angle(_obj* ent, vec3 front)
 	float differ = ent->expect_x - actual;
 	if(differ > PI)differ -= tau;
 	if(differ <-PI)differ += tau;
-say("x_desire = %f\n", ent->expect_x);
-say("x_actual = %f\n", actual);
-say("x_differ = %f\n", differ);
+logtoall("x_desire = %f\n", ent->expect_x);
+logtoall("x_actual = %f\n", actual);
+logtoall("x_differ = %f\n", differ);
 
 	return Ap*differ;
 }
@@ -45,9 +45,9 @@ float carcon_pidloop_speed(_obj* ent, struct style* sty, float expect)
 	ent->integral += ent->e0;
 	if(ent->integral <-Kp*100.0)ent->integral =-Kp*100.0;
 	if(ent->integral > Kp*100.0)ent->integral = Kp*100.0;
-say("v_desire = %f\n", expect);
-say("v_actual = %f\n", actual);
-say("v_differ = %f\n", ent->e0);
+logtoall("v_desire = %f\n", expect);
+logtoall("v_actual = %f\n", actual);
+logtoall("v_differ = %f\n", ent->e0);
 
 	return Kp*ent->e0 + Ki*ent->integral + Kd*(ent->e0 - ent->e1);
 }
@@ -64,9 +64,9 @@ void carcon_applyforce(_obj* ent)
 	float* vf = sty->fs.vf;
 	float* vt = sty->fs.vt;
 	float v = carcon_pidloop_angle(ent, vf);
-	say("x_pidout = %f\n",v);
+	logtoall("x_pidout = %f\n",v);
 	float a = carcon_pidloop_speed(ent, sty, v);
-	say("v_pidout = %f\n",a);
+	logtoall("v_pidout = %f\n",a);
 
 	float ln = 0.1 - a;
 	float rn = 0.1 + a;
@@ -81,7 +81,7 @@ void carcon_applyforce(_obj* ent)
 	if(lf <-MAXVAL)lf =-MAXVAL;
 	if(rf > MAXVAL)rf = MAXVAL;
 	if(rf <-MAXVAL)rf =-MAXVAL;
-	say("ln,rn,lf,rf = %f,%f,%f,%f\n",ln,rn,lf,rf);
+	logtoall("ln,rn,lf,rf = %f,%f,%f,%f\n",ln,rn,lf,rf);
 
 	sty->force[0][0] = vf[0] * ln;
 	sty->force[0][1] = vf[1] * ln;
@@ -137,12 +137,12 @@ void carcon_checkplace(_obj* ent)
 
 int carcon_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	say("@carcon_read:%p,%p\n",ent,foot);
+	logtoall("@carcon_read:%p,%p\n",ent,foot);
 	return 0;
 }
 int carcon_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
-	//say("@carcon_write:%.4s\n",&foot);
+	//logtoall("@carcon_write:%.4s\n",&foot);
 	float angle;
 	switch(stack[sp=1].foottype){
 	case _clk_:
@@ -152,11 +152,11 @@ int carcon_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8*
 	case _ioby_:
 		decstr2float(buf, &angle);
 		ent->expect_x = angle*PI/180;
-		say("input:%f\n",ent->expect_x);
+		logtoall("input:%f\n",ent->expect_x);
 		break;
 	case _evby_:
 		ent->expect_x = buf[0]*PI/50 - PI;
-		say("input:%f\n",ent->expect_x);
+		logtoall("input:%f\n",ent->expect_x);
 		break;
 	}
 	return 0;
@@ -187,7 +187,7 @@ int carcon_delete(_obj* ent)
 }
 int carcon_create(_obj* ent, void* str)
 {
-	say("@carcon_create\n");
+	logtoall("@carcon_create\n");
 	ent->REL_WORLD = 0;
 	ent->REL_DRONE = 0;
 

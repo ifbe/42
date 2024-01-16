@@ -1,4 +1,4 @@
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 
@@ -13,6 +13,6 @@ int check_gz(unsigned char* addr)	//unsigned because addr[1]=0x8b
 }
 int parse_gz(unsigned char* addr)
 {
-	say("gz\n");
+	logtoall("gz\n");
 	return 0;
 }

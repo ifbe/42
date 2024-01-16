@@ -84,27 +84,27 @@ struct perobj{
 
 void picfmt_copy_y(u8* dst, u8* src)
 {
-	say("@picfmt_copy_y\n");
+	logtoall("@picfmt_copy_y\n");
 	int j;
 	for(j=0;j<640*480;j++)dst[j] = src[j];
 }
 void picfmt_copy_u(u8* dst, u8* src)
 {
-	say("@picfmt_copy_u\n");
+	logtoall("@picfmt_copy_u\n");
 	int j;
 	dst = dst+640*480;
 	for(j=0;j<640*480/4;j++)dst[j*2] = src[j*2];	//android u = u0 x u1 x u2 x u3 x ...
 }
 void picfmt_copy_v(u8* dst, u8* src)
 {
-	say("@picfmt_copy_v\n");
+	logtoall("@picfmt_copy_v\n");
 	int j;
 	dst = dst+640*480;
 	for(j=0;j<640*480/4;j++)dst[j*2+1] = src[j*2];	//android v = v0 x v1 x v2 x v3 x ...
 }
 void picfmt_copy_uv(u8* dst, u8* src)
 {
-	say("@picfmt_copy_uv\n");
+	logtoall("@picfmt_copy_uv\n");
 	int j;
 	for(j=0;j<640*480/2;j++)dst[j] = src[j];
 }
@@ -116,7 +116,7 @@ int picfmt_take(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, void
 }
 int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, void* buf, int len)
 {
-	//say("@picfmt_give\n");
+	//logtoall("@picfmt_give\n");
 	struct perobj* per = (void*)art->priv_256b;
 
 	//process metadata
@@ -126,12 +126,12 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, void
 	u64 srcfmt = per->srcfmt;
 	u64 ts = 0;
 	float* m3 = 0;
-	//say("srcw=%d,srch=%d\n",srcw,srch);
+	//logtoall("srcw=%d,srch=%d\n",srcw,srch);
 	if(_kv88_ == cmd){
 		int j;
 		struct kv88* kv = (void*)arg;
 		for(j=0;j<16;j++){
-			//say("key=%llx,val=%llx\n",kv[j].key, kv[j].val);
+			//logtoall("key=%llx,val=%llx\n",kv[j].key, kv[j].val);
 			if(kv[j].key <= 0x20)break;
 			switch(kv[j].key){
 			case '.':
@@ -155,7 +155,7 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, void
 		}
 	}
 	if((0 == srcw)|(0 == srch)){
-		say("wrong srcw=%d or srch=%d\n",srcw,srch);
+		logtoall("wrong srcw=%d or srch=%d\n",srcw,srch);
 		return 0;
 	}
 
@@ -189,7 +189,7 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, void
 	}
 	if(per->zerocopy){
 		reading_data_from_peer(art, _dst_, 0, _buf_, &per->dstbuf, 1);
-		if(per->log)say("zerocopy:%p\n", per->dstbuf[0]);
+		if(per->log)logtoall("zerocopy:%p\n", per->dstbuf[0]);
 	}
 	if(0 == per->dstbuf[0]){
 		per->dstlen = 4 * per->dstw * per->dsth;
@@ -269,11 +269,11 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, void
 	}
 
 unknown:
-	say("picfmt_give unknown:srcfmt=%llx,dstfmt=%llx\n", srcfmt, per->dstfmt);
+	logtoall("picfmt_give unknown:srcfmt=%llx,dstfmt=%llx\n", srcfmt, per->dstfmt);
 	printmemory(buf, 16);
 
 done:
-/*	say("src(buf=%p,len=%x,w=%d,h=%d) -> dst(buf=%p,dstlen=%x,w=%d,h=%d)\n",
+/*	logtoall("src(buf=%p,len=%x,w=%d,h=%d) -> dst(buf=%p,dstlen=%x,w=%d,h=%d)\n",
 		buf, len, srcw, srch,
 		per->dstbuf[0], per->dstlen, per->dstw, per->dsth);*/
 	per->kv[0].key = 'w';per->kv[0].val = per->dstw;
@@ -301,13 +301,13 @@ int picfmt_delete(_obj* ele)
 int picfmt_create(_obj* ele, u8* arg, int argc, char** argv)
 {
 	int j;
-	say("@picfmt_create\n");
+	logtoall("@picfmt_create\n");
 
 	struct perobj* per = (void*)ele->priv_256b;
 	per->dstw = per->dsth = 0;
 
 	for(j=0;j<argc;j++){
-		say("%d:%.8s\n", j, argv[j]);
+		logtoall("%d:%.8s\n", j, argv[j]);
 		if(0 == ncmp(argv[j], "srcfmt:", 7)){
 			copyeightcc(&per->srcfmt, argv[j]+7);
 			continue;
@@ -341,8 +341,8 @@ int picfmt_create(_obj* ele, u8* arg, int argc, char** argv)
 		}
 	}
 
-	say("src:fmt=%.4s,w=%d,h=%d\n", &per->srcfmt, per->srcw, per->srch);
-	say("dst:fmt=%.4s,w=%d,h=%d\n", &per->dstfmt, per->dstw, per->dsth);
+	logtoall("src:fmt=%.4s,w=%d,h=%d\n", &per->srcfmt, per->srcw, per->srch);
+	logtoall("dst:fmt=%.4s,w=%d,h=%d\n", &per->dstfmt, per->dstw, per->dsth);
 
 	return 1;
 }

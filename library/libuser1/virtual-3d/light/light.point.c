@@ -127,7 +127,7 @@ static void pointlight_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,
 static void pointlight_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	u8* in = buf;
-	say("@pointlight_write:%x\n",in[0]);
+	logtoall("@pointlight_write:%x\n",in[0]);
 
 	if('0' == in[0])ent->ONOFF = 0;
 	if('1' == in[0])ent->ONOFF = 1;

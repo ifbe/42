@@ -322,7 +322,7 @@ void weiqi_putone(struct perweiqi* per, vec3 v)
 {
 	int x = 19*v[0];
 	int y = 19*(1.0-v[1]);
-	say("%d,%d\n",x,y);
+	logtoall("%d,%d\n",x,y);
 
 	if(x<0)return;
 	if(x>18)return;
@@ -366,7 +366,7 @@ void weiqi_intersect(float* out, vec3 ray[], struct fstyle* sty)
 	//[0,1]
 	out[0] = (out[0]+1.0)/2;
 	out[1] = (out[1]+1.0)/2;
-	say("%f,%f\n", out[0],out[1]);
+	logtoall("%f,%f\n", out[0],out[1]);
 }
 
 
@@ -413,7 +413,7 @@ static void weiqi_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 	case _scene3d_:
 	case _reality_:{
 		vec3* ray = buf;
-/*		say("%f,%f,%f->%f,%f,%f\n",
+/*		logtoall("%f,%f,%f->%f,%f,%f\n",
 			ray[0][0],ray[0][1],ray[0][2],
 			ray[1][0],ray[1][1],ray[1][2]);
 */

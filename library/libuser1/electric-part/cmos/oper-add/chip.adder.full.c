@@ -363,7 +363,7 @@ static void fulladd_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int
 static void fulladd_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
 	u8 x,y,z,tmp;
-	//say("@fulladd_write:%x\n",buf[0]);
+	//logtoall("@fulladd_write:%x\n",buf[0]);
 
 	if(_src_ == stack[sp-1].foottype){
 		tmp = buf[0] - 0x30;

@@ -111,7 +111,7 @@ DWORD WINAPI iocpthread(LPVOID pM)
 	struct perio* perio = NULL;		//in struct perfd
 
 	ret = GetCurrentThreadId();
-	//say("threadid = %x\n", ret);
+	//logtoall("threadid = %x\n", ret);
 
 	while(1)
 	{

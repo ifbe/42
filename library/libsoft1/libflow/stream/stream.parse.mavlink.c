@@ -46,14 +46,14 @@ int mavlinkclient_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 	printmemory(buf, len);
 
 	tmp = ml->len;
-	say("ver = %d\n", 0xff - ml->ver);
-	say("len = %d\n", tmp);
-	say("flag = %d:%d\n", ml->a, ml->b);
-	say("seq = %d\n", ml->seq);
-	say("id = %d:%d\n", ml->sid, ml->cid);
-	say("msg = %d\n", ml->msg[0] | (ml->msg[1]<<8) | (ml->msg[2]<<16));
+	logtoall("ver = %d\n", 0xff - ml->ver);
+	logtoall("len = %d\n", tmp);
+	logtoall("flag = %d:%d\n", ml->a, ml->b);
+	logtoall("seq = %d\n", ml->seq);
+	logtoall("id = %d:%d\n", ml->sid, ml->cid);
+	logtoall("msg = %d\n", ml->msg[0] | (ml->msg[1]<<8) | (ml->msg[2]<<16));
 	printmemory(buf + 10, tmp);
-	say("crc=%x\n", crc_calculate(buf+1, 9+tmp));
+	logtoall("crc=%x\n", crc_calculate(buf+1, 9+tmp));
 	return 0;
 }
 int mavlinkclient_delete(_obj* ele)
@@ -62,7 +62,7 @@ int mavlinkclient_delete(_obj* ele)
 }
 int mavlinkclient_create(_obj* ele, u8* arg)
 {
-	say("@mavlinkclient_create\n");
+	logtoall("@mavlinkclient_create\n");
 	return 0;
 }
 
@@ -84,6 +84,6 @@ int mavlinkserver_delete(_obj* ele)
 }
 int mavlinkserver_create(_obj* ele, u8* arg)
 {
-	say("@mavlinkserver_create\n");
+	logtoall("@mavlinkserver_create\n");
 	return 0;
 }

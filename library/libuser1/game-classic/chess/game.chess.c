@@ -133,17 +133,17 @@ static void chess_draw_cli(
 {
 	u8 ch;
 	int x,y;
-	say("chess(%x,%x,%x)\n",win,act,sty);
+	logtoall("chess(%x,%x,%x)\n",win,act,sty);
 
 	for(y=0;y<8;y++)
 	{
 		for(x=0;x<8;x++)
 		{
 			ch = buffer[y][x];
-			if(ch <= 0x20)say("_	");
-			else say("%c	", ch);
+			if(ch <= 0x20)logtoall("_	");
+			else logtoall("%c	", ch);
 		}
-		say("\n");
+		logtoall("\n");
 	}
 }
 
@@ -187,7 +187,7 @@ static void chess_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 }
 static void chess_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	//say("@chess:%x,%x\n", ev->why, ev->what);
+	//logtoall("@chess:%x,%x\n", ev->why, ev->what);
 }
 static void chess_detach(struct halfrel* self, struct halfrel* peer)
 {

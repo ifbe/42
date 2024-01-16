@@ -27,21 +27,21 @@ int proxyclient_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int id
 }
 int proxyclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	say("@proxyclient_write:%llx, %.4s, len=%d\n", art, &foot, len);
+	logtoall("@proxyclient_write:%llx, %.4s, len=%d\n", art, &foot, len);
 	printmemory(buf, len<16?len:16);
 
 	return 0;
 }
 int proxyclient_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@proxyclient_detach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+	logtoall("@proxyclient_detach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
 		&self->nodetype, self->pchip, &self->foottype, self->pfoot,
 		&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
 	return 0;
 }
 int proxyclient_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@proxyclient_attach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+	logtoall("@proxyclient_attach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
 		&self->nodetype, self->pchip, &self->foottype, self->pfoot,
 		&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
 	return 0;
@@ -52,7 +52,7 @@ int proxyclient_delete(_obj* art)
 }
 int proxyclient_create(_obj* art, u8* url)
 {
-	say("@proxyclient_create\n");
+	logtoall("@proxyclient_create\n");
 	art->vfmt = 0;
 	return 0;
 }
@@ -66,7 +66,7 @@ int proxyserver_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int id
 }
 int proxyserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	say("@proxyserver_write:%p,%p, len=%d\n", art, foot, len);
+	logtoall("@proxyserver_write:%p,%p, len=%d\n", art, foot, len);
 //printmemory(buf, len<16?len:16);
 
 	struct perobj* perobj = (void*)art->priv_256b;
@@ -96,14 +96,14 @@ int proxyserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 }
 int proxyserver_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@proxyserver_detach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+	logtoall("@proxyserver_detach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
 		&self->nodetype, self->pchip, &self->foottype, self->pfoot,
 		&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
 	return 0;
 }
 int proxyserver_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@proxyserver_attach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+	logtoall("@proxyserver_attach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
 		&self->nodetype, self->pchip, &self->foottype, self->pfoot,
 		&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
 	return 0;
@@ -114,7 +114,7 @@ int proxyserver_delete(_obj* art)
 }
 int proxyserver_create(_obj* art, u8* url)
 {
-	say("@proxyserver_create\n");
+	logtoall("@proxyserver_create\n");
 	art->vfmt = 0;
 	return 0;
 }
@@ -139,9 +139,9 @@ int proxymaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 	_obj* Proxy;		//server
 	_obj* socks;
 
-	say("@proxymaster_write:chip=%llx, foot=%.4s, len=%d\n", art, &foot, len);
+	logtoall("@proxymaster_write:chip=%llx, foot=%.4s, len=%d\n", art, &foot, len);
 	//printmemory(buf, len<16?len:16);
-	say("%.*s", len, buf);
+	logtoall("%.*s", len, buf);
 
 
 //0: CONNECT or GET ?
@@ -199,7 +199,7 @@ int proxymaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 
 
 //3: server prepare
-	say("target=%s\n", perobj->data);
+	logtoall("target=%s\n", perobj->data);
 	switch(art->hfmt){
 		case _socks_:{
 			//socksclient -> proxyserver
@@ -239,7 +239,7 @@ int proxymaster_detach(struct halfrel* self, struct halfrel* peer)
 }
 int proxymaster_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@proxymaster_attach\n");
+	logtoall("@proxymaster_attach\n");
 	return 0;
 }
 int proxymaster_delete(_obj* art)
@@ -248,7 +248,7 @@ int proxymaster_delete(_obj* art)
 }
 int proxymaster_create(_obj* art, u8* url)
 {
-	say("@proxymaster.create\n");
+	logtoall("@proxymaster.create\n");
 	int j,k;
 	struct perobj* perobj = (void*)art->priv_256b;
 	perobj->buf = 0;
@@ -280,6 +280,6 @@ int proxymaster_create(_obj* art, u8* url)
 
 none:
 	art->hfmt = 0;
-	say("@proxymaster.ending\n");
+	logtoall("@proxymaster.ending\n");
 	return 0;
 }

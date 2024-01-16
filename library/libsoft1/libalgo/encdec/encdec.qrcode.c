@@ -1,4 +1,4 @@
-void say(char*,...);
+void logtoall(char*,...);
 
 
 
@@ -127,7 +127,7 @@ void qrcode_generate(char* src, char* dest, int side, int correction)
 	ret=(side-17)%4;
 	if( (version<1) | (version>40) | (ret!=0) )
 	{
-		say("error@qrcode version\n");
+		logtoall("error@qrcode version\n");
 		return;
 	}
 

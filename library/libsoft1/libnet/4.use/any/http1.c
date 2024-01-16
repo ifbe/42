@@ -48,7 +48,7 @@ void httpparser(u8* buf, int len, struct httpparsed* p)
 			k = j+2;
 		}
 	}
-	//say("Content@%llx\nEnd@%llx\n", p->Content, p->End);
+	//logtoall("Content@%llx\nEnd@%llx\n", p->Content, p->End);
 }
 
 
@@ -61,7 +61,7 @@ int httpclient_read(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, 
 int httpclient_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
 	int j,k;
-	say("@httpclient_write:%p,%p\n", art, foot);
+	logtoall("@httpclient_write:%p,%p\n", art, foot);
 	if(len>0)printmemory(buf, len<16?len:16);
 
 	switch(stack[sp-1].foottype){
@@ -80,14 +80,14 @@ int httpclient_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx,
             //send: http data
 			k = 0;
 			for(j=0;j<len-2;j++){
-				//say("%d,%x\n",j,buf[j]);
+				//logtoall("%d,%x\n",j,buf[j]);
 				if(	(buf[j+0] == 0xd) && (buf[j+1] == 0xa) ) {
 					if(buf[k] != 0xd){
-						say("(((%.*s)))\n", j-k, buf+k);
+						logtoall("(((%.*s)))\n", j-k, buf+k);
 						k = j+2;
 					}
 					else{
-						//say("dbg:%d\n",len-j-2);
+						//logtoall("dbg:%d\n",len-j-2);
 						//printmemory(buf+j+2, len-j-2);
 						give_data_into_peer(art, _dst_, stack,sp, 0,0, buf+j+2,len-j-2);
 						break;
@@ -105,14 +105,14 @@ int httpclient_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx,
 }
 int httpclient_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@httpclient_detach: %.4s\n", &self->foottype);
+	logtoall("@httpclient_detach: %.4s\n", &self->foottype);
 	return 0;
 }
 int httpclient_attach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* art;
 	_obj* obj;
-	say("@httpclient_attach: %.4s\n", &self->foottype);
+	logtoall("@httpclient_attach: %.4s\n", &self->foottype);
 
 	art = self->pchip;
 	if(_src_ == self->foottype){
@@ -167,7 +167,7 @@ int httpclient_create(_obj* ele, u8* url)
 		clen, ctxt,
 		hlen, host
 	);
-	say("httpclient_create firstpacket=\n%.*s\n", ele->LEN, ele->BUF);
+	logtoall("httpclient_create firstpacket=\n%.*s\n", ele->LEN, ele->BUF);
 	return 0;
 }
 
@@ -198,12 +198,12 @@ int httpserver_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx,
 }
 int httpserver_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@httpserver_detach: %.4s\n", &self->foottype);
+	logtoall("@httpserver_detach: %.4s\n", &self->foottype);
 	return 0;
 }
 int httpserver_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@httpserver_attach: %.4s\n", &self->foottype);
+	logtoall("@httpserver_attach: %.4s\n", &self->foottype);
 	return 0;
 }
 int httpserver_delete(_obj* ele)
@@ -307,7 +307,7 @@ int httpmaster_write_bysrc(_obj* art,void* foot, _syn* stack,int sp, p64 arg, in
 			give_data_into_peer(art, _src_, stack,sp, 0,0, buf,len);
 		}
 		else{
-			say("unknown: POST\n");
+			logtoall("unknown: POST\n");
 		}
 	}
 
@@ -321,7 +321,7 @@ int httpmaster_write_bysrc(_obj* art,void* foot, _syn* stack,int sp, p64 arg, in
 }
 int httpmaster_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
-	say("@httpmaster_write:%p,%p\n", art, foot);
+	logtoall("@httpmaster_write:%p,%p\n", art, foot);
 	switch(stack[sp-1].foottype){
 	case _dst_:return httpmaster_write_bydst(art,foot, stack,sp, arg,idx, buf,len);
 	default:return httpmaster_write_bysrc(art,foot, stack,sp, arg,idx, buf,len);

@@ -71,7 +71,7 @@ static void font_draw_pixel(
 			if(n < 0)continue;
 			if(n > 0xff)continue;
 
-//say("%d,%d\n",x,y);
+//logtoall("%d,%d\n",x,y);
 			if((0 == x)|(0 == y))
 			{
 				drawsolid_rect(
@@ -120,24 +120,24 @@ static void font_draw_cli(
 	u8 buf[0x20];
 	drawascii_bitmap(buf, chosen);
 
-	say("\n%02x0 1 2 3 4 5 6 7 8 9 a b c d e f\n", chosen);
+	logtoall("\n%02x0 1 2 3 4 5 6 7 8 9 a b c d e f\n", chosen);
 	for(y=0;y<16;y++)
 	{
-		if(y<=9)say("%c ", 0x30+y);
-		else say("%c ", 0x57+y);
+		if(y<=9)logtoall("%c ", 0x30+y);
+		else logtoall("%c ", 0x57+y);
 
 		ch = buf[y];
 		for(x=0;x<16;x++)
 		{
-			if(x >= 8)say("**");
+			if(x >= 8)logtoall("**");
 			else
 			{
-				if((ch&0x80) != 0)say("%@");
-				else say("--");
+				if((ch&0x80) != 0)logtoall("%@");
+				else logtoall("--");
 				ch = ch<<1;
 			}
 		}
-		say("\n");
+		logtoall("\n");
 	}
 }
 

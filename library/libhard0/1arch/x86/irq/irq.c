@@ -39,7 +39,7 @@ void irqchip_enableirq(int chip, int pin, int apicid, int intvec)
 		if(_isa_ == chip){
 			u8* redirtbl = acpi_getredirtbl();
 			gsi = redirtbl[pin];
-			say("@enableirq: isa %d -> gsi %d\n", pin, gsi);
+			logtoall("@enableirq: isa %d -> gsi %d\n", pin, gsi);
 		}
 		ioapic_enableirq(gsi, intvec);
 	}
@@ -52,7 +52,7 @@ void irqchip_disableirq(int chip, int pin)
 	else{
 		u8* redirtbl = acpi_getredirtbl();
 		u8 gsi = redirtbl[pin];
-		say("@disableirq: isa %d -> gsi %d\n", pin, gsi);
+		logtoall("@disableirq: isa %d -> gsi %d\n", pin, gsi);
 		ioapic_disableirq(gsi);
 	}
 }
@@ -67,20 +67,20 @@ void irqchip_endofirq(int irq)
 }
 void initirq(struct item* dev)
 {
-	say("@initirq\n");
+	logtoall("@initirq\n");
 	if(0 != acpi_getirqioapic()){
 		ioapic_init();
 		chosen = 0;
-		say("irqchip=apic\n");
+		logtoall("irqchip=apic\n");
 	}
 	else if(1 == acpi_getdual8259()){
 		dual8259_init();
 		chosen = 8259;
-		say("irqchip=8259\n");
+		logtoall("irqchip=8259\n");
 	}
 	else{
-		say("error: no irq chip found\n");
+		logtoall("error: no irq chip found\n");
 		while(1)asm("hlt");
 	}
-	say("@initirq end\n\n");
+	logtoall("@initirq end\n\n");
 }

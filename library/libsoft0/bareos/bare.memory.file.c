@@ -38,7 +38,7 @@ int filemanager_registerpart(_obj* node, void* foot)
 {
 	int j,ret;
 	struct parsed tmp[0x80];
-	say("type=%llx\n", node->type);
+	logtoall("type=%llx\n", node->type);
 
 	//1.remember
 	ptblnode[ptblcount] = node;
@@ -49,14 +49,14 @@ int filemanager_registerpart(_obj* node, void* foot)
 	if(0 == node->ontaking)return 0;
 
 	ret = node->ontaking((void*)node,foot, 0,0, 0,_part_, tmp,0);
-	say("filemgr.ret=%x\n",ret);
+	logtoall("filemgr.ret=%x\n",ret);
 	if(ret <= 0)return 0;
 
 	//3.mount all i know
 	_obj* fsys;
 	struct relation* rel;
 	for(j=0;j<ret;j++){
-		say("%d: %llx,%llx,%llx,%llx\n", j, tmp[j].type, tmp[j].name, tmp[j].start, tmp[j].count);
+		logtoall("%d: %llx,%llx,%llx,%llx\n", j, tmp[j].type, tmp[j].name, tmp[j].start, tmp[j].count);
 		switch(tmp[j].type){
 		case _fat_:
 		case _ntfs_:
@@ -77,7 +77,7 @@ int filemanager_registerpart(_obj* node, void* foot)
 }
 int filemanager_registerdisk(void* node, void* foot)
 {
-	say("@filemanager_registerdisk: [%d]=%p\n", diskcount, node);
+	logtoall("@filemanager_registerdisk: [%d]=%p\n", diskcount, node);
 
 	//1.remember
 	disknode[diskcount] = node;
@@ -162,69 +162,69 @@ int file_search_disk()
 	int j,ret;
 	struct item* node;
 	void* slot;
-	say("--------disk--------\n");
+	logtoall("--------disk--------\n");
 
 	for(j=0;j<diskcount;j++){
-		say("disk[%d]@%p:\n", j, disknode[j]);
+		logtoall("disk[%d]@%p:\n", j, disknode[j]);
 
 		node = disknode[j];
 		if(node->ontaking){
 			slot = diskfoot[j];
 			ret = node->ontaking(node,slot, 0,0, 0,_info_, 0,0);
-			//say("ret=%d\n",ret);
+			//logtoall("ret=%d\n",ret);
 		}
 		else{
-			say("there is no info\n");
+			logtoall("there is no info\n");
 		}
-		say("\n");
+		logtoall("\n");
 	}
-	if(0 == j)say("no disk\n\n");
+	if(0 == j)logtoall("no disk\n\n");
 }
 int file_search_ptbl()
 {
 	int j,ret;
 	struct item* node;
 	void* slot;
-	say("--------ptbl--------\n");
+	logtoall("--------ptbl--------\n");
 
 	for(j=0;j<ptblcount;j++){
-		say("ptbl[%d]@%p:\n", j, ptblnode[j]);
+		logtoall("ptbl[%d]@%p:\n", j, ptblnode[j]);
 
 		node = ptblnode[j];
 		if(node->ontaking){
 			slot = ptblfoot[j];
 			ret = node->ontaking(node,slot, 0,0, 0,_info_, 0,0);
-			//say("ret=%d\n",ret);
+			//logtoall("ret=%d\n",ret);
 		}
 		else{
-			say("there is no info\n");
+			logtoall("there is no info\n");
 		}
-		say("\n");
+		logtoall("\n");
 	}
-	if(0 == j)say("no ptbl\n\n");
+	if(0 == j)logtoall("no ptbl\n\n");
 }
 int file_search_fsys()
 {
 	int j,ret;
 	struct item* node;
 	void* slot;
-	say("--------fsys--------\n");
+	logtoall("--------fsys--------\n");
 
 	for(j=0;j<fsyscount;j++){
-		say("fsys[%d]@%p:\n", j, fsysnode[j]);
+		logtoall("fsys[%d]@%p:\n", j, fsysnode[j]);
 
 		node = fsysnode[j];
 		if(node->ontaking){
 			slot = fsysfoot[j];
 			ret = node->ontaking(node,slot, 0,0, 0,_info_, 0,0);
-			//say("ret=%d\n",ret);
+			//logtoall("ret=%d\n",ret);
 		}
 		else{
-			say("there is no info\n");
+			logtoall("there is no info\n");
 		}
-		say("\n");
+		logtoall("\n");
 	}
-	if(0 == j)say("no fsys\n\n");
+	if(0 == j)logtoall("no fsys\n\n");
 }
 int file_search_fsys_x(int id, u8* path)
 {
@@ -239,9 +239,9 @@ int file_search_fsys_x(int id, u8* path)
 }
 int file_search(u8* buf, int len)
 {
-	say("@filesearch:buf=%p,len=%x\n", buf,len);
+	logtoall("@filesearch:buf=%p,len=%x\n", buf,len);
 	if(buf){
-		say("arg={%s}\n", buf);
+		logtoall("arg={%s}\n", buf);
 		if(0 == ncmp(buf, "/disk", 5)){
 			file_search_disk();
 		}
@@ -274,7 +274,7 @@ int file_modify(void* buf, int len)
 
 void initfilemgr()
 {
-	say("@initfilemgr\n");
+	logtoall("@initfilemgr\n");
 }
 void freefilemgr()
 {

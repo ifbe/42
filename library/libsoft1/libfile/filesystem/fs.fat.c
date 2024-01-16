@@ -144,7 +144,7 @@ static void parsefolder(_obj* art, u8* rsi)
 		fatdate2mydate(dir->create_date, dir->create_time_s, date);
 
 		printmemory(rsi+j,0x20);
-		say("clus=%x, size=%x, type=%x, name=%.8s%.3s\n",
+		logtoall("clus=%x, size=%x, type=%x, name=%.8s%.3s\n",
 			clus,
 			dir->filesize,
 			dir->attr,
@@ -245,7 +245,7 @@ static int fat16_read(_obj* art, int ign, u32 clus,int offs, u8* buf,int len)
 		clus = fat16_nextclus(art, clus);
 		if(clus < 2)break;
 		if(clus >= 0xfff8)break;
-		if(clus == 0xfff7){say("bad clus:%x\n",clus);break;}
+		if(clus == 0xfff7){logtoall("bad clus:%x\n",clus);break;}
 	}
 
 	tmp = per->byte_per_sec * (per->sec_of_clus2 + per->sec_per_clus * (clus-2));
@@ -299,7 +299,7 @@ static int fat32_read(_obj* art, int ign, u64 clus,int offs, u8* buf,int len)
 		clus = fat32_nextclus(art, clus);
 		if(clus <2)goto retcnt;
 		if(clus >= 0x0ffffff8)goto retcnt;
-		if(clus == 0x0ffffff7){say("bad clus:%x\n",clus);goto retcnt;}
+		if(clus == 0x0ffffff7){logtoall("bad clus:%x\n",clus);goto retcnt;}
 	}
 
 	while(1){
@@ -316,7 +316,7 @@ static int fat32_read(_obj* art, int ign, u64 clus,int offs, u8* buf,int len)
 		clus = fat32_nextclus(art, clus);
 		if(clus <2)goto retcnt;
 		if(clus >= 0x0ffffff8)goto retcnt;
-		if(clus == 0x0ffffff7){say("bad clus:%x\n",clus);goto retcnt;}
+		if(clus == 0x0ffffff7){logtoall("bad clus:%x\n",clus);goto retcnt;}
 	}
 
 	tmp = per->byte_per_sec * (per->sec_of_clus2 + per->sec_per_clus * (clus-2));
@@ -372,7 +372,7 @@ u32 fat_searchfolder(u8* ptr, u8* name)
 		//if(0 == (dir->attr&0x10))continue;
 
 		k = fat_checkname(name, dir->name_this);
-		//say("@@@@@@k=%d\n",k);
+		//logtoall("@@@@@@k=%d\n",k);
 		if(0 != k)continue;
 
 		return (dir->clus_hi16<<16) + dir->clus_lo16;
@@ -440,7 +440,7 @@ u32 fat_name2clus(_obj* art, u8* name)
 			depth++;
 		}
 	}
-	say("depth=%d\n",depth);
+	logtoall("depth=%d\n",depth);
 	return ret;
 }
 
@@ -480,14 +480,14 @@ int fat_parse(_obj* art, u8* addr)
 
 	p = fat->byte_per_sec;
 	per->byte_per_sec = p[0] + (p[1]<<8);
-	say("byte_per_sec=%x\n", per->byte_per_sec);
+	logtoall("byte_per_sec=%x\n", per->byte_per_sec);
 
 	per->sec_per_clus = fat->sec_per_clus;
-	say("sec_per_clus=%x\n", per->sec_per_clus);
+	logtoall("sec_per_clus=%x\n", per->sec_per_clus);
 
 	p = fat->sec_of_fat0;
 	per->sec_of_fat0 = p[0] + (p[1]<<8);
-	say("sec_of_fat0=%x\n", per->sec_of_fat0);
+	logtoall("sec_of_fat0=%x\n", per->sec_of_fat0);
 
 	int ver = 32;
 	if(addr[0x11])ver = 16;
@@ -499,10 +499,10 @@ int fat_parse(_obj* art, u8* addr)
 	{
 		p = fat->sec_per_fat;
 		per->sec_per_fat = *(u16*)(fat->sec_per_fat);
-		say("sec_per_fat:%x\n", per->sec_per_fat);
+		logtoall("sec_per_fat:%x\n", per->sec_per_fat);
 
 		per->sec_of_clus2 = per->sec_of_fat0 + per->sec_per_fat*2 + 32;
-		say("sec_of_clus2@%x\n", per->sec_of_clus2);
+		logtoall("sec_of_clus2@%x\n", per->sec_of_clus2);
 
 		per->version = 16;
 	}
@@ -512,10 +512,10 @@ int fat_parse(_obj* art, u8* addr)
 
 		p = fat32->sec_per_fat;
 		per->sec_per_fat = p[0] + (p[1]<<8) + (p[2]<<16) + (p[3]<<24);;
-		say("sec_per_fat:%x\n", per->sec_per_fat);
+		logtoall("sec_per_fat:%x\n", per->sec_per_fat);
 
 		per->sec_of_clus2 = per->sec_of_fat0 + per->sec_per_fat*2;
-		say("sec_of_clus2@%x\n", per->sec_of_clus2);
+		logtoall("sec_of_clus2@%x\n", per->sec_of_clus2);
 
 		per->version = 32;
 	}
@@ -526,12 +526,12 @@ int fat_showinfo(_obj* art)
 	struct perfs* per = art->priv_ptr;
 	if(0 == per)return 0;
 
-	say("version=%d\n", per->version);
-	say("byte_per_sec=%x\n", per->byte_per_sec);
-	say("sec_per_fat=%x\n", per->sec_per_fat);
-	say("sec_per_clus=%x\n", per->sec_per_clus);
-	say("sec_of_fat0=%x\n", per->sec_of_fat0);
-	say("sec_of_clus2=%x\n", per->sec_of_clus2);
+	logtoall("version=%d\n", per->version);
+	logtoall("byte_per_sec=%x\n", per->byte_per_sec);
+	logtoall("sec_per_fat=%x\n", per->sec_per_fat);
+	logtoall("sec_per_clus=%x\n", per->sec_per_clus);
+	logtoall("sec_of_fat0=%x\n", per->sec_of_fat0);
+	logtoall("sec_of_clus2=%x\n", per->sec_of_clus2);
 
 	return 0;
 }
@@ -541,8 +541,8 @@ int fat_showinfo(_obj* art)
 
 static int fatclient_ontake(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, u8* buf, int len)
 {
-	say("@fatclient_ontake\n");
-	say("%p,%p, %p,%x, %llx,%x, %p,%x\n",art,foot, stack,sp, arg,cmd, buf,len);
+	logtoall("@fatclient_ontake\n");
+	logtoall("%p,%p, %p,%x, %llx,%x, %p,%x\n",art,foot, stack,sp, arg,cmd, buf,len);
 
 	struct perfs* per = art->priv_ptr;
 	if(0 == per)return 0;
@@ -552,13 +552,13 @@ static int fatclient_ontake(_obj* art,void* foot, _syn* stack,int sp, p64 arg, i
 	}
 
 	if(_path_ == cmd){
-		if(arg)say("path=%s\n",(void*)arg);
+		if(arg)logtoall("path=%s\n",(void*)arg);
 	}
 	void* name = (void*)arg;
 	u32 clus = fat_name2clus(art, name);
-	say("name=%s,fat=%x\n", name, clus);
+	logtoall("name=%s,fat=%x\n", name, clus);
 	if(0 == clus){
-		say("wrong file\n");
+		logtoall("wrong file\n");
 		return 0;
 	}
 
@@ -595,7 +595,7 @@ static int fatclient_ongive(_obj* art,void* foot, _syn* stack,int sp, p64 arg, i
 }
 int fatclient_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@fatclient_attach\n");
+	logtoall("@fatclient_attach\n");
 	int ret;
 	if(_src_ != self->foottype)return 0;
 
@@ -607,13 +607,13 @@ int fatclient_attach(struct halfrel* self, struct halfrel* peer)
 
 	ret = take_data_from_peer(art,_src_, 0,0, 0,_pos_, per->pbrbuffer,0x200);
 	if(ret < 0x200){
-		say("fail@read:%d\n",ret);
+		logtoall("fail@read:%d\n",ret);
 		return 0;
 	}
 
 	ret = fat_check(per->pbrbuffer);
 	if(ret < 12){
-		say("wrong fat\n");
+		logtoall("wrong fat\n");
 		printmemory(per->pbrbuffer,0x200);
 		return -1;
 	}
@@ -644,7 +644,7 @@ static int fatclient_writer(_obj* art,int xxx, void* arg,int cmd, void* buf,int 
 }
 int fatclient_create(_obj* art)
 {
-	say("@fatclient_create\n");
+	logtoall("@fatclient_create\n");
 
 	struct perfs* per = memoryalloc(0x200000, 0);
 	art->priv_ptr = per;

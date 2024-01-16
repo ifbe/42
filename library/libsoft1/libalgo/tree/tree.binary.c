@@ -6,7 +6,7 @@
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
 u32 random_read();
 void printmemory(void*, int);
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 
@@ -34,7 +34,7 @@ void* bintree_grow(struct bintree* root)
 	{
        		temp = (void*)root + (root->up);
 		root->up += 0x10;
-		//say("temp1=%llx\n",temp);
+		//logtoall("temp1=%llx\n",temp);
 		return temp;
 	}
 
@@ -47,13 +47,13 @@ void* bintree_grow(struct bintree* root)
 			if((void*)root + (upup->left) == temp)
 			{
 				upup->left = 0;
-				//say("temp2=%llx\n",temp);
+				//logtoall("temp2=%llx\n",temp);
 				return temp;
 			}
 			else
 			{
 				upup->right = 0;
-				//say("temp3=%llx\n",temp);
+				//logtoall("temp3=%llx\n",temp);
 				return temp;
 			}
 		}

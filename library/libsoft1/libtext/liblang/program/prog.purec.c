@@ -3,7 +3,7 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 int mysnprintf(void*, int, void*, ...);
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 
@@ -212,7 +212,7 @@ static void printprophet(u8* p)
 
 finalprint:
 	//write(outfile,strbuf,count);
-	say("%s",strbuf);
+	logtoall("%s",strbuf);
 	return;
 }
 int purec_read(u8* src, int count)
@@ -221,7 +221,7 @@ int purec_read(u8* src, int count)
 	countbyte = 0;
 
 /*
-	say(
+	logtoall(
 		"@%x@%d -> %d,%d,%d,%d\n",
 		countbyte,
 		countline+1,

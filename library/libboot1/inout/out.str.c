@@ -56,7 +56,7 @@ void stdout_setwindow(void* node)
 
 
 
-void dbg(u8* fmt, ...)
+void logtomem(u8* fmt, ...)
 {
 	int j,k,len;
 	__builtin_va_list arg;
@@ -88,7 +88,7 @@ void dbg(u8* fmt, ...)
 	}
 
 }
-int say(void* fmt, ...)
+int logtoall(void* fmt, ...)
 {
 	int j,k,len;
 	__builtin_va_list arg;
@@ -160,8 +160,8 @@ void printbigint(u8* buf, int len)
 	int j;
 	if(len<=0)return;
 
-	say((void*)"0x");
-	for(j=len-1;j>=0;j--)say((void*)"%02x", buf[j]);
+	logtoall((void*)"0x");
+	for(j=len-1;j>=0;j--)logtoall((void*)"%02x", buf[j]);
 }
 int printmmio(void* ptr, int len)
 {
@@ -170,15 +170,15 @@ int printmmio(void* ptr, int len)
 
 	int j,k;
 	for(j=0;j<len;j+=4){
-		if(0 == (j&0xf))say((u8*)"@%-12p ", buf+j);
+		if(0 == (j&0xf))logtoall((u8*)"@%-12p ", buf+j);
 
-		say((u8*)"0x%08x", *(u32*)(buf+j));
+		logtoall((u8*)"0x%08x", *(u32*)(buf+j));
 
 		if((j+4)>=len)break;
 
-		say((u8*)"%c", (0xc == (j&0xf)) ? '\n' : ' ');
+		logtoall((u8*)"%c", (0xc == (j&0xf)) ? '\n' : ' ');
 	}
-	say((u8*)"\n");
+	logtoall((u8*)"\n");
 	return 0;
 }
 int printmemory(void* ptr, int len)
@@ -211,7 +211,7 @@ int printmemory(void* ptr, int len)
 			if((c<0x20)|(c>=0x7f))c = '.';
 			tmp[14+48+j] = c;
 		}
-		say((void*)"%.*s\n", 14+48+16, tmp);
+		logtoall((void*)"%.*s\n", 14+48+16, tmp);
 
 		buf += 16;
 		len -= 16;

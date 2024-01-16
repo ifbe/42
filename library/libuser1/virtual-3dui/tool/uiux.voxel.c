@@ -88,7 +88,7 @@ static void voxel_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("voxel(%x,%x,%x)\n",win,act,sty);
+	logtoall("voxel(%x,%x,%x)\n",win,act,sty);
 }
 
 
@@ -98,7 +98,7 @@ void voxel_data(_obj* act, int type, void* buf, int len)
 {
 	int j,idx;
 	void** tab;
-	say("@voxel_write.pcm: %d,%llx\n", len, buf);
+	logtoall("@voxel_write.pcm: %d,%llx\n", len, buf);
 
 	idx = act->TABLEN;
 	tab = act->TABBUF;
@@ -145,7 +145,7 @@ static void voxel_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int k
 	case _dx11list_:
 	case _mt20list_:
 	case _vk12list_:
-		say("caller@%p\n", caller);
+		logtoall("caller@%p\n", caller);
 		break;
 	default:
 		voxel_wrl_cam_wnd(ent,slot, stack,sp);
@@ -165,7 +165,7 @@ static void voxel_detach(struct halfrel* self, struct halfrel* peer)
 }
 static void voxel_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@voxel_attach\n");
+	logtoall("@voxel_attach\n");
 }
 
 

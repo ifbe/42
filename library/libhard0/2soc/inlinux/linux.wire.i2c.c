@@ -10,7 +10,7 @@
 #include<linux/i2c.h>		//if you have problem
 #include<linux/i2c-dev.h>
 void printmemory(void*, int);
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 
@@ -118,6 +118,6 @@ int i2c_create(u8* name, int flag, int argc, u8** argv)
 		}
 	}
 
-	say("i2c: %s\n", buf);
+	logtoall("i2c: %s\n", buf);
 	return open((void*)buf, O_RDWR);
 }

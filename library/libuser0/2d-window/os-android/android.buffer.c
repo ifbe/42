@@ -92,11 +92,11 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Read(JNIEnv*
 		ANativeWindow_unlockAndPost(native);
 
 		time = timeread_us() - time;
-		say("delta=%d\n",time);
+		logtoall("delta=%d\n",time);
 again:
 		ev = eventread();
 		if(ev == 0)break;
-//say("@Read: %llx,%llx,%llx\n", ev->why, ev->what, ev->where);
+//logtoall("@Read: %llx,%llx,%llx\n", ev->why, ev->what, ev->where);
 
 		//libsoft.file/socket: receiving events
 		ret = (ev->what)&0xff;
@@ -116,7 +116,7 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Write(JNIEnv
 {
 	int dx, dy;
 	u64 why, what, where;
-	//say("@Write:%llx,%llx\n", type, data);
+	//logtoall("@Write:%llx,%llx\n", type, data);
 
 	where = (u64)&supply[0];
 	eventwrite(data, type, where, 0);
@@ -200,19 +200,19 @@ JNIEXPORT void JNICALL JNI_OnUnLoad(JavaVM* vm, void* reserved)
 
 void window_read()
 {
-	say("@windowlist\n");
+	logtoall("@windowlist\n");
 }
 void window_write()
 {
-	say("@windowchange\n");
+	logtoall("@windowchange\n");
 }
 void window_attach()
 {
-	say("@windowstart\n");
+	logtoall("@windowstart\n");
 }
 void window_detach()
 {
-	say("@windowstop\n");
+	logtoall("@windowstop\n");
 }
 
 
@@ -220,19 +220,19 @@ void window_detach()
 
 void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	say("@windowread\n");
+	logtoall("@windowread\n");
 }
 void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	say("@windowwrite\n");
+	logtoall("@windowwrite\n");
 }
 void window_create()
 {
-	say("@windowcreate\n");
+	logtoall("@windowcreate\n");
 }
 void window_delete()
 {
-	say("@windowdelete\n");
+	logtoall("@windowdelete\n");
 }
 
 

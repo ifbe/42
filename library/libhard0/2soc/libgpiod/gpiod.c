@@ -17,11 +17,11 @@ void setpin_input(struct privdata* priv, int id)
 {
 	struct gpiod_line* gpioline = gpiod_chip_get_line(priv->chip, id);
 	if (gpioline == NULL)return;
-	say("gpiod_chip_get_line %d ok\n", id);
+	logtoall("gpiod_chip_get_line %d ok\n", id);
 
 	int ret = gpiod_line_request_input(gpioline, "gpioin");
 	if(ret != 0)return;
-	say("gpiod_line_request_input %d ok\n", id);
+	logtoall("gpiod_line_request_input %d ok\n", id);
 
 	priv->pin[id] = gpioline;
 }
@@ -29,14 +29,14 @@ void setpin_output(struct privdata* priv, int id, int val)
 {
 	struct gpiod_line* gpioline = gpiod_chip_get_line(priv->chip, id);
 	if (gpioline == NULL)return;
-	say("gpiod_chip_get_line %d ok\n", id);
+	logtoall("gpiod_chip_get_line %d ok\n", id);
 
 	int ret = gpiod_line_request_output(gpioline, "gpioout", val);
 	if (ret != 0)return;
-	say("gpiod_line_request_output %d ok\n", id);
+	logtoall("gpiod_line_request_output %d ok\n", id);
 
 	if (gpiod_line_is_used(gpioline)){
-		say("gpiod_line_is_used %d\n", id);
+		logtoall("gpiod_line_is_used %d\n", id);
 		//goto errorline;
 	}
 
@@ -52,7 +52,7 @@ int getvalue(struct privdata* priv, int id)
 	if(0 == priv->pin[id])return -2;
 
 	int val = gpiod_line_get_value(priv->pin[id]);
-	say("gpiod_line_get_value: gpio=%d, val=%d\n", id, val);
+	logtoall("gpiod_line_get_value: gpio=%d, val=%d\n", id, val);
 	return val;
 }
 int setvalue(struct privdata* priv, int id, int val)
@@ -61,7 +61,7 @@ int setvalue(struct privdata* priv, int id, int val)
 	if(0 == priv->pin[id])return -2;
 
 	int ret = gpiod_line_set_value(priv->pin[id], val);
-	say("gpiod_line_set_value: gpio=%d, val=%d, ret=%d\n", id, val, ret);
+	logtoall("gpiod_line_set_value: gpio=%d, val=%d, ret=%d\n", id, val, ret);
 	return 0;
 }
 
@@ -70,12 +70,12 @@ int setvalue(struct privdata* priv, int id, int val)
 
 int gpio_takeby(struct halfrel* st,int sp, p64 arg,int cmd, void* buf,int len)
 {
-	say("@gpio_takeby:%p,%x,%p,%x\n", arg, cmd, buf, len);
+	logtoall("@gpio_takeby:%p,%x,%p,%x\n", arg, cmd, buf, len);
 	return 0;
 }
 int gpio_giveby(struct halfrel* st,int sp, p64 arg,int cmd, void* buf,int len)
 {
-	say("@gpio_giveby:%p,%x,%p,%x\n", arg, cmd, buf, len);
+	logtoall("@gpio_giveby:%p,%x,%p,%x\n", arg, cmd, buf, len);
 	return 0;
 }
 int gpio_detach(struct halfrel* st, struct halfrel* peer)
@@ -88,7 +88,7 @@ int gpio_attach(struct halfrel* st, struct halfrel* peer)
 }
 int gpio_read(_obj* obj,void* foot, p64 arg,int cmd, u8* buf,int len)
 {
-	say("@gpioread:%p,%x,%p,%x\n", arg, cmd, buf, len);
+	logtoall("@gpioread:%p,%x,%p,%x\n", arg, cmd, buf, len);
 	struct privdata* priv = (void*)obj->priv_256b;
 
 	int j;
@@ -106,7 +106,7 @@ int gpio_read(_obj* obj,void* foot, p64 arg,int cmd, u8* buf,int len)
 }
 int gpio_write(_obj* obj,void* foot, u8* arg,int cmd, u8* buf,int len)
 {
-	say("@gpiowrite:%p,%x,%p,%x\n", arg, cmd, buf, len);
+	logtoall("@gpiowrite:%p,%x,%p,%x\n", arg, cmd, buf, len);
 	struct privdata* priv = (void*)obj->priv_256b;
 
 	int j;
@@ -119,7 +119,7 @@ int gpio_write(_obj* obj,void* foot, u8* arg,int cmd, u8* buf,int len)
 		for(j=0;j<len;j++){
 			pin = buf[j*2+0];
 			value = buf[j*2+1];
-			say("pin=%d,value=%d\n", pin, value);
+			logtoall("pin=%d,value=%d\n", pin, value);
 			setvalue(priv, pin, value);
 		}
 		break;
@@ -150,7 +150,7 @@ int gpio_delete(_obj* obj, void* arg)
 	if(priv->pin){
 		for(j=0;j<100;j++){
 			if(0 == priv->pin[j])continue;
-			say("gpiod_line_release: pin=%d,line=%p\n", j, priv->pin[j]);
+			logtoall("gpiod_line_release: pin=%d,line=%p\n", j, priv->pin[j]);
 			gpiod_line_release(priv->pin[j]);
 			priv->pin[j] = 0;
 		}
@@ -165,12 +165,12 @@ int gpio_create(_obj* obj, void* arg, int argc, void** argv)
 {
 	//parse arg
 	char* path = arg;
-	say("path=%s\n", path);
+	logtoall("path=%s\n", path);
 
 	//chip open
 	struct gpiod_chip* gpiochip = gpiod_chip_open(path);
 	if (gpiochip == NULL){
-		say("gpiod_chip_open failed: %s\n", path);
+		logtoall("gpiod_chip_open failed: %s\n", path);
 	}
 
 	//my device

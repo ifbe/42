@@ -3,7 +3,7 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 void printmemory(char*, int);
-void say(char*, ...);
+void logtoall(char*, ...);
 
 
 
@@ -61,7 +61,7 @@ int decstr2data(u8* src, void* dst)
 		data = data*10;
 		data += src[j]-0x30;
 	}
-	//say("data=%llx\n", data);
+	//logtoall("data=%llx\n", data);
 
 	if(data>0xffffffff)*(u64*)dst = data;
 	else if(data>0xffff)*(u32*)dst = data;
@@ -377,7 +377,7 @@ int hexstr2data(u8* src,u64* data)
 	*data=0;
 	for(j=0;j<16;j++)
 	{
-		//say("%x\n",src[j]);
+		//logtoall("%x\n",src[j]);
 		//1.如果小于0x20，那就是结束了
 		if(src[j]<=0x20) return j;
 

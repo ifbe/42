@@ -18,7 +18,7 @@ int mmiospace_detach(struct halfrel* self, struct halfrel* peer)
 }
 int mmiospace_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@mmiospace_attach\n");
+	logtoall("@mmiospace_attach\n");
 	return 0;
 }
 

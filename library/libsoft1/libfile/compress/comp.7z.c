@@ -1,4 +1,4 @@
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 
@@ -19,6 +19,6 @@ int check_7z(char* addr)
 }
 int parse_7z(char* addr)
 {
-	say("7z\n");
+	logtoall("7z\n");
 	return 0;
 }

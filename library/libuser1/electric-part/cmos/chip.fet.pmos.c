@@ -273,7 +273,7 @@ static void pmos_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int ke
 }
 static void pmos_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
-	say("pmos_write: %llx, %.4s=%x\n", ent, &foot, buf[0]);
+	logtoall("pmos_write: %llx, %.4s=%x\n", ent, &foot, buf[0]);
 	switch(stack[sp-1].foottype){
 		case 'D':pmos_write_D(ent,key, stack,sp, buf,len);return;
 		case 'S':pmos_write_S(ent,key, stack,sp, buf,len);return;

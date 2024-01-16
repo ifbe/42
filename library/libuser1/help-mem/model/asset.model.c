@@ -48,7 +48,7 @@ void computetangent(float* p, int c)
 		x = tmp * (v1to3 * x1to2 - v1to2 * x1to3);
 		y = tmp * (v1to3 * y1to2 - v1to2 * y1to3);
 		z = tmp * (v1to3 * z1to2 - v1to2 * z1to3);
-//say("%d:%f,%f,%f\n",j,x,y,z);
+//logtoall("%d:%f,%f,%f\n",j,x,y,z);
 		p[j*36 +  9] = x;
 		p[j*36 + 10] = y;
 		p[j*36 + 11] = z;
@@ -70,14 +70,14 @@ void parsevec3fromobj(float* dst, int cnt, u8* buf, int len)
 {
 	int j,k = 0;
 	float* v = &dst[cnt*3];
-	//say("parsevec3fromobj: %p,%d, %.*s\n", dst,cnt, len,buf);
+	//logtoall("parsevec3fromobj: %p,%d, %.*s\n", dst,cnt, len,buf);
 
 	for(j=0;j<3;j++){
 		if(k >= len)break;
 		if(0xa >= buf[k])break;
 		k += 1+decstr2float(buf+k, &v[j]);
 	}
-	//say("%d: %f,%f,%f\n", j, v[0], v[1], v[2]);
+	//logtoall("%d: %f,%f,%f\n", j, v[0], v[1], v[2]);
 }
 void parsefacefromobj(
 	float* dst, int cnt, u8* buf, int len,
@@ -89,7 +89,7 @@ void parsefacefromobj(
 	float* vtx;
 	float* tex;
 	float* nor;
-	//say("parsefacefromobj: %.*s\n",len,buf);
+	//logtoall("parsefacefromobj: %.*s\n",len,buf);
 
 	//format>>	1/2/3 4/5/6 7/8/9	<<format
 	k = 0;
@@ -99,7 +99,7 @@ void parsefacefromobj(
 		k += 1+decstr2u16(buf+k, &f[j]);
 		f[j] -= 1;
 	}
-	//say("parsed value: %d,%d,%d %d,%d,%d %d,%d,%d\n", f[0],f[1],f[2], f[3],f[4],f[5], f[6],f[7],f[8]);
+	//logtoall("parsed value: %d,%d,%d %d,%d,%d %d,%d,%d\n", f[0],f[1],f[2], f[3],f[4],f[5], f[6],f[7],f[8]);
 
 	//3 triangles
 	for(j=0;j<3;j++){
@@ -125,9 +125,9 @@ void parsefacefromobj(
 	}
 
 /*	p = &dst[cnt*12*3];
-	say("@a: %f,%f,%f %f,%f,%f %f,%f,%f\n", j, p[ 0],p[ 1],p[ 2], p[ 3],p[ 4],p[ 5], p[ 6],p[ 7],p[ 8]);
-	say("@b: %f,%f,%f %f,%f,%f %f,%f,%f\n", j, p[12],p[13],p[14], p[15],p[16],p[17], p[18],p[19],p[20]);
-	say("@c: %f,%f,%f %f,%f,%f %f,%f,%f\n", j, p[24],p[25],p[26], p[27],p[28],p[29], p[30],p[31],p[32]);*/
+	logtoall("@a: %f,%f,%f %f,%f,%f %f,%f,%f\n", j, p[ 0],p[ 1],p[ 2], p[ 3],p[ 4],p[ 5], p[ 6],p[ 7],p[ 8]);
+	logtoall("@b: %f,%f,%f %f,%f,%f %f,%f,%f\n", j, p[12],p[13],p[14], p[15],p[16],p[17], p[18],p[19],p[20]);
+	logtoall("@c: %f,%f,%f %f,%f,%f %f,%f,%f\n", j, p[24],p[25],p[26], p[27],p[28],p[29], p[30],p[31],p[32]);*/
 }
 void parsevertfromobj(struct vertex* vtx, struct fstyle* sty, u8* buf, int len, u8* tmp, int max)
 {
@@ -139,7 +139,7 @@ void parsevertfromobj(struct vertex* vtx, struct fstyle* sty, u8* buf, int len, 
 	float* vu = sty->vt;	//top
 	float* vq = sty->vq;	//info
 	float* vc = sty->vc;	//center
-	//say("%s\n",buf);
+	//logtoall("%s\n",buf);
 
 	vl[0] = 100000.0;
 	vl[1] = 0.0;
@@ -178,10 +178,10 @@ void parsevertfromobj(struct vertex* vtx, struct fstyle* sty, u8* buf, int len, 
 	k = 0;
 	line = 1;
 	for(j=0;j<len;j++){
-		//say("%x\n",buf[j]);
+		//logtoall("%x\n",buf[j]);
 		if(buf[j] < 0xa)break;
 		if((buf[j] == 0xa) | (j+1 == len)) {
-			//say("%d:[%x,%x]%.*s\n", line, k,j, j-k,buf+k);
+			//logtoall("%d:[%x,%x]%.*s\n", line, k,j, j-k,buf+k);
 			if('v' == buf[k]){
 				if(' ' == buf[k+1]){		//vertex
 					parsevec3fromobj(fv, cv, buf+k+2, j-k-2);
@@ -205,7 +205,7 @@ void parsevertfromobj(struct vertex* vtx, struct fstyle* sty, u8* buf, int len, 
 					parsevec3fromobj(fp, cp, buf+k+3, j-k-3);
 					cp += 1;
 				}
-				else say("error@%d\n",j);
+				else logtoall("error@%d\n",j);
 			}
 			if('f' == buf[k]){
 				parsefacefromobj(
@@ -219,8 +219,8 @@ void parsevertfromobj(struct vertex* vtx, struct fstyle* sty, u8* buf, int len, 
 			if(j+1 != len)line++;
 		}
 	}
-say("in:j=%d,len=%d,line=%d\n", j,len,line);
-say("out:cv=%d#%x, ct=%d#%x, cn=%d#%x, cp=%d#%x, face=%d#%x\n", cv,cv*4*3, ct,ct*4*3, cn,cn*4*3, cp,cp*4*3, cnt,cnt*4*36);
+logtoall("in:j=%d,len=%d,line=%d\n", j,len,line);
+logtoall("out:cv=%d#%x, ct=%d#%x, cn=%d#%x, cp=%d#%x, face=%d#%x\n", cv,cv*4*3, ct,ct*4*3, cn,cn*4*3, cp,cp*4*3, cnt,cnt*4*36);
 
 	//calculate tangent
 	computetangent(dst, cnt);
@@ -234,10 +234,10 @@ say("out:cv=%d#%x, ct=%d#%x, cn=%d#%x, cp=%d#%x, face=%d#%x\n", cv,cv*4*3, ct,ct
 	vr[0] -= vc[0];
 	vf[1] -= vc[1];
 	vu[2] -= vc[2];
-	say("l=%f, r=%f, n=%f, f=%f, b=%f, u=%f\n",
+	logtoall("l=%f, r=%f, n=%f, f=%f, b=%f, u=%f\n",
 		vl[0], vr[0], vn[1], vf[1], vb[2], vu[2]
 	);
-	say("w=%f, h=%f, d=%f, x=%f, y=%f, z=%f\n",
+	logtoall("w=%f, h=%f, d=%f, x=%f, y=%f, z=%f\n",
 		vq[0], vq[1], vq[2], vc[0], vc[1], vc[2]
 	);
 
@@ -285,7 +285,7 @@ void parsevertfromstl(struct fstyle* sty, int* vbuf_h, u8* buf, int len)
 	vu[2] = -100000.0;
 
 	ret = *(u32*)(buf+80);
-	say("len=%x, count=%x\n", len, ret);
+	logtoall("len=%x, count=%x\n", len, ret);
 	ret = ret%(0x1000000/72);
 
 	for(j=0;j<250;j++)tmp[j] = buf[84+j];
@@ -311,7 +311,7 @@ void parsevertfromstl(struct fstyle* sty, int* vbuf_h, u8* buf, int len)
 		if(vb[2] > dst[2])vb[2] = dst[2];
 		if(vu[2] < dst[2])vu[2] = dst[2];
 
-		//say("%f,%f,%f,%f,%f,%f\n",dst[0],dst[1],dst[2],dst[3],dst[4],dst[5]);
+		//logtoall("%f,%f,%f,%f,%f,%f\n",dst[0],dst[1],dst[2],dst[3],dst[4],dst[5]);
 	}
 
 	vq[0] = vr[0] - vl[0];
@@ -323,11 +323,11 @@ void parsevertfromstl(struct fstyle* sty, int* vbuf_h, u8* buf, int len)
 	vr[0] -= vc[0];
 	vf[1] -= vc[1];
 	vu[2] -= vc[2];
-	say(
+	logtoall(
 		"l=%f, r=%f, n=%f, f=%f, b=%f, u=%f\n",
 		vl[0], vr[0], vn[1], vf[1], vb[2], vu[2]
 	);
-	say(
+	logtoall(
 		"w=%f, h=%f, d=%f, x=%f, y=%f, z=%f\n",
 		vq[0], vq[1], vq[2], vc[0], vc[1], vc[2]
 	);

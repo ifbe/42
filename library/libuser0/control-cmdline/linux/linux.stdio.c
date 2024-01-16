@@ -24,7 +24,7 @@ void terminalthread(_obj* win)
 			eventwrite(ret, _char_, 0, 0);
 		}
 		else {
-			//say("%x\n", ret);
+			//logtoall("%x\n", ret);
 			ev.why = ret;
 			ev.what = _char_;
 			give_data_into_peer(win,_dst_, stack,0, 0,0, &ev,0);

@@ -3,7 +3,7 @@
 #define debug_bulktransfer 0
 #define debug_transfer 0
 #define debug_waitevent 0
-#define xhci_print(fmt, ...) say("%08lld xhci@%p "fmt, timeread_us(), xhci, ##__VA_ARGS__)
+#define xhci_print(fmt, ...) logtoall("%08lld xhci@%p "fmt, timeread_us(), xhci, ##__VA_ARGS__)
 int usbany_linkup(void*,int,void*,int);
 
 
@@ -1573,7 +1573,7 @@ int xhci_ControlTransfer(struct item* xhci, int slot, struct UsbRequest* req, in
 	//
 	xhci_giveorder(xhci, slot | (DCI<<8));
 	if(xhci_waitevent(xhci, 5*1000*1000, TRB_event_Transfer, slot|0x100) != (slot|0x100)){	//return slot|(endp<<8)
-		say("timeout!!\n");
+		logtoall("timeout!!\n");
 		recvlen = -1;
 		goto byebye;
 	}
@@ -1824,7 +1824,7 @@ void xhci_listall(struct item* xhci, int count)
 	int j;
 	for(j=0;j<count;j++){
 		xhci_acceptport(xhci, j);
-		say("...\n");
+		logtoall("...\n");
 	}
 }
 void xhci_freeall(struct item* xhci, int count)

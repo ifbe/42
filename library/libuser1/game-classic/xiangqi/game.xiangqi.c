@@ -153,11 +153,11 @@ void xiangqi_event(
 	{
 		//x = key & 0xffff;
 		//y = (key >> 16) & 0xffff;
-		//say("%d,%d => ",x,y);
+		//logtoall("%d,%d => ",x,y);
 
 		//x = (x*9)>>16;
 		//y = (y*10)>>16;
-		//say("%d,%d\n",x,y);
+		//logtoall("%d,%d\n",x,y);
 
 		x = (key & 0xffff) / 6;
 		y = ((key >> 16) & 0xffff) / 3;
@@ -614,7 +614,7 @@ static void xiangqi_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("xiangqi(%x,%x,%x,%x)\n", win, act, sty, pin);
+	logtoall("xiangqi(%x,%x,%x,%x)\n", win, act, sty, pin);
 	int x,y,tmp;
 	struct perxiangqi* xq = act->listptr.buf0;
 	for(y=0;y<10;y++)
@@ -623,7 +623,7 @@ static void xiangqi_draw_cli(
 		{
 			tmp = xq->data[y][x];
 			if(0 == char2hanzi(tmp))tmp = '.';
-			say("%c%c", tmp, (x==8) ? '\n' : ' ');
+			logtoall("%c%c", tmp, (x==8) ? '\n' : ' ');
 		}
 	}
 }
@@ -671,7 +671,7 @@ static void xiangqi_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 }
 static void xiangqi_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	say("@xiangqi_giving: %p\n", foot);
+	logtoall("@xiangqi_giving: %p\n", foot);
 	struct perxiangqi* xq = ent->listptr.buf0;
 
 	switch(stack[sp-1].foottype){
@@ -712,7 +712,7 @@ static void xiangqi_create(_obj* act, void* str)
 	int ret=0;
 	void* buf;
 	if(0 == act)return;
-say("@xiangqi_create:%llx\n",str);
+logtoall("@xiangqi_create:%llx\n",str);
 
 	buf = memoryalloc(sizeof(struct perxiangqi), 0);
 	act->listptr.buf0 = buf;

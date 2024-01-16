@@ -68,7 +68,7 @@ struct privdata{
 
 void printvec4(float* s)
 {
-	say("%f, %f, %f, %f\n", s[0], s[1], s[2], s[3]);
+	logtoall("%f, %f, %f, %f\n", s[0], s[1], s[2], s[3]);
 }
 void printstyle(struct fstyle* sty)
 {
@@ -381,7 +381,7 @@ static void freecam_frus2wvp(
 	struct privdata* own = act->OWNBUF;
 	frustum2viewandclip_transpose(frus, own->world2view, own->world2clip);
 
-	//say("wvp:\n");
+	//logtoall("wvp:\n");
 	//printmat4(own->world2clip);
 }
 static void freecam_frus2pvw(
@@ -392,7 +392,7 @@ static void freecam_frus2pvw(
 	struct privdata* own = act->OWNBUF;
 	clip2world_projz0z1_transpose(own->clip2world, frus);
 
-	//say("pvw:\n");
+	//logtoall("pvw:\n");
 	//printmat4(own->clip2world);
 }
 
@@ -478,7 +478,7 @@ static void freecam_gl41gbuf_world2_prep(_obj* act)
 	if(own->gbuf_vs[0])vs = own->gbuf_vs;
 	void* fs = (void*)"datafile/shader/deferred/debug.glsl";
 	if(own->gbuf_fs[0])fs = own->gbuf_fs;
-	say("vs=%s,fs=%s\n", vs, fs);
+	logtoall("vs=%s,fs=%s\n", vs, fs);
 
 	//shader
 	data->src.vs = memoryalloc(0x1000, 0);
@@ -640,7 +640,7 @@ static void freecam_gl41ppll_world2_prep(_obj* act)
 	if(own->ppll_vs[0])vs = own->ppll_vs;
 	void* fs = (void*)"datafile/shader/deferred/debug.glsl";
 	if(own->ppll_fs[0])fs = own->ppll_fs;
-	say("vs=%s,fs=%s\n", vs, fs);
+	logtoall("vs=%s,fs=%s\n", vs, fs);
 
 	//shader
 	data->src.vs = memoryalloc(0x1000, 0);
@@ -817,12 +817,12 @@ static int freecam_generate(_obj* ent,void* slot, _syn* stack,int sp, _obj* wor,
 	switch(wnd->hfmt){
 
 	case _cli_:
-		say("\r%s/%s/%s:%f,%f,%f", &wnd->hfmt, &ent->hfmt, &wor->hfmt, geom->fs.vc[0], geom->fs.vc[1], geom->fs.vc[2]);
+		logtoall("\r%s/%s/%s:%f,%f,%f", &wnd->hfmt, &ent->hfmt, &wor->hfmt, geom->fs.vc[0], geom->fs.vc[1], geom->fs.vc[2]);
 		break;
 
 	case _tui_:
 	case _rgba_:
-		//say("@freecam: raster\n");
+		//logtoall("@freecam: raster\n");
 		if(_tui_ == wnd->hfmt)freecam_tui_ratio(wor, geom, wnd, area);
 		else freecam_ratio(wor, geom, wnd, area);
 
@@ -923,7 +923,7 @@ static int freecam_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,
 
 	freecam_generate(ent,slot, stack,sp, wor,geom, wnd,area);
 	return 0;
-//say("@freecam_bywnd_read.end\n");
+//logtoall("@freecam_bywnd_read.end\n");
 }
 static int freecam_bywnd_write(_obj* ent,void* ef, _obj* wnd,void* wf, struct event* ev)
 {
@@ -945,7 +945,7 @@ static int freecam_bywnd_write(_obj* ent,void* ef, _obj* wnd,void* wf, struct ev
 
 static int freecam_byrts_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	say("@%s\n",__FUNCTION__);
+	logtoall("@%s\n",__FUNCTION__);
 	struct privdata* own = ent->OWNBUF;
 	struct halfrel* self = own->self;
 	struct halfrel* peer = own->peer;
@@ -973,7 +973,7 @@ static int freecam_byrts_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, p6
 
 static int freecam_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	//say("@freecam_read\n");
+	//logtoall("@freecam_read\n");
 	if(0 == stack)return 0;
 	take_data_from_peer(ent,_mind_, stack,sp, 0,0, 0,0);
 
@@ -1024,7 +1024,7 @@ static void freecam_detach(struct halfrel* self, struct halfrel* peer)
 }
 static void freecam_attach(struct halfrel* self, struct halfrel* peer)
 {
-    say("@freecam_attach\n");
+    logtoall("@freecam_attach\n");
 
 	_obj* ent = self->pchip;
 	struct privdata* own = ent->OWNBUF;
@@ -1070,7 +1070,7 @@ static void freecam_delete(_obj* act)
 }
 static void freecam_create(_obj* act, void* arg, int argc, u8** argv)
 {
-    say("@freecam_create\n");
+    logtoall("@freecam_create\n");
 
 	act->whdf.fx0 = 0.0;
 	act->whdf.fy0 = 0.0;

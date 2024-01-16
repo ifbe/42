@@ -91,7 +91,7 @@ _obj* shell_create(char* p)
 	//obj
 	struct item* oo = &obj[fd];
 	oo->sockinfo.fd = fd;
-	say("fd=%d,obj=%p\n", fd, oo);
+	logtoall("fd=%d,obj=%p\n", fd, oo);
 
 	ret = grantpt(fd);
 	if(ret < 0)

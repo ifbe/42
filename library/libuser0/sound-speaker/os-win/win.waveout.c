@@ -121,7 +121,7 @@ void speaker_create(_obj* win)
 		&fmt, (DWORD_PTR)ocb,
 		0L, CALLBACK_FUNCTION
 	);
-	say("@waveOutOpen:%d\n", ret);
+	logtoall("@waveOutOpen:%d\n", ret);
 }
 
 

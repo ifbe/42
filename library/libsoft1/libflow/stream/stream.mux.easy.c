@@ -42,6 +42,6 @@ int easymux_delete(_obj* ele, u8* arg)
 }
 int easymux_create(_obj* ele, u8* arg)
 {
-	say("@easymux_create\n");
+	logtoall("@easymux_create\n");
 	return 1;
 }

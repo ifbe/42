@@ -165,18 +165,18 @@ int dhcprequest(struct _fullpkt_dhcp4* pkt)
 
 int dhcppacket_parse(u8* buf, int len)
 {
-	//say("dhcp reply:\n");
+	//logtoall("dhcp reply:\n");
 	//printmemory(buf,len);
 	struct _dhcp* p = (void*)buf;
-	say("op=%x,htype=%x,hlen=%x,hops=%x\n", p->op, p->htype, p->hlen, p->hops);
-	say("xid=%x,sec=%x,flag=%x\n", swap32(p->xid), swap16(p->secs), swap16(p->flags));
-	say("ciaddr=%d.%d.%d.%d\n", p->ci[0], p->ci[1], p->ci[2], p->ci[3]);
-	say("yiaddr=%d.%d.%d.%d\n", p->yi[0], p->yi[1], p->yi[2], p->yi[3]);
-	say("siaddr=%d.%d.%d.%d\n", p->si[0], p->si[1], p->si[2], p->si[3]);
-	say("giaddr=%d.%d.%d.%d\n", p->gi[0], p->gi[1], p->gi[2], p->gi[3]);
-	say("id@%p\n", p->chaddr);
-	say("hostname=%.64s\n", p->sname);
-	say("bootfile=%.128s\n", p->file);
+	logtoall("op=%x,htype=%x,hlen=%x,hops=%x\n", p->op, p->htype, p->hlen, p->hops);
+	logtoall("xid=%x,sec=%x,flag=%x\n", swap32(p->xid), swap16(p->secs), swap16(p->flags));
+	logtoall("ciaddr=%d.%d.%d.%d\n", p->ci[0], p->ci[1], p->ci[2], p->ci[3]);
+	logtoall("yiaddr=%d.%d.%d.%d\n", p->yi[0], p->yi[1], p->yi[2], p->yi[3]);
+	logtoall("siaddr=%d.%d.%d.%d\n", p->si[0], p->si[1], p->si[2], p->si[3]);
+	logtoall("giaddr=%d.%d.%d.%d\n", p->gi[0], p->gi[1], p->gi[2], p->gi[3]);
+	logtoall("id@%p\n", p->chaddr);
+	logtoall("hostname=%.64s\n", p->sname);
+	logtoall("bootfile=%.128s\n", p->file);
 	return 0;
 }
 int udppacket_parse(u8* buf, int len)
@@ -185,7 +185,7 @@ int udppacket_parse(u8* buf, int len)
 	int src = swap16(p->srcport);
 	int dst = swap16(p->dstport);
 	//int len = swap16(p->udplen);
-	say("srcport=%d,dstport=%d\n", src, dst);
+	logtoall("srcport=%d,dstport=%d\n", src, dst);
 	if((67 == src)&&(68 == dst))dhcppacket_parse(buf+8, len-8);
 	//else printmemory(buf+8, len-8);
 	return 0;
@@ -216,8 +216,8 @@ int ipv4packet_parse(u8* buf, int len)
 	int headlen = (p->iphead&0xf)<<2;
 	int length = swap16(p->length);
 	int proto = p->protocol;
-	say("length=%x,proto=%x\n", length, proto);
-	say("srcaddr=%d.%d.%d.%d, dstaddr=%d.%d.%d.%d\n",
+	logtoall("length=%x,proto=%x\n", length, proto);
+	logtoall("srcaddr=%d.%d.%d.%d, dstaddr=%d.%d.%d.%d\n",
 		p->ipsrc[0],p->ipsrc[1],p->ipsrc[2],p->ipsrc[3],
 		p->ipdst[0],p->ipdst[1],p->ipdst[2],p->ipdst[3]);
 
@@ -231,7 +231,7 @@ int ipv6packet_parse(u8* buf, int len)
 	u32 length = swap16(p->length);
 	u8 proto = p->proto;
 	u8 hoplimit = p->hoplimit;
-	say("ipv6head=%x,length=%x,proto=%x,hoplimit=%x,ipsrc and ipdst:\n", ipv6head, length, proto, hoplimit);
+	logtoall("ipv6head=%x,length=%x,proto=%x,hoplimit=%x,ipsrc and ipdst:\n", ipv6head, length, proto, hoplimit);
 	printmemory(p->ipsrc, 0x10*2);
 
 	int headlen = 0x28;
@@ -284,7 +284,7 @@ int macpacket_parse(u8* buf, int len)
 		vlanpacket_parse(buf+headlen, len-headlen);
 		break;*/
 	default:
-		say("macpacket_parse: unknown packet\n");
+		logtoall("macpacket_parse: unknown packet\n");
 		printmemory(buf, len < 16 ? len : 16);
 	}
 	return 0;
@@ -319,7 +319,7 @@ int eth_take(struct item* e1000,void* foot, void* stack,int sp, p64 arg,int cmd,
 }
 int eth_give(struct item* e1000,void* foot, void* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
-	//say("@eth_give\n");
+	//logtoall("@eth_give\n");
 	//printmemory(buf,len);
 
 	macpacket_parse(buf, len);
@@ -331,7 +331,7 @@ int eth_discon(struct item* eth,int xxx, struct item* card,int slot)
 }
 int eth_linkup(struct item* eth,int xxx, struct item* card,int slot)
 {
-	say("eth_linkup: %p,%x,%p,%x\n", eth,xxx, card,slot);
+	logtoall("eth_linkup: %p,%x,%p,%x\n", eth,xxx, card,slot);
 
 	eth->take = (void*)eth_take;
 	eth->give = (void*)eth_give;

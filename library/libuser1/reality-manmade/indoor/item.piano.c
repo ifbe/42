@@ -65,14 +65,14 @@ static void piano_event(_obj* act, struct event* ev)
 {
 	int j,k;
 	float f;
-	say("@piano_event\n");
+	logtoall("@piano_event\n");
 
 	if(_char_ == ev->what)piano_char(act, (void*)ev);
 /*
 	if(0x2d70 == ev->what){
 		j = (ev->why)&0xffff;
 		j = j*70/(win->whdf.width);
-		say("j=%d\n",j);
+		logtoall("j=%d\n",j);
 
 		k = j%7;
 		j = j/7;
@@ -99,7 +99,7 @@ static void piano_event(_obj* act, struct event* ev)
 			case 8:f *= 8;break;
 			case 9:f *= 16;break;
 		}
-		say("f=%f\n",f);
+		logtoall("f=%f\n",f);
 
 		piano_gen(act->buf, f);
 		soundwrite(act, _spk_, 0, 0, act->buf, 16384*2);
@@ -328,7 +328,7 @@ static void piano_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("piano(%x,%x,%x)\n",win,act,sty);
+	logtoall("piano(%x,%x,%x)\n",win,act,sty);
 }
 
 

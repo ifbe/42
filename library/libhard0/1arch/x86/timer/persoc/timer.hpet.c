@@ -110,11 +110,11 @@ static void isr_hpet(void* p)
 		debugirq[irqcnt].isr = mhpet->isr_lo32;
 		debugirq[irqcnt].counter = mhpet->countervalue;
 		debugirq[irqcnt].compare = tmr->value;
-		//say("isr_hpet: tsc=%lld,isr=%x,counter=%lld,compare=%lld\n", rdtsc(), mhpet->isr_lo32, mhpet->countervalue, tmr->value);
+		//logtoall("isr_hpet: tsc=%lld,isr=%x,counter=%lld,compare=%lld\n", rdtsc(), mhpet->isr_lo32, mhpet->countervalue, tmr->value);
 	}
 	}
 #endif
-	//if(0==(irqcnt%1000))say("irqcnt=%d\n",irqcnt);
+	//if(0==(irqcnt%1000))logtoall("irqcnt=%d\n",irqcnt);
 
 	irqcnt += 1;
 }
@@ -149,18 +149,18 @@ void hpet_print_timer(struct hpetmmio* hpet, int id)
 	struct timermmio* tmr = &hpet->timer[id];
 	u32 cfg = tmr->cfgcap&0xffffffff;
 	u32 pin = tmr->cfgcap>>32;
-	say("->timer%d@%p,cfgcap=%x,%x{\n", id, tmr, cfg, pin);
-	say("size:is64=%x,force32=%x\n", (cfg>>5)&1, (cfg>>8)&1);
-	say("periodic:cap=%x,en=%x,valset=%x\n", (cfg>>4)&1, (cfg>>3)&1, (cfg>>6)&1);
-	say("ioapic:cap:%x,using=%x\n", pin, (cfg>>9)&0x1f);
-	say("fsb:cap=%x,en=%x\n", (cfg>>15)&1, (cfg>>14)&1);
-	say("trigger:islevel=%x,en=%x\n", (cfg>>1)&1, (cfg>>2)&1);
-	say("}%d\n", id);
+	logtoall("->timer%d@%p,cfgcap=%x,%x{\n", id, tmr, cfg, pin);
+	logtoall("size:is64=%x,force32=%x\n", (cfg>>5)&1, (cfg>>8)&1);
+	logtoall("periodic:cap=%x,en=%x,valset=%x\n", (cfg>>4)&1, (cfg>>3)&1, (cfg>>6)&1);
+	logtoall("ioapic:cap:%x,using=%x\n", pin, (cfg>>9)&0x1f);
+	logtoall("fsb:cap=%x,en=%x\n", (cfg>>15)&1, (cfg>>14)&1);
+	logtoall("trigger:islevel=%x,en=%x\n", (cfg>>1)&1, (cfg>>2)&1);
+	logtoall("}%d\n", id);
 }
 void hpet_print(struct hpetmmio* hpet)
 {
 	u32 cap_lo32 = hpet->cap_lo32;
-	say("vendor=%x, legacysupport=%x, cntszcap=%x, numtimer=%x, revision=%x\n",
+	logtoall("vendor=%x, legacysupport=%x, cntszcap=%x, numtimer=%x, revision=%x\n",
 		cap_lo32>>16,
 		!!(cap_lo32&0x8000),
 		!!(cap_lo32&0x2000),
@@ -169,11 +169,11 @@ void hpet_print(struct hpetmmio* hpet)
 	);
 
 	u32 cap_hi32 = hpet->cap_hi32_COUNTER_CLK_PERIOD;
-	say("period=%d(fs)=%d(ns)\n", cap_hi32, cap_hi32/1000/1000);
+	logtoall("period=%d(fs)=%d(ns)\n", cap_hi32, cap_hi32/1000/1000);
 
-	//say("cap=%x,%d(ps)\n", hpet->cap_lo32, hpet->cap_hi32_COUNTER_CLK_PERIOD);
-	say("cfg=%x,%x\n", hpet->cfg_lo32, hpet->cfg_hi32);
-	say("isr=%x,%x\n", hpet->isr_lo32, hpet->isr_hi32);
+	//logtoall("cap=%x,%d(ps)\n", hpet->cap_lo32, hpet->cap_hi32_COUNTER_CLK_PERIOD);
+	logtoall("cfg=%x,%x\n", hpet->cfg_lo32, hpet->cfg_hi32);
+	logtoall("isr=%x,%x\n", hpet->isr_lo32, hpet->isr_hi32);
 
 	hpet_print_timer(hpet, 0);
 	hpet_print_timer(hpet, 1);
@@ -188,12 +188,12 @@ void hpet_setup(struct hpetmmio* hpet)
 	u64 interval_between_counter = hpet->cap_hi32_COUNTER_CLK_PERIOD;
 	u64 interval_between_interrupt = (u64)1000*1000*1000*1000;
 	u64 delta = interval_between_interrupt/interval_between_counter;
-	say("%lld / %lld = %lld\n", interval_between_interrupt, interval_between_counter, delta);
+	logtoall("%lld / %lld = %lld\n", interval_between_interrupt, interval_between_counter, delta);
 
 	struct timermmio* tmr = &hpet->timer[0];
 
 	//1.cpu
-	say("hpet_setup cpu\n");
+	logtoall("hpet_setup cpu\n");
 	int cpu_apicid = localapic_coreid();		//target cpu id
 	int cpu_intvec = 0x20;	//target cpu intvec
 	percpu_enableint(cpu_apicid, cpu_intvec, isr_hpet, 0);
@@ -204,7 +204,7 @@ void hpet_setup(struct hpetmmio* hpet)
 		//2.irqchip
 		u32 msi_addr = msi_help_addr(cpu_apicid);
 		u32 msi_data = msi_help_data(cpu_intvec, 0, 0);
-		say("hpet_setup msi: addr=%x,data=%x\n", msi_addr, msi_data);
+		logtoall("hpet_setup msi: addr=%x,data=%x\n", msi_addr, msi_data);
 
 		tmr->msi_addr = msi_addr;
 		tmr->msi_data = msi_data;
@@ -216,7 +216,7 @@ void hpet_setup(struct hpetmmio* hpet)
 	}
 	else{
 		u64 ioapic_input = firstnonezerobit(tmr->cfgcap>>32);
-		say("hpet_setup ioapic:%llx\n", ioapic_input);
+		logtoall("hpet_setup ioapic:%llx\n", ioapic_input);
 
 		//2.irqchip
 		int irqchip_type = hex16('i','o');
@@ -230,20 +230,20 @@ void hpet_setup(struct hpetmmio* hpet)
 	}
 
 	u64 curval = hpet->countervalue;
-	say("hpet_setup before setval: tsc=%lld, cfgcap=%llx, counter=%lld, compare=%lld\n", rdtsc(), cfgcap, curval, tmr->value);
+	logtoall("hpet_setup before setval: tsc=%lld, cfgcap=%llx, counter=%lld, compare=%lld\n", rdtsc(), cfgcap, curval, tmr->value);
 
 	tmr->cfgcap = cfgcap;	//dont enable irq: otherwise receive {counter=0,compare=-1}
 	tmr->value = curval + delta;
 	tmr->value = delta;
 	tmr->cfgcap |= (1 << 2);	//enable irq after value set
 	hpet->cfg_lo32 |= 1;
-	say("hpet_setup after setval: tsc=%lld, cfgcap=%llx, counter=%lld, compare=%lld\n", rdtsc(), tmr->cfgcap, hpet->countervalue, tmr->value);
+	logtoall("hpet_setup after setval: tsc=%lld, cfgcap=%llx, counter=%lld, compare=%lld\n", rdtsc(), tmr->cfgcap, hpet->countervalue, tmr->value);
 
 	aftersetup.tsc = rdtsc();
 	aftersetup.isr = hpet->isr_lo32;
 	aftersetup.counter = hpet->countervalue;
 	aftersetup.compare = tmr->value;
-	say("hpet_setup all done: tsc=%lld, isr=%llx, counter=%lld, compare=%lld\n", aftersetup.tsc, aftersetup.isr, aftersetup.counter, aftersetup.compare);
+	logtoall("hpet_setup all done: tsc=%lld, isr=%llx, counter=%lld, compare=%lld\n", aftersetup.tsc, aftersetup.isr, aftersetup.counter, aftersetup.compare);
 }
 int hpet_check(struct hpetmmio* hpet)
 {
@@ -257,7 +257,7 @@ int hpet_check(struct hpetmmio* hpet)
 	u64 tsc_chk = 0;
 	u64 irq_now = 0;		//now
 	u64 tsc_now = 0;
-	say("waiting for something change: irqsum=%lld,tsc=%lld\n", irq_c0, tsc_t0);
+	logtoall("waiting for something change: irqsum=%lld,tsc=%lld\n", irq_c0, tsc_t0);
 	while(1){
 		irq_now = irqcnt;
 		tsc_now = rdtsc();
@@ -269,47 +269,47 @@ int hpet_check(struct hpetmmio* hpet)
 		}
 
 		if(tsc_now > tsc_tn){		//print every 10G tsc
-			say("(maybe noirq)irqsum=%lld,tscval=%lld,counter=%lld,compare=%lld\n", irq_now, tsc_now, hpet->countervalue, tmr->value);
+			logtoall("(maybe noirq)irqsum=%lld,tscval=%lld,counter=%lld,compare=%lld\n", irq_now, tsc_now, hpet->countervalue, tmr->value);
 			tsc_tn += (u64)10*1000*1000*1000;
 		}
 		if(irq_now >= irq_cn){		//print every 10 irq
-			say("(look good)irqsum=%lld,tscval=%lld,counter=%lld,compare=%lld\n", irq_now, tsc_now, hpet->countervalue, tmr->value);
+			logtoall("(look good)irqsum=%lld,tscval=%lld,counter=%lld,compare=%lld\n", irq_now, tsc_now, hpet->countervalue, tmr->value);
 			irq_cn += 10;
 		}
 		if(irq_now >= irq_c0 + 200){		//success: over 200 irq
-			say("tsc_delta=%lld, irq_delta=%lld, avgfreq=%lldmhz\n", tsc_now-tsc_chk, irq_now-irq_chk, (tsc_now-tsc_chk)/(irq_now-irq_chk)/1000);
+			logtoall("tsc_delta=%lld, irq_delta=%lld, avgfreq=%lldmhz\n", tsc_now-tsc_chk, irq_now-irq_chk, (tsc_now-tsc_chk)/(irq_now-irq_chk)/1000);
 			ret = 1;
 			break;
 		}
 		if(tsc_now > tsc_t0 + (u64)3*10*1000*1000*1000){	//abnormal: over 30G tsc
-			say("hpet fail\n");
+			logtoall("hpet fail\n");
 			ret = 0;
 			break;
 		}
 	}
 
 #ifdef HPET_DEBUGIRQ
-	say("debugtirq0: tsc=%lld,isr=%llx,counter=%lld,compare=%lld\n", debugirq[0].tsc, debugirq[0].isr, debugirq[0].counter, debugirq[0].compare);
-	say("debugtirq1: tsc=%lld,isr=%llx,counter=%lld,compare=%lld\n", debugirq[1].tsc, debugirq[1].isr, debugirq[1].counter, debugirq[1].compare);
-	say("debugtirq2: tsc=%lld,isr=%llx,counter=%lld,compare=%lld\n", debugirq[2].tsc, debugirq[2].isr, debugirq[2].counter, debugirq[2].compare);
+	logtoall("debugtirq0: tsc=%lld,isr=%llx,counter=%lld,compare=%lld\n", debugirq[0].tsc, debugirq[0].isr, debugirq[0].counter, debugirq[0].compare);
+	logtoall("debugtirq1: tsc=%lld,isr=%llx,counter=%lld,compare=%lld\n", debugirq[1].tsc, debugirq[1].isr, debugirq[1].counter, debugirq[1].compare);
+	logtoall("debugtirq2: tsc=%lld,isr=%llx,counter=%lld,compare=%lld\n", debugirq[2].tsc, debugirq[2].isr, debugirq[2].counter, debugirq[2].compare);
 #endif
 
 	return ret;
 }
 int inithpet(struct hpetmmio* hpet)
 {
-	say("@inithpet, tsc=%llx\n", rdtsc());
+	logtoall("@inithpet, tsc=%llx\n", rdtsc());
 	if(0 == hpet)return 0;
 
 	mhpet = hpet;
 
 	hpet_print(hpet);
-	//say("hpet fail\n\n");return 0;			//debug
+	//logtoall("hpet fail\n\n");return 0;			//debug
 
 	hpet_setup(hpet);
 
 	int ret = hpet_check(hpet);
 
-	say("inithpet end\n\n");
+	logtoall("inithpet end\n\n");
 	return ret;
 }

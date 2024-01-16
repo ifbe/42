@@ -89,7 +89,7 @@ static void halfadd_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int
 static void halfadd_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
 	u8 tmp;
-	say("@halfaddgate_write:%x\n",buf[0]);
+	logtoall("@halfaddgate_write:%x\n",buf[0]);
 
 	if('0' == buf[0])ent->whdf.ix0 = 0;
 	else if('1' == buf[0])ent->whdf.ix0 = 1;

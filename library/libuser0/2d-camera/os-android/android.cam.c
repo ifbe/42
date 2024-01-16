@@ -11,22 +11,22 @@
 void onCaptureFailed(void* context, ACameraCaptureSession* session,
 					 ACaptureRequest* request, ACameraCaptureFailure* failure)
 {
-	say("onCaptureFailed:context=%p,session=%p,request=%p,failure=%p\n", context, session, request, failure);
+	logtoall("onCaptureFailed:context=%p,session=%p,request=%p,failure=%p\n", context, session, request, failure);
 }
 void onCaptureSequenceCompleted(void* context, ACameraCaptureSession* session,
 								int sequenceId, int64_t frameNumber)
 {
-	say("onCaptureSequenceCompleted:context=%p,session=%p,sequenceId=%x,frameNumber=%llx\n", context, session, sequenceId, frameNumber);
+	logtoall("onCaptureSequenceCompleted:context=%p,session=%p,sequenceId=%x,frameNumber=%llx\n", context, session, sequenceId, frameNumber);
 }
 void onCaptureSequenceAborted(void* context, ACameraCaptureSession* session,
 							  int sequenceId)
 {
-	say("onCaptureCompleted:context=%p,session=%p,sequenceId=%x\n", context, session, sequenceId);
+	logtoall("onCaptureCompleted:context=%p,session=%p,sequenceId=%x\n", context, session, sequenceId);
 }
 void onCaptureCompleted (void* context, ACameraCaptureSession* session,
 		ACaptureRequest* request, const ACameraMetadata* result)
 {
-	say("onCaptureCompleted:context=%p,session=%p,request=%p,result=%p\n", context, session, request, result);
+	logtoall("onCaptureCompleted:context=%p,session=%p,request=%p,result=%p\n", context, session, request, result);
 }
 static ACameraCaptureSession_captureCallbacks captureCallbacks = {
 		.context = 0,
@@ -44,15 +44,15 @@ static ACameraCaptureSession_captureCallbacks captureCallbacks = {
 
 static void onSessionActive(void* context, ACameraCaptureSession* session)
 {
-	say("onSessionActive:context=%p,session=%p\n", context, session);
+	logtoall("onSessionActive:context=%p,session=%p\n", context, session);
 }
 static void onSessionReady(void* context, ACameraCaptureSession* session)
 {
-	say("onSessionReady:context=%p,session=%p\n", context, session);
+	logtoall("onSessionReady:context=%p,session=%p\n", context, session);
 }
 static void onSessionClosed(void* context, ACameraCaptureSession* session)
 {
-	say("onSessionClosed:context=%p,session=%p\n", context, session);
+	logtoall("onSessionClosed:context=%p,session=%p\n", context, session);
 }
 static ACameraCaptureSession_stateCallbacks sessionStateCallbacks = {
 		.context = 0,
@@ -66,7 +66,7 @@ static ACameraCaptureSession_stateCallbacks sessionStateCallbacks = {
 
 static void imageCallback(void* context, AImageReader* reader)
 {
-	say("imageCallback:context=%p,reader=%p\n", context, reader);
+	logtoall("imageCallback:context=%p,reader=%p\n", context, reader);
 
 	AImage* image = 0;
 	int status = AImageReader_acquireNextImage(reader, &image);
@@ -85,7 +85,7 @@ static void imageCallback(void* context, AImageReader* reader)
 	int plane;
 	for(plane=0;plane<3;plane++){
 		AImage_getPlaneData(image, plane, &buf, &len);
-		say("plane[%d]:buf=%p,len=%x\n", plane, buf, len);
+		logtoall("plane[%d]:buf=%p,len=%x\n", plane, buf, len);
 		printmemory(buf, 16);
 
 		if(0 == plane){
@@ -115,11 +115,11 @@ static AImageReader_ImageListener listener = {
 
 static void onDisconnect(void* context, ACameraDevice* device)
 {
-	say("onDisconnect:context=%p,device=%p\n", context, device);
+	logtoall("onDisconnect:context=%p,device=%p\n", context, device);
 }
 static void onError(void* context, ACameraDevice* device, int error)
 {
-	say("onError:context=%p,device=%p,error=%d\n", context, device, error);
+	logtoall("onError:context=%p,device=%p,error=%d\n", context, device, error);
 }
 static ACameraDevice_stateCallbacks callback = {
 	.context = 0,
@@ -158,16 +158,16 @@ void camera_delete(_obj* cam)
 void camera_create(_obj* cam, void* arg, int argc, u8** argv)
 {
 	ACameraManager* camManager = ACameraManager_create();
-	say((void*)"camManager=%p\n", camManager);
+	logtoall((void*)"camManager=%p\n", camManager);
 
 	ACameraIdList* camList;
 	camera_status_t ret = ACameraManager_getCameraIdList(camManager, &camList);
-	say((void*)"camList=%p\n", camList);
+	logtoall((void*)"camList=%p\n", camList);
 
 	int j,k;
 	for(j=0;j<camList->numCameras;j++){
 		const char* id = camList->cameraIds[j];
-		say((void*)"camname=%s\n", id);
+		logtoall((void*)"camname=%s\n", id);
 
 		ACameraMetadata* meta;
 		ret = ACameraManager_getCameraCharacteristics(camManager, id, &meta);
@@ -178,27 +178,27 @@ void camera_create(_obj* cam, void* arg, int argc, u8** argv)
 		ret = ACameraMetadata_getAllTags(meta, &tagcnt, &tagbuf);
 		for(k=0;k<tagcnt;k++){
 			ret = ACameraMetadata_getConstEntry(meta, tagbuf[k], &entry);
-			if(ACAMERA_OK != ret)say("%d:tag=%x,ret=%d\n", k, tagbuf[k], ret);
-			else say("%d:tag=%x,type=%x,count=%x,ptr=%p\n", k, entry.tag, entry.type, entry.count, entry.data.u8);
+			if(ACAMERA_OK != ret)logtoall("%d:tag=%x,ret=%d\n", k, tagbuf[k], ret);
+			else logtoall("%d:tag=%x,type=%x,count=%x,ptr=%p\n", k, entry.tag, entry.type, entry.count, entry.data.u8);
 
 			switch(tagbuf[k]){
 			case ACAMERA_LENS_FACING:
-				say("ACAMERA_LENS_FACING=%d\n", entry.data.u8[0]);
+				logtoall("ACAMERA_LENS_FACING=%d\n", entry.data.u8[0]);
 				break;
 			case ACAMERA_LENS_FOCUS_RANGE:
-				say("ACAMERA_LENS_FOCUS_RANGE=%f,%f\n", entry.data.f[0], entry.data.f[1]);
+				logtoall("ACAMERA_LENS_FOCUS_RANGE=%f,%f\n", entry.data.f[0], entry.data.f[1]);
 				break;
 			case ACAMERA_LENS_FOCAL_LENGTH:
-				say("ACAMERA_LENS_FOCAL_LENGTH=%f\n", entry.data.f[0]);
+				logtoall("ACAMERA_LENS_FOCAL_LENGTH=%f\n", entry.data.f[0]);
 				break;
 			case ACAMERA_LENS_FOCUS_DISTANCE:
-				say("ACAMERA_LENS_FOCUS_DISTANCE=%f\n", entry.data.f[0]);
+				logtoall("ACAMERA_LENS_FOCUS_DISTANCE=%f\n", entry.data.f[0]);
 				break;
 			case ACAMERA_SENSOR_INFO_PHYSICAL_SIZE:
-				say("ACAMERA_SENSOR_INFO_PHYSICAL_SIZE=%f,%f\n", entry.data.f[0], entry.data.f[1]);
+				logtoall("ACAMERA_SENSOR_INFO_PHYSICAL_SIZE=%f,%f\n", entry.data.f[0], entry.data.f[1]);
 				break;
 			case ACAMERA_SENSOR_INFO_PIXEL_ARRAY_SIZE:
-				say("ACAMERA_SENSOR_INFO_PIXEL_ARRAY_SIZE=%d,%d\n", entry.data.i32[0], entry.data.i32[1]);
+				logtoall("ACAMERA_SENSOR_INFO_PIXEL_ARRAY_SIZE=%d,%d\n", entry.data.i32[0], entry.data.i32[1]);
 				break;
 			default:
 				break;
@@ -210,7 +210,7 @@ void camera_create(_obj* cam, void* arg, int argc, u8** argv)
 
 	ACameraDevice* device = 0;
 	ret = ACameraManager_openCamera(camManager, camList->cameraIds[0], &callback, &device);
-	say("device=%p\n", device);
+	logtoall("device=%p\n", device);
 
 	ACameraManager_deleteCameraIdList(camList);
 

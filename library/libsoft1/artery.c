@@ -755,7 +755,7 @@ static int elelen = 0;
 #define maxitem (0x100000/sizeof(_obj))
 void artery_init(u8* addr)
 {
-	say("[a,c):artery initing\n");
+	logtoall("[a,c):artery initing\n");
 
 	int j;
 	for(j=0;j<0x200000;j++)addr[j] = 0;
@@ -771,16 +771,16 @@ void artery_init(u8* addr)
 	//artery_create(0,  (u8*)"SSH://0.0.0.0:2222");
 	//artery_create(0, (u8*)"HTTP://0.0.0.0:4444");
 
-	say("[a,c):artery inited\n");
+	logtoall("[a,c):artery inited\n");
 }
 void artery_exit()
 {
-	say("[a,c):artery exiting\n");
+	logtoall("[a,c):artery exiting\n");
 
 	//qqq = 0;
 	ele = 0;
 
-	say("[a,c):artery exited\n");
+	logtoall("[a,c):artery exited\n");
 }
 
 
@@ -815,7 +815,7 @@ void* artery_create(u64 type, void* arg, int argc, u8** argv)
 		if(0 == ret)return 0;	//unknown
 
 		url += ret;
-		say("type=%.8s,url=%s\n", (void*)&type, url);
+		logtoall("type=%.8s,url=%s\n", (void*)&type, url);
 	}
 
 	//
@@ -1878,7 +1878,7 @@ int artery_writer(_obj* art,void* foot, p64 arg, int idx, void* buf, int len)
 int artery_attach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ele;
-	//say("@artery_attach\n");
+	//logtoall("@artery_attach\n");
 
 	ele = self->pchip;
 	if(0 == ele)return 0;
@@ -1975,7 +1975,7 @@ int artery_attach(struct halfrel* self, struct halfrel* peer)
 int artery_detach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ele;
-	//say("@arterydetach\n");
+	//logtoall("@arterydetach\n");
 
 	ele = self->pchip;
 	if(0 == ele)return 0;
@@ -2195,7 +2195,7 @@ int artery_takeby(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, vo
 }
 int artery_giveby(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
-	//say("@arterywrite: obj=%.8s,len=%x\n", &ele->type,len);
+	//logtoall("@arterywrite: obj=%.8s,len=%x\n", &ele->type,len);
 	switch(art->type){
 	//case _gpt_:return gptclient_give(art,foot, stack,sp, arg,idx, buf,len);break;
 	//case _mbr_:return mbrclient_give(art,foot, stack,sp, arg,idx, buf,len);break;
@@ -2342,11 +2342,11 @@ void* artery_search(u8* buf, int len)
 		if(0 == art->type)continue;
 
 		k++;
-		say("[%04x]: %.8s, %.8s\n", j,
+		logtoall("[%04x]: %.8s, %.8s\n", j,
 			&art->tier, &art->type);
 	}
 
-	if(0 == k)say("empth artery\n");
+	if(0 == k)logtoall("empth artery\n");
 	return 0;
 }
 void* artery_modify(int argc, u8** argv)
@@ -2355,7 +2355,7 @@ void* artery_modify(int argc, u8** argv)
 	u64 name = 0;
 	u8* tmp = (u8*)&name;
 	if(argc < 2)return 0;
-//say("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
+//logtoall("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
 	if(0 == ncmp(argv[1], "create", 6))
 	{
 		for(j=0;j<8;j++)
@@ -2363,7 +2363,7 @@ void* artery_modify(int argc, u8** argv)
 			if(argv[2][j] <= 0x20)break;
 			tmp[j] = argv[2][j];
 		}
-		say("%llx,%llx\n",name, argv[3]);
+		logtoall("%llx,%llx\n",name, argv[3]);
 		artery_create(name, argv[3], argc-3, &argv[3]);
 	}
 	return 0;

@@ -451,7 +451,7 @@ int libcam_create(_obj* cam, void* arg, int argc, u8** argv)
 			my->log = 1;
 		}
 	}
-	say((void*)"libcam_create fmt=%x,w=%d,h=%d\n", fmt, w, h);
+	logtoall((void*)"libcam_create fmt=%x,w=%d,h=%d\n", fmt, w, h);
 
 	my->fmt = fmt;
 	my->fps = 60;

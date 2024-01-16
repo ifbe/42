@@ -5,7 +5,7 @@
 u8 in8(u16 port);
 void out8(u16 port, u8 data);
 void printmemory(void*, int);
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 
@@ -43,7 +43,7 @@ void dual8259_endofirq(int num)
 }
 void dual8259_init()
 {
-	say("@init8259\n");
+	logtoall("@init8259\n");
 
 	//icw1
 	out8(0x20, 0x11);
@@ -65,5 +65,5 @@ void dual8259_init()
 	out8(0x21, 0xff);
 	out8(0xa1, 0xff);
 
-	say("\n\n");
+	logtoall("\n\n");
 }

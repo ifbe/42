@@ -48,7 +48,7 @@ void http3parser(u8* buf, int len, struct http3parsed* p)
 			k = j+2;
 		}
 	}
-	//say("Content@%llx\nEnd@%llx\n", p->Content, p->End);
+	//logtoall("Content@%llx\nEnd@%llx\n", p->Content, p->End);
 }
 
 
@@ -60,17 +60,17 @@ int http3client_read(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx,
 }
 int http3client_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
-	say("@http3client_write:%p,%p\n", art, foot);
+	logtoall("@http3client_write:%p,%p\n", art, foot);
 	return 0;
 }
 int http3client_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@http3client_detach: %.4s\n", &self->foottype);
+	logtoall("@http3client_detach: %.4s\n", &self->foottype);
 	return 0;
 }
 int http3client_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@http3client_attach: %.4s\n", &self->foottype);
+	logtoall("@http3client_attach: %.4s\n", &self->foottype);
 	return 0;
 }
 int http3client_delete(_obj* ele)
@@ -95,12 +95,12 @@ int http3server_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx
 }
 int http3server_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@http3server_detach: %.4s\n", &self->foottype);
+	logtoall("@http3server_detach: %.4s\n", &self->foottype);
 	return 0;
 }
 int http3server_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@http3server_attach: %.4s\n", &self->foottype);
+	logtoall("@http3server_attach: %.4s\n", &self->foottype);
 	return 0;
 }
 int http3server_delete(_obj* ele)
@@ -117,7 +117,7 @@ int http3server_create(_obj* ele, u8* url)
 
 int http3master_write_byudp(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
-	say("@%s\n", __FUNCTION__);
+	logtoall("@%s\n", __FUNCTION__);
 	return 0;
 }
 int http3master_write_bysrc(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
@@ -140,7 +140,7 @@ int http3master_write_bysrc(_obj* art,void* foot, _syn* stack,int sp, p64 arg, i
 }
 int http3master_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
-	//say("@http3master_write:%p,%p\n", art, foot);
+	//logtoall("@http3master_write:%p,%p\n", art, foot);
 	switch(stack[sp-1].foottype){
 	case _quic_:return http3master_write_byudp(art,foot, stack,sp, arg,idx, buf,len);
 	default:return http3master_write_bysrc(art,foot, stack,sp, arg,idx, buf,len);

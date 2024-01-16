@@ -64,7 +64,7 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int
 		{
 			if(SDL_WINDOWEVENT_RESIZED == ev.window.event)
 			{
-				//say("%d,%d\n", ev.window.data1, ev.window.data2);
+				//logtoall("%d,%d\n", ev.window.data1, ev.window.data2);
 				wnd->whdf.width = ev.window.data1;
 				wnd->whdf.height = ev.window.data2;
 
@@ -84,7 +84,7 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int
 		{
 			sym = ev.key.keysym;
 			msg.why = sym.sym;
-			//say("%llx\n",msg.why);
+			//logtoall("%llx\n",msg.why);
 
 			if(msg.why >= 0xff)
 			{
@@ -125,7 +125,7 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int
 		}
 		else if(SDL_MOUSEBUTTONDOWN == ev.type)
 		{
-			//say("+%d,%d\n", ev.button.x, ev.button.y);
+			//logtoall("+%d,%d\n", ev.button.x, ev.button.y);
 			if(SDL_BUTTON_LEFT == ev.button.button)
 			{
 				int x = ev.button.x;
@@ -137,7 +137,7 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int
 		}
 		else if(SDL_MOUSEBUTTONUP == ev.type)
 		{
-			//say("-%d,%d\n", ev.button.x, ev.button.y);
+			//logtoall("-%d,%d\n", ev.button.x, ev.button.y);
 			if(SDL_BUTTON_LEFT == ev.button.button)
 			{
 				int x = ev.button.x;
@@ -149,7 +149,7 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int
 		}
 		else if(SDL_MOUSEMOTION == ev.type)
 		{
-			//say("@%d,%d\n", ev.button.x, ev.button.y);
+			//logtoall("@%d,%d\n", ev.button.x, ev.button.y);
 			int x = ev.button.x;
 			int y = ev.button.y;
 			msg.why = x+(y<<16)+((u64)'l'<<48);

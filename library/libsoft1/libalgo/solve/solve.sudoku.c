@@ -33,7 +33,7 @@ int sudoku_next(u8 (*data)[9], u8 (*stack)[9], int x, int y)
 		{
 			data[y][x] = j;
 			stack[y][x] = j;
-			//say("k=%d,j=%d\n", k, j);
+			//logtoall("k=%d,j=%d\n", k, j);
 			break;
 		}
 	}*/
@@ -138,7 +138,7 @@ next:
 	t = 0;
 	while(1)
 	{
-		say("t=%d\n",t);
+		logtoall("t=%d\n",t);
 		//printmemory(haha, t);
 		//printmemory(stack, t);
 		y = t/9;

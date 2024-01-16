@@ -54,7 +54,7 @@ static int wrklen = 0;
 #define maxitem (0x100000/sizeof(struct item))
 void bootup_init(u8* addr)
 {
-	say("[2,4):bootup initing\n");
+	logtoall("[2,4):bootup initing\n");
 
 	int j;
 	for(j=0;j<0x200000;j++)addr[j]=0;
@@ -72,16 +72,16 @@ void bootup_init(u8* addr)
 	poller_init(addr - 0x200000);
 	waiter_init(addr - 0x200000);
 
-	say("[2,4):bootup inited\n");
+	logtoall("[2,4):bootup inited\n");
 }
 void bootup_exit()
 {
-	say("[2,4):bootup exiting\n");
+	logtoall("[2,4):bootup exiting\n");
 
 	freestdev();
 	freestdrel();
 
-	say("[2,4):bootup exited\n");
+	logtoall("[2,4):bootup exited\n");
 }
 
 
@@ -108,7 +108,7 @@ void* bootup_create(u64 type, void* arg, int argc, u8** argv)
 {
 	struct item* tmp;
 
-	//say("type=%.8s\n",&type);
+	//logtoall("type=%.8s\n",&type);
 	if(_subcmd_ == type){
 		//self @ 0
 		tmp = bootup_alloc();
@@ -201,7 +201,7 @@ void* bootup_create(u64 type, void* arg, int argc, u8** argv)
 int bootup_delete(struct item* tmp)
 {
 	if(0 == tmp)return 0;
-	say("bootup_delete:%.8s\n", &tmp->type);
+	logtoall("bootup_delete:%.8s\n", &tmp->type);
 
 	switch(tmp->type){
 	case _myml_:
@@ -224,12 +224,12 @@ int bootup_writer(struct item* wrk,void* foot, p64 arg,int idx, void* buf,int le
 
 int bootup_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@bootupattach\n");
+	logtoall("@bootupattach\n");
 	return 0;
 }
 int bootup_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@bootupdetach\n");
+	logtoall("@bootupdetach\n");
 	return 0;
 }
 int bootup_takeby(struct item* wrk,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
@@ -258,11 +258,11 @@ int bootup_search(u8* buf, int len)
 	for(j=0;j<64;j++)
 	{
 		if(0 == wrk[j].type)continue;
-		say("[%04x]: %.8s\n", j, &wrk[j].type);
+		logtoall("[%04x]: %.8s\n", j, &wrk[j].type);
 		k++;
 	}
 
-	if(0 == k)say("empth bootup\n");
+	if(0 == k)logtoall("empth bootup\n");
 	return 0;
 }
 int bootup_modify(int argc, u8** argv)
@@ -271,7 +271,7 @@ int bootup_modify(int argc, u8** argv)
 	u64 name = 0;
 	u8* tmp = (u8*)&name;
 	if(argc < 2)return 0;
-//say("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
+//logtoall("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
 	if(0 == ncmp(argv[1], "create", 6))
 	{
 		for(j=0;j<8;j++)
@@ -279,7 +279,7 @@ int bootup_modify(int argc, u8** argv)
 			if(argv[2][j] <= 0x20)break;
 			tmp[j] = argv[2][j];
 		}
-		say("%llx,%llx\n",name, argv[3]);
+		logtoall("%llx,%llx\n",name, argv[3]);
 		bootup_create(name, argv[3], argc-3, &argv[3]);
 	}
 	return 0;

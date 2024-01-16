@@ -93,7 +93,7 @@ int gdigrab_create(_obj* win, void* arg, int argc, u8** argv)
 	int j;
 	for(j=1;j<argc;j++){
 		arg = argv[j];
-		say((void*)"%d->%.16s\n",j,argv[j]);
+		logtoall((void*)"%d->%.16s\n",j,argv[j]);
 	}
 
     struct priv* my = (struct priv*)win->priv_256b;

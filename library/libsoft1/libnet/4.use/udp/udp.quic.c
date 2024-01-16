@@ -60,7 +60,7 @@ int quicmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int id
 	}
 
 	//print
-	say("%s\n", str);
+	logtoall("%s\n", str);
 	printmemory(buf, len);
 
 	//send back

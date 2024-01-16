@@ -151,7 +151,7 @@ static void bplus_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("tree(%x,%x,%x)\n",win,act,sty);
+	logtoall("tree(%x,%x,%x)\n",win,act,sty);
 }
 
 

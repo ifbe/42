@@ -143,7 +143,7 @@ int lsm9ds1_write(struct item* dri,void* foot, struct halfrel* stack,int sp, str
 	float tmp[10];
 	if(_clk_ == stack[sp-1].foottype){
 		ret = lsm9ds1_i2cread(dri, tmp);
-		say("@lsm9ds1_write_clk: %f,%f,%f, %f,%f,%f, %f,%f,%f\n", tmp[0],tmp[1],tmp[2], tmp[3],tmp[4],tmp[5], tmp[6],tmp[7],tmp[8]);
+		logtoall("@lsm9ds1_write_clk: %f,%f,%f, %f,%f,%f, %f,%f,%f\n", tmp[0],tmp[1],tmp[2], tmp[3],tmp[4],tmp[5], tmp[6],tmp[7],tmp[8]);
 		give_data_into_peer(dri,_dst_, stack,sp, 0,0, tmp,ret);
 	}
 	return 0;
@@ -155,7 +155,7 @@ int lsm9ds1_detach(struct halfrel* self, struct halfrel* peer)
 int lsm9ds1_attach(struct halfrel* self, struct halfrel* peer)
 {
 	struct item* it;
-	say("@lsm9ds1_attach\n", &self->foottype);
+	logtoall("@lsm9ds1_attach\n", &self->foottype);
 
 	it = (void*)(self->chip);
 	if(0 == it)return 0;
@@ -172,7 +172,7 @@ int lsm9ds1_attach(struct halfrel* self, struct halfrel* peer)
 
 int lsm9ds1_create(struct item* ele, u8* url)
 {
-	say("@lsm9ds1_create\n");
+	logtoall("@lsm9ds1_create\n");
 	return 1;
 }
 int lsm9ds1_delete(struct item* ele)

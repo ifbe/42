@@ -101,7 +101,7 @@ void poller(void* poller)
 	{
 		//cur time
 		t0 = timeread_us();
-		//say("t0=%lld\n",t0);
+		//logtoall("t0=%lld\n",t0);
 
 		//draw frame
 		supplyread_all(stack);
@@ -118,11 +118,11 @@ void poller(void* poller)
 
 		//max fps
 		dt = timeread_us() - t0;
-		//say("dt=%d\n", delta);
+		//logtoall("dt=%d\n", delta);
 		if(dt < 16000)sleep_us(16000-dt);
 	}
 byebye:
-	say("poller@%p exiting\n", poller);
+	logtoall("poller@%p exiting\n", poller);
 }
 
 

@@ -191,7 +191,7 @@ void maze_solve_dfs(u8* data, int w, int h)
 
 		t = mask[sp-1];
 		tmp = data[(w*y)+x]&0xf;
-//say("%d,%d,%d,%d\n",x,y,t,tmp);
+//logtoall("%d,%d,%d,%d\n",x,y,t,tmp);
 		if((0 == (t&left)) && (0 == (tmp&left)) && (x>0))
 		{
 			mask[sp-1] |= left;

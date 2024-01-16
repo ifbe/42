@@ -107,7 +107,7 @@ static void slider_write_bywnd(_obj* ent,void* foot, _syn* stack,int sp, struct 
 		if(x > 100)x = 100;
 
 		int* list = ent->LISTBUF;
-		say("%d,%d\n", x, y);
+		logtoall("%d,%d\n", x, y);
 
 		list[y] = x;
 		give_data_into_peer(ent, _evto_, stack,sp, 0,0, list,12);

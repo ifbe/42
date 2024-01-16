@@ -160,10 +160,10 @@ static int dsfourhid_ongive(struct item* usb,int xxx, struct item* xhci,int endp
 	else xx[1] = 0;
 	if(xx[0] | xx[1])eventwrite(*(u64*)xx, point_dlt, 0, 0);
 /*
-	say("l=%d,r=%d,d=%d,u=%d,a=%d,b=%d,x=%d,y=%d\n",lrdu[0],lrdu[1],lrdu[2],lrdu[3],data->a,data->b,data->x,data->y);
-	say("l1=%d,r1=%d,l2=%d,r2=%d,l3=%d,r3=%d, share=%d,opt=%d,ps=%d\n",data->l1,data->r1,data->l2,data->r2,data->l3,data->r3,  data->share,data->opt,data->ps);
-	say("lx=%d,ly=%d,rx=%d,ry=%d,lt=%d,rt=%d\n",data->lx,255-data->ly,data->rx,255-data->ry,data->lt,data->rt);
-	say("gx=%d,gy=%d,gz=%d, ax=%d,ay=%d,az=%d\n",data->gx,-data->gz,data->gy,  -data->ax,data->az,-data->ay);*/
+	logtoall("l=%d,r=%d,d=%d,u=%d,a=%d,b=%d,x=%d,y=%d\n",lrdu[0],lrdu[1],lrdu[2],lrdu[3],data->a,data->b,data->x,data->y);
+	logtoall("l1=%d,r1=%d,l2=%d,r2=%d,l3=%d,r3=%d, share=%d,opt=%d,ps=%d\n",data->l1,data->r1,data->l2,data->r2,data->l3,data->r3,  data->share,data->opt,data->ps);
+	logtoall("lx=%d,ly=%d,rx=%d,ry=%d,lt=%d,rt=%d\n",data->lx,255-data->ly,data->rx,255-data->ry,data->lt,data->rt);
+	logtoall("gx=%d,gy=%d,gz=%d, ax=%d,ay=%d,az=%d\n",data->gx,-data->gz,data->gy,  -data->ax,data->az,-data->ay);*/
 	return 0;
 }
 static int dsfivehid_ongive(struct item* usb,int xxx, struct item* xhci,int endp, p64 arg,int slen, void* rbuf,int rlen)
@@ -256,7 +256,7 @@ int dsfourhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struc
 			}
 
 			pktlen = endpdesc->wMaxPacketSize;
-			say("[dsfourhid]endpdesc: addr=%x, attr=%x, pktlen=%x, interval=%x\n",
+			logtoall("[dsfourhid]endpdesc: addr=%x, attr=%x, pktlen=%x, interval=%x\n",
 				endpdesc->bEndpointAddress, endpdesc->bmAttributes,
 				endpdesc->wMaxPacketSize, endpdesc->bInterval
 			);
@@ -280,7 +280,7 @@ int dsfourhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struc
 		case 0x21:{
 			hidnode = (void*)endpnode;
 			hiddesc = (void*)endpdesc;
-			say("[dsfourhid]hiddesc: country=%x, numdesc=%x, reporttype=%x, reportlen=%x\n",
+			logtoall("[dsfourhid]hiddesc: country=%x, numdesc=%x, reporttype=%x, reportlen=%x\n",
 				hiddesc->bCountryCode, hiddesc->bNumDescriptors,
 				hiddesc->bReportDescType, hiddesc->wReportDescLength
 			);
@@ -305,7 +305,7 @@ int dsfourhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struc
 			break;
 		}//hid desc
 		default:{
-			say("[dsfourhid]desctype=%x\n", endpdesc->bDescriptorType);
+			logtoall("[dsfourhid]desctype=%x\n", endpdesc->bDescriptorType);
 		}//report desc?
 		}//switch
 
@@ -314,7 +314,7 @@ int dsfourhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struc
 
 
 //------------------------device side------------------------
-	say("[dsfourhid]set_config\n");
+	logtoall("[dsfourhid]set_config\n");
 	H2D_STD_DEV_SETCONF(&req, confdesc->bConfigurationValue);
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
@@ -328,7 +328,7 @@ int dsfourhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struc
 	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, buf,req.wLength);
 	if(4 != ret)return -11;
 */
-	say("[dsfourhid]set_idle\n");
+	logtoall("[dsfourhid]set_idle\n");
 	H2D_CLASS_INTF_SETIDLE(&req, intfdesc->bInterfaceNumber, 0);
 	ret = xhci->give_pxpxpxpx(
 		xhci,slot,
@@ -339,7 +339,7 @@ int dsfourhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struc
 
 
 //------------------------transfer ring------------------------
-	say("[dsfourhid]making trb\n");
+	logtoall("[dsfourhid]making trb\n");
 	if((0x054c == devdesc->idVendor) && (0x09cc == devdesc->idProduct)){
 		usb->ongiving = (void*)dsfourhid_ongive;
 	}
@@ -379,15 +379,15 @@ int usbdualshock_driver(struct item* usb, int xxx, struct item* xhci, int slot)
 
     //check version
 	switch(devdesc->idProduct){
-	case 0x05c4:say("[usbdsfour]ver=origin\n");break;
-	case 0x09cc:say("[usbdsfour]ver=ps4pro\n");break;
-	case 0x0ba0:say("[usbdsfour]ver=adapter\n");break;
-	case 0x0ce6:say("[usbdsfive]ver=ps5\n");break;
+	case 0x05c4:logtoall("[usbdsfour]ver=origin\n");break;
+	case 0x09cc:logtoall("[usbdsfour]ver=ps4pro\n");break;
+	case 0x0ba0:logtoall("[usbdsfour]ver=adapter\n");break;
+	case 0x0ce6:logtoall("[usbdsfive]ver=ps5\n");break;
 	}
 
 	//composite device, all interface
 	while(1){
-        say("[usbdsfour]interface: node=%p,desc=%p, num=%x, alt=%x, c=%x,s=%x,p=%x\n",
+        logtoall("[usbdsfour]interface: node=%p,desc=%p, num=%x, alt=%x, c=%x,s=%x,p=%x\n",
             intfnode,intfdesc, intfdesc->bInterfaceNumber, intfdesc->bAlternateSetting,
             intfdesc->bInterfaceClass, intfdesc->bInterfaceSubClass, intfdesc->bInterfaceProtocol);
 

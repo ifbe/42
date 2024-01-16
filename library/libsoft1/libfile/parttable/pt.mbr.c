@@ -109,7 +109,7 @@ int parse_mbr_one(struct mbrpart* part, struct parsed* out)
 		out->count = count;
 	}
 	else{
-		say("[%08x,%08x]:type=%02x(%s)\n", start, start+count-1, part->parttype, str);
+		logtoall("[%08x,%08x]:type=%02x(%s)\n", start, start+count-1, part->parttype, str);
 	}
 	return 1;
 }
@@ -139,7 +139,7 @@ int mount_mbr_one(_obj* art, struct mbrpart* part)
 	//count-1 = bus error, gcc bug ?
 	start = hackforarmalign4(part->lba_start);
 	count = hackforarmalign4(part->lba_count);
-	say("[%08x,%08x]:type=%x\n", start, start+count-1, part->parttype);
+	logtoall("[%08x,%08x]:type=%x\n", start, start+count-1, part->parttype);
 
 	switch(part->parttype){
 	case 0x0b:
@@ -187,7 +187,7 @@ static int mbrclient_showpart(_obj* art,void* foot, void* buf,int len)
 
 static int mbrclient_ontake(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, u8* buf, int len)
 {
-	say("@mbrclient_ontake:obj=%p,slot=%p,arg=%llx,cmd=%x,buf=%p,len=%x\n", art,foot, arg,cmd, buf,len);
+	logtoall("@mbrclient_ontake:obj=%p,slot=%p,arg=%llx,cmd=%x,buf=%p,len=%x\n", art,foot, arg,cmd, buf,len);
 
 	switch(cmd){
 	case _info_:return mbrclient_showinfo(art);
@@ -207,7 +207,7 @@ int mbrclient_detach(struct halfrel* self, struct halfrel* peer)
 }
 int mbrclient_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@mbrclient_attach:%x\n",self->foottype);
+	logtoall("@mbrclient_attach:%x\n",self->foottype);
 	_obj* ele = self->pchip;
 	if(0 == ele)return 0;
 	void* buf = ele->listptr.buf0;
@@ -257,7 +257,7 @@ int mbrclient_delete(_obj* art)
 }
 int mbrclient_create(_obj* art)
 {
-	say("@mbrclient_create\n");
+	logtoall("@mbrclient_create\n");
 	art->listptr.buf0 = memoryalloc(0x100000, 0);
 
 	art->ongiving = (void*)mbrclient_ongive;

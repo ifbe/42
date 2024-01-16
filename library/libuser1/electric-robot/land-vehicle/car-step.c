@@ -104,7 +104,7 @@ int stepcar_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,i
 }
 int stepcar_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
-	say("@stepcar_write\n");
+	logtoall("@stepcar_write\n");
 	printmemory(buf, len);
 
 	switch(buf[0])

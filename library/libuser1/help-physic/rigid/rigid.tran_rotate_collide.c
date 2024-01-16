@@ -69,7 +69,7 @@ void rigidsimu_realforce(struct style* geom)
 		geom->fs.vr[3]*2.0,
 		geom->fs.vf[3]*2.0,
 		geom->fs.vt[3]*2.0);
-/*	say("localinertia:\n%f,%f,%f\n%f,%f,%f\n%f,%f,%f\n",
+/*	logtoall("localinertia:\n%f,%f,%f\n%f,%f,%f\n%f,%f,%f\n",
 		localinertia[0][0],localinertia[0][1],localinertia[0][2],
 		localinertia[1][0],localinertia[1][1],localinertia[1][2],
 		localinertia[2][0],localinertia[2][1],localinertia[2][2]
@@ -77,7 +77,7 @@ void rigidsimu_realforce(struct style* geom)
 
 	mat3 worldinertia;
 	rigidsimu_inertiatensor_local2world(worldinertia, localinertia, &geom->fshape, mass);
-/*	say("worldinertia:\n%f,%f,%f\n%f,%f,%f\n%f,%f,%f\n",
+/*	logtoall("worldinertia:\n%f,%f,%f\n%f,%f,%f\n%f,%f,%f\n",
 		worldinertia[0][0],worldinertia[0][1],worldinertia[0][2],
 		worldinertia[1][0],worldinertia[1][1],worldinertia[1][2],
 		worldinertia[2][0],worldinertia[2][1],worldinertia[2][2]
@@ -85,7 +85,7 @@ void rigidsimu_realforce(struct style* geom)
 
 	mat3 worldinverse;
 	mat3_inverse(worldinverse, worldinertia);
-/*	say("worldinverse:\n%f,%f,%f\n%f,%f,%f\n%f,%f,%f\n",
+/*	logtoall("worldinverse:\n%f,%f,%f\n%f,%f,%f\n%f,%f,%f\n",
 		worldinverse[0][0],worldinverse[0][1],worldinverse[0][2],
 		worldinverse[1][0],worldinverse[1][1],worldinverse[1][2],
 		worldinverse[2][0],worldinverse[2][1],worldinverse[2][2]
@@ -106,7 +106,7 @@ void rigidsimu_realforce(struct style* geom)
 }
 void rigidsimu_computeforce(_obj* ent, struct style* geom)
 {
-	say("%s\n",__func__);
+	logtoall("%s\n",__func__);
 	if(0 == ent->TEST){
 		float na = -geom->fm.angular_v[3];
 		geom->fm.angular_a[0] = geom->fm.angular_v[0] * na;
@@ -149,7 +149,7 @@ int rigidsimu_applyangular(_obj* ent, struct style* geom, float dt)
 	float* q = geom->fm.angular_x;
 
 
-//say("omega_old=%f,%f,%f,%f\n",final->angular_v[0],final->angular_v[1],final->angular_v[2],final->angular_v[3]);
+//logtoall("omega_old=%f,%f,%f,%f\n",final->angular_v[0],final->angular_v[1],final->angular_v[2],final->angular_v[3]);
 	//omega_now
 	v[0] = final->angular_v[0] * final->angular_v[3];
 	v[1] = final->angular_v[1] * final->angular_v[3];
@@ -186,12 +186,12 @@ int rigidsimu_applyangular(_obj* ent, struct style* geom, float dt)
 		qr[1] = geom->fm.angular_x[1];
 		qr[2] = geom->fm.angular_x[2];
 		qr[3] = geom->fm.angular_x[3];
-		//say("ql=%f,%f,%f,%f\n",ql[0],ql[1],ql[2],ql[3]);
-		//say("qr=%f,%f,%f,%f\n",qr[0],qr[1],qr[2],qr[3]);
+		//logtoall("ql=%f,%f,%f,%f\n",ql[0],ql[1],ql[2],ql[3]);
+		//logtoall("qr=%f,%f,%f,%f\n",qr[0],qr[1],qr[2],qr[3]);
 		quaternion_multiplyfrom(q, ql, qr);
-		//say("q?=%f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
+		//logtoall("q?=%f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
 		quaternion_normalize(q);
-		//say("q!=%f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
+		//logtoall("q!=%f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
 
 		//writeback attitude
 		a = geom->fshape.vr[3];
@@ -209,7 +209,7 @@ int rigidsimu_applyangular(_obj* ent, struct style* geom, float dt)
 		geom->fshape.vt[1] = a * (2.0 * (q[1]*q[2] - q[0]*q[3]));
 		geom->fshape.vt[2] = a * (1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0);
 	}
-//say("omega_new=%f,%f,%f,%f\n",final->angular_v[0],final->angular_v[1],final->angular_v[2],final->angular_v[3]);
+//logtoall("omega_new=%f,%f,%f,%f\n",final->angular_v[0],final->angular_v[1],final->angular_v[2],final->angular_v[3]);
 	return 0;
 }
 
@@ -218,7 +218,7 @@ int rigidsimu_applyangular(_obj* ent, struct style* geom, float dt)
 
 int rigidsimu_solvecollide(_obj* ent, struct style* geom)
 {
-	say("%s\n",__func__);
+	logtoall("%s\n",__func__);
 	struct fmotion* final = &geom->actual;
 
 	float* dx = final->displace_x;
@@ -237,7 +237,7 @@ int rigidsimu_solvecollide(_obj* ent, struct style* geom)
 		final->displace_x[2] = massheight;
 		final->displace_v[2] = -0.3 * final->displace_v[2];
 	}
-	//say("%f,%f\n", final->displace_v[2], final->displace_x[2]);
+	//logtoall("%f,%f\n", final->displace_v[2], final->displace_x[2]);
 
 	//writeback position
 	geom->fs.vc[0] = final->displace_x[0];
@@ -264,9 +264,9 @@ int rigidsimu_foreach(_obj* ent)
 	if((_virtual_ != world->hfmt)&&(_scene3d_ != world->hfmt))return 0;
 
 	now = timeread_us();
-	//say("%llx\n", now);
+	//logtoall("%llx\n", now);
 	dt = (float)((now - ent->TIME)%1000000)/1000000.0;
-	//say("dt=%f\n",dt);
+	//logtoall("dt=%f\n",dt);
 	if(ent->FLAG < 42)ent->FLAG += 1;
 
 	rel = world->orel0;
@@ -294,12 +294,12 @@ int rigidsimu_foreach(_obj* ent)
 
 int rigidsimu_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	//say("@rigidsimu_read:%.4s\n",&foot);
+	//logtoall("@rigidsimu_read:%.4s\n",&foot);
 	return 0;
 }
 int rigidsimu_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
-	//say("@rigidsimu_write:%.4s\n",&foot);
+	//logtoall("@rigidsimu_write:%.4s\n",&foot);
 	switch(stack[sp-1].foottype){
 	case _clk_:
 		rigidsimu_foreach(ent);
@@ -340,7 +340,7 @@ int rigidsimu_delete(_obj* ent)
 }
 int rigidsimu_create(_obj* ent, void* str)
 {
-	say("@rigidsimu_create\n");
+	logtoall("@rigidsimu_create\n");
 	ent->FLAG = 0;
 	ent->TEST = 0;
 	return 0;

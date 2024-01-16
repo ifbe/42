@@ -367,7 +367,7 @@ void video_gl41draw(
 	vbuf[5][5] = 0.0;
 
 	//yuvx4yuyv(data->tex[0].data, 1024*1024*4, srcbuf, 640*480*2);
-	//say("infmt=%.4s,outfmt=%.4s\n", &own->infmt, &own->outfmt);
+	//logtoall("infmt=%.4s,outfmt=%.4s\n", &own->infmt, &own->outfmt);
 	data->tex[0].data = own->inbuf;
 	data->tex[0].w = own->inw;
 	data->tex[0].h = own->inh;
@@ -494,7 +494,7 @@ static void video_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 }
 static void video_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	//say("@video_write.yuv: %p,%x,%p,%x\n", arg, key, buf, len);
+	//logtoall("@video_write.yuv: %p,%x,%p,%x\n", arg, key, buf, len);
 
 	struct own* own = ent->OWNBUF;
 	if(0 == own)return;
@@ -502,7 +502,7 @@ static void video_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 	own->inbuf = buf;
 
 	if(_kv88_ == key){
-		//say("video kv88:\n");
+		//logtoall("video kv88:\n");
 		int w=0,h=0;
 		u64 ts=0;
 
@@ -513,10 +513,10 @@ static void video_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 			case 'w':w=kv[j].val;break;
 			case 'h':h=kv[j].val;break;
 			case 't':ts=kv[j].val;break;
-			//default:say("%llx=%llx\n", kv[j].key, kv[j].val);
+			//default:logtoall("%llx=%llx\n", kv[j].key, kv[j].val);
 			}
 		}
-		say("video: w=%d,h=%d,t=%lld\n",w,h,ts);
+		logtoall("video: w=%d,h=%d,t=%lld\n",w,h,ts);
 	}
 }
 static void video_detach(struct halfrel* self, struct halfrel* peer)
@@ -557,7 +557,7 @@ static void video_create(_obj* act, void* arg, int argc, u8** argv)
 		}
 	}
 	for(j=0;j<argc;j++){
-		say("%d:%.4s\n", j, argv[j]);
+		logtoall("%d:%.4s\n", j, argv[j]);
 		if(0 == ncmp(argv[j], "format:", 7)){
 			copyfourcc(&fmt, argv[j]+7);
 		}
@@ -575,7 +575,7 @@ static void video_create(_obj* act, void* arg, int argc, u8** argv)
 	own->inh = height;
 	own->infmt = fmt;
 	own->inbuf = 0;
-	for(j=0;j<4;j++)say("%f,%f,%f,%f\n",own->ccm[j][0],own->ccm[j][1],own->ccm[j][2],own->ccm[j][3]);
+	for(j=0;j<4;j++)logtoall("%f,%f,%f,%f\n",own->ccm[j][0],own->ccm[j][1],own->ccm[j][2],own->ccm[j][3]);
 
 	video_dx11prep(own);
 	video_gl41prep(own);

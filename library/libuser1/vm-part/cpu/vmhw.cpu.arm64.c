@@ -68,14 +68,14 @@ static void arm64_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 
 		u64 where = cpu->pc & 0xfffffffffffff000;
 		if(cpu->cache != where){
-			say("cache miss, reading memory: [%llx,%llx]\n", where, where+0xfff);
+			logtoall("cache miss, reading memory: [%llx,%llx]\n", where, where+0xfff);
 			int ret = take_data_from_peer(ent,_mmio_, stack,sp, 0,where, cpu->code,0x1000);
 			if(ret <= 0)return;
 		}
 		cpu->cache = where;
 
 		where = (cpu->pc&0xfff)>>2;
-		say("%08x: %x\n", cpu->pc, cpu->code[where]);
+		logtoall("%08x: %x\n", cpu->pc, cpu->code[where]);
 
 		cpu->pc += 4;
 	}

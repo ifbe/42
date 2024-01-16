@@ -24,7 +24,7 @@ int fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41d
 
 int gl41fboc_take(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
-	//say("@gl41fboc_read: %llx\n", self->pchip);
+	//logtoall("@gl41fboc_read: %llx\n", self->pchip);
 /*
 	if(0 == wnd->fbo){
 		wnd->width = wnd->fbwidth = 1024;
@@ -69,7 +69,7 @@ int gl41fboc_take(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int idx, voi
 }
 int gl41fboc_give(_obj* this,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
-	//say("@gl41fboc_write: %llx\n", self->pchip);
+	//logtoall("@gl41fboc_write: %llx\n", self->pchip);
 /*
 	if(0 == this->fbo){
 		this->width = this->fbwidth = 1024;

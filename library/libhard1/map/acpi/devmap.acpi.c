@@ -13,7 +13,7 @@
 #define _MCFG_ hex32('M','C','F','G')
 #define RSD_PTR_ hex64('R','S','D',' ','P','T','R',' ')
 void printmemory(void*, int);
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 
@@ -286,17 +286,17 @@ int acpi_hpet_replacepit()
 void parse_S5_(void* p)
 {
 	u16 data;
-	say("%.4s@%p\n", p, p);
+	logtoall("%.4s@%p\n", p, p);
 
 	data = (*(u8*)(p+8))<<10;
-	say("data=%p\n", data);
+	logtoall("data=%p\n", data);
 
 	power_data = data;
 }
 void acpi_DSDT(void* p)
 {
 	int j,cnt;
-	say("%.4s@%p\n", p, p);
+	logtoall("%.4s@%p\n", p, p);
 
 	cnt = *(u32*)(p+4);
 	for(j=4;j<cnt;j++){
@@ -311,13 +311,13 @@ void acpi_FACP(void* p)
 	struct FADT* fadt = p;
 
 	u16 BootArchitectureFlags = fadt->BootArchitectureFlags;
-	say("BootArchFlag:offs=%d,data=%x\n", (void*)&fadt->BootArchitectureFlags-p, BootArchitectureFlags);
+	logtoall("BootArchFlag:offs=%d,data=%x\n", (void*)&fadt->BootArchitectureFlags-p, BootArchitectureFlags);
 	if(0 == (BootArchitectureFlags&2))have8042 = 0;
 	if(BootArchitectureFlags&0x20)cmos_rtc_not_present = 1;
 
 	u16 port;
 	port = *(u16*)(p+0x40);
-	say("port=%p\n", port);
+	logtoall("port=%p\n", port);
 	power_port = port;
 
 	u64 addr;
@@ -329,13 +329,13 @@ void acpi_HPET(void* p)
 	struct HPET* a = p;
 	hpet_addr = (void*)a->addr;
 	hpet_replacepit = a->legacy_replace;
-	say("legacy_relpace=%x,addr=%p\n", hpet_replacepit, hpet_addr);
+	logtoall("legacy_relpace=%x,addr=%p\n", hpet_replacepit, hpet_addr);
 
 }
 void acpi_MADT(void* p)
 {
 	struct MADT* madt = p;
-	say(".localapic=%x, have8259=%d\n", madt->LocalApicAddr, madt->Dual8259Flag);
+	logtoall(".localapic=%x, have8259=%d\n", madt->LocalApicAddr, madt->Dual8259Flag);
 	addr_localapic = (void*)(u64)(madt->LocalApicAddr);
 	have8259 = madt->Dual8259Flag;
 
@@ -350,29 +350,29 @@ void acpi_MADT(void* p)
 		switch(madt->entry[j]){
 		case 0:
 			t0 = (void*)(madt->entry+j);
-			say("%x-type0: cpu=%x,apic=%x,flag=%x\n", j, t0->cpuID,t0->apicID,t0->flag);
+			logtoall("%x-type0: cpu=%x,apic=%x,flag=%x\n", j, t0->cpuID,t0->apicID,t0->flag);
 			if(0 != (t0->flag&3))knowncores[t0->apicID>>6] |= 1<<(t0->apicID&0x3f);
 			break;
 		case 1:
 			t1 = (void*)(madt->entry+j);
-			say("%x-type1: ioapicid=%x,ioapicaddr=%x,gsib=%x\n", j, t1->ioapicID,t1->ioapicaddr,t1->GlobalSystemInterruptBase);
+			logtoall("%x-type1: ioapicid=%x,ioapicaddr=%x,gsib=%x\n", j, t1->ioapicID,t1->ioapicaddr,t1->GlobalSystemInterruptBase);
 			if(0 == t1->GlobalSystemInterruptBase)addr_irqioaddr = (void*)(u64)(t1->ioapicaddr);
 			break;
 		case 2:
 			t2 = (void*)(madt->entry+j);
-			say("%x-type2: bus=%x,irq=%x,gsi=%x,flag=%x\n", j, t2->bus,t2->irq,t2->GlobalSystemInterrupt,t2->flag);
+			logtoall("%x-type2: bus=%x,irq=%x,gsi=%x,flag=%x\n", j, t2->bus,t2->irq,t2->GlobalSystemInterrupt,t2->flag);
 			if(t2->irq < 16)isa2gsi[t2->irq] = t2->GlobalSystemInterrupt;
 			break;
 		case 4:
 			t4 = (void*)(madt->entry+j);
-			say("%x-type4: cpu=%x,flag=%x,LINT=%x\n", j, t4->cpuID,t4->flag,t4->LINT);
+			logtoall("%x-type4: cpu=%x,flag=%x,LINT=%x\n", j, t4->cpuID,t4->flag,t4->LINT);
 			break;
 		case 5:
 			t5 = (void*)(madt->entry+j);
-			say("%x-type5: localapic=%llx\n", j, t5->apicaddr);
+			logtoall("%x-type5: localapic=%llx\n", j, t5->apicaddr);
 			break;
 		default:
-			say("%x-type%x,len=%x\n", j, madt->entry[j], madt->entry[j+1]);
+			logtoall("%x-type%x,len=%x\n", j, madt->entry[j], madt->entry[j+1]);
 		}
 		if(0 == madt->entry[j+1])break;
 
@@ -391,13 +391,13 @@ void acpi_MCFG(void* p)
 	pcietable_size = sz;
 
 	for(j=0;j<sz;j++){
-		say("%02x: base=%llx,group=%x,start=%x,end=%x\n", j,
+		logtoall("%02x: base=%llx,group=%x,start=%x,end=%x\n", j,
 		c[j].BaseAddr, c[j].GroupNum, c[j].BusNum_start, c[j].BusNum_end);
 	}
 }
 void acpitable(void* p)
 {
-	say("%.4s@%p\n", p, p);
+	logtoall("%.4s@%p\n", p, p);
 	switch(*(u32*)p){
 	case _APIC_:acpi_MADT(p);break;
 	case _DSDT_:acpi_DSDT(p);break;
@@ -410,7 +410,7 @@ void acpirsdt(void* buf)
 {
 	int j;
 	int len = *(u32*)(buf+4);
-	say("rsdt,%x@%p\n", len, buf);
+	logtoall("rsdt,%x@%p\n", len, buf);
 
 	len &= 0xffff;
 	printmemory(buf, len);
@@ -425,7 +425,7 @@ void acpixsdt(void* buf)
 {
 	int j;
 	int len = *(u32*)(buf+4);
-	say("xsdt,%x@%p\n", len, buf);
+	logtoall("xsdt,%x@%p\n", len, buf);
 
 	len &= 0xffff;
 	printmemory(buf, len);
@@ -440,7 +440,7 @@ void parsedevmap_acpi(u8* buf)
 {
 	if(0 == buf)return;
 
-	say("rsdptr@%p\n", buf);
+	logtoall("rsdptr@%p\n", buf);
 	printmemory(buf, 0x20);
 
 	int j;
@@ -456,5 +456,5 @@ void parsedevmap_acpi(u8* buf)
 		acpixsdt(xsdt);
 	}
 
-	say("\n\n");
+	logtoall("\n\n");
 }

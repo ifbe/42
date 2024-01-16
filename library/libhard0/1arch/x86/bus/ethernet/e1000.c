@@ -129,7 +129,7 @@ static int e1000_read(struct item* e1000,void* foot, void* stack,int sp, void* a
 	u8 stat = desc[12];
 	if(0 == (stat&0x1))return 0;
 
-//say("@e1000_recv:sts=%x,err=%x\n", desc[12], desc[13]);
+//logtoall("@e1000_recv:sts=%x,err=%x\n", desc[12], desc[13]);
 //printmemory(desc, 16);
 	desc[12] = 0;		//status写0
 
@@ -190,14 +190,14 @@ static int e1000_write(struct item* e1000,void* foot, void* stack,int sp, void* 
 		timeout++;
 		if(timeout>0xfffffff)
 		{
-			say("fail",0);
+			logtoall("fail",0);
 			return -2;
 		}
 
 		volatile u8 status = *(volatile u8*)(desc+12);
 		if( (status&0x1) == 0x1 )
 		{
-			say("sent@%x\n",desc);
+			logtoall("sent@%x\n",desc);
 			break;
 		}
 	}
@@ -232,14 +232,14 @@ static u32 eepromread(u8* mmio, u32 addr)
 
 		cnt++;
 		if(cnt > 0xffffff){
-			say("timeout@eepromread\n");
+			logtoall("timeout@eepromread\n");
 			return 0xffffffff;
 		}
 	}
 /*
 	*(u32*)(mmio+REG_EEPROM) = 1 | (addr << 2);
 	while( !((tmp = *(u32*)(mmio+REG_EEPROM)) & (1 << 1)) ){
-		say("tmp=%x\n",tmp);
+		logtoall("tmp=%x\n",tmp);
 	}
 */
 
@@ -249,7 +249,7 @@ void e1000_mmioinit(struct item* dev, u8* mmio)
 {
 	struct perdev* per = (void*)(dev->priv_256b);
 	per->mmioaddr = mmio;
-	say("e1000@mmio:%llx{\n", mmio);
+	logtoall("e1000@mmio:%llx{\n", mmio);
 
 
 	//
@@ -262,7 +262,7 @@ void e1000_mmioinit(struct item* dev, u8* mmio)
 
 	//---------------------macaddr-------------------
 	if(eepromexist(mmio)){
-		say("reading eeprom\n");
+		logtoall("reading eeprom\n");
 		u64 mac01 = eepromread(mmio, 0);
 		u64 mac23 = eepromread(mmio, 1);
 		u64 mac45 = eepromread(mmio, 2);
@@ -271,10 +271,10 @@ void e1000_mmioinit(struct item* dev, u8* mmio)
 	else{
 		u64 lo = *(u32*)(mmio+0x5400);	//receive address low
 		u64 hi = *(u32*)(mmio+0x5404);
-		say("lo=%x,hi=%x\n", lo, hi);
+		logtoall("lo=%x,hi=%x\n", lo, hi);
 		*(u64*)per->macaddr = ((hi&0xffff)<<32) + lo;
 	}
-	say("macaddr=%llx\n", *(u64*)per->macaddr);
+	logtoall("macaddr=%llx\n", *(u64*)per->macaddr);
 	//------------------------------------------
 
 
@@ -291,7 +291,7 @@ void e1000_mmioinit(struct item* dev, u8* mmio)
 	*(u32*)(mmio+0xd0) = 0x1f6dc;
 
 	//read to clear "interrupt cause read"
-	say("icr=%x\n", *(u32*)(mmio+0xc0));
+	logtoall("icr=%x\n", *(u32*)(mmio+0xc0));
 	//---------------------------------------
 
 
@@ -346,7 +346,7 @@ void e1000_mmioinit(struct item* dev, u8* mmio)
 	//----------------------------------------------
 
 
-	say("}\n");
+	logtoall("}\n");
 	dev->take = (void*)e1000_read;
 	dev->give = (void*)e1000_write;
 
@@ -359,7 +359,7 @@ void e1000_mmioinit(struct item* dev, u8* mmio)
 void e1000_portinit(struct item* dev, u64 addr)
 {
 	u32 temp;
-	say("e1000@port:%x{\n",addr);
+	logtoall("e1000@port:%x{\n",addr);
 
 	out32(0xcf8, addr+0x4);
 	temp = in32(0xcfc);
@@ -369,16 +369,16 @@ void e1000_portinit(struct item* dev, u64 addr)
 	out32(0xcfc, temp);
 
 	out32(0xcf8, addr+0x4);
-	say("sts,cmd=%x\n", in32(0xcfc));
+	logtoall("sts,cmd=%x\n", in32(0xcfc));
 
 	out32(0xcf8, addr+0x3c);
 	temp = in32(0xcfc);
-	say("int line=%x,pin=%x\n", temp&0xff, (temp>>8)&0xff);
+	logtoall("int line=%x,pin=%x\n", temp&0xff, (temp>>8)&0xff);
 
 	out32(0xcf8, addr+0x10);
 	temp = in32(0xcfc)&0xfffffff0;
 
-	say("}\n");
+	logtoall("}\n");
 
 	e1000_mmioinit(dev, (void*)(u64)temp);
 }

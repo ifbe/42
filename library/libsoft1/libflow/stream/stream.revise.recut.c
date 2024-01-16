@@ -35,13 +35,13 @@ int recut_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8
 		if(len <= 0)break;
 		k = max-(enq%max);
 		if(len < k){
-			say("@recut_write?: %x+%x / %x\n", enq, len, max);
+			logtoall("@recut_write?: %x+%x / %x\n", enq, len, max);
 			for(j=0;j<len;j++)cache[enq+j] = buf[j];
 			enq += len;
 			break;
 		}
 
-		say("@recut_write!: %x+%x / %x\n", enq, k, max);
+		logtoall("@recut_write!: %x+%x / %x\n", enq, k, max);
 		for(j=0;j<k;j++)cache[enq+j] = buf[j];
 		give_data_into_peer(art,_dst_, stack,sp, 0,0, cache+deq,max);
 
@@ -72,7 +72,7 @@ int recut_attach(struct halfrel* self, struct halfrel* peer)
 
 int recut_create(_obj* ele, void* arg, int argc, u8** argv)
 {
-	say("@recut_create\n");
+	logtoall("@recut_create\n");
 
 	struct perobj* perobj = (void*)ele->priv_256b;
 

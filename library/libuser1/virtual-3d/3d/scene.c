@@ -60,7 +60,7 @@ int scene3d_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, vo
 }
 int scene3d_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	say("@scene3d_giving\n");
+	logtoall("@scene3d_giving\n");
 
 	//remember which is raypicked
 	struct relation* rel = (void*)arg;
@@ -85,7 +85,7 @@ int scene3d_detach(struct halfrel* self, struct halfrel* peer)
 }
 int scene3d_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@scene3d_attach\n");
+	logtoall("@scene3d_attach\n");
 	return 0;
 }
 
@@ -106,7 +106,7 @@ int scene3d_delete(_obj* scene)
 }
 int scene3d_create(_obj* scene, void* str)
 {
-	say("@scene3d_create\n");
+	logtoall("@scene3d_create\n");
 	scene->priv_ptr = 0;
 	return 0;
 }

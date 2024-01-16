@@ -55,7 +55,7 @@ void wait_msec_st(unsigned int n)
 
 void initsystmr()
 {
-	say("@initsystmr\n");
+	logtoall("@initsystmr\n");
 	mmio = mmiobase() + SYSTMR;
-	say("\n");
+	logtoall("\n");
 }

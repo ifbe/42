@@ -21,7 +21,7 @@ static void texball_prep(struct own* my, char* albedo, char* height)
 
 	int ret = loadtexfromfile(&my->albedotex, albedo);
 	if(ret < 0){
-		say("texball: failed to load albedo\n");
+		logtoall("texball: failed to load albedo\n");
 	}
 
 
@@ -31,7 +31,7 @@ static void texball_prep(struct own* my, char* albedo, char* height)
 
 	ret = loadtexfromfile(&my->heighttex, height);
 	if(ret < 0){
-		say("texball: failed to load height\n");
+		logtoall("texball: failed to load height\n");
 	}
 /*
 	int x,y;
@@ -204,7 +204,7 @@ static void texball_gl41prep(struct own* my)
 	heightmap->h    = my->heighttex.h;
 	data->dst.texname[1] = "heightmap";
 	data->src.tex_enq[1] = 42;
-	//say("w=%d,h=%d\n",data->src.tex[0].w, data->src.tex[0].h);
+	//logtoall("w=%d,h=%d\n",data->src.tex[0].w, data->src.tex[0].h);
 
 #define accx 64
 #define accy 63
@@ -235,7 +235,7 @@ static void texball_gl41draw(
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vu = geom->fs.vt;
-	//say("c(%f,%f,%f),r(%f,%f,%f),f(%f,%f,%f),t(%f,%f,%f)\n", vc[0],vc[1],vc[2], vr[0],vr[1],vr[2], vf[0],vf[1],vf[2], vu[0],vu[1],vu[2]);
+	//logtoall("c(%f,%f,%f),r(%f,%f,%f),f(%f,%f,%f),t(%f,%f,%f)\n", vc[0],vc[1],vc[2], vr[0],vr[1],vr[2], vf[0],vf[1],vf[2], vu[0],vu[1],vu[2]);
 	//gl41line_sphere(ctx, 0xff00ff, vc, vr, vf, vu);
 	//gl41line_prism4(ctx, 0xff00ff, vc, vr, vf, vu);
 
@@ -289,7 +289,7 @@ static void texball_draw_pixel(
 	{
 		dst = (win->buf) + (cy-hh+y)*stride*4 + (cx-ww)*4;
 		src = (act->buf) + 4*y*(act->whdf.width);
-		//say("y=%d,%llx,%llx\n",y,dst,src);
+		//logtoall("y=%d,%llx,%llx\n",y,dst,src);
 		if('b' == ((win->hfmt)&0xff))
 		{
 			for(x=0;x<xmax;x++)dst[x] = src[x];
@@ -323,7 +323,7 @@ static void texball_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("texball(%x,%x,%x)\n",win,act,sty);
+	logtoall("texball(%x,%x,%x)\n",win,act,sty);
 }
 static void texball_event(
 	_obj* act, struct style* pin,
@@ -388,7 +388,7 @@ static void texball_detach(struct halfrel* self, struct halfrel* peer)
 }
 static void texball_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@texball_attach\n");
+	logtoall("@texball_attach\n");
 }
 
 

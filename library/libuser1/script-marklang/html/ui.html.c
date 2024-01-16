@@ -84,7 +84,7 @@ void foreground_html(_obj* win)
 
 int htmlroot_taketext(_obj* ent,void* foot, _syn* stack,int sp)
 {
-	say("@htmlroot_read\n");
+	logtoall("@htmlroot_read\n");
 
 	background_html(ent);
 	struct relation* rel = ent->orel0;
@@ -157,7 +157,7 @@ int htmlroot_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, v
 {
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
-	say("caller:type=%.4s,fmt=%.4s\n", &caller->type, &caller->hfmt);
+	logtoall("caller:type=%.4s,fmt=%.4s\n", &caller->type, &caller->hfmt);
 
 	//slot type known: do work based on slot type
 	//switch(stack[sp-1].foottype){
@@ -170,16 +170,16 @@ int htmlroot_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, v
 		htmlroot_draw_gl41_whcam(ent,slot, caller,area);
 		break;
 	case _http_:
-		say("byhttp\n");
+		logtoall("byhttp\n");
 		break;
 	}
 	return 0;
 }
 int htmlroot_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	//say("@htmlroot_write: %.4s\n", &foot);
+	//logtoall("@htmlroot_write: %.4s\n", &foot);
 	_obj* caller = stack[sp-2].pchip;
-	say("caller:type=%.4s,fmt=%.4s\n", &caller->type, &caller->hfmt);
+	logtoall("caller:type=%.4s,fmt=%.4s\n", &caller->type, &caller->hfmt);
 
 	//slot type known: do work based on slot type
 	switch(stack[sp-1].foottype){

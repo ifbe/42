@@ -5,22 +5,22 @@
 
 int baby_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	say("@baby_read: crying\n");
+	logtoall("@baby_read: crying\n");
 	return 0;
 }
 int baby_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	say("@baby_write: crying\n");
+	logtoall("@baby_write: crying\n");
 	return 0;
 }
 int baby_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@baby_detach: crying\n");
+	logtoall("@baby_detach: crying\n");
 	return 0;
 }
 int baby_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@baby_attach: crying\n");
+	logtoall("@baby_attach: crying\n");
 	return 0;
 }
 
@@ -29,22 +29,22 @@ int baby_attach(struct halfrel* self, struct halfrel* peer)
 
 int baby_search(_obj* act)
 {
-	say("@baby_search: crying\n");
+	logtoall("@baby_search: crying\n");
 	return 0;
 }
 int baby_modify(_obj* act)
 {
-	say("@baby_modity: crying\n");
+	logtoall("@baby_modity: crying\n");
 	return 0;
 }
 int baby_delete(_obj* act)
 {
-	say("@baby_delete: crying\n");
+	logtoall("@baby_delete: crying\n");
 	return 0;
 }
 int baby_create(_obj* act)
 {
-	say("@baby_create: crying\n");
+	logtoall("@baby_create: crying\n");
 	return 0;
 }
 
@@ -53,9 +53,9 @@ int baby_create(_obj* act)
 
 void baby_exit()
 {
-	//say("@baby_exit: crying\n");
+	//logtoall("@baby_exit: crying\n");
 }
 void baby_init(void* addr)
 {
-	//say("@baby_init: crying\n");
+	//logtoall("@baby_init: crying\n");
 }

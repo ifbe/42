@@ -32,7 +32,7 @@ void* cachedwindow = 0;
 
 void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	//say("wnd=%p,stack=%p\n",wnd,stack);
+	//logtoall("wnd=%p,stack=%p\n",wnd,stack);
 	wndmgr_take(wnd,foot, stack,sp, arg,key, buf,len);
 
 	int j;

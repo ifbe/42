@@ -93,7 +93,7 @@ static int aidfont_load()
 {
 	int j;
 	if(buf)return 0;
-	say("@loadbuf\n");
+	logtoall("@loadbuf\n");
 
 	buf = memoryalloc(2048*2048*4, 0);
 	if(0 == buf)return -1;
@@ -595,7 +595,7 @@ void gl41text(_obj* win, u32 rgb,
 	cnt = 0;
 	for(j=0;j<=len;j++){
 		if((j==len) | ('\n' == buf[j])){
-			//say("%.*s\n", j-k, buf+k);
+			//logtoall("%.*s\n", j-k, buf+k);
 			gl41string(win, rgb, tc, tr, tf, buf+k, j-k);
 			tc[0] -= tf[0];
 			tc[1] -= tf[1];

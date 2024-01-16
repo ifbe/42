@@ -77,7 +77,7 @@ static void texbox_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("texbox(%x,%x,%x)\n",win,act,sty);
+	logtoall("texbox(%x,%x,%x)\n",win,act,sty);
 }
 static void texbox_event(
 	_obj* act, struct style* pin,
@@ -178,7 +178,7 @@ static void texbox_create(_obj* act, void* str)
 
 	data->dst.texname[0] = "tex0";
 	data->src.tex_enq[0] = 42;
-	//say("w=%d,h=%d\n",data->src.tex[0].w, data->src.tex[0].h);
+	//logtoall("w=%d,h=%d\n",data->src.tex[0].w, data->src.tex[0].h);
 
 	struct vertex* vtx = data->src.vtx;
 	vtx->geometry = 3;

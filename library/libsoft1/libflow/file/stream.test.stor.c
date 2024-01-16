@@ -15,7 +15,7 @@ int stor_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, voi
 	u8 url[64];
 	int ret = mysnprintf(url, 64, "picture%03d.jpg", art->priv_u32);
 	//if(ret <= 0)return 0;
-	say("%s\n",url);
+	logtoall("%s\n",url);
 
 	ret = openwriteclose(url, 0, buf, len);
 	//if()return 0;
@@ -37,7 +37,7 @@ int stor_attach(struct halfrel* self, struct halfrel* peer)
 
 int stor_create(_obj* art, u8* url)
 {
-	say("@stor_create\n");
+	logtoall("@stor_create\n");
 	art->priv_u32 = 0;
 	return 1;
 }

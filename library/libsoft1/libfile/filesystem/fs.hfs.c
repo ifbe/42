@@ -64,16 +64,16 @@ void explainindexnode()
 		if(keylen==0)break;
 
 		//打印
-		say("@%x,len=%x,key=",offset,keylen);
+		logtoall("@%x,len=%x,key=",offset,keylen);
 
 		//
 		int i;
 		for(i=0;i<8;i++)
 		{
-			say("%02x ",*(u8*)(datahome+offset+2+i));
+			logtoall("%02x ",*(u8*)(datahome+offset+2+i));
 		}
 		u32 child=BSWAP_32(*(u32*)(datahome+offset+2+keylen));
-		say(",child=%x\n",child);
+		logtoall(",child=%x\n",child);
 
 	}
 }
@@ -84,28 +84,28 @@ void explainrecorddata(u64 offset)
 	{
 		case 1:			//folder
 		{
-			say("folder,");
-			say("cnid=%x,",BSWAP_32(*(u32*)(datahome+offset+8)));
+			logtoall("folder,");
+			logtoall("cnid=%x,",BSWAP_32(*(u32*)(datahome+offset+8)));
 			break;
 		}
 		case 2:			//file
 		{
-			say("file,");
-			say("cnid=%x,",BSWAP_32(*(u32*)(datahome+offset+8)));
+			logtoall("file,");
+			logtoall("cnid=%x,",BSWAP_32(*(u32*)(datahome+offset+8)));
 			break;
 		}
 		case 3:			//folderthread
 		{
-			say("folderthread,");
+			logtoall("folderthread,");
 			break;
 		}
 		case 4:			//filethread
 		{
-			say("filethread,");
+			logtoall("filethread,");
 			break;
 		}
 	}
-	say("\n");
+	logtoall("\n");
 }
 //（只用来调试）解释叶节点
 void explainleafnode()
@@ -128,15 +128,15 @@ void explainleafnode()
 
 		//key第一部分，father
 		u32 father=BSWAP_32(*(u32*)(datahome+offset+2));
-		say("@%x,len=%x,father=%x,data:",offset,keylen,father);
+		logtoall("@%x,len=%x,father=%x,data:",offset,keylen,father);
 
 		//key后面的data
 		int i;
 		for(i=0;i<8;i++)
 		{
-			say("%02x ",*(u8*)(datahome+offset+2+keylen+i));
+			logtoall("%02x ",*(u8*)(datahome+offset+2+keylen+i));
 		}
-		say("\n");
+		logtoall("\n");
 
 		//目录和文件
 		explainrecorddata(offset+2+keylen);
@@ -149,7 +149,7 @@ void explainleafnode()
 //（只用来调试）解释某个节点
 static void hfs_explain(u64 number)
 {
-	say("%llx@%llx\n",number,catalogsector+nodesize*number);
+	logtoall("%llx@%llx\n",number,catalogsector+nodesize*number);
 /*	file_take(0, 0,
 		"", (catalogsector+nodesize*number)*0x200,
 		datahome, nodesize*0x200
@@ -160,7 +160,7 @@ static void hfs_explain(u64 number)
 	u32 rightbrother=BSWAP_32(*(u32*)datahome);
 	u32 leftbrother=BSWAP_32(*(u32*)(datahome+4));
 	u8 type=*(u8*)(datahome+8);
-	say("rightbro=%x,leftbro=%x,type:%x\n",rightbrother,leftbrother,type);
+	logtoall("rightbro=%x,leftbro=%x,type:%x\n",rightbrother,leftbrother,type);
 
 	//
 	if(type==1)
@@ -190,7 +190,7 @@ static void hfs_explain(u64 number)
 //我会返回这一号cnid所在的叶子节点
 u64 searchbtreeforcnid(u64 nodenum,u64 wantcnid)
 {
-	say("enter node:%llx\n",nodenum);
+	logtoall("enter node:%llx\n",nodenum);
 
 	//把指定节点读到内存,顺便看看这节点是啥类型
 /*	file_take(0, 0,
@@ -226,7 +226,7 @@ u64 searchbtreeforcnid(u64 nodenum,u64 wantcnid)
 			u64 temptempkey=BSWAP_32(*(u32*)(datahome+0x8000+0x10));
 
 			//
-			//say("temptempnode:%x,temptempkey:%x\n",temptempnodenum,temptempkey);
+			//logtoall("temptempnode:%x,temptempkey:%x\n",temptempnodenum,temptempkey);
 			if(wantcnid<=temptempkey)
 			{
 				candidatechosen=1;			//候选者选中信号1
@@ -240,7 +240,7 @@ u64 searchbtreeforcnid(u64 nodenum,u64 wantcnid)
 			u16 offset=BSWAP_16(*(u16*)(datahome+nodesize*0x200-temp*2));
 			u32 key=BSWAP_32(*(u32*)(datahome+offset+2));
 			int keylen=BSWAP_16(*(u16*)(datahome+offset));
-			//say("%x@%x,%x\n",key,nodenum,offset);
+			//logtoall("%x@%x,%x\n",key,nodenum,offset);
 
 
 			//候选者
@@ -251,7 +251,7 @@ u64 searchbtreeforcnid(u64 nodenum,u64 wantcnid)
 				candidateoffset=offset;
 				candidatekey=key;
 				candidatechild=BSWAP_32(*(u32*)(datahome+offset+2+keylen));
-				//say("candidatekey:%x,candidatechild:%x,@%x,%x\n",key,candidatechild,nodenum,offset);
+				//logtoall("candidatekey:%x,candidatechild:%x,@%x,%x\n",key,candidatechild,nodenum,offset);
 			}
 			else{candidatechosen=1;}			//候选者选中信号2
 		}
@@ -261,7 +261,7 @@ u64 searchbtreeforcnid(u64 nodenum,u64 wantcnid)
 		//2：当前这个已经大于等于想要的，所以候选者直接被选中
 		if(candidatechosen>0)
 		{
-			//say("the chosen one:%x,%x\n",nodenum,candidatekey);
+			//logtoall("the chosen one:%x,%x\n",nodenum,candidatekey);
 
 			//有问题的候选者退出
 			if(candidateoffset==-1)
@@ -273,7 +273,7 @@ u64 searchbtreeforcnid(u64 nodenum,u64 wantcnid)
 			//看节点类型分别处理（头节点和位图节点不可能被传进来吧？）
 			if(type==0xff)
 			{
-				//say("return %x\n",nodenum);
+				//logtoall("return %x\n",nodenum);
 				return nodenum;
 			}
 			if(type==0)
@@ -323,7 +323,7 @@ static void explaindirectory(u64 nodenum,u64 wantcnid)
 		{
 			nodenum=BSWAP_32(*(u32*)datahome);
 			if(nodenum==0)break;
-			say("next node:%x\n",nodenum);
+			logtoall("next node:%x\n",nodenum);
 
 /*			file_take(0, 0,
 				"", (catalogsector+nodenum*nodesize)*0x200,
@@ -342,7 +342,7 @@ static void explaindirectory(u64 nodenum,u64 wantcnid)
 		u32 key=BSWAP_32(*(u32*)(datahome+offset+2));
 		if(key>wantcnid)break;
 		if(key<wantcnid)continue;
-		//say("key:%x,in:%llx\n",key,nodenum);
+		//logtoall("key:%x,in:%llx\n",key,nodenum);
 
 		int keylen=BSWAP_16(*(u16*)(datahome+offset));
 		u64 filetype=BSWAP_16(*(u16*)(datahome+offset+2+keylen));
@@ -372,14 +372,14 @@ static void explaindirectory(u64 nodenum,u64 wantcnid)
 
 		//[0x20,0x3f]:名字	//namelength=*(byte*)(rsi+6)
 		i=BSWAP_16(*(u16*)(datahome+offset+6));
-		//say("%x@%x\n",i,offset);
+		//logtoall("%x@%x\n",i,offset);
 		i--;
 		if(i>0x1b)i=0x1b;
 		for(;i>=0;i--)
 		{
 			*(u8*)(rdi+0x20+i)=*(u8*)(datahome+offset+9+i*2);
 		}
-		//say("%s\n",(rdi+0x20));
+		//logtoall("%s\n",(rdi+0x20));
 		if(*(u32*)(rdi+0x20) == 0) *(u32*)(rdi+0x20)=0x3f3f3f3f;
 
 
@@ -405,7 +405,7 @@ void explainfile(u64 fathercnid,u64 wantcnid,u64 nodenum,u64 wantwhere)
 	{
 		*(u8*)(rdi+i)=0;
 	}
-	say("father:%x,self:%x,node:%x,want:%x\n",fathercnid,wantcnid,nodenum,wantwhere);
+	logtoall("father:%x,self:%x,node:%x,want:%x\n",fathercnid,wantcnid,nodenum,wantwhere);
 
 
 	//然后是后面的记录
@@ -420,35 +420,35 @@ void explainfile(u64 fathercnid,u64 wantcnid,u64 nodenum,u64 wantwhere)
 	{
 		//每次进来直接减2
 		temp-=2;
-		//say("oh\n");
+		//logtoall("oh\n");
 
 		//这个节点结束了（1）
 		u16 offset=BSWAP_16(*(u16*)(catabuf+temp));
-		//say("oh 1:offset=%x\n",offset);
+		//logtoall("oh 1:offset=%x\n",offset);
 		if(offset>=temp)break;
 
 		//出毛病了，到指针最后一个都没找着（2）
 		int keylen=BSWAP_16(*(u16*)(catabuf+offset));
-		//say("oh 2:keylen=%x\n",keylen);
+		//logtoall("oh 2:keylen=%x\n",keylen);
 		if(keylen==0)return;
 
 		//比较fathercnid，要是不一样就跳过（3）
 		u32 key=BSWAP_32(*(u32*)(catabuf+offset+2));
-		//say("oh 3:key=%x\n",key);
+		//logtoall("oh 3:key=%x\n",key);
 		if(key!=fathercnid)continue;
 
 		//要是这个record不是文件，那就再跳过（4）
 		u8 filetype=*(u8*)(catabuf+offset+2+keylen+1);
-		//say("oh 4:type=:%x\n",filetype);
+		//logtoall("oh 4:type=:%x\n",filetype);
 		if(filetype!=2)continue;
 
 		//再看看文件cnid对不对，不对还跳过（5）
 		u32 thiscnid=BSWAP_32(*(u32*)(catabuf+offset+2+keylen+8));
-		//say("oh 5:self:%x\n",thiscnid);
+		//logtoall("oh 5:self:%x\n",thiscnid);
 		if(thiscnid!=wantcnid)continue;
 
 		//穿越重重阻碍，现在可以从datafork里面，找扇区号，和扇区数了
-		say("oh i am here!\n");
+		logtoall("oh i am here!\n");
 		u8* forkaddr=catabuf+offset+2+keylen+0x58+0x10;
 		u64 logicwhere=0;
 		for(i=0;i<8;i++)
@@ -507,10 +507,10 @@ static int hfs_choose(u64 id)
 		foundnode=searchbtreeforcnid(rootnode,id);
 		if( foundnode <= 0 )		//offset值不可能小于e
 		{
-			say("this cnid isn't in btree\n");
+			logtoall("this cnid isn't in btree\n");
 			return -2;
 		}
-		say("found:%llx@node:%llx\n",id,foundnode);
+		logtoall("found:%llx@node:%llx\n",id,foundnode);
 	}
 
 
@@ -526,10 +526,10 @@ static void hfs_read(u64 id,u64 wantwhere)
 	u64 foundnode=searchbtreeforcnid(rootnode,fathercnid);
 	if(foundnode <= 0)
 	{
-		say("not found\n");
+		logtoall("not found\n");
 		return;
 	}
-	say("found:%llx@node:%llx\n",id,foundnode);
+	logtoall("found:%llx@node:%llx\n",id,foundnode);
 
 
 	//3.从他爹开始，record，的data部分，的fork信息里面，找到东西
@@ -547,7 +547,7 @@ int explainhfshead()
 
 //---------------------第一次读，把分区头读进pbrbuffer------------------------
 	blocksize=BSWAP_32( *(u32*)(pbr+0x428) )/0x200;
-	say("blocksize:%x\n",blocksize);
+	logtoall("blocksize:%x\n",blocksize);
 
 	//0x470,0x4c0,0x510,0x560
 	for(i=0;i<4;i++)
@@ -561,20 +561,20 @@ int explainhfshead()
 
 		if(i==0)
 		{
-			say("allocation\n");
+			logtoall("allocation\n");
 		}
 		else if(i==1)
 		{
-			say("extents overflow\n");
+			logtoall("extents overflow\n");
 		}
 		else if(i==2)
 		{
 			catalogsector=sector;
-			say("catalog\n");
+			logtoall("catalog\n");
 		}
 		else if(i==3)
 		{
-			say("attribute\n");
+			logtoall("attribute\n");
 		}
 	}
 
@@ -588,15 +588,15 @@ int explainhfshead()
 	//nodesize
 	nodesize=BSWAP_16( *(u16*)(catabuf+0x20) );
 	nodesize=nodesize/0x200;
-	say("nodesize:%x\n",nodesize);
+	logtoall("nodesize:%x\n",nodesize);
 
 	//rootnode
 	rootnode=BSWAP_32(*(u32*)(catabuf+0x10) );
-	say("rootnode:%x\n",rootnode);
+	logtoall("rootnode:%x\n",rootnode);
 
 	//firstleafnode
 	firstleafnode=BSWAP_32(*(u32*)(catabuf+0x18) );
-	say("firstleafnode:%x\n",firstleafnode);
+	logtoall("firstleafnode:%x\n",firstleafnode);
 
 
 
@@ -617,17 +617,17 @@ int check_hfs(u8* addr)
 	temp=*(u16*)(addr+0x400);
 	if( temp== 0x4442)
 	{
-		say("hfs\n");
+		logtoall("hfs\n");
 		return 11;
 	}
 	else if( temp == 0x2b48 )
 	{
-		say("hfs+\n");
+		logtoall("hfs+\n");
 		return 22;
 	}
 	else if( temp == 0x5848 )
 	{
-		say("hfsx\n");
+		logtoall("hfsx\n");
 		return 33;
 	}
 	else return 0;
@@ -638,7 +638,7 @@ int check_hfs(u8* addr)
 
 static int hfsclient_ontake(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, u8* buf, int len)
 {
-	say("@hfsclient_ontake\n");
+	logtoall("@hfsclient_ontake\n");
 	return 0;
 }
 static int hfsclient_ongive(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)

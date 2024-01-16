@@ -104,7 +104,7 @@ void gl41data_whcam(_obj* wnd, struct fstyle* area)
 	m[2][3] = 0.9;
 	m[3][3] = 1.0;
 	mat4_transpose(m);
-	//say("%f,%f\n", m[0][0], m[1][1]);
+	//logtoall("%f,%f\n", m[0][0], m[1][1]);
 
 	data->dst.arg[0].fmt = 'm';
 	data->dst.arg[0].name = "cammvp";
@@ -151,7 +151,7 @@ void gl41data_addlit(_obj* wnd, struct gl41data* data)
 void gl41data_insert(_obj* ctx, int type, struct gl41data* src, int cnt)
 {
 	int j;
-	//say("@gl41data_insert:%llx,%x,%llx,%x\n", ctx,type,src,cnt);
+	//logtoall("@gl41data_insert:%llx,%x,%llx,%x\n", ctx,type,src,cnt);
 
 	if('s' == type){
 		for(j=solidaid_max;j<64;j++){

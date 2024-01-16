@@ -160,7 +160,7 @@ static void not_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key
 static void not_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
 	u8 tmp;
-	say("@notgate_write:%x\n",buf[0]);
+	logtoall("@notgate_write:%x\n",buf[0]);
 
 	if('a' == buf[0])ent->whdf.ix0 ^= 1;
 	else if('0' == buf[0])ent->whdf.ix0 = 0;

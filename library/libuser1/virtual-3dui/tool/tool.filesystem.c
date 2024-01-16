@@ -72,14 +72,14 @@ static int fslist_cdto(struct str* path, u8* name)
 				path->buf[j+1] = 0;
 				path->len = j+1;
 			}
-			say("%s\n", path->buf);
+			logtoall("%s\n", path->buf);
 			return 0;
 		}
 	}
 
 	path->len += copypath(path->buf+path->len, name);
 	path->buf[path->len] = 0;
-	say("%s\n", path->buf);
+	logtoall("%s\n", path->buf);
 	return 0;
 }
 static void fslist_write_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area, struct event* ev)
@@ -88,7 +88,7 @@ static void fslist_write_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct st
 	if(('p' == what) | ('t' == what)){
 		vec3 xyz;
 		gl41data_convert(wnd, area, ev, xyz);
-		say("percentxy=%f,%f\n",xyz[0],xyz[1]);
+		logtoall("percentxy=%f,%f\n",xyz[0],xyz[1]);
 
 		float x0 = area->fs.vc[0] * wnd->whdf.width;
 		float y0 = area->fs.vc[0] * wnd->whdf.height;
@@ -99,11 +99,11 @@ static void fslist_write_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct st
 		int perline = fslist_getcntperline((int)dx, (int)dy);
 		priv->px = (int)(perline*xyz[0]);
 		priv->py = (int)(perline*(1.0-xyz[1])*dy/dx);
-		say("logicxy=%d,%d\n",priv->px,priv->py);
+		logtoall("logicxy=%d,%d\n",priv->px,priv->py);
 
 		if((0x2d70 == ev->what) | (0x2d74 == ev->what) ){
 			int id = priv->px + (priv->py*perline);
-			say("id=%d\n",id);
+			logtoall("id=%d\n",id);
 
 			int j,k;
 			struct str* path = priv->pathbuf;
@@ -126,7 +126,7 @@ static void fslist_write_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct st
 
 			for(j=0;j<0x10000;j++)list->buf[j] = 0;
 			list->len = readfolder(path->buf,0, 0,0, list->buf,0x10000);
-			//say("%s\n",list->buf);
+			//logtoall("%s\n",list->buf);
 		}
 	}
 }
@@ -326,7 +326,7 @@ static void fslist_create(_obj* act, void* arg, int argc, u8** argv)
 
 	struct str* list = priv->listbuf = memoryalloc(0x10000, 0);
 	list->len = readfolder(path->buf,0, 0,0, list->buf,0x10000);
-//say("%d,%s\n", list->len, list->buf);
+//logtoall("%d,%s\n", list->len, list->buf);
 }
 
 

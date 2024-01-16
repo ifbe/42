@@ -49,7 +49,7 @@ int cam3rd_nearfar(struct privdata* own, struct fstyle* cam, struct fstyle* tar,
 	float k = 1.0;
 	if('b' == key)k = 1.01 - val*0.01;
 	if('f' == key)k = 0.99 - val*0.01;
-	//say("%x,%x\n",key,val);
+	//logtoall("%x,%x\n",key,val);
 
 	own->cam2tar[3] *= k;
 	vec3_setlen(own->cam2tar, own->cam2tar[3]);
@@ -304,12 +304,12 @@ int cam3rd_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, str
 }
 int cam3rd_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@cam3rd_detach\n");
+	logtoall("@cam3rd_detach\n");
 	return 0;
 }
 int cam3rd_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@cam3rd_attach\n");
+	logtoall("@cam3rd_attach\n");
 	_obj* ent = self->pchip;
 	struct privdata* own = ent->priv_ptr;
 	switch(self->foottype){

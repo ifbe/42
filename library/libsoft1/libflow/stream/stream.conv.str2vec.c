@@ -16,7 +16,7 @@ int str2vec_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, 
 	float* f;
 	float tmp_f[9];
 	u8 tmp_u8[256];
-	say("@str2vec_write: %.4s\n", &foot);
+	logtoall("@str2vec_write: %.4s\n", &foot);
 
 	switch(stack[sp-1].foottype){
 	case _str_:
@@ -49,6 +49,6 @@ int str2vec_delete(_obj* art)
 }
 int str2vec_create(_obj* art, u8* arg)
 {
-	say("@str2vec_create\n");
+	logtoall("@str2vec_create\n");
 	return 1;
 }

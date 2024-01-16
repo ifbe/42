@@ -2,7 +2,7 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 
@@ -14,6 +14,6 @@ int check_stl(u8* buf, int len)
 int parse_stl(u8* buf)
 {
 	u32* count = (void*)(buf + 80);
-	say("count=%x\n", count[0]);
+	logtoall("count=%x\n", count[0]);
 	return 0;
 }

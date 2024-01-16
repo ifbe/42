@@ -87,7 +87,7 @@ void micphone_create(_obj* win, void* arg, int argc, u8** argv)
 		&fmt, (DWORD_PTR)icb,
 		0L, CALLBACK_FUNCTION
 	);
-	say("@waveInOpen:%d\n", ret);
+	logtoall("@waveInOpen:%d\n", ret);
 
 	icur = 0;
 	ibuf = malloc(1024*2*16);

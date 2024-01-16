@@ -20,7 +20,7 @@ int mediamux_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 {
 	int ret;
 	u8 tmp[32];
-	say("@mediamux:%.4s\n", &foot);
+	logtoall("@mediamux:%.4s\n", &foot);
 
 	switch(stack[sp-1].foottype){
 	case _a0by_:{
@@ -59,7 +59,7 @@ int mediamux_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 
 				buf += 2+ret;
 				len -= 2+ret;
-				say("@begin:%c,%x\n", art->RECVSTAT, art->RECVBYTE);
+				logtoall("@begin:%c,%x\n", art->RECVSTAT, art->RECVBYTE);
 			}
 
 			//how many
@@ -84,7 +84,7 @@ int mediamux_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 	return 0;
 
 error:
-	say("err=%d@mediamux\n",ret);
+	logtoall("err=%d@mediamux\n",ret);
 	return 0;
 }
 int mediamux_detach(struct halfrel* self, struct halfrel* peer)
@@ -105,7 +105,7 @@ int mediamux_delete(_obj* ele, u8* arg)
 }
 int mediamux_create(_obj* ele, u8* arg)
 {
-	say("@mediamux_create\n");
+	logtoall("@mediamux_create\n");
 	ele->SENDLOCK = 0;
 	ele->RECVSTAT = 0;
 	return 1;

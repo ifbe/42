@@ -29,5 +29,5 @@ int memoryfree(void*);
 int printmemory(void*, int);
 int printmmio(void*, int);
 //
-int say(void*, ...);
+int logtoall(void*, ...);
 int dbg(void*, ...);

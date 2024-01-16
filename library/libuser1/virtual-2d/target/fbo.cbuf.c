@@ -200,7 +200,7 @@ static void cbuffer_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("cbuffer(%x,%x,%x)\n",win,act,sty);
+	logtoall("cbuffer(%x,%x,%x)\n",win,act,sty);
 }
 
 
@@ -260,7 +260,7 @@ static void cbuffer_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int
 }
 static void cbuffer_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	//say("@cbuffer_write\n");
+	//logtoall("@cbuffer_write\n");
 	if(_wnd_ == stack[sp-1].foottype){
 		//give_data_into_peer(ent,_fbo_, stack,sp, arg,key, buf,len);
 	}

@@ -19,7 +19,7 @@ int graveasy_effect(struct style* geom, float dt)
 		final->displace_x[2] = 0.00001;
 		final->displace_v[2] = -0.5 * final->displace_v[2];
 	}
-	say("%f,%f\n", final->displace_v[2], final->displace_x[2]);
+	logtoall("%f,%f\n", final->displace_v[2], final->displace_x[2]);
 
 	geom->fs.vc[2] = final->displace_x[2];
 	return 0;
@@ -39,9 +39,9 @@ int graveasy_working(_obj* ent)
 	if((_virtual_ != world->hfmt)&&(_scene3d_ != world->hfmt))return 0;
 
 	now = timeread_us();
-	say("%llx\n", now);
+	logtoall("%llx\n", now);
 	dt = (float)((now - ent->TIME)%1000000)/1000000.0;
-	say("dt=%f\n",dt);
+	logtoall("dt=%f\n",dt);
 	if(ent->FLAG < 42)ent->FLAG += 1;
 
 	rel = world->orel0;
@@ -63,12 +63,12 @@ int graveasy_working(_obj* ent)
 
 int graveasy_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	say("@graveasy_read:%p,%p\n",ent,foot);
+	logtoall("@graveasy_read:%p,%p\n",ent,foot);
 	return 0;
 }
 int graveasy_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	say("@graveasy_give:%p,%p\n",ent,foot);
+	logtoall("@graveasy_give:%p,%p\n",ent,foot);
 	if(_clk_ == stack[sp-1].foottype)graveasy_working(ent);
 	return 0;
 }
@@ -98,7 +98,7 @@ int graveasy_delete(_obj* ent)
 }
 int graveasy_create(_obj* ent, void* str)
 {
-	say("@graveasy_create\n");
+	logtoall("@graveasy_create\n");
 	ent->FLAG = 0;
 	return 0;
 }

@@ -71,7 +71,7 @@ u8* findstr(u8* src, int len, u8* target, int tarlen)
 
 		k = ncmp(src+j, target, tarlen);
 /*
-say("%d,%c%c%c,%c%c%c\n",k,
+logtoall("%d,%c%c%c,%c%c%c\n",k,
 	src[j],src[j+1],src[j+2],
 	target[0],target[1],target[2]
 );

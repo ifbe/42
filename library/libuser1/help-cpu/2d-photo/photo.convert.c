@@ -621,7 +621,7 @@ void yuyv_to_yuvx(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth)
 {
-	//say("yuyv_to_yuvx:srcw=%d,srch=%d,dstw=%d,dsth=%d\n",srcw,srch,dstw,dsth);
+	//logtoall("yuyv_to_yuvx:srcw=%d,srch=%d,dstw=%d,dsth=%d\n",srcw,srch,dstw,dsth);
 	if(0 == srcbuf)return;
 	if(0 == dstbuf)return;
 	//printmemory(srcbuf, 0x10);
@@ -715,7 +715,7 @@ void gbgbxrgrgx_to_rgba(
 {
 	if(0 == srcbuf)return;
 	if(0 == dstbuf)return;
-//say("gbgbxrgrgx_to_rgba\n");
+//logtoall("gbgbxrgrgx_to_rgba\n");
 //printmemory(srcbuf, 0x40);
 	int newx = 0;
 	int srcstride = srcw*5/4;
@@ -846,7 +846,7 @@ void gbgbxrgrgx_to_y4_u_v(
 {
 	if(0 == srcbuf)return;
 	if(0 == dstbuf)return;
-//say("gbgbxrgrgx_to_y4_u_v:srcw=%d,srch=%d,dstw=%d,dsth=%d\n",srcw,srch,dstw,dsth);
+//logtoall("gbgbxrgrgx_to_y4_u_v:srcw=%d,srch=%d,dstw=%d,dsth=%d\n",srcw,srch,dstw,dsth);
 //printmemory(srcbuf, 0x40);
 	int newx = 0;
 	int srcstride = srcw*5/4;
@@ -867,7 +867,7 @@ void gbgbxrgrgx_to_y4_u_v(
 	{
 		if(y+2 >= srch)break;		//1080
 		if(y+2 >= dsth)break;		//1088
-		//say("y=%d\n",y);
+		//logtoall("y=%d\n",y);
 
 		dsty0 = dstbuf + (y+0)*dstw;
 		dsty1 = dstbuf + (y+1)*dstw;
@@ -956,7 +956,7 @@ g b g b ~ g b g b ~ g b g b ~	//vd
 			sumy = 0.2126*sumr+0.7152*sumg+0.0722*sumb;
 			dstu[x/2] = clamprgbfromfloat(128+(sumb-sumy)/1.8556);
 			dstv[x/2] = clamprgbfromfloat(128+(sumr-sumy)/1.5748);
-			//say("sumb=%d,sumr=%d,sumy=%f\n",sumb,sumr,sumy);
+			//logtoall("sumb=%d,sumr=%d,sumy=%f\n",sumb,sumr,sumy);
 
 			//yyyy
 			r = (va[3]+vc[3])/2;
@@ -1003,7 +1003,7 @@ g b g b ~ g b g b ~ g b g b ~	//vd
 			dstu[x/2 + 1] = clamprgbfromfloat(128+(sumb-sumy)/1.8556);
 			dstv[x/2 + 1] = clamprgbfromfloat(128+(sumr-sumy)/1.5748);
 		}
-		//say("yyyyy=%d\n",y);
+		//logtoall("yyyyy=%d\n",y);
 	}
 }
 
@@ -1017,7 +1017,7 @@ void bgbgxgrgrx_to_rgba(
 {
 	if(0 == srcbuf)return;
 	if(0 == dstbuf)return;
-//say("bgbgxgrgrx_to_rgba\n");
+//logtoall("bgbgxgrgrx_to_rgba\n");
 //printmemory(srcbuf, 0x40);
 	int newx = 0;
 	int srcstride = srcw*5/4;
@@ -1148,7 +1148,7 @@ void bgbgxgrgrx_to_y4_u_v(
 {
 	if(0 == srcbuf)return;
 	if(0 == dstbuf)return;
-//say("bgbgxgrgrx_to_y4_u_v:srcw=%d,srch=%d,dstw=%d,dsth=%d\n",srcw,srch,dstw,dsth);
+//logtoall("bgbgxgrgrx_to_y4_u_v:srcw=%d,srch=%d,dstw=%d,dsth=%d\n",srcw,srch,dstw,dsth);
 //printmemory(srcbuf, 0x40);
 	int newx = 0;
 	int srcstride = srcw*5/4;
@@ -1169,7 +1169,7 @@ void bgbgxgrgrx_to_y4_u_v(
 	{
 		if(y+2 >= srch)break;		//1080
 		if(y+2 >= dsth)break;		//1088
-		//say("y=%d\n",y);
+		//logtoall("y=%d\n",y);
 
 		dsty0 = dstbuf + (y+0)*dstw;
 		dsty1 = dstbuf + (y+1)*dstw;
@@ -1258,7 +1258,7 @@ b g b g ~ b g b g ~ b g b g ~	//vd
 			sumy = 0.2126*sumr+0.7152*sumg+0.0722*sumb;
 			dstu[x/2] = clamprgbfromfloat(128+(sumb-sumy)/1.8556);
 			dstv[x/2] = clamprgbfromfloat(128+(sumr-sumy)/1.5748);
-			//say("sumb=%d,sumr=%d,sumy=%f\n",sumb,sumr,sumy);
+			//logtoall("sumb=%d,sumr=%d,sumy=%f\n",sumb,sumr,sumy);
 
 			//yyyy
 			r = (va[2]+va[4]+vc[2]+vc[4])/4;
@@ -1305,7 +1305,7 @@ b g b g ~ b g b g ~ b g b g ~	//vd
 			dstu[x/2 + 1] = clamprgbfromfloat(128+(sumb-sumy)/1.8556);
 			dstv[x/2 + 1] = clamprgbfromfloat(128+(sumr-sumy)/1.5748);
 		}
-		//say("yyyyy=%d\n",y);
+		//logtoall("yyyyy=%d\n",y);
 	}
 }
 //1. BT.601标准[1]——标清数字电视（SDTV)

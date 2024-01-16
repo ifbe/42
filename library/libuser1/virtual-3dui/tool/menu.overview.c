@@ -940,7 +940,7 @@ void overview_drag(_obj* win, int x0, int y0, int x1, int y1)
 	_obj* win_d;
 	_obj* act_s;
 	_obj* act_d;
-	say("(%d,%d)->(%d,%d)\n", x0, y0, x1, y1);
+	logtoall("(%d,%d)->(%d,%d)\n", x0, y0, x1, y1);
 
 	if(y0 < 8)
 	{
@@ -980,7 +980,7 @@ void overview_drag(_obj* win, int x0, int y0, int x1, int y1)
 		if((x0==x1)&&(y0==y1))
 		{
 			y1 = y1-8;
-			say("@supply:%d\n", (y1*16)+x1);
+			logtoall("@supply:%d\n", (y1*16)+x1);
 			//supplycreate(0,0);
 		}
 		else if(y1 < 8)
@@ -1214,11 +1214,11 @@ static void overview_write_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct 
 	if('p' == (ev->what&0xff)){
 		vec3 xyz;
 		gl41data_convert(wnd, area, ev, xyz);
-		//say("%f,%f\n",xyz[0],xyz[1]);
+		//logtoall("%f,%f\n",xyz[0],xyz[1]);
 
 		ent->whdf.ix0 = (int)(16*xyz[0]);
 		ent->whdf.iy0 = (int)(32*(1.0-xyz[1]));
-		say("%d,%d\n",ent->whdf.ix0,ent->whdf.iy0);
+		logtoall("%d,%d\n",ent->whdf.ix0,ent->whdf.iy0);
 
 		if(0x2d70 == ev->what){
 		}
@@ -1262,7 +1262,7 @@ static void overview_detach(struct halfrel* self, struct halfrel* peer)
 }
 static void overview_attach(struct halfrel* self, struct halfrel* peer)
 {
-    say("@overview_attach\n");
+    logtoall("@overview_attach\n");
 }
 
 
@@ -1279,7 +1279,7 @@ void overview_delete(_obj* act)
 }
 void overview_create(_obj* act, void* str)
 {
-    say("@overview_create\n");
+    logtoall("@overview_create\n");
 }
 
 

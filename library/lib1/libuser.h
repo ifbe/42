@@ -160,7 +160,7 @@ int myvsnprintf(void*, int, void*, __builtin_va_list);
 //
 int printmemory(void*, int);
 int printmmio(void*, int);
-int say(void*, ...);
+int logtoall(void*, ...);
 
 #ifdef __cplusplus
 }

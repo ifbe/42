@@ -5,7 +5,7 @@
 
 int portspace_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	say("@portspace_read\n");
+	logtoall("@portspace_read\n");
 	return 0;
 }
 int portspace_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
@@ -18,7 +18,7 @@ int portspace_detach(struct halfrel* self, struct halfrel* peer)
 }
 int portspace_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@portspace_attach\n");
+	logtoall("@portspace_attach\n");
 	return 0;
 }
 

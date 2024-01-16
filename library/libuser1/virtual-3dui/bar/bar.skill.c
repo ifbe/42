@@ -179,7 +179,7 @@ static void skillbar_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("skillbar(%x,%x,%x)\n",win,act,sty);
+	logtoall("skillbar(%x,%x,%x)\n",win,act,sty);
 }
 
 

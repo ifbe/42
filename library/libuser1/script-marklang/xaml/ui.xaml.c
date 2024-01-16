@@ -17,7 +17,7 @@ int xamlroot_detach(struct halfrel* self, struct halfrel* peer)
 }
 int xamlroot_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@xamlroot_attach\n");
+	logtoall("@xamlroot_attach\n");
 	return 0;
 }
 

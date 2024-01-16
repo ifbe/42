@@ -21,7 +21,7 @@ int renalu_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
 }
 int renalu_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
-	say("@renalu_write\n");
+	logtoall("@renalu_write\n");
 	printmemory(buf, 16);
 	if(0 == art)return 0;
 
@@ -31,7 +31,7 @@ int renalu_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u
 	int deq = per->deq;
 	int j,restart=1;
 	while(restart){
-say("000000\n");
+logtoall("000000\n");
 		restart = 0;
 		for(j=0;j<len;j++){
 			bak[enq+j] = buf[j];
@@ -41,14 +41,14 @@ say("000000\n");
 			if(0 != bak[enq+j-1])continue;
 			if(0 != bak[enq+j-2])continue;
 			if(0 != bak[enq+j-3])continue;
-say("11111\n");
+logtoall("11111\n");
 			//send prev pack
 			if(0 == deq){
 				deq = enq+j-3;
 				continue;
 			}
 			give_data_into_peer(art,_dst_, stack,sp, 0,0, bak+deq,enq+j-3-deq);
-say("222222\n");
+logtoall("222222\n");
 			if(enq+j >= 0xf0000){
 				bak[0x10000+0] = bak[0x10000+1] = bak[0x10000+2] = 0;
 				bak[0x10000+3] = 1;
@@ -82,7 +82,7 @@ int renalu_attach(struct halfrel* self, struct halfrel* peer)
 
 int renalu_create(_obj* ele, void* arg, int argc, u8** argv)
 {
-	say("@renalu_create\n");
+	logtoall("@renalu_create\n");
 
 	struct perobj* perobj = (void*)ele->priv_256b;
 

@@ -236,7 +236,7 @@ void madgwickupdate9(struct perimu* per, float* pg, float* pa, float* pm)
 	//gx = arctanyx(2*(qw*qx+qy*qz),1-2*(qx*qx+qy*qy))*180/3.141592653;
 	//gy = arcsin(2*qw*qy - 2*qx*qz)*180/3.141592653;
 	//gz = arctanyx(2*(qw*qz+qx*qy),1-2*(qy*qy+qz*qz))*180/3.141592653;
-	//say("euler:	%f	%f	%f\n", gx, gy, gz);
+	//logtoall("euler:	%f	%f	%f\n", gx, gy, gz);
 }
 
 
@@ -244,7 +244,7 @@ void madgwickupdate9(struct perimu* per, float* pg, float* pa, float* pm)
 
 int madgwick_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	say("@madgwick_read\n");
+	logtoall("@madgwick_read\n");
 
 	float f[10];
 	take_data_from_peer(art,_src_, stack,sp, 0,0, f,10);
@@ -252,14 +252,14 @@ int madgwick_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, 
 }
 int madgwick_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	say("@madgwick_write\n");
+	logtoall("@madgwick_write\n");
 
 	struct perimu* per = (void*)art->priv_256b;
 	float* f = (void*)buf;
 	switch(len){
 		case 9:madgwickupdate9(per, &f[0], &f[3], &f[6]);break;
 		case 6:madgwickupdate6(per, &f[0], &f[3]);break;
-		default:say("err@madgwick_write:len=%d\n", len);return 0;
+		default:logtoall("err@madgwick_write:len=%d\n", len);return 0;
 	}
 
 	give_data_into_peer(art,_dst_, stack,sp, 0,0, per->q,4);
@@ -267,12 +267,12 @@ int madgwick_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 }
 int madgwick_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@madgwick_detach\n");
+	logtoall("@madgwick_detach\n");
 	return 0;
 }
 int madgwick_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@madgwick_attach\n");
+	logtoall("@madgwick_attach\n");
 	return 0;
 }
 
@@ -299,7 +299,7 @@ int madgwick_delete(_obj* ele)
 }
 int madgwick_create(_obj* ele, u8* arg)
 {
-	say("@madgwick_create\n");
+	logtoall("@madgwick_create\n");
 
 	struct perimu* per = (void*)ele->priv_256b;
 

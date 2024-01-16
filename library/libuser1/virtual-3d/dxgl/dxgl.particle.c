@@ -175,7 +175,7 @@ static void particle_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("particle(%x,%x,%x)\n",win,act,sty);
+	logtoall("particle(%x,%x,%x)\n",win,act,sty);
 }
 
 

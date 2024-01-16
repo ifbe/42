@@ -52,7 +52,7 @@ int parsefmt(u8* buf, u8* str)
 }
 int parsenameandtype(u8* buf, int len, u8* name, u8* type)
 {
-	//say("parsenameandtype:%.16s\n",buf);
+	//logtoall("parsenameandtype:%.16s\n",buf);
 	parsefmt(name, buf);
 
 	int j;
@@ -87,7 +87,7 @@ void parsehalfrel_old(u8* buf, int len,
 		}
 	}
 	if(k != 2){
-		say("error@parsehalfrel,k=%d\n",k);
+		logtoall("error@parsehalfrel,k=%d\n",k);
 		return;
 	}
 
@@ -165,7 +165,7 @@ void parsehalfrel(u8* buf, int len,
 	while(0x20 == buf[j])j++;
 	parsefmt((u8*)&hash, buf+j);
 	rel->nodetype = hash;
-	say("nodetype=%.8s\n", &rel->nodetype);
+	logtoall("nodetype=%.8s\n", &rel->nodetype);
 
 	//chip.addr
 	if(lat >= 0){
@@ -182,16 +182,16 @@ void parsehalfrel(u8* buf, int len,
 		}
 	}
 	else{
-		say("no @ at left?\n");
+		logtoall("no @ at left?\n");
 	}
-	say("nodeaddr=%p\n", rel->pchip);
+	logtoall("nodeaddr=%p\n", rel->pchip);
 
 	//foot.type
 	j = findcol[0]+1;
 	while(0x20 == buf[j])j++;
 	parsefmt((u8*)&hash, buf+j);
 	rel->foottype = hash;
-	say("foottype=%.8s\n", &rel->foottype);
+	logtoall("foottype=%.8s\n", &rel->foottype);
 
 	if(rat >= 0){
 		j = rat+1;
@@ -205,14 +205,14 @@ void parsehalfrel(u8* buf, int len,
 			}
 		}
 	}
-	say("footaddr=%p\n", rel->pfoot);
+	logtoall("footaddr=%p\n", rel->pfoot);
 }
 void role_test_relation(
 	struct chiplist chip[], int clen,
 	struct footlist foot[], int flen,
 	u8* buf, int len)
 {
-	//say("relation:\n%.*s\n", len, buf);
+	//logtoall("relation:\n%.*s\n", len, buf);
 	struct halfrel src;
 	struct halfrel dst;
 	struct relation* rel;
@@ -228,7 +228,7 @@ void role_test_relation(
 		if( (run == len) | ('\n' == val) ) {
 			if((0 != dst.chip) && (0 != src.chip))
 			{
-				say("%.4s@%llx,%.4s@%llx -> %.4s@%llx,%.4s@%llx\n",
+				logtoall("%.4s@%llx,%.4s@%llx -> %.4s@%llx,%.4s@%llx\n",
 					&src.nodetype,src.chip, &src.foottype,src.foot,
 					&dst.nodetype,dst.chip, &dst.foottype,dst.foot
 				);
@@ -237,9 +237,9 @@ void role_test_relation(
 					(void*)src.chip, (void*)src.foot, src.nodetype, src.foottype
 				);
 				relationattach((void*)&rel->srcchip, (void*)&rel->dstchip);
-				say("\n");
+				logtoall("\n");
 			}
-//say("***\n");
+//logtoall("***\n");
 
 			dst.chip = src.chip = 0;
 			bracket_l = bracket_r = -1;
@@ -249,11 +249,11 @@ void role_test_relation(
 		if('#' == val){
 			tmp = run;
 			while('\n' != buf[tmp])tmp++;
-			say("[%x,%x]ignore note: (%.*s)\n", run, tmp, tmp-run, buf+run);
+			logtoall("[%x,%x]ignore note: (%.*s)\n", run, tmp, tmp-run, buf+run);
 			run = tmp;
 			continue;
 		}
-//say("@%c@\n",k);
+//logtoall("@%c@\n",k);
 		//(src) -> (dst)
 		if('(' == val) {
 			if(bracket_l < 0) {
@@ -265,7 +265,7 @@ void role_test_relation(
 		}
 		if(')' == val) {
 			if(bracket_r >= 0) {
-				say("[%x,%x)rrel: <%.*s>\n", bracket_r, run, run-bracket_r, buf+bracket_r);
+				logtoall("[%x,%x)rrel: <%.*s>\n", bracket_r, run, run-bracket_r, buf+bracket_r);
 
 				dst.chip = dst.foot = 0;
 				dst.nodetype = dst.foottype = 0;
@@ -274,7 +274,7 @@ void role_test_relation(
 					&dst);
 			}
 			else if(bracket_l >= 0) {
-				say("[%x,%x)lrel: <%.*s>\n", bracket_l, run, run-bracket_l, buf+bracket_l);
+				logtoall("[%x,%x)lrel: <%.*s>\n", bracket_l, run, run-bracket_l, buf+bracket_l);
 
 				src.chip = src.foot = 0;
 				src.nodetype = src.foottype = 0;
@@ -345,10 +345,10 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 				argv[argc] = buf+propname;
 				argc += 1;
 
-				//say("propname = %.*s\n", j-propname, buf+propname);
+				//logtoall("propname = %.*s\n", j-propname, buf+propname);
 				if(0 == ncmp(buf+propname, "fmt", 3)){
 					parsefmt((void*)&type, buf+propdata);
-					//say("%llx\n", type);
+					//logtoall("%llx\n", type);
 				}
 				if(0 == ncmp(buf+propname, "arg", 3)){
 					copypath(tmp, buf+propdata);
@@ -364,13 +364,13 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 			nodedata = j+1;
 			str = -1;
 
-			say("actnode=%.*s\n", j-nodename, buf+nodename);
+			logtoall("actnode=%.*s\n", j-nodename, buf+nodename);
 			parsenameandtype(buf+nodename, j-nodename, (void*)&hash, (void*)&type);
-			say("name=%.8s,type=%.8s\n", &hash, &type);
+			logtoall("name=%.8s,type=%.8s\n", &hash, &type);
 		}
 		if('}' == k) {
 			if(nodename >= 0){
-				//say("haha:%llx,%llx\n", fmt, arg);
+				//logtoall("haha:%llx,%llx\n", fmt, arg);
 
 				chip[clen].tier = tier;		//_ent_ _sup_ _art_ _sys_ _dri_ _dev_ _wrk_
 				chip[clen].type = type;
@@ -399,7 +399,7 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 						chip[clen].addr = bootup_create(type, arg, argc, argv);
 						break;
 				}
-				say("node%d:tier=%.8s,type=%.8s,hash=%.8s,addr=%p\n",clen, &tier,&type,&hash,chip[clen].addr);
+				logtoall("node%d:tier=%.8s,type=%.8s,hash=%.8s,addr=%p\n",clen, &tier,&type,&hash,chip[clen].addr);
 
 				nodename = -1;
 				clen += 1;
@@ -420,7 +420,7 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 
 int role_test_style(struct footlist foot[], int flen, u8* buf, int len)
 {
-	//say("style:\n%.*s\n", len, buf);
+	//logtoall("style:\n%.*s\n", len, buf);
 	u64 hash;
 	struct style* sty;
 
@@ -439,7 +439,7 @@ int role_test_style(struct footlist foot[], int flen, u8* buf, int len)
 		if( (j == len) | ('\n' == k) ) {
 /*
 			if(propdata >= 0) {
-				say("propctx = %.*s\n", j-propdata, buf+propdata);
+				logtoall("propctx = %.*s\n", j-propdata, buf+propdata);
 				propname = propdata = -1;
 			}
 */
@@ -465,7 +465,7 @@ int role_test_style(struct footlist foot[], int flen, u8* buf, int len)
 		if(':' == k) {
 			//in <type> && in node{} && have str
 			if( (nodename >= 0) && (str >= 0) ) {
-				//say("propname = %.*s\n", j-str, buf+str);
+				//logtoall("propname = %.*s\n", j-str, buf+str);
 				propdata = j+1;
 				propname = str;
 				str = -1;
@@ -508,7 +508,7 @@ int role_test_style(struct footlist foot[], int flen, u8* buf, int len)
 			nodedata = j+1;
 			str = -1;
 
-			//say("stynode=%.*s\n", j-nodename, buf+nodename);
+			//logtoall("stynode=%.*s\n", j-nodename, buf+nodename);
 
 			parsefmt((void*)&hash, buf+nodename);
 
@@ -518,18 +518,18 @@ int role_test_style(struct footlist foot[], int flen, u8* buf, int len)
 			if(nodename >= 0){
 				nodename = -1;
 /*
-				say("l:%f, %f, %f\n", sty->vl[0], sty->vl[1], sty->vl[2]);
-				say("r:%f, %f, %f\n", sty->vr[0], sty->vr[1], sty->vr[2]);
-				say("b:%f, %f, %f\n", sty->vb[0], sty->vb[1], sty->vb[2]);
-				say("u:%f, %f, %f\n", sty->vu[0], sty->vu[1], sty->vu[2]);
-				say("n:%f, %f, %f\n", sty->vn[0], sty->vn[1], sty->vn[2]);
-				say("f:%f, %f, %f\n", sty->vf[0], sty->vf[1], sty->vf[2]);
-				say("q:%f, %f, %f\n", sty->vq[0], sty->vq[1], sty->vq[2]);
-				say("c:%f, %f, %f\n", sty->vc[0], sty->vc[1], sty->vc[2]);
+				logtoall("l:%f, %f, %f\n", sty->vl[0], sty->vl[1], sty->vl[2]);
+				logtoall("r:%f, %f, %f\n", sty->vr[0], sty->vr[1], sty->vr[2]);
+				logtoall("b:%f, %f, %f\n", sty->vb[0], sty->vb[1], sty->vb[2]);
+				logtoall("u:%f, %f, %f\n", sty->vu[0], sty->vu[1], sty->vu[2]);
+				logtoall("n:%f, %f, %f\n", sty->vn[0], sty->vn[1], sty->vn[2]);
+				logtoall("f:%f, %f, %f\n", sty->vf[0], sty->vf[1], sty->vf[2]);
+				logtoall("q:%f, %f, %f\n", sty->vq[0], sty->vq[1], sty->vq[2]);
+				logtoall("c:%f, %f, %f\n", sty->vc[0], sty->vc[1], sty->vc[2]);
 */
 				foot[flen].hash = hash;
 				foot[flen].addr = sty;
-				say("slot%d:hash=%.8s,addr=%p\n",flen,&hash,sty);
+				logtoall("slot%d:hash=%.8s,addr=%p\n",flen,&hash,sty);
 
 				flen += 1;
 			}//if innode
@@ -554,12 +554,12 @@ void role_test1(u8* buf, int len)
 	int flen = 0;
 	struct footlist fbuf[80];
 
-	say("parsing myml\n");
+	logtoall("parsing myml\n");
 	for(j=0;j<=len;j++) {
 		k = buf[j];
 
 		if( (j == len) | ('\n' == k) ) {
-			//say("%04d: %.*s\n", line, j-head, buf+head);
+			//logtoall("%04d: %.*s\n", line, j-head, buf+head);
 
 			head = j+1;
 			line += 1;
@@ -576,7 +576,7 @@ void role_test1(u8* buf, int len)
 		if('>' == k) {
 			if(typename < 0)continue;
 
-			////say("typename = %.*s\n", j-typename, buf+typename);
+			////logtoall("typename = %.*s\n", j-typename, buf+typename);
 			typedata = j+1;
 		}
 		if('<' == k) {
@@ -647,7 +647,7 @@ void role_test1(u8* buf, int len)
 	for(j=0;j<clen;j++)
 	{
 		if(0 == cbuf[j].addr)break;
-		say("%.8s/%.8s: %.8s@%llx\n",
+		logtoall("%.8s/%.8s: %.8s@%llx\n",
 			&cbuf[j].tier, &cbuf[j].type,
 			&cbuf[j].hash, cbuf[j].addr
 		);
@@ -656,7 +656,7 @@ void role_test1(u8* buf, int len)
 	for(j=0;j<flen;j++)
 	{
 		if(0 == fbuf[j].addr)break;
-		say("foot: %.8s@%llx\n",
+		logtoall("foot: %.8s@%llx\n",
 			&fbuf[j].hash, fbuf[j].addr
 		);
 	}
@@ -668,9 +668,9 @@ int role_fromfile(u8* str, int len)
 
 	len = openreadclose(str, 0, buf, 0x2000);
 	if(len <= 0)return 0;
-	//say("%s", buf);
+	//logtoall("%s", buf);
 
-    say("----read done, now parse----\n");
+    logtoall("----read done, now parse----\n");
 
 	role_test1(buf, len);
 	return 1;
@@ -690,22 +690,22 @@ int myml_create(struct item* obj, void* arg, int argc, u8** argv)
 	}
 	else{
 		for(j=1;j<argc;j++){
-			say("arg[%d]=%s\n", j, argv[j]);
+			logtoall("arg[%d]=%s\n", j, argv[j]);
 			role_fromfile(argv[j], 0);
 		}
 	}
 
-    say("----parse done, now loop or exit----\n");
+    logtoall("----parse done, now loop or exit----\n");
 
 	void* mpoller = poller_alloc();
 	if(mpoller)poller(mpoller);
 
-	say("myml@%p exiting\n",obj);
+	logtoall("myml@%p exiting\n",obj);
 	return 0;
 }
 int myml_delete(struct item* obj)
 {
-	say("myml_delete:%p\n", obj);
+	logtoall("myml_delete:%p\n", obj);
 	return 0;
 }
 

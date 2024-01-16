@@ -8,7 +8,7 @@ int decstr2u32(void* src, void* dst);
 
 int goslow_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	say("@goslow_read\n");
+	logtoall("@goslow_read\n");
 
 	float f[10];
 	take_data_from_peer(art,_src_, stack,sp, 0,0, f,10);
@@ -22,10 +22,10 @@ int goslow_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, v
 	if(_src_ == stack[sp-1].foottype){
 		cur = art->CURNUM;
 		max = art->MAXNUM;
-		say("@goslow_write:%d/%d\n", cur, max);
+		logtoall("@goslow_write:%d/%d\n", cur, max);
 
 		if(0 == cur){
-			say("@goslow.sending\n");
+			logtoall("@goslow.sending\n");
 			give_data_into_peer(art,_dst_, stack,sp, 0,0, buf,len);
 		}
 		art->CURNUM = (cur + 1) % max;
@@ -50,6 +50,6 @@ int goslow_create(_obj* ele, u8* arg)
 	ele->MAXNUM = 8;	//default
 	if(arg)decstr2u32(arg, &ele->MAXNUM);
 
-	say("@goslow_create:%d\n",ele->MAXNUM);
+	logtoall("@goslow_create:%d\n",ele->MAXNUM);
 	return 1;
 }

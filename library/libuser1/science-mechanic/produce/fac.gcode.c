@@ -10,7 +10,7 @@ int gcode_line(float* vbuf, int vlen, u8* str, int len)
 {
 	int j;
 	int x,y,z;
-	//say("%.*s\n", len, str);
+	//logtoall("%.*s\n", len, str);
 
 	if('G' != str[0])return 0;
 	if(('0' != str[1]) && ('1' != str[1]))return 0;
@@ -22,7 +22,7 @@ int gcode_line(float* vbuf, int vlen, u8* str, int len)
 		if('Y' == str[j])y = j+1;
 		if('Z' == str[j])z = j+1;
 	}
-	//say("x=%d,y=%d,z=%d\n",x,y,z);
+	//logtoall("x=%d,y=%d,z=%d\n",x,y,z);
 
 	if(0 == x){
 		if(vlen <= 0)vbuf[3*vlen+0] = 0;
@@ -42,7 +42,7 @@ int gcode_line(float* vbuf, int vlen, u8* str, int len)
 	}
 	else decstr2float(str+z, &vbuf[3*vlen+2]);
 
-	say("%f,%f,%f\n", vbuf[3*vlen+0], vbuf[3*vlen+1], vbuf[3*vlen+2]);
+	logtoall("%f,%f,%f\n", vbuf[3*vlen+0], vbuf[3*vlen+1], vbuf[3*vlen+2]);
 	return 1;
 }
 int gcode_parse(float* dst, u8* buf)
@@ -94,7 +94,7 @@ static void gcode_create(_obj* act, void* arg)
 		cnt = gcode_parse(dst, buf);
 
 		act->CNTBUF = cnt;
-		say("len=%x\n", 12*cnt);
+		logtoall("len=%x\n", 12*cnt);
 	}
 }
 

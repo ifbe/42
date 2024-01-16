@@ -56,7 +56,7 @@ int v4l2cam_destroy(_obj* cam)
 {
 	struct percam* pcam = cam->priv_ptr;
 	if(0 == pcam){
-		say("@v4l2cam_destroy:0=pcam\n");
+		logtoall("@v4l2cam_destroy:0=pcam\n");
 		return 0;
 	}
 
@@ -92,7 +92,7 @@ int v4l2cam_prepare(_obj* cam)
 {
 	struct percam* pcam = cam->priv_ptr;
 	if(0 == pcam){
-		say("@v4l2cam_prepare:0=pcam\n");
+		logtoall("@v4l2cam_prepare:0=pcam\n");
 		return 0;
 	}
 	pcam->fd = 0;
@@ -164,10 +164,10 @@ int v4l2cam_prepare(_obj* cam)
 
 	desc.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	desc.index = 0;
-	say("v4l2_fmtdesc:\n");
+	logtoall("v4l2_fmtdesc:\n");
 	while(ioctl(fd, VIDIOC_ENUM_FMT, &desc) >= 0)
 	{
-		say("	4cc=%.4s,str=%s\n", &desc.pixelformat, desc.description);
+		logtoall("	4cc=%.4s,str=%s\n", &desc.pixelformat, desc.description);
 
 		frmsize.pixel_format = desc.pixelformat;
 		frmsize.index = 0;
@@ -175,7 +175,7 @@ int v4l2cam_prepare(_obj* cam)
 			if (frmsize.type == V4L2_FRMSIZE_TYPE_DISCRETE) {
 				enumx = frmsize.discrete.width;
 				enumy = frmsize.discrete.height;
-				say("		DISCRETE:w=%d,h=%d\n", enumx,enumy);
+				logtoall("		DISCRETE:w=%d,h=%d\n", enumx,enumy);
 			} else if (frmsize.type == V4L2_FRMSIZE_TYPE_STEPWISE) {
 				minx = frmsize.stepwise.min_width;
 				miny = frmsize.stepwise.min_height;
@@ -183,7 +183,7 @@ int v4l2cam_prepare(_obj* cam)
 				maxy = frmsize.stepwise.max_height;
 				stepx = frmsize.stepwise.step_width;
 				stepy = frmsize.stepwise.step_height;
-				say("		STEPWISE:min=(%d,%d),max=(%d,%d),step=(%d,%d)\n", minx,miny,maxx,maxy,stepx,stepy);
+				logtoall("		STEPWISE:min=(%d,%d),max=(%d,%d),step=(%d,%d)\n", minx,miny,maxx,maxy,stepx,stepy);
 
 				if( (0==(pcam->wantstride-minx)%stepx)&&
 				    (0==(pcam->wantheight-miny)%stepy) )
@@ -193,7 +193,7 @@ int v4l2cam_prepare(_obj* cam)
 				}
 			}
 			else{
-				say("		frmsize.type=%x\n", frmsize.type);
+				logtoall("		frmsize.type=%x\n", frmsize.type);
 			}
 
 			if( (pcam->wantstride == enumx) &&
@@ -212,33 +212,33 @@ int v4l2cam_prepare(_obj* cam)
 			frmival.width = enumx;
 			frmival.height = enumy;
 			while(ioctl(fd, VIDIOC_ENUM_FRAMEINTERVALS, &frmival) >= 0){
-				say("			fps=%d/%d\n",
+				logtoall("			fps=%d/%d\n",
 					frmival.discrete.numerator,
 					frmival.discrete.denominator
 				);
 				frmival.index++;
 			}
 			if(0 == frmival.index){
-				say("			VIDIOC_ENUM_FRAMEINTERVALS:errno=%d\n",errno);
+				logtoall("			VIDIOC_ENUM_FRAMEINTERVALS:errno=%d\n",errno);
 				//return 0;
 			}
 */
 			frmsize.index++;
 		}
 		if(0 == frmsize.index){
-			say("		VIDIOC_ENUM_FRAMESIZES:errno=%d\n",errno);
+			logtoall("		VIDIOC_ENUM_FRAMESIZES:errno=%d\n",errno);
 			return 0;
 		}
 
 		desc.index++;
 	}
 	if(0 == desc.index){
-		say("	VIDIOC_ENUM_FMT:errno=%d\n",errno);
+		logtoall("	VIDIOC_ENUM_FMT:errno=%d\n",errno);
 		return 0;
 	}
 
 	if(0 == pcam->realformat){
-		say("not support: w=%d,h=%d,fmt=%.4s\n", pcam->wantstride, pcam->wantheight, &pcam->wantformat);
+		logtoall("not support: w=%d,h=%d,fmt=%.4s\n", pcam->wantstride, pcam->wantheight, &pcam->wantformat);
 		goto failclose;
 	}
 
@@ -324,7 +324,7 @@ void* cameraworker(_obj* cam)
 {
 	struct percam* pcam = cam->priv_ptr;
 	if(0 == pcam){
-		say("@cameraworker:0=pcam\n");
+		logtoall("@cameraworker:0=pcam\n");
 		return 0;
 	}
 	pcam->deq = 0;
@@ -363,7 +363,7 @@ void* cameraworker(_obj* cam)
 		v4l2buf->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 		v4l2buf->memory = V4L2_MEMORY_MMAP;
 		if(-1 == ioctl(fd, VIDIOC_DQBUF, v4l2buf)){
-			say("error@DQBUF\n");
+			logtoall("error@DQBUF\n");
 		}
 
 		//send
@@ -372,7 +372,7 @@ void* cameraworker(_obj* cam)
 
 		//enq
 		if(-1 == ioctl(fd, VIDIOC_QBUF, v4l2buf)){
-			say("error@DQBUF\n");
+			logtoall("error@DQBUF\n");
 		}
 	}
 
@@ -389,7 +389,7 @@ int v4l2cam_take(_obj* cam,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* 
 	if(0 == pcam)return 0;
 
 	u64 addr = pcam->datainfo[(pcam->deq+BUFCNT-1)%BUFCNT].addr;
-	say("addr=%llx\n",addr);
+	logtoall("addr=%llx\n",addr);
 
 	*(u64*)buf = addr;
 	return 0;
@@ -456,14 +456,14 @@ int v4l2cam_create(_obj* cam, void* arg, int argc, u8** argv)
 	for(j=1;j<argc;j++){
 		arg = argv[j];
 		if(0 == arg)break;
-		//say("%d->%.16s\n",j,arg[j]);
+		//logtoall("%d->%.16s\n",j,arg[j]);
 
 		if(0 == ncmp(arg, "path:", 5)){
 			path = argv[j]+5;
 		}
 		if(0 == ncmp(arg, "format:", 7)){
 			arg = argv[j]+7;
-			//say("format=%.5s\n",arg);
+			//logtoall("format=%.5s\n",arg);
 			if(0)return 0;
 			else if(0 == ncmp(arg, "mjpeg", 5))format = V4L2_PIX_FMT_MJPEG;
 			else if(0 == ncmp(arg, "h264", 4))format = V4L2_PIX_FMT_H264;
@@ -485,7 +485,7 @@ int v4l2cam_create(_obj* cam, void* arg, int argc, u8** argv)
 	//percam data
 	struct percam* pcam = cam->priv_ptr = memoryalloc(0x1000, 4);
 	if(0 == pcam){
-		say("oom@alloc pcam\n");
+		logtoall("oom@alloc pcam\n");
 		return -1;
 	}
 

@@ -1,5 +1,5 @@
 #include "libhard.h"
-#define ahci_print(fmt, ...) say("<%08lld,ahci>" fmt, timeread_us(), ##__VA_ARGS__)
+#define ahci_print(fmt, ...) logtoall("<%08lld,ahci>" fmt, timeread_us(), ##__VA_ARGS__)
 u32 in32(u16 port);
 void out32(u16 port, u32 data);
 void filemanager_registerdisk(void*,void*);
@@ -554,7 +554,7 @@ static int ahci_identify(volatile struct HBA_PORT* port, struct SATA_ident* rdi)
 	//printmemory(rdi, 0x200);
 	swap16(rdi->serial_no, 20);
 	swap16(rdi->model,     40);
-	say("type=sata\n"
+	logtoall("type=sata\n"
 		"serial=<%.20s>\n"
 		"model=<%.40s>\n", rdi->serial_no, rdi->model);
 	return 1;
@@ -579,7 +579,7 @@ static int ahci_readdata(struct item* ahci,void* foot,struct halfrel* stack,int 
 static int ahci_readinfo(struct item* ahci,void* foot,struct halfrel* stack,int sp, void* buf,int len)
 {
 	struct perahci* my = (void*)(ahci->priv_256b);
-	say("@ahci_readinfo: %p,%p\n",ahci,foot);
+	logtoall("@ahci_readinfo: %p,%p\n",ahci,foot);
 
 	if(0 == buf)buf = my->onemega + receivebuf;
 	int ret = ahci_identify(foot, buf);
@@ -591,7 +591,7 @@ static int ahci_readinfo(struct item* ahci,void* foot,struct halfrel* stack,int 
 
 static int ahci_ontake(struct item* ahci,void* foot,struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
-	say("ahci_ontake:%llx,%x,%p,%x\n",arg,cmd,buf,len);
+	logtoall("ahci_ontake:%llx,%x,%p,%x\n",arg,cmd,buf,len);
 	if(_info_ == cmd)return ahci_readinfo(ahci,foot, stack,sp, buf,len);
 
 	if(0 == buf){

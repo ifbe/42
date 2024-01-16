@@ -23,7 +23,7 @@ double getsin(double);
 double power(double, double);
 //
 void printmemory(void*, int);
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 

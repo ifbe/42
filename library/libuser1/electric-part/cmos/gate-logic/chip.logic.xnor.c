@@ -393,7 +393,7 @@ static void xnor_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int ke
 static void xnor_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
 	u8 tmp;
-	//say("@xorgate_write:%x\n",buf[0]);
+	//logtoall("@xorgate_write:%x\n",buf[0]);
 	if(_src_ == stack[sp-1].foottype){
 		tmp = buf[0] - 0x30;
 		if((tmp >= 0)&&(tmp <= 3)){

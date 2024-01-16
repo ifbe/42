@@ -11,12 +11,12 @@ int dbgf32_write(_obj* art,void* foot, struct halfrel* stack,int sp, void* arg,i
 {
 	int j;
 	float* f;
-	say("@dbgf32_write: foot=%.4s, len=0x%x\n", &foot, len);
+	logtoall("@dbgf32_write: foot=%.4s, len=0x%x\n", &foot, len);
 
 	f = buf;
 	for(j=0;j<len;j++){
-		if(j == len-1)say("%f\n", f[j]);
-		else say("%f, ", f[j]);
+		if(j == len-1)logtoall("%f\n", f[j]);
+		else logtoall("%f, ", f[j]);
 	}
 	return 0;
 }
@@ -34,6 +34,6 @@ int dbgf32_attach(struct halfrel* self, struct halfrel* peer)
 
 int dbgf32_create(_obj* ele, u8* arg)
 {
-	say("@dbgf32_create\n");
+	logtoall("@dbgf32_create\n");
 	return 1;
 }

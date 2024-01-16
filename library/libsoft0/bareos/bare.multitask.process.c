@@ -140,7 +140,7 @@ int processsearch(void* buf, int len)
 {
 	int j;
 	for(j=0;j<8;j++){
-		say("%d:ptbl=%p,code=%p,path=%p,fdtbl=%p\n", j,
+		logtoall("%d:ptbl=%p,code=%p,path=%p,fdtbl=%p\n", j,
 			perproc[j].ptbl, perproc[j].code, perproc[j].path, perproc[j].fdtable
 		);
 	}
@@ -152,7 +152,7 @@ int processmodify()
 }
 u64 processcreate(void* file, void* args)
 {
-	say("file=%s\n",file);
+	logtoall("file=%s\n",file);
 
 
 	//prepare memory for reading
@@ -181,7 +181,7 @@ u64 processcreate(void* file, void* args)
 	//test1: read file to pa
 	int ret = file_reader(file,0, 0,0, (void*)pa,0x200000);
 	if(ret <= 0){
-		say("@processcreate: file notfound\n");
+		logtoall("@processcreate: file notfound\n");
 		return 0;
 	}
 
@@ -206,7 +206,7 @@ u64 processcreate(void* file, void* args)
 	u64 va = 0xffffffffffe00000;
 	pagetable_makeuser((void*)cr, 0x100000, pa, 0x200000, va, 0x200000);
 	//printmemory((void*)va, 0x200);
-	//say("virt2phys:%llx\n",pagetable_virt2phys(cr, va));
+	//logtoall("virt2phys:%llx\n",pagetable_virt2phys(cr, va));
 
 	//here it almost done
 	perproc[now].path = 0;
@@ -232,7 +232,7 @@ void process_switchto(int curr, int next)
 }
 void process_registersupplier(int coreid, void* ptbl)
 {
-	say("incoming process: from coreid=%d\n", coreid);
+	logtoall("incoming process: from coreid=%d\n", coreid);
 
 	perproc[0].ptbl = ptbl;
 	perproc[0].path = 0;

@@ -11,7 +11,7 @@ void irqchip_enableirq(int chip, int pin, int apicid, int intvec);
 void irqchip_disableirq(int chip, int pin);
 //
 void printmemory(void*, int);
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 
@@ -19,7 +19,7 @@ void say(void*, ...);
 static u64 cnt = 0;
 void isr_825x(void* p)
 {
-	//if(0==(cnt%1000))say("cnt=%d\n",cnt);
+	//if(0==(cnt%1000))logtoall("cnt=%d\n",cnt);
 	cnt += 1;
 }
 u64 pit8254_ms()
@@ -39,7 +39,7 @@ u64 pit8254_ns()
 int pit8254_check()
 {
 	//while(0 == cnt);
-	//say("8254 works, cnt=%x, tsc=%llx\n\n", cnt, rdtsc());
+	//logtoall("8254 works, cnt=%x, tsc=%llx\n\n", cnt, rdtsc());
 
 	u64 pit_t0 = cnt;
 	u64 pit_tn = pit_t0 + 10;		//10ms
@@ -47,25 +47,25 @@ int pit8254_check()
 	u64 tsc_t0 = rdtsc();
 	u64 tsc_tn = tsc_t0 + (u64)10*1000*1000*1000;
 	u64 tsc_now = 0;
-	say("waiting (irqsum>100) or (tsc>10g): irqsum=%lld,tsc=%lld\n", pit_t0, tsc_t0);
+	logtoall("waiting (irqsum>100) or (tsc>10g): irqsum=%lld,tsc=%lld\n", pit_t0, tsc_t0);
 	while(1){
 		pit_now = cnt;
 		tsc_now = rdtsc();
 
 		if(tsc_now > tsc_tn){
-			say("(maybe noirq)irqsum=%lld,tsc=%lld\n", pit_now, tsc_now);
+			logtoall("(maybe noirq)irqsum=%lld,tsc=%lld\n", pit_now, tsc_now);
 			tsc_tn += (u64)10*1000*1000*1000;
 		}
 		if(pit_now >= pit_tn){
-			say("(look good)irqsum=%lld,tsc=%lld\n", pit_now, tsc_now);
+			logtoall("(look good)irqsum=%lld,tsc=%lld\n", pit_now, tsc_now);
 			pit_tn += 10;
 		}
 		if(pit_now >= pit_t0 + 100){
-			say("time_delta=0.1s, tsc_delta=%lld, avgfreq=%lldmhz\n", tsc_now - tsc_t0, (tsc_now-tsc_t0)*10/1000/1000);
+			logtoall("time_delta=0.1s, tsc_delta=%lld, avgfreq=%lldmhz\n", tsc_now - tsc_t0, (tsc_now-tsc_t0)*10/1000/1000);
 			goto good;
 		}
 		if(tsc_now > tsc_t0 + (u64)3*10*1000*1000*1000){
-			say("pit fail\n");
+			logtoall("pit fail\n");
 			goto fail;
 		}
 	}
@@ -76,7 +76,7 @@ fail:
 }
 int init825x()
 {
-	say("@init825x, cnt=%x, tsc=%llx\n", cnt, rdtsc());
+	logtoall("@init825x, cnt=%x, tsc=%llx\n", cnt, rdtsc());
 	u32 t = 3579545 / 3 / 1000;
 	u16 lo = t & 0xff;
 	u16 hi = t >> 8;
@@ -89,6 +89,6 @@ int init825x()
 
 	int ret = pit8254_check();
 
-	say("initpit end\n\n");
+	logtoall("initpit end\n\n");
 	return ret;
 }

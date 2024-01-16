@@ -552,10 +552,10 @@ int mfcam_create(_obj* cam, void* arg, int argc, u8** argv)
 	int j;
 	for(j=1;j<argc;j++){
 		arg = argv[j];
-		//say("%d->%.16s\n",j,arg;
+		//logtoall("%d->%.16s\n",j,arg;
 		if(0 == ncmp(arg, (void*)"format:", 7)){
 			arg = argv[j]+7;
-			//say("format=%.5s\n",arg);
+			//logtoall("format=%.5s\n",arg);
 			if(0 == ncmp(arg, (void*)"mjpeg", 5))priv->format = _mjpg_;
 			if(0 == ncmp(arg, (void*)"y4,uv", 5))priv->format = _y4_uv_;
 		}

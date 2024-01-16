@@ -10,7 +10,7 @@ void poweroff()
     u16 port,data;
     acpi_getportanddata(&port,&data);
     if(0 == port){
-        say("badport@poweroff:%x\n",port);
+        logtoall("badport@poweroff:%x\n",port);
         return;
     }
 

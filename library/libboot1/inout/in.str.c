@@ -5,7 +5,7 @@
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 int termwrite(void*, int);
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 
@@ -66,7 +66,7 @@ int autocomplete(u8* buf, int len)
 		for(;len<4;len++)
 		{
 			tmp = knowncmd[len];
-			say("%c", tmp);
+			logtoall("%c", tmp);
 
 			inbuf[enq] = tmp;
 			enq++;
@@ -74,9 +74,9 @@ int autocomplete(u8* buf, int len)
 		return 1;
 	}
 
-	say("\n(matching: %.*s*)\n", len, buf);
-	say("	0101	haha	device	driver\n");
-	say("	system	artery	supply	entity\n");
+	logtoall("\n(matching: %.*s*)\n", len, buf);
+	logtoall("	0101	haha	device	driver\n");
+	logtoall("	system	artery	supply	entity\n");
 	return 0;
 }
 
@@ -102,7 +102,7 @@ void input(u8* buf, int len)
 				enq--;
 				k = inbuf[enq];
 
-				say("\b \b");
+				logtoall("\b \b");
 				inbuf[enq] = 0;
 
 				if((k < 0x80)|(k > 0xc0))break;
@@ -127,7 +127,7 @@ void input(u8* buf, int len)
 					if('\n' == inbuf[enq-1])break;
 					enq--;
 					inbuf[enq] = 0;
-					say("\b \b");
+					logtoall("\b \b");
 				}
 				if(0 == dy)return;
 
@@ -140,7 +140,7 @@ void input(u8* buf, int len)
 					if(t == dy)
 					{
 						if(j)j++;
-						say("%.*s", k-j, inbuf+j);
+						logtoall("%.*s", k-j, inbuf+j);
 						for(t=0;t<k-j;t++)inbuf[enq+t] = inbuf[j+t];
 
 						deq = enq;
@@ -160,13 +160,13 @@ void input(u8* buf, int len)
 			if(0 == t)	//failed
 			{
 				termwrite("\n", 1);
-				say("%.*s", enq-deq, inbuf+deq);
+				logtoall("%.*s", enq-deq, inbuf+deq);
 			}
 		}
 		else
 		{
 			if(0xd == k)k = 0xa;
-			say("%c", k);
+			logtoall("%c", k);
 
 			if(enq > 0x3f000)enq = 0;
 			inbuf[enq] = k;

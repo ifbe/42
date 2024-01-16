@@ -57,7 +57,7 @@ static void tetris_draw_pixel(
 	{
 		for(x=0;x<WIDTH;x++)
 		{
-			//say("%d ",buf[y*WIDTH+x]);
+			//logtoall("%d ",buf[y*WIDTH+x]);
 			if(0 == data[y][x])continue;
 			else if(1 == data[y][x])c = 0xffffff;
 			else c = 0x00ff00;
@@ -68,9 +68,9 @@ static void tetris_draw_pixel(
 				cx-ww-1 + ((x+1)*2*ww)/WIDTH,
 				cy-hh-1 + ((y+1)*2*hh)/HEIGHT);
 		}
-		//say("\n");
+		//logtoall("\n");
 	}
-	//say("\n");
+	//logtoall("\n");
 /*
 	//print cubies
 	cubie(win, 1,

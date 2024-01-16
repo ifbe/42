@@ -5,7 +5,7 @@
 
 void exiter(void* exiter)
 {
-	say("@exiter, byebye!\n");
+	logtoall("@exiter, byebye!\n");
 }
 
 

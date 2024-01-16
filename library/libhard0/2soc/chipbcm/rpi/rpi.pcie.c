@@ -7,11 +7,11 @@
 
 void brcmpcie_init()
 {
-    say("@brcmpcie_init\n");
+    logtoall("@brcmpcie_init\n");
 
     printmmio((void*)PCIE_HOST_BASE, 0x40);
 
-    say("\n");
+    logtoall("\n");
 }
 void brcmpcie_exit()
 {

@@ -62,7 +62,7 @@ static int ppplen = 0;
 //#define maxfoot 
 void system_init(u8* addr)
 {
-	say("[8,a):system initing\n");
+	logtoall("[8,a):system initing\n");
 
 	int j;
 	for(j=0;j<0x200000;j++)addr[j]=0;
@@ -84,11 +84,11 @@ void system_init(u8* addr)
 	initprocess();
 	initthread();
 
-	say("[8,a):system inited\n");
+	logtoall("[8,a):system inited\n");
 }
 void system_exit()
 {
-	say("[8,a):system exiting\n");
+	logtoall("[8,a):system exiting\n");
 
 	freesocket();
 	freeuart();
@@ -97,7 +97,7 @@ void system_exit()
 	freesignal();
 	freerandom();
 
-	say("[8,a):system exited\n");
+	logtoall("[8,a):system exited\n");
 }
 
 
@@ -143,9 +143,9 @@ void* system_create(u64 type, void* argstr, int argc, u8** argv)
 			}
 		}
 	}
-	//say("type=%llx,name=%.16s\n", type, name);
+	//logtoall("type=%llx,name=%.16s\n", type, name);
 	if(0 == type){
-		say("@system_create:unknown path:%s\n", name);
+		logtoall("@system_create:unknown path:%s\n", name);
 		return 0;
 	}
 
@@ -168,7 +168,7 @@ void* system_create(u64 type, void* argstr, int argc, u8** argv)
 
 	case _ptmx_:
 		parseuart(host, &port, name);
-		say("parse: %s, %d\n", host, port);
+		logtoall("parse: %s, %d\n", host, port);
 
 		per = shell_create(host, port);
 		if(0 == per)return 0;
@@ -178,7 +178,7 @@ void* system_create(u64 type, void* argstr, int argc, u8** argv)
 
 	case _uart_:
 		parseuart(host, &port, name);
-		say("parse: %s, %d\n", host, port);
+		logtoall("parse: %s, %d\n", host, port);
 
 		per = uart_create(host, port);
 		if(0 == per)return 0;
@@ -311,25 +311,25 @@ int system_attach(struct halfrel* self, struct halfrel* peer)
 	_obj* oo = self->pchip;
 	switch(oo->type){
 	case _file_:
-		say("@file_attach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+		logtoall("@file_attach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
 			&self->nodetype, self->pchip, &self->foottype, self->pfoot,
 			&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
 		//file_attach(oo);
 		break;
 	case _ptmx_:
-		say("@ptmx_attach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+		logtoall("@ptmx_attach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
 			&self->nodetype, self->pchip, &self->foottype, self->pfoot,
 			&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
 		//shell_attach(oo);
 		break;
 	case _uart_:
-		say("@uart_attach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+		logtoall("@uart_attach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
 			&self->nodetype, self->pchip, &self->foottype, self->pfoot,
 			&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
 		//uart_attach(oo);
 		break;
 	default:
-		say("@socket_attach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+		logtoall("@socket_attach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
 			&self->nodetype, self->pchip, &self->foottype, self->pfoot,
 			&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
 		//socket_attach(oo);
@@ -341,25 +341,25 @@ int system_detach(struct halfrel* self, struct halfrel* peer)
 	_obj* oo = self->pchip;
 	switch(oo->type){
 	case _file_:
-		say("@file_detach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+		logtoall("@file_detach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
 			&self->nodetype, self->pchip, &self->foottype, self->pfoot,
 			&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
 		//file_detach(oo);
 		break;
 	case _ptmx_:
-		say("@ptmx_detach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+		logtoall("@ptmx_detach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
 			&self->nodetype, self->pchip, &self->foottype, self->pfoot,
 			&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
 		//shell_detach(oo);
 		break;
 	case _uart_:
-		say("@uart_detach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+		logtoall("@uart_detach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
 			&self->nodetype, self->pchip, &self->foottype, self->pfoot,
 			&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
 		//uart_detach(oo);
 		break;
 	default:
-		say("@socket_detach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+		logtoall("@socket_detach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
 			&self->nodetype, self->pchip, &self->foottype, self->pfoot,
 			&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
 		//socket_detach(oo);
@@ -377,7 +377,7 @@ int system_takeby(_obj* sys,void* foot, _syn* stack,int sp, p64 arg,int cmd, voi
 }
 int system_giveby(_obj* sys,void* foot, _syn* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
-	//say("@systemwrite: obj=%.8s,len=%x\n", &sys->type,len);
+	//logtoall("@systemwrite: obj=%.8s,len=%x\n", &sys->type,len);
 	switch(sys->type){
 	case _FILE_:
 	case _file_:
@@ -416,11 +416,11 @@ void* system_search(u8* buf, int len)
 		if(0 == tmp->type)continue;
 
 		k++;
-		say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
+		logtoall("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
 			&tmp->tier, &tmp->type, &tmp->hfmt, &tmp->vfmt);
 	}
 
-	if(0 == k)say("empth system\n");
+	if(0 == k)logtoall("empth system\n");
 	return 0;
 }
 void* system_modify(int argc, u8** argv)
@@ -429,7 +429,7 @@ void* system_modify(int argc, u8** argv)
 	u64 name = 0;
 	u8* tmp = (u8*)&name;
 	if(argc < 2)return 0;
-//say("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
+//logtoall("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
 	if(0 == ncmp(argv[1], "create", 6))
 	{
 		for(j=0;j<8;j++)
@@ -437,7 +437,7 @@ void* system_modify(int argc, u8** argv)
 			if(argv[2][j] <= 0x20)break;
 			tmp[j] = argv[2][j];
 		}
-		say("%llx,%llx\n",name, argv[3]);
+		logtoall("%llx,%llx\n",name, argv[3]);
 		system_create(name, argv[3], argc-3, &argv[3]);
 	}
 	return 0;

@@ -11,7 +11,7 @@ static void micphonecallback(void* ptr, AudioQueueRef aqref, AudioQueueBufferRef
 	int len = aqbufref->mAudioDataByteSize;
 	u64 timepkt = inStartTime->mHostTime;
 	u64 timenow = timeread_ns();
-	say("@aqin.callback: spk=%p, aqref=%p,aqbufref=%p, len=%x,buf=%p, timepkt=%lld,timenow=%lld,dt=%d\n",
+	logtoall("@aqin.callback: spk=%p, aqref=%p,aqbufref=%p, len=%x,buf=%p, timepkt=%lld,timenow=%lld,dt=%d\n",
 	spk, aqref, aqbufref, len,buf, timepkt, timenow, timenow-timepkt);
 
 	//deliver

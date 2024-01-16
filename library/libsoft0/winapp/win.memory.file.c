@@ -35,7 +35,7 @@ static char name[0x20]={
 	'P','h','y','s','i','c','a','l','D','r','i','v','e','0','\0','\0'};
 static u64 getsize(HANDLE hand,char* path,char* dest)
 {
-	//say("%llx\n",*(u64*)path);
+	//logtoall("%llx\n",*(u64*)path);
 	if( *(u64*)path == 0x737968505c2e5c5c )
 	{
 		//磁盘大小这么拿
@@ -57,12 +57,12 @@ static u64 getsize(HANDLE hand,char* path,char* dest)
 		);
 		if(ret==FALSE)
 		{
-			say("can't get size:%llx\n",GetLastError());
+			logtoall("can't get size:%llx\n",GetLastError());
 		}
 
 		//
 		*(u64*)dest=out.Length.QuadPart;
-		//say("%x\n",dest);
+		//logtoall("%x\n",dest);
 	}
 	else
 	{
@@ -102,7 +102,7 @@ void listfile(char* dest)
 			//[0x18,0x1f]:end
 			*(u64*)(dest+0x10)=0;
 			*(u64*)(dest+0x18)=0;
-			//say("%x\n",dest+0x18);
+			//logtoall("%x\n",dest+0x18);
 			getsize(hand, name, dest+0x18 );
 
 			//[0x20,0x3f]:name
@@ -121,7 +121,7 @@ void listfile(char* dest)
 }
 int file_search(void* buf, int len)
 {
-	say("@filesearch\n");
+	logtoall("@filesearch\n");
 	return 0;
 }
 int file_modify(void* buf, int len)
@@ -204,7 +204,7 @@ _obj* file_create(void* orig, int flag)
 
 	if(INVALID_HANDLE_VALUE == fd)
 	{
-		say("error:%d@createfile:%s\n", GetLastError(), path);
+		logtoall("error:%d@createfile:%s\n", GetLastError(), path);
 		return 0;
 	}
 
@@ -230,7 +230,7 @@ int file_reader(_obj* oo, int xx, p64 arg, int cmd, void* mem, int len)
 	}//from head
 
 	ret = ReadFile(file, mem, len, &val, 0);
-	if(ret == 0)say("ret=%d,val=%d,error=%d\n", ret, val, GetLastError());
+	if(ret == 0)logtoall("ret=%d,val=%d,error=%d\n", ret, val, GetLastError());
 	return val;
 }
 int file_writer(_obj* oo, int xx, p64 arg, int cmd, void* mem, int len)
@@ -246,6 +246,6 @@ int file_writer(_obj* oo, int xx, p64 arg, int cmd, void* mem, int len)
 	}//from head
 
 	ret = WriteFile(file, mem, len, &val, NULL);
-	if(ret == 0)say("ret=%d,val=%d,error=%d\n", ret, val, GetLastError());
+	if(ret == 0)logtoall("ret=%d,val=%d,error=%d\n", ret, val, GetLastError());
 	return val;
 }

@@ -69,7 +69,7 @@ static void button_read_byworld_bycam_bywnd(_obj* ent,void* foot, _syn* stack,in
 }
 static void button_read_byworld_bywnd(_obj* ent,struct style* slot, _syn* stack,int sp)
 {
-	//say("@%s\n",__func__);
+	//logtoall("@%s\n",__func__);
 	if(0 == stack)return;
 
 	_obj* wor = stack[sp-2].pchip;
@@ -135,7 +135,7 @@ static void button_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int 
 }
 static void button_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	say("button:%s\n",__func__);
+	logtoall("button:%s\n",__func__);
 	struct event* ev = buf;
 	if(0x2b70 == ev->what)give_data_into_peer(ent,_evto_, stack,sp, 0,0, "1",1);
 }

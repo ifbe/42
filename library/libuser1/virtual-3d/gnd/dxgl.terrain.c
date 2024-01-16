@@ -79,7 +79,7 @@ static int terrain_needredo(_obj* act, struct privdata* own, float x, float y)
 
 	int cx = texw * act->whdf.fx0;
 	int cy = texh * act->whdf.fy0;
-	//say("cx=%d,cy=%d,texx=%d,texy=%d\n",cx,cy, texx,texy);
+	//logtoall("cx=%d,cy=%d,texx=%d,texy=%d\n",cx,cy, texx,texy);
 
 	if(texx < cx-64)return 1;
 	if(texx > cx+64)return 1;
@@ -175,7 +175,7 @@ void terrain_locate(vec4 v, _obj* act)
 	else{y1 = -(int)(-fy);y0 = y1 - 1;}
 
 	//
-	//say("%d,%d,%d,%d\n",x0,x1,y0,y1);
+	//logtoall("%d,%d,%d,%d\n",x0,x1,y0,y1);
 	if(x0 < 0)goto edge;
 	if(x1 >= w)goto edge;
 	if(y0 < 0)goto edge;
@@ -207,7 +207,7 @@ static void terrain_ask(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	float* v = (void*)buf;
 
 	terrain_locate(v, act);
-	say("%f,%f,%f\n", v[0], v[1], v[2]);
+	logtoall("%f,%f,%f\n", v[0], v[1], v[2]);
 
 	x = v[0] / 1000.0;
 	act->whdf.fxn = (int)x;
@@ -231,7 +231,7 @@ static void terrain_ask(struct halfrel* self, struct halfrel* peer, u8* buf, int
 		act->whdf.iw0 = 0;
 	}
 
-	say("%f,%f,%f,%f\n", act->whdf.fx0, act->whdf.fy0, act->whdf.fxn, act->whdf.fyn);
+	logtoall("%f,%f,%f,%f\n", act->whdf.fx0, act->whdf.fy0, act->whdf.fxn, act->whdf.fyn);
 }*/
 
 
@@ -295,7 +295,7 @@ static void terrain_dx11draw(
 	float dy = y - act->whdf.fy0;
 	if(dx<0)dx = -dx;
 	if(dy<0)dy = -dy;
-	//say("x=%f,y=%f,dx=%f,dy=%f\n",x,y,dx,dy);
+	//logtoall("x=%f,y=%f,dx=%f,dy=%f\n",x,y,dx,dy);
 
 	struct privdata* own = act->OWNBUF;
 	struct mysrc* src = &own->dx11.src;
@@ -408,7 +408,7 @@ static void terrain_gl41draw(
 	float dy = y - act->whdf.fy0;
 	if(dx<0)dx = -dx;
 	if(dy<0)dy = -dy;
-	say("cx=%f,cy=%f,w=%f,h=%f,x=%f,y=%f,dx=%f,dy=%f\n",camg->frus.vc[0],camg->frus.vc[1], w,h, x,y, dx,dy);
+	logtoall("cx=%f,cy=%f,w=%f,h=%f,x=%f,y=%f,dx=%f,dy=%f\n",camg->frus.vc[0],camg->frus.vc[1], w,h, x,y, dx,dy);
 */
 	struct privdata* own = act->OWNBUF;
 	struct mysrc* src = &own->gl41.src;
@@ -420,7 +420,7 @@ static void terrain_gl41draw(
 	if(terrain_needredo(act, own, x,y)){
 		act->whdf.fx0 = x;
 		act->whdf.fy0 = y;
-		//say("cx=%f,cy=%f,x=%f,y=%f\n",camg->frus.vc[0],camg->frus.vc[1], x,y);
+		//logtoall("cx=%f,cy=%f,x=%f,y=%f\n",camg->frus.vc[0],camg->frus.vc[1], x,y);
 
 		//x0,y0,z0,dx,dy,dz -> ndc
 		vbuf = own->vtx.vbuf;
@@ -491,7 +491,7 @@ void terrain_modify_matter(_obj* act, int* src, int len)
 	f[0] = src[0]*0.01;
 	f[1] = src[1]*0.01;
 	f[2] = src[2]*0.01;
-	say("%f,%f,%f\n",f[0],f[1],f[2]);
+	logtoall("%f,%f,%f\n",f[0],f[1],f[2]);
 }
 
 
@@ -579,7 +579,7 @@ static void terrain_create(_obj* act, void* arg, int argc, u8** argv)
 	char* glvs = 0;
 	char* glfs = 0;
 	for(j=0;j<argc;j++){
-		//say("%d:%.8s\n", j, argv[j]);
+		//logtoall("%d:%.8s\n", j, argv[j]);
 		if(0 == ncmp(argv[j], "rgb:", 4)){
 			copypath(own->rgb, argv[j]+4);
 			rgb = (void*)own->rgb;

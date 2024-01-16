@@ -68,8 +68,8 @@ static void mmioedit_draw_pixel(
 
 	int lineperrect;
 	lineperrect = (hh*2-1)/16;
-	//say("hh=%x,lpr=%x\n",hh,lineperrect);
-//say("bpl=%x,lpr=%x\n", byteperline, lineperrect);
+	//logtoall("hh=%x,lpr=%x\n",hh,lineperrect);
+//logtoall("bpl=%x,lpr=%x\n", byteperline, lineperrect);
 
 	u32* addr;
 	int x,y,rgb;
@@ -168,7 +168,7 @@ static void mmioedit_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,in
 }
 static int mmioedit_giving(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	//say("@mmioedit_give\n");
+	//logtoall("@mmioedit_give\n");
 
 	struct event* ev = buf;
 	if(_kbd_ == ev->what){

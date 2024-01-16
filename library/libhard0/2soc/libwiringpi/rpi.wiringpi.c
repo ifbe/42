@@ -23,7 +23,7 @@ int gpioread(int type, int addr, u8* buf, int len)
 }
 int gpiowrite(int type, int addr, u8* buf, int len)
 {
-	//say("@gpiowrite: %.4s, %d, %d\n", &type, addr, len);
+	//logtoall("@gpiowrite: %.4s, %d, %d\n", &type, addr, len);
 	switch(type){
 	case _gpio_:{
 		digitalWrite(addr, len);
@@ -77,7 +77,7 @@ int gpiostart(int name, int mode)
 		case hex32('w','s', 0, 0):pin = 29;break;
 		default:return -1;
 	}
-	say("@gpiostart: name=%x,mode=%x,pin=%d\n", name, mode, pin);
+	logtoall("@gpiostart: name=%x,mode=%x,pin=%d\n", name, mode, pin);
 
 	switch(mode)
 	{

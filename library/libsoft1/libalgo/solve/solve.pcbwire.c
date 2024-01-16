@@ -19,7 +19,7 @@ int solve_pcbwire(u8* buf, int w, int h, int l)
     //these wire to connect
     for(j=0;j<256;j++)
     {
-        if(bucket[j] >= 2)say("%d: %d\n", j, bucket[j]);
+        if(bucket[j] >= 2)logtoall("%d: %d\n", j, bucket[j]);
     }
 
     

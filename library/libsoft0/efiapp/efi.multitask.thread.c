@@ -13,7 +13,7 @@ int threaddelete(u64 h)
 }
 int threadsearch(void* buf, int len)
 {
-	say("@threadsearch\n");
+	logtoall("@threadsearch\n");
 
 	return 0;
 }

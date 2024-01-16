@@ -96,7 +96,7 @@ static void weather_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("weather(%x,%x,%x)\n",win,act,sty);
+	logtoall("weather(%x,%x,%x)\n",win,act,sty);
 }
 
 

@@ -97,7 +97,7 @@ void rastersolid_triangle(
 	int cy = (py+qy)/2;
 	int dx = (qx-px)/2;
 	int dy = (qy-py)/2;
-	//say("%d,%d,%d,%d\n", cx,cy, dx,dy);
+	//logtoall("%d,%d,%d,%d\n", cx,cy, dx,dy);
 
 	float inv,dep;
 	int j,k, rgb;
@@ -150,13 +150,13 @@ void rastersolid_triangle(
 		boty = cy - dy*top[1];
 		tb[0] = botx;
 		tb[1] = boty;
-		//say("%d,%d, %d,%d, %d,%d\n", botx,boty, midx,midy, topx,topy);
+		//logtoall("%d,%d, %d,%d, %d,%d\n", botx,boty, midx,midy, topx,topy);
 
 		if(topy == boty)continue;
 		left = botx + (topx-botx)*(midy-boty)/(topy-boty);
 		if(midx > left){right = midx;}
 		else{right = left;left = midx;}
-		//say("%d,%d, %d,%d, %d,%d, %d,%d\n", botx,boty, midx,midy, topx,topy, left,right);
+		//logtoall("%d,%d, %d,%d, %d,%d, %d,%d\n", botx,boty, midx,midy, topx,topy, left,right);
 /*
 		//test
 		drawline(wnd,0xff0000, topx,topy, left,midy);

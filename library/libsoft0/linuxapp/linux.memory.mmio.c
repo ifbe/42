@@ -2,7 +2,7 @@
 #include<fcntl.h>
 #include<sys/mman.h>
 void printmemory(void*, int);
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 
@@ -46,7 +46,7 @@ void startphymem(char* what)
 	_dev_mem=open("/dev/mem", O_RDWR|O_SYNC);
 	if(_dev_mem==-1)
 	{
-		say("(failed,ignored)open /dev/mem\n");
+		logtoall("(failed,ignored)open /dev/mem\n");
 	}
 
 	//memory map

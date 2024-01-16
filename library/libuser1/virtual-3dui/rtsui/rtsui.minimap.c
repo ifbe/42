@@ -64,7 +64,7 @@ static void minimap_read_byuiux(_obj* ent,void* slot, _syn* stack,int sp)
 	y0 = area->fs.vc[1];
 	xn = area->fs.vc[0]+area->fs.vq[0];
 	yn = area->fs.vc[1]+area->fs.vq[1];
-	//say("%f,%f,%f,%f\n",x0,y0,dx,dy);
+	//logtoall("%f,%f,%f,%f\n",x0,y0,dx,dy);
 
 	struct fstyle fs;
 	fs.vc[0] = (x0+xn)/2;fs.vc[1] = (y0+yn)/2;fs.vc[2] = 0.5;
@@ -85,7 +85,7 @@ static void minimap_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 {
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
-//say("fmt=%.8s\n", &sup->hfmt);
+//logtoall("fmt=%.8s\n", &sup->hfmt);
 
 	switch(wnd->hfmt){
 	case _gl41list_:

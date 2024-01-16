@@ -137,7 +137,7 @@ static void ground_dx11_draw(
 
 static void ground_gl41_prep(struct gl41data* data, char* tex0, char* tex1, char* tex2, char* vs, char* fs)
 {
-	say("%s\n%s\n%s\n%s\n%s\n",tex0,tex1,tex2,vs,fs);
+	logtoall("%s\n%s\n%s\n%s\n%s\n",tex0,tex1,tex2,vs,fs);
 
 	//shader
 	data->src.vs = memoryalloc(0x10000, 0);
@@ -337,7 +337,7 @@ static void ground_create(_obj* act, void* str, int argc, u8** argv)
 	char* normal = 0;
 	char* matter = 0;
 	for(j=0;j<argc;j++){
-		//say("%d:%.8s\n", j, argv[j]);
+		//logtoall("%d:%.8s\n", j, argv[j]);
 		if(0 == ncmp(argv[j], "dxvs:", 5)){
 			copypath(own->dxvs, argv[j]+5);
 			dxvs = (void*)own->dxvs;

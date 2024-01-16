@@ -146,7 +146,7 @@ float readadc(_obj* ele, int chan)
 
 	int val = getLastConversionResults(ele);
 	float volt = (6.144 * val) / 32768;
-	//say("chan=%d,val=%d,volt=%f\n",chan,val,volt);
+	//logtoall("chan=%d,val=%d,volt=%f\n",chan,val,volt);
 
 	return volt;
 }
@@ -156,13 +156,13 @@ float readadc(_obj* ele, int chan)
 
 int ads1115_take(_obj* obj,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
-	//say("@ads1115_take\n");
+	//logtoall("@ads1115_take\n");
 	float* v = buf;
 	v[0] = readadc(obj, 0);
 	v[1] = readadc(obj, 1);
 	v[2] = readadc(obj, 2);
 	v[3] = readadc(obj, 3);
-	say("@ads1115_take: %f,%f,%f,%f\n", v[0], v[1], v[2], v[3]);
+	logtoall("@ads1115_take: %f,%f,%f,%f\n", v[0], v[1], v[2], v[3]);
 
 	return 0;
 }
@@ -192,7 +192,7 @@ int ads1115_write(_obj* obj,void* foot,p64 arg, int idx, u8* buf, int len)
 }
 int ads1115_create(_obj* obj, void* arg, int argc, u8** argv)
 {
-	say("@ads1115_create\n");
+	logtoall("@ads1115_create\n");
 	return 1;
 }
 int ads1115_delete(_obj* ele)

@@ -215,7 +215,7 @@ void window_create(_obj* win)
 	thewin = win;
 	win->fmt = hex64('r','g','b','a','8','8','8','8');
 
-	say("@windowcreate\n");
+	logtoall("@windowcreate\n");
 	while(!status)pollenv();
 }
 

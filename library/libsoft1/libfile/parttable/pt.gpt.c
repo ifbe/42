@@ -78,7 +78,7 @@ int parse_gpt_one(struct gptpart* part, struct parsed* out)
 		out->count = part->lba_end - part->lba_start+1;
 	}
 	else{
-		say("[%016llx,%016llx]:	type=%.8s, name=%s\n", part->lba_start, part->lba_end, &type, part->name);
+		logtoall("[%016llx,%016llx]:	type=%.8s, name=%s\n", part->lba_start, part->lba_end, &type, part->name);
 	}
 	return 1;
 }
@@ -88,15 +88,15 @@ int parse_gpt(u8* src, struct parsed* out)
 	int ret,cnt;
 	u32 hcrc,bcrc;
 	u8* tmp;
-	say("@parse_gpt\n");
+	logtoall("@parse_gpt\n");
 
 	j = src[0x20c];
 	if(j >= 0x14)j -= 0x14;
 	hcrc = crc32(0, src + 0x200, 0x10);
 	hcrc = crc32(hcrc, src + 0x214, 4);
 	hcrc = crc32(hcrc, src + 0x214, j);
-	say("head crc:	%x, %x\n", *(u32*)(src+0x210), hcrc);
-	say("body crc:	%x, %x\n", *(u32*)(src+0x258), crc32(0, src+0x400, 0x4000));
+	logtoall("head crc:	%x, %x\n", *(u32*)(src+0x210), hcrc);
+	logtoall("body crc:	%x, %x\n", *(u32*)(src+0x258), crc32(0, src+0x400, 0x4000));
 
 	cnt = 0;
 	for(j=0;j<0x80;j++){
@@ -129,7 +129,7 @@ void mount_gpt_one(_obj* art, struct gptpart* part)
 	char* name = part->name;
 	for(j=0;j<0x40;j++)name[j] = part->name[j*2];
 
-	//say("[%016llx,%016llx]:	type=%.8s, name=%s\n", part->lba_start, part->lba_end, &type, name);
+	//logtoall("[%016llx,%016llx]:	type=%.8s, name=%s\n", part->lba_start, part->lba_end, &type, name);
 	if((_efi_ == type)|(_fat_ == type)){
 		_obj* tmp = artery_create(_fat_,0,0,0);
 		if(0 == tmp)return;
@@ -142,15 +142,15 @@ void mount_gpt(_obj* art, u8* src)
 {
 	int j,k;
 	u32 crc;
-	say("@mount_gpt\n");
+	logtoall("@mount_gpt\n");
 
 	j = src[0x20c];
 	if(j >= 0x14)j -= 0x14;
 	crc = crc32(0, src + 0x200, 0x10);
 	crc = crc32(crc, src + 0x214, 4);
 	crc = crc32(crc, src + 0x214, j);
-	say("head crc:	%x, %x\n", *(u32*)(src+0x210), crc);
-	say("body crc:	%x, %x\n", *(u32*)(src+0x258), crc32(0, src+0x400, 0x4000));
+	logtoall("head crc:	%x, %x\n", *(u32*)(src+0x210), crc);
+	logtoall("body crc:	%x, %x\n", *(u32*)(src+0x258), crc32(0, src+0x400, 0x4000));
 
 	for(j=0;j<0x80;j++){
 		mount_gpt_one(art, (void*)(src + 0x400 + 0x80*j));
@@ -176,17 +176,17 @@ static int gptclient_showpart(_obj* art,void* foot, void* buf,int len)
 
 int gptclient_ontake(_obj* art,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len)
 {
-	//say("@gptclient_take\n");
+	//logtoall("@gptclient_take\n");
 
 	switch(idx){
 	case _info_:return gptclient_showinfo(art);
 	case _part_:return gptclient_showpart(art,foot, buf,len);
 	}
 
-	//say("foot=%x\n",foot);
+	//logtoall("foot=%x\n",foot);
 	u64 offs = (u64)foot + arg;		//foot->offs + arg		//partoffs + dataoffs
 	int ret = take_data_from_peer(art,_src_, stack,sp+2, offs,_pos_, buf,len);
-	//say("gpt.ret=%x\n",ret);
+	//logtoall("gpt.ret=%x\n",ret);
 	return ret;
 }
 int gptclient_ongive(_obj* art,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len)
@@ -236,7 +236,7 @@ int gptclient_delete(_obj* ele)
 }
 int gptclient_create(_obj* art, u8* url)
 {
-	say("@gptclient_create\n");
+	logtoall("@gptclient_create\n");
 	art->listptr.buf0 = memoryalloc(0x10000, 0);
 
 	art->ongiving = (void*)gptclient_ongive;

@@ -1,5 +1,5 @@
 #include "libhard.h"
-#define nvme_print(fmt, ...) say("<%08lld,nvme>" fmt, timeread_us(), ##__VA_ARGS__)
+#define nvme_print(fmt, ...) logtoall("<%08lld,nvme>" fmt, timeread_us(), ##__VA_ARGS__)
 
 
 

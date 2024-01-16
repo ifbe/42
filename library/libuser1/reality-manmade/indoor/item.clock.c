@@ -129,7 +129,7 @@ static void clock_draw_cli(
 	u64 date = dateread();
 	u8* p = (u8*)&date;
 
-	say(	"_%02d_%02d_%02d_%02d_%02d_%02d_%02d\n",
+	logtoall(	"_%02d_%02d_%02d_%02d_%02d_%02d_%02d\n",
 		p[6],p[5],p[4],p[3],p[2],p[1],p[0]);
 }
 

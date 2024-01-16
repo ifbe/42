@@ -39,7 +39,7 @@ enum mpu9250{
 int ak8963_parse(u8* buf, float* vec)
 {
 	short* t = (short*)buf;
-	//say("m=(%d,%d,%d)\n", t[0], t[1], t[2]);
+	//logtoall("m=(%d,%d,%d)\n", t[0], t[1], t[2]);
 	vec[1] = t[0] * 4192.0 / 32760.0;
 	vec[0] = t[1] * 4192.0 / 32760.0;
 	vec[2] = -t[2] * 4192.0 / 32760.0;
@@ -79,7 +79,7 @@ int mpu9250_parse(u8* buf, float* vec)
 	vec[4] = acc[1] * acc_max / 32768.0;
 	vec[5] = acc[2] * acc_max / 32768.0;
 /*
-	say("a=(%d,%d,%d), g=(%d,%d,%d), t=%d\n",
+	logtoall("a=(%d,%d,%d), g=(%d,%d,%d), t=%d\n",
 		acc[0],acc[1],acc[2],
 		gyr[0],gyr[1],gyr[2],
 		temp
@@ -147,7 +147,7 @@ int spi9250_slv8963_start(struct item* dri)
 //check 8963.whoami
 	spi9250_slv8963_read(dri, 0, tmp, 1);
 	if(0x48 != tmp[0]){
-		say("ak8963.whoami != 0x48\n");
+		logtoall("ak8963.whoami != 0x48\n");
 		return 0;
 	}
 
@@ -188,7 +188,7 @@ int mpu9250_spiinit(struct item* dri)
 //check 9250.whoami
 	take_data_from_peer(dri,_spi_, 0,0, 0,0x75|0x80, tmp,1);
 	if(0x71 != tmp[0]){
-		say("mpu9250.whoami != 0x71\n");
+		logtoall("mpu9250.whoami != 0x71\n");
 		return 0;
 	}
 
@@ -340,7 +340,7 @@ int mpu9250_write(struct item* dri,void* foot, _syn* stack,int sp, p64 arg,int i
 {
 	int ret;
 	float tmp[10];
-	say("@mpu9250_write:%p,%p\n", dri,foot);
+	logtoall("@mpu9250_write:%p,%p\n", dri,foot);
 
 	if(_clk_ == stack[sp-1].foottype){
 		switch(dri->hfmt){
@@ -360,7 +360,7 @@ int mpu9250_detach(struct halfrel* self, struct halfrel* peer)
 int mpu9250_attach(struct halfrel* self, struct halfrel* peer)
 {
 	struct item* drv;
-	say("@mpu9250_attach: %.4s\n", &self->foottype);
+	logtoall("@mpu9250_attach: %.4s\n", &self->foottype);
 
 	drv = self->pchip;
 	if(0 == drv)return 0;
@@ -386,7 +386,7 @@ int mpu9250_attach(struct halfrel* self, struct halfrel* peer)
 
 int mpu9250_create(struct item* ele, u8* url)
 {
-	say("@mpu9250_create\n");
+	logtoall("@mpu9250_create\n");
 	return 1;
 }
 int mpu9250_delete(struct item* ele)

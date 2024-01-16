@@ -131,7 +131,7 @@ void vjoy_draw_cli(_obj* win, struct style* sty)
 
 int vjoy_event(struct event* ev, int x, int y, int z)
 {
-	//say("%d,%d, z\n", x, y, z);
+	//logtoall("%d,%d, z\n", x, y, z);
 	short* tmp = (void*)&ev;
 	int val = x + y*4;
 	if('l' == z){

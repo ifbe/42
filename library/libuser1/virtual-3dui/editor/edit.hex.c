@@ -186,7 +186,7 @@ static void hexedit_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("hex(%x,%x,%x)\n",win,act,sty);
+	logtoall("hex(%x,%x,%x)\n",win,act,sty);
 }
 
 
@@ -200,7 +200,7 @@ static void hexedit_event(
 	int j,ret;
 	u64 type = ev->what;
 	u64 key = ev->why;
-	//say("%x,%x\n",type,key);
+	//logtoall("%x,%x\n",type,key);
 
 	if(_char_ == type){
 		if('	' == key)act->whdf.iw0 ^= 1;
@@ -225,7 +225,7 @@ static void hexedit_event(
 			break;
 		}
 	}//switch(key)
-	say("%x\n",act->whdf.iz0);
+	logtoall("%x\n",act->whdf.iz0);
 	}//if(kbd)
 
 	if(0x4070 == type){
@@ -239,7 +239,7 @@ static void hexedit_event(
 		short* t = (void*)ev;
 		act->whdf.ixn = (t[0]-x0)*32/dx;
 		act->whdf.iyn = (t[1]-y0)*32/dy;
-		//say("%d,%d\n",act->whdf.ixn,act->whdf.iyn);
+		//logtoall("%d,%d\n",act->whdf.ixn,act->whdf.iyn);
 	}
 }
 

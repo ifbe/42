@@ -26,7 +26,7 @@ double getsin(double);
 double power(double, double);
 //
 void printmemory(void*, int);
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 
@@ -173,7 +173,7 @@ void postfix2binarytree(u8* src, u8* bintree)
 	while(1)
 	{
 		data = *src;
-		//say("%02x\n",data);
+		//logtoall("%02x\n",data);
 
 		if(data == 0)
 		{

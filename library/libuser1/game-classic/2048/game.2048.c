@@ -137,7 +137,7 @@ static void the2048_draw_dx11(
 		for(x=0;x<4;x++)
 		{
 			rgb = color2048[tab[y][x]];
-			//say("%x\n", rgb);
+			//logtoall("%x\n", rgb);
 
 			f[0] = (x+x-3) / 4.0;
 			f[1] = (3-y-y) / 4.0;
@@ -193,7 +193,7 @@ static void the2048_draw_gl41(
 		for(x=0;x<4;x++)
 		{
 			rgb = color2048[tab[y][x]];
-			//say("%x\n", rgb);
+			//logtoall("%x\n", rgb);
 
 			f[0] = (x+x-3) / 4.0;
 			f[1] = (3-y-y) / 4.0;
@@ -321,26 +321,26 @@ static void the2048_draw_cli(
 	struct per2048* per = (void*)act->priv_256b;
 	u8 (*tab)[4] = (void*)(per->data) + (per->curr)*16;
 
-	say("2048(%x,%x,%x,%x)\n", win, act, sty, pin);
-	say("%d	%d	%d	%d\n",
+	logtoall("2048(%x,%x,%x,%x)\n", win, act, sty, pin);
+	logtoall("%d	%d	%d	%d\n",
 		val2048[tab[0][0]],
 		val2048[tab[0][1]],
 		val2048[tab[0][2]],
 		val2048[tab[0][3]]
 	);
-	say("%d	%d	%d	%d\n",
+	logtoall("%d	%d	%d	%d\n",
 		val2048[tab[1][0]],
 		val2048[tab[1][1]],
 		val2048[tab[1][2]],
 		val2048[tab[1][3]]
 	);
-	say("%d	%d	%d	%d\n",
+	logtoall("%d	%d	%d	%d\n",
 		val2048[tab[2][0]],
 		val2048[tab[2][1]],
 		val2048[tab[2][2]],
 		val2048[tab[2][3]]
 	);
-	say("%d	%d	%d	%d\n",
+	logtoall("%d	%d	%d	%d\n",
 		val2048[tab[3][0]],
 		val2048[tab[3][1]],
 		val2048[tab[3][2]],
@@ -376,8 +376,8 @@ static void the2048_event(_obj* act, struct event* ev)
 {
 	int k;
 	short* s;
-	//say("%llx,%llx,%llx\n", act, pin, ev);
-	say("%16llx,%16llx,%16llx,%16llx\n",ev->when, ev->where, ev->what, ev->why);
+	//logtoall("%llx,%llx,%llx\n", act, pin, ev);
+	logtoall("%16llx,%16llx,%16llx,%16llx\n",ev->when, ev->where, ev->what, ev->why);
 
 	struct per2048* per = (void*)act->priv_256b;
 	if(_char_ == ev->what)
@@ -454,7 +454,7 @@ static void the2048_wrl_wnd(_obj* ent,void* slot, _obj* mgr,struct style* geom, 
 
 static void the2048_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	//say("@the2048_read\n");
+	//logtoall("@the2048_read\n");
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
@@ -477,7 +477,7 @@ static void the2048_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 	case _dx11list_:
 	case _mt20list_:
 	case _vk12list_:
-		say("caller@%p\n", caller);
+		logtoall("caller@%p\n", caller);
 		break;
 	case _corner_:
 	case _wndmgr_:
@@ -490,7 +490,7 @@ static void the2048_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 }
 static void the2048_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	//say("@the2048_write\n");
+	//logtoall("@the2048_write\n");
 	switch(stack[sp-1].foottype){
 	case _ioby_:the2048_move(ent, *(u8*)buf);break;
 	default:the2048_event(ent, buf);

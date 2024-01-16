@@ -144,7 +144,7 @@ static void dancemat_write_data(_obj* ent, _obj* src, u8* buf, int len)
 
 	buf += 12;
 	len -= 12;
-	//say("(len=%d)", len);
+	//logtoall("(len=%d)", len);
 
 	nbuf = ent->NBUF;
 	if(0 == nbuf)return;
@@ -170,9 +170,9 @@ static void dancemat_write_data(_obj* ent, _obj* src, u8* buf, int len)
 		cnt += 1;
 		k += j+1;
 
-		//say("%d,", data);
+		//logtoall("%d,", data);
 	}
-	//say("<cnt=%d>\n", cnt);
+	//logtoall("<cnt=%d>\n", cnt);
 }
 
 
@@ -272,7 +272,7 @@ static void dancemat_create(_obj* act, u8* arg, int argc, u8** argv)
 	nbuf = act->NBUF = memoryalloc(0x1000, 0);
 	for(j=0;j<288;j++){
 		nbuf[j] = (random_read() & 0xfff);
-		//say("%d\n", nbuf[j]);
+		//logtoall("%d\n", nbuf[j]);
 	}
 
 	ibuf = act->IBUF = memoryalloc(0x1000, 0);
@@ -304,7 +304,7 @@ static void dancemat_create(_obj* act, u8* arg, int argc, u8** argv)
 		ibuf[j+1] = x-2;
 		ibuf[j+2] = x;
 		ibuf[j+3] = x-1;
-		//say("%d:%d,%d,%d,%d\n", j, x, x-2, x, x-1);
+		//logtoall("%d:%d,%d,%d,%d\n", j, x, x-2, x, x-1);
 		j+=4;
 	}
 	for(x=123;x<144;x+=4){
@@ -312,7 +312,7 @@ static void dancemat_create(_obj* act, u8* arg, int argc, u8** argv)
 		ibuf[j+1] = x-3;
 		ibuf[j+2] = x;
 		ibuf[j+3] = x-2;
-		//say("%d:%d,%d,%d,%d\n", j, x, x-2, x, x-1);
+		//logtoall("%d:%d,%d,%d,%d\n", j, x, x-2, x, x-1);
 		j+=4;
 	}
 	for(y=0;y<121;y+=24){
@@ -320,7 +320,7 @@ static void dancemat_create(_obj* act, u8* arg, int argc, u8** argv)
 		ibuf[j+1] = y+2;
 		ibuf[j+2] = y;
 		ibuf[j+3] = y+3;
-		//say("%d:%d,%d,%d,%d\n", j, y, y+2, y, y+3);
+		//logtoall("%d:%d,%d,%d,%d\n", j, y, y+2, y, y+3);
 		j+=4;
 	}
 	for(y=21;y<144;y+=24){
@@ -328,7 +328,7 @@ static void dancemat_create(_obj* act, u8* arg, int argc, u8** argv)
 		ibuf[j+1] = y+1;
 		ibuf[j+2] = y;
 		ibuf[j+3] = y+2;
-		//say("%d:%d,%d,%d,%d\n", j, y, y+2, y, y+3);
+		//logtoall("%d:%d,%d,%d,%d\n", j, y, y+2, y, y+3);
 		j+=4;
 	}
 }

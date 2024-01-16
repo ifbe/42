@@ -47,7 +47,7 @@ u64 archtimer_ns()
 
 void inittimer()
 {
-	say("inittimer\n");
+	logtoall("inittimer\n");
 
 	int ret = 0;
 	void* hpet_mmio = acpi_hpet_addr();
@@ -55,24 +55,24 @@ void inittimer()
 
 	if(0 == timer_type){
 		if(hpet_mmio && hpet_prefer){
-			say("try hpet@%p\n", hpet_mmio);
+			logtoall("try hpet@%p\n", hpet_mmio);
 			ret = inithpet(hpet_mmio);
 			if(ret)timer_type = 'h';
 		}
 	}
 
 	if(0 == timer_type){
-		say("try rtc+pit\n");
+		logtoall("try rtc+pit\n");
 		initrtc();
 		ret = init825x();
 		if(ret)timer_type = 'p';
 	}
 
 	if(0 == timer_type){
-		say("no more to try, forever hlt\n");
+		logtoall("no more to try, forever hlt\n");
 		while(1)asm("hlt");		//no more way, timer must work
-		say("try tsc\n");
+		logtoall("try tsc\n");
 	}
 
-	say("\n");
+	logtoall("\n");
 }

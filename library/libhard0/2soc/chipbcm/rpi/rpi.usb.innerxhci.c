@@ -10,7 +10,7 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr);
 //must del: dtoverlay=dwc2
 void brcmxhci_init()
 {
-	say("@brcmxhci_init\n");
+	logtoall("@brcmxhci_init\n");
 return;
 	void* addr = mmiobase()+BRCM_XHCI;
 	printmmio(addr, 0x100);

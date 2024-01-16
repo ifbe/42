@@ -59,32 +59,32 @@ int initwindow()
 static void callback_keyboard(GLFWwindow* fw, int key, int scan, int action, int mods)
 {
 	_obj* ogl = glfwGetWindowUserPointer(fw);
-	say("@callback_keyboard\n");
+	logtoall("@callback_keyboard\n");
 }
 static void callback_scroll(GLFWwindow* fw, double x, double y)
 {
 	_obj* ogl = glfwGetWindowUserPointer(fw);
-	say("@callback_scroll\n");
+	logtoall("@callback_scroll\n");
 }
 static void callback_mouse(GLFWwindow* fw, int button, int action, int mods)
 {
 	_obj* ogl = glfwGetWindowUserPointer(fw);
-	say("@callback_mouse\n");
+	logtoall("@callback_mouse\n");
 }
 static void callback_move(GLFWwindow* fw, double xpos, double ypos)
 {
 	_obj* ogl = glfwGetWindowUserPointer(fw);
-	say("@callback_move\n");
+	logtoall("@callback_move\n");
 }
 static void callback_drop(GLFWwindow* fw, int count, const char** paths)
 {
 	_obj* ogl = glfwGetWindowUserPointer(fw);
-	say("@callback_drop\n");
+	logtoall("@callback_drop\n");
 }
 static void callback_reshape(GLFWwindow* fw, int w, int h)
 {
 	_obj* ogl = glfwGetWindowUserPointer(fw);
-	say("@callback_reshape\n");
+	logtoall("@callback_reshape\n");
 }
 
 

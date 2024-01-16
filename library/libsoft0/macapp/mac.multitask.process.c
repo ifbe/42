@@ -27,6 +27,6 @@ int processdelete()
 
 int processsearch(void* buf, int len)
 {
-	say("@procsearch\n");
+	logtoall("@procsearch\n");
 	return 0;
 }

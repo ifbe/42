@@ -27,7 +27,7 @@ int fftpcm_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, v
 	short* pcm;
 	float* real;
 	float* imag;
-	say("@fftpcm_write\n");
+	logtoall("@fftpcm_write\n");
 	if(len < 2048)return 0;
 
 	struct perobj* perobj = (void*)art->priv_256b;
@@ -43,7 +43,7 @@ int fftpcm_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, v
 	fft(real, imag, 10);
 
 	//2.complex->pcm
-	say("len=%x\n", perobj->len);
+	logtoall("len=%x\n", perobj->len);
 	pcm = perobj->buf1 + perobj->len;
 	perobj->len = (perobj->len+2048) % 0x100000;
 
@@ -55,7 +55,7 @@ int fftpcm_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, v
 			maxval = magni;
 		}
 		if(magni > 0.5){
-			say("%d:%f\n",j,magni);
+			logtoall("%d:%f\n",j,magni);
 			magni = 1.0;
 		}
 
@@ -66,14 +66,14 @@ int fftpcm_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, v
 	}
 
 	maxidx = maxidx * 44100 / 1024;
-	say("freq = %f\n", maxidx);
+	logtoall("freq = %f\n", maxidx);
 
 	give_data_into_peer(art,_dst_, stack,sp, 0,0, pcm,1024*2);
 /*
 	pcm = buf;
 	ifft(real, imag, 10);		//check if x==ifft(fft(x))
 	for(j=0;j<16;j++){
-		say("%f, %f, %f\n", pcm[j]/32768.0, real[j], imag[j]);
+		logtoall("%f, %f, %f\n", pcm[j]/32768.0, real[j], imag[j]);
 	}
 */
 	return 0;
@@ -96,7 +96,7 @@ int fftpcm_delete(_obj* ele)
 }
 int fftpcm_create(_obj* ele, u8* arg)
 {
-	say("@fftpcm_create\n");
+	logtoall("@fftpcm_create\n");
 
 	struct perobj* perobj = (void*)ele->priv_256b;
 	perobj->buf0 = memoryalloc(0x100000, 0);

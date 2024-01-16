@@ -44,7 +44,7 @@ void imagelight_litforwnd(struct gl41data* data, char* str)
 	data->src.tex[0].data = memoryalloc(2048*2048*4, 0);
 	loadtexfromfile(&data->src.tex[0], str);
 	data->src.tex_enq[0] = 42;
-	//say("w=%d,h=%d\n",data->src.tex[0].w, data->src.tex[0].h);
+	//logtoall("w=%d,h=%d\n",data->src.tex[0].w, data->src.tex[0].h);
 }
 static void imagelight_lightupdate(
 	_obj* act, struct style* slot,
@@ -140,7 +140,7 @@ static void imagelight_draw_pixel(
 	{
 		dst = (win->buf) + (cy-hh+y)*stride*4 + (cx-ww)*4;
 		src = (act->buf) + 4*y*(act->whdf.width);
-		//say("y=%d,%llx,%llx\n",y,dst,src);
+		//logtoall("y=%d,%llx,%llx\n",y,dst,src);
 		if('b' == ((win->hfmt)&0xff))
 		{
 			for(x=0;x<xmax;x++)dst[x] = src[x];
@@ -174,7 +174,7 @@ static void imagelight_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("imagelight(%x,%x,%x)\n",win,act,sty);
+	logtoall("imagelight(%x,%x,%x)\n",win,act,sty);
 }
 static void imagelight_event(
 	_obj* act, struct style* pin,
@@ -234,7 +234,7 @@ static void imagelight_detach(struct halfrel* self, struct halfrel* peer)
 }
 static void imagelight_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@imagelight_attach\n");
+	logtoall("@imagelight_attach\n");
 }
 
 

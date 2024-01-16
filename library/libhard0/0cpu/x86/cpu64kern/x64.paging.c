@@ -113,7 +113,7 @@ void pagetable_makeuser(u8* buf, int len, u64 pa, int plen, u64 va, int vlen)
 	u64 bit30_38 = (va>>30)&0x1ff;
 	u64 bit21_29 = (va>>21)&0x1ff;
 	u64 bit12_20 = (va>>12)&0x1ff;
-	say("pml4:%d, pml3:%d, pml2:%d, pml1:%d\n",bit39_47, bit30_38, bit21_29, bit12_20);
+	logtoall("pml4:%d, pml3:%d, pml2:%d, pml1:%d\n",bit39_47, bit30_38, bit21_29, bit12_20);
 
 	u64* pdir = (u64*)(buf+PDIRUSER);
 	pdir[bit21_29] = pa | Isleaf | Allowuser | Writable | Present;
@@ -145,14 +145,14 @@ void pagetable_readcr3()
 		:
 		:"m"(old)
 	);
-	say("old cr3=%p\n", old);
+	logtoall("old cr3=%p\n", old);
 	printmemory(old, 0x20);
 }
 void pagetable_use(u8* cr3)
 {
 	//printmemory(cr3, 0x80);
 
-	//say("@pagetable_writecr3+++\n");
+	//logtoall("@pagetable_writecr3+++\n");
 
 	//write cr3
 	asm __volatile__(
@@ -162,11 +162,11 @@ void pagetable_use(u8* cr3)
 		:"m"(cr3)
 	);
 
-	//say("@pagetable_writecr3---\n");
+	//logtoall("@pagetable_writecr3---\n");
 }
 void initpaging(u8* pagehome, int len, void* pdir, int plen)
 {
-	say("@initpaging\n");
+	logtoall("@initpaging\n");
 
 	pagetable_readcr3();
 
@@ -176,5 +176,5 @@ void initpaging(u8* pagehome, int len, void* pdir, int plen)
 	pagetable_use(pagehome);
 
 	//printmemory((u8*)0xffffffffffe00000, 0x100);
-	say("\n\n");
+	logtoall("\n\n");
 }

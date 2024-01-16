@@ -116,9 +116,9 @@ static void graph_draw_gl41(
 /*
 		for(j=0;j<act->vlen;j++)
 		{
-			say("%f,%f,%f\n", vbuf[j*3 + 0], vbuf[j*3 + 1], vbuf[j*3 + 2]);
+			logtoall("%f,%f,%f\n", vbuf[j*3 + 0], vbuf[j*3 + 1], vbuf[j*3 + 2]);
 		}
-		say("%d,%d,%d,%d\n",act->nlen, act->wlen, act->vlen, act->ilen);
+		logtoall("%d,%d,%d,%d\n",act->nlen, act->wlen, act->vlen, act->ilen);
 */
 	}
 
@@ -303,9 +303,9 @@ static void graph_event(
 				vbuf[j*3 + 0] = sty->fs.vc[0] + (random_read() & 0xffff) / 16.0;
 				vbuf[j*3 + 1] = sty->fs.vc[1] + (random_read() & 0xffff) / 16.0;
 				vbuf[j*3 + 2] = sty->fs.vc[2] + (random_read() & 0xffff) / 16.0;
-				say("%f,%f,%f\n", vbuf[j*3 + 0], vbuf[j*3 + 1], vbuf[j*3 + 2]);
+				logtoall("%f,%f,%f\n", vbuf[j*3 + 0], vbuf[j*3 + 1], vbuf[j*3 + 2]);
 			}
-say("%d,%d,%d,%d\n",perobj->nlen, perobj->wlen, perobj->vlen, perobj->ilen);
+logtoall("%d,%d,%d,%d\n",perobj->nlen, perobj->wlen, perobj->vlen, perobj->ilen);
 		}
 	}
 }
@@ -344,9 +344,9 @@ static void graph_attach(struct halfrel* self, struct halfrel* peer)
 		vbuf[j*3 + 0] = sty->fs.vc[0] + (random_read() & 0xffff) / 16.0;
 		vbuf[j*3 + 1] = sty->fs.vc[1] + (random_read() & 0xffff) / 16.0;
 		vbuf[j*3 + 2] = sty->fs.vc[2] + (random_read() & 0xffff) / 16.0;
-		say("%f,%f,%f\n", vbuf[j*3 + 0], vbuf[j*3 + 1], vbuf[j*3 + 2]);
+		logtoall("%f,%f,%f\n", vbuf[j*3 + 0], vbuf[j*3 + 1], vbuf[j*3 + 2]);
 	}
-	say("%d,%d,%d,%d\n", perobj->nlen, perobj->wlen, perobj->vlen, perobj->ilen);
+	logtoall("%d,%d,%d,%d\n", perobj->nlen, perobj->wlen, perobj->vlen, perobj->ilen);
 }
 
 

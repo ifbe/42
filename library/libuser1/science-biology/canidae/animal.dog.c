@@ -211,7 +211,7 @@ static void robodog_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int
 }
 static void robodog_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	say("robodog_write\n");
+	logtoall("robodog_write\n");
 
 	switch(stack[sp-1].foottype){
 	case _int_:

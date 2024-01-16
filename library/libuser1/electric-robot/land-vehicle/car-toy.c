@@ -69,7 +69,7 @@ int toycar_read_byhttp(_obj* ent,void* foot, struct halfrel* stack,int sp)
 }
 int toycar_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
-	say("@toycar_read:%p,%p,sp=%x\n", ent,foot, sp);
+	logtoall("@toycar_read:%p,%p,sp=%x\n", ent,foot, sp);
 	if(0 == stack)return 0;
 
 	_obj* caller = stack[sp-2].pchip;
@@ -85,7 +85,7 @@ int toycar_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,in
 }
 int toycar_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
-	say("@toycar_write\n");
+	logtoall("@toycar_write\n");
 	//printmemory(buf, len);
 /*
 	//do work

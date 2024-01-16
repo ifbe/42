@@ -111,12 +111,12 @@ static int vrbox_event(_obj* act, struct fstyle* pin, struct event* ev, int len)
 }
 static int vrbox_sensor(_obj* act, struct fstyle* pin, float* f, int len)
 {
-	say("g(%f,%f,%f),a(%f,%f,%f),m(%f,%f,%f)\n",f[0],f[1],f[2],f[3],f[4],f[5],f[6],f[7],f[8]);
+	logtoall("g(%f,%f,%f),a(%f,%f,%f),m(%f,%f,%f)\n",f[0],f[1],f[2],f[3],f[4],f[5],f[6],f[7],f[8]);
 	return 1;
 }
 static int vrbox_quaternion(_obj* act, struct fstyle* pin, float* q, int len)
 {
-	//say("q(%f,%f,%f,%f)\n",q[0],q[1],q[2],q[3]);
+	//logtoall("q(%f,%f,%f,%f)\n",q[0],q[1],q[2],q[3]);
 
 	struct halfrel* self;
 	struct halfrel* peer;
@@ -138,7 +138,7 @@ static int vrbox_quaternion(_obj* act, struct fstyle* pin, float* q, int len)
 	quaternion_rotate(vr, fix);
 	quaternion_rotate(vf, fix);
 	quaternion_rotate(vt, fix);
-	//say("r(%f,%f,%f),f(%f,%f,%f),t(%f,%f,%f)\n", vr[0],vr[1],vr[2], vf[0],vf[1],vf[2], vt[0],vt[1],vt[2]);
+	//logtoall("r(%f,%f,%f),f(%f,%f,%f),t(%f,%f,%f)\n", vr[0],vr[1],vr[2], vf[0],vf[1],vf[2], vt[0],vt[1],vt[2]);
 	vec3_setlen(vr, vr[3]);
 	vec3_setlen(vt, vt[3]);
 	vec3_setlen(vf, vf[3]);
@@ -172,7 +172,7 @@ void vrbox_frustum(struct fstyle* frus, struct fstyle* plane)
 	float dr = plane->vq[0];
 	float df = plane->vq[1];
 	float du = plane->vq[2];
-	//say("@vrbox_frus:%llx,%llx,%llx,%f,%f,%f\n",frus,plane,eye,eye[0],eye[1],eye[2]);
+	//logtoall("@vrbox_frus:%llx,%llx,%llx,%f,%f,%f\n",frus,plane,eye,eye[0],eye[1],eye[2]);
 
 	//l,r
 	rx = plane->vr[0];
@@ -245,7 +245,7 @@ void vrbox_frustum(struct fstyle* frus, struct fstyle* plane)
 		(plane->vc[1] - plane->vf[1] - eye[1])*fy +
 		(plane->vc[2] - plane->vf[2] - eye[2])*fz;
 	frus->vf[3] = frus->vn[3]*1000*1000;
-/*	say("vrbox_frustum: (%f,%f), (%f,%f), (%f,%f), (%f,%f,%f)\n",
+/*	logtoall("vrbox_frustum: (%f,%f), (%f,%f), (%f,%f), (%f,%f,%f)\n",
 		frus->vn[3], frus->vf[3], frus->vl[3], frus->vr[3], frus->vb[3], frus->vt[3],
 		frus->vc[0], frus->vc[1], frus->vc[2]);*/
 }

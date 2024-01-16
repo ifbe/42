@@ -97,7 +97,7 @@ static u8* checkcacheforinode(u64 wanted)
 		if(count>0x400)count=0x400;	//这一组里剩余的太多的话，多余的不要
 
 		//read inode table
-		//say("inode:%x@%x\n",this,where);
+		//logtoall("inode:%x@%x\n",this,where);
 		//注意inodepergroup奇葩时这里出问题
 		//file_take(0, 0, "", where*0x200, rdi, count*inodesize*0x200);
 
@@ -125,7 +125,7 @@ static int explaininode(u64 inode,u64 wantwhere)
 	u16 temp=(*(u16*)rsi)&0xf000;
 	if(temp == 0xa000)
 	{
-		say("soft link:%x\n",rsi+0x28);
+		logtoall("soft link:%x\n",rsi+0x28);
 		return -1;
 	}
 
@@ -183,7 +183,7 @@ static int explaininode(u64 inode,u64 wantwhere)
 	}
 	else		//ext2，3用老的直接间接块的方式
 	{
-	say("old@%x\n",rsi);
+	logtoall("old@%x\n",rsi);
 /*
 	rsi+=0x28;
 	for(i=0;i<8;i++)
@@ -191,10 +191,10 @@ static int explaininode(u64 inode,u64 wantwhere)
 		if(*(u32*)rsi != 0)
 		{
 			u64 temp;
-			say("    pointer@%x\n",rsi);
+			logtoall("    pointer@%x\n",rsi);
 
 			temp=block0+(*(u32*)rsi)*blocksize;
-			say("sector:%x\n",temp);
+			logtoall("sector:%x\n",temp);
 
 			//file_take(0, temp*0x200, rdi, blocksize*0x200);
 			rdi+=0x200*blocksize;
@@ -225,7 +225,7 @@ static void explaindirectory()
 		if(rsi>=datahome+0x100000)break;
 		if(*(u32*)rsi == 0)break;
 		if(*(u16*)(rsi+4) == 0)break;
-		//say("%x\n",*(u16*)(rsi+4));
+		//logtoall("%x\n",*(u16*)(rsi+4));
 		//printmemory(rsi,0x10);
 
 		//[0,0x7]:type
@@ -286,20 +286,20 @@ int explainexthead(u8* pbr)
 	//变量们
 	blocksize=*(u32*)(pbr+0x418);
 	blocksize=( 1<<(blocksize+10) )/0x200;		//每块多少扇区
-	say("sectorperblock:%x\n",blocksize);
+	logtoall("sectorperblock:%x\n",blocksize);
 
 	//每组多少扇区
 	groupsize=*(u32*)(pbr+0x420);
 	groupsize=groupsize*blocksize;
-	say("sectorpergroup:%x\n",groupsize);
+	logtoall("sectorpergroup:%x\n",groupsize);
 
 	//每组多少个inode
 	inodepergroup=*(u32*)(pbr+0x428);
-	say("inodepergroup:%x\n",inodepergroup);
+	logtoall("inodepergroup:%x\n",inodepergroup);
 
 	//每inode多少字节
 	inodesize=*(u16*)(pbr+0x458);
-	say("byteperinode:%x\n",inodesize);
+	logtoall("byteperinode:%x\n",inodesize);
 
 	return 1;
 }
@@ -351,7 +351,7 @@ static int ext_start(u64 sector)
 
 static int extclient_ontake(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, u8* buf, int len)
 {
-	say("@extclient_ontake\n");
+	logtoall("@extclient_ontake\n");
 	return 0;
 }
 static int extclient_ongive(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
@@ -360,7 +360,7 @@ static int extclient_ongive(_obj* art,void* foot, _syn* stack,int sp, p64 arg, i
 }
 int extclient_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@extclient_attach\n");
+	logtoall("@extclient_attach\n");
 	if(_src_ != self->foottype)return 0;
 
 	_obj* art = self->pchip;
@@ -372,7 +372,7 @@ int extclient_attach(struct halfrel* self, struct halfrel* peer)
 	u8* pbr = per->pbrbuffer;
 	int ret = take_data_from_peer(art,_src_, 0,0, 0,_pos_, pbr,0x1000);
 	if(ret < 0x200){
-		say("fail@read:%d\n",ret);
+		logtoall("fail@read:%d\n",ret);
 		return 0;
 	}
 
@@ -402,7 +402,7 @@ int extclient_detach(struct halfrel* self, struct halfrel* peer)
 
 static int extclient_reader(_obj* art,int xxx, void* arg,int cmd, void* buf,int len)
 {
-	say("@extclient_reader\n");
+	logtoall("@extclient_reader\n");
 	return 0;
 }
 static int extclient_writer(_obj* art,int xxx, void* arg,int cmd, void* buf,int len)
@@ -411,7 +411,7 @@ static int extclient_writer(_obj* art,int xxx, void* arg,int cmd, void* buf,int 
 }
 int extclient_create(_obj* art)
 {
-	say("@extclient_create\n");
+	logtoall("@extclient_create\n");
 
 	struct perfs* per = memoryalloc(0x200000, 0);
 	art->priv_ptr = per;

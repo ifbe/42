@@ -87,7 +87,7 @@ static void pwmtool_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("pwmtool(%x,%x,%x)\n",win,act,sty);
+	logtoall("pwmtool(%x,%x,%x)\n",win,act,sty);
 }
 
 

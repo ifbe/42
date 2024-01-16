@@ -23,7 +23,7 @@ int pump_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, voi
 	int ret;
 	u8 tmp[0x1000];
 
-	say("@pump.%4s\n", &foot);
+	logtoall("@pump.%4s\n", &foot);
 	if(_clk_ == stack[sp-1].foottype){
 		//whenever clock
 		ret = take_data_from_peer(art,_src_, stack,sp, 0,0, tmp,0x1000);
@@ -61,7 +61,7 @@ static void funcaddr(_obj* art)
 
 int pump_create(_obj* ele, u8* arg)
 {
-	say("@pump_create:%.16s\n", arg);
+	logtoall("@pump_create:%.16s\n", arg);
 
 	struct perobj* per = (void*)ele->priv_256b;
 	copypath(per->path, arg);

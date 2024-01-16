@@ -53,7 +53,7 @@ void coopctx_update_one(struct datapair* pair)
 	glGenVertexArrays(1, &gd->vao);
 	glBindVertexArray(gd->vao);
 	glBindBuffer(GL_ARRAY_BUFFER, gd->vbo);
-	say("%x,%x,%x\n", gd->vao, gd->vbo, gs->vbuf_fmt);
+	logtoall("%x,%x,%x\n", gd->vao, gd->vbo, gs->vbuf_fmt);
 	switch(gs->vbuf_fmt)
 	{
 		case vbuffmt_3:

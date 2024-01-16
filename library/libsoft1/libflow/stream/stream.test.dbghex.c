@@ -9,7 +9,7 @@ int dbghex_read(_obj* art,void* foot, struct halfrel* stack,int sp, void* arg,in
 }
 int dbghex_write(_obj* art,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	say("@dbghex_write: 0x%x\n", len);
+	logtoall("@dbghex_write: 0x%x\n", len);
 	printmemory(buf, len<16 ? len : 16);
 	return 0;
 }
@@ -27,6 +27,6 @@ int dbghex_attach(struct halfrel* self, struct halfrel* peer)
 
 int dbghex_create(_obj* ele, u8* arg)
 {
-	say("@dbghex_create\n");
+	logtoall("@dbghex_create\n");
 	return 1;
 }

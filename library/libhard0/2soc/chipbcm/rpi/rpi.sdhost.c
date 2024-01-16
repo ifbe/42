@@ -84,7 +84,7 @@ int freesdhost()
 int initsdhost(struct item* dev)
 {
 	long r,cnt,ccs=0;
-	say("@initsdhost\n");
+	logtoall("@initsdhost\n");
 
 	void* mmio = mmiobase();
 	void* sdhost = mmio + SDHOST_OFFS;
@@ -94,6 +94,6 @@ int initsdhost(struct item* dev)
 	struct persdhost* per = (void*)dev->priv_256b;
 	per->sdhost = sdhost;
 
-	say("\n");
+	logtoall("\n");
 	return 0;
 }

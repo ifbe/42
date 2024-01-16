@@ -16,7 +16,7 @@ struct privdata{
 
 static aaudio_data_callback_result_t dataCallback(AAudioStream *stream, void *userData, void *audioData, int32_t numFrames)
 {
-	say((void*)"recordDataCallback: stream=%p,userData=%p,audiodata=%p,numFrames=%x\n", stream, userData, audioData, numFrames);
+	logtoall((void*)"recordDataCallback: stream=%p,userData=%p,audiodata=%p,numFrames=%x\n", stream, userData, audioData, numFrames);
 
 	_obj* spk = userData;
 	struct privdata* priv = (void*)spk->priv_256b;
@@ -34,7 +34,7 @@ static aaudio_data_callback_result_t dataCallback(AAudioStream *stream, void *us
 }
 static void errorCallback(AAudioStream *stream, void *userData, aaudio_result_t error)
 {
-	say((void*)"recordErrorCallback: stream=%p,userData=%p,error=%s\n", stream, userData, AAudio_convertResultToText(error));
+	logtoall((void*)"recordErrorCallback: stream=%p,userData=%p,error=%s\n", stream, userData, AAudio_convertResultToText(error));
 }
 
 
@@ -69,12 +69,12 @@ void speaker_delete(_obj* spk, void* arg, int argc, u8** argv)
 }
 void speaker_create(_obj* spk, void* arg, int argc, u8** argv)
 {
-	say((void*)"speakercreate\n");
+	logtoall((void*)"speakercreate\n");
 
 	AAudioStreamBuilder *builder;
 	aaudio_result_t res = AAudio_createStreamBuilder(&builder);
 	if(AAUDIO_OK != res){
-		say((void*)"AAudio_createStreamBuilder: error=%s\n", AAudio_convertResultToText(res));
+		logtoall((void*)"AAudio_createStreamBuilder: error=%s\n", AAudio_convertResultToText(res));
 		return;
 	}
 
@@ -91,7 +91,7 @@ void speaker_create(_obj* spk, void* arg, int argc, u8** argv)
 	AAudioStream* stream;
 	res = AAudioStreamBuilder_openStream(builder, &stream);
 	if(AAUDIO_OK != res){
-		say((void*)"AAudioStreamBuilder_openStream: error=%s, internal error usually mean permission denied\n", AAudio_convertResultToText(res));
+		logtoall((void*)"AAudioStreamBuilder_openStream: error=%s, internal error usually mean permission denied\n", AAudio_convertResultToText(res));
 		return;
 	}
 

@@ -168,11 +168,11 @@ void new2048(u8 (*table)[4])
 		}
 	}
 	if(count==0)return;
-	//say("count=%x\n", count);
+	//logtoall("count=%x\n", count);
 
 	//choose which empty cubie
 	count = random_read() % count;
-	//say("choice=%x\n", count);
+	//logtoall("choice=%x\n", count);
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<4;x++)

@@ -11,7 +11,7 @@ u8 in8(u16 port);
 void out8(u16 port, u8 data);
 //
 void printmemory(void*, int);
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 
@@ -55,12 +55,12 @@ void isr_rtc()
 	p[0] = in8(0x71);
 
 	for(j=0;j<7;j++)p[j] = (p[j]&0xf) + (p[j]>>4)*10;
-	//say("date: %d,%d,%d,%d,%d,%d,%d,%d\n",p[7],p[6],p[5],p[4],p[3],p[2],p[1],p[0]);
+	//logtoall("date: %d,%d,%d,%d,%d,%d,%d,%d\n",p[7],p[6],p[5],p[4],p[3],p[2],p[1],p[0]);
 	datewrite(date);
 }
 void initrtc()
 {
-	say("@initrtc\n");
+	logtoall("@initrtc\n");
 	u8 tmp;
 	out8(0x70, 0x8a);
 	out8(0x71, 0xaf);	//3=8192hz,6=1024hz,a=64hz,f=2hz
@@ -71,5 +71,5 @@ void initrtc()
 	out8(0x71, tmp|0x40);
 
 	irqchip_enableirq(0,8, 0,0x28);
-	say("initrtc end\n\n");
+	logtoall("initrtc end\n\n");
 }

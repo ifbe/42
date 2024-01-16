@@ -2,7 +2,7 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-void say(void*, ...);
+void logtoall(void*, ...);
 struct piece
 {
 	void* buf;
@@ -19,7 +19,7 @@ void memory_debug(struct piece* mem)
 	while(1)
 	{
 		if(mem[j].buf == 0)break;
-		say("%llx,%x,%x\n",mem[j].buf, mem[j].len, mem[j].flag);
+		logtoall("%llx,%x,%x\n",mem[j].buf, mem[j].len, mem[j].flag);
 		j++;
 	}
 }

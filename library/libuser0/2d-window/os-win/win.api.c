@@ -210,11 +210,11 @@ int window_create(_obj* wnd)
 	DragAcceptFiles(hwnd, TRUE);
 
 	HMODULE hUser = LoadLibraryA("user32.dll");
-	if(!hUser){say("failed to load\n");exit(-1);}
+	if(!hUser){logtoall("failed to load\n");exit(-1);}
 
 	ChangeWindowMessageFilterProc hProc;
 	hProc = (ChangeWindowMessageFilterProc)GetProcAddress(hUser, "ChangeWindowMessageFilter");
-	if(!hProc){say("can't drag\n");exit(-1);}
+	if(!hProc){logtoall("can't drag\n");exit(-1);}
 
 	hProc(WM_COPYDATA, 1);
 	hProc(WM_DROPFILES, 1);
@@ -345,7 +345,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				key[i]=(value<<16)+touchpoint[i].y;
 				key[i]=(value<<16)+touchpoint[i].x;
 
-				say("id=%x:x=%x,y=%x\n",
+				logtoall("id=%x:x=%x,y=%x\n",
 					touchpoint[i].dwID,
 					touchpoint[i].x,
 					touchpoint[i].y
@@ -361,7 +361,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
 			u64 x,y,k;
 			k = whichfinger(win, -1, (u16)wparam);
-			//say("k=%d\n",k);
+			//logtoall("k=%d\n",k);
 			if(k >= 10)return 0;
 
 			pt.y = GET_Y_LPARAM(lparam);
@@ -382,7 +382,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
 			u64 x,y,k;
 			k = whichfinger(win, (u16)wparam, -1);
-			//say("k=%d\n",k);
+			//logtoall("k=%d\n",k);
 			if(k >= 10)return 0;
 
 			pt.y = GET_Y_LPARAM(lparam);
@@ -404,7 +404,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
 			u64 x,y,k;
 			k = whichfinger(win, (u16)wparam, (u16)wparam);
-			//say("k=%d\n",k);
+			//logtoall("k=%d\n",k);
 			if(k >= 10)return 0;
 
 			pt.y = GET_Y_LPARAM(lparam);

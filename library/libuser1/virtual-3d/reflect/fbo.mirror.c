@@ -209,7 +209,7 @@ static void mirror_gl41geom_update(
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vu = geom->fs.vt;
-	//say("%f,%f,%f	%f,%f,%f\n",vc[0],vc[1],vc[2],vr[0],vf[1],vu[2]);
+	//logtoall("%f,%f,%f	%f,%f,%f\n",vc[0],vc[1],vc[2],vr[0],vf[1],vu[2]);
 	gl41line_rect(wnd, 0x404040, vc, vr, vf);
 
 

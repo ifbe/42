@@ -1,6 +1,6 @@
 #include "libhard.h"
 #include "drv/usb.h"
-#define usbhost_print(fmt, ...) say("%08lld usbhost@%p "fmt, timeread_us(), usb, ##__VA_ARGS__)
+#define usbhost_print(fmt, ...) logtoall("%08lld usbhost@%p "fmt, timeread_us(), usb, ##__VA_ARGS__)
 //device driver
 int usbvmware_driver(struct item* usb, int xxx, struct item* xhci, int slot);
 int usbdualshock_driver(struct item* usb, int xxx, struct item* xhci, int slot);
@@ -184,79 +184,79 @@ void D2H_STD_ENDP_SYNCHFRAME(struct UsbRequest* req, u16 endp)
 
 void explaindevdesc(struct DeviceDescriptor* desc)
 {
-	say(".bLength=%x\n",            desc->bLength);
-	say(".bDescriptorType=DeviceDescriptor\n");
-	say(".bcdUSB=%x\n",             desc->bcdUSB);
-	say(".bDeviceClass=%x\n",       desc->bDeviceClass);
-	say(".bDeviceSubClass=%x\n",    desc->bDeviceSubClass);
-	say(".bDeviceProtocol=%x\n",    desc->bDeviceProtocol);
-	say(".bMaxPacketSize0=%x\n",    desc->bMaxPacketSize0);
-	say(".idVendor=%04x\n",         desc->idVendor);
-	say(".idProduct=%04x\n",        desc->idProduct);
-	say(".bcdDevice=%x\n",          desc->bcdDevice);
-	say(".iManufacturer=%x\n",      desc->iManufacturer);
-	say(".iProduct=%x\n",           desc->iProduct);
-	say(".iSerialNumber=%x\n",      desc->iSerialNumber);
-	say(".bNumConfigurations=%x\n", desc->bNumConfigurations);
+	logtoall(".bLength=%x\n",            desc->bLength);
+	logtoall(".bDescriptorType=DeviceDescriptor\n");
+	logtoall(".bcdUSB=%x\n",             desc->bcdUSB);
+	logtoall(".bDeviceClass=%x\n",       desc->bDeviceClass);
+	logtoall(".bDeviceSubClass=%x\n",    desc->bDeviceSubClass);
+	logtoall(".bDeviceProtocol=%x\n",    desc->bDeviceProtocol);
+	logtoall(".bMaxPacketSize0=%x\n",    desc->bMaxPacketSize0);
+	logtoall(".idVendor=%04x\n",         desc->idVendor);
+	logtoall(".idProduct=%04x\n",        desc->idProduct);
+	logtoall(".bcdDevice=%x\n",          desc->bcdDevice);
+	logtoall(".iManufacturer=%x\n",      desc->iManufacturer);
+	logtoall(".iProduct=%x\n",           desc->iProduct);
+	logtoall(".iSerialNumber=%x\n",      desc->iSerialNumber);
+	logtoall(".bNumConfigurations=%x\n", desc->bNumConfigurations);
 }
 void explainconfdesc(struct ConfigurationDescriptor* desc)
 {
-	say(".bLength=%x\n",             desc->bLength);
-	say(".bDescriptorType=ConfigurationDescriptor\n");
-	say(".wTotalLength=%x\n",        desc->wTotalLength);
-	say(".bNumInterfaces=%x\n",      desc->bNumInterfaces);
-	say(".bConfigurationValue=%x\n", desc->bConfigurationValue);
-	say(".iConfiguration=%x\n",      desc->iConfiguration);
-	say(".bmAttributes=%x\n",        desc->bmAttributes);
-	say(".bMaxPower=%dmA\n",         desc->bMaxPower*2);
+	logtoall(".bLength=%x\n",             desc->bLength);
+	logtoall(".bDescriptorType=ConfigurationDescriptor\n");
+	logtoall(".wTotalLength=%x\n",        desc->wTotalLength);
+	logtoall(".bNumInterfaces=%x\n",      desc->bNumInterfaces);
+	logtoall(".bConfigurationValue=%x\n", desc->bConfigurationValue);
+	logtoall(".iConfiguration=%x\n",      desc->iConfiguration);
+	logtoall(".bmAttributes=%x\n",        desc->bmAttributes);
+	logtoall(".bMaxPower=%dmA\n",         desc->bMaxPower*2);
 }
 void explainintfdesc(struct InterfaceDescriptor* desc)
 {
-	say(".bLength=%x\n",            desc->bLength);
-	say(".bDescriptorType=InterfaceDescriptor\n");
-	say(".bInterfaceNumber=%x\n",   desc->bInterfaceNumber);
-	say(".bAlternateSetting=%x\n",  desc->bAlternateSetting);
-	say(".bNumEndpoints=%x\n",      desc->bNumEndpoints);
-	say(".bInterfaceClass=%x\n",    desc->bInterfaceClass);
-	say(".bInterfaceSubClass=%x\n", desc->bInterfaceSubClass);
-	say(".bInterfaceProtocol=%x\n", desc->bInterfaceProtocol);
-	say(".iInterface=%x\n",         desc->iInterface);
+	logtoall(".bLength=%x\n",            desc->bLength);
+	logtoall(".bDescriptorType=InterfaceDescriptor\n");
+	logtoall(".bInterfaceNumber=%x\n",   desc->bInterfaceNumber);
+	logtoall(".bAlternateSetting=%x\n",  desc->bAlternateSetting);
+	logtoall(".bNumEndpoints=%x\n",      desc->bNumEndpoints);
+	logtoall(".bInterfaceClass=%x\n",    desc->bInterfaceClass);
+	logtoall(".bInterfaceSubClass=%x\n", desc->bInterfaceSubClass);
+	logtoall(".bInterfaceProtocol=%x\n", desc->bInterfaceProtocol);
+	logtoall(".iInterface=%x\n",         desc->iInterface);
 }
 void explainendpdesc(struct EndpointDescriptor* desc)
 {
 	int tmp = desc->bEndpointAddress;
-	say(".bLength=%x\n",          desc->bLength);
-	say(".bDescriptorType=EndpointDescriptor\n");
-	say(".bEndpointAddress=%x,%s\n", tmp&0x1f, (tmp>=0x80)?"in":"out");
-	say(".bmAttributes=%x\n",     desc->bmAttributes);
-	say(".wMaxPacketSize=%x\n",   desc->wMaxPacketSize);
-	say(".bInterval=%d\n",        desc->bInterval);
+	logtoall(".bLength=%x\n",          desc->bLength);
+	logtoall(".bDescriptorType=EndpointDescriptor\n");
+	logtoall(".bEndpointAddress=%x,%s\n", tmp&0x1f, (tmp>=0x80)?"in":"out");
+	logtoall(".bmAttributes=%x\n",     desc->bmAttributes);
+	logtoall(".wMaxPacketSize=%x\n",   desc->wMaxPacketSize);
+	logtoall(".bInterval=%d\n",        desc->bInterval);
 }
 void explainInterfaceAssociation(struct InterfaceAssociation* desc)
 {
-	say(".bLength=%x\n",           desc->bLength);
-	say(".bDescriptorType=InterfaceAssociation\n");
-	say(".bFirstInterface=%x\n",   desc->bFirstInterface);
-	say(".bInterfaceCount=%x\n",   desc->bInterfaceCount);
-	say(".bFunctionClass=%x\n",    desc->bFunctionClass);
-	say(".bFunctionSubclass=%x\n", desc->bFunctionSubclass);
-	say(".bFunctionProtocol=%x\n", desc->bFunctionProtocol);
-	say(".iFunction=%x\n",         desc->iFunction);
+	logtoall(".bLength=%x\n",           desc->bLength);
+	logtoall(".bDescriptorType=InterfaceAssociation\n");
+	logtoall(".bFirstInterface=%x\n",   desc->bFirstInterface);
+	logtoall(".bInterfaceCount=%x\n",   desc->bInterfaceCount);
+	logtoall(".bFunctionClass=%x\n",    desc->bFunctionClass);
+	logtoall(".bFunctionSubclass=%x\n", desc->bFunctionSubclass);
+	logtoall(".bFunctionProtocol=%x\n", desc->bFunctionProtocol);
+	logtoall(".iFunction=%x\n",         desc->iFunction);
 }
 void explainHIDdesc(struct HIDDescriptor* desc)
 {
-	say(".bLength=%x\n",            desc->bLength);
-	say(".bDescriptorType=HIDDescriptor\n");
-	say(".bcdHID=%x\n",             desc->bcdHID);
-	say(".bCountryCode=%x\n",       desc->bCountryCode);
-	say(".bNumDescriptors=%x\n",    desc->bNumDescriptors);
-	say(".bReportDescType=%x\n",    desc->bReportDescType);
-	say(".wReportDescLength=%x\n",  desc->wReportDescLength);
+	logtoall(".bLength=%x\n",            desc->bLength);
+	logtoall(".bDescriptorType=HIDDescriptor\n");
+	logtoall(".bcdHID=%x\n",             desc->bcdHID);
+	logtoall(".bCountryCode=%x\n",       desc->bCountryCode);
+	logtoall(".bNumDescriptors=%x\n",    desc->bNumDescriptors);
+	logtoall(".bReportDescType=%x\n",    desc->bReportDescType);
+	logtoall(".wReportDescLength=%x\n",  desc->wReportDescLength);
 }
 void explainotherdesc(u8* buf)
 {
-	say(".bLength=%x\n",         buf[0]);
-	say(".bDescriptorType=%x\n", buf[1]);
+	logtoall(".bLength=%x\n",         buf[0]);
+	logtoall(".bDescriptorType=%x\n", buf[1]);
 }
 
 
@@ -413,11 +413,11 @@ int usbany_ReadAndHandleString(struct item* usb, int xxx, struct item* xhci, int
 	perusb->origin.byteused += strdesc->bLength;
 
 	//printmemory(tmp, req.wLength);
-	say("unicode2ascii{");
+	logtoall("unicode2ascii{");
 	for(j=0;j<(strdesc->bLength-2)/2;j++){
-		say("%c",(strdesc->unicode[j])&0x7f);
+		logtoall("%c",(strdesc->unicode[j])&0x7f);
 	}
-	say("}\n");
+	logtoall("}\n");
 
 	return 0;
 }
@@ -438,7 +438,7 @@ void explainconfdesc_tostr(struct item* usb, int xxx, struct item* xhci, int slo
 	while(1){
 		if(j >= len)break;
 
-		say("@[%x,%x]:type=%x\n", j, j+buf[j]-1, buf[j+1]);
+		logtoall("@[%x,%x]:type=%x\n", j, j+buf[j]-1, buf[j+1]);
 		switch(buf[j+1]){
 		case 0x02:
 			confdesc = (void*)(buf+j);
@@ -604,19 +604,19 @@ void explainconfdesc_tomy(struct item* usb, int xxx, struct item* xhci, int slot
 
 		switch(helpnode->type){
 		case 0x2:
-			say("%.*sconfig:%d.%d\n", 2*sp,tabs, helpnode->id, helpnode->altid);
+			logtoall("%.*sconfig:%d.%d\n", 2*sp,tabs, helpnode->id, helpnode->altid);
 			break;
 		case 0xb:
-			say("%.*sassociate:%d.%d\n", 2*sp,tabs, helpnode->id, helpnode->altid);
+			logtoall("%.*sassociate:%d.%d\n", 2*sp,tabs, helpnode->id, helpnode->altid);
 			break;
 		case 0x4:
-			say("%.*sinterface:%d.%d\n", 2*sp,tabs, helpnode->id, helpnode->altid);
+			logtoall("%.*sinterface:%d.%d\n", 2*sp,tabs, helpnode->id, helpnode->altid);
 			break;
 		case 0x5:
-			say("%.*sendpoint:%d.%d\n", 2*sp,tabs, helpnode->id, helpnode->altid);
+			logtoall("%.*sendpoint:%d.%d\n", 2*sp,tabs, helpnode->id, helpnode->altid);
 			break;
 		case 0x21:
-			say("%.*shid:%d.%d\n", 2*sp,tabs, helpnode->id, helpnode->altid);
+			logtoall("%.*shid:%d.%d\n", 2*sp,tabs, helpnode->id, helpnode->altid);
 			break;
 		}
 

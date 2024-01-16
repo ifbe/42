@@ -200,21 +200,21 @@ int sd_appcmd(struct persdhci* per)
 	per->sd_err = SD_OK;
 
 	if(sd_status(per, SR_CMD_INHIBIT)) {
-		say("ERROR: EMMC busy 1\n");
+		logtoall("ERROR: EMMC busy 1\n");
 		per->sd_err = SD_TIMEOUT;
 		return 0;
 	}
 
 	u32 code = CMD_APP_CMD | (per->sd_rca?CMD_RSPNS_48:0);
 	u32 arg = per->sd_rca;
-	say("EMMC: Sending appcmd %x,%x\n",code, arg);
+	logtoall("EMMC: Sending appcmd %x,%x\n",code, arg);
 
 	EMMC_INTERRUPT = EMMC_INTERRUPT;
 	EMMC_ARG1 = arg;
 	EMMC_CMDTM = code;
 
 	if((ret = sd_int(per, INT_CMD_DONE))) {
-		say("error@send app cmd\n");
+		logtoall("error@send app cmd\n");
 		per->sd_err = ret;
 		return 0;
 	}
@@ -231,20 +231,20 @@ int sd_cmd(struct persdhci* per, unsigned int code, unsigned int arg)
 	if(code&CMD_NEED_APP) {
 		ret = sd_appcmd(per);
 		if(per->sd_rca && !ret) {
-			say("ERROR: failed to send SD APP command\n");
+			logtoall("ERROR: failed to send SD APP command\n");
 			per->sd_err=SD_ERROR;
 			return 0;
 		}
 		code &= ~CMD_NEED_APP;
 	}
 	if(sd_status(per, SR_CMD_INHIBIT)) {
-		say("ERROR: EMMC busy 2\n");
+		logtoall("ERROR: EMMC busy 2\n");
 		per->sd_err = SD_TIMEOUT;
 		return 0;
 	}
 
 	wait_msec(1000);	//must delay, but why?
-	//say("EMMC: Sending mmccmd %x,%x\n",code, arg);
+	//logtoall("EMMC: Sending mmccmd %x,%x\n",code, arg);
 
 	EMMC_INTERRUPT = EMMC_INTERRUPT;
 	EMMC_ARG1 = arg;
@@ -254,7 +254,7 @@ int sd_cmd(struct persdhci* per, unsigned int code, unsigned int arg)
 	else if(code==CMD_SEND_IF_COND) wait_msec(300);
 
 	if((ret = sd_int(per, INT_CMD_DONE))) {
-		say("error@send mmc cmd: code=%x,arg=%x\n",code,arg);
+		logtoall("error@send mmc cmd: code=%x,arg=%x\n",code,arg);
 		per->sd_err = ret;
 		return 0;
 	}
@@ -291,7 +291,7 @@ int sd_clk(struct persdhci* per, unsigned int f)
 	int cnt = 100000;
 	while((EMMC_STATUS & (SR_CMD_INHIBIT|SR_DAT_INHIBIT)) && cnt--) wait_msec(1);
 	if(cnt <= 0) {
-		say("ERROR: timeout waiting for inhibit flag\n");
+		logtoall("ERROR: timeout waiting for inhibit flag\n");
 		return SD_ERROR;
 	}
 
@@ -314,7 +314,7 @@ int sd_clk(struct persdhci* per, unsigned int f)
 	else d=(1<<s);
 
 	if(d<=2) {d=2;s=0;}
-	say("EMMC: sd_clk divisor %x, shift %x\n", d, s);
+	logtoall("EMMC: sd_clk divisor %x, shift %x\n", d, s);
 
 	if(per->hciver > HOST_SPEC_V2) h=(d&0x300)>>2;
 	d=(((d&0x0ff) << 8) | h);
@@ -326,7 +326,7 @@ int sd_clk(struct persdhci* per, unsigned int f)
 	cnt=10000;
 	while(!(EMMC_CONTROL1 & C1_CLK_STABLE) && cnt--) wait_msec(10);
 	if(cnt <= 0) {
-		say("ERROR: failed to get stable clock\n");
+		logtoall("ERROR: failed to get stable clock\n");
 		return SD_ERROR;
 	}
 	return SD_OK;
@@ -373,7 +373,7 @@ static u32 sd_get_clock_divider(u32 base_clock, u32 target_rate)
 	int denominator = 1;
 	if(divisor != 0)denominator = divisor * 2;
 	int actual_clock = base_clock / denominator;
-	say("EMMC: base_clock: %d, target_rate: %d, divisor: %08x, "
+	logtoall("EMMC: base_clock: %d, target_rate: %d, divisor: %08x, "
 			"actual_clock: %d, ret: %08x\n", base_clock, target_rate,
 			divisor, actual_clock, ret);
 
@@ -394,7 +394,7 @@ int sd_readblock(struct persdhci* per, unsigned int lba, unsigned char *buf, int
 	int r,c=0,d;
 	if(num<1) num=1;
 
-	//say("EMMC: sd_readblock lba %x,%x\n", lba, num);
+	//logtoall("EMMC: sd_readblock lba %x,%x\n", lba, num);
 	if(sd_status(per, SR_DAT_INHIBIT)) {per->sd_err=SD_TIMEOUT; return 0;}
 
 	unsigned int* tmp = (unsigned int*)buf;
@@ -416,7 +416,7 @@ int sd_readblock(struct persdhci* per, unsigned int lba, unsigned char *buf, int
 			if(per->sd_err) return 0;
 		}
 		if((r=sd_int(per, INT_READ_RDY))){
-			say("ERROR: Timeout waiting for ready to read\n");
+			logtoall("ERROR: Timeout waiting for ready to read\n");
 			per->sd_err = r;
 			return 0;
 		}
@@ -451,7 +451,7 @@ int freesdhci()
 int initsdhci(struct item* dev, int offs)
 {
 	long r,cnt,ccs=0;
-	say("@initsdhci@%x\n", offs);
+	logtoall("@initsdhci@%x\n", offs);
 
 	//which
 	void* sdhci = mmiobase() + offs;
@@ -467,11 +467,11 @@ int initsdhci(struct item* dev, int offs)
 	per->vendor = tmp >> 24;
 	per->hciver =(tmp >> 16) & 0xff;
 	per->status = tmp & 0xff;
-	say("EMMC: vendor=%x, hciver=%x, status %x\n", per->vendor, per->hciver, per->status);
+	logtoall("EMMC: vendor=%x, hciver=%x, status %x\n", per->vendor, per->hciver, per->status);
 
 
 	// Reset the controller
-	say("EMMC: reset hc\n");
+	logtoall("EMMC: reset hc\n");
 	u32 control1 = EMMC_CONTROL1;
 	control1 |= (1 << 24);
 	control1 &= ~(1 << 2);
@@ -484,41 +484,41 @@ int initsdhci(struct item* dev, int offs)
 		wait_msec(1);
 	}
 	if(cnt <= 0) {
-		say("ERROR: failed to reset EMMC\n");
+		logtoall("ERROR: failed to reset EMMC\n");
 		return SD_ERROR;
 	}
-	say("ctl0: %08x, ctl1: %08x, ctl2: %08x\n", EMMC_CONTROL0, EMMC_CONTROL1, EMMC_CONTROL2);
-	say("EMMC: reset ok\n");
+	logtoall("ctl0: %08x, ctl1: %08x, ctl2: %08x\n", EMMC_CONTROL0, EMMC_CONTROL1, EMMC_CONTROL2);
+	logtoall("EMMC: reset ok\n");
 
 
 	// Enable SD Bus Power VDD1 at 3.3V
 	if(raspi_version() >= 4){
-		say("EMMC: vdd = 3.3v\n");
+		logtoall("EMMC: vdd = 3.3v\n");
 		u32 control0 = EMMC_CONTROL0;
 		control0 |= (0x0F << 8);
 		EMMC_CONTROL0 = control0;
 		wait_msec(2);
-		say("EMMC: vdd ok\n");
+		logtoall("EMMC: vdd ok\n");
 	}
 
 /*
 	// Read the capabilities registers
 	u32 capabilities_0 = *EMMC_CAPABILITIES_0;
 	u32 capabilities_1 = *EMMC_CAPABILITIES_1;
-	say("EMMC: capabilities: %08x%08x\n", capabilities_1, capabilities_0);
+	logtoall("EMMC: capabilities: %08x%08x\n", capabilities_1, capabilities_0);
 */
 
 	// Check for a valid card
-	say("EMMC: checking for an inserted card\n");
+	logtoall("EMMC: checking for an inserted card\n");
 	cnt = 1000000;
 	while(cnt--){
 		if(0 != (EMMC_STATUS & (1 << 16)))break;
 		wait_msec(1);
 	}
 	if(cnt <= 0){
-		say("no card inserted\n");
+		logtoall("no card inserted\n");
 	}
-	say("EMMC: status: %08x\n", EMMC_STATUS);
+	logtoall("EMMC: status: %08x\n", EMMC_STATUS);
 
 
 	// Clear control2
@@ -526,7 +526,7 @@ int initsdhci(struct item* dev, int offs)
 
 	// Get the base clock rate
 	u32 baseclock = mbox_getbaseclock();
-	say("baseclock_frommbox=%d\n",baseclock);
+	logtoall("baseclock_frommbox=%d\n",baseclock);
 
 	// Set clock rate to something slow
 	control1 = EMMC_CONTROL1;
@@ -535,7 +535,7 @@ int initsdhci(struct item* dev, int offs)
 	// Set to identification frequency (400 kHz)
 	u32 f_id = sd_get_clock_divider(baseclock, SD_CLOCK_400K);
 	if(f_id == 0xffffffff){
-		say("EMMC: unable to get a valid clock divider for ID frequency\n");
+		logtoall("EMMC: unable to get a valid clock divider for ID frequency\n");
 		return -1;
 	}
 	control1 |= f_id;
@@ -550,20 +550,20 @@ int initsdhci(struct item* dev, int offs)
 		wait_msec(1);
 	}
 	if(cnt <= 0){
-		say("EMMC: controller's clock did not stabilise within 1 second\n");
+		logtoall("EMMC: controller's clock did not stabilise within 1 second\n");
 		//return -1;
 	}
-	say("EMMC: ctl0: %08x, ctl1: %08x\n", EMMC_CONTROL0, EMMC_CONTROL1);
+	logtoall("EMMC: ctl0: %08x, ctl1: %08x\n", EMMC_CONTROL0, EMMC_CONTROL1);
 
 
 	// Enable the SD clock
-	say("EMMC: SD clock en\n");
+	logtoall("EMMC: SD clock en\n");
 	wait_msec(2);
 	control1 = EMMC_CONTROL1;
 	control1 |= 4;
 	EMMC_CONTROL1 = control1;
 	wait_msec(2);
-	say("EMMC: SD clock ok\n");
+	logtoall("EMMC: SD clock ok\n");
 
 /*
 	// Mask off sending interrupts to the ARM
@@ -575,7 +575,7 @@ int initsdhci(struct item* dev, int offs)
     irpt_mask |= SD_CARD_INTERRUPT;
 	mmio_write(emmc_base + EMMC_IRPT_MASK, irpt_mask);
 
-	say("EMMC: interrupts disabled\n");
+	logtoall("EMMC: interrupts disabled\n");
 */
 	EMMC_INT_EN   = 0xffffffff;
 	EMMC_INT_MASK = 0xffffffff;
@@ -588,28 +588,28 @@ int initsdhci(struct item* dev, int offs)
 	per->sd_err = 0;
 
 	//CMD0: reset to idle state, wifi module fail here
-	say("CMD0:reset to idle\n");
+	logtoall("CMD0:reset to idle\n");
 	sd_cmd(per, CMD_GO_IDLE, 0);
 	if(per->sd_err) return per->sd_err;
-	say("CMD0 ok\n");
+	logtoall("CMD0 ok\n");
 
 	//CMD8: check if it is SD V2
-	say("CMD8:check if SD V2\n");
+	logtoall("CMD8:check if SD V2\n");
 	sd_cmd(per, CMD_SEND_IF_COND, 0x000001AA);
 	if(per->sd_err) return per->sd_err;
-	say("CMD8 ok: rsp0=%x\n", EMMC_RESP0);
+	logtoall("CMD8 ok: rsp0=%x\n", EMMC_RESP0);
 
 	//CMD5: check if it is sdio device
 
 	//ACMD41
-	say("APPCMD41 inquery ??\n");
+	logtoall("APPCMD41 inquery ??\n");
 	r = sd_cmd(per, 0x29000000|CMD_NEED_APP, 0);
-	say("APPCMD41 inquery ok\n");
+	logtoall("APPCMD41 inquery ok\n");
 
 	cnt = 6;
 	while(cnt--){
 		r = sd_cmd(per, CMD_SEND_OP_COND, ACMD41_ARG_HC);
-		say("EMMC: CMD_SEND_OP_COND ret=%x,err=%x\n", r, per->sd_err);
+		logtoall("EMMC: CMD_SEND_OP_COND ret=%x,err=%x\n", r, per->sd_err);
 
 		if(r&ACMD41_CMD_CCS) ccs = SCR_SUPP_CCS;
 		if(r&ACMD41_CMD_COMPLETE)break;
@@ -622,15 +622,15 @@ int initsdhci(struct item* dev, int offs)
 		wait_cycles(400);
 
 		r = sd_cmd(per, CMD_SEND_OP_COND, ACMD41_ARG_HC);
-		say("EMMC: CMD_SEND_OP_COND ret=%x,err=%x\n", r, per->sd_err);
+		logtoall("EMMC: CMD_SEND_OP_COND ret=%x,err=%x\n", r, per->sd_err);
 
-		if(r&ACMD41_CMD_COMPLETE)say("COMPLETE ");
-		if(r&ACMD41_VOLTAGE)say("VOLTAGE ");
-		if(r&ACMD41_CMD_CCS)say("CCS %08x,%08x", r>>32, r);
-		say("\n");
+		if(r&ACMD41_CMD_COMPLETE)logtoall("COMPLETE ");
+		if(r&ACMD41_VOLTAGE)logtoall("VOLTAGE ");
+		if(r&ACMD41_CMD_CCS)logtoall("CCS %08x,%08x", r>>32, r);
+		logtoall("\n");
 
 		if(per->sd_err!=SD_TIMEOUT && per->sd_err!=SD_OK ) {
-			say("ERROR: EMMC ACMD41 returned error\n");
+			logtoall("ERROR: EMMC ACMD41 returned error\n");
 			return per->sd_err;
 		}
 	}
@@ -639,13 +639,13 @@ int initsdhci(struct item* dev, int offs)
 	if(r&ACMD41_CMD_CCS) ccs = SCR_SUPP_CCS;
 */
 
-	say("CMD_ALL_SEND_CID ??\n");
+	logtoall("CMD_ALL_SEND_CID ??\n");
 	sd_cmd(per, CMD_ALL_SEND_CID,0);
-	say("CMD_ALL_SEND_CID ok\n");
+	logtoall("CMD_ALL_SEND_CID ok\n");
 
 
 	per->sd_rca = sd_cmd(per, CMD_SEND_REL_ADDR,0);
-	say("EMMC: CMD_SEND_REL_ADDR returned %08x,%08x\n", per->sd_rca>>32, per->sd_rca);
+	logtoall("EMMC: CMD_SEND_REL_ADDR returned %08x,%08x\n", per->sd_rca>>32, per->sd_rca);
 	if(per->sd_err) return per->sd_err;
 
 
@@ -673,10 +673,10 @@ int initsdhci(struct item* dev, int offs)
 		EMMC_CONTROL0 |= C0_HCTL_DWITDH;
 	}
 	// add software flag
-	say("EMMC: supports ");
-	if(per->sd_scr[0] & SCR_SUPP_SET_BLKCNT)say("SET_BLKCNT ");
-	if(ccs)say("CCS ");
-	say("\n");
+	logtoall("EMMC: supports ");
+	if(per->sd_scr[0] & SCR_SUPP_SET_BLKCNT)logtoall("SET_BLKCNT ");
+	if(ccs)logtoall("CCS ");
+	logtoall("\n");
 
 	per->sd_scr[0] &= ~SCR_SUPP_CCS;
 	per->sd_scr[0] |= ccs;
@@ -689,30 +689,30 @@ int initsdhci(struct item* dev, int offs)
 
 int initsdhci_wifi(struct item* dev, int offs)
 {
-	say("@initsdhci_wifi@%x\n", offs);
+	logtoall("@initsdhci_wifi@%x\n", offs);
 	pinmgr_gpio3439_sdhciold();
 
 	initsdhci(dev, offs);
 
-	say("\n");
+	logtoall("\n");
 	return 0;
 }
 int initsdhci_bcm283xsdcard(struct item* dev, int offs)
 {
-	say("@initsdhci_bcm283xsdcard@%x\n", offs);
+	logtoall("@initsdhci_bcm283xsdcard@%x\n", offs);
 
 	//gpio
-	say("EMMC: gpio[46,53]\n");
+	logtoall("EMMC: gpio[46,53]\n");
 	pinmgr_gpio4653_sdhcinew();
-	say("EMMC: gpio ok\n");
+	logtoall("EMMC: gpio ok\n");
 
 	//power
-	say("EMMC: power ??\n");
+	logtoall("EMMC: power ??\n");
 	mbox_poweroff();
 	wait_msec(2);
 	mbox_poweron();
 	wait_msec(200);
-	say("EMMC: power ok\n");
+	logtoall("EMMC: power ok\n");
 
 	//sdhci
 	initsdhci(dev, offs);
@@ -722,15 +722,15 @@ int initsdhci_bcm283xsdcard(struct item* dev, int offs)
 	dev->ongiving = (void*)sdhci_ongive;
 	filemanager_registerdisk(dev, 0);
 
-	say("\n");
+	logtoall("\n");
 	return 0;
 }
 int initsdhci_bcm2711sdcard(struct item* dev, int offs)
 {
-	say("@initsdhci_bcm2711sdcard@%x\n", offs);
+	logtoall("@initsdhci_bcm2711sdcard@%x\n", offs);
 
 	//gpio
-	say("sdcard: on hidden bcm2711 gpio, not gpio46-53\n");
+	logtoall("sdcard: on hidden bcm2711 gpio, not gpio46-53\n");
 
 	//sdhci
 	initsdhci(dev, offs);
@@ -740,6 +740,6 @@ int initsdhci_bcm2711sdcard(struct item* dev, int offs)
 	dev->ongiving = (void*)sdhci_ongive;
 	filemanager_registerdisk(dev, 0);
 
-	say("\n");
+	logtoall("\n");
 	return 0;
 }

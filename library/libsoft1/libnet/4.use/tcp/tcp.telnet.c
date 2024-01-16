@@ -78,7 +78,7 @@ int telnetclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int 
 		case 4:give_data_into_peer(art,_src_, stack,sp, 0,0, cpacket4,sizeof(cpacket4));break;
 		case 5:give_data_into_peer(art,_src_, stack,sp, 0,0, cpacket5,sizeof(cpacket5));break;
 		default:{
-			say("%.*s", len, buf);
+			logtoall("%.*s", len, buf);
 			return 0;
 		}
 	}

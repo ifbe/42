@@ -46,14 +46,14 @@ u64 gst_alsasrc_get_timestamp(_obj* mic, snd_pcm_status_t* status)
 
 	int ret = snd_pcm_status (priv->capture_handle, status);
 	if(ret != 0) {
-		say("snd_pcm_status failed");
+		logtoall("snd_pcm_status failed");
 		return 0;
 	}
 
 	//in case an xrun condition has occured we need to handle this
 	ret = snd_pcm_status_get_state (status);
 	if (ret != SND_PCM_STATE_RUNNING) {
-		say("snd_pcm_status_get_state:ret=%d\n",ret);
+		logtoall("snd_pcm_status_get_state:ret=%d\n",ret);
 /*		int err = -EPIPE;
 		ret = xrun_recovery (asrc, priv->capture_handle, err);
 		if(ret < 0) {
@@ -62,7 +62,7 @@ u64 gst_alsasrc_get_timestamp(_obj* mic, snd_pcm_status_t* status)
 		//reload the status alsa status object, since recovery made it invalid
 		ret = snd_pcm_status (priv->capture_handle, status);
 		if(ret != 0) {
-			say("snd_pcm_status failed");
+			logtoall("snd_pcm_status failed");
 		}*/
 	}
 
@@ -83,7 +83,7 @@ u64 gst_alsasrc_get_timestamp(_obj* mic, snd_pcm_status_t* status)
 	//timestamp -= asrc->period_time * 1000;
 
 	u64 ts = timestamp-delta;
-	if(priv->log)say("ts=%lld, htstamp=%lld, now=%lld, avail=%lld\n", ts, timestamp, timeread_ns(), avail);
+	if(priv->log)logtoall("ts=%lld, htstamp=%lld, now=%lld, avail=%lld\n", ts, timestamp, timeread_ns(), avail);
 
 	return ts;
 }
@@ -101,7 +101,7 @@ void* micphone_thread(_obj* mic)
 	snd_pcm_status_t* status;
 	ret = snd_pcm_status_malloc (&status);
 	if(ret != 0) {
-		say("snd_pcm_status_malloc failed");
+		logtoall("snd_pcm_status_malloc failed");
 		return 0;
 	}
 
@@ -123,7 +123,7 @@ void* micphone_thread(_obj* mic)
 
 		t1 = timeread_us();
 
-		if(priv->log)say("pcm[%x,%x]\n",priv->icur,priv->icur+1024*priv->bytes);
+		if(priv->log)logtoall("pcm[%x,%x]\n",priv->icur,priv->icur+1024*priv->bytes);
 		if(priv->log)printmemory(priv->ibuf+priv->icur, 16);
 		kv[0].val = ts;
 		give_data_into_peer_temp_stack(mic,_dst_, (p64)kv,_kv88_, priv->ibuf+priv->icur,1024*priv->bytes);
@@ -343,8 +343,8 @@ int micphone_create(_obj* mic, u8* arg, int argc, char** argv)
 			copyname(priv->path, argv[j]+5);
 		}
 	}
-	say("path=%s\n",priv->path);
-	say("bits=%d\n",priv->bits);
+	logtoall("path=%s\n",priv->path);
+	logtoall("bits=%d\n",priv->bits);
 
 	int ret = micphone_startcapture(mic);
 	if(ret < 0)return -1;

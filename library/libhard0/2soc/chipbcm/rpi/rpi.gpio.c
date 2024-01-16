@@ -349,17 +349,17 @@ void initpinmgr()
 {
 	volatile void* mmio = mmiobase();
 	volatile void* gpio = mmio + GPIO_OFFS;
-	say("@initpinmgr: mmio=%p,gpio=%p\n", mmio, gpio);
+	logtoall("@initpinmgr: mmio=%p,gpio=%p\n", mmio, gpio);
 
 	int j,k;
 	u32 val;
 	for(k=0;k<5;k++){
 		val = GPIOACCESS(GPFSEL0 + k*4);
-		say("GPFSEL%d=%x\n", k, val);
+		logtoall("GPFSEL%d=%x\n", k, val);
 		for(j=0;j<10;j++){
-			say("pin%d: func=%d(%s)\n", k*10+j, val&7, val2str[val&7]);
+			logtoall("pin%d: func=%d(%s)\n", k*10+j, val&7, val2str[val&7]);
 			val >>= 3;
 		}
 	}
-	say("\n");
+	logtoall("\n");
 }

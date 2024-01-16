@@ -46,7 +46,7 @@ void stick_read_force(_obj* ent, _obj* sup, struct joint* jo, int len)
 {
 	int a = ent->A_PEERFOOT - 'a';
 	int b = ent->B_PEERFOOT - 'a';
-	say("@stick_read_force: %d,%d\n",a,b);
+	logtoall("@stick_read_force: %d,%d\n",a,b);
 
 	float* va = jo[a].here;
 	float* vb = jo[b].here;
@@ -96,7 +96,7 @@ static void stick_read_a(_obj* ent, int key, struct joint* jo,int thisone)
 	float urx = jo[theother].here[0];
 	float ury = jo[theother].here[1];
 	float urz = jo[theother].here[2];
-	say("@stick_read_a: %d=%f,%f,%f, %d=%f,%f,%f\n",thisone,myx,myy,myz, theother,urx,ury,urz);
+	logtoall("@stick_read_a: %d=%f,%f,%f, %d=%f,%f,%f\n",thisone,myx,myy,myz, theother,urx,ury,urz);
 
 	float dx = myx-urx;
 	float dy = myy-ury;
@@ -105,7 +105,7 @@ static void stick_read_a(_obj* ent, int key, struct joint* jo,int thisone)
 	dx = 4*lenlen*(myx - urx);
 	dy = 4*lenlen*(myy - ury);
 	dz = 4*lenlen*(myz - urz);
-	say("derivative: %f,%f,%f\n",dx,dy,dz);
+	logtoall("derivative: %f,%f,%f\n",dx,dy,dz);
 	jo[thisone].grad[0] += dx/10000000;
 	jo[thisone].grad[1] += dy/10000000;
 	jo[thisone].grad[2] += dz/10000000;
@@ -124,7 +124,7 @@ static void stick_read_b(_obj* ent, int key, struct joint* jo,int thisone)
 	float urx = jo[theother].here[0];
 	float ury = jo[theother].here[1];
 	float urz = jo[theother].here[2];
-	say("@stick_read_b: %d=%f,%f,%f, %d=%f,%f,%f\n",thisone,myx,myy,myz, theother,urx,ury,urz);
+	logtoall("@stick_read_b: %d=%f,%f,%f, %d=%f,%f,%f\n",thisone,myx,myy,myz, theother,urx,ury,urz);
 
 	float dx = myx-urx;
 	float dy = myy-ury;
@@ -133,7 +133,7 @@ static void stick_read_b(_obj* ent, int key, struct joint* jo,int thisone)
 	dx = 4*lenlen*(myx - urx);
 	dy = 4*lenlen*(myy - ury);
 	dz = 4*lenlen*(myz - urz);
-	say("derivative: %f,%f,%f\n",dx,dy,dz);
+	logtoall("derivative: %f,%f,%f\n",dx,dy,dz);
 	jo[thisone].grad[0] += dx/10000000;
 	jo[thisone].grad[1] += dy/10000000;
 	jo[thisone].grad[2] += dz/10000000;
@@ -158,7 +158,7 @@ static void stick_detach(struct halfrel* self, struct halfrel* peer)
 }
 static void stick_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@stick_attach: %.4s,%.4s\n", &self->foottype, &peer->foottype);
+	logtoall("@stick_attach: %.4s,%.4s\n", &self->foottype, &peer->foottype);
 	_obj* ent = self->pchip;
 	switch(self->foottype){
 		case 'a':ent->A_PEERFOOT = peer->foottype;break;
@@ -187,7 +187,7 @@ static void stick_create(_obj* ent, void* arg, int argc, u8** argv)
 	for(j=1;j<argc;j++){
 		if(0 == ncmp("l:", argv[j], 2))decstr2float(argv[j]+2, &L);
 	}
-	say("l=%f\n", L);
+	logtoall("l=%f\n", L);
 	ent->LVAL = L;
 }
 

@@ -11,11 +11,11 @@ int gcodeclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 {
 	switch(stack[sp-1].foottype){
 		case _src_:{
-			say("%.*s", len, buf);
+			logtoall("%.*s", len, buf);
 			break;
 		}
 		case _clk_:{
-			//say("@gcodeclient_write.clk\n");
+			//logtoall("@gcodeclient_write.clk\n");
 			give_data_into_peer(art,_src_, stack,sp, 0,0, "M105\n",5);
 			break;
 		}

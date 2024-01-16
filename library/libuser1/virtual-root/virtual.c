@@ -66,7 +66,7 @@ int virtual_bycam_byrgba_take(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,
 
 int virtual_bywnd_ongive(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	//say("@%s\n",__FUNCTION__);
+	//logtoall("@%s\n",__FUNCTION__);
 	struct event* ev = buf;
 	if('p' == (ev->what&0xff)){
 		_obj* wnd = stack[sp-2].pchip;
@@ -75,7 +75,7 @@ int virtual_bywnd_ongive(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 		short* t = (void*)&ev->why;
 		float x = t[0] * 1.0 / wnd->whdf.width;
 		float y = 1.0 - t[1] * 1.0 / wnd->whdf.height;
-		//say("testtest: %f,%f\n", x, y);
+		//logtoall("testtest: %f,%f\n", x, y);
 
 		struct relation* rel = ent->oreln;
 		struct style* sty = 0;
@@ -83,7 +83,7 @@ int virtual_bywnd_ongive(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 			if(0 == rel)break;
 			sty = (void*)(rel->srcfoot);
 			if(sty){
-				//say("testtest: (%f,%f),(%f,%f)\n", sty->fs.vc[0], sty->fs.vc[1], sty->fs.vq[0], sty->fs.vq[1]);
+				//logtoall("testtest: (%f,%f),(%f,%f)\n", sty->fs.vc[0], sty->fs.vc[1], sty->fs.vq[0], sty->fs.vq[1]);
 				if(virtual_inside_01(sty, x, y)){
 					stack[sp+0].pchip = rel->psrcchip;
 					stack[sp+0].pfoot = rel->psrcfoot;
@@ -111,7 +111,7 @@ int virtual_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, vo
 	_obj* caller_2 = stack[sp-4].pchip;
 	//if(caller_2)
 
-	//say("%.8s,%.8s\n", &caller_1->type, &caller_1->hfmt);
+	//logtoall("%.8s,%.8s\n", &caller_1->type, &caller_1->hfmt);
 	switch(caller_1->type){
 	case _camrts_:
 		caller_1 = stack[sp-4].pchip;
@@ -135,7 +135,7 @@ int virtual_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, vo
 }
 int virtual_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	//say("@virtual_write\n");
+	//logtoall("@virtual_write\n");
 	//give_data_into_peer(ent,_evto_, stack,sp, arg,key, buf,len);
 
 	struct perworld* per = (void*)ent->priv_256b;
@@ -143,7 +143,7 @@ int virtual_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, vo
 
 	_obj* caller = stack[sp-2].pchip;
 	if(0 == caller)return 0;
-	//say("caller:%.8s\n", &caller->type);
+	//logtoall("caller:%.8s\n", &caller->type);
 
 	//default 2d: from window
 	int ret = 0;
@@ -159,12 +159,12 @@ int virtual_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, vo
 }
 int virtual_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("virtual_detach\n");
+	logtoall("virtual_detach\n");
 	return 0;
 }
 int virtual_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@virtual_attach\n");
+	logtoall("@virtual_attach\n");
 	return 0;
 }
 
@@ -185,7 +185,7 @@ int virtual_delete(_obj* world)
 }
 int virtual_create(_obj* world, void* str)
 {
-	say("@virtual_create\n");
+	logtoall("@virtual_create\n");
 	struct perworld* per = (void*)world->priv_256b;
 	per->camtype = _01_;
 	return 0;

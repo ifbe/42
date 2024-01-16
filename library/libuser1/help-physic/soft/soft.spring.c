@@ -41,7 +41,7 @@ static int parsejoint(struct joint* jo, u8* buf)
 				jo[ioff].grad[0] = 0.0;
 				jo[ioff].grad[1] = 0.0;
 				jo[ioff].grad[2] = 0.0;
-				say("%d: %f,%f,%f\n", ioff, jo[ioff].here[0], jo[ioff].here[1], jo[ioff].here[2]);
+				logtoall("%d: %f,%f,%f\n", ioff, jo[ioff].here[0], jo[ioff].here[1], jo[ioff].here[2]);
 				ioff += 1;
 			}
 			if(buf[j] < 0xa)break;
@@ -76,7 +76,7 @@ static void force_decent_spring(_obj* ent, struct joint* jo, _syn* stack,int sp)
 		jo[j].here[0] -= jo[j].grad[0];
 		jo[j].here[1] -= jo[j].grad[1];
 		jo[j].here[2] -= jo[j].grad[2];
-		say("@force_decent_spring: %f,%f,%f\n",jo[j].here[0], jo[j].here[1], jo[j].here[2]);
+		logtoall("@force_decent_spring: %f,%f,%f\n",jo[j].here[0], jo[j].here[1], jo[j].here[2]);
 	}
 }
 static void force_decent_stick(_obj* ent, struct joint* jo, _syn* stack,int sp)
@@ -98,7 +98,7 @@ static void force_decent_stick(_obj* ent, struct joint* jo, _syn* stack,int sp)
 		jo[j].here[0] -= jo[j].grad[0];
 		jo[j].here[1] -= jo[j].grad[1];
 		jo[j].here[2] -= jo[j].grad[2];
-		say("force_decent_stick:%f,%f,%f\n",jo[j].here[0], jo[j].here[1], jo[j].here[2]);
+		logtoall("force_decent_stick:%f,%f,%f\n",jo[j].here[0], jo[j].here[1], jo[j].here[2]);
 	}
 }
 
@@ -160,7 +160,7 @@ void force_read_inner(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key)
 	int j;
 	for(j=0;j<16;j++){
 		if(0 == tab[j])break;
-		say("node: %llx\n", tab[j]);
+		logtoall("node: %llx\n", tab[j]);
 
 		stack[sp+0].pchip = ent;
 		stack[sp+0].foottype = 0;
@@ -208,7 +208,7 @@ int force_attach(struct halfrel* self, struct halfrel* peer)
 {
 	int j;
 	if(0 == self)return 0;
-	say("@force_attach: %.4s\n", &self->foottype);
+	logtoall("@force_attach: %.4s\n", &self->foottype);
 
 	j = self->foottype;
 	if('a' > j)return 0;
@@ -246,7 +246,7 @@ int force_create(_obj* scene, void* arg, int argc, u8** argv)
 {
 	int ret;
 	void* buf;
-	say("@force_create\n");
+	logtoall("@force_create\n");
 	if(0 == arg)return 0;
 
 	scene->listptr.buf0 = memoryalloc(0x10000, 0);

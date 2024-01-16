@@ -118,17 +118,17 @@ static void ooxx_draw_cli(
 {
 	u8 ch;
 	int x,y;
-	say("ooxx(%x,%x,%x)\n",win,act,sty);
+	logtoall("ooxx(%x,%x,%x)\n",win,act,sty);
 
 	for(y=0;y<3;y++)
 	{
 		for(x=0;x<3;x++)
 		{
 			ch = data[y][x];
-			if((ch!='o') && (ch!='x'))say("_	");
-			else say("%c	",ch);
+			if((ch!='o') && (ch!='x'))logtoall("_	");
+			else logtoall("%c	",ch);
 		}
-		say("\n");
+		logtoall("\n");
 	}
 }
 
@@ -158,7 +158,7 @@ void ooxx_event(
 
 		x = x*3/min;
 		y = y*3/min;
-say("%d,%d\n",x,y);
+logtoall("%d,%d\n",x,y);
 		if(0 != data[y][x])return;
 
 		if((turn&0x1) == 0x1)val='o';

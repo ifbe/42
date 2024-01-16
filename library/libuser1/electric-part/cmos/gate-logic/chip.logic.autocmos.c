@@ -173,7 +173,7 @@ static void autocmos_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,in
 }
 static void autocmos_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	//say("@autocmos_write:%x\n",buf[0]);
+	//logtoall("@autocmos_write:%x\n",buf[0]);
 }
 static void autocmos_detach(struct halfrel* self, struct halfrel* peer)
 {

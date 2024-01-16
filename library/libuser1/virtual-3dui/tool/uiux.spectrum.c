@@ -40,7 +40,7 @@ static void spectrum_draw_gl41(
 	for(y=0;y<slice;y++){
 		idx = (slice-1+now-y)%slice;
 		buf = priv->TABBUF[idx];
-		//say("%d:%d\n",y,idx);
+		//logtoall("%d:%d\n",y,idx);
 		if(0 == buf)break;
 
 		for(x=0;x<512;x++){
@@ -80,7 +80,7 @@ static void spectrum_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("spectrum(%x,%x,%x)\n",win,act,sty);
+	logtoall("spectrum(%x,%x,%x)\n",win,act,sty);
 }
 
 
@@ -89,7 +89,7 @@ static void spectrum_draw_cli(
 void spectrum_data(_obj* act, void* type, void* buf, int len)
 {
 	struct privdata* priv = (void*)act->priv_256b;
-	say("@spectrum_write.pcm: %d,%llx\n", len, buf);
+	logtoall("@spectrum_write.pcm: %d,%llx\n", len, buf);
 
 	priv->TABBUF[priv->TABLEN] = buf;
 	priv->TABLEN = (priv->TABLEN+1) % slice;
@@ -135,7 +135,7 @@ static void spectrum_detach(struct halfrel* self, struct halfrel* peer)
 }
 static void spectrum_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@spectrum_attach\n");
+	logtoall("@spectrum_attach\n");
 }
 
 

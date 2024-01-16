@@ -30,7 +30,7 @@ void asset_create()
 		//read
 		j = openreadclose("datafile/unicode.raw", 0, utf8data, 0x200000);
 		if(j < 0x200000){
-			say("error@unicode\n");
+			logtoall("error@unicode\n");
 			memoryfree(utf8data);
 			return;
 		}

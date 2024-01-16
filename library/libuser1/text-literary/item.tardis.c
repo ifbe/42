@@ -65,7 +65,7 @@ void tardis_pcm(_obj* ent,void* slot, _obj* sup,void* area)
 	int j;
 	struct pcmdata* pcm;
 	if(0 == ent->listptr.buf0)return;
-//say("@tardis_pcm\n");
+//logtoall("@tardis_pcm\n");
 	pcm = ent->listptr.buf0 + 44 - 0x10;
 	pcm->fmt = hex32('s','1','6',0);
 	pcm->chan = 1;

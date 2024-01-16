@@ -309,11 +309,11 @@ void mnist_draw_cli(_obj* win, struct style* sty)
 static void mnist_write_bywnd(_obj* ent, struct event* ev)
 {
 	struct privdata* priv = (void*)ent->priv_256b;
-//say("%x,%x\n",ev->what,ev->why);
+//logtoall("%x,%x\n",ev->what,ev->why);
 	if(_kbd_ == ev->what){
 		if(kbd_left == ev->why)priv->which_to_learn -= 1;
 		if(kbd_right == ev->why)priv->which_to_learn += 1;
-		say("%d\n", priv->which_to_learn);
+		logtoall("%d\n", priv->which_to_learn);
 	}
 	if(_char_ == ev->what){
 		if(0x20 == ev->why)priv->back_propagation ^= 1;

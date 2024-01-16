@@ -413,7 +413,7 @@ int tls1v3client_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 int tls1v3client_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	int j;
-	say("@tls1v3client_write:len=%x\n",len);
+	logtoall("@tls1v3client_write:len=%x\n",len);
 	printmemory(buf, len < 16 ? len : 16);
 
 	while(1){
@@ -424,19 +424,19 @@ int tls1v3client_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int 
 
 		switch(buf[0]){
 		case 0x16:{
-			say("server hello, len=%x\n",j);
+			logtoall("server hello, len=%x\n",j);
 			break;
 		}
 		case 0x14:{
-			say("change cipher spec, len=%x\n",j);
+			logtoall("change cipher spec, len=%x\n",j);
 			break;
 		}
 		case 0x17:{
-			say("application data, len=%x\n",j);
+			logtoall("application data, len=%x\n",j);
 			break;
 		}
 		default:{
-			say("unknown: typ=%x,len=%x\n", buf[0], j);
+			logtoall("unknown: typ=%x,len=%x\n", buf[0], j);
 			printmemory(buf, j+5);
 			break;
 		}
@@ -453,7 +453,7 @@ int tls1v3client_detach(struct halfrel* self, struct halfrel* peer)
 }
 int tls1v3client_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@tls1v3client_attach:%.4s\n",&self->foottype);
+	logtoall("@tls1v3client_attach:%.4s\n",&self->foottype);
 	if(_src_ == self->foottype){
 		_obj* art = self->pchip;
 		u8* buf = art->priv_ptr;
@@ -468,7 +468,7 @@ int tls1v3client_dartte(_obj* art)
 }
 int tls1v3client_create(_obj* art, u8* url)
 {
-	say("@tls1v3client_create\n");
+	logtoall("@tls1v3client_create\n");
 	art->priv_ptr = memoryalloc(0x100000, 0);
 	return 0;
 }
@@ -482,7 +482,7 @@ int tls1v3server_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 }
 int tls1v3server_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
-	say("@tls1v3server_write\n");
+	logtoall("@tls1v3server_write\n");
 	return 0;
 }
 int tls1v3server_detach(struct halfrel* self, struct halfrel* peer)
@@ -511,7 +511,7 @@ int tls1v3master_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 }
 int tls1v3master_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
-	say("@tls1v3master_write\n");
+	logtoall("@tls1v3master_write\n");
 	printmemory(buf,len);
 	return 0;
 }
@@ -521,7 +521,7 @@ int tls1v3master_detach(struct halfrel* self, struct halfrel* peer)
 }
 int tls1v3master_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@tls1v3master_attach\n");
+	logtoall("@tls1v3master_attach\n");
 	return 0;
 }
 int tls1v3master_dartte(_obj* art)
@@ -530,6 +530,6 @@ int tls1v3master_dartte(_obj* art)
 }
 int tls1v3master_create(_obj* art, u8* url)
 {
-	say("@tls1v3master_create\n");
+	logtoall("@tls1v3master_create\n");
 	return 0;
 }

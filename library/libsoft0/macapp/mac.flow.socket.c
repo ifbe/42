@@ -163,7 +163,7 @@ int socket_str2sockaddr(char* addr, union addrv4v6* out)
 		return 0;
 	}
 
-	say("resolvehostname4\n");
+	logtoall("resolvehostname4\n");
 	u32 tmp = resolvehostname4(addr);
 	if(tmp){
 		out->v4.sin_family = AF_INET;
@@ -171,10 +171,10 @@ int socket_str2sockaddr(char* addr, union addrv4v6* out)
 		return 0;
 	}
 
-	say("resolvehostname6\n");
+	logtoall("resolvehostname6\n");
 	tmp = resolvehostname6(addr, out);
 	if(tmp){
-		say("66666666\n");
+		logtoall("66666666\n");
 		return 0;
 	}
 
@@ -195,21 +195,21 @@ int waitconnectwithselect(int sock)
 
 	ret = select(sock+1, NULL, &fds, NULL, &time);
 	if(ret < 0){
-		say("error@select\n");
+		logtoall("error@select\n");
 		return 0;
 	}
 	if(ret == 0){
-		say("timeout@select\n");
+		logtoall("timeout@select\n");
 		return 0;
 	}
 
 	socklen_t retlen = sizeof(ret);
 	if(getsockopt(sock, SOL_SOCKET, SO_ERROR, &ret, &retlen) < 0){
-		say("errno=%d@getsockopt\n",errno);
+		logtoall("errno=%d@getsockopt\n",errno);
 		return 0;
 	}
 	if(ret != 0){
-		say("errno=%d@waitconnect\n",ret);
+		logtoall("errno=%d@waitconnect\n",ret);
 		return 0;
 	}
 	return 1;
@@ -225,7 +225,7 @@ _obj* createsocket_bt(char* addr, int port)
 _obj* createsocket_raw(char* addr, int port)
 {
 	int fd,ret;
-	say("macos doesnot support rawsocket!\n");
+	logtoall("macos doesnot support rawsocket!\n");
 
 	//create
 	fd = socket(AF_INET, SOCK_RAW, 0);
@@ -236,7 +236,7 @@ _obj* createsocket_raw(char* addr, int port)
 
 	//mem
 	_obj* oo = getobjbysock(fd);
-	say("fd=%x,oo=%p\n", fd, oo);
+	logtoall("fd=%x,oo=%p\n", fd, oo);
 	oo->sockinfo.fd = fd;
 
 	kqueue_add(fd);
@@ -268,7 +268,7 @@ _obj* createsocket_udpserver(union addrv4v6* my)
 
 	//mem
 	_obj* oo = getobjbysock(fd);
-	say("fd=%x,oo=%p\n", fd, oo);
+	logtoall("fd=%x,oo=%p\n", fd, oo);
 	oo->sockinfo.fd = fd;
 
 	//reuse
@@ -321,7 +321,7 @@ _obj* createsocket_udpclient(union addrv4v6* my, union addrv4v6* to)
 
 	//mem
 	_obj* oo = getobjbysock(fd);
-	say("fd=%x,oo=%p\n", fd, oo);
+	logtoall("fd=%x,oo=%p\n", fd, oo);
 	oo->sockinfo.fd = fd;
 
 	//reuse
@@ -389,7 +389,7 @@ _obj* createsocket_tcpserver(union addrv4v6* my)
 
 	//mem
 	_obj* oo = getobjbysock(fd);
-	say("fd=%x,oo=%p\n", fd, oo);
+	logtoall("fd=%x,oo=%p\n", fd, oo);
 	oo->sockinfo.fd = fd;
 
 	//reuse
@@ -448,7 +448,7 @@ _obj* createsocket_tcpclient(union addrv4v6* my, union addrv4v6* to)
 
 	//mem
 	_obj* oo = getobjbysock(fd);
-	say("fd=%x,oo=%p\n", fd, oo);
+	logtoall("fd=%x,oo=%p\n", fd, oo);
 	oo->sockinfo.fd = fd;
 
 	//reuse
@@ -591,12 +591,12 @@ int socket_delete(_obj* oo)
 }
 int socket_writer(_obj* oo,int xx, p64 arg,int cmd, void* buf, int len)
 {
-//say("@writesocket:%x,%llx,%llx,%x\n",fd,tmp,buf,len);
+//logtoall("@writesocket:%x,%llx,%llx,%x\n",fd,tmp,buf,len);
 	if(buf == 0)return 0;
 
 	int fd = oo->sockinfo.fd;
 	if(fd < 0)return 0;
-//say("oo=%p,fd=%d\n", oo, fd);
+//logtoall("oo=%p,fd=%d\n", oo, fd);
 
 	int ret, cnt=0;
 	u64 type = oo->type;
@@ -637,7 +637,7 @@ int socket_writer(_obj* oo,int xx, p64 arg,int cmd, void* buf, int len)
 	while(1){
 		ret = write(fd, buf+cnt, len-cnt);
 		if(ret < 0){
-			say("@writesocket: ret=%d,errno=%d\n", ret, errno);
+			logtoall("@writesocket: ret=%d,errno=%d\n", ret, errno);
 			if(EAGAIN != errno)return -1;
 
 			usleep(1000);
@@ -646,7 +646,7 @@ int socket_writer(_obj* oo,int xx, p64 arg,int cmd, void* buf, int len)
 
 		cnt += ret;
 		if(cnt == len)break;
-		say("@writesocket: %x/%x\n", cnt, len);
+		logtoall("@writesocket: %x/%x\n", cnt, len);
 	}
 	return ret;
 }
@@ -718,13 +718,13 @@ int socket_modify(_obj* oo,int xx, p64 arg,int cmd, u8* addr,int port)
 	if(_connect_ == cmd){
 		u8* p = oo->sockinfo.self;
 		u8* q = addr;
-		say("reuse this for connect: %d.%d.%d.%d:%d -> %d.%d.%d.%d:%d\n",
+		logtoall("reuse this for connect: %d.%d.%d.%d:%d -> %d.%d.%d.%d:%d\n",
 			p[4],p[5],p[6],p[7], (p[2]<<8)+p[3],
 			q[0],p[1],q[2],q[3], port
 		);
 	}
 	if(_listen_ == cmd){
-		say("reuse this for listen\n");
+		logtoall("reuse this for listen\n");
 	}
 	return 0;
 }

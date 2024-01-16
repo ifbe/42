@@ -13,7 +13,7 @@ static u8 pin_mode_value[2][3] = {
 
 static void onrecvkey(_obj* obj, u8* buf, int len)
 {
-	say("buf[0]=%x\n", buf[0]);
+	logtoall("buf[0]=%x\n", buf[0]);
 	u8 pin_value[1][2];
 	switch(buf[0]){
 	case '0':
@@ -30,20 +30,20 @@ static void onrecvkey(_obj* obj, u8* buf, int len)
 
 	pin_value[0][0] = 23;
 	reading_data_from_peer(obj, _chip_, 0,_pin_value_, pin_value, 1);
-	say("volt(%d)=%d\n", pin_value[0][0], pin_value[0][1]);
+	logtoall("volt(%d)=%d\n", pin_value[0][0], pin_value[0][1]);
 }
 
 
 int gpiotest_take(_obj* obj,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
-	say("@gpiotest_take\n");
+	logtoall("@gpiotest_take\n");
 
 	return 0;
 }
 int gpiotest_give(_obj* obj,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
 	u32 foottype = stack[sp-1].foottype;
-	//say("@gpiotest_give:%.4s\n", foottype);
+	//logtoall("@gpiotest_give:%.4s\n", foottype);
 
 	switch(foottype){
 	case _chip_:
@@ -93,7 +93,7 @@ int gpiotest_write(_obj* obj,void* foot,p64 arg, int idx, u8* buf, int len)
 }
 int gpiotest_create(_obj* obj, void* arg, int argc, u8** argv)
 {
-	say("@gpiotest_create\n");
+	logtoall("@gpiotest_create\n");
 	return 1;
 }
 int gpiotest_delete(_obj* ele)

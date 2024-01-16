@@ -6,7 +6,7 @@
 float threecross(vec3 a, vec3 b, vec3 p)
 {
     float t = (b[0]-a[0])*(p[1]-a[1]) - (p[0]-a[0])*(b[1]-a[1]);
-//say("t=%f\n",t);
+//logtoall("t=%f\n",t);
     return t;
 }
 int rect_point(vec3 crf[], vec3 xyz, vec3 out[])
@@ -23,7 +23,7 @@ int rect_point(vec3 crf[], vec3 xyz, vec3 out[])
     c[1] = crf[0][1] + crf[1][1] + crf[2][1];
     d[0] = crf[0][0] - crf[1][0] + crf[2][0];
     d[1] = crf[0][1] - crf[1][1] + crf[2][1];
-//say("dbg\n");
+//logtoall("dbg\n");
     //(AB X AE) * (CD X CE) < 0: wrong
     if(threecross(a,b,xyz)*threecross(c,d,xyz) < 0)return 0;
 

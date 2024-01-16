@@ -1,5 +1,5 @@
 #include "libhard.h"
-#define usbperi_print(fmt, ...) say("%08lld usbperi@%p "fmt, timeread_us(), usb, ##__VA_ARGS__)
+#define usbperi_print(fmt, ...) logtoall("%08lld usbperi@%p "fmt, timeread_us(), usb, ##__VA_ARGS__)
 
 
 

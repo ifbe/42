@@ -17,7 +17,7 @@ static void joystick_sendevent(struct halfrel* stack,int sp, struct xyzwpair* pa
 	u8 buf[4];
 	struct event ev;
 	_obj* joy;
-	//say("@joystick_sendevent:%d\n", j);
+	//logtoall("@joystick_sendevent:%d\n", j);
 	//printmemory(matchtable, 32);
 
 	ev.where = 0;
@@ -27,7 +27,7 @@ static void joystick_sendevent(struct halfrel* stack,int sp, struct xyzwpair* pa
 	if(0 == joy)return;
 
 	if((0 == joy->orel0) && (0 == joy->irel0)){
-		say("id=%d,obj=%p\n", j, joy);
+		logtoall("id=%d,obj=%p\n", j, joy);
 		ev.why = *(u64*)(&pair->x0);
 		ev.what = joy_left;
 		printmemory(&ev, 16);
@@ -248,12 +248,12 @@ static void thread_joystick(_obj* joy)
 			f = glfwGetJoystickAxes(GLFW_JOYSTICK_1 + j, &c1);
 			if(0 == f)continue;
 			if(0 == c1)continue;
-			//for(k=0;k<c1;k++)say("a%d:%f\n", k, f[k]);
+			//for(k=0;k<c1;k++)logtoall("a%d:%f\n", k, f[k]);
 
 			u = glfwGetJoystickButtons(GLFW_JOYSTICK_1 + j, &c2);
 			if(0 == u)continue;
 			if(0 == c2)continue;
-			//for(k=0;k<c2;k++)say("b%d:%x\n", k, u[k]);
+			//for(k=0;k<c2;k++)logtoall("b%d:%x\n", k, u[k]);
 
 			if(0){
 				joystick_8bitdo(&pair, f, u);
@@ -275,7 +275,7 @@ static void thread_joystick(_obj* joy)
 }
 static void callback_joystick(int id, int ev)
 {
-	say("joystick: %d,%d\n", id, ev);
+	logtoall("joystick: %d,%d\n", id, ev);
 }
 
 

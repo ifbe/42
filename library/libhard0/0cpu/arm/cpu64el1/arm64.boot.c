@@ -212,8 +212,8 @@ int percpu_schedule(struct savereg* regs)
 	int coreid = percpu_coreid();
 
 	struct percpu* per = &cpubuf[coreid];
-	//say("coreid=%x, percpu@%p\n", coreid, per);
-	//say("x0=%llx,x1=%llx,x2=%llx,x3=%llx, x29=%llx,x30=%llx\n",regs->x0,regs->x1,regs->x2,regs->x3, regs->x29,regs->x30);
+	//logtoall("coreid=%x, percpu@%p\n", coreid, per);
+	//logtoall("x0=%llx,x1=%llx,x2=%llx,x3=%llx, x29=%llx,x30=%llx\n",regs->x0,regs->x1,regs->x2,regs->x3, regs->x29,regs->x30);
 
 	//check thread
 	int tcurr;
@@ -241,7 +241,7 @@ int percpu_schedule(struct savereg* regs)
 		per->pid = pnext;
 	}
 
-	//say("tcurr=%d,tnext=%d\n",tcurr,tnext);
+	//logtoall("tcurr=%d,tnext=%d\n",tcurr,tnext);
 	//return 0;
 
 	//switch thread
@@ -260,13 +260,13 @@ void initcpu_bsp()
 
 //----------------coreid----------------
 	int coreid = percpu_coreid();
-	say("@initcpu_bsp=%x\n", coreid);
+	logtoall("@initcpu_bsp=%x\n", coreid);
 
 //----------------el----------------
-	say("old CurrentEL=%x\n", percpu_currentel());
+	logtoall("old CurrentEL=%x\n", percpu_currentel());
 	if_el3_go_el2();
 	if_el2_go_el1();
-	say("new CurrentEL=%x\n", percpu_currentel());
+	logtoall("new CurrentEL=%x\n", percpu_currentel());
 
 //----------------exception----------------
 	initexception(vectors);
@@ -303,7 +303,7 @@ void initcpu_bsp()
 		percpu_enableint();
 	}
 
-	say("@initcpu_bsp.end\n\n");
+	logtoall("@initcpu_bsp.end\n\n");
 }
 void initcpu_other()
 {
@@ -311,13 +311,13 @@ void initcpu_other()
 
 //----------------coreid----------------
 	int coreid = percpu_coreid();
-	say("@initcpu_other=%x\n",coreid);
+	logtoall("@initcpu_other=%x\n",coreid);
 
 //----------------el----------------
-	say("old CurrentEL=%x\n", percpu_currentel());
+	logtoall("old CurrentEL=%x\n", percpu_currentel());
 	if_el3_go_el2();
 	if_el2_go_el1();
-	say("new CurrentEL=%x\n", percpu_currentel());
+	logtoall("new CurrentEL=%x\n", percpu_currentel());
 
 //----------------exception----------------
 	initexception(vectors);
@@ -350,7 +350,7 @@ void initcpu_other()
 		percpu_enableint();
 	}
 
-	say("@initcpu_other.end\n\n");
+	logtoall("@initcpu_other.end\n\n");
 
 	volatile u64* ptr = (void*)0xd8;
 	ptr[1] = 0;
@@ -363,12 +363,12 @@ void initcpu_other()
 
 void initcpu_ap()
 {
-	//say("@initcpu_ap\n");
+	//logtoall("@initcpu_ap\n");
 	volatile u64* ptr = (void*)0xd8;
 
 	//check
 	if(ptr[1]){
-		say("error@multicore: [%p] = %llx\n", &ptr[1], ptr[1]);
+		logtoall("error@multicore: [%p] = %llx\n", &ptr[1], ptr[1]);
 		return;
 	}
 
@@ -388,5 +388,5 @@ void initcpu_ap()
 		wait_msec(1);
 	}
 
-	//say("@initcpu_ap.end\n\n");
+	//logtoall("@initcpu_ap.end\n\n");
 }

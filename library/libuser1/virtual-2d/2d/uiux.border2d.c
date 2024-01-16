@@ -11,7 +11,7 @@ void border2d_draw_gl41(_obj* scene, _obj* wnd)
 	struct fstyle* sty;
 	vec3 tc,tr,tf;
 	int j;
-	//say("@border2d_read: %.8s.%.8s\n", &wnd->hfmt, &scene->hfmt);
+	//logtoall("@border2d_read: %.8s.%.8s\n", &wnd->hfmt, &scene->hfmt);
 
 	rel = scene->orel0;
 	while(1){
@@ -19,7 +19,7 @@ void border2d_draw_gl41(_obj* scene, _obj* wnd)
 		ent = rel->pdstchip;
 		sty = rel->psrcfoot;
 		if(sty){
-			//say("%llx,%llx\n",ent,sty);
+			//logtoall("%llx,%llx\n",ent,sty);
 			for(j=0;j<3;j++){
 				tr[j] = sty->vr[j];
 				tf[j] = sty->vf[j];
@@ -90,7 +90,7 @@ int border2d_detach(struct halfrel* self, struct halfrel* peer)
 }
 int border2d_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@border2d_attach\n");
+	logtoall("@border2d_attach\n");
 	return 0;
 }
 
@@ -111,6 +111,6 @@ int border2d_delete(_obj* scene)
 }
 int border2d_create(_obj* scene, void* str)
 {
-	say("@border2d_create\n");
+	logtoall("@border2d_create\n");
 	return 0;
 }

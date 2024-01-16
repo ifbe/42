@@ -1,4 +1,4 @@
-void say(void*, ...);
+void logtoall(void*, ...);
 
 
 
@@ -38,7 +38,7 @@ void xiangqi_generate(char (*data)[9])
 void xiangqi_move(char (*data)[9], int* turn, int px, int py, int x, int y)
 {
 	int min, max, t, u;
-	say("(%d,%d) -> (%d,%d)\n", px, py, x, y);
+	logtoall("(%d,%d) -> (%d,%d)\n", px, py, x, y);
 
 	//chess going
 	if(data[py][px] == 'S')		//兵

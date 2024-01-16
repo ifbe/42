@@ -64,7 +64,7 @@ void imuupdate(struct perimu* per,
 	//vx = arctanyx(2*(qw*qx+qy*qz),1-2*(qx*qx+qy*qy))*180/3.141592653;
 	//vy = arcsin(2*qw*qy - 2*qx*qz)*180/3.141592653;
 	//vz = arctanyx(2*(qw*qz+qx*qy),1-2*(qy*qy+qz*qz))*180/3.141592653;
-	//say("euler:	%f	%f	%f\n", vx, vy, vz);
+	//logtoall("euler:	%f	%f	%f\n", vx, vy, vz);
 }
 
 
@@ -73,37 +73,37 @@ void imuupdate(struct perimu* per,
 int easyag_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	float f[10];
-	say("@easyag_read\n");
+	logtoall("@easyag_read\n");
 
 	take_data_from_peer(art,_src_, stack,sp, 0,0, f,10);
 	return 0;
 }
 int easyag_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	//say("@easyag_write: stack=%p, foot=%.4s, len=0x%x\n", stack, &foot, len);
+	//logtoall("@easyag_write: stack=%p, foot=%.4s, len=0x%x\n", stack, &foot, len);
 	if((6 != len) && (9 != len)){
-		say("err@easyag_write:len=%d\n",len);
+		logtoall("err@easyag_write:len=%d\n",len);
 		return 0;
 	}
 
 	float* f = (void*)buf;
-	//say("	ii: %f,%f,%f,%f,%f,%f\n",f[0],f[1],f[2], f[3],f[4],f[5]);
+	//logtoall("	ii: %f,%f,%f,%f,%f,%f\n",f[0],f[1],f[2], f[3],f[4],f[5]);
 
 	struct perimu* per = (void*)art->priv_256b;
 	imuupdate(per, f[0],f[1],f[2], f[3],f[4],f[5]);
-	//say("	oo: %f,%f,%f,%f\n",qx,qy,qz,qw);
+	//logtoall("	oo: %f,%f,%f,%f\n",qx,qy,qz,qw);
 
 	give_data_into_peer(art,_dst_, stack,sp, 0,0, per->q,4);
 	return 0;
 }
 int easyag_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@easyag_detach\n");
+	logtoall("@easyag_detach\n");
 	return 0;
 }
 int easyag_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@easyag_attach\n");
+	logtoall("@easyag_attach\n");
 	return 0;
 }
 

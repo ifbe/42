@@ -111,7 +111,7 @@ int bt_hciCommand(void* uart0, u16 opcode, volatile unsigned char *data, unsigne
 
 		unsigned char err = mmio_waitReadByte(uart0);
 		if (err != 0) {
-			say("Saw HCI COMMAND STATUS error:%x\n", err);
+			logtoall("Saw HCI COMMAND STATUS error:%x\n", err);
 			return 12;
 		}
 
@@ -133,7 +133,7 @@ int bt_hciCommand(void* uart0, u16 opcode, volatile unsigned char *data, unsigne
 void bt_reset(void* uart0) {
 	volatile unsigned char empty[] = {};
 	int ret = bt_hciCommand(uart0, bt_opcode(OGF_HOST_CONTROL, COMMAND_RESET_CHIP), empty, 0);
-	if(ret)say("bt_reset() failed=%d\n", ret);
+	if(ret)logtoall("bt_reset() failed=%d\n", ret);
 }
 /*
 void bt_loadfirmware(void* uart0)
@@ -343,7 +343,7 @@ void connect(void* uart0, unsigned char *addr)
 
 void initrpibt()
 {
-	say("@initrpibt\n");
+	logtoall("@initrpibt\n");
 
 	//bt -> GPIO30-33 -> uart0
 	pinmgr_setfunc(30, 7);
@@ -351,19 +351,19 @@ void initrpibt()
 	pinmgr_setfunc(32, 7);
 	pinmgr_setfunc(33, 7);
 
-	say(">>setup uart0\n");
+	logtoall(">>setup uart0\n");
 	void* mmio = mmiobase();
 	void* uart0 = mmio + ARM_UART0_BASE;
 	uart0_init(uart0);
 
-	say(">>reset bt\n");
+	logtoall(">>reset bt\n");
 	bt_reset(uart0);
 /*
-	say(">> firmware load: ");
+	logtoall(">> firmware load: ");
 	bt_loadfirmware();
-	say(">> set baud: ");
+	logtoall(">> set baud: ");
 	bt_setbaud();
-	say(">> set bdaddr: ");
+	logtoall(">> set bdaddr: ");
 	bt_setbdaddr();
 
 	// Print the BD_ADDR
@@ -371,5 +371,5 @@ void initrpibt()
 	bt_getbdaddr(local_addr);
 	printmemory(local_addr, 6);
 */
-	say("\n");
+	logtoall("\n");
 }

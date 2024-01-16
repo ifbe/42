@@ -3,7 +3,7 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 void* pollenv();
-void say(char*, ...);
+void logtoall(char*, ...);
 
 
 
@@ -37,7 +37,7 @@ void eventwrite(u64 why, u64 what, u64 where, u64 when)
 	{
 		//full
 		__sync_lock_release(&lock);
-		say("droping event: %llx,%llx,%llx,%llx\n", why, what, where, when);
+		logtoall("droping event: %llx,%llx,%llx,%llx\n", why, what, where, when);
 		return;
 	}
 
@@ -52,7 +52,7 @@ void eventwrite(u64 why, u64 what, u64 where, u64 when)
 	__sync_lock_release(&lock);
 
 	//debug
-	//say("%llx,%llx,%llx,%llx\n", p[0], p[1], p[2], p[3]);
+	//logtoall("%llx,%llx,%llx,%llx\n", p[0], p[1], p[2], p[3]);
 }
 void* eventread()
 {

@@ -18,27 +18,27 @@ int subcmd_create(struct item* wrk, void* arg, int argc, u8** argv)
 		if(mpoller)poller(mpoller);
 	}
 	else if(0 == ncmp(argv[1], "help", 4)){
-		say("./a.out myml xxxx.myml\n");
-		say("./a.out mython xxxx.my\n");
-		say("./a.out ...\n");
+		logtoall("./a.out myml xxxx.myml\n");
+		logtoall("./a.out mython xxxx.my\n");
+		logtoall("./a.out ...\n");
 	}
 	else if(0 == ncmp(argv[1], "myml", 4)){
-		say("mode=myml\n");
+		logtoall("mode=myml\n");
 		thr = bootup_create(_myml_, 0, argc-1, &argv[1]);
 		bootup_delete(thr);
 	}
 	else if(0 == ncmp(argv[1], "mython", 6)){
-		say("mode=mython\n");
+		logtoall("mode=mython\n");
 		thr = bootup_create(_mython_, 0, argc-1, &argv[1]);
 		bootup_delete(thr);
 	}
 	else if(0 == ncmp(argv[1], "term", 4)){
-		say("mode=term\n");
+		logtoall("mode=term\n");
 		thr = bootup_create(_term_, 0, argc-1, &argv[1]);
 		bootup_delete(thr);
 	}
 	else if(0 == ncmp(argv[1], "guiapp", 6)){
-		say("mode=guiapp\n");
+		logtoall("mode=guiapp\n");
 		thr = bootup_create(_guiapp_, 0, argc-1, &argv[1]);
 		bootup_delete(thr);
 	}
@@ -50,11 +50,11 @@ int subcmd_create(struct item* wrk, void* arg, int argc, u8** argv)
 			if('.' == argv[1][j])ptr = argv[1]+j;
 		}
 		if(0 == ptr){
-			say("type=unknown\n");
+			logtoall("type=unknown\n");
 			return 0;
 		}
 
-		say("type=%.8s\n", ptr);
+		logtoall("type=%.8s\n", ptr);
 		if(0 == ncmp(ptr, ".myml", 5)){
 			thr = bootup_create(_myml_, 0, argc, &argv[0]);
 			bootup_delete(thr);

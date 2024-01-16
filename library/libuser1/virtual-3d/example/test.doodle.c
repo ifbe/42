@@ -141,7 +141,7 @@ static void doodle_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("doodle(%x,%x,%x)\n", act, pin, win, sty);
+	logtoall("doodle(%x,%x,%x)\n", act, pin, win, sty);
 }
 static void doodle_event(
 	_obj* act, struct style* pin,

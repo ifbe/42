@@ -74,7 +74,7 @@ static void picture_draw_gl41(
 	if(0 == act->CTXBUF)return;
 /*
 	act->whdf.fx0 = ((timeread_us()%5000000)/5000000.0)*tau;
-	//say("%f\n",act->whdf.fx0);
+	//logtoall("%f\n",act->whdf.fx0);
 */
 	struct mysrc* src = act->CTXBUF;
 	if(0 == src)return;
@@ -154,7 +154,7 @@ static void picture_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("picture(%x,%x,%x)\n",win,act,sty);
+	logtoall("picture(%x,%x,%x)\n",win,act,sty);
 }
 
 
@@ -172,7 +172,7 @@ static void picture_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int
 }
 static void picture_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	say("@picture_write\n");
+	logtoall("@picture_write\n");
 	give_data_into_peer(ent,_evto_, stack,sp, 0,0, "calibrate\n", 10);
 }
 static void picture_detach(struct halfrel* self, struct halfrel* peer)

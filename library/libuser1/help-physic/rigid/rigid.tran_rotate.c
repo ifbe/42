@@ -23,7 +23,7 @@ void gravtest_resistance(struct style* geom)
 }
 void gravtest_testforce(struct style* geom)
 {
-	//say("@gravtest_addforce\n");
+	//logtoall("@gravtest_addforce\n");
 	geom->fm.angular_a[0] = 0.0;
 	geom->fm.angular_a[1] = 0.0;
 	geom->fm.angular_a[2] = 1.0;
@@ -94,7 +94,7 @@ void gravtest_realforce(struct style* geom)
 		geom->fs.vr[3]*2.0,
 		geom->fs.vf[3]*2.0,
 		geom->fs.vt[3]*2.0);
-/*	say("localinertia:\n%f,%f,%f\n%f,%f,%f\n%f,%f,%f\n",
+/*	logtoall("localinertia:\n%f,%f,%f\n%f,%f,%f\n%f,%f,%f\n",
 		localinertia[0][0],localinertia[0][1],localinertia[0][2],
 		localinertia[1][0],localinertia[1][1],localinertia[1][2],
 		localinertia[2][0],localinertia[2][1],localinertia[2][2]
@@ -102,7 +102,7 @@ void gravtest_realforce(struct style* geom)
 
 	mat3 worldinertia;
 	inertiatensor_local2world(worldinertia, localinertia, &geom->fshape, mass);
-/*	say("worldinertia:\n%f,%f,%f\n%f,%f,%f\n%f,%f,%f\n",
+/*	logtoall("worldinertia:\n%f,%f,%f\n%f,%f,%f\n%f,%f,%f\n",
 		worldinertia[0][0],worldinertia[0][1],worldinertia[0][2],
 		worldinertia[1][0],worldinertia[1][1],worldinertia[1][2],
 		worldinertia[2][0],worldinertia[2][1],worldinertia[2][2]
@@ -110,7 +110,7 @@ void gravtest_realforce(struct style* geom)
 
 	mat3 worldinverse;
 	mat3_inverse(worldinverse, worldinertia);
-/*	say("worldinverse:\n%f,%f,%f\n%f,%f,%f\n%f,%f,%f\n",
+/*	logtoall("worldinverse:\n%f,%f,%f\n%f,%f,%f\n%f,%f,%f\n",
 		worldinverse[0][0],worldinverse[0][1],worldinverse[0][2],
 		worldinverse[1][0],worldinverse[1][1],worldinverse[1][2],
 		worldinverse[2][0],worldinverse[2][1],worldinverse[2][2]
@@ -141,7 +141,7 @@ int gravtest_effect(struct style* geom, float dt)
 	float* q = geom->fm.angular_x;
 
 
-//say("omega_old=%f,%f,%f,%f\n",final->angular_v[0],final->angular_v[1],final->angular_v[2],final->angular_v[3]);
+//logtoall("omega_old=%f,%f,%f,%f\n",final->angular_v[0],final->angular_v[1],final->angular_v[2],final->angular_v[3]);
 	//omega_now
 	v[0] = final->angular_v[0] * final->angular_v[3];
 	v[1] = final->angular_v[1] * final->angular_v[3];
@@ -178,12 +178,12 @@ int gravtest_effect(struct style* geom, float dt)
 		qr[1] = geom->fm.angular_x[1];
 		qr[2] = geom->fm.angular_x[2];
 		qr[3] = geom->fm.angular_x[3];
-		//say("ql=%f,%f,%f,%f\n",ql[0],ql[1],ql[2],ql[3]);
-		//say("qr=%f,%f,%f,%f\n",qr[0],qr[1],qr[2],qr[3]);
+		//logtoall("ql=%f,%f,%f,%f\n",ql[0],ql[1],ql[2],ql[3]);
+		//logtoall("qr=%f,%f,%f,%f\n",qr[0],qr[1],qr[2],qr[3]);
 		quaternion_multiplyfrom(q, ql, qr);
-		//say("q?=%f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
+		//logtoall("q?=%f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
 		quaternion_normalize(q);
-		//say("q!=%f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
+		//logtoall("q!=%f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
 
 		//writeback attitude
 		a = geom->fshape.vr[3];
@@ -201,7 +201,7 @@ int gravtest_effect(struct style* geom, float dt)
 		geom->fshape.vt[1] = a * (2.0 * (q[1]*q[2] - q[0]*q[3]));
 		geom->fshape.vt[2] = a * (1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0);
 	}
-//say("omega_new=%f,%f,%f,%f\n",final->angular_v[0],final->angular_v[1],final->angular_v[2],final->angular_v[3]);
+//logtoall("omega_new=%f,%f,%f,%f\n",final->angular_v[0],final->angular_v[1],final->angular_v[2],final->angular_v[3]);
 
 
 	//displacement
@@ -218,7 +218,7 @@ int gravtest_effect(struct style* geom, float dt)
 		final->displace_x[2] = 0.00001;
 		final->displace_v[2] = -0.5 * final->displace_v[2];
 	}
-	//say("%f,%f\n", final->displace_v[2], final->displace_x[2]);
+	//logtoall("%f,%f\n", final->displace_v[2], final->displace_x[2]);
 
 	//writeback position
 	geom->fs.vc[0] = final->displace_x[0];
@@ -241,9 +241,9 @@ int gravtest_foreach(_obj* ent)
 	if((_virtual_ != world->hfmt)&&(_scene3d_ != world->hfmt))return 0;
 
 	now = timeread_us();
-	//say("%llx\n", now);
+	//logtoall("%llx\n", now);
 	dt = (float)((now - ent->TIME)%1000000)/1000000.0;
-	//say("dt=%f\n",dt);
+	//logtoall("dt=%f\n",dt);
 	if(ent->FLAG < 42)ent->FLAG += 1;
 
 	rel = world->orel0;
@@ -273,12 +273,12 @@ int gravtest_foreach(_obj* ent)
 
 int gravtest_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	//say("@gravtest_read:%.4s\n",&foot);
+	//logtoall("@gravtest_read:%.4s\n",&foot);
 	return 0;
 }
 int gravtest_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
-	//say("@gravtest_write:%.4s\n",&foot);
+	//logtoall("@gravtest_write:%.4s\n",&foot);
 	switch(stack[sp-1].foottype){
 	case _clk_:
 		gravtest_foreach(ent);
@@ -319,7 +319,7 @@ int gravtest_delete(_obj* ent)
 }
 int gravtest_create(_obj* ent, void* str)
 {
-	say("@gravtest_create\n");
+	logtoall("@gravtest_create\n");
 	ent->FLAG = 0;
 	ent->TEST = 0;
 	return 0;

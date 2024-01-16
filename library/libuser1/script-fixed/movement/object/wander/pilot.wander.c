@@ -49,7 +49,7 @@ void wander_doit(struct privdata* own, struct fstyle* this)
 		dist = squareroot(dx*dx + dy*dy + dz*dz);
 	}
 
-	say("at(%f,%f,%f), to(%f,%f,%f)\n",
+	logtoall("at(%f,%f,%f), to(%f,%f,%f)\n",
 		this->vc[0], this->vc[1], this->vc[2],
 		own->x, own->y, own->z
 	);
@@ -80,7 +80,7 @@ int wander_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, voi
 }
 int wander_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
-	say("@wander_write:%.4s\n",&foot);
+	logtoall("@wander_write:%.4s\n",&foot);
 	if(_clk_ == stack[sp-1].foottype){
 		struct privdata* own = ent->priv_ptr;
 		if(0 == own->self)return 0;
@@ -101,14 +101,14 @@ int wander_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, voi
 }
 int wander_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@wander_detach\n");
+	logtoall("@wander_detach\n");
 	return 0;
 }
 int wander_attach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ent = self->pchip;
 	struct privdata* own = ent->priv_ptr;
-	say("@wander_attach: %.4s\n", &self->foottype);
+	logtoall("@wander_attach: %.4s\n", &self->foottype);
 
 	switch(self->foottype){
 	case _self_:own->self = peer->pchip;break;

@@ -188,7 +188,7 @@ void dx11data_after(_obj* ctx)
 void dx11data_insert(_obj* ctx, int type, struct dx11data* src, int cnt)
 {
 	int j;
-	//say("@dx11data_insert:%llx,%x,%llx,%x\n", ctx,type,src,cnt);
+	//logtoall("@dx11data_insert:%llx,%x,%llx,%x\n", ctx,type,src,cnt);
 
 	if('s' == type){
 		for(j=solidaid_max;j<64;j++){

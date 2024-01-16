@@ -136,7 +136,7 @@ void drawline_rect(_obj* win, u32 rgb,
 	else{startx=x2;endx=x1;}
 	if(y1<y2){starty=y1;endy=y2;}
 	else{starty=y2;endy=y1;}
-	//say("(%x,%x),(%x,%x)\n",startx,starty,endx,endy);
+	//logtoall("(%x,%x),(%x,%x)\n",startx,starty,endx,endy);
 
 	rgb |= 0xff000000;
 	for(n=0;n<2;n++)

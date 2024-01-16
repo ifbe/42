@@ -65,7 +65,7 @@ static u32 obj3d_fragment(vec4 out[], vec4 in[], struct privdata* own)
 	//float* v = in[0];		//in vec3 v
 	//float* n = in[1];		//in vec3 n
 	float* t = in[2];		//in vec3 t
-	//say("%f,%f,%f\n",t[0],t[1],t[2]);
+	//logtoall("%f,%f,%f\n",t[0],t[1],t[2]);
 /*
 	float w = 1.0;
 	u32 b = (u32)(256*(t[0]*w));
@@ -104,7 +104,7 @@ static void obj3d_gl41_prep(struct privdata* own, char* albedo, char* matter, ch
 	struct gl41data* data = &own->gl41;
 	struct mysrc* src = &data->src;
 	struct gldst* dst = &data->dst;
-//say("%s\n%s\n%s\n%s\n%s\n",albedo,matter,normal,vs,fs);
+//logtoall("%s\n%s\n%s\n%s\n%s\n",albedo,matter,normal,vs,fs);
 
 	//shader
 	src->vs = memoryalloc(0x10000, 0);
@@ -264,7 +264,7 @@ static void obj3d_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("obj3d(%x,%x,%x)\n",win,act,sty);
+	logtoall("obj3d(%x,%x,%x)\n",win,act,sty);
 }
 
 
@@ -385,7 +385,7 @@ static void obj3d_create(_obj* act, void* arg, int argc, u8** argv)
 	char* matter = 0;
 	char* normal = 0;
 	for(j=0;j<argc;j++){
-		//say("%d:%.8s\n", j, argv[j]);
+		//logtoall("%d:%.8s\n", j, argv[j]);
 
 		//cpu
 		if(0 == ncmp(argv[j], "albedo:", 7)){

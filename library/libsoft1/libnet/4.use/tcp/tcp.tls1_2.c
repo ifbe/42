@@ -51,47 +51,47 @@ void tls1v2_prep_cert(u8* dirbuf, int dirlen)
 
 	//cert1,2,3......
 	mysnprintf(dirbuf+dirlen, 256-dirlen, "fullchain.pem");
-	say("fullchain: %s\n", dirbuf);
+	logtoall("fullchain: %s\n", dirbuf);
 
 	fl = openreadclose(dirbuf, 0, buf, 0x2000);
-	if(fl<=0){say("err@fullchain.pem:%d\n",fl);return;}
+	if(fl<=0){logtoall("err@fullchain.pem:%d\n",fl);return;}
 
 	j = pem2bin(cert_first+3, buf, 0, fl);
-	if(j<=0){say("err@cert1:%d\n",j);return;}
+	if(j<=0){logtoall("err@cert1:%d\n",j);return;}
 	cert_first[0] = 0;
 	cert_first[1] = (j>>8)&0xff;
 	cert_first[2] = j&0xff;
-	say("cert1:\n");
+	logtoall("cert1:\n");
 	printmemory(cert_first, j+3);
 
 	j = pem2bin(cert_second+3, buf, 1, fl);
-	if(j<=0){say("err@cert2:%d\n",j);return;}
+	if(j<=0){logtoall("err@cert2:%d\n",j);return;}
 	cert_second[0] = 0;
 	cert_second[1] = (j>>8)&0xff;
 	cert_second[2] = j&0xff;
-	say("cert2:\n");
+	logtoall("cert2:\n");
 	printmemory(cert_second, j+3);
 
 
 	//private and modulus
 	mysnprintf(dirbuf+dirlen, 256-dirlen, "privkey.pem");
-	say("privkey: %s\n", dirbuf);
+	logtoall("privkey: %s\n", dirbuf);
 
 	j = openreadclose(dirbuf, 0, buf, 0x2000);
-	if(j<=0){say("err@privkey.pem:%d\n",j);return;}
+	if(j<=0){logtoall("err@privkey.pem:%d\n",j);return;}
 
 	j = pem2bin(buf, buf, 0, j);
-	if(j<=0){say("err@pvk:%d\n",j);return;}
-	say("pkcs8:\n");
+	if(j<=0){logtoall("err@pvk:%d\n",j);return;}
+	logtoall("pkcs8:\n");
 	printmemory(buf, j);
 
 	//openssl rsa -in privkey.pem -noout -text
 	for(j=0;j<0x100;j++)cert_modulus[j] = buf[0xff-j+0x26];
-	say("modulus:\n");
+	logtoall("modulus:\n");
 	printmemory(cert_modulus, 0x100);
 
 	for(j=0;j<0x100;j++)cert_private[j] = buf[0xff-j+0x12f];
-	say("private:\n");
+	logtoall("private:\n");
 	printmemory(cert_private, 0x100);
 }
 int tls1v2_parse_cert(u8* buf, int len)
@@ -112,7 +112,7 @@ struct tlshead
 int tls1v2_read_head(u8* buf, int len)
 {
 	len = (buf[3]<<8)+buf[4];
-	say("head{ctx=%x,ver=%02x%02x,len=%x}\n",
+	logtoall("head{ctx=%x,ver=%02x%02x,len=%x}\n",
 		buf[0],
 		buf[1],buf[2],
 		len
@@ -133,7 +133,7 @@ int tls1v2_read_hello(u8* buf, int len)
 {
 	struct bothhello* p = (void*)buf;
 	len = (buf[1]<<16) + (buf[2]<<8) + buf[3];
-	say("hello{msg=%x, len=%x, ver=%02x%02x}\n",
+	logtoall("hello{msg=%x, len=%x, ver=%02x%02x}\n",
 		p->msg,
 		len,
 		p->ver[0], p->ver[1]
@@ -235,7 +235,7 @@ int tls1v2_read_cert(u8* buf, int len)
 
 	len = (buf[1]<<16) + (buf[2]<<8) + buf[3];
 	certlen = (buf[4]<<16) + (buf[5]<<8) + buf[6];
-	say("certi{msg=%x, len=%x, certlen=%x}\n",
+	logtoall("certi{msg=%x, len=%x, certlen=%x}\n",
 		p->msg,
 		len,
 		certlen
@@ -301,7 +301,7 @@ int tls1v2_read_keyex(u8* buf, int len)
 	struct serverkeyexch* p = (void*)buf;
 
 	len = (buf[1]<<16) + (buf[2]<<8) + buf[3];
-	say("keyex{msg=%x, len=%x}\n",
+	logtoall("keyex{msg=%x, len=%x}\n",
 		p->msg,
 		len
 	);
@@ -310,8 +310,8 @@ int tls1v2_read_keyex(u8* buf, int len)
 int tls1v2_read_client_keyexch(u8* buf, int len)
 {
 	int j = (buf[3]<<8) + buf[4];
-	say("clientkeyexch{\n");
-	say("}clientkeyexch\n");
+	logtoall("clientkeyexch{\n");
+	logtoall("}clientkeyexch\n");
 	return j+5;
 }
 int tls1v2_write_client_keyexch(u8* buf, int len)
@@ -387,7 +387,7 @@ int tls1v2_write_server_keyexch(_obj* ele, int fd, u8* buf, int len)
 	for(j=0;j<0x20;j++)p[0x00+j] = ele->priv_256b[j];
 	for(j=0;j<0x20;j++)p[0x20+j] = ele->priv_256b[j+0x20];
 	for(j=0;j<0x45;j++)p[0x40+j] = buf[9+j];
-	say("c+s+p:\n");
+	logtoall("c+s+p:\n");
 	printmemory(p, 0x85);
 
 	//dst@[0x10c0,0x10ff], src@[0,0x84]
@@ -398,7 +398,7 @@ int tls1v2_write_server_keyexch(_obj* ele, int fd, u8* buf, int len)
 	for(j=0;j<19;j++)p[0x10ad+j] = fixed[j];
 	sha512sum(p+0x10c0, p, 0x20+0x20+3+1+0x41);
 
-	say("flag+sha512:\n");
+	logtoall("flag+sha512:\n");
 	printmemory(p+0x1000, 256);
 
 	//dst@[0x100,0x1ff], src@[0x1000,0x10ff]
@@ -409,7 +409,7 @@ int tls1v2_write_server_keyexch(_obj* ele, int fd, u8* buf, int len)
 		cert_modulus, 256
 	);
 
-	say("rsa2048:\n");
+	logtoall("rsa2048:\n");
 	printmemory(p, 256);
 	p += 0x100;
 
@@ -443,7 +443,7 @@ int tls1v2_read_sdone(u8* buf, int len)
 	struct serverdone* p = (void*)buf;
 
 	len = (buf[1]<<16) + (buf[2]<<8) + buf[3];
-	say("sdone{msg=%x, len=%x}\n",
+	logtoall("sdone{msg=%x, len=%x}\n",
 		p->msg,
 		len
 	);
@@ -473,7 +473,7 @@ struct servercipher
 };
 int tls1v2_read_client_cipherspec(u8* buf, int len)
 {
-	say("client cipherspec\n");
+	logtoall("client cipherspec\n");
 	return 6;
 }
 int tls1v2_write_client_cipherspec(u8* buf, int len)
@@ -512,7 +512,7 @@ struct hellorequest
 int tls1v2_read_client_hellorequest(u8* buf, int len)
 {
 	int j = (buf[3]<<8) + buf[4];
-	say("client hellorequest\n");
+	logtoall("client hellorequest\n");
 	return j+5;
 }
 int tls1v2_write_client_hellorequest(u8* buf, int len)
@@ -602,10 +602,10 @@ struct bothdata
 int tls1v2_read_both_data(u8* buf, int len)
 {
 	//head
-	say("type=%02x\n", buf[0]);
-	say("version=%02x%02x\n", buf[1], buf[2]);
+	logtoall("type=%02x\n", buf[0]);
+	logtoall("version=%02x%02x\n", buf[1], buf[2]);
 	len = (buf[3]<<8) + buf[4];
-	say("length=%x\n",len);
+	logtoall("length=%x\n",len);
 
 	//data
 	return len;
@@ -624,13 +624,13 @@ int tls1v2_clientread_serverhello(u8* buf, int len)
 	int j,k;
 
 	//hello
-	say("serverhello{\n");
+	logtoall("serverhello{\n");
 	len = tls1v2_read_hello(buf, len);
 
 
 	//random
 	t = buf+6;
-	say("random(20):\n");
+	logtoall("random(20):\n");
 	printmemory(t, 0x20);
 	t += 0x20;
 
@@ -639,13 +639,13 @@ int tls1v2_clientread_serverhello(u8* buf, int len)
 	j = t[0];
 	t += 1;
 
-	if(j)say("sessid(%x)\n", j);
+	if(j)logtoall("sessid(%x)\n", j);
 	t += j;
 
 
 	//cipher
 	j = (t[0]<<8)+t[1];
-	say("cipher=%04x\n", j);
+	logtoall("cipher=%04x\n", j);
 	t += 2;
 
 
@@ -653,7 +653,7 @@ int tls1v2_clientread_serverhello(u8* buf, int len)
 	j = t[0];
 	t += 1;
 
-	if(j)say("compress(%x)\n", j);
+	if(j)logtoall("compress(%x)\n", j);
 	t += j;
 
 
@@ -661,7 +661,7 @@ int tls1v2_clientread_serverhello(u8* buf, int len)
 	j = (t[0]<<8) + t[1];
 	t += 2;
 
-	say("extension(len=%x)\n", j);
+	logtoall("extension(len=%x)\n", j);
 	printmemory(t, j);
 	while(1)
 	{
@@ -670,20 +670,20 @@ int tls1v2_clientread_serverhello(u8* buf, int len)
 
 		j = (t[0]<<8) + t[1];
 		k = (t[2]<<8) + t[3];
-		say("type=%04x, len=%x\n", j, k);
+		logtoall("type=%04x, len=%x\n", j, k);
 
 		t += 4 + k;
 	}
 
 
-	say("}serverhello\n\n");
+	logtoall("}serverhello\n\n");
 	return len;
 }
 int tls1v2_clientread_servercertificate(u8* buf, int len)
 {
 	int j,total;
 	u8* q;
-	say("servercert{\n");
+	logtoall("servercert{\n");
 	len = tls1v2_read_cert(buf, len);
 
 
@@ -691,7 +691,7 @@ int tls1v2_clientread_servercertificate(u8* buf, int len)
 	//total
 	q = buf+4;
 	total = (q[0]<<16)+(q[1]<<8)+q[2];
-	say("total=%x\n", total);
+	logtoall("total=%x\n", total);
 	q += 3;
 
 
@@ -703,7 +703,7 @@ int tls1v2_clientread_servercertificate(u8* buf, int len)
 		j = (q[0]<<16)+(q[1]<<8)+q[2];
 		q += 3;
 
-		say("cert(%x):\n", j);
+		logtoall("cert(%x):\n", j);
 		tls1v2_parse_cert(q, j);
 		q += j;
 
@@ -712,20 +712,20 @@ int tls1v2_clientread_servercertificate(u8* buf, int len)
 
 
 	//
-	say("}servercert\n\n");
+	logtoall("}servercert\n\n");
 	return len;
 }
 int tls1v2_clientread_serverkeyexch(u8* buf, int len)
 {
 	int j;
 	u8* q;
-	say("serverkeyexch{\n");
+	logtoall("serverkeyexch{\n");
 	len = tls1v2_read_keyex(buf, len);
 
 
 	//curve
 	q = buf + 4;
-	say("curvetype=%x,namecurve=%02x%02x\n",
+	logtoall("curvetype=%x,namecurve=%02x%02x\n",
 		q[0],
 		q[1],q[2]
 	);
@@ -736,13 +736,13 @@ int tls1v2_clientread_serverkeyexch(u8* buf, int len)
 	j = q[0];
 	q += 1;
 
-	say("pubkey(%x)\n",j);
+	logtoall("pubkey(%x)\n",j);
 	printmemory(q, j);
 	q += j;
 
 
 	//signature algorithm
-	say("sig alg: %02x%02x\n", q[0], q[1]);
+	logtoall("sig alg: %02x%02x\n", q[0], q[1]);
 	q += 2;
 
 
@@ -750,12 +750,12 @@ int tls1v2_clientread_serverkeyexch(u8* buf, int len)
 	j = (q[0]<<8)+q[1];
 	q += 2;
 
-	say("sig ctx(%02x):\n", j);
+	logtoall("sig ctx(%02x):\n", j);
 	printmemory(q, j);
 
 
 	//
-	say("}serverkeyexch\n\n");
+	logtoall("}serverkeyexch\n\n");
 	return len;
 }
 int tls1v2_clientread_serverdone(u8* buf, int len)
@@ -763,11 +763,11 @@ int tls1v2_clientread_serverdone(u8* buf, int len)
 	struct serverdone* p = (void*)buf;
 	u8* q;
 
-	say("serverdone{\n");
+	logtoall("serverdone{\n");
 	len = tls1v2_read_sdone(buf, len);
 
 	//
-	say("}serverdone\n\n");
+	logtoall("}serverdone\n\n");
 	return len;
 }
 int tls1v2_clientwrite_clienthello(u8* dst, int cnt)
@@ -943,7 +943,7 @@ int tls1v2client_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int 
 {
 	int ret;
 	u8 tmp[0x1000];
-	say("@tls1v2client_write\n");
+	logtoall("@tls1v2client_write\n");
 
 	if(0 == art->vfmt)
 	{
@@ -1013,14 +1013,14 @@ int tls1v2_serverread_clienthello(_obj* ele, void* foot, u8* buf, int len)
 	u8* q;
 
 	//hello
-	say("clienthello{\n");
+	logtoall("clienthello{\n");
 	len = tls1v2_read_hello(buf, len);
 
 
 	//random
 	q = buf+6;
 
-	say("random(len=20)\n");
+	logtoall("random(len=20)\n");
 	printmemory(q, 0x20);
 	for(j=0;j<0x20;j++)ele->priv_256b[j] = q[j];
 
@@ -1031,7 +1031,7 @@ int tls1v2_serverread_clienthello(_obj* ele, void* foot, u8* buf, int len)
 	j = q[0];
 	q += 1;
 
-	say("sessionid(len=%x)\n", j);
+	logtoall("sessionid(len=%x)\n", j);
 	printmemory(q, j);
 	q += j;
 
@@ -1040,7 +1040,7 @@ int tls1v2_serverread_clienthello(_obj* ele, void* foot, u8* buf, int len)
 	j = (q[0]<<8) + q[1];
 	q += 2;
 
-	say("ciphersites(len=%x)\n", j);
+	logtoall("ciphersites(len=%x)\n", j);
 	printmemory(q, j);
 	q += j;
 
@@ -1049,7 +1049,7 @@ int tls1v2_serverread_clienthello(_obj* ele, void* foot, u8* buf, int len)
 	j = q[0];
 	q += 1;
 
-	say("compression(len=%x)\n", j);
+	logtoall("compression(len=%x)\n", j);
 	if(j)printmemory(q, j);
 	q += j;
 
@@ -1058,7 +1058,7 @@ int tls1v2_serverread_clienthello(_obj* ele, void* foot, u8* buf, int len)
 	j = (q[0]<<8) + q[1];
 	q += 2;
 
-	say("extension(len=%x)\n", j);
+	logtoall("extension(len=%x)\n", j);
 	printmemory(q, j);
 	while(1)
 	{
@@ -1067,12 +1067,12 @@ int tls1v2_serverread_clienthello(_obj* ele, void* foot, u8* buf, int len)
 
 		j = (q[0]<<8) + q[1];
 		k = (q[2]<<8) + q[3];
-		say("type=%04x, len=%x\n", j, k);
+		logtoall("type=%04x, len=%x\n", j, k);
 
 		q += 4 + k;
 	}
 
-	say("}clienthello\n");
+	logtoall("}clienthello\n");
 	return len + 5;
 }
 
@@ -1086,7 +1086,7 @@ int tls1v2server_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 int tls1v2server_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	int ret;
-	say("@tls1v2server_write\n");
+	logtoall("@tls1v2server_write\n");
 
 	switch(art->vfmt)
 	{
@@ -1153,7 +1153,7 @@ int tls1v2master_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 }
 int tls1v2master_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
-	say("@tls1v2master_write\n");
+	logtoall("@tls1v2master_write\n");
 
 	if(0x16 != buf[0]){
 		give_data_into_peer(art,_src_, stack,sp, 0,0, response,sizeof(response));

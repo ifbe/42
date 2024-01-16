@@ -265,7 +265,7 @@ void drone_write_quaternion(_obj* act, float* q)
 	struct relation* rel;
 	_obj* world;
 	struct style* sty = 0;
-	//say("drone_quat: %f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
+	//logtoall("drone_quat: %f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
 
 	rel = act->irel0;
 	while(1){
@@ -278,7 +278,7 @@ void drone_write_quaternion(_obj* act, float* q)
 		rel = samedstnextsrc(rel);
 	}
 	if(0 == sty)return;
-	//say("%f,%f,%f\n",sty->vr[3], sty->vf[3], sty->vt[3]);
+	//logtoall("%f,%f,%f\n",sty->vr[3], sty->vf[3], sty->vt[3]);
 
 	float l = sty->fshape.vr[3];
 	sty->fshape.vr[0] = l*(1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0);
@@ -356,7 +356,7 @@ static void drone_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 }
 static void drone_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	//say("ent=%p,stack=%p,buf=%p\n",ent,stack,buf);
+	//logtoall("ent=%p,stack=%p,buf=%p\n",ent,stack,buf);
 	switch(stack[sp-1].foottype){
 	case _quat_:
 		drone_write_quaternion(ent, buf);

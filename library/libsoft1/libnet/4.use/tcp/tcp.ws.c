@@ -34,7 +34,7 @@ int websocket_clientwrite_handshake(u8* buf, int len, u8* dst, int max)
 }
 int websocket_clientread(u8* buf, int len, u8* dst, int max)
 {
-	if(0x81 != buf[0])say("@wsclient_clientread: type=%x\n",buf[0]);
+	if(0x81 != buf[0])logtoall("@wsclient_clientread: type=%x\n",buf[0]);
 
 	if(126 > buf[1])return 2;
 	if(126 == buf[1])return 4;
@@ -95,7 +95,7 @@ int wsclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 {
 	int ret;
 	u8 tmp[0x1000];
-	say("@wsclient_write: %llx, %.4s, %d\n", art, &foot, len);
+	logtoall("@wsclient_write: %llx, %.4s, %d\n", art, &foot, len);
     printmemory(buf, len<16?len:16);
 
 	switch(stack[sp-1].foottype){
@@ -108,7 +108,7 @@ int wsclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 	case _src_:
 		if(0 == art->vfmt)
 		{
-		/*	say("ws.serverhello={\n"
+		/*	logtoall("ws.serverhello={\n"
 				"%.*s"
 				"}=ws.serverhello\n",
 				len, buf);*/
@@ -180,17 +180,17 @@ int websocket_serverread_handshake(u8* buf, int len, u8* dst, int max)
 	j = findtail(Sec_WebSocket_Key);
 	j += mysnprintf(Sec_WebSocket_Key + j, 256,
 		"258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
-	say("Sec_WebSocket_Key=%s\n", Sec_WebSocket_Key);
+	logtoall("Sec_WebSocket_Key=%s\n", Sec_WebSocket_Key);
 
 	//对这个字符串做一次sha1
 	sha1sum(sha1buf, Sec_WebSocket_Key, j);
-	say("sha1=");
-	for(j=0;j<20;j++)say("%02x", sha1buf[j]);
-	say("\n");
+	logtoall("sha1=");
+	for(j=0;j<20;j++)logtoall("%02x", sha1buf[j]);
+	logtoall("\n");
 
 	//把sha1的结果以base64格式编码
 	base64_encode(base64buf, sha1buf, 20);
-	say("base64=%s\n", base64buf);
+	logtoall("base64=%s\n", base64buf);
 
 	//把base64的结果作为accept密钥
 	return mysnprintf(dst, 256,
@@ -369,7 +369,7 @@ int wsserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 {
 	int ret;
 	u8 tmp[0x1000];
-	say("@wsserver_write: %llx, %.4s, %d\n", art, &foot, len);
+	logtoall("@wsserver_write: %llx, %.4s, %d\n", art, &foot, len);
     printmemory(buf, len<16?len:16);
 
 	switch(stack[sp-1].foottype){
@@ -383,7 +383,7 @@ int wsserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 	case _src_:
 		if(0 == art->vfmt){
 			art->vfmt = 1;
-		/*	say("ws.clienthello={\n"
+		/*	logtoall("ws.clienthello={\n"
 				"%.*s"
 				"}=ws.clienthello\n",
 				len, buf);*/
@@ -399,7 +399,7 @@ int wsserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 		}
 		else{
 			ret = websocket_serverread_head(buf, len, tmp, 0x1000);
-			say("sending:\n");
+			logtoall("sending:\n");
 			printmemory(tmp, ret<16?ret:16);
 			give_data_into_peer(art,_dst_, stack,sp, 0,0, tmp,ret);
 		}
@@ -434,7 +434,7 @@ int wsmaster_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, 
 }
 int wsmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	say("@wsserver_write: %llx, %.4s, %d\n", art, &foot, len);
+	logtoall("@wsserver_write: %llx, %.4s, %d\n", art, &foot, len);
     printmemory(buf, len<16?len:16);
 
 	//socket: parent,child
@@ -471,7 +471,7 @@ int wsmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 		break;
 	}//ptmx
 	default:{
-		say("who can serve it?\n");
+		logtoall("who can serve it?\n");
 	}
 	}//switch
 	return 0;

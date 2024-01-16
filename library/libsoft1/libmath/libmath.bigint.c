@@ -13,17 +13,17 @@ void bigint_print(struct str* src)
 	j = len-1;
 	if(buf[j] < 0x80)
 	{
-		say("0x");
+		logtoall("0x");
 		while((j>0)&&(0==buf[j]))j--;
-		for(;j>=0;j--)say("%02x", buf[j]);
-		say("\n");
+		for(;j>=0;j--)logtoall("%02x", buf[j]);
+		logtoall("\n");
 		return;
 	}
 
-	say("-0x");
-	for(j=len-1;j>0;j--)say("%02x", 0xff-buf[j]);
-	say("%02x", 0x100-buf[0]);
-	say("\n");
+	logtoall("-0x");
+	for(j=len-1;j>0;j--)logtoall("%02x", 0xff-buf[j]);
+	logtoall("%02x", 0x100-buf[0]);
+	logtoall("\n");
 }
 
 

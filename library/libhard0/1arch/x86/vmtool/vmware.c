@@ -187,11 +187,11 @@ void vmware_handle_mouse(void) {
 		vmware_backdoor_mouse_absolute();
 		return;
 	}
-//say("1111\n");
+//logtoall("1111\n");
 
 	/* The status command returns a size we need to read, should be at least 4. */
 	if ((cmd.ax & 0xFFFF) < 4) return;
-//say("2222\n");
+//logtoall("2222\n");
 
 	/* Read 4 bytes of mouse data */
 	cmd.bx = 4;
@@ -204,12 +204,12 @@ void vmware_handle_mouse(void) {
 	int x       = (cmd.bx); /* Both X and Y are scaled from 0 to 0xFFFF */
 	int y       = (cmd.cx); /* You should map these somewhere to the actual resolution. */
 	int z       = (u8)(cmd.dx); /* Z is a single signed byte indicating scroll direction. */
-	//say("x=%x,y=%x\n", x, y);
+	//logtoall("x=%x,y=%x\n", x, y);
 
 	/* TODO: Do something useful here with these values, such as providing them to userspace! */
 	u64 what = point_per;
 	if(buttons != vmmouse.button){
-		say("mouse key: old=%x,new=%x\n",vmmouse.button, buttons);
+		logtoall("mouse key: old=%x,new=%x\n",vmmouse.button, buttons);
 		if(buttons)what = point_onto;
 		else what = point_away;
 
@@ -224,7 +224,7 @@ void vmware_handle_mouse(void) {
 __attribute__((interrupt)) static void ps2mouse_vmware_isr(void* p)
 {
 	u8 data = in8(0x60);
-	//say("data0=%x\n", data);
+	//logtoall("data0=%x\n", data);
 
 	vmware_handle_mouse();
 
@@ -246,11 +246,11 @@ void vmware_tool()
 	cmd.command = BDOOR_CMD_GETVERSION;
 	vmware_send(&cmd);
 	if (cmd.bx != VMWARE_MAGIC || cmd.ax == 0xFFFFFFFF) {
-		say("vmtool: magic mismatch\n");
+		logtoall("vmtool: magic mismatch\n");
 		return;
 	}
 
-	say("set vmware mouse mode: absolute\n");
+	logtoall("set vmware mouse mode: absolute\n");
 	vmware_backdoor_mouse_absolute();
 	//vmware_backdoor_mouse_relative();
 }
@@ -271,16 +271,16 @@ void initvmtool()
 		vmware_tool();
 	}
 	else if(0 == ncmp(oemid, "BOCHS ",6)){
-		say("qemu,ovmf?\n");
+		logtoall("qemu,ovmf?\n");
 	}
 	else if(0 == ncmp(oemid, "VBOX  ",6)){
-		say("virtual box?\n");
+		logtoall("virtual box?\n");
 	}
 	else if(0 == ncmp(oemid, "PRLS  ",6)){
-		say("parallels desktop?\n");
+		logtoall("parallels desktop?\n");
 		//initps2mouse();
 	}
 	else{
-		say("oemid={%.6s}\n",oemid);
+		logtoall("oemid={%.6s}\n",oemid);
 	}
 }

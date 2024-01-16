@@ -239,7 +239,7 @@ static int vkbd_event(
 {
 	short tmp[4];
 	int x,y,w,h,ret;
-	//say("vkbd_keyboard_write\n");
+	//logtoall("vkbd_keyboard_write\n");
 	//if(win->vkbdw <= 0)return 0;
 
 	w = win->whdf.width;
@@ -252,7 +252,7 @@ static int vkbd_event(
 	{
 		x = 16*x/w;
 		y = 31 - 32*y/h;
-		//say("x=%d,y=%d\n",x,y);
+		//logtoall("x=%d,y=%d\n",x,y);
 		eventwrite(x+(y*16), _char_, (u64)win, 0);
 	}
 	return 1;
@@ -307,7 +307,7 @@ static void vkbd_bywnd_event(_obj* ent,void* foot, _syn* stack,int sp, struct ev
 {
 	_obj* wnd;struct style* area;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
-	//say("vkbd_bywnd_event\n");
+	//logtoall("vkbd_bywnd_event\n");
 	//printmemory(ev,16);
 
 	if(_char_ == ev->what){

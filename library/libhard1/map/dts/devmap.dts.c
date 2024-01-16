@@ -39,18 +39,18 @@ static u32 be2le(u32 x)
 void parsedevmap_dtb(struct fdt_header* h)
 {
 	if(0 == h){
-		say("[dt]wrong addr\n");
+		logtoall("[dt]wrong addr\n");
 		return;
 	}
 	if(0xedfe0dd0 != h->magic){
-		say("[dt]wrong magic\n");
+		logtoall("[dt]wrong magic\n");
 		return;
 	}
 	printmemory(h,sizeof(struct fdt_header));
-	say("[dt]magic=%x,total=%x\n",   be2le(h->magic),            be2le(h->totalsize));
-	say("[dt]ver:this=%x,comp=%x\n", be2le(h->version_thisfile), be2le(h->version_lastcomp));
-	say("[dt]dat:off=%x,len=%x\n",   be2le(h->off_dt_struct),    be2le(h->size_dt_struct));
-	say("[dt]str:off=%x,len=%x\n",   be2le(h->off_dt_strings),   be2le(h->size_dt_strings));
-	say("[dt]mem:off=%x\n",          be2le(h->off_mem_rsvmap));
-	say("[dt]cpu:phy=%x\n",          be2le(h->boot_cpuid_phys));
+	logtoall("[dt]magic=%x,total=%x\n",   be2le(h->magic),            be2le(h->totalsize));
+	logtoall("[dt]ver:this=%x,comp=%x\n", be2le(h->version_thisfile), be2le(h->version_lastcomp));
+	logtoall("[dt]dat:off=%x,len=%x\n",   be2le(h->off_dt_struct),    be2le(h->size_dt_struct));
+	logtoall("[dt]str:off=%x,len=%x\n",   be2le(h->off_dt_strings),   be2le(h->size_dt_strings));
+	logtoall("[dt]mem:off=%x\n",          be2le(h->off_mem_rsvmap));
+	logtoall("[dt]cpu:phy=%x\n",          be2le(h->boot_cpuid_phys));
 }

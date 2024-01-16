@@ -122,10 +122,10 @@ void* read8042(struct event* ev)
 }
 void init8042()
 {
-	say("@init8042\n");
+	logtoall("@init8042\n");
 	if(0 == acpi_have8042()){
 		enablepolling = 0;
-		say("no 8042 found, enablepoll=%d\n\n", enablepolling);
+		logtoall("no 8042 found, enablepoll=%d\n\n", enablepolling);
 	}
 }
 
@@ -150,7 +150,7 @@ byebye:
 }
 void initps2kbd()
 {
-	say("@initps2kbd\n");
+	logtoall("@initps2kbd\n");
 	enablepolling = 0;
 
 	percpu_enableint(0, 0x21, ps2kbd_isr, 0);
@@ -181,13 +181,13 @@ u8 mouse_read()
 __attribute__((interrupt)) static void ps2mouse_isr(void* p)
 {
 	u8 data = in8(0x60);
-	say("data0=%x\n", data);
+	logtoall("data0=%x\n", data);
 
 	irqchip_endofirq(12);
 }
 void initps2mouse()
 {
-	say("@initps2mouse\n");
+	logtoall("@initps2mouse\n");
 
 	u8 _status;	//unsigned char
 

@@ -135,7 +135,7 @@ static void rawinputlistall()
 		default:break;
 		}
 		if(0 == type)continue;
-		say("%d:	%s\n", j, type);
+		logtoall("%d:	%s\n", j, type);
 
 		//info
 		RID_DEVICE_INFO rdi;
@@ -154,7 +154,7 @@ static void rawinputlistall()
 		size = sizeof(name);
 		ret = GetRawInputDeviceInfoA(ridl[j].hDevice, RIDI_DEVICENAME, name, &size);
 		if(-1 == ret)continue;
-		say("%s\n", name);
+		logtoall("%s\n", name);
 	}
 
 byebye:

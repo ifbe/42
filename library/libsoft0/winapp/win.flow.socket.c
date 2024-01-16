@@ -194,7 +194,7 @@ int socket_str2sockaddr(char* addr, union addrv4v6* out)
 		return 0;
 	}
 
-	say("resolvehostname4\n");
+	logtoall("resolvehostname4\n");
 	u32 tmp = resolvehostname4(addr);
 	if(tmp){
 		out->v4.sin_family = AF_INET;
@@ -202,10 +202,10 @@ int socket_str2sockaddr(char* addr, union addrv4v6* out)
 		return 0;
 	}
 
-	say("resolvehostname6\n");
+	logtoall("resolvehostname6\n");
 	tmp = resolvehostname6(addr, out);
 	if(tmp){
-		say("66666666\n");
+		logtoall("66666666\n");
 		return 0;
 	}
 
@@ -228,7 +228,7 @@ _obj* createsocket_bt(char* addr, int port)
 
 	//mem
 	_obj* oo = getobjbysock(fd);
-	say("fd=%x,oo=%p\n", fd, oo);
+	logtoall("fd=%x,oo=%p\n", fd, oo);
 
 	struct perfd* perfd = (void*)(oo->priv_256b);
 	perfd->sock = fd;
@@ -254,7 +254,7 @@ _obj* createsocket_raw(char* addr, int port)
 
 	//mem
 	_obj* oo = getobjbysock(fd);
-	say("fd=%x,oo=%p\n", fd, oo);
+	logtoall("fd=%x,oo=%p\n", fd, oo);
 
 	struct perfd* perfd = (void*)(oo->priv_256b);
 	perfd->sock = fd;
@@ -312,7 +312,7 @@ _obj* createsocket_udpserver(union addrv4v6* my)
 
 	//mem
 	_obj* oo = getobjbysock(fd);
-	say("fd=%x,oo=%p\n", fd, oo);
+	logtoall("fd=%x,oo=%p\n", fd, oo);
 
 	struct perfd* perfd = (void*)(oo->priv_256b);
 	perfd->sock = fd;
@@ -357,7 +357,7 @@ _obj* createsocket_udpclient(union addrv4v6* my, union addrv4v6* to)
 
 	//mem
 	_obj* oo = getobjbysock(fd);
-	say("fd=%x,oo=%p\n", fd, oo);
+	logtoall("fd=%x,oo=%p\n", fd, oo);
 
 	struct perfd* perfd = (void*)(oo->priv_256b);
 	perfd->sock = fd;
@@ -420,7 +420,7 @@ _obj* createsocket_tcpserver(union addrv4v6* my)
 	//mem
 	_obj* oo = getobjbysock(fd);
 	struct perfd* parentperfd = (void*)(oo->priv_256b);
-	say("fd=%x,oo=%p\n", fd, oo);
+	logtoall("fd=%x,oo=%p\n", fd, oo);
 
 	oo->sockinfo.fd = fd;
 	parentperfd->sock = fd;
@@ -541,7 +541,7 @@ _obj* createsocket_tcpclient(union addrv4v6* my, union addrv4v6* to)
 
 	//mem
 	_obj* oo = getobjbysock(fd);
-	say("fd=%x,oo=%p\n", fd, oo);
+	logtoall("fd=%x,oo=%p\n", fd, oo);
 
 	struct perfd* perfd = (void*)(oo->priv_256b);
 	perfd->sock = fd;

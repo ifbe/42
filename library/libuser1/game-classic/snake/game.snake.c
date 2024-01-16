@@ -48,7 +48,7 @@ void snake_draw_pixel(
 	j = 1;
 	while(1)
 	{
-		//say("[%x]=%x,%x,%x\n", j, buf[j].x, buf[j].y, buf[j].next);
+		//logtoall("[%x]=%x,%x,%x\n", j, buf[j].x, buf[j].y, buf[j].next);
 		t1 = cx-ww + buf[j].x * 2 * ww / WIDTH;
 		t2 = cy-hh + buf[j].y * 2 * hh / HEIGHT;
 		t3 = cx-ww + (buf[j].x+1) * 2 * ww / WIDTH;
@@ -119,7 +119,7 @@ void snake_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
 {
-	say("snake(%x,%x,%x)\n",win,act,sty);
+	logtoall("snake(%x,%x,%x)\n",win,act,sty);
 }
 
 

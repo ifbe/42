@@ -33,7 +33,7 @@ struct saved_cpureg{
 
 void syscall_version()
 {
-	say("ver: date=%s,time=%s\n", __DATE__, __TIME__);
+	logtoall("ver: date=%s,time=%s\n", __DATE__, __TIME__);
 }
 void syscall_sleep()
 {
@@ -46,7 +46,7 @@ void syscall_exit(void* cpureg)
 	int pid = percpu_process();
 	int qid = percpu_tqueue();
 	int tid = percpu_thread();
-	say("@syscall_exit: coreid=%d,pid=%d, qid=%d,tid=%d\n", core,pid, qid,tid);
+	logtoall("@syscall_exit: coreid=%d,pid=%d, qid=%d,tid=%d\n", core,pid, qid,tid);
 	thread_disable(qid, tid);
 	percpu_schedule(cpureg);
 }
@@ -56,7 +56,7 @@ void syscall_yield(void* cpureg)
 	int pid = percpu_process();
 	int qid = percpu_tqueue();
 	int tid = percpu_thread();
-	say("@syscall_yield: coreid=%d,pid=%d, qid=%d,tid=%d\n", core,pid, qid,tid);
+	logtoall("@syscall_yield: coreid=%d,pid=%d, qid=%d,tid=%d\n", core,pid, qid,tid);
 	percpu_schedule(cpureg);
 }
 
@@ -71,7 +71,7 @@ void syscall_handler(struct saved_cpureg* cpureg)
 	case _slp_:syscall_sleep();return;
 	case _yield_:syscall_yield(cpureg);return;
 	case _exit_:syscall_exit(cpureg);return;
-	//default:say("unknown@syscall: %llx\n", cpureg->x8);
+	//default:logtoall("unknown@syscall: %llx\n", cpureg->x8);
 	}
 
 	//let system do rest

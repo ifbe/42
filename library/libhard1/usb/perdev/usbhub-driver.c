@@ -1,6 +1,6 @@
 #include "libhard.h"
 #include "drv/usb.h"
-#define usbhub_print(fmt, ...) say("%08lld usbhub@%p "fmt, timeread_us(), usb, ##__VA_ARGS__)
+#define usbhub_print(fmt, ...) logtoall("%08lld usbhub@%p "fmt, timeread_us(), usb, ##__VA_ARGS__)
 //
 int usbdesc_addr2offs(struct perusb* perusb, void* desc);
 void* usbdesc_offs2addr(struct perusb* perusb, int offs);
@@ -197,7 +197,7 @@ int usbhub_powerone(struct item* usb, int id)
 		&perfunc->portstat[id],4
 	);
 	if(ret < 0)return -10;
-	say("stat=%x\n",perfunc->portstat[id]);
+	logtoall("stat=%x\n",perfunc->portstat[id]);
 
 
 	usbhub_print("%d:power on\n", id);
@@ -219,7 +219,7 @@ int usbhub_powerone(struct item* usb, int id)
 		&perfunc->portstat[id],4
 	);
 	if(ret < 0)return -10;
-	say("stat=%x\n",perfunc->portstat[id]);
+	logtoall("stat=%x\n",perfunc->portstat[id]);
 
 	return 0;
 }
@@ -249,7 +249,7 @@ int usbhub_resetone(struct item* usb, int id)
 		&perfunc->portstat[id],4
 	);
 	if(ret < 0)return -10;
-	say("stat=%x\n",perfunc->portstat[id]);
+	logtoall("stat=%x\n",perfunc->portstat[id]);
 
 
 	usbhub_print("%d:clear change.conn\n", id);
@@ -272,7 +272,7 @@ int usbhub_resetone(struct item* usb, int id)
 		&perfunc->portstat[id],4
 	);
 	if(ret < 0)return -10;
-	say("stat=%x\n",perfunc->portstat[id]);
+	logtoall("stat=%x\n",perfunc->portstat[id]);
 
 	if(0 == (perfunc->portstat[id]&HUB_STATUS_CONNECTION))return -11;
 
@@ -297,7 +297,7 @@ int usbhub_resetone(struct item* usb, int id)
 		&perfunc->portstat[id],4
 	);
 	if(ret < 0)return -10;
-	say("stat=%x\n",perfunc->portstat[id]);
+	logtoall("stat=%x\n",perfunc->portstat[id]);
 
 	return 0;
 }
@@ -328,7 +328,7 @@ int usbhub_checkone(struct item* usb, int id)
 		&perfunc->portstat[id],4
 	);
 	if(ret < 0)return -10;
-	say("stat=%x\n",perfunc->portstat[id]);
+	logtoall("stat=%x\n",perfunc->portstat[id]);
 	if(0 == (perfunc->portstat[id]&HUB_STATUS_CONNECTION))return 0;
 
 
@@ -352,7 +352,7 @@ int usbhub_checkone(struct item* usb, int id)
 		&perfunc->portstat[id],4
 	);
 	if(ret < 0)return -10;
-	say("stat=%x\n",perfunc->portstat[id]);
+	logtoall("stat=%x\n",perfunc->portstat[id]);
 
 
 	if(perfunc->hubtype >= 3){
@@ -418,7 +418,7 @@ int usbhub_checkall(struct item* usb)
 
 		ret = usbhub_checkone(usb, j);
 thisdone:
-		say("----------------\n");
+		logtoall("----------------\n");
 	}
 	return 0;
 }
@@ -532,17 +532,17 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		(p64)&req,8,
 		hubdesc,8
 	);
-	say("bDescLength=%x\n",         hubdesc->bDescLength);
-	say("bDescriptorType=%x\n",     hubdesc->bDescriptorType);
-	say("bNbrPorts=%x\n",           hubdesc->bNbrPorts);
-	say("wHubCharacteristics=%x\n", hubdesc->wHubCharacteristics);
-	say("  LogPwrSwitchMode=%x\n",        hubdesc->character.LogPwrSwitchMode);
-	say("  CompoundDevice=%x\n",          hubdesc->character.CompoundDevice);
-	say("  OverCurrentProtectMode=%x\n",  hubdesc->character.OverCurrentProtectMode);
-	say("  TTThinkTime=%x\n",             hubdesc->character.TTThinkTime);
-	say("  PortIndicatorsSupported=%x\n", hubdesc->character.PortIndicatorsSupported);
-	say("bPwrOn2PwrGood=%x\n",      hubdesc->bPwrOn2PwrGood);
-	say("bHubContrCurrent=%x\n",    hubdesc->bHubContrCurrent);
+	logtoall("bDescLength=%x\n",         hubdesc->bDescLength);
+	logtoall("bDescriptorType=%x\n",     hubdesc->bDescriptorType);
+	logtoall("bNbrPorts=%x\n",           hubdesc->bNbrPorts);
+	logtoall("wHubCharacteristics=%x\n", hubdesc->wHubCharacteristics);
+	logtoall("  LogPwrSwitchMode=%x\n",        hubdesc->character.LogPwrSwitchMode);
+	logtoall("  CompoundDevice=%x\n",          hubdesc->character.CompoundDevice);
+	logtoall("  OverCurrentProtectMode=%x\n",  hubdesc->character.OverCurrentProtectMode);
+	logtoall("  TTThinkTime=%x\n",             hubdesc->character.TTThinkTime);
+	logtoall("  PortIndicatorsSupported=%x\n", hubdesc->character.PortIndicatorsSupported);
+	logtoall("bPwrOn2PwrGood=%x\n",      hubdesc->bPwrOn2PwrGood);
+	logtoall("bHubContrCurrent=%x\n",    hubdesc->bHubContrCurrent);
 
 	//notify xhci its hub, and send hub desc
 	usbhub_print("notify ishub\n");

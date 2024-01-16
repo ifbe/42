@@ -49,7 +49,7 @@ void initpci_port()
 	struct item* xx;
 	u32 idid,type;
 	u32 bus,dev,fun,addr;
-	say("@initpci_port\n");
+	logtoall("@initpci_port\n");
 
 	for(bus=0;bus<256;bus++){
 	for(dev=0;dev<32;dev++){
@@ -61,7 +61,7 @@ void initpci_port()
 
 		out32(0xcf8, addr+8);
 		type = in32(0xcfc);
-		say("(%x,%x,%x)@%08x: idid=%08x, type=%08x\n",bus,dev,fun, addr, idid,type);
+		logtoall("(%x,%x,%x)@%08x: idid=%08x, type=%08x\n",bus,dev,fun, addr, idid,type);
 
 		switch(type >> 16){
 		case 0x0101:
@@ -96,13 +96,13 @@ void initpci_port()
 		case 0x0c03:
 			switch((type>>8)&0xff){
 			case 0x00:
-				say("uhci\n");
+				logtoall("uhci\n");
 				break;
 			case 0x10:
-				say("ohci\n");
+				logtoall("ohci\n");
 				break;
 			case 0x20:
-				say("ehci\n");
+				logtoall("ehci\n");
 				break;
 			case 0x30:
 				xx = device_create(_xhci_, 0, 0, 0);

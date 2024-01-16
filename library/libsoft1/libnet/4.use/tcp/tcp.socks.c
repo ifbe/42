@@ -43,7 +43,7 @@ int socksclient_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx
 	int j,port;
 	u8 tmp[256];
 	struct socks5_request* req;
-	say("@socksclient_write:%llx, %.4s, len=%d\n", art, &foot, len);
+	logtoall("@socksclient_write:%llx, %.4s, len=%d\n", art, &foot, len);
 	//if(len>0)printmemory(buf, len<16?len:16);
 
 	switch(stack[sp-1].foottype){
@@ -95,7 +95,7 @@ int socksclient_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx
 }
 int socksclient_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@socksclient_detach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+	logtoall("@socksclient_detach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
 		&self->nodetype, self->pchip, &self->foottype, self->pfoot,
 		&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
 	return 0;
@@ -103,7 +103,7 @@ int socksclient_detach(struct halfrel* self, struct halfrel* peer)
 int socksclient_attach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ele;
-	say("@socksclient_attach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+	logtoall("@socksclient_attach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
 		&self->nodetype, self->pchip, &self->foottype, self->pfoot,
 		&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
 
@@ -122,11 +122,11 @@ int socksclient_create(_obj* ele, char* url)
 {
 	int j,port;
 	struct socks5_request* req;
-	say("@socksclient_create: %llx\n", url);
+	logtoall("@socksclient_create: %llx\n", url);
 	ele->vfmt = 0;
 
 	if(0 == url)url = "www.baidu.com";
-	say("url = %s\n", url);
+	logtoall("url = %s\n", url);
 
 	//head
 	req = (void*)(ele->priv_256b);
@@ -162,7 +162,7 @@ int socksserver_read(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx,
 }
 int socksserver_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
 {
-	say("@socksserver_write:%p,%p, len=%d\n", art, foot, len);
+	logtoall("@socksserver_write:%p,%p, len=%d\n", art, foot, len);
 	printmemory(buf, len<16?len:16);
 
 	switch(stack[sp-1].foottype){
@@ -177,14 +177,14 @@ int socksserver_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx
 }
 int socksserver_detach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@socksserver_detach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+	logtoall("@socksserver_detach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
 		&self->nodetype, self->pchip, &self->foottype, self->pfoot,
 		&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
 	return 0;
 }
 int socksserver_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@socksserver_attach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
+	logtoall("@socksserver_attach: (%.4s@%p, %.4s@%p) -> (%.4s@%p, %.4s@%p)\n",
 		&self->nodetype, self->pchip, &self->foottype, self->pfoot,
 		&peer->nodetype, peer->pchip, &peer->foottype, peer->pfoot);
 	return 0;
@@ -195,7 +195,7 @@ int socksserver_delete(_obj* ele)
 }
 int socksserver_create(_obj* ele, u8* url)
 {
-	say("@socksserver_create\n");
+	logtoall("@socksserver_create\n");
 	return 0;
 }
 
@@ -211,7 +211,7 @@ int socksmaster_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx
 	int j;
 	u8* ch;
 	struct socks5_request* req;
-	say("@socksmaster_write: chip=%llx, foot=%.4s, len=%d\n", art, &foot, len);
+	logtoall("@socksmaster_write: chip=%llx, foot=%.4s, len=%d\n", art, &foot, len);
 	printmemory(buf, len<16?len:16);
 
 	if(len < 3)return 0;
@@ -225,7 +225,7 @@ int socksmaster_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx
 
 	req = buf;
 	if(5 != req->ver){
-		say("\n????????\n");
+		logtoall("\n????????\n");
 		return 0;
 	}
 
@@ -233,25 +233,25 @@ int socksmaster_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx
 	ch = req->url;
 	j = req->len;
 	mysnprintf(tmp, 256, "%.*s:%d", j, ch, (ch[j]<<8) + ch[j+1]);
-	say("ver=%x,cmd=%x,atyp=%x: %s\n", req->ver, req->cmd, req->atyp, tmp);
+	logtoall("ver=%x,cmd=%x,atyp=%x: %s\n", req->ver, req->cmd, req->atyp, tmp);
 	if(3 != req->atyp)return 0;
-say("1\n");
+logtoall("1\n");
 	//side a
 	_obj* obj = stack[sp-1].pchip;
 	if(0 == obj)return 0;
 	_obj* child = obj->sockinfo.child;
 	if(0 == child)return 0;
-say("2\n");
+logtoall("2\n");
 	//side b
 	void* sys = system_create(_tcp_, tmp, 0, 0);
 	if(0 == sys)return 0;
-say("3\n");
+logtoall("3\n");
 	//connect s->a s->b
 	void* s5 = artery_create(_Socks_, 0, 0, 0);
 	if(0 == s5)return 0;
 	relationcreate(s5, 0, _art_, 'a', child, 0, _sys_, _dst_);
 	relationcreate(s5, 0, _art_, 'b', sys, 0, _sys_, _dst_);
-say("4\n");
+logtoall("4\n");
 	//tell client, ok now
 	give_data_into_peer(art,_src_, stack,sp, arg,idx, socks5_server1,10);
 	return 0;
@@ -262,7 +262,7 @@ int socksmaster_detach(struct halfrel* self, struct halfrel* peer)
 }
 int socksmaster_attach(struct halfrel* self, struct halfrel* peer)
 {
-	say("@socksmaster_attach\n");
+	logtoall("@socksmaster_attach\n");
 	return 0;
 }
 int socksmaster_delete(_obj* ele)
@@ -271,6 +271,6 @@ int socksmaster_delete(_obj* ele)
 }
 int socksmaster_create(_obj* ele, u8* url)
 {
-	say("@socksmaster_create\n");
+	logtoall("@socksmaster_create\n");
 	return 0;
 }
