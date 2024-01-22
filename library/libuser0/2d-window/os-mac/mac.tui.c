@@ -5,6 +5,7 @@
 #include <termios.h>
 #include <sys/ioctl.h>
 #include "libuser.h"
+void stdout_sethelpseiral(void*);
 void* supply_alloc();
 void* supply_recycle(void*);
 int tuinode_take(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len);
@@ -139,8 +140,12 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int
 	//read context
 	tuinode_take(wnd,0, stack,sp, arg,key, buf,len);
 
+	stdout_sethelpseiral(0);
+
 	//update screen
 	windowdraw(wnd);
+
+	//stdout_sethelpseiral((void*)1);
 
 	usleep(100*1000);
 }

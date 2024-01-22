@@ -42,7 +42,7 @@ _obj* thewin = 0;
 	CMTime timestamp = CMSampleBufferGetPresentationTimeStamp(videoFrame);
     u64 timepkt = (u64)(1000*1000*1000*CMTimeGetSeconds(timestamp));
 	u64 timenow = timeread_ns();
-	NSLog(@"timepkt=%lld,timenow=%lld,dt=%lld", timepkt, timenow, timenow-timepkt);
+	logtoall("timepkt=%lld,timenow=%lld,dt=%lld\n", timepkt, timenow, timenow-timepkt);
 
 	//be careful: mac's yuv2 = actually uyvy
 	struct kv88 kv[4] = {
