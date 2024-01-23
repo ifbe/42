@@ -119,12 +119,13 @@ static void* epollthread(void* p)
 				case _udp_:
 				case _UDP_:
 				case _tcp_:{
-					cnt = socket_reader(here,fd, (p64)here->sockinfo.peer,0, tmpbuf,BUFFER_SIZE);
+					union addrv4v6 addr;
+					cnt = socket_reader(here,fd, (p64)&addr,0, tmpbuf,BUFFER_SIZE);
 					if(cnt >= 0)
 					{
 						//logtoall("@epollthread: %.4s\n", &obj[cc].type);
 						if((0==here->irel0)&&(0==here->orel0))printmemory(tmpbuf, cnt);
-						else give_data_into_peer(here,_dst_, stack,0, (p64)here->sockinfo.peer,0, tmpbuf,cnt);
+						else give_data_into_peer(here,_dst_, stack,0, (p64)&addr,0, tmpbuf,cnt);
 					}
 					if(cnt <= 0)
 					{

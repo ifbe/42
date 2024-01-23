@@ -8,7 +8,6 @@ fmt:std
 <artery>
 client{
 fmt:udptrav
-arg:deepstack.tech
 }
 </artery>
 
@@ -16,12 +15,13 @@ arg:deepstack.tech
 <system>
 socket{
 fmt:udp
-arg:deepstack.tech:9999
+arg:127.0.0.1:9999
+#arg:deepstack.tech:9999
 }
 </system>
 
 
 <relation>
-(socket, 0, dst) -> (client, 0, src)
-(stdio, 0, dst) -> (client, 0, std)
+(@socket, dst@0) -> (@client, src@0)
+(@stdio, dst@0) -> (@client, std@0)
 </relation>

@@ -708,18 +708,22 @@ int socket_reader(_obj* oo,int xx, p64 arg,int cmd, void* buf, int len)
 	ret = perio->count;
 	if(0 == ret)return 0;	//disconnect
 */
-	//data
+	//copy data
 	src = perio->bufing.buf;
 	dst = buf;
 	for(j=0;j<ret;j++)dst[j] = src[j];
 
-	//peer
-	if(_UDP_ == oo->type)
-	{
-		union addrv4v6* tmp = (void*)arg;
-		dst = (void*)tmp;
-		src = oo->sockinfo.peer;
-		for(j=0;j<8;j++)dst[j] = src[j];
+	//copy addr
+	union addrv4v6* tmp;
+	switch(oo->type){
+	case _UDP_:
+	case _udp_:
+		if(arg){
+			dst = (void*)arg;
+			src = oo->sockinfo.peer;
+			for(j=0;j<8;j++)dst[j] = src[j];
+		}
+		break;
 	}
 
 	//perio->count = 0;
@@ -735,43 +739,40 @@ int socket_writer(_obj* oo,int xx, p64 arg,int cmd, void* buf, int len)
 		return 0;
 	}
 
-	int ret;
-	DWORD dwret;
-	WSABUF wbuf;
-
 	SOCKET sock = getsockbyobj(oo);
-	struct perfd* perfd = (void*)(oo->priv_256b);
-	struct perio* perio = &perfd->perio[0];
+	//struct perfd* perfd = (void*)(oo->priv_256b);
+	//struct perio* perio = &perfd->perio[0];
 	//printf("write:sock=%x,len=%x\n",sock,len);
 
-	if(_UDP_ == oo->type)
-	{
-		union addrv4v6 out;
-		union addrv4v6* tmp = (void*)arg;
-		if(0 == tmp)tmp = (void*)(oo->sockinfo.peer);
-		else{
-			memset(&out, 0, sizeof(struct sockaddr_in));
-			out.v4.sin_family = AF_INET;
-			out.v4.sin_port = tmp->v4.sin_port;
-			out.v4.sin_addr.s_addr = tmp->v4.sin_addr.s_addr;
-			tmp = &out;
-		}
+	DWORD dwret;
+	WSABUF wbuf;
+	int ret, cnt, socklen;
+	struct sockaddr_in* tmp;
+	switch(oo->type){
+	case _UDP_:
+	case _udp_:
+		if(arg)tmp = (void*)arg;
+		else tmp = (void*)oo->sockinfo.peer;
+
+		socklen = (AF_INET6 == tmp->sin_family) ? sizeof(struct sockaddr_in6) : sizeof(struct sockaddr_in);
+		//printf("@writesocket: ver=%x\n",socklen);
+		//printmemory(tmp, socklen);
 
 		wbuf.buf = buf;
 		wbuf.len = len;
 		ret = WSASendTo(sock,
 			&wbuf, 1,
 			&dwret, 0,
-			(void*)tmp, sizeof(struct sockaddr_in),
+			(void*)tmp, socklen,
 			0, 0
 		);
-		return len;
+		break;
+	default:
+		wbuf.buf = buf;
+		wbuf.len = len;
+		ret = WSASend(sock, &wbuf, 1, &dwret, 0, 0, 0);
+		//printf("@send:len=%d,ret=%d,err=%d\n",len,ret,GetLastError());
 	}
-
-	wbuf.buf = buf;
-	wbuf.len = len;
-	ret = WSASend(sock, &wbuf, 1, &dwret, 0, 0, 0);
-	//printf("@send:len=%d,ret=%d,err=%d\n",len,ret,GetLastError());
 	return len;
 }
 

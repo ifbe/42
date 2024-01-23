@@ -8,6 +8,7 @@ fmt:std
 <system>
 socket{
 fmt:udp
+#arg:deepstack.tech:9999
 arg:127.0.0.1:9999
 }
 </system>

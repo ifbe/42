@@ -358,13 +358,13 @@ if(my){
 	}
 }
 
-	//connect
+if(0){	//dont connect
 	ret = connect(fd, (void*)to, socklen);
 	if(ret < 0){
 		printf("errno=%d@connect\n",errno);
 		return 0;
 	}
-
+}
 	//self
 	union addrv4v6* self = (void*)oo->sockinfo.self;
 	socklen_t len = socklen;
@@ -374,7 +374,7 @@ if(my){
 	printipaddr(self);
 
 	//peer
-	union addrv4v6* peer = (void*)oo->sockinfo.self;
+	union addrv4v6* peer = (void*)oo->sockinfo.peer;
 	memcpy((void*)peer, to, socklen);
 	logtoall("peeraddr: ");
 	printipaddr(peer);
@@ -527,7 +527,7 @@ if(my){
 	printipaddr(self);
 
 	//peer
-	union addrv4v6* peer = (void*)oo->sockinfo.self;
+	union addrv4v6* peer = (void*)oo->sockinfo.peer;
 	memcpy((void*)peer, to, socklen);
 	logtoall("peeraddr: ");
 	printipaddr(peer);
@@ -632,57 +632,42 @@ int socket_writer(_obj* oo,int xx, p64 arg,int cmd, void* buf, int len)
 	if(fd < 0)return 0;
 //logtoall("oo=%p,fd=%d\n", oo, fd);
 
-	int ret, cnt=0;
-	u64 type = oo->type;
-	if(_UDP_ == type){
-		struct sockaddr_in out;
-		struct sockaddr_in* tmp = (void*)arg;
-		if(0 == tmp)tmp = (void*)oo->sockinfo.peer;
-		else{
-			memset(&out, 0, sizeof(struct sockaddr_in));
-			out.sin_family = AF_INET;
-			out.sin_port = tmp->sin_port;
-			out.sin_addr.s_addr = tmp->sin_addr.s_addr;
-			tmp = &out;
-		}
+	int ret, cnt, socklen;
+	struct sockaddr_in* tmp;
+	switch(oo->type){
+	case _UDP_:
+	case _udp_:
+		if(arg)tmp = (void*)arg;
+		else tmp = (void*)oo->sockinfo.peer;
+
+		socklen = (AF_INET6 == tmp->sin_family) ? sizeof(struct sockaddr_in6) : sizeof(struct sockaddr_in);
+		printf("@writesocket: ver=%x\n",socklen);
+		printmemory(tmp, socklen);
 
 		ret = sendto(
 			fd, buf, len, 0,
-			(void*)tmp, sizeof(struct sockaddr_in)
+			(void*)tmp, socklen
 		);
-		return ret;
-	}
-	if(_udp_ == type){
-		ret = 0;
+		len = ret;
+		break;
+	default:
+		cnt = 0;
 		while(1){
-			if(len-ret <= 1024){
-				write(fd, buf+ret, len-ret);
-				break;
+			logtoall("@write: pos=%x,len=%x\n", cnt, len-cnt);
+			ret = write(fd, buf+cnt, len-cnt);
+			if(ret < 0){
+				logtoall("@write: ret=%d,errno=%d\n", ret, errno);
+				if(EAGAIN != errno)return -1;
+
+				usleep(1000);
+				continue;
 			}
-			else{
-				write(fd, buf+ret, 1024);
-				ret += 1024;
-			}
+
+			cnt += ret;
+			if(cnt == len)break;
 		}
-		return len;
 	}
-
-	cnt = 0;
-	while(1){
-		ret = write(fd, buf+cnt, len-cnt);
-		if(ret < 0){
-			logtoall("@writesocket: ret=%d,errno=%d\n", ret, errno);
-			if(EAGAIN != errno)return -1;
-
-			usleep(1000);
-			continue;
-		}
-
-		cnt += ret;
-		if(cnt == len)break;
-		logtoall("@writesocket: %x/%x\n", cnt, len);
-	}
-	return ret;
+	return len;
 }
 int socket_reader(_obj* oo,int xx, p64 arg,int cmd, void* buf,int len)
 {
@@ -693,29 +678,33 @@ int socket_reader(_obj* oo,int xx, p64 arg,int cmd, void* buf,int len)
 
 	int ret, cnt=0;
 	u64 type = oo->type;
-	if(_UDP_ == type)
-	{
+	struct sockaddr* tmp;
+	switch(type){
+	case _UDP_:
+	case _udp_:
+		if(arg)tmp = (void*)arg;
+		else tmp = (void*)oo->sockinfo.peer;
 		cnt = sizeof(union addrv4v6);
-		struct sockaddr* tmp = (void*)arg;
+
 		ret = recvfrom(
 			fd, buf, len, 0,
 			tmp, (void*)&cnt
 		);
 		//printf("socklen=%d\n",cnt);
 		//printmemory(tmp, 32);
-		return ret;
-	}
+		break;
+	default:
+		while(1)
+		{
+			ret = read(fd, buf, len);
+			if(ret > 0)break;
+			if(ret == 0)return -1;		//disconnect
+			if(errno != 11)return -2;	//errno
+			if(cnt >= 100)return 0;
 
-	while(1)
-	{
-		ret = read(fd, buf, len);
-		if(ret > 0)break;
-		if(ret == 0)return -1;		//disconnect
-		if(errno != 11)return -2;	//errno
-		if(cnt >= 100)return 0;
-
-		usleep(1000);
-		cnt++;
+			usleep(1000);
+			cnt++;
+		}
 	}
 	return ret;
 }
