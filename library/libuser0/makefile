@@ -223,6 +223,9 @@ linuxsdl:$(else_o) $(linux_o) $(linuxsdl_o)
 
 .PHONY:pilinuxcli
 pilinuxcli:$(else_o) $(linux_o) $(pilinuxcam_o) $(pilinuxcam_cpp_o) $(linuxcli_o)
+
+.PHONY:pilinuxtui
+pilinuxtui:$(else_o) $(linux_o) $(pilinuxcam_o) $(pilinuxcam_cpp_o) $(linuxtui_o)
 #########################################################
 
 

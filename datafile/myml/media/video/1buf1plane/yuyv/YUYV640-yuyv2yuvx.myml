@@ -8,15 +8,13 @@ dstfmt:yuvx
 dstw:640
 dsth:480
 }
-print:dbghex{
-}
 </artery>
 
 
 <supply>
 usbcam{
 fmt:cam
-format:yuyv
+format:YUYV
 width:640
 height:480
 }
@@ -24,6 +22,5 @@ height:480
 
 
 <relation>
-(@usbcam, dst) -> (@convert, src)
-(@convert, dst) -> (@print, src)
+(usbcam, 0, dst) -> (convert, 0, src)
 </relation>

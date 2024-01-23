@@ -147,7 +147,7 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int
 
 	//stdout_sethelpseiral((void*)1);
 
-	usleep(100*1000);
+	usleep(50*1000);
 }
 void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
@@ -172,6 +172,10 @@ void window_create(_obj* w)
 
 	w->tuitext.buf = malloc(0x100000);
 	//threadcreate(uievent, w);
+
+	int j;
+	printf("will print 64 empty lines\n");
+	for(j=0;j<64;j++)printf("%d\n", j);
 }
 void window_reader()
 {

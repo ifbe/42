@@ -18,6 +18,7 @@ fmt:virtual
 usbcam{
 fmt:cam
 arg:/dev/video0
+format:yuyv
 width:640
 height:480
 }

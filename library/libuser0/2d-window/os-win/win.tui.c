@@ -364,7 +364,11 @@ void window_create(_obj* w)
 	//w->fbheight = 0;
 
 	w->tuitext.buf = malloc(0x100000);
-	threadcreate(windowthread, w);
+	//threadcreate(windowthread, w);
+
+	int j;
+	printf("will print 64 empty lines\n");
+	for(j=0;j<64;j++)printf("%d\n", j);
 }
 
 

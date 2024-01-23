@@ -11,8 +11,8 @@ void stdout_sethelpseiral(void*);
 int lowlevel_input();
 void* supply_alloc();
 void* supply_recycle(void*);
-void tuinode_take( void*,int, void*,int, void*,int, void*,int);
-void tuinode_give(void*,int, void*,int, void*,int, void*,int);
+void tuinode_take( void*,int, void*,int, p64,int, void*,int);
+void tuinode_give(void*,int, void*,int, p64,int, void*,int);
 
 
 
@@ -140,7 +140,7 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int
 
 	//stdout_sethelpseiral((void*)1);
 
-	usleep(20*1000);
+	usleep(50*1000);
 }
 void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
@@ -178,6 +178,10 @@ void window_create(_obj* w)
 	w->tuitext.buf = malloc(0x100000);
 	w->tuitext.conv= malloc(0x100000);
 	//threadcreate(textuithread, w);
+
+	int j;
+	printf("will print 64 empty lines\n");
+	for(j=0;j<64;j++)printf("%d\n", j);
 }
 
 

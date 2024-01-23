@@ -1,5 +1,23 @@
-//https://github.com/kbingham/simple-cam/blob/master/simple-cam.cpp
 /*
+//usage example:
+//https://github.com/kbingham/simple-cam/blob/master/simple-cam.cpp
+*/
+
+/*
+//header define:
+//https://www.libcamera.org/api-html/build_2include_2libcamera_2formats_8h_source.html
+ constexpr uint32_t __fourcc(char a, char b, char c, char d)
+ {
+     return (static_cast<uint32_t>(a) <<  0) |
+            (static_cast<uint32_t>(b) <<  8) |
+            (static_cast<uint32_t>(c) << 16) |
+            (static_cast<uint32_t>(d) << 24);
+ }
+ constexpr uint64_t __mod(unsigned int vendor, unsigned int mod)
+ {
+     return (static_cast<uint64_t>(vendor) << 56) |
+            (static_cast<uint64_t>(mod) << 0);
+ }
  constexpr PixelFormat R8{ __fourcc('R', '8', ' ', ' '), __mod(0, 0) };
  constexpr PixelFormat R10{ __fourcc('R', '1', '0', ' '), __mod(0, 0) };
  constexpr PixelFormat R12{ __fourcc('R', '1', '2', ' '), __mod(0, 0) };
@@ -109,6 +127,7 @@ struct mydata{
 	_obj* myobj;
 	int log;
 
+	int choosecamera;
 	int fmt;
 	int fps;
 	int w;
@@ -123,7 +142,6 @@ struct mydata{
 
 	std::vector<std::unique_ptr<Request>> requests;
 };
-
 
 static void requestComplete(Request *request)
 {
@@ -255,19 +273,22 @@ int createcamera(struct mydata* my){
 
 	my->cm->start();
 
-	auto list = my->cm->cameras();
-	if(list.empty()){
+	auto camlist = my->cm->cameras();
+	if(camlist.empty()){
 		std::cout << "no camera" << std::endl;
 		return 0;
 	}
 
 	int idx = 0;
-	for (auto const &camera : list){
-		std::cout << idx << ": " << cameraName(camera.get())<< " @ " << camera->id() << std::endl;
+	for (auto const &camera : camlist){
+		std::cout << idx;
+		std::cout << ": cameraName=" << cameraName(camera.get());
+		std::cout << ", id=" << camera->id();
+		std::cout << (my->choosecamera==idx?", (chosen)":"") << std::endl;
 		idx += 1;
 	}
 
-	std::string id = list[0]->id();
+	std::string id = camlist[0]->id();
 	my->cam = my->cm->get(id);
 	my->cam->acquire();
 
@@ -286,30 +307,59 @@ int createcamera(struct mydata* my){
 
 	//foramt
 	auto stcfmt = stmcfg.formats();
-	auto pixfmt = stcfmt.pixelformats();
-	for(auto& fmt: pixfmt){
-		std::cout << "format: " << fmt.toString() <<std::hex<< " fourcc=" << fmt.fourcc() << std::endl;
+	auto enumfmt = stcfmt.pixelformats();
+	for(auto& fmt: enumfmt){
+		std::cout << "format: " << fmt.toString() <<std::hex<< " fourcc=" << fmt.fourcc() <<std::hex<< " modifier=" << fmt.modifier() << std::endl;
 
-		auto pixsize= stcfmt.sizes(fmt);
-		for(auto& sz: pixsize){
+		auto enumsize= stcfmt.sizes(fmt);
+		for(auto& sz: enumsize){
 			std::cout << "size: " << sz.toString() << std::endl;
 		}
 	}
 
-	//stream config
+	//if format set, try my format
 	stmcfg.size.width = my->w;
 	stmcfg.size.height = my->h;
-	if(my->fmt){
-		stmcfg.pixelFormat = PixelFormat(my->fmt);
-	}
-	else{
-		my->fmt = stmcfg.pixelFormat.fourcc();
-		if(_BG10_ == my->fmt)my->fmt = _pBAA_;
-		if(_GB10_ == my->fmt)my->fmt = _pGAA_;
+	switch(my->fmt){
+	case _yuyv_:
+		stmcfg.pixelFormat = libcamera::formats::YUYV;
+		break;
+	case _uyvy_:
+		stmcfg.pixelFormat = libcamera::formats::UYVY;
+		break;
 	}
 
-	//camera config
+	//check is it valid
+	logtoall((void*)"calling validate\n");
 	camcfg->validate();
+
+	//if format not set, convert libcam fmt to my fmt
+	u32 libcam_width = stmcfg.size.width;
+	u32 libcam_height = stmcfg.size.height;
+	u32 libcam_fourcc = stmcfg.pixelFormat.fourcc();
+	u64 libcam_modifier = stmcfg.pixelFormat.modifier();
+	switch(stmcfg.pixelFormat){
+	case libcamera::formats::SBGGR10_CSI2P:
+		my->fmt = _pBAA_;
+		break;
+	case libcamera::formats::SGBRG10_CSI2P:
+		my->fmt = _pGAA_;
+		break;
+	case libcamera::formats::YUYV:
+		my->fmt = _yuyv_;
+		break;
+	case libcamera::formats::UYVY:
+		my->fmt = _uyvy_;
+		break;
+	case libcamera::formats::SBGGR16:
+	default:
+		my->fmt = libcam_fourcc;
+		break;
+	}
+	logtoall((void*)"libcam_width=%d, libcam_height=%d, libcam_fourcc=%x, libcam_modifier=%llx\n",
+		libcam_width, libcam_height, libcam_fourcc, libcam_modifier);
+
+	//camera config
 	my->cam->configure(camcfg.get());
 
 	my->allocator = new FrameBufferAllocator(my->cam);
@@ -434,10 +484,14 @@ int libcam_create(_obj* cam, void* arg, int argc, u8** argv)
 	my->log = 0;
 
 	int j;
+	u32 choosecamera = 0;
+	u32 fmt = 0;
 	u32 w = 640;
 	u32 h = 480;
-	u32 fmt = 0;
 	for(j=1;j<argc;j++){
+		if(0 == ncmp(argv[j], (void*)"camera:", 7)){
+			decstr2u32(argv[j]+7, &choosecamera);
+		}
 		if(0 == ncmp(argv[j], (void*)"format:", 7)){
 			fmt = *(u32*)(argv[j]+7);
 		}
@@ -453,6 +507,7 @@ int libcam_create(_obj* cam, void* arg, int argc, u8** argv)
 	}
 	logtoall((void*)"libcam_create fmt=%x,w=%d,h=%d\n", fmt, w, h);
 
+	my->choosecamera = choosecamera;
 	my->fmt = fmt;
 	my->fps = 60;
 	my->w = w;

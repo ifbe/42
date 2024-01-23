@@ -86,7 +86,7 @@ int l298n_give(_obj* obj,void* foot, _syn* stack,int sp, p64 arg, int idx, void*
 			pin_value[k*3+2][1] = 1;
 		}
 		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
-		sleep_us(500*1000);
+		sleep_us(300*1000);
 		break;
 	case 's':
 		for(k=0;k<4;k++){
@@ -95,7 +95,7 @@ int l298n_give(_obj* obj,void* foot, _syn* stack,int sp, p64 arg, int idx, void*
 			pin_value[k*3+2][1] = 0;
 		}
 		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
-		sleep_us(500*1000);
+		sleep_us(300*1000);
 		break;
 	case 'a':
 		for(k=0;k<2;k++){
@@ -109,7 +109,7 @@ int l298n_give(_obj* obj,void* foot, _syn* stack,int sp, p64 arg, int idx, void*
 			pin_value[k*3+2][1] = 1;
 		}
 		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
-		sleep_us(500*1000);
+		sleep_us(300*1000);
 		break;
 	case 'd':
 		for(k=0;k<2;k++){
@@ -123,7 +123,7 @@ int l298n_give(_obj* obj,void* foot, _syn* stack,int sp, p64 arg, int idx, void*
 			pin_value[k*3+2][1] = 0;
 		}
 		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
-		sleep_us(500*1000);
+		sleep_us(300*1000);
 		break;
 	}
 

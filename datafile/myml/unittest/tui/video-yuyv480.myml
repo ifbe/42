@@ -10,6 +10,9 @@ format:yuvx
 usbcam{
 fmt:cam
 arg:/dev/video0
+format:yuyv
+width:640
+height:480
 }
 wnd{
 fmt:wnd
