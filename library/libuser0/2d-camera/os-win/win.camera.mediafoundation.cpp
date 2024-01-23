@@ -271,22 +271,22 @@ char* mf_subtype2format(GUID* guid, char* str){
 int mf_enum(_obj* cam, IMFMediaSource* source){
 	struct privdata* priv = (struct privdata*)cam->priv_256b;
 
-	printf("--------format enum--------:\n");
+	logtoall((void*)"--------format enum--------:\n");
 	IMFPresentationDescriptor* desc = 0;
 	auto hr = source->CreatePresentationDescriptor(&desc);
 	if(FAILED(hr)){
-		printf("61\n");
+		logtoall((void*)"61\n");
 		return 0;
 	}
 	if(0 == desc){
-		printf("62\n");
+		logtoall((void*)"62\n");
 		return 0;
 	}
 
 	DWORD desccount;
 	hr = desc->GetStreamDescriptorCount(&desccount);
 	if(FAILED(hr)){
-		printf("63\n");
+		logtoall((void*)"63\n");
 		return 0;
 	}
 
@@ -301,7 +301,7 @@ int mf_enum(_obj* cam, IMFMediaSource* source){
 
 		char str[64];
 		wstr2str(wstr,wlen, str,64);
-		printf("stream%d: %s\n", j, str);
+		logtoall((void*)"stream%d: %s\n", j, str);
 
 		IMFMediaTypeHandler* hand;
 		hr = streamdesc->GetMediaTypeHandler(&hand);
@@ -319,7 +319,7 @@ int mf_enum(_obj* cam, IMFMediaSource* source){
 			hr = MFGetAttributeSize(priv->mediatype, MF_MT_FRAME_RATE, &numerator, &denominator);
 
 			char str[64];
-			printf("%d: width=%d,height=%d,fps=%f,format=%.32s\n", k, width, height, (float)numerator/denominator, mf_subtype2format(&priv->subtype, str));
+			logtoall((void*)"%d: width=%d,height=%d,fps=%f,format=%.32s\n", k, width, height, (float)numerator/denominator, mf_subtype2format(&priv->subtype, str));
 		}
 	}
 	return 0;
@@ -327,7 +327,7 @@ int mf_enum(_obj* cam, IMFMediaSource* source){
 int mf_select(_obj* cam, IMFMediaSource* source){
 	struct privdata* priv = (struct privdata*)cam->priv_256b;
 
-	printf("--------format select--------:\n");
+	logtoall((void*)"--------format select--------:\n");
 	IMFPresentationDescriptor* desc = 0;
 	auto hr = source->CreatePresentationDescriptor(&desc);
 
@@ -356,7 +356,7 @@ int mf_select(_obj* cam, IMFMediaSource* source){
 				(IsEqualGUID(priv->subtype, MFVideoFormat_NV12) && (_y4_uv_ == priv->format) )
 			){
 				char str[64];
-				printf("%d: width=%d,height=%d,fps=%f,format=%.32s\n", k, ww, hh, (float)numerator/denominator, mf_subtype2format(&priv->subtype, str));
+				logtoall((void*)"%d: width=%d,height=%d,fps=%f,format=%.32s\n", k, ww, hh, (float)numerator/denominator, mf_subtype2format(&priv->subtype, str));
 		
 				hr = hand->SetCurrentMediaType(priv->mediatype);
 				break;
@@ -366,28 +366,28 @@ int mf_select(_obj* cam, IMFMediaSource* source){
 
 	hr = MFCreateSourceReaderFromMediaSource(source, NULL, &priv->reader);
 	if(FAILED(hr)){
-		printf("6\n");
+		logtoall((void*)"6\n");
 	}
 
 	hr = priv->reader->GetCurrentMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM, &priv->mediatype);
 	if(FAILED(hr)){
-		printf("7\n");
+		logtoall((void*)"7\n");
 	}
 
 	hr = priv->mediatype->GetGUID(MF_MT_SUBTYPE, &priv->subtype);
 	if(FAILED(hr)){
-		printf("8\n");
+		logtoall((void*)"8\n");
 	}
 
 	u32 width;
 	u32 height;
 	hr = MFGetAttributeSize(priv->mediatype, MF_MT_FRAME_SIZE, &width, &height);
 	if(FAILED(hr)){
-		printf("9\n");
+		logtoall((void*)"9\n");
 	}
 
 	char str[64];
-	printf("width=%d,height=%d,format=%.32s\n", width, height, mf_subtype2format(&priv->subtype, str));
+	logtoall((void*)"width=%d,height=%d,format=%.32s\n", width, height, mf_subtype2format(&priv->subtype, str));
 
 	return 0;
 }
@@ -397,29 +397,29 @@ int mfthread(_obj* cam){
 
 	auto hr = MFStartup(MF_VERSION);
 	if(FAILED(hr)){
-		printf("0\n");
+		logtoall((void*)"0\n");
 	}
 
 	hr = MFCreateAttributes(&priv->attr, 1);
 	if(FAILED(hr)){
-		printf("1\n");
+		logtoall((void*)"1\n");
 	}
 
 	hr = priv->attr->SetGUID(
 		MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
 		MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID);
 	if(FAILED(hr)){
-		printf("2\n");
+		logtoall((void*)"2\n");
 	}
 
-	printf("--------device enum--------:\n");
+	logtoall((void*)"--------device enum--------:\n");
 	hr = MFEnumDeviceSources(priv->attr, &priv->devices, &priv->camcount);
 	if(FAILED(hr)){
-		printf("3\n");
+		logtoall((void*)"3\n");
 		return 0;
 	}
 	if(priv->camcount < 1){
-		printf("4\n");
+		logtoall((void*)"4\n");
 		return 0;
 	}
 	for(int j=0;j<priv->camcount;j++){
@@ -429,13 +429,13 @@ int mfthread(_obj* cam){
 
 		char str[64];
 		wstr2str(wstr,wlen, str,64);
-		printf("%d: %s\n", j, str);
+		logtoall((void*)"%d: %s\n", j, str);
 	}
 
-	printf("--------device select--------:\n");
+	logtoall((void*)"--------device select--------:\n");
 	hr = MFCreateDeviceSource(priv->devices[0], &priv->source);
 	if(FAILED(hr)){
-		printf("5\n");
+		logtoall((void*)"5\n");
 	}
 	//devices[0]->ActivateObject(IID_PPV_ARGS(source));
 
@@ -443,7 +443,7 @@ int mfthread(_obj* cam){
 
 	mf_select(cam, priv->source);
 
-	printf("--------run--------:\n");
+	logtoall((void*)"--------run--------:\n");
 	struct kv88 kv88[4] = {
 		't', 0,
 		 0 , 0
@@ -455,12 +455,12 @@ int mfthread(_obj* cam){
 		IMFSample* sample;
 		hr = priv->reader->ReadSample(MF_SOURCE_READER_FIRST_VIDEO_STREAM, 0, &idx, &flag, &timestamp, &sample);
 		if(FAILED(hr)){
-			printf("10\n");
+			logtoall((void*)"10\n");
 		}
 
 		u64 timenow = timeread_ns();
 		u64 timeimg = timestamp*100;		//ns
-		printf("ReadSample: idx=%d,flag=%x,sample=%p, timeimg=%lld,timenow=%lld,dt=%d\n", idx, flag, sample, timeimg,timenow,timenow-timeimg);
+		logtoall((void*)"ReadSample: idx=%d,flag=%x,sample=%p, timeimg=%lld,timenow=%lld,dt=%d\n", idx, flag, sample, timeimg,timenow,timenow-timeimg);
 		if(0 == sample)continue;
 
 		DWORD cnt = 0;
@@ -474,29 +474,29 @@ int mfthread(_obj* cam){
 			u8* data;
 			hr = buffer->Lock(&data, NULL, &len);
 			if(FAILED(hr)){
-				printf("10\n");
+				logtoall((void*)"10\n");
 			}
 
 			//char str[64];
-			//printf("type=%.32s,data=%p\n", mf_subtype2format(&subtype, str), data);
+			//logtoall((void*)"type=%.32s,data=%p\n", mf_subtype2format(&subtype, str), data);
 			//printmemory(data, 0x20);
 			kv88[0].val = timeimg;
 			give_data_into_peer_temp_stack(cam,_dst_, (p64)kv88,_kv88_, data, 0);
 
 			hr = buffer->Unlock();
 			if(FAILED(hr)){
-				printf("11\n");
+				logtoall((void*)"11\n");
 			}
 
 			hr = buffer->Release();
 			if(FAILED(hr)){
-				printf("12\n");
+				logtoall((void*)"12\n");
 			}
 		}
 
 		hr = sample->Release();
 		if(FAILED(hr)){
-			printf("13\n");
+			logtoall((void*)"13\n");
 		}
 	}
 	priv->attr->Release();

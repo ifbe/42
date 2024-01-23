@@ -260,7 +260,6 @@
 ./libnet/4.use/any/http3.c
 ./libnet/4.use/tcp/tcp.dl.c
 ./libnet/4.use/tcp/tcp.ftp.c
-./libnet/4.use/tcp/tcp.fuckgfw.c
 ./libnet/4.use/tcp/tcp.party.c
 ./libnet/4.use/tcp/tcp.proxy.c
 ./libnet/4.use/tcp/tcp.rdp.c

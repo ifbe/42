@@ -696,25 +696,6 @@ int tls1v3master_attach(struct halfrel* self, struct halfrel* peer);
 int tls1v3master_detach(struct halfrel* self, struct halfrel* peer);
 int tls1v3master_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len);
 int tls1v3master_read( _obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len);
-//fuckgfw
-int fuckgfwclient_create(_obj* ele, void* arg, int argc, u8** argv);
-int fuckgfwclient_delete(_obj* ele, void* arg);
-int fuckgfwclient_attach(struct halfrel* self, struct halfrel* peer);
-int fuckgfwclient_detach(struct halfrel* self, struct halfrel* peer);
-int fuckgfwclient_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len);
-int fuckgfwclient_read( _obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len);
-int fuckgfwserver_create(_obj* ele, void* arg, int argc, u8** argv);
-int fuckgfwserver_delete(_obj* ele, void* arg);
-int fuckgfwserver_attach(struct halfrel* self, struct halfrel* peer);
-int fuckgfwserver_detach(struct halfrel* self, struct halfrel* peer);
-int fuckgfwserver_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len);
-int fuckgfwserver_read( _obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len);
-int fuckgfwmaster_create(_obj* ele, void* arg, int argc, u8** argv);
-int fuckgfwmaster_delete(_obj* ele, void* arg);
-int fuckgfwmaster_attach(struct halfrel* self, struct halfrel* peer);
-int fuckgfwmaster_detach(struct halfrel* self, struct halfrel* peer);
-int fuckgfwmaster_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len);
-int fuckgfwmaster_read( _obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len);
 //tcp.party
 int partyclient_create(_obj* ele, void* arg, int argc, u8** argv);
 int partyclient_delete(_obj* ele, void* arg);
@@ -1793,38 +1774,6 @@ void* artery_create(u64 type, void* arg, int argc, u8** argv)
 		return e;
 	}
 
-	//fuckgfw: master,server,client
-	if(_FUCKGFW_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _FUCKGFW_;
-		fuckgfwmaster_create(e, url, argc, argv);
-
-		return e;
-	}
-	if(_Fuckgfw_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _Fuckgfw_;
-		fuckgfwserver_create(e, url, argc, argv);
-
-		return e;
-	}
-	if(_fuckgfw_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _fuckgfw_;
-		fuckgfwclient_create(e, url, argc, argv);
-
-		return e;
-	}
-
 	//serve: master,server,client
 	if(_PARTY_ == type)
 	{
@@ -2146,9 +2095,6 @@ int artery_takeby(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, vo
 	case _TCPTRAV_:tcptravmaster_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _tcptrav_:tcptravclient_read(art,foot, stack,sp, arg,idx, buf,len);break;
 
-	case _FUCKGFW_:fuckgfwmaster_read(art,foot, stack,sp, arg,idx, buf,len);break;
-	case _Fuckgfw_:fuckgfwserver_read(art,foot, stack,sp, arg,idx, buf,len);break;
-	case _fuckgfw_:fuckgfwclient_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _PARTY_:partymaster_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _Party_:partyserver_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _party_:partyclient_read(art,foot, stack,sp, arg,idx, buf,len);break;
@@ -2273,9 +2219,6 @@ int artery_giveby(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, vo
 	case _TCPTRAV_:return tcptravmaster_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _tcptrav_:return tcptravclient_write(art,foot, stack,sp, arg,idx, buf,len);break;
 
-	case _FUCKGFW_:return fuckgfwmaster_write(art,foot, stack,sp, arg,idx, buf,len);break;
-	case _Fuckgfw_:return fuckgfwserver_write(art,foot, stack,sp, arg,idx, buf,len);break;
-	case _fuckgfw_:return fuckgfwclient_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _PARTY_:return partymaster_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _Party_:return partyserver_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _party_:return partyclient_write(art,foot, stack,sp, arg,idx, buf,len);break;

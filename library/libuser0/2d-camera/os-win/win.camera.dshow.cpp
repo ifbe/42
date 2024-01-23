@@ -66,7 +66,7 @@ public:
 	STDMETHODIMP QueryInterface(REFIID riid, void **ppv)
 	{
 		if (NULL == ppv) return E_POINTER;
-		printf("%llx\n",riid);
+		logtoall((void*)"%llx\n",riid);
 		if (riid == __uuidof(IUnknown))
 		{
 			*ppv = static_cast<IUnknown*>(this);
@@ -125,11 +125,11 @@ HRESULT enumdev(void* dev, int which)
 		CLSID_SystemDeviceEnum, NULL,  
 		CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pDevEnum)
 	);
-	if(FAILED(hr)){printf("error@ICreateDevEnum\n");return -1;}
+	if(FAILED(hr)){logtoall((void*)"error@ICreateDevEnum\n");return -1;}
 
 	//Create an enumerator for the category.
 	hr = pDevEnum->CreateClassEnumerator(CLSID_VideoInputDeviceCategory, &pEnum, 0);
-	if (hr == S_FALSE){printf("error@IEnumMoniker\n");return -2;}
+	if (hr == S_FALSE){logtoall((void*)"error@IEnumMoniker\n");return -2;}
 
 	while (pEnum->Next(1, &pMoniker, NULL) == S_OK)
 	{
@@ -146,7 +146,7 @@ HRESULT enumdev(void* dev, int which)
 		if (SUCCEEDED(hr))
 		{
 			// The dev path is not intended for display.
-			printf("dev path: %S\n", var.bstrVal);
+			logtoall((void*)"dev path: %S\n", var.bstrVal);
 		}
 */
 
@@ -161,14 +161,14 @@ HRESULT enumdev(void* dev, int which)
 			if(which == 0)
 			{
 				hr = pMoniker->BindToObject(0, 0, IID_IBaseFilter, (void**)dev);
-				if(FAILED(hr))printf("error@bindtoobject\n");
+				if(FAILED(hr))logtoall((void*)"error@bindtoobject\n");
 				else
 				{
-					printf("%S	***selected***\n", var.bstrVal);
+					logtoall((void*)"%S	***selected***\n", var.bstrVal);
 					flag = 1;
 				}
 			}
-			else printf("%S\n", var.bstrVal);
+			else logtoall((void*)"%S\n", var.bstrVal);
 
 			which--;
 		}
@@ -176,7 +176,7 @@ HRESULT enumdev(void* dev, int which)
 		pPropBag->Release();
 		pMoniker->Release();
 	}
-	printf("\n");
+	logtoall((void*)"\n");
 
 	//
 	pEnum->Release();
@@ -232,11 +232,11 @@ HRESULT configgraph(_obj* win, IAMStreamConfig* devcfg)
 
 	hr = devcfg->GetNumberOfCapabilities(&iCount, &iSize);
 	if(FAILED(hr)){
-		printf("%x@GetNumberOfCapabilities\n",hr);
+		logtoall((void*)"%x@GetNumberOfCapabilities\n",hr);
 		return -2;
 	}
 	if(iSize != sizeof(VIDEO_STREAM_CONFIG_CAPS)){
-		printf("iSize != sizeof(VIDEO_STREAM_CONFIG_CAPS)\n");
+		logtoall((void*)"iSize != sizeof(VIDEO_STREAM_CONFIG_CAPS)\n");
 		return -3;
 	}
 
@@ -251,29 +251,29 @@ HRESULT configgraph(_obj* win, IAMStreamConfig* devcfg)
 		u32 tmpfmt = 0;
 		if(MEDIASUBTYPE_YUY2 == pmtConfig->subtype)tmpfmt = _yuyv_;
 		if(MEDIASUBTYPE_MJPG == pmtConfig->subtype)tmpfmt = _mjpg_;
-		printf("%03d: %.4s\n",iFormat, &tmpfmt);
+		logtoall((void*)"%03d: %.4s\n",iFormat, &tmpfmt);
 
 		if(MEDIATYPE_Video != pmtConfig->majortype)continue;
 		if(FORMAT_VideoInfo == pmtConfig->formattype){
 			VIDEOINFOHEADER* head = (VIDEOINFOHEADER*)(pmtConfig->pbFormat);
 			BITMAPINFOHEADER* bmp = &head->bmiHeader;
-			printf("FORMAT_VideoInfo1: %dx%d@%d\n",bmp->biWidth, bmp->biHeight, 10*1000*1000/head->AvgTimePerFrame);
+			logtoall((void*)"FORMAT_VideoInfo1: %dx%d@%d\n",bmp->biWidth, bmp->biHeight, 10*1000*1000/head->AvgTimePerFrame);
 
 			if(	(win->STRIDE == bmp->biWidth) &&
 				(win->HEIGHT == bmp->biHeight) &&
 				(win->FORMAT == tmpfmt) )
 			{
 				hr = devcfg->SetFormat(pmtConfig);
-				if(SUCCEEDED(hr))printf("success@SetFormat\n");
-				else printf("errno=%d@SetFormat\n", hr);
+				if(SUCCEEDED(hr))logtoall((void*)"success@SetFormat\n");
+				else logtoall((void*)"errno=%d@SetFormat\n", hr);
 			}
 		}
 		if(FORMAT_VideoInfo2 == pmtConfig->formattype){
-			printf("FORMAT_VideoInfo2\n");
+			logtoall((void*)"FORMAT_VideoInfo2\n");
 		}
 	}//for
 
-	printf("\n");
+	logtoall((void*)"\n");
 	return S_OK;
 }
 void shutupdie(_obj* win)
@@ -319,26 +319,26 @@ void letsgo(_obj* win)
 		CLSCTX_INPROC_SERVER, IID_ICaptureGraphBuilder2,
 		(void**)&m_pBuild
 	);
-	if(FAILED(hr)){printf("error %x@CLSID_CaptureGraphBuilder2\n",hr);goto fail;}
+	if(FAILED(hr)){logtoall((void*)"error %x@CLSID_CaptureGraphBuilder2\n",hr);goto fail;}
 
 	hr = CoCreateInstance(
 		CLSID_FilterGraph, NULL,
 		CLSCTX_INPROC_SERVER, IID_IGraphBuilder,
 		(void**)&m_pGraph
 	);
-	if(FAILED(hr)){printf("error %x@CLSID_FilterGraph\n",hr);goto fail;}
+	if(FAILED(hr)){logtoall((void*)"error %x@CLSID_FilterGraph\n",hr);goto fail;}
 
 	hr = m_pBuild->SetFiltergraph(m_pGraph);
-	if(FAILED(hr)){printf("error %x@SetFiltergraph\n",hr);goto fail;}
+	if(FAILED(hr)){logtoall((void*)"error %x@SetFiltergraph\n",hr);goto fail;}
 
 	hr = m_pGraph->QueryInterface(IID_IMediaControl,(LPVOID *) &g_pMC);
-	if (FAILED(hr)){printf("mediacontrol\n");return;}
+	if (FAILED(hr)){logtoall((void*)"mediacontrol\n");return;}
 
 	hr = m_pGraph->QueryInterface(IID_IVideoWindow, (LPVOID *) &g_pVW);
-	if (FAILED(hr)){printf("videowindow\n");return;}
+	if (FAILED(hr)){logtoall((void*)"videowindow\n");return;}
 
 	hr = m_pGraph->QueryInterface(IID_IMediaEventEx, (LPVOID *) &g_pME);
-	if (FAILED(hr)){printf("mediaevent\n");return;}
+	if (FAILED(hr)){logtoall((void*)"mediaevent\n");return;}
 
 
 
@@ -348,7 +348,7 @@ void letsgo(_obj* win)
 	if(hr < 0)goto fail;
 
 	hr = m_pGraph->AddFilter(dev, L"Capture Filter");
-	if(FAILED(hr)){printf("error %x@add dev\n",hr);goto fail;}
+	if(FAILED(hr)){logtoall((void*)"error %x@add dev\n",hr);goto fail;}
 
 	hr = enumpin(dev, PINDIR_OUTPUT, 0, &devout);
 	if(hr < 0)goto fail;
@@ -365,19 +365,19 @@ void letsgo(_obj* win)
 		CLSCTX_INPROC_SERVER, IID_IBaseFilter,
 		(void**)&sample
 	);
-	if(FAILED(hr)){printf("error %x@sample create\n",hr);goto fail;}
+	if(FAILED(hr)){logtoall((void*)"error %x@sample create\n",hr);goto fail;}
 
 	hr = sample->QueryInterface(IID_ISampleGrabber, (void**)&pGrabber);
-	if(FAILED(hr)){printf("error %x@sample query\n",hr);goto fail;}
+	if(FAILED(hr)){logtoall((void*)"error %x@sample query\n",hr);goto fail;}
 
 	hr = pGrabber->SetOneShot(FALSE);
 	hr = pGrabber->SetBufferSamples(TRUE);
 
 	hr = pGrabber->SetCallback(&cb, 0);
-	if(FAILED(hr)){printf("error %x@sample callback\n",hr);goto fail;}
+	if(FAILED(hr)){logtoall((void*)"error %x@sample callback\n",hr);goto fail;}
 
 	hr = m_pGraph->AddFilter(sample, L"Sample Grabber");
-	if(FAILED(hr)){printf("error %x@add sample\n",hr);goto fail;}
+	if(FAILED(hr)){logtoall((void*)"error %x@add sample\n",hr);goto fail;}
 
 	hr = enumpin(sample, PINDIR_INPUT, 0, &samplein);
 
@@ -388,26 +388,26 @@ void letsgo(_obj* win)
 
 	//connect, connect, start
 	hr = m_pGraph->Connect(devout, samplein);
-	if(FAILED(hr)){printf("error %x@graph connect\n",hr);goto fail;}
+	if(FAILED(hr)){logtoall((void*)"error %x@graph connect\n",hr);goto fail;}
 
 	hr = m_pBuild->FindInterface(
 		&PIN_CATEGORY_CAPTURE, &MEDIATYPE_Video,
 		dev, IID_IAMStreamConfig,
 		(void**)&devcfg
 	);
-	if(FAILED(hr)){printf("%x@findinterface\n",hr);goto fail;}
+	if(FAILED(hr)){logtoall((void*)"%x@findinterface\n",hr);goto fail;}
 
 	hr = configgraph(win, devcfg);
 /*
 	hr = pGrabber->GetConnectedMediaType(&mt);
-	if(FAILED(hr)){printf("error %x@media type\n",hr);goto fail;}
+	if(FAILED(hr)){logtoall((void*)"error %x@media type\n",hr);goto fail;}
 
 	head = (VIDEOINFOHEADER*)(mt.pbFormat);
 	bmp = &head->bmiHeader;
-	printf("GetConnectedMediaType: %dx%d~%d\n", bmp->biWidth, bmp->biHeight, 10*1000*1000/head->AvgTimePerFrame);
+	logtoall((void*)"GetConnectedMediaType: %dx%d~%d\n", bmp->biWidth, bmp->biHeight, 10*1000*1000/head->AvgTimePerFrame);
 */
 	hr = g_pMC->Run();
-	if(FAILED(hr)){printf("error %x@run\n",hr);goto fail;}
+	if(FAILED(hr)){logtoall((void*)"error %x@run\n",hr);goto fail;}
 
 	return;
 
@@ -427,7 +427,7 @@ extern "C" {
 int dshowcam_take(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 	u64 addr = obj[(enq+59)%60].addr;
-	printf("addr=%llx\n",addr);
+	logtoall((void*)"addr=%llx\n",addr);
 
 	*(u64*)buf = addr;
 	return 0;

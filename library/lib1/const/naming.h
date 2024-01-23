@@ -187,9 +187,6 @@
 #define _PARTY_ hex64('P','A','R','T','Y', 0, 0, 0)
 #define _Party_ hex64('P','a','r','t','y', 0, 0, 0)
 #define _party_ hex64('p','a','r','t','y', 0, 0, 0)
-#define _FUCKGFW_ hex64('F','U','C','K','G','F','W', 0)
-#define _Fuckgfw_ hex64('F','u','c','k','g','f','w', 0)
-#define _fuckgfw_ hex64('f','u','c','k','g','f','w', 0)
 //trav
 #define _UDPTRAV_ hex64('U','D','P','T','R','A','V', 0)
 #define _Udptrav_ hex64('U','d','p','t','r','a','v', 0)

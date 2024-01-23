@@ -72,7 +72,7 @@ dostop:
 	j = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	if(-1 == ioctl(fd, VIDIOC_STREAMOFF, &j))
 	{
-		printf("@OFF:errno=%d\n",errno);
+		logtoall("@OFF:errno=%d\n",errno);
 		goto doclose;
 	}
 
@@ -102,7 +102,7 @@ int v4l2cam_prepare(_obj* cam)
 	int fd = open(pcam->path, O_RDWR);    //|O_NONBLOCK);
 	if(fd <= 0)
 	{
-		printf("error@open /dev/video0\n");
+		logtoall("error@open /dev/video0\n");
 		return 0;
 	}
 	pcam->fd = fd;
@@ -112,42 +112,42 @@ int v4l2cam_prepare(_obj* cam)
 	struct v4l2_capability cap;
 	if(-1 == ioctl(fd,VIDIOC_QUERYCAP,&cap))
 	{
-		printf("VIDIOC_QUERYCAP error\n");
+		logtoall("VIDIOC_QUERYCAP error\n");
 		return 0;
 	}
-	printf("v4l2_capability:\n");
-	printf("	driver: %s\n", cap.driver);
-	printf("	card: %s\n", cap.card);
-	printf("	bus_info: %s\n", cap.bus_info);
-	printf("	version: %08X\n", cap.version);
-	printf("	capabilities: %08X\n", cap.capabilities);
-	if(cap.capabilities&V4L2_CAP_VIDEO_CAPTURE)       printf("		V4L2_CAP_VIDEO_CAPTURE\n");
-	if(cap.capabilities&V4L2_CAP_VIDEO_CAPTURE_MPLANE)printf("		V4L2_CAP_VIDEO_CAPTURE_MPLANE\n");
-	if(cap.capabilities&V4L2_CAP_VIDEO_OUTPUT)        printf("		V4L2_CAP_VIDEO_OUTPUT\n");
-	if(cap.capabilities&V4L2_CAP_VIDEO_OUTPUT_MPLANE) printf("		V4L2_CAP_VIDEO_OUTPUT_MPLANE\n");
-	if(cap.capabilities&V4L2_CAP_VIDEO_M2M)           printf("		V4L2_CAP_VIDEO_M2M\n");
-	if(cap.capabilities&V4L2_CAP_VIDEO_M2M_MPLANE)    printf("		V4L2_CAP_VIDEO_M2M_MPLANE\n");
-	if(cap.capabilities&V4L2_CAP_VIDEO_OVERLAY)       printf("		V4L2_CAP_VIDEO_OVERLAY\n");
-	if(cap.capabilities&V4L2_CAP_VBI_CAPTURE)         printf("		V4L2_CAP_VBI_CAPTURE\n");
-	if(cap.capabilities&V4L2_CAP_VBI_OUTPUT)          printf("		V4L2_CAP_VBI_OUTPUT\n");
-	if(cap.capabilities&V4L2_CAP_SLICED_VBI_CAPTURE)  printf("		V4L2_CAP_SLICED_VBI_CAPTURE\n");
-	if(cap.capabilities&V4L2_CAP_SLICED_VBI_OUTPUT)   printf("		V4L2_CAP_SLICED_VBI_OUTPUT\n");
-	if(cap.capabilities&V4L2_CAP_RDS_CAPTURE)         printf("		V4L2_CAP_RDS_CAPTURE\n");
-	if(cap.capabilities&V4L2_CAP_VIDEO_OUTPUT_OVERLAY)printf("		V4L2_CAP_VIDEO_OUTPUT_OVERLAY\n");
-	if(cap.capabilities&V4L2_CAP_HW_FREQ_SEEK)        printf("		V4L2_CAP_HW_FREQ_SEEK\n");
-	if(cap.capabilities&V4L2_CAP_RDS_OUTPUT)          printf("		V4L2_CAP_RDS_OUTPUT\n");
-	if(cap.capabilities&V4L2_CAP_TUNER)               printf("		V4L2_CAP_TUNER\n");
-	if(cap.capabilities&V4L2_CAP_AUDIO)               printf("		V4L2_CAP_AUDIO\n");
-	if(cap.capabilities&V4L2_CAP_RADIO)               printf("		V4L2_CAP_RADIO\n");
-	if(cap.capabilities&V4L2_CAP_MODULATOR)           printf("		V4L2_CAP_MODULATOR\n");
-	if(cap.capabilities&V4L2_CAP_SDR_CAPTURE)         printf("		V4L2_CAP_SDR_CAPTURE\n");
-	if(cap.capabilities&V4L2_CAP_EXT_PIX_FORMAT)      printf("		V4L2_CAP_EXT_PIX_FORMAT\n");
-	if(cap.capabilities&V4L2_CAP_SDR_OUTPUT)          printf("		V4L2_CAP_SDR_OUTPUT\n");
-	if(cap.capabilities&V4L2_CAP_READWRITE)           printf("		V4L2_CAP_READWRITE\n");
-	if(cap.capabilities&V4L2_CAP_ASYNCIO)             printf("		V4L2_CAP_ASYNCIO\n");
-	if(cap.capabilities&V4L2_CAP_STREAMING)           printf("		V4L2_CAP_STREAMING\n");
-	//if(cap.capabilities&V4L2_CAP_TOUCH)               printf("		V4L2_CAP_TOUCH\n");
-	if(cap.capabilities&V4L2_CAP_DEVICE_CAPS)         printf("		V4L2_CAP_DEVICE_CAPS\n");
+	logtoall("v4l2_capability:\n");
+	logtoall("	driver: %s\n", cap.driver);
+	logtoall("	card: %s\n", cap.card);
+	logtoall("	bus_info: %s\n", cap.bus_info);
+	logtoall("	version: %08X\n", cap.version);
+	logtoall("	capabilities: %08X\n", cap.capabilities);
+	if(cap.capabilities&V4L2_CAP_VIDEO_CAPTURE)       logtoall("		V4L2_CAP_VIDEO_CAPTURE\n");
+	if(cap.capabilities&V4L2_CAP_VIDEO_CAPTURE_MPLANE)logtoall("		V4L2_CAP_VIDEO_CAPTURE_MPLANE\n");
+	if(cap.capabilities&V4L2_CAP_VIDEO_OUTPUT)        logtoall("		V4L2_CAP_VIDEO_OUTPUT\n");
+	if(cap.capabilities&V4L2_CAP_VIDEO_OUTPUT_MPLANE) logtoall("		V4L2_CAP_VIDEO_OUTPUT_MPLANE\n");
+	if(cap.capabilities&V4L2_CAP_VIDEO_M2M)           logtoall("		V4L2_CAP_VIDEO_M2M\n");
+	if(cap.capabilities&V4L2_CAP_VIDEO_M2M_MPLANE)    logtoall("		V4L2_CAP_VIDEO_M2M_MPLANE\n");
+	if(cap.capabilities&V4L2_CAP_VIDEO_OVERLAY)       logtoall("		V4L2_CAP_VIDEO_OVERLAY\n");
+	if(cap.capabilities&V4L2_CAP_VBI_CAPTURE)         logtoall("		V4L2_CAP_VBI_CAPTURE\n");
+	if(cap.capabilities&V4L2_CAP_VBI_OUTPUT)          logtoall("		V4L2_CAP_VBI_OUTPUT\n");
+	if(cap.capabilities&V4L2_CAP_SLICED_VBI_CAPTURE)  logtoall("		V4L2_CAP_SLICED_VBI_CAPTURE\n");
+	if(cap.capabilities&V4L2_CAP_SLICED_VBI_OUTPUT)   logtoall("		V4L2_CAP_SLICED_VBI_OUTPUT\n");
+	if(cap.capabilities&V4L2_CAP_RDS_CAPTURE)         logtoall("		V4L2_CAP_RDS_CAPTURE\n");
+	if(cap.capabilities&V4L2_CAP_VIDEO_OUTPUT_OVERLAY)logtoall("		V4L2_CAP_VIDEO_OUTPUT_OVERLAY\n");
+	if(cap.capabilities&V4L2_CAP_HW_FREQ_SEEK)        logtoall("		V4L2_CAP_HW_FREQ_SEEK\n");
+	if(cap.capabilities&V4L2_CAP_RDS_OUTPUT)          logtoall("		V4L2_CAP_RDS_OUTPUT\n");
+	if(cap.capabilities&V4L2_CAP_TUNER)               logtoall("		V4L2_CAP_TUNER\n");
+	if(cap.capabilities&V4L2_CAP_AUDIO)               logtoall("		V4L2_CAP_AUDIO\n");
+	if(cap.capabilities&V4L2_CAP_RADIO)               logtoall("		V4L2_CAP_RADIO\n");
+	if(cap.capabilities&V4L2_CAP_MODULATOR)           logtoall("		V4L2_CAP_MODULATOR\n");
+	if(cap.capabilities&V4L2_CAP_SDR_CAPTURE)         logtoall("		V4L2_CAP_SDR_CAPTURE\n");
+	if(cap.capabilities&V4L2_CAP_EXT_PIX_FORMAT)      logtoall("		V4L2_CAP_EXT_PIX_FORMAT\n");
+	if(cap.capabilities&V4L2_CAP_SDR_OUTPUT)          logtoall("		V4L2_CAP_SDR_OUTPUT\n");
+	if(cap.capabilities&V4L2_CAP_READWRITE)           logtoall("		V4L2_CAP_READWRITE\n");
+	if(cap.capabilities&V4L2_CAP_ASYNCIO)             logtoall("		V4L2_CAP_ASYNCIO\n");
+	if(cap.capabilities&V4L2_CAP_STREAMING)           logtoall("		V4L2_CAP_STREAMING\n");
+	//if(cap.capabilities&V4L2_CAP_TOUCH)               logtoall("		V4L2_CAP_TOUCH\n");
+	if(cap.capabilities&V4L2_CAP_DEVICE_CAPS)         logtoall("		V4L2_CAP_DEVICE_CAPS\n");
 	if(0 == cap.capabilities&V4L2_CAP_VIDEO_CAPTURE)return 0;
 
 
@@ -204,7 +204,7 @@ int v4l2cam_prepare(_obj* cam)
 				pcam->realstride = enumx;
 				pcam->realheight = enumy;
 				pcam->realformat = desc.pixelformat;
-				printf("find what i want!\n");
+				logtoall("find what i want!\n");
 			}
 /*
 			frmival.index = 0;
@@ -251,7 +251,7 @@ int v4l2cam_prepare(_obj* cam)
 	fmt.fmt.pix.pixelformat = pcam->realformat;
 	if(-1 == ioctl(fd, VIDIOC_S_FMT, &fmt))
 	{
-		printf("@VIDIOC_S_FMT:errno=%d\n",errno);
+		logtoall("@VIDIOC_S_FMT:errno=%d\n",errno);
 		return 0;
 	}
 
@@ -262,7 +262,7 @@ int v4l2cam_prepare(_obj* cam)
 	req.memory      = V4L2_MEMORY_MMAP;     //V4L2_MEMORY_USERPTR;
 	if(-1 == ioctl(fd,VIDIOC_REQBUFS,&req))
 	{
-		printf("@VIDIOC_REQBUFS:error=%d\n",errno);
+		logtoall("@VIDIOC_REQBUFS:error=%d\n",errno);
 		return 0;
 	}
 
@@ -280,7 +280,7 @@ int v4l2cam_prepare(_obj* cam)
 		v4l2buf->index = j;
 		if(-1 == ioctl(fd, VIDIOC_QUERYBUF, v4l2buf))
 		{
-			printf("@VIDIOC_QUERYBUF:errno=%d\n",errno);
+			logtoall("@VIDIOC_QUERYBUF:errno=%d\n",errno);
 			return 0;
 		}
 
@@ -295,12 +295,12 @@ int v4l2cam_prepare(_obj* cam)
 
 		if(MAP_FAILED == pcam->datainfo[j].buf)
 		{
-			printf("@mmap:errno=%d\n",errno);
+			logtoall("@mmap:errno=%d\n",errno);
 			return 0;
 		}
 		if(-1 == ioctl(fd, VIDIOC_QBUF, v4l2buf))
 		{
-			printf("@VIDEOC_QBUF:errno=%d\n",errno);
+			logtoall("@VIDEOC_QBUF:errno=%d\n",errno);
 			return 0;
 		}
 	}
@@ -309,7 +309,7 @@ int v4l2cam_prepare(_obj* cam)
 	j = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	if(-1 == ioctl(fd, VIDIOC_STREAMON, &j))
 	{
-		printf("@ON:errno=%d\n",errno);
+		logtoall("@ON:errno=%d\n",errno);
 		return 0;
 	}
 	pcam->started = 1;
@@ -352,7 +352,7 @@ void* cameraworker(_obj* cam)
 		j = epoll_wait(epfd, &ev, 1, -1);
 		if(j == -1)
 		{
-			printf("epoll error\n");
+			logtoall("epoll error\n");
 			return 0;
 		}
 
