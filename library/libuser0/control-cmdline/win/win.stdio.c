@@ -20,7 +20,7 @@ void terminalthread(_obj* win)
 			//logtoall("%x\n", ret);
 			ev.why = ret;
 			ev.what = _char_;
-			give_data_into_peer(win,_dst_, stack,0, 0,0, &ev,0);
+			give_data_into_peer(win,_dst_, stack,0, 0,0, &ev,sizeof(u64)*4);
 		}
 	}
 }

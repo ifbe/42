@@ -58,7 +58,20 @@ static int getsockbyobj(_obj* oo)
 
 
 
-
+void printipaddr(union addrv4v6* addr)
+{
+	u8* p;
+	if(addr->sa.sa_family == AF_INET6){
+		logtoall("port=%d,addr=", htons(addr->v6.sin6_port));
+		printmemory(&addr->v6.sin6_addr, 16);
+	}
+	else{
+		p = (u8*)&addr->v4.sin_addr;
+		logtoall("port=%d, addr=%d.%d.%d.%d\n",
+			htons(addr->v4.sin_port),
+			p[0],p[1],p[2],p[3]);
+	}
+}
 u32 resolvehostname4(char* addr)
 {
 	struct hostent* host;
@@ -290,6 +303,8 @@ _obj* createsocket_udpserver(union addrv4v6* my)
 	//self
 	union addrv4v6* self = (void*)oo->sockinfo.self;
 	memcpy((void*)self, my, socklen);
+	logtoall("selfaddr: ");
+	printipaddr(self);
 
 	kqueue_add(fd);
 	return oo;
@@ -298,7 +313,9 @@ _obj* createsocket_udpclient(union addrv4v6* my, union addrv4v6* to)
 {
 	//
 	int sockfmt,socklen;
-	if(AF_INET6 == my->sa.sa_family){
+	if(	(my && (AF_INET6 == my->sa.sa_family) ) |
+		(to && (AF_INET6 == to->sa.sa_family) ) )
+	{
 		sockfmt = AF_INET6;
 		socklen = sizeof(struct sockaddr_in6);
 	}
@@ -352,11 +369,15 @@ if(my){
 	union addrv4v6* self = (void*)oo->sockinfo.self;
 	socklen_t len = socklen;
 	getsockname(fd, (void*)(oo->sockinfo.self), &len);
-	printmemory(self, 32);
+	//printmemory(self, 32);
+	logtoall("selfaddr: ");
+	printipaddr(self);
 
 	//peer
 	union addrv4v6* peer = (void*)oo->sockinfo.self;
 	memcpy((void*)peer, to, socklen);
+	logtoall("peeraddr: ");
+	printipaddr(peer);
 
 	//done
 	kqueue_add(fd);
@@ -422,6 +443,8 @@ _obj* createsocket_tcpserver(union addrv4v6* my)
 	//self
 	union addrv4v6* self = (void*)oo->sockinfo.self;
 	memcpy((void*)self, my, socklen);
+	logtoall("selfaddr: ");
+	printipaddr(self);
 
 	//done
 	kqueue_add(fd);
@@ -430,7 +453,9 @@ _obj* createsocket_tcpserver(union addrv4v6* my)
 _obj* createsocket_tcpclient(union addrv4v6* my, union addrv4v6* to)
 {
 	int sockfmt,socklen;
-	if(AF_INET6 == to->sa.sa_family){
+	if(	(my && (AF_INET6 == my->sa.sa_family) ) |
+		(to && (AF_INET6 == to->sa.sa_family) ) )
+	{
 		sockfmt = AF_INET6;
 		socklen = sizeof(struct sockaddr_in6);
 	}
@@ -497,11 +522,15 @@ if(my){
 	union addrv4v6* self = (void*)oo->sockinfo.self;
 	socklen_t len = socklen;
 	getsockname(fd, (void*)self, &len);
-	printmemory(self, 32);
+	//printmemory(self, 32);
+	logtoall("selfaddr: ");
+	printipaddr(self);
 
 	//peer
 	union addrv4v6* peer = (void*)oo->sockinfo.self;
 	memcpy((void*)peer, to, socklen);
+	logtoall("peeraddr: ");
+	printipaddr(peer);
 
 	//done
 	kqueue_add(fd);
@@ -533,6 +562,7 @@ _obj* socket_create(int fmt, char* arg)
 
 skip:
 	//type
+	logtoall("fmt=%.4s\n", &fmt);
 	switch(fmt){
 	case _RAW_:return createsocket_raw(myaddr, myport);
 	case _UDP_:{
@@ -546,7 +576,7 @@ skip:
 			toport = myport;
 			socket_str2sockaddr(toaddr, &to);
 			to.v4.sin_port = htons(toport);
-			return createsocket_tcpclient(0, &to);
+			return createsocket_udpclient(0, &to);
 		}
 		else{
 			socket_str2sockaddr(myaddr, &my);
@@ -593,6 +623,10 @@ int socket_writer(_obj* oo,int xx, p64 arg,int cmd, void* buf, int len)
 {
 //logtoall("@writesocket:%x,%llx,%llx,%x\n",fd,tmp,buf,len);
 	if(buf == 0)return 0;
+	if(0 == len){
+		logtoall("%s: refuse to send 0 length packet\n", __func__);
+		return 0;
+	}
 
 	int fd = oo->sockinfo.fd;
 	if(fd < 0)return 0;

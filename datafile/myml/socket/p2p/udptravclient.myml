@@ -15,8 +15,8 @@ arg:deepstack.tech
 
 <system>
 socket{
-fmt:UDP
-arg:0.0.0.0:9999
+fmt:udp
+arg:deepstack.tech:9999
 }
 </system>
 

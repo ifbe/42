@@ -349,7 +349,9 @@ _obj* createsocket_udpclient(union addrv4v6* my, union addrv4v6* to)
 {
 	int sockfmt;
 	int socklen;
-	if(AF_INET6 == my->sa.sa_family){
+	if(	(my && (AF_INET6 == my->sa.sa_family) ) |
+		(to && (AF_INET6 == to->sa.sa_family) ) )
+	{
 		sockfmt = AF_INET6;
 		socklen = sizeof(struct sockaddr_in6);
 	}
@@ -482,7 +484,9 @@ _obj* createsocket_tcpclient(union addrv4v6* my, union addrv4v6* to)
 {
 	int sockfmt;
 	int socklen;
-	if(AF_INET6 == to->sa.sa_family){
+	if(	(my && (AF_INET6 == my->sa.sa_family) ) |
+		(to && (AF_INET6 == to->sa.sa_family) ) )
+	{
 		sockfmt = AF_INET6;
 		socklen = sizeof(struct sockaddr_in6);
 	}
@@ -597,7 +601,7 @@ skip:
 			toport = myport;
 			socket_str2sockaddr(toaddr, &to);
 			to.v4.sin_port = htons(toport);
-			return createsocket_tcpclient(0, &to);
+			return createsocket_udpclient(0, &to);
 		}
 		else{
 			socket_str2sockaddr(myaddr, &my);
@@ -645,6 +649,10 @@ int socket_delete(_obj* oo)
 int socket_writer(_obj* oo,int xx, struct sockaddr_in* tmp,int cmd, void* buf,int len)
 {
 	if(0 == buf)return 0;
+	if(0 == len){
+		logtoall("%s: refuse to send 0 length packet\n", __func__);
+		return 0;
+	}
 
 	int fd = oo->sockinfo.fd;
 	if(fd <= 0)return 0;
