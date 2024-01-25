@@ -8,22 +8,14 @@ void* threadsearch(void*, int);
 int processsearch(void* buf, int len);
 int processcreate(void* file, void* args);
 //
-void* origin_search(void*, int);
-void* bootup_search(void*, int);
-void* device_search(void*, int);
-void* driver_search(void*, int);
-void* system_search(void*, int);
-void* artery_search(void*, int);
-void* supply_search(void*, int);
-void* entity_search(void*, int);
-void* origin_modify(int argc, void* argv);
-void* bootup_modify(int argc, void* argv);
-void* device_modify(int argc, void* argv);
-void* driver_modify(int argc, void* argv);
-void* system_modify(int argc, void* argv);
-void* artery_modify(int argc, void* argv);
-void* supply_modify(int argc, void* argv);
-void* entity_modify(int argc, void* argv);
+void* origincommand(int argc, void* argv);
+void* bootupcommand(int argc, void* argv);
+void* devicecommand(int argc, void* argv);
+void* drivercommand(int argc, void* argv);
+void* systemcommand(int argc, void* argv);
+void* arterycommand(int argc, void* argv);
+void* supplycommand(int argc, void* argv);
+void* entitycommand(int argc, void* argv);
 //
 void* style_alloc();
 void style_recycle();
@@ -70,7 +62,7 @@ void term_window(int argc, u8** argv)
 
 	u64 type = u64fromstr(argv[1]);
 
-	struct entity* ent = entity_create(type, 0, 0, 0);
+	struct entity* ent = entity_alloc_prep_create(_ent_, type, 0, 0, 0, 0);
 	if(0 == ent)return;
 
 	struct style* toterm = style_alloc();
@@ -100,35 +92,38 @@ void term_window(int argc, u8** argv)
 }
 void term_ls(u8* buf, int len)
 {
+	char* argv[2];
+	argv[1] = "search";
+
 	if(buf[3] <= 0x20)
 	{
-		origin_search(0, 0);
+		origincommand(2, argv);
 		logtoall("----------------\n");
-		bootup_search(0, 0);
+		bootupcommand(2, argv);
 		logtoall("----------------\n");
-		device_search(0, 0);
+		devicecommand(2, argv);
 		logtoall("----------------\n");
-		driver_search(0, 0);
+		drivercommand(2, argv);
 		logtoall("----------------\n");
-		system_search(0, 0);
+		systemcommand(2, argv);
 		logtoall("----------------\n");
-		artery_search(0, 0);
+		arterycommand(2, argv);
 		logtoall("----------------\n");
-		supply_search(0, 0);
+		supplycommand(2, argv);
 		logtoall("----------------\n");
-		entity_search(0, 0);
+		entitycommand(2, argv);
 		return;
 	}
 
 	buf += 3;
-	if(0 == ncmp(buf, "origin", 6))origin_search(0, 0);
-	else if(0 == ncmp(buf, "bootup", 6))bootup_search(0, 0);
-	else if(0 == ncmp(buf, "device", 6))device_search(0, 0);
-	else if(0 == ncmp(buf, "driver", 6))driver_search(0, 0);
-	else if(0 == ncmp(buf, "system", 6))system_search(0, 0);
-	else if(0 == ncmp(buf, "artery", 6))artery_search(0, 0);
-	else if(0 == ncmp(buf, "supply", 6))supply_search(0, 0);
-	else if(0 == ncmp(buf, "entity", 6))entity_search(0, 0);
+	if(0 == ncmp(buf, "origin", 6))origincommand(2, argv);
+	else if(0 == ncmp(buf, "bootup", 6))bootupcommand(2, argv);
+	else if(0 == ncmp(buf, "device", 6))devicecommand(2, argv);
+	else if(0 == ncmp(buf, "driver", 6))drivercommand(2, argv);
+	else if(0 == ncmp(buf, "system", 6))systemcommand(2, argv);
+	else if(0 == ncmp(buf, "artery", 6))arterycommand(2, argv);
+	else if(0 == ncmp(buf, "supply", 6))supplycommand(2, argv);
+	else if(0 == ncmp(buf, "entity", 6))entitycommand(2, argv);
 	else logtoall("ls(%s)\n", buf);
 }
 void term_mmio(int argc, u8** argv)
@@ -200,14 +195,14 @@ int termwrite(u8* buf, int len)
 	else if(0 == ncmp(buf, "thread", 6))term_thread(j, argv);
 	else if(0 == ncmp(buf, "process", 7))term_process(j, argv);
 	else if(0 == ncmp(buf, "window", 6))term_window(j, argv);
-	else if(0 == ncmp(buf, "origin", 6))origin_modify(j, argv);
-	else if(0 == ncmp(buf, "bootup", 6))bootup_modify(j, argv);
-	else if(0 == ncmp(buf, "device", 6))device_modify(j, argv);
-	else if(0 == ncmp(buf, "driver", 6))driver_modify(j, argv);
-	else if(0 == ncmp(buf, "system", 6))system_modify(j, argv);
-	else if(0 == ncmp(buf, "artery", 6))artery_modify(j, argv);
-	else if(0 == ncmp(buf, "supply", 6))supply_modify(j, argv);
-	else if(0 == ncmp(buf, "entity", 6))entity_modify(j, argv);
+	else if(0 == ncmp(buf, "origin", 6))origincommand(j, argv);
+	else if(0 == ncmp(buf, "bootup", 6))bootupcommand(j, argv);
+	else if(0 == ncmp(buf, "device", 6))devicecommand(j, argv);
+	else if(0 == ncmp(buf, "driver", 6))drivercommand(j, argv);
+	else if(0 == ncmp(buf, "system", 6))systemcommand(j, argv);
+	else if(0 == ncmp(buf, "artery", 6))arterycommand(j, argv);
+	else if(0 == ncmp(buf, "supply", 6))supplycommand(j, argv);
+	else if(0 == ncmp(buf, "entity", 6))entitycommand(j, argv);
 
 finish:
 	term_prompt();

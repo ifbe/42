@@ -113,9 +113,9 @@ vhd2img:
 
 #----------------run----------------
 qemu-mouse:
-	../../../live/virt/qemu/ovmf.sh "qemu-system-x86_64" $(shell pwd)/test.img $(shell pwd)/test.vhd
+	../../../thelive/virt/qemu/ovmf.sh "qemu-system-x86_64" $(shell pwd)/test.img $(shell pwd)/test.vhd
 qemu-tablet:
-	../../../live/virt/qemu/usb-tablet.sh "qemu-system-x86_64" $(shell pwd)/test.img $(shell pwd)/test.vhd
+	../../../thelive/virt/qemu/usb-tablet.sh "qemu-system-x86_64" $(shell pwd)/test.img $(shell pwd)/test.vhd
 qemu:
 	make qemu-tablet
 

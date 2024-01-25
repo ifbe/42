@@ -377,7 +377,8 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 				chip[clen].hash = hash;
 				switch(tier){
 					case _ent_:
-						chip[clen].addr = entity_create(type, arg, argc, argv);
+						chip[clen].addr = entity_alloc_prep(0, type, 0, 0);
+						if(chip[clen].addr)entity_create(chip[clen].addr, arg, argc, argv);
 						break;
 					case _sup_:
 						chip[clen].addr = supply_alloc_prep(0, type, 0, 0);

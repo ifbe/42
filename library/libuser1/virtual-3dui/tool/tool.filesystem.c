@@ -334,6 +334,7 @@ static void fslist_create(_obj* act, void* arg, int argc, u8** argv)
 
 void fslist_register(_obj* p)
 {
+	p->type = _orig_;
 	p->hfmt = hex64('f','s','l','i','s','t', 0, 0);
 
 	p->oncreate = (void*)fslist_create;

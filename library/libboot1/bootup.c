@@ -244,43 +244,54 @@ int bootup_giveby(struct item* wrk,void* foot, _syn* stack,int sp, p64 arg, int 
 
 
 
-int bootup_insert(u8* buf, int len)
+int bootupcommand_insert(u8* name, u8* arg)
 {
 	return 0;
 }
-int bootup_remove(u8* buf, int len)
+int bootupcommand_remove(u8* name)
 {
 	return 0;
 }
-int bootup_search(u8* buf, int len)
-{
-	int j,k=0;
-	for(j=0;j<64;j++)
-	{
-		if(0 == wrk[j].type)continue;
-		logtoall("[%04x]: %.8s\n", j, &wrk[j].type);
-		k++;
-	}
-
-	if(0 == k)logtoall("empth bootup\n");
-	return 0;
-}
-int bootup_modify(int argc, u8** argv)
+int bootupcommand_search(u8* name)
 {
 	int j;
-	u64 name = 0;
-	u8* tmp = (u8*)&name;
-	if(argc < 2)return 0;
-//logtoall("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
-	if(0 == ncmp(argv[1], "create", 6))
-	{
-		for(j=0;j<8;j++)
-		{
-			if(argv[2][j] <= 0x20)break;
-			tmp[j] = argv[2][j];
+	_obj* act;
+	if(0 == name){
+		for(j=0;j<maxitem;j++){
+			act = &wrk[j];
+			if((0 == act->type)&&(0 == act->hfmt))continue;
+			logtoall("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
+				&act->tier, &act->type, &act->hfmt, &act->hfmt);
 		}
-		logtoall("%llx,%llx\n",name, argv[3]);
-		bootup_create(name, argv[3], argc-3, &argv[3]);
+		if(0 == j)logtoall("empty bootup\n");
 	}
+	else{
+		for(j=0;j<0x100;j++){
+			if(0 == wrk[j].hfmt)break;
+			if(0 == cmp(&wrk[j].hfmt, name))logtoall("name=%d,node=%p\n", name, &wrk[j]);
+			break;
+		}
+	}
+	return 0;
+}
+int bootupcommand_modify(int argc, u8** argv)
+{
+	return 0;
+}
+void* bootupcommand(int argc, u8** argv)
+{
+	if(argc < 2){
+		logtoall("bootup insert name arg\n");
+		logtoall("bootup search name\n");
+	}
+	else if(0 == ncmp(argv[1], "insert", 6)){
+		//bootup create name arg
+		bootupcommand_insert(argv[2], argv[3]);
+	}
+	else if(0 == ncmp(argv[1], "search", 6)){
+		//bootup search <name>
+		bootupcommand_search((argc<3) ? 0 : argv[2]);
+	}
+
 	return 0;
 }

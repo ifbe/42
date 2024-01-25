@@ -214,43 +214,54 @@ int driver_giveby(struct item* dri,void* foot, _syn* stack,int sp, p64 arg, int 
 
 
 
-int driver_insert(u8* buf, int len)
+int drivercommand_insert(u8* name, u8* arg)
 {
 	return 0;
 }
-int driver_remove(u8* buf, int len)
+int drivercommand_remove(u8* name)
 {
 	return 0;
 }
-int driver_search(u8* buf, int len)
-{
-	int j,k=0;
-	for(j=0;j<64;j++)
-	{
-		if(0 == dri[j].type)continue;
-		logtoall("[%04x]: %.8s\n", j, &dri[j].type);
-		k++;
-	}
-
-	if(0 == k)logtoall("empth driver\n");
-	return 0;
-}
-int driver_modify(int argc, u8** argv)
+int drivercommand_search(u8* name)
 {
 	int j;
-	u64 name = 0;
-	u8* tmp = (u8*)&name;
-	if(argc < 2)return 0;
-//logtoall("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
-	if(0 == ncmp(argv[1], "create", 6))
-	{
-		for(j=0;j<8;j++)
-		{
-			if(argv[2][j] <= 0x20)break;
-			tmp[j] = argv[2][j];
+	_obj* act;
+	if(0 == name){
+		for(j=0;j<maxitem;j++){
+			act = &dri[j];
+			if((0 == act->type)&&(0 == act->hfmt))continue;
+			logtoall("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
+				&act->tier, &act->type, &act->hfmt, &act->hfmt);
 		}
-		logtoall("%llx,%llx\n",name, argv[3]);
-		driver_create(name, argv[3], argc-3, &argv[3]);
+		if(0 == j)logtoall("empty driver\n");
 	}
+	else{
+		for(j=0;j<0x100;j++){
+			if(0 == dri[j].hfmt)break;
+			if(0 == cmp(&dri[j].hfmt, name))logtoall("name=%d,node=%p\n", name, &dri[j]);
+			break;
+		}
+	}
+	return 0;
+}
+int drivercommand_modify(int argc, u8** argv)
+{
+	return 0;
+}
+void* drivercommand(int argc, u8** argv)
+{
+	if(argc < 2){
+		logtoall("driver insert name arg\n");
+		logtoall("driver search name\n");
+	}
+	else if(0 == ncmp(argv[1], "insert", 6)){
+		//driver create name arg
+		drivercommand_insert(argv[2], argv[3]);
+	}
+	else if(0 == ncmp(argv[1], "search", 6)){
+		//driver search <name>
+		drivercommand_search((argc<3) ? 0 : argv[2]);
+	}
+
 	return 0;
 }

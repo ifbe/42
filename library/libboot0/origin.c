@@ -176,43 +176,54 @@ int origin_giveby(struct item* ori,void* foot, _syn* stack,int sp, p64 arg, int 
 
 
 
-int origin_insert(u8* buf, int len)
+int origincommand_insert(u8* name, u8* arg)
 {
 	return 0;
 }
-int origin_remove(u8* buf, int len)
+int origincommand_remove(u8* name)
 {
 	return 0;
 }
-int origin_search(u8* buf, int len)
-{
-	int j,k=0;
-	for(j=0;j<64;j++)
-	{
-		if(0 == ori[j].type)continue;
-		logtoall("[%04x]: %.8s\n", j, &ori[j].type);
-		k++;
-	}
-
-	if(0 == k)logtoall("empth origin\n");
-	return 0;
-}
-int origin_modify(int argc, u8** argv)
+int origincommand_search(u8* name)
 {
 	int j;
-	u64 name = 0;
-	u8* tmp = (u8*)&name;
-	if(argc < 2)return 0;
-//logtoall("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
-	if(0 == ncmp(argv[1], "create", 6))
-	{
-		for(j=0;j<8;j++)
-		{
-			if(argv[2][j] <= 0x20)break;
-			tmp[j] = argv[2][j];
+	_obj* act;
+	if(0 == name){
+		for(j=0;j<maxitem;j++){
+			act = &ori[j];
+			if((0 == act->type)&&(0 == act->hfmt))continue;
+			logtoall("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
+				&act->tier, &act->type, &act->hfmt, &act->hfmt);
 		}
-		logtoall("%llx,%llx\n",name, argv[3]);
-		origin_create(name, argv[3], argc-3, &argv[3]);
+		if(0 == j)logtoall("empty origin\n");
 	}
+	else{
+		for(j=0;j<0x100;j++){
+			if(0 == ori[j].hfmt)break;
+			if(0 == cmp(&ori[j].hfmt, name))logtoall("name=%d,node=%p\n", name, &ori[j]);
+			break;
+		}
+	}
+	return 0;
+}
+int origincommand_modify(int argc, u8** argv)
+{
+	return 0;
+}
+void* origincommand(int argc, u8** argv)
+{
+	if(argc < 2){
+		logtoall("origin insert name arg\n");
+		logtoall("origin search name\n");
+	}
+	else if(0 == ncmp(argv[1], "insert", 6)){
+		//origin create name arg
+		origincommand_insert(argv[2], argv[3]);
+	}
+	else if(0 == ncmp(argv[1], "search", 6)){
+		//origin search <name>
+		origincommand_search((argc<3) ? 0 : argv[2]);
+	}
+
 	return 0;
 }

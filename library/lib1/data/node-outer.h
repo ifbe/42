@@ -548,7 +548,9 @@ typedef struct item _obj;
 
 
 //--------------------------------function--------------------------------
-void* entity_create(u64 type, void* addr, int argc, u8** argv);
+void* entity_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt);
+void* entity_alloc_prep_create(u64 tier, u64 type, u64 hfmt, u64 vfmt, int argc, u8** argv);
+int entity_create(_obj*, void* addr, int argc, u8** argv);
 int entity_delete(_obj*);
 int entity_reader(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
 int entity_writer(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);

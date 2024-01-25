@@ -326,7 +326,7 @@ void style_recycle()
 
 
 
-
+//alloc: get on empty memory in internal memory
 void entity_recycle()
 {
 }
@@ -342,36 +342,37 @@ void* entity_alloc()
 	}
 	return 0;
 }
-void* entity_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt)
-{
+
+
+
+
+void* entity_findfmt(u64 fmt){
+	_obj* tmp = 0x100000 + (void*)entity;
+	int j;
+	for(j=1;j<256;j++){
+		tmp = &tmp[-1];		//prev
+		if(fmt == tmp->hfmt)return tmp;
+	}
 	return 0;
 }
 
 
 
 
-void* entity_createfromclone(u64 fmt, u8* arg, int argc, u8** argv)
+/*
+prep: fill in data structure
+1.mem allocated from here or malloc, then call prep
+2.app define _obj xxx in stack without malloc, then call prep
+*/
+void* entity_prepfromclone(_obj* ent, _obj* tmp)
 {
 	int j;
-	u8* src;
-	u8* dst;
-	_obj* ent;
-	_obj* tmp = 0x100000 + (void*)entity;
-
-	for(j=1;j<256;j++){
-		tmp = &tmp[-1];		//prev
-		if(fmt == tmp->hfmt)goto found;
-	}
-	return 0;
-
-found:
-	ent = entity_alloc();
-	dst = (void*)ent;
+	u8* dst = (void*)ent;
 	for(j=0;j<sizeof(_obj);j++)dst[j] = 0;
 
 	ent->tier = tmp->tier;
 	ent->type = tmp->type;
-	ent->hfmt  = tmp->hfmt;
+	ent->hfmt = tmp->hfmt;
 	ent->vfmt = tmp->vfmt;
 
 	ent->oncreate = tmp->oncreate;
@@ -383,332 +384,298 @@ found:
 	ent->ondetach = tmp->ondetach;
 	ent->ontaking = tmp->ontaking;
 	ent->ongiving = tmp->ongiving;
-
-	ent->oncreate(ent, arg, argc, argv);
 	return ent;
 }
-void* entity_createfromfile(u64 fmt, u8* arg, int argc, u8** argv)
+void* entity_prepfromfile(u64 fmt)
 {
+	return 0;
+}
+void* entity_prep(_obj* act, int len, u64 tier, u64 type, u64 hfmt, u64 vfmt)
+{
+	if(len < sizeof(_obj))return 0;
+
+	_obj* tmp = entity_findfmt(type);
+	if(tmp){
+		entity_prepfromclone(act, tmp);
+		return act;
+	}
+
+	switch(type){
+	case _virtual_:
+		act->hfmt = act->type = _virtual_;
+		return act;
+	case _axis3d_:
+		act->hfmt = act->type = _axis3d_;
+		return act;
+	case _guide3d_:
+		act->hfmt = act->type = _guide3d_;
+		return act;
+	case _border3d_:
+		act->hfmt = act->type = _border3d_;
+		return act;
+	case _scene3d_:
+		act->hfmt = act->type = _scene3d_;
+		return act;
+
+	case _wndmgr_:
+		act->hfmt = act->type = _wndmgr_;
+		return act;
+	case _border2d_:
+		act->hfmt = act->type = _border2d_;
+		return act;
+	case _htmlroot_:
+		act->hfmt = act->type = _htmlroot_;
+		return act;
+	case _xamlroot_:
+		act->hfmt = act->type = _xamlroot_;
+		return act;
+
+	case _mmio_:
+		act->hfmt = act->type = _mmio_;
+		return act;
+	case _port_:
+		act->hfmt = act->type = _port_;
+		return act;
+
+	case _sch_:
+		act->hfmt = act->type = _sch_;
+		return act;
+	case _pcb_:
+		act->hfmt = act->type = _pcb_;
+		return act;
+	case _analog_:
+		act->hfmt = act->type = _analog_;
+		return act;
+	case _digital_:
+		act->hfmt = act->type = _digital_;
+		return act;
+
+ 	case _baby_:
+		act->hfmt = act->type = _baby_;
+		return act;
+	case _test_:
+		act->hfmt = act->type = _test_;
+		return act;
+
+	case _cam1rd_:
+		act->hfmt = act->type = _cam1rd_;
+		return act;
+	case _cam3rd_:
+		act->hfmt = act->type = _cam3rd_;
+		return act;
+	case _camrts_:
+		act->hfmt = act->type = _camrts_;
+		return act;
+
+	case _touchobj_:
+		act->hfmt = act->type = _touchobj_;
+		return act;
+	case _clickray_:
+		act->hfmt = act->type = _clickray_;
+		return act;
+
+	case _virtimu_:
+		act->hfmt = act->type = _virtimu_;
+		return act;
+
+	case _follow_:
+		act->hfmt = act->type = _follow_;
+		return act;
+	case _lookat_:
+		act->hfmt = act->type = _lookat_;
+		return act;
+	case _wander_:
+		act->hfmt = act->type = _wander_;
+		return act;
+
+	case _carcon_:
+		act->hfmt = act->type = _carcon_;
+		return act;
+	case _flycon_:
+		act->hfmt = act->type = _flycon_;
+		return act;
+	case _balancer_:
+		act->hfmt = act->type = _balancer_;
+		return act;
+
+	case _force_:
+		act->hfmt = act->type = _force_;
+		return act;
+	case _graveasy_:
+		act->hfmt = act->type = _graveasy_;
+		return act;
+	case _gravtest_:
+		act->hfmt = act->type = _gravtest_;
+		return act;
+	case _rigidall_:
+		act->hfmt = act->type = _rigidall_;
+		return act;
+	}
 	return 0;
 }
 
 
 
 
-void* entity_create(u64 type, void* buf, int argc, u8** argv)
+int entity_create(_obj* act, void* buf, int argc, u8** argv)
 {
-	_obj* act;
 	//logtoall("%llx,%llx\n", type, buf);
+	if(act->oncreate){
+		return act->oncreate(act, buf, argc, argv);
+	}
 
-	switch(type){
-//----------------world----------------
+	switch(act->type){
 	case _virtual_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _virtual_;
 		virtual_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 	case _axis3d_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _axis3d_;
 		axis3d_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 	case _guide3d_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _guide3d_;
 		guide3d_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 	case _border3d_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _border3d_;
 		border3d_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 	case _scene3d_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _scene3d_;
 		scene3d_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 
 	case _wndmgr_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _wndmgr_;
 		wndmgr_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 	case _border2d_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _border2d_;
 		border2d_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 	case _htmlroot_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _htmlroot_;
 		htmlroot_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 	case _xamlroot_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _xamlroot_;
 		xamlroot_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 
 	case _mmio_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _mmio_;
 		mmiospace_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 	case _port_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _port_;
 		portspace_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 
 	//circuit
 	case _sch_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _sch_;
 		schematic_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 	case _pcb_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _pcb_;
 		printboard_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 	case _analog_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _analog_;
 		analog_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 	case _digital_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _digital_;
 		digital_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 
 //----------------mind----------------
  	case _baby_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _baby_;
 		baby_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 	case _test_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _test_;
 		test_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 
 	//event
 	case _cam1rd_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _cam1rd_;
 		cam1rd_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 	case _cam3rd_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _cam3rd_;
 		cam3rd_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 	case _camrts_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _camrts_;
 		camrts_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 
 	case _touchobj_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _touchobj_;
 		touchobj_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 	case _clickray_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _clickray_;
 		clickray_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 
 //---------------sensor----------------
 	case _virtimu_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _virtimu_;
 		virtimu_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 
 //---------------robot----------------
 	case _follow_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _follow_;
 		follow_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 	case _lookat_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _lookat_;
 		lookat_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 	case _wander_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _wander_;
 		wander_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 
 	case _carcon_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _carcon_;
 		carcon_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 	case _flycon_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _flycon_;
 		flycon_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 	case _balancer_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _balancer_;
 		balancer_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 
 //----------------rule----------------
 
 	//physic
 	case _force_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _force_;
 		force_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 	case _graveasy_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _graveasy_;
 		graveasy_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 	case _gravtest_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _gravtest_;
 		gravtest_create(act, buf, argc, argv);
-		return act;
-	}
+		break;
 	case _rigidall_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _rigidall_;
 		rigidsimu_create(act, buf, argc, argv);
-		return act;
-	}
-
-//----------------other----------------
-/*	case _bdc_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _bdc_;
-		toycar_create(act, buf, argc, argv);
-		return act;
-	}
-	case _step_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _step_;
-		stepcar_create(act, buf, argc, argv);
-		return act;
-	}
-*/
-/*	case _gl41data_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _gl41data_;
-		gl41data_create(act, buf, argc, argv);
-		return act;
-	}
-	case _gl41coop_:
-	{
-		act = entity_alloc();
-		act->hfmt = act->type = _gl41coop_;
-		gl41coop_create(act, buf, argc, argv);
-		return act;
-	}*/
-
+		break;
 	}//switch
 
-	//
-	return entity_createfromclone(type, buf, argc, argv);
+	return 0;
 }
-int entity_delete(_obj* p)
+int entity_delete(_obj* act)
 {
-	if(0 == p)return 0;
-	_obj* act = p;
+	if(0 == act)return 0;
+
+	if(act->ondelete){
+		return act->ondelete(act);
+	}
 
 	switch(act->type){
-		case _orig_:return 0;
-		case _copy_:return 0;
-		case _ORIG_:act->type = _orig_;
-		case _COPY_:act->type = _copy_;
+	case _virtual_:
+		virtual_delete(act, 0);
+		break;
 	}
-	act->ondelete(act);
 
 	return 0;
 }
 int entity_reader(_obj* act,void* foot, p64 arg,int key, void* buf,int len)
 {
+	if(act->onreader){
+		return act->onreader(act, foot, arg,key, buf, len);
+	}
+
 	return 0;
 }
 int entity_writer(_obj* act,void* foot, p64 arg,int key, void* buf,int len)
 {
+	if(act->onwriter){
+		return act->onwriter(act, foot, arg,key, buf, len);
+	}
+
 	return 0;
 }
 
@@ -721,6 +688,10 @@ int entity_attach(struct halfrel* self, struct halfrel* peer)
 
 	_obj* act = self->pchip;
 	if(0 == act)return 0;
+
+	if(act->onattach){
+		return act->onattach(self, peer);
+	}
 
 	//logtoall("@entity_attach\n");
 	switch(act->type){
@@ -774,8 +745,7 @@ int entity_attach(struct halfrel* self, struct halfrel* peer)
 	case _baby_:return baby_attach(self, peer);
 	}
 
-	if(0 == act->onattach)return 0;
-	return act->onattach(self, peer);
+	return 0;
 }
 int entity_detach(struct halfrel* self, struct halfrel* peer)
 {
@@ -783,6 +753,10 @@ int entity_detach(struct halfrel* self, struct halfrel* peer)
 
 	_obj* act = self->pchip;
 	if(0 == act)return 0;
+
+	if(act->ondetach){
+		return act->ondetach(self, peer);
+	}
 
 	//logtoall("@entity_detach\n");
 	switch(act->type){
@@ -836,11 +810,14 @@ int entity_detach(struct halfrel* self, struct halfrel* peer)
 	case _baby_:return baby_detach(self, peer);
 	}
 
-	if(0 == act->ondetach)return 0;
-	return act->ondetach(self, peer);
+	return 0;
 }
 int entity_takeby(_obj* act,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
+	if(act->ontaking){
+		return act->ontaking(act,foot, stack,sp, arg,key, buf,len);
+	}
+
 	switch(act->type){
 	case _cam1rd_:return cam1rd_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _cam3rd_:return cam3rd_taking(act,foot, stack,sp, arg,key, buf,len);
@@ -891,12 +868,14 @@ int entity_takeby(_obj* act,void* foot, _syn* stack,int sp, p64 arg,int key, voi
 	case _test_:return test_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _baby_:return baby_taking(act,foot, stack,sp, arg,key, buf,len);
 	}
-
-	if(0 == act->ontaking)return 0;
-	return act->ontaking(act,foot, stack,sp, arg,key, buf,len);
+	return 0;
 }
 int entity_giveby(_obj* act,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
+	if(act->ongiving){
+		return act->ongiving(act,foot, stack,sp, arg,key, buf,len);
+	}
+
 	switch(act->type){
 	case _cam1rd_:return cam1rd_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _cam3rd_:return cam3rd_giving(act,foot, stack,sp, arg,key, buf,len);
@@ -949,69 +928,99 @@ int entity_giveby(_obj* act,void* foot, _syn* stack,int sp, p64 arg,int key, voi
 	case _baby_:return baby_giving(act,foot, stack,sp, arg,key, buf,len);
 	}
 
-	if(0 == act->ongiving)return 0;
-	return act->ongiving(act,foot, stack,sp, arg,key, buf,len);
+	return 0;
 }
 
 
 
 
-int entity_insert(u8* buf, int len)
+//helper function
+void* entity_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt)
+{
+	//logtoall("%s:%.8s\n", __func__, &type);
+	_obj* obj = entity_alloc();
+	if(0 == obj)return 0;
+
+	//if(entity_findfmt())entity_prepfromclone(obj, );
+	return entity_prep(obj, sizeof(_obj), tier, type, hfmt, vfmt);
+}
+int entity_unprep_dealloc(_obj* obj)
 {
 	return 0;
 }
-int entity_remove(u8* buf, int len)
+void* entity_alloc_prep_create(u64 tier, u64 type, u64 hfmt, u64 vfmt, int argc, u8** argv)
+{
+	_obj* obj = entity_alloc_prep(tier, type, hfmt, vfmt);
+	if(0 == obj)return 0;
+
+	int ret = entity_create(obj, 0, argc, argv);
+
+	return obj;
+}
+int entity_delete_unprep_dealloc(_obj* obj)
 {
 	return 0;
 }
-void* entity_search(u8* buf, int len)
+void* entity_alloc_prep_create_attach()
 {
-	int j,k;
-	u8* p;
+	return 0;
+}
+int entity_detach_delete_unprep_dealloc()
+{
+	return 0;
+}
+
+
+
+
+//cmdline function
+int entitycommand_insert(u8* name, u8* arg)
+{
+	return 0;
+}
+int entitycommand_remove(u8* name)
+{
+	return 0;
+}
+int entitycommand_search(u8* name)
+{
+	int j;
 	_obj* act;
-	if(0 == buf)
-	{
-		for(j=0;j<0x100;j++)
-		{
+	if(0 == name){
+		for(j=0;j<maxsz;j++){
 			act = &entity[j];
-			if(0 == act->hfmt)break;
+			if((0 == act->type)&&(0 == act->hfmt))continue;
 			logtoall("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
 				&act->tier, &act->type, &act->hfmt, &act->hfmt);
 		}
 		if(0 == j)logtoall("empty entity\n");
 	}
-	else
-	{
-		for(j=0;j<0x100;j++)
-		{
+	else{
+		for(j=0;j<0x100;j++){
 			if(0 == entity[j].hfmt)break;
-			p = (void*)(&entity[j].hfmt);
-
-			for(k=0;k<8;k++)
-			{
-				if((0 == p[k])|(0x20 >= buf[k]))return &entity[j];
-				if(buf[k] != p[k])break;
-			}
+			if(0 == cmp(&entity[j].hfmt, name))logtoall("name=%d,node=%p\n", name, &entity[j]);
+			break;
 		}
 	}
 	return 0;
 }
-void* entity_modify(int argc, u8** argv)
+int entitycommand_modify(int argc, u8** argv)
 {
-	int j;
-	u64 name = 0;
-	u8* tmp = (u8*)&name;
-	if(argc < 2)return 0;
-//logtoall("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
-	if(0 == ncmp(argv[1], "create", 6))
-	{
-		for(j=0;j<8;j++)
-		{
-			if(argv[2][j] <= 0x20)break;
-			tmp[j] = argv[2][j];
-		}
-		logtoall("%llx,%llx\n",name, argv[3]);
-		entity_create(name, argv[3], argc-3, &argv[3]);
+	return 0;
+}
+void* entitycommand(int argc, u8** argv)
+{
+	if(argc < 2){
+		logtoall("entity insert name arg\n");
+		logtoall("entity search name\n");
+	}
+	else if(0 == ncmp(argv[1], "insert", 6)){
+		//entity create name arg
+		entitycommand_insert(argv[2], argv[3]);
+	}
+	else if(0 == ncmp(argv[1], "search", 6)){
+		//entity search <name>
+		entitycommand_search((argc<3) ? 0 : argv[2]);
 	}
 
 	return 0;

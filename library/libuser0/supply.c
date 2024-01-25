@@ -159,191 +159,94 @@ void* supply_alloc()
 	obj->orel0 = obj->oreln = 0;
 	return obj;
 }
-void* supply_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt)
+
+
+
+
+void* supply_prep(_obj* obj, int len, u64 tier, u64 type, u64 hfmt, u64 vfmt)
 {
-	//logtoall("supply_alloc_prep:%.8s\n",&type);
-	int j = 0;
-	_obj* obj;
+	if(len < sizeof(_obj))return 0;
 
 	switch(type){
-//-------------------tobe delete--------------
-	case _ahrs_:
-	{
-		obj = supply_alloc();
-		if(0 == obj)return 0;
-
-		obj->type = _sensor_;
-		obj->hfmt = _ahrs_;
-		return obj;
-	}
-	case _slam_:
-	{
-		obj = supply_alloc();
-		if(0 == obj)return 0;
-
-		obj->type = _sensor_;
-		obj->hfmt = _slam_;
-		return obj;
-	}
-
 //---------------------gadget-----------------
 	case _joy_:
-	{
-		obj = supply_alloc();
-		if(0 == obj)return 0;
-
 		obj->type = _joy_;
 		obj->hfmt = _joy_;
 		return obj;
-	}
 	case _std_:
-	{
-		obj = supply_alloc();
-		if(0 == obj)return 0;
-
 		obj->type = _std_;
 		obj->hfmt = _std_;
 		return obj;
-	}
 	case _tray_:
-	{
-		obj = supply_alloc();
-		if(0 == obj)return 0;
-
 		obj->type = _tray_;
 		obj->hfmt = _tray_;
 		return obj;
-	}
 
 //--------------------micphone------------------
 	case _mic_:
-	{
-		obj = supply_alloc();
-		if(0 == obj)return 0;
-
 		obj->type = _mic_;
 		obj->hfmt = hex32('p','c','m',0);
 		return obj;
-	}
 
 //--------------------speaker--------------------
 	case _spk_:
-	{
-		obj = supply_alloc();
-		if(0 == obj)return 0;
-
 		obj->type = _spk_;
 		obj->hfmt = hex32('p','c','m',0);
 		return obj;
-	}
 
 //---------------------camera-------------------
 	case _cam_:
-	{
-		obj = supply_alloc();
-		if(0 == obj)return 0;
-
 		obj->type = _cam_;
 		obj->hfmt = hex32('y','u','v',0);
 		return obj;
-	}
 	case _wndcap_:
-	{
-		obj = supply_alloc();
-		if(0 == obj)return 0;
-
 		obj->type = _wndcap_;
 		return obj;
-	}
 
 //---------------------window----------------
 	case _wnd_:
-	{
-		obj = window_alloc();
-		if(0 == obj)return 0;
-
 		obj->type = _wnd_;
 		return obj;
-	}
 
 	case _dec_:
-	{
-		obj = supply_alloc();
-		if(0 == obj)return 0;
-
 		obj->type = _dec_;
 		obj->hfmt = _h264_;
 		return obj;
-	}
 	case _enc_:
-	{
-		obj = supply_alloc();
-		if(0 == obj)return 0;
-
 		obj->type = _enc_;
 		obj->hfmt = _h264_;
 		return obj;
-	}
 
 //---------------------3dinput-------------------
 	case _cap_:
-	{
-		obj = supply_alloc();
-		if(0 == obj)return 0;
-
 		obj->type = _cap_;
 		obj->hfmt = hex32('h','o','l','o');
 		return obj;
-	}
+
 //---------------------3doutput-------------------
 	case _gpu_:
-	{
-		obj = supply_alloc();
-		if(0 == obj)return 0;
-
 		obj->type = _gpu_;
 		obj->hfmt = _gpu_;
 		return obj;
-	}
 	case _gl41none_:
-	{
-		obj = supply_alloc();
-		if(0 == obj)return 0;
-
 		obj->type = _wnd_;
 		obj->hfmt = _gl41none_;
 		return obj;
-	}
 	case _gl41easy_:
-	{
-		obj = supply_alloc();
-		if(0 == obj)return 0;
-
 		obj->type = _wnd_;
 		obj->hfmt = _gl41easy_;
 		return obj;
-	}
 	case _gl41list_:
-	{
-		obj = supply_alloc();
-		if(0 == obj)return 0;
-
 		obj->type = _wnd_;
 		obj->hfmt = _gl41list_;
 		return obj;
-	}
 	case _gl41cmdq_:
-	{
-		obj = supply_alloc();
-		if(0 == obj)return 0;
-
 		obj->type = _wnd_;
 		obj->hfmt = _gl41cmdq_;
 		return obj;
-	}
-
 	}//switch
-	return 0;
+
+	return obj;
 }
 
 
@@ -512,70 +415,93 @@ int supply_giveby(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, voi
 
 
 
-int supply_insert(u8* buf, int len)
+//helper function
+void* supply_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt)
+{
+	//logtoall("%s:%.8s\n", __func__, &type);
+	_obj* obj = supply_alloc();
+	if(0 == obj)return 0;
+
+	//if(supply_findfmt())supply_prepfromclone(obj, );
+	return supply_prep(obj, sizeof(_obj), tier, type, hfmt, vfmt);
+}
+int supply_unprep_dealloc(_obj* obj)
 {
 	return 0;
 }
-int supply_remove(u8* buf, int len)
+void* supply_alloc_prep_create(u64 tier, u64 type, u64 hfmt, u64 vfmt, int argc, u8** argv)
+{
+	_obj* obj = supply_alloc_prep(tier, type, hfmt, vfmt);
+	if(0 == obj)return 0;
+
+	int ret = supply_create(obj, 0, argc, argv);
+
+	return obj;
+}
+int supply_delete_unprep_dealloc(_obj* obj)
 {
 	return 0;
 }
-void* supply_search(u8* buf, int len)
+void* supply_alloc_prep_create_attach()
 {
-	int j,k;
-	u8* p;
-	_obj* obj;
-	if(0 == buf)
-	{
-		for(j=0;j<0x100;j++)
-		{
-			obj = &supply[j];
-			if(0 == obj->type)break;
-			logtoall("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j, &obj->tier, &obj->type, &obj->hfmt, &obj->vfmt);
+	return 0;
+}
+int supply_detach_delete_unprep_dealloc()
+{
+	return 0;
+}
+
+
+
+
+//cmdline function
+int supplycommand_insert(u8* name, u8* arg)
+{
+	return 0;
+}
+int supplycommand_remove(u8* name)
+{
+	return 0;
+}
+int supplycommand_search(u8* name)
+{
+	int j;
+	_obj* act;
+	if(0 == name){
+		for(j=0;j<maxitem;j++){
+			act = &supply[j];
+			if((0 == act->type)&&(0 == act->hfmt))continue;
+			logtoall("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
+				&act->tier, &act->type, &act->hfmt, &act->hfmt);
 		}
 		if(0 == j)logtoall("empty supply\n");
 	}
-	else
-	{
-/*
-		for(j=0;j<len;j++){if('@' == buf[j])break;}
-
-		j = buf[j+1]-0x30;
-		if(j >= 10)j = 0;
-
-		if(0 == supply[j].type)return 0;
-		return &supply[j];
-*/
-		for(j=0;j<0x100;j++)
-		{
+	else{
+		for(j=0;j<0x100;j++){
 			if(0 == supply[j].hfmt)break;
-			p = (void*)(&supply[j].hfmt);
-
-			for(k=0;k<8;k++)
-			{
-				if((0 == p[k])|(0x20 >= buf[k]))return &supply[j];
-				if(buf[k] != p[k])break;
-			}
+			if(0 == cmp(&supply[j].hfmt, name))logtoall("name=%d,node=%p\n", name, &supply[j]);
+			break;
 		}
 	}
 	return 0;
 }
-void* supply_modify(int argc, u8** argv)
+int supplycommand_modify(int argc, u8** argv)
 {
-	int j;
-	u64 name = 0;
-	u8* tmp = (u8*)&name;
-	if(argc < 2)return 0;
-//logtoall("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
-	if(0 == ncmp(argv[1], "create", 6))
-	{
-		for(j=0;j<8;j++)
-		{
-			if(argv[2][j] <= 0x20)break;
-			tmp[j] = argv[2][j];
-		}
-		logtoall("%llx,%llx\n",name, argv[3]);
-		//supply_create(name, argv[3], argc-3, &argv[3]);
+	return 0;
+}
+void* supplycommand(int argc, u8** argv)
+{
+	if(argc < 2){
+		logtoall("supply insert name arg\n");
+		logtoall("supply search name\n");
+	}
+	else if(0 == ncmp(argv[1], "insert", 6)){
+		//supply create name arg
+		supplycommand_insert(argv[2], argv[3]);
+	}
+	else if(0 == ncmp(argv[1], "search", 6)){
+		//supply search <name>
+		supplycommand_search((argc<3) ? 0 : argv[2]);
 	}
 
 	return 0;

@@ -11,6 +11,7 @@ void haltwaitforint();
 
 
 
+#define maxdevlen (0x100000/sizeof(struct item))
 static struct item* origin = 0;
 static struct item* worker = 0;
 static struct item* device = 0;
@@ -54,13 +55,13 @@ static void kernel_wndctx(_obj* wnd)
 
 
 	//things
-	_obj* termnode = entity_create(_term_,0, 0, 0);
+	_obj* termnode = entity_alloc_prep_create(_ent_, _term_,0, 0, 0, 0);
 	struct style* termfoot = style_alloc();
 
-	_obj* gamenode = entity_create(_clock_,0, 0, 0);
+	_obj* gamenode = entity_alloc_prep_create(_ent_, _clock_,0, 0, 0, 0);
 	struct style* gamefoot = style_alloc();
 
-	_obj* editnode = entity_create(_mmioedit_,0, 0, 0);
+	_obj* editnode = entity_alloc_prep_create(_ent_, _mmioedit_,0, 0, 0, 0);
 	struct style* editfoot = style_alloc();
 
 
@@ -96,8 +97,8 @@ static int kernel_pollloop(struct item* wrk)
 		t0 = timeread_us();
 		heartbeat_poll = t0+1;
 
-		for(j=0;j<10;j++){
-			dev = &device[j];
+		for(j=-10;j<10;j++){
+			dev = &device[(j>=0) ? j : (maxdevlen+j)];
 			if( (_xhci_ == dev->type) | (_eth_ == dev->type) ){
 				if(dev->ontaking)dev->ontaking(dev,0, 0,0, 0,0, 0,0);
 			}

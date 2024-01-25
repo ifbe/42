@@ -26,7 +26,7 @@ void poller(void*);
 
 static void guiapp_mgr_to_ent(_obj* mgr)
 {
-	_obj* term = entity_create(_term_,0, 0, 0);
+	_obj* term = entity_alloc_prep_create(_ent_, _term_, 0, 0, 0, 0);
 	struct style* term_to_mgr = style_alloc();
 	struct style* mgr_to_term = style_alloc();
 	mgr_to_term->fshape.vc[0] = 0.0;
@@ -36,7 +36,7 @@ static void guiapp_mgr_to_ent(_obj* mgr)
 	struct relation* rel1 = relationcreate(term,term_to_mgr, _ent_,0, mgr,mgr_to_term, _ent_,0);
 	relationattach((void*)&rel1->srcchip, (void*)&rel1->dstchip);
 /*
-	_obj* game = entity_create(_2048_,0, 0, 0);
+	_obj* game = entity_alloc_prep_create(_ent_, _2048_,0, 0, 0, 0);
 	struct style* game_to_mgr = style_alloc();
 	struct style* mgr_to_game = style_alloc();
 	mgr_to_game->fshape.vc[0] = 0.0;
@@ -49,7 +49,7 @@ static void guiapp_mgr_to_ent(_obj* mgr)
 }
 static void guiapp_wnd_to_mgr(_obj* wnd)
 {
-	_obj* mgr = entity_create(_corner_,0, 0, 0);
+	_obj* mgr = entity_alloc_prep_create(_ent_, _corner_,0, 0, 0, 0);
 	struct style* mgr_to_wnd = style_alloc();
 	struct style* wnd_to_mgr = style_alloc();
 	wnd_to_mgr->fshape.vc[0] = 0.0;
@@ -63,10 +63,10 @@ static void guiapp_wnd_to_mgr(_obj* wnd)
 }
 static void guiapp_wnd_to_3d(_obj* wnd)
 {
-	//_obj* abc = entity_create(_texball_,"datafile/jpg/texball-grassland.jpg", 0, 0);
-	_obj* abc = entity_create(_texball_,"datafile/jpg/360d-park.jpg", 0, 0);
-	_obj* wrd = entity_create(_virtual_,0, 0, 0);
-	_obj* cam = entity_create(_vrbox_,0, 0, 0);
+	//_obj* abc = entity_alloc_prep_create(_ent_, _texball_,"datafile/jpg/texball-grassland.jpg", 0, 0);
+	_obj* abc = entity_alloc_prep_create(_ent_, _texball_, 0, 0, 1, (u8**)&"datafile/jpg/360d-park.jpg");
+	_obj* wrd = entity_alloc_prep_create(_ent_, _virtual_,0, 0, 0 ,0);
+	_obj* cam = entity_alloc_prep_create(_ent_, _vrbox_,0, 0, 0 ,0);
 
 	struct style* wrd_to_cam = style_alloc();
 	struct style* cam_to_wrd = style_alloc();

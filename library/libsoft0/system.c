@@ -50,7 +50,7 @@ int cmp(void*, void*);
 
 
 //
-static struct item* obj = 0;
+static struct item* sysobj = 0;
 static int objlen = 0;
 static void* ppp = 0;
 static int ppplen = 0;
@@ -67,9 +67,9 @@ void system_init(u8* addr)
 	int j;
 	for(j=0;j<0x200000;j++)addr[j]=0;
 
-	obj = (void*)(addr+0x000000);
+	sysobj = (void*)(addr+0x000000);
 	objlen = maxitem-1;
-	for(j=0;j<maxitem;j++)obj[j].tier = _sys_;
+	for(j=0;j<maxitem;j++)sysobj[j].tier = _sys_;
 
 	ppp = (void*)(addr+0x100000);
 
@@ -108,7 +108,7 @@ void system_recycle()
 }
 void* system_alloc()
 {
-	void* addr = &obj[objlen];
+	void* addr = &sysobj[objlen];
 	objlen -= 1;
 	return addr;
 }
@@ -398,47 +398,54 @@ int system_giveby(_obj* sys,void* foot, _syn* stack,int sp, p64 arg,int cmd, voi
 
 
 
-int system_insert(u8* buf, int len)
+int systemcommand_insert(u8* name, u8* arg)
 {
 	return 0;
 }
-int system_remove(u8* buf, int len)
+int systemcommand_remove(u8* name)
 {
 	return 0;
 }
-void* system_search(u8* buf, int len)
-{
-	int j,k=0;
-	struct item* tmp;
-	for(j=0;j<0x1000;j++)
-	{
-		tmp = &obj[j];
-		if(0 == tmp->type)continue;
-
-		k++;
-		logtoall("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
-			&tmp->tier, &tmp->type, &tmp->hfmt, &tmp->vfmt);
-	}
-
-	if(0 == k)logtoall("empth system\n");
-	return 0;
-}
-void* system_modify(int argc, u8** argv)
+int systemcommand_search(u8* name)
 {
 	int j;
-	u64 name = 0;
-	u8* tmp = (u8*)&name;
-	if(argc < 2)return 0;
-//logtoall("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
-	if(0 == ncmp(argv[1], "create", 6))
-	{
-		for(j=0;j<8;j++)
-		{
-			if(argv[2][j] <= 0x20)break;
-			tmp[j] = argv[2][j];
+	_obj* act;
+	if(0 == name){
+		for(j=0;j<maxitem;j++){
+			act = &sysobj[j];
+			if((0 == act->type)&&(0 == act->hfmt))continue;
+			logtoall("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
+				&act->tier, &act->type, &act->hfmt, &act->hfmt);
 		}
-		logtoall("%llx,%llx\n",name, argv[3]);
-		system_create(name, argv[3], argc-3, &argv[3]);
+		if(0 == j)logtoall("empty system\n");
 	}
+	else{
+		for(j=0;j<0x100;j++){
+			if(0 == sysobj[j].hfmt)break;
+			if(0 == cmp(&sysobj[j].hfmt, name))logtoall("name=%d,node=%p\n", name, &sysobj[j]);
+			break;
+		}
+	}
+	return 0;
+}
+int systemcommand_modify(int argc, u8** argv)
+{
+	return 0;
+}
+void* systemcommand(int argc, u8** argv)
+{
+	if(argc < 2){
+		logtoall("system insert name arg\n");
+		logtoall("system search name\n");
+	}
+	else if(0 == ncmp(argv[1], "insert", 6)){
+		//system create name arg
+		systemcommand_insert(argv[2], argv[3]);
+	}
+	else if(0 == ncmp(argv[1], "search", 6)){
+		//system search <name>
+		systemcommand_search((argc<3) ? 0 : argv[2]);
+	}
+
 	return 0;
 }
