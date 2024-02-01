@@ -375,7 +375,7 @@ static void maze_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int ke
 	_obj* caller = stack[sp-2].pchip;
 	//struct style* area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
+	switch(caller->type){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -429,8 +429,9 @@ static void maze_create(_obj* act)
 
 void maze_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex32('m', 'a', 'z', 'e');
+	p->kind = _game_;
+	p->type = hex32('m', 'a', 'z', 'e');
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)maze_create;
 	p->ondelete = (void*)maze_delete;

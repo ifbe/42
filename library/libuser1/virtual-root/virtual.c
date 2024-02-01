@@ -43,23 +43,6 @@ int virtual_takeall(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key)
 
 	return 0;
 }
-int virtual_bycam_byrgba_take(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key)
-{
-	struct relation* rel = ent->orel0;
-	while(1){
-		if(0 == rel)break;
-		if(_ent_ == rel->dstnodetype){
-			stack[sp+0].pchip = rel->psrcchip;
-			stack[sp+0].pfoot = rel->psrcfoot;
-			stack[sp+1].pchip = rel->pdstchip;
-			stack[sp+1].pfoot = rel->pdstfoot;
-			entity_takeby(rel->pdstchip,rel->pdstfoot, stack,sp+2, arg,key, 0,0);
-		}
-		rel = samesrcnextdst(rel);
-	}
-
-	return 0;
-}
 
 
 
@@ -111,7 +94,7 @@ int virtual_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, vo
 	_obj* caller_2 = stack[sp-4].pchip;
 	//if(caller_2)
 
-	//logtoall("%.8s,%.8s\n", &caller_1->type, &caller_1->hfmt);
+	//logtoall("%.8s,%.8s\n", &caller_1->type, &caller_1->type);
 	switch(caller_1->type){
 	case _camrts_:
 		caller_1 = stack[sp-4].pchip;
@@ -123,12 +106,7 @@ int virtual_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, vo
 		gl41data_after(caller_1);
 		break;
 	default:
-		if(caller_2 && (_wnd_ == caller_2->type) && (_rgba_ == caller_2->hfmt) ){
-			virtual_bycam_byrgba_take(ent,foot, stack,sp, arg,key);
-		}
-		else{
-			virtual_takeall(ent,foot, stack,sp, arg,key);
-		}
+		virtual_takeall(ent,foot, stack,sp, arg,key);
 		break;
 	}//switch
 	return 0;

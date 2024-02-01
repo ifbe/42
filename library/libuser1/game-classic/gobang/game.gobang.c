@@ -46,8 +46,9 @@ static void gobang_create(_obj* act)
 
 void gobang_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('g', 'o', 'b', 'a', 'n', 'g', 0, 0);
+	p->kind = _game_;
+	p->type = hex64('g', 'o', 'b', 'a', 'n', 'g', 0, 0);
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)gobang_create;
 	p->ondelete = (void*)gobang_delete;

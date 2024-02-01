@@ -38,6 +38,36 @@ int str2arg(u8* buf, int len, u8* tmp, int cnt, u8** argv, int max)
 
 
 
+int str2type32(u8* buf, u8* type)
+{
+	int j;
+	for(j=0;j<4;j++){
+		if(buf[j] <= 0x20)break;
+		type[j] = buf[j];
+	}
+
+	int k;
+	for(k=j;k<4;k++)type[k] = 0;
+
+	return j;
+}
+int str2type64(u8* buf, u8* type)
+{
+	int j;
+	for(j=0;j<8;j++){
+		if(buf[j] <= 0x20)break;
+		type[j] = buf[j];
+	}
+
+	int k;
+	for(k=j;k<8;k++)type[k] = 0;
+
+	return j;
+}
+
+
+
+
 /*
 "card=wlan0" -> "card" , "wlan0"
 "user=name" -> "user" , "name"
@@ -68,20 +98,4 @@ int buf2keyval(
 		*val = buf+j+1;
 	}
 	return j;
-}
-
-
-
-
-/*
-"%d%16s%3.5f\n" 71 "wertyui" 3.14159
-*/
-int buf2logtoall(u8* buf, int len)
-{
-	u64 list[64];
-	logtoall(buf,
-		list[0], list[1], list[2], list[3],
-		list[4], list[5], list[6], list[7]
-	);
-	return 0;
 }

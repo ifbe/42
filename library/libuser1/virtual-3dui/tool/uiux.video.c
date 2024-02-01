@@ -21,7 +21,13 @@ void rggb_to_rgba(
 void yuvx_to_ascii(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
+void yuvx_to_tui256(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth);
 void rgbx_to_ascii(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth);
+void rgbx_to_tui256(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
 void dx11data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
@@ -445,6 +451,23 @@ void video_draw_tui(
 		break;
 	}
 }
+void video_draw_tui256(
+	_obj* ent, struct style* pin,
+	_obj* win, struct style* sty)
+{
+	struct own* own = ent->OWNBUF;
+	if(0 == own->inbuf)return;
+	switch(own->infmt){
+	case _yuvx_:
+		yuvx_to_ascii(own->inbuf, 0, 640, 480, win->tuitext.buf, 0, win->whdf.width, win->whdf.height);
+		yuvx_to_tui256(own->inbuf, 0, 640, 480, win->tuitext.buf, 0, win->whdf.width, win->whdf.height);
+		break;
+	case _rgba_:
+		rgbx_to_ascii(own->inbuf, 0, 640, 480, win->tuitext.buf, 0, win->whdf.width, win->whdf.height);
+		rgbx_to_tui256(own->inbuf, 0, 640, 480, win->tuitext.buf, 0, win->whdf.width, win->whdf.height);
+		break;
+	}
+}
 void video_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
@@ -460,36 +483,76 @@ void video_event(
 
 
 
-static void video_read_bycam(_obj* ent,void* slot, _syn* stack,int sp)
+static void video_read_bywnd(_obj* ent,void* slot, _obj* wnd, void* area, _syn* stack,int sp)
 {
-	_obj* wor;struct style* geom;
-	_obj* wnd;struct style* area;
-	if(0 == stack)return;
-
-	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	switch(wnd->hfmt){
-	case _dx11list_:video_dx11draw(ent,slot, wor,geom, wnd,area);break;
-	case _gl41list_:video_gl41draw(ent,slot, wor,geom, wnd,area);break;
+	switch(wnd->vfmt){
+	case _cli_:
+		break;
+	case _tui_:
+		video_draw_tui(ent,0, wnd, area);
+		break;
+	case _tui256_:
+		video_draw_tui256(ent,0, wnd, area);
+		break;
+	case _rgba8888_:
+		video_draw_pixel(ent,0, wnd, area);
+		break;
 	}
 }
+
+//video - world - cam - wnd
+static void video_read_byworld_bycam_bywnd(
+_obj* ent,void* slot,
+_obj* world,struct style* geom,
+_syn* stack,int sp)
+{
+	//logtoall("%s\n", __func__);
+	if(0 == stack)return;
+
+	_obj* wnd = stack[sp-6].pchip;
+	struct style* area = stack[sp-6].pfoot;
+	switch(wnd->vfmt){
+	case _gl41list_:
+		//logtoall("2222222\n");
+		video_gl41draw(ent,slot, world,geom, wnd,area);
+		break;
+	case _dx11list_:
+		video_dx11draw(ent,slot, world,geom, wnd,area);
+		break;
+	}
+}
+
+static void video_read_byworld(
+_obj* ent,void* slot,
+_obj* world,struct style* geom,
+_syn* stack,int sp)
+{
+	_obj* caller2 = stack[sp-4].pchip;
+	struct style* area = stack[sp-4].pfoot;
+	switch(caller2->type){
+	case _wnd_:
+		//video_draw_gl41_nocam(ent,slot, caller2,area);
+		break;
+	default:
+		video_read_byworld_bycam_bywnd(ent,slot, world,geom, stack,sp);
+	}
+}
+
+
+
+
 static void video_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 	if(0 == stack)return;
 
-	switch(caller->hfmt){
-	case _cli_:
-		break;
-	case _tui_:
-		video_draw_tui(ent,0, caller, area);
-		break;
-	case _rgba_:
-		video_draw_pixel(ent,0, caller, area);
+	switch(caller->type){
+	case _wnd_:
+		video_read_bywnd(ent,foot, caller,area, stack,sp);
 		break;
 	default:
-		video_read_bycam(ent,foot, stack,sp);
+		video_read_byworld(ent,foot, caller,area, stack,sp);
 	}
 }
 static void video_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
@@ -586,8 +649,8 @@ static void video_create(_obj* act, void* arg, int argc, u8** argv)
 
 void video_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('v', 'i', 'd', 'e', 'o', 0, 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('v', 'i', 'd', 'e', 'o', 0, 0, 0);
 
 	p->oncreate = (void*)video_create;
 	p->ondelete = (void*)video_delete;

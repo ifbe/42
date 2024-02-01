@@ -156,14 +156,18 @@ void karnaugh_draw_cli(_obj* win, struct style* sty)
 static void karnaugh_read_bywnd(_obj* ent,struct style* slot, _obj* wnd, struct style* area)
 {
 	struct fstyle fs;
-	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
-	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
-	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
-	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
-	gl41data_before(wnd);
-	karnaugh_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_01cam(wnd);
-	gl41data_after(wnd);
+	switch(wnd->vfmt){
+	case _gl41list_:
+		fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
+		fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+		fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+		fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
+		gl41data_before(wnd);
+		karnaugh_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+		gl41data_01cam(wnd);
+		gl41data_after(wnd);
+		break;
+	}
 }
 static void karnaugh_write_bywnd(_obj* ent,struct style* slot, _obj* wnd, struct style* area,
 	_syn* stack,int sp, struct event* ev,int len)
@@ -215,8 +219,8 @@ static int karnaugh_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 {
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
-	switch(wnd->hfmt){
-	case _gl41list_:
+	switch(wnd->type){
+	case _wnd_:
 		karnaugh_read_bywnd(ent,slot, wnd,area);
 		break;
 	}
@@ -230,8 +234,8 @@ static int karnaugh_giving(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
-	switch(wnd->hfmt){
-	case _gl41list_:
+	switch(wnd->type){
+	case _wnd_:
 		karnaugh_write_bywnd(ent,slot, wnd,area, stack,sp, buf,len);
 		break;
 	}
@@ -251,8 +255,8 @@ static int karnaugh_attach(struct halfrel* self, struct halfrel* peer)
 
 void karnaugh_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('k','a','r','n','a','u','g','h');
+	p->vfmt = _orig_;
+	p->type = hex64('k','a','r','n','a','u','g','h');
 
 	p->oncreate = (void*)karnaugh_create;
 	p->ondelete = (void*)karnaugh_delete;

@@ -64,7 +64,20 @@ static void resistor_draw_gl41(
 	}
 	gl41float(wnd, 0xffffff, tc,tr,tf, act->whdf.fx0);
 }
-static void resistor_read_bycam(_obj* ent,void* slot, _syn* stack,int sp)
+
+
+
+
+static void resistor_read_bywnd(_obj* ent,void* foot, _obj* caller,void* area, _syn* stack,int sp)
+{
+	switch(caller->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		break;
+	}
+}
+static void resistor_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -131,13 +144,12 @@ static void resistor_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,in
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
+		resistor_read_bywnd(ent,foot, caller,area, stack,sp);
 		break;
 	default:
-		resistor_read_bycam(ent,foot, stack,sp);break;
+		resistor_read_byworld_bycam_bywnd(ent,foot, stack,sp);break;
 	}
 }
 static void resistor_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
@@ -182,8 +194,8 @@ static void resistor_create(_obj* act, void* arg, int argc, u8** argv)
 
 void resistor_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('r','e','s','i','s','t','o','r');
+	p->type = hex64('r','e','s','i','s','t','o','r');
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)resistor_create;
 	p->ondelete = (void*)resistor_delete;

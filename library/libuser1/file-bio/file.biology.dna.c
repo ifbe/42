@@ -100,7 +100,7 @@ static void dna_draw_cli(
 
 
 
-static void dna_world_camera_window(_obj* ent,void* slot, _syn* stack,int sp)
+static void dna_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -121,13 +121,11 @@ static void dna_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key
 	}
 
 	//caller defined behavior
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		break;
 	default:
-		dna_world_camera_window(ent,slot, stack,sp);
+		dna_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 	}
 }
 static void dna_giving(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
@@ -166,8 +164,8 @@ static void dna_create(_obj* act)
 
 void dna_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex32('d', 'n', 'a', 0);
+	p->vfmt = _orig_;
+	p->type = hex32('d', 'n', 'a', 0);
 
 	p->oncreate = (void*)dna_create;
 	p->ondelete = (void*)dna_delete;

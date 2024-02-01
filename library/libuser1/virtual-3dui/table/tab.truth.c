@@ -115,10 +115,14 @@ static void truth_read_bywnd(_obj* ent,struct style* slot, _obj* wnd, struct sty
 	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
 	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
 	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
-	gl41data_before(wnd);
-	truth_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_01cam(wnd);
-	gl41data_after(wnd);
+	switch(wnd->vfmt){
+	case _gl41list_:
+		gl41data_before(wnd);
+		truth_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+		gl41data_01cam(wnd);
+		gl41data_after(wnd);
+		break;
+	}
 }
 static void truth_write_bywnd(_obj* ent,struct style* slot, _obj* wnd, struct style* area,
 	_syn* stack,int sp, struct event* ev,int len)
@@ -170,8 +174,8 @@ static int truth_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int ke
 {
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
-	switch(wnd->hfmt){
-	case _gl41list_:
+	switch(wnd->type){
+	case _wnd_:
 		truth_read_bywnd(ent,slot, wnd,area);break;
 	}
 	return 0;
@@ -184,8 +188,8 @@ static int truth_giving(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int ke
 
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
-	switch(wnd->hfmt){
-	case _gl41list_:truth_write_bywnd(ent,slot, wnd,area, stack,sp, buf,len);break;
+	switch(wnd->type){
+	case _wnd_:truth_write_bywnd(ent,slot, wnd,area, stack,sp, buf,len);break;
 	}
 	return 0;
 }
@@ -203,8 +207,8 @@ static int truth_attach(struct halfrel* self, struct halfrel* peer)
 
 void truth_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('t','r','u','t','h', 0, 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('t','r','u','t','h', 0, 0, 0);
 
 	p->oncreate = (void*)truth_create;
 	p->ondelete = (void*)truth_delete;

@@ -3,18 +3,21 @@
 int inithardware();
 int freehardware();
 //i2c
-int i2c_create(void*, int, int, u8**);
-int i2c_delete(int);
-int i2c_read(int fd, int addr, u8* buf, int len);
-int i2c_write(int fd, int addr, u8* buf, int len);
+_obj* i2c_alloc(u64, u8*);
+int i2c_create(_obj* obj, void*, int, u8**);
+int i2c_delete(_obj* obj);
+int i2c_read(_obj* obj,void* foot, p64 arg,int cmd, u8* buf,int len);
+int i2c_write(_obj* obj,void* foot, p64 arg,int cmd, u8* buf,int len);
 //spi
-int spi_create(void*, int, int, u8**);
-int spi_delete(int);
-int spi_read(int fd, int addr, u8* buf, int len);
-int spi_write(int fd, int addr, u8* buf, int len);
+_obj* spi_alloc(u64, u8*);
+int spi_create(_obj* obj, void*, int, u8**);
+int spi_delete(_obj* obj);
+int spi_read(_obj* obj,void* foot, p64 arg,int cmd, u8* buf,int len);
+int spi_write(_obj* obj,void* foot, p64 arg,int cmd, u8* buf,int len);
 //gpio
-int gpio_create(void*,void*,int,void*);
-int gpio_delete(void*);
+_obj* gpio_alloc(u64, u8*);
+int gpio_create(_obj* obj, void*, int, void*);
+int gpio_delete(_obj* obj);
 int gpio_read(_obj* obj,void* foot, p64 arg,int cmd, u8* buf,int len);
 int gpio_write(_obj* obj,void* foot, p64 arg,int cmd, u8* buf,int len);
 
@@ -30,7 +33,7 @@ static int aaalen = 0;
 
 
 #define maxdevlen (0x100000/sizeof(struct item))
-void device_init(u8* addr)
+void device_init(u8* addr, int size)
 {
 	logtoall("[4,6):device initing\n");
 
@@ -59,9 +62,6 @@ void device_exit()
 
 
 
-void device_recycle()
-{
-}
 int device_obj2fd(_obj* obj)
 {
 	u8* a0 = (u8*)dev;
@@ -72,117 +72,94 @@ void* device_fd2obj(int fd)
 {
 	return &dev[fd];
 }
+
+
+
+
+void device_recycle(_obj* obj)
+{
+	obj->type = 0;
+}
 void* device_alloc()
 {
 	void* addr = &dev[devlen];
 	devlen -= 1;
 	return addr;
 }
-void* device_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt)
+void* device_alloc_fromtype(u64 type)
 {
-	_obj* obj;
-	switch(type){
-	case _gpio_:
-		obj = device_alloc();
-		if(0 == obj)return 0;
+	_obj* obj = device_alloc();
+	if(0 == obj)return 0;
 
-		obj->type = _gpio_;
-		return obj;
-	default:
-		return 0;
+	//obj->tier = tier;		//should be tier: bootup
+	//obj->kind = kind;		//should be class: usb
+	obj->type = type;		//should be type: xhci
+	//obj->vfmt = vfmt;		//should be model: intelxhci
+	return obj;
+}
+void* device_alloc_frompath(u64 type, u8* path)
+{
+	_obj* obj = 0;
+	switch(type){
+	case _i2c_:
+		obj = i2c_alloc(type,path);
+		obj->type = type;
+		break;
+	case _spi_:
+		obj = spi_alloc(type,path);
+		obj->type = type;
+		break;
+	case _gpio_:
+		obj = gpio_alloc(type,path);
+		obj->type = type;
+		break;
 	}
+
+	return obj;
+}
+void* device_alloc_fromfd(u64 type, int fd)
+{
+	_obj* obj = device_fd2obj(fd);
+
+	obj->type = type;
+	return obj;
 }
 
 
 
 
-void* device_create(u64 type, void* name, int argc, u8** argv)
+int device_create(_obj* obj, void* name, int argc, u8** argv)
 {
-	void* obj;
-	if(0 == type){
-		return device_alloc();
-	}
-	if(_uart_ == type){
-		struct item* p = device_alloc();
-		p->type = _uart_;
-		p->hfmt = _uart_;
-		return p;
-	}
-	if(_cpu_ == type){
-		struct item* p = device_alloc();
-		p->type = _cpu_;
-		p->hfmt = _cpu_;
-		return p;
-	}
-	if(_irq_ == type){
-		struct item* p = device_alloc();
-		p->type = _irq_;
-		p->hfmt = _irq_;
-		return p;
-	}
-	if(_tmr_ == type){
-		struct item* p = device_alloc();
-		p->type = _tmr_;
-		p->hfmt = _tmr_;
-		return p;
-	}
-	if(_pci_ == type){
-		struct item* p = device_alloc();
-		p->type = _bus_;
-		p->hfmt = _pci_;
-		return p;
-	}
-	if(_ahci_ == type){
-		struct item* p = device_alloc();
-		p->type = _ahci_;
-		p->hfmt = _ahci_;
-		return p;
-	}
-	if(_xhci_ == type){
-		struct item* p = device_alloc();
-		p->type = _xhci_;
-		p->hfmt = _xhci_;
-		return p;
-	}
-	if(_usb_ == type){
-		struct item* p = device_alloc();
-		p->type = _usb_;
-		p->hfmt = _usb_;
-		return p;
-	}
-	if(_mmc_ == type){
-		struct item* p = device_alloc();
-		p->type = _mmc_;
-		p->hfmt = _mmc_;
-		return p;
-	}
-	if(_eth_ == type){
-		struct item* p = device_alloc();
-		p->type = _eth_;
-		p->hfmt = _eth_;
-		return p;
-	}
-	if(_i2c_ == type){
-		int fd = i2c_create(name, 0, argc, argv);
-		if(fd <= 0)return 0;
-
-		dev[fd].type = _i2c_;
-		dev[fd].priv_fd = fd;
-
-		return &dev[fd];
-	}
-	if(_spi_ == type){
-		int fd = spi_create(name, 0, argc, argv);
-		if(fd <= 0)return 0;
-
-		dev[fd].type = _spi_;
-		dev[fd].priv_fd = fd;
-		return &dev[fd];
-	}
-	if(_gpio_ == type){
-		obj = device_alloc_prep(0, _gpio_, 0, 0);
+	switch(obj->type){
+	case _cpu_:
+		break;
+	case _irq_:
+		break;
+	case _tmr_:
+		break;
+	case _pci_:
+		break;
+	case _ahci_:
+		break;
+	case _xhci_:
+		break;
+	case _usb_:
+		break;
+	case _mmc_:
+		break;
+	case _eth_:
+		break;
+	case _uart_:
+		break;
+	case _i2c_:
+		i2c_create(obj, name, argc, argv);
+		break;
+	case _spi_:
+		spi_create(obj, name, argc, argv);
+		break;
+	case _gpio_:
 		gpio_create(obj, name, argc, argv);
-		return obj;
+		break;
 	}
 	return 0;
 }
@@ -193,7 +170,6 @@ int device_delete(_obj* this)
 int device_reader(struct item* dev,void* foot, p64 arg,int cmd, void* buf,int len)
 {
 	//logtoall("@device_reader\n");
-	int fd = dev->priv_fd;
 	switch(dev->type){
 		case _gpio_:return gpio_read(dev,foot, arg,cmd, buf,len);break;
 	}
@@ -202,7 +178,6 @@ int device_reader(struct item* dev,void* foot, p64 arg,int cmd, void* buf,int le
 int device_writer(struct item* dev,void* foot, p64 arg,int cmd, void* buf,int len)
 {
 	//logtoall("@device_writer\n");
-	int fd = dev->priv_fd;
 	switch(dev->type){
 		case _gpio_:return gpio_write(dev,foot, arg,cmd, buf,len);break;
 	}
@@ -212,32 +187,31 @@ int device_writer(struct item* dev,void* foot, p64 arg,int cmd, void* buf,int le
 
 
 
-int device_attach(struct halfrel* self, struct halfrel* peer)
+int device_attach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* peer)
 {
 	logtoall("@deviceattach\n");
 	return 0;
 }
-int device_detach(struct halfrel* self, struct halfrel* peer)
+int device_detach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* peer)
 {
 	logtoall("@devicedetach\n");
 	return 0;
 }
-int device_takeby(struct item* dev,void* foot, _syn* stack,int sp, p64 arg,int cmd, void* buf,int len)
+int device_takeby(_obj* dev,void* foot, _syn* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	//logtoall("@deviceread\n");
 	if(dev->ontaking){
 		return dev->ontaking(dev,foot, stack,sp, arg,cmd, buf,len);
 	}
 
-	int fd = dev->priv_fd;
 	switch(dev->type){
-		case _i2c_:return i2c_read(fd, cmd, buf, len);break;
-		case _spi_:return spi_read(fd, cmd, buf, len);break;
+		case _i2c_:return i2c_read(dev,foot, arg,cmd, buf,len);break;
+		case _spi_:return spi_read(dev,foot, arg,cmd, buf,len);break;
 		case _gpio_:return gpio_read(dev,foot, arg,cmd, buf,len);break;
 	}
 	return 0;
 }
-int device_giveby(struct item* dev,void* foot, _syn* stack,int sp, p64 arg,int cmd, void* buf,int len)
+int device_giveby(_obj* dev,void* foot, _syn* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	//logtoall("@device_giveby\n");
 	u8 t[2];
@@ -247,10 +221,9 @@ int device_giveby(struct item* dev,void* foot, _syn* stack,int sp, p64 arg,int c
 		len = 1;
 	}
 
-	int fd = dev->priv_fd;
 	switch(dev->type){
-		case _i2c_:return i2c_write(fd, cmd, buf, len);break;
-		case _spi_:return spi_write(fd, cmd, buf, len);break;
+		case _i2c_:return i2c_write(dev,foot, arg,cmd, buf,len);break;
+		case _spi_:return spi_write(dev,foot, arg,cmd, buf,len);break;
 		case _gpio_:return gpio_write(dev,foot, arg,cmd, buf,len);break;
 	}
 	return 0;
@@ -274,16 +247,16 @@ int devicecommand_search(u8* name)
 	if(0 == name){
 		for(j=0;j<maxdevlen;j++){
 			act = &dev[j];
-			if((0 == act->type)&&(0 == act->hfmt))continue;
+			if(0 == act->type)continue;
 			logtoall("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
-				&act->tier, &act->type, &act->hfmt, &act->hfmt);
+				&act->tier, &act->kind, &act->type, &act->vfmt);
 		}
 		if(0 == j)logtoall("empty device\n");
 	}
 	else{
 		for(j=0;j<0x100;j++){
-			if(0 == dev[j].hfmt)break;
-			if(0 == cmp(&dev[j].hfmt, name))logtoall("name=%d,node=%p\n", name, &dev[j]);
+			if(0 == dev[j].type)break;
+			if(0 == cmp(&dev[j].type, name))logtoall("name=%d,node=%p\n", name, &dev[j]);
 			break;
 		}
 	}

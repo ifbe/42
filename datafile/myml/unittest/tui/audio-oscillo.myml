@@ -1,0 +1,36 @@
+<entity>
+oscillo{
+fmt:oscillo
+}
+</entity>
+
+
+<supply>
+usbmic{
+fmt:mic
+path:default
+bits:16
+}
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<style>
+freerect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<relation>
+(oscillo, 0, pcm) -> (usbmic, 0, dst)
+
+(opengl, freerect, mvp) -> (oscillo, 0, 0)
+</relation>

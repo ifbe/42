@@ -306,7 +306,16 @@ static void dirlight_mesh_prep(struct mysrc* src)
 
 
 
-static void dirlight_wrl_cam_wnd(_obj* ent,void* foot, _syn* stack,int sp)
+static void dirlight_read_bywnd(_obj* ent,void* foot, _obj* wnd,void* area)
+{
+	switch(wnd->vfmt){
+	case _rgba_:
+		break;
+	case _gl41list_:
+		break;
+	}
+}
+static void dirlight_read_byworld_bycam_bywnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
 	if(0 == stack)return;
 
@@ -319,12 +328,19 @@ static void dirlight_wrl_cam_wnd(_obj* ent,void* foot, _syn* stack,int sp)
 
 	struct sunbuf* sun = ent->OWNBUF;
 	dirlight_frustum(&geom->frus, &geom->fs);
-	if(_gl41list_ == wnd->hfmt)world2clip_orthznzp_transpose(sun->wvp, &geom->frus);
-	else world2clip_orthz0z1_transpose(sun->wvp, &geom->frus);
 
-	dirlight_cam_update(ent,foot, wor,geom, wnd,area);
-	dirlight_lit_update(ent,foot, wor,geom, wnd,area);
-	dirlight_mesh_update(ent,foot, wor,geom, wnd,area);
+	switch(wnd->vfmt){
+	case _gl41list_:
+		world2clip_orthznzp_transpose(sun->wvp, &geom->frus);
+
+		dirlight_cam_update(ent,foot, wor,geom, wnd,area);
+		dirlight_lit_update(ent,foot, wor,geom, wnd,area);
+		dirlight_mesh_update(ent,foot, wor,geom, wnd,area);
+		break;
+	default:
+		world2clip_orthz0z1_transpose(sun->wvp, &geom->frus);
+		break;
+	}
 }
 
 
@@ -342,13 +358,12 @@ static void dirlight_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,in
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
+		dirlight_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
-		dirlight_wrl_cam_wnd(ent,slot, stack,sp);
+		dirlight_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -412,8 +427,8 @@ static void dirlight_create(_obj* act, void* str)
 
 void dirlight_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('d','i','r','l', 'i', 't', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('d','i','r','l', 'i', 't', 0, 0);
 
 	p->oncreate = (void*)dirlight_create;
 	p->ondelete = (void*)dirlight_delete;

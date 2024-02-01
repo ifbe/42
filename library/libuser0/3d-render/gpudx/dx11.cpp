@@ -1061,9 +1061,6 @@ int window_delete(_obj* wnd)
 }
 int window_create(_obj* wnd)
 {
-	//wnd->tier
-	//wnd->type
-	wnd->hfmt = _dx11list_;
 	wnd->vfmt= _dx11list_;
 
 	wnd->whdf.width = wnd->whdf.fbwidth = 1024;

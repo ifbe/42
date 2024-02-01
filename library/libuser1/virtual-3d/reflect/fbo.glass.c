@@ -1,15 +1,15 @@
 #include "libuser.h"
-#define _fbo_ hex32('f','b','o',0)
 void world2clip_projz0z1_transpose(mat4 mat, struct fstyle* frus);
 void world2clip_projznzp_transpose(mat4 mat, struct fstyle* frus);
-void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
+void gl41data_insert(_obj* ctx, int type, struct gl41data* src, int cnt);
+void gl41data_addcam(_obj* wnd, struct gl41data* data);
 
 
-#define CAMBUF listptr.buf0
 #define CTXBUF listptr.buf1
 struct glassbuf{
-	mat4 mvp;
-	u8 data[0];
+	mat4 wvp;
+	struct gl41data geom;
+	struct gl41data dest;
 };
 
 
@@ -174,56 +174,65 @@ void glass_frustum(struct fstyle* frus, struct fstyle* obb, vec3 cam)
 	frus->vt[2] = z;
 	frus->vt[3] = t;
 }
-static void glass_forfbo_update(
-	_obj* act, struct style* slot,
-	_obj* win, struct style* geom,
+static void glass_gl41fbo_update(
+	_obj* act, struct style* part,
+	_obj* wrd, struct style* geom,
 	_obj* wrl, struct style* camg,
-	_obj* fbo, struct style* area)
+	_obj* wnd, struct style* area)
 {
-	//frus from shape and eye
-	struct fstyle* shap = &geom->fshape;
-	struct fstyle* frus = &geom->frustum;
-	glass_frustum(frus, shap, camg->frus.vc);
-
-	//mvp from frus
-	struct glassbuf* glass = act->CAMBUF;
-	if(0 == glass)return;
-	world2clip_projznzp_transpose(glass->mvp, frus);
-
-	//give arg(matrix and position) to fbo
-	struct gl41data* data = (void*)(glass->data);
+	struct glassbuf* glass = act->CTXBUF;
+	struct gl41data* data = &glass->dest;
 	data->dst.arg[0].fmt = 'm';
 	data->dst.arg[0].name = "cammvp";
-	data->dst.arg[0].data = glass->mvp;
+	data->dst.arg[0].data = glass->wvp;
 	data->dst.arg[1].fmt = 'v';
 	data->dst.arg[1].name = "camxyz";
-	data->dst.arg[1].data = frus->vc;
-	fbo->gl41list.world[0].camera[0] = data;
+	data->dst.arg[1].data = geom->frus.vc;
+	gl41data_addcam((void*)wnd, data);
 }
-static void glass_forfbo_prepare(struct gl41data* data)
+void glass_gl41fbo_prepare(struct mysrc* src)
 {
+	src->tex[0].w = 1024;
+	src->tex[0].h = 1024;
+	src->tex[0].fmt = 0;
+	src->tex[0].glfd = 0;
+
+	src->type = 'c';
+	src->target_enq = 42;
 }
 
 
 
 
 //for window
-static void glass_draw_gl41(
+static void glass_gl41geom_update(
 	_obj* act, struct style* slot,
 	_obj* win, struct style* geom,
 	_obj* ctx, struct style* area)
 {
-	struct glassbuf* glass = act->CTXBUF;
-	if(0 == glass)return;
-	struct mysrc* src = (void*)(glass->data);
-	if(0 == src)return;
-	float (*vbuf)[6] = src->vtx[0].vbuf;
-	if(0 == vbuf)return;
-
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vu = geom->fs.vt;
+	//logtoall("%f,%f,%f	%f,%f,%f\n",vc[0],vc[1],vc[2],vr[0],vf[1],vu[2]);
+	gl41line_rect(ctx, 0x404040, vc, vr, vf);
+
+	struct glassbuf* glass = act->CTXBUF;
+	if(0 == glass)return;
+	struct gl41data* body = &glass->geom;
+	if(0 == body)return;
+	struct gl41data* dest = &glass->dest;
+	if(0 == dest)return;
+
+//.texture
+	body->dst.texname[0] = "tex0";
+	body->src.tex[0].glfd = dest->dst.tex[0];
+	body->src.tex[0].fmt = '!';
+	body->src.tex_enq[0] += 1;
+
+//.vertex
+	float (*vbuf)[6] = body->src.vtx[0].vbuf;
+	if(0 == vbuf)return;
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];
@@ -267,34 +276,18 @@ static void glass_draw_gl41(
 	vbuf[5][4] = 0.0;
 	vbuf[5][5] = 0.0;
 
-	src->vbuf_enq += 1;
-	gl41data_insert(ctx, 'o', src, 1);
+	body->src.vbuf_enq += 1;
+	gl41data_insert(ctx, 'o', body, 1);
 }
-void glass_forwnd_update(_obj* act, struct style* slot, _obj* fbo, struct style* rect)
-{
-	struct glassbuf* glass = act->CTXBUF;
-	if(0 == glass)return;
-
-	struct gl41data* data = (void*)(glass->data);
-	if(0 == data)return;
-
-	data->dst.texname[0] = "tex0";
-	//data->src.tex[0].glfd = fbo->gl41list.tex[0];
-	data->src.tex[0].fmt = '!';
-	data->src.tex_enq[0] += 1;
-}
-void glass_forwnd_prepare(struct gl41data* data)
+void glass_gl41geom_prepare(struct mysrc* src)
 {
 	//shader
-	data->src.vs = glass_glsl_v;
-	data->src.fs = glass_glsl_f;
-	data->src.shader_enq = 42;
-
-	//texture
-	data->dst.texname[0] = "tex0";
+	src->vs = glass_glsl_v;
+	src->fs = glass_glsl_f;
+	src->shader_enq = 42;
 
 	//vertex
-	struct vertex* vtx = data->src.vtx;
+	struct vertex* vtx = src->vtx;
 	vtx->geometry = 3;
 	vtx->opaque = 1;
 
@@ -304,17 +297,23 @@ void glass_forwnd_prepare(struct gl41data* data)
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
 	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 
-	data->src.vbuf_enq = 0;
+	src->vbuf_enq = 0;
 }
 
 
 
 
 
-
-
-
-static void glass_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void glass_read_bywnd(_obj* ent,void* foot, _obj* wnd,void* area)
+{
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		break;
+	}
+}
+static void glass_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* dup;struct style* camg;
@@ -323,24 +322,21 @@ static void glass_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 	dup = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 
-	//search for myown fbo
-	int ret;
-	struct halfrel* rel[2];
-	ret = relationsearch(ent, _fbo_, &rel[0], &rel[1]);
-	if(ret <= 0)return;
+	//frus from shape and eye
+	struct glassbuf* glass = ent->CTXBUF;
+	glass_frustum(&geom->frus, &geom->fshape, camg->frus.vc);
 
-	//update matrix for fbo
-	_obj* fbo = rel[1]->pchip;
-	struct style* rect = rel[1]->pfoot;
-	glass_forfbo_update(ent,slot, wor,geom, dup,camg, fbo,rect);
+	switch(wnd->vfmt){
+	case _gl41list_:
+		world2clip_projznzp_transpose(glass->wvp, &geom->frus);
 
-	//wnd.data -> fbo.texture
-	give_data_into_peer(ent,_fbo_, stack,sp, 0,0, 0,0);
+		//create or update fbo
+		glass_gl41fbo_update(ent,slot, wor,geom, dup,camg, (void*)wnd,area);
 
-	//fbo.texture -> my.data -> wnd.data
-	glass_forwnd_update(ent,slot, fbo,rect);
-
-	glass_draw_gl41(ent,slot, wor,geom, wnd,area);
+		//geom
+		glass_gl41geom_update(ent,slot, wor,geom, wnd,area);
+		break;
+	}
 }
 
 
@@ -358,13 +354,12 @@ static void glass_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int k
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
+		glass_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
-		glass_wrl_cam_wnd(ent,slot, stack,sp);
+		glass_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -394,26 +389,14 @@ static void glass_delete(_obj* act)
 		memoryfree(act->CTXBUF);
 		act->CTXBUF = 0;
 	}
-	if(act->CAMBUF){
-		memoryfree(act->CAMBUF);
-		act->CAMBUF = 0;
-	}
 }
 static void glass_create(_obj* act, void* str)
 {
-	struct glassbuf* glass;
-	struct gl41data* data;
-	if(0 == act)return;
-
-	glass = act->CTXBUF = memoryalloc(0x1000, 0);
+	struct glassbuf* glass = act->CTXBUF = memoryalloc(0x10000, 0);
 	if(0 == glass)return;
-	data = (void*)(glass->data);
-	glass_forwnd_prepare(data);
 
-	glass = act->CAMBUF = memoryalloc(0x1000, 0);
-	if(0 == glass)return;
-	data = (void*)(glass->data);
-	glass_forfbo_prepare(data);
+	glass_gl41fbo_prepare(&glass->dest.src);
+	glass_gl41geom_prepare(&glass->geom.src);
 }
 
 
@@ -421,8 +404,8 @@ static void glass_create(_obj* act, void* str)
 
 void glass_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('g', 'l', 'a', 's', 's', 0, 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('g', 'l', 'a', 's', 's', 0, 0, 0);
 
 	p->oncreate = (void*)glass_create;
 	p->ondelete = (void*)glass_delete;

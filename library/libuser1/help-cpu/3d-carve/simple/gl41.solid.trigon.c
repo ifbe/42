@@ -228,7 +228,7 @@ GLSL_PRECISION
 static int trigon3d_fill(_obj* win, struct mysrc* src)
 {
 	if(0 == src->vs){
-		switch(win->hfmt){
+		switch(win->vfmt){
 		case _gl41list_:
 			src->vs = gl41solidtrigon_vert;
 			src->fs = gl41solidtrigon_frag;
@@ -331,11 +331,12 @@ void gl41solid_triangle(_obj* win, u32 rgb,
 void gl41solid_rect(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf)
 {
+//logtoall("%s\n",__func__);
 	float* vbuf;
 	u16* ibuf;
 	int vlen = trigon3d_vars(win, 0, &vbuf, &ibuf, 4, 2);
+//logtoall("vbuf=%p,ibuf=%p,vlen=%d\n",vbuf,ibuf,vlen);
 	if(vlen < 0)return;
-
 	int j;
 	float bb = (float)(rgb&0xff) / 255.0;
 	float gg = (float)((rgb>>8)&0xff) / 255.0;

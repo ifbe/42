@@ -52,7 +52,7 @@ static int wrklen = 0;
 
 
 #define maxitem (0x100000/sizeof(struct item))
-void bootup_init(u8* addr)
+void bootup_init(u8* addr, int size)
 {
 	logtoall("[2,4):bootup initing\n");
 
@@ -96,104 +96,64 @@ void* bootup_alloc()
 	wrklen -= 1;
 	return addr;
 }
-void* bootup_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt)
+void* bootup_alloc_fromtype(u64 type)
 {
-	return 0;
+	_obj* obj = bootup_alloc();
+	if(0 == obj)return 0;
+
+	//obj->tier = tier;		//should be tier: bootup
+	//obj->kind = kind;		//should be class: usb
+	obj->type = type;		//should be type: xhci
+	//obj->vfmt = vfmt;		//should be model: intelxhci
+	return obj;
 }
 
 
 
 
-void* bootup_create(u64 type, void* arg, int argc, u8** argv)
+int bootup_create(_obj* tmp, void* arg, int argc, u8** argv)
 {
-	struct item* tmp;
-
 	//logtoall("type=%.8s\n",&type);
-	if(_subcmd_ == type){
-		//self @ 0
-		tmp = bootup_alloc();
-		tmp->type = _subcmd_;
+	switch(tmp->type){
+	case _subcmd_:
 		subcmd_create(tmp, arg, argc, argv);
-		return tmp;
-	}
-	if(_compiler_ == type){
-		//self @ 0
-		tmp = bootup_alloc();
-		tmp->type = _compiler_;
+		break;
+	case _compiler_:
 		compiler_create(tmp, arg, argc, argv);
-		return tmp;
-	}
-	if(_kernel_ == type){
-		//self @ 0
-		tmp = bootup_alloc();
-		tmp->type = _kernel_;
+		break;
+	case _kernel_:
 		kernel_create(tmp, arg, argc, argv);
-		return tmp;
-	}
-	if(_myml_ == type){
-		//self @ 0
-		tmp = bootup_alloc();
-		tmp->type = _myml_;
+		break;
+	case _myml_:
 		myml_create(tmp, arg, argc, argv);
-		return tmp;
-	}
-	if(_mython_ == type){
-		//self @ 0
-		tmp = bootup_alloc();
-		tmp->type = _mython_;
+		break;
+	case _mython_:
 		mython_create(tmp, arg, argc, argv);
-		return tmp;
-	}
-	if(_term_ == type){
-		//self @ 0
-		tmp = bootup_alloc();
-		tmp->type = _term_;
+		break;
+	case _term_:
 		term_create(tmp, arg, argc, argv);
-		return tmp;
-	}
-	if(_guiapp_ == type){
-		//self @ 0
-		tmp = bootup_alloc();
-		tmp->type = _guiapp_;
+		break;
+	case _guiapp_:
 		guiapp_create(tmp, arg, argc, argv);
-		return tmp;
-	}
+		break;
 
 	//
-	if(_exiter_ == type)
-	{
-		tmp = bootup_alloc();
-		tmp->type = _exiter_;
-
+	case _exiter_:
 		exiter_create(tmp, arg, argc, argv);
 		threadcreate(exiter, tmp);
-		return tmp;
-	}
-	if(_pulser_ == type)
-	{
-		tmp = bootup_alloc();
-		tmp->type = _pulser_;
-
+		break;
+	case _pulser_:
 		pulser_create(tmp, arg, argc, argv);
 		threadcreate(pulser, tmp);
-		return tmp;
-	}
-	if(_poller_ == type){
-		tmp = bootup_alloc();
-		tmp->type = _poller_;
-
+		break;
+	case _poller_:
 		poller_create(tmp, arg, argc, argv);
 		threadcreate(poller, tmp);
-		return tmp;
-	}
-	if(_waiter_ == type)
-	{
-		tmp = bootup_alloc();
-		tmp->type = _waiter_;
-
+		break;
+	case _waiter_:
 		waiter_create(tmp, arg, argc, argv);
 		threadcreate(waiter, tmp);
-		return tmp;
+		break;
 	}
 
 	return 0;
@@ -222,12 +182,12 @@ int bootup_writer(struct item* wrk,void* foot, p64 arg,int idx, void* buf,int le
 
 
 
-int bootup_attach(struct halfrel* self, struct halfrel* peer)
+int bootup_attach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* peer)
 {
 	logtoall("@bootupattach\n");
 	return 0;
 }
-int bootup_detach(struct halfrel* self, struct halfrel* peer)
+int bootup_detach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* peer)
 {
 	logtoall("@bootupdetach\n");
 	return 0;
@@ -259,16 +219,16 @@ int bootupcommand_search(u8* name)
 	if(0 == name){
 		for(j=0;j<maxitem;j++){
 			act = &wrk[j];
-			if((0 == act->type)&&(0 == act->hfmt))continue;
+			if(0 == act->type)continue;
 			logtoall("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
-				&act->tier, &act->type, &act->hfmt, &act->hfmt);
+				&act->tier, &act->kind, &act->type, &act->vfmt);
 		}
 		if(0 == j)logtoall("empty bootup\n");
 	}
 	else{
 		for(j=0;j<0x100;j++){
-			if(0 == wrk[j].hfmt)break;
-			if(0 == cmp(&wrk[j].hfmt, name))logtoall("name=%d,node=%p\n", name, &wrk[j]);
+			if(0 == wrk[j].type)break;
+			if(0 == cmp(&wrk[j].type, name))logtoall("name=%d,node=%p\n", name, &wrk[j]);
 			break;
 		}
 	}

@@ -60,7 +60,7 @@ void tabbar_gl41_listtwig(_obj* win, struct style* sty, _obj* tmp, int t)
 			st = (void*)(rel->srcfoot);
 			if('#' == st->is.uc[3])rgb = 0x404040;
 			else rgb = 0xff00ff;
-			gl41string_center(win, rgb, tc, rr, tf, (void*)&ac->hfmt, 8);
+			gl41string_center(win, rgb, tc, rr, tf, (void*)&ac->type, 8);
 
 			j++;
 			if(j >= 64)break;
@@ -115,7 +115,7 @@ void tabbar_gl41_listroot(
 			tr[2] = vr[2] / 2 / 16;
 
 			aa = (void*)(rel->dstchip);
-			gl41string_center(win, 0xffffff, tc, tr, tf, (void*)(&aa->hfmt), 8);
+			gl41string_center(win, 0xffffff, tc, tr, tf, (void*)(&aa->type), 8);
 
 			if(j == act->whdf.ix0)tabbar_gl41_listtwig(win, sty, aa, j);
 
@@ -169,7 +169,7 @@ void tabbar_pixel_listtwig(_obj* win, struct style* sty, _obj* tmp, int t)
 				win, rgb,
 				(x+4)*w/16+2, (y+4)*h/16+2,
 				(x+5)*w/16-2, (y+5)*h/16-2,
-				(void*)&ac->hfmt, 8
+				(void*)&ac->type, 8
 			);
 
 			j++;
@@ -207,7 +207,7 @@ void tabbar_pixel_listroot(
 				win, 0xffffff,
 				(j+4)*w/16, h*31/32,
 				(j+5)*w/16, h-1,
-				(void*)(&aa->hfmt), 8);
+				(void*)(&aa->type), 8);
 
 			if(j == act->whdf.ix0)tabbar_pixel_listtwig(win, sty, aa, j);
 
@@ -385,8 +385,8 @@ static void tabbar_create(_obj* act, void* str)
 
 void tabbar_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('t', 'a', 'b', 'b', 'a', 'r', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('t', 'a', 'b', 'b', 'a', 'r', 0, 0);
 
 	p->oncreate = (void*)tabbar_create;
 	p->ondelete = (void*)tabbar_delete;

@@ -123,7 +123,7 @@ static void gcode_draw_gl41(
 
 
 
-static void gcode_world_camera_window(_obj* ent,void* slot, _syn* stack,int sp)
+static void gcode_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* scn;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -149,13 +149,11 @@ static void gcode_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int k
 	}
 
 	//caller defined behavior
-	switch(caller->hfmt){
-	case _rgba_:
-	        break;
-	case _gl41list_:
-	        break;
+	switch(caller->type){
+	case _wnd_:
+		break;
 	default:
-		gcode_world_camera_window(ent,slot, stack,sp);
+		gcode_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 	}
 }
 static void gcode_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
@@ -173,8 +171,8 @@ static void gcode_attach(struct halfrel* self, struct halfrel* peer)
 
 void gcode_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('g', 'c', 'o', 'd', 'e', 0, 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('g', 'c', 'o', 'd', 'e', 0, 0, 0);
 
 	p->oncreate = (void*)gcode_create;
 	p->ondelete = (void*)gcode_delete;

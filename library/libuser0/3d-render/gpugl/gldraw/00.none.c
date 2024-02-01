@@ -63,7 +63,7 @@ void nonewindow_delete(_obj* win)
 }
 void nonewindow_create(_obj* win)
 {
-	win->hfmt = _gl41none_;
+	win->vfmt = _gl41none_;
 	win->whdf.ix0 = win->whdf.width / 2;
 	win->whdf.iy0 = win->whdf.height / 2;
 }

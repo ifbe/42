@@ -149,6 +149,17 @@ int htmlroot_draw_gl41_whcam(
 	gl41data_after(wnd);
 	return 0;
 }
+static void htmlroot_read_bywnd(_obj* ent,void* foot, _obj* caller,void* area, _syn* stack,int sp)
+{
+	switch(caller->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		htmlroot_taketext(ent,foot, stack,sp);
+		htmlroot_draw_gl41_whcam(ent,foot, caller,area);
+		break;
+	}
+}
 
 
 
@@ -157,17 +168,16 @@ int htmlroot_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, v
 {
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
-	logtoall("caller:type=%.4s,fmt=%.4s\n", &caller->type, &caller->hfmt);
+	logtoall("caller:type=%.4s,fmt=%.4s\n", &caller->type, &caller->type);
 
 	//slot type known: do work based on slot type
 	//switch(stack[sp-1].foottype){
 	//}
 
 	//slot type unknown: do work based on caller fmt
-	switch(caller->hfmt){
-	case _gl41list_:
-		htmlroot_taketext(ent,slot, stack,sp);
-		htmlroot_draw_gl41_whcam(ent,slot, caller,area);
+	switch(caller->type){
+	case _wnd_:
+		htmlroot_read_bywnd(ent,slot, caller,area, stack,sp);
 		break;
 	case _http_:
 		logtoall("byhttp\n");
@@ -179,7 +189,7 @@ int htmlroot_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, v
 {
 	//logtoall("@htmlroot_write: %.4s\n", &foot);
 	_obj* caller = stack[sp-2].pchip;
-	logtoall("caller:type=%.4s,fmt=%.4s\n", &caller->type, &caller->hfmt);
+	logtoall("caller:type=%.4s,fmt=%.4s\n", &caller->type, &caller->type);
 
 	//slot type known: do work based on slot type
 	switch(stack[sp-1].foottype){

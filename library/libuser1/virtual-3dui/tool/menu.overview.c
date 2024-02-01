@@ -67,7 +67,7 @@ void overview_draw_pixel(
 		x1 = (cx-1)+(x-7)*ww/8;
 		y1 = (cy-1)+(y-15)*hh/16;
 		drawopaque_rect(win, c, x0, y0, x1, y1);
-		drawstring_fit(win, 0xffffff, x0, y0, x1, y1, (u8*)&entity[j].hfmt, 8);
+		drawstring_fit(win, 0xffffff, x0, y0, x1, y1, (u8*)&entity[j].type, 8);
 	}
 
 	//supply
@@ -86,7 +86,7 @@ void overview_draw_pixel(
 		x1 = (cx-1)+(x-7)*ww/8;
 		y1 = (cy-1)+(y-7)*hh/16;
 		drawopaque_rect(win, c, x0, y0, x1, y1);
-		drawstring_fit(win, 0xffffff, x0, y0, x1, y1, (u8*)&supply[j].hfmt, 8);
+		drawstring_fit(win, 0xffffff, x0, y0, x1, y1, (u8*)&supply[j].type, 8);
 	}
 
 	//artery
@@ -128,7 +128,7 @@ void overview_draw_pixel(
 	//entity.irel
 	for(j=0;j<128;j++)
 	{
-		if(0 == entity[j].hfmt)continue;
+		if(0 == entity[j].type)continue;
 
 		rel = entity[j].irel0;
 		while(1)
@@ -392,7 +392,7 @@ void overview_draw_gl41(
 	//entity
 	for(j=0;j<128;j++)
 	{
-		k = entity[j].hfmt;
+		k = entity[j].type;
 		if(0 == k)break;
 
 		if(j == cursor)
@@ -420,7 +420,7 @@ void overview_draw_gl41(
 			tc[k] -= vt[k]*0.5;
 			tr[k] = vr[k] / 32.0;
 		}
-		gl41string_center(ctx, fg, tc, tr, tf, (u8*)&entity[j].hfmt, 8);
+		gl41string_center(ctx, fg, tc, tr, tf, (u8*)&entity[j].type, 8);
 	}
 
 	//supply
@@ -453,7 +453,7 @@ void overview_draw_gl41(
 			tc[k] -= vt[k]*0.5;
 			tr[k] = vr[k] / 32.0;
 		}
-		gl41string_center(ctx, fg, tc, tr, tf, (u8*)&supply[j].hfmt, 8);
+		gl41string_center(ctx, fg, tc, tr, tf, (u8*)&supply[j].type, 8);
 	}
 
 	//artery
@@ -523,7 +523,7 @@ void overview_draw_gl41(
 	//entity.irel
 	for(j=0;j<128;j++)
 	{
-		if(0 == entity[j].hfmt)continue;
+		if(0 == entity[j].type)continue;
 
 		rel = entity[j].irel0;
 		while(1)
@@ -961,10 +961,10 @@ void overview_drag(_obj* win, int x0, int y0, int x1, int y1)
 				);
 			}
 			else if(0 == act_s->type){
-				//entity_create(act_d->hfmt, 0, 0, 0);
+				//entity_create(act_d->type, 0, 0, 0);
 			}
 			else if(0 == act_d->type){
-				//entity_create(act_s->hfmt, 0, 0, 0);
+				//entity_create(act_s->type, 0, 0, 0);
 			}
 		}
 		else if(y1 < 16)
@@ -1190,7 +1190,7 @@ static int overview_event(
 
 
 
-static void overview_read_bycam(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key)
+static void overview_read_byworld_bycam_bywnd(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key)
 {
 	struct style* slot;
 	_obj* wor;struct style* geom;
@@ -1207,11 +1207,14 @@ static void overview_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct s
 	fs.vr[0] = 0.5;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
 	fs.vf[0] = 0.0;fs.vf[1] = 0.5;fs.vf[2] = 0.0;
 	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 0.1;
-	gl41data_before(wnd);
-	overview_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_after(wnd);
-
-	gl41data_01cam(wnd);
+	switch(wnd->vfmt){
+	case _gl41list_:
+		gl41data_before(wnd);
+		overview_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+		gl41data_01cam(wnd);
+		gl41data_after(wnd);
+		break;
+	}
 }
 static void overview_write_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area, struct event* ev)
 {
@@ -1237,12 +1240,12 @@ static int overview_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 	_obj* caller = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		overview_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
-		overview_read_bycam(ent,slot, stack,sp, arg,key);
+		overview_read_byworld_bycam_bywnd(ent,slot, stack,sp, arg,key);
 		break;
 	}
 	return 0;
@@ -1254,8 +1257,8 @@ static int overview_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->hfmt){
-	case _gl41list_:
+	switch(wnd->type){
+	case _wnd_:
 		overview_write_bywnd(ent,slot, wnd,area, buf);
 		break;
 	}
@@ -1291,8 +1294,8 @@ void overview_create(_obj* act, void* str)
 
 void overview_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('o', 'v', 'e', 'r', 'v', 'i', 'e', 'w');
+	p->vfmt = _orig_;
+	p->type = hex64('o', 'v', 'e', 'r', 'v', 'i', 'e', 'w');
 
 	p->oncreate = (void*)overview_create;
 	p->ondelete = (void*)overview_delete;

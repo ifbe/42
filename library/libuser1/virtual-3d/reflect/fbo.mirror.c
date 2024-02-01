@@ -298,10 +298,19 @@ void mirror_gl41geom_prepare(struct mysrc* src)
 
 
 
+static void mirror_read_bywnd(_obj* ent,void* foot, _obj* wnd,void* area)
+{
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		break;
+	}
+}
 //[-6,-5]: wnd,area -> cam,togl
 //[-4,-3]: cam,gl41 -> wor,camg		//the camera taking photo
 //[-2,-1]: wor,geom -> ent,gl41		//the entity being taken
-static void mirror_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void mirror_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	if(0 == stack)return;
 	_obj* wor;struct style* geom;
@@ -316,14 +325,20 @@ static void mirror_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 	mirror_frustum(&geom->frus, &geom->fshape, camg->frus.vc);
 
 	//wvp from frus
-	if(_gl41list_ == wnd->hfmt)world2clip_projznzp_transpose(mirr->wvp, &geom->frus);
-	else world2clip_projz0z1_transpose(mirr->wvp, &geom->frus);
+	switch(wnd->vfmt){
+	case _gl41list_:
+		world2clip_projznzp_transpose(mirr->wvp, &geom->frus);
 
-	//create or update fbo
-	mirror_gl41fbo_update(ent,slot, wor,geom, dup,camg, (void*)wnd,area);
+		//create or update fbo
+		mirror_gl41fbo_update(ent,slot, wor,geom, dup,camg, (void*)wnd,area);
 
-	//geom
-	mirror_gl41geom_update(ent,slot, wor,geom, wnd,area);
+		//geom
+		mirror_gl41geom_update(ent,slot, wor,geom, wnd,area);
+		break;
+	default:
+		world2clip_projz0z1_transpose(mirr->wvp, &geom->frus);
+		break;
+	}
 }
 
 
@@ -341,13 +356,12 @@ static void mirror_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int 
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
+		mirror_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
-		mirror_wrl_cam_wnd(ent,slot, stack,sp);
+		mirror_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -389,8 +403,8 @@ static void mirror_create(_obj* act, void* str)
 
 void mirror_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('m', 'i', 'r', 'r', 'o', 'r', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('m', 'i', 'r', 'r', 'o', 'r', 0, 0);
 
 	p->oncreate = (void*)mirror_create;
 	p->ondelete = (void*)mirror_delete;

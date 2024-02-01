@@ -89,14 +89,15 @@ int tcptravclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg,int 
 		logtoall("remote=%d.%d.%d.%d:%d\n", r[4],r[5],r[6],r[7], (r[2]<<8)+r[3]);
 
 		//connect
-		struct system* ccc;
+		_obj* ccc;
 		mysnprintf(tmp,64,
 			"%d.%d.%d.%d:%d->%d.%d.%d.%d:%d",
 			t[4],t[5],t[6],t[7], (t[2]<<8)+t[3],
 			r[4],r[5],r[6],r[7], (r[2]<<8)+r[3]
 		);
 		for(j=0;j<10;j++){
-			ccc = system_create(_tcp_, tmp, 0, 0);
+			ccc = system_alloc_frompath(_tcp_, (u8*)tmp);
+			system_create(ccc, tmp, 0, 0);
 			logtoall("ccc=%llx\n",ccc);
 			if(ccc){
 				relationcreate(art, 0, _art_, _ccc_, ccc, 0, _sys_, _dst_);
@@ -106,13 +107,14 @@ int tcptravclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg,int 
 		}
 
 		//listen
-		struct system* sss;
+		_obj* sss;
 		mysnprintf(tmp,32,
 			"%d.%d.%d.%d:%d",
 			t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]
 		);
-		sss = system_create(_TCP_, tmp, 0, 0);
+		sss = system_alloc_frompath(_TCP_, (u8*)tmp);
 		if(sss){
+			system_create(sss, tmp, 0, 0);
 			relationcreate(art, 0, _art_, _sss_, sss, 0, _sys_, _dst_);
 		}
 

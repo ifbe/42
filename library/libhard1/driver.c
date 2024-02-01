@@ -57,7 +57,7 @@ static int bbblen = 0;
 
 
 #define maxitem (0x100000/sizeof(struct item))
-void driver_init(u8* addr)
+void driver_init(u8* addr, int size)
 {
 	logtoall("[6,8):driver initing\n");
 
@@ -83,64 +83,50 @@ void driver_exit()
 
 
 
+void driver_recycle()
+{
+}
 void* driver_alloc()
 {
 	void* addr = &dri[drilen];
 	drilen -= 1;
 	return addr;
 }
-void driver_recycle()
+void* driver_alloc_fromtype(u64 type)
 {
+	_obj* obj = driver_alloc();
+	if(0 == obj)return 0;
+
+	//obj->tier = tier;		//should be tier: bootup
+	//obj->kind = kind;		//should be class: usb
+	obj->type = type;		//should be type: xhci
+	//obj->vfmt = vfmt;		//should be model: intelxhci
+	return obj;
 }
-void* driver_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt)
+
+
+
+
+int driver_create(_obj* obj, void* arg, int argc, u8** argv)
 {
-	return 0;
-}
+	logtoall("@drivercreate\n");
 
-
-
-
-void* driver_create(u64 type, void* arg, int argc, u8** argv)
-{
-	struct item* dr;
-	logtoall("@drivercreate: %.8s\n", &type);
-
-	switch(type){
+	switch(obj->type){
 	case _mpu9250_:
-		dr = driver_alloc();
-		if(0 == dr)return 0;
-
-		dr->type = _mpu9250_;
-		mpu9250_create(dr, arg, argc, argv);
-		return dr;
+		mpu9250_create(obj, arg, argc, argv);
+		break;
 	case _lsm9ds1_:
-		dr = driver_alloc();
-		if(0 == dr)return 0;
-
-		dr->type = _lsm9ds1_;
-		lsm9ds1_create(dr, arg, argc, argv);
-		return dr;
+		lsm9ds1_create(obj, arg, argc, argv);
+		break;
 	case _ads1115_:
-		dr = driver_alloc();
-		if(0 == dr)return 0;
-
-		dr->type = _ads1115_;
-		ads1115_create(dr, arg, argc, argv);
-		return dr;
+		ads1115_create(obj, arg, argc, argv);
+		break;
 	case _gpiotest_:
-		dr = driver_alloc();
-		if(0 == dr)return 0;
-
-		dr->type = _gpiotest_;
-		gpiotest_create(dr, arg, argc, argv);
-		return dr;
+		gpiotest_create(obj, arg, argc, argv);
+		break;
 	case _l298n_:
-		dr = driver_alloc();
-		if(0 == dr)return 0;
-
-		dr->type = _l298n_;
-		l298n_create(dr, arg, argc, argv);
-		return dr;
+		l298n_create(obj, arg, argc, argv);
+		break;
 	}
 
 	return 0;
@@ -161,7 +147,7 @@ int driver_writer(struct item* dri,void* foot, p64 arg, int idx, void* buf, int 
 
 
 
-int driver_attach(struct halfrel* self, struct halfrel* peer)
+int driver_attach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* peer)
 {
 	struct item* ele = (void*)(self->chip);
 	logtoall("@driverattach\n");
@@ -174,7 +160,7 @@ int driver_attach(struct halfrel* self, struct halfrel* peer)
 	}
 	return 0;
 }
-int driver_detach(struct halfrel* self, struct halfrel* peer)
+int driver_detach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* peer)
 {
 	struct item* ele = (void*)(self->chip);
 	logtoall("@driverdetach\n");
@@ -229,16 +215,16 @@ int drivercommand_search(u8* name)
 	if(0 == name){
 		for(j=0;j<maxitem;j++){
 			act = &dri[j];
-			if((0 == act->type)&&(0 == act->hfmt))continue;
+			if(0 == act->type)continue;
 			logtoall("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
-				&act->tier, &act->type, &act->hfmt, &act->hfmt);
+				&act->tier, &act->kind, &act->type, &act->vfmt);
 		}
 		if(0 == j)logtoall("empty driver\n");
 	}
 	else{
 		for(j=0;j<0x100;j++){
-			if(0 == dri[j].hfmt)break;
-			if(0 == cmp(&dri[j].hfmt, name))logtoall("name=%d,node=%p\n", name, &dri[j]);
+			if(0 == dri[j].type)break;
+			if(0 == cmp(&dri[j].type, name))logtoall("name=%d,node=%p\n", name, &dri[j]);
 			break;
 		}
 	}

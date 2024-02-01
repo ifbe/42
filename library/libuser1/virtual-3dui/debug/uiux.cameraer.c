@@ -76,7 +76,7 @@ void camman_listcamera(
 		if(_sup_ == rel->dstnodetype)
 		{
 			twig = (void*)(rel->dstchip);
-			//if(_cam3d_ == twig->hfmt)goto found;
+			//if(_cam3d_ == twig->type)goto found;
 		}
 		rel = samesrcnextdst(rel);
 	}
@@ -107,7 +107,7 @@ found:
 			y += 1;
 
 			leaf = (void*)(rel->dstchip);
-			gl41string(win, rgb, tc, tr, tf, (void*)&leaf->hfmt, 8);
+			gl41string(win, rgb, tc, tr, tf, (void*)&leaf->type, 8);
 		}
 
 		rel = samesrcnextdst(rel);
@@ -134,7 +134,7 @@ void camman_listlight(
 		if(_sup_ == rel->dstnodetype)
 		{
 			twig = (void*)(rel->dstchip);
-			//if(_lit3d_ == twig->hfmt)goto found;
+			//if(_lit3d_ == twig->type)goto found;
 		}
 		rel = samesrcnextdst(rel);
 	}
@@ -165,7 +165,7 @@ found:
 			y += 1;
 
 			leaf = (void*)(rel->dstchip);
-			gl41string(win, rgb, tc, tr, tf, (void*)&leaf->hfmt, 8);
+			gl41string(win, rgb, tc, tr, tf, (void*)&leaf->type, 8);
 		}
 
 		rel = samesrcnextdst(rel);
@@ -275,8 +275,8 @@ static void camman_create(_obj* act)
 
 void camman_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('c', 'a', 'm', 'm', 'a', 'n', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('c', 'a', 'm', 'm', 'a', 'n', 0, 0);
 
 	p->oncreate = (void*)camman_create;
 	p->ondelete = (void*)camman_delete;

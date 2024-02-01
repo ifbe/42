@@ -75,7 +75,7 @@ int toycar_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,in
 	_obj* caller = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
+	switch(caller->type){
 	case _http_:
 	case _HTTP_:
 		return toycar_read_byhttp(ent,foot, stack,sp);

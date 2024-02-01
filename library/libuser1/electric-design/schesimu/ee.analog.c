@@ -206,15 +206,13 @@ int analog_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, voi
 	}
 
 	//caller defined behavior
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
+		analog_read_child(ent,foot, stack,sp, arg,key, buf,len);
+		analog_read_board(ent,foot, stack,sp, arg,key, buf,len);
 		break;
 	}
 
-	analog_read_child(ent,foot, stack,sp, arg,key, buf,len);
-	analog_read_board(ent,foot, stack,sp, arg,key, buf,len);
 	return 0;
 }
 int analog_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)

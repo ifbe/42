@@ -119,8 +119,8 @@ int clickray_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, v
 	struct style* xxxx = stack[sp-2].pfoot;
 	_obj* wnd = stack[sp-4].pchip;
 	struct style* area = stack[sp-4].pfoot;
-logtoall("%.8s->%.8s->%.8s\n",&wnd->hfmt, &cam->hfmt, &ent->hfmt);
-/*	switch(wnd->hfmt){
+logtoall("%.8s->%.8s->%.8s\n",&wnd->type, &cam->type, &ent->type);
+/*	switch(wnd->type){
 	case _gl41list_:
 	case _dx11list_:
 	case _mt20list_:

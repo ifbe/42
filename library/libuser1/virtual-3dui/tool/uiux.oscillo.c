@@ -157,6 +157,33 @@ static void oscillo_draw_tui(
 	_obj* win, struct style* sty)
 {
 }
+static void oscillo_draw_tui256(
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
+{
+	u8* tuibuf = win->tuitext.buf;
+	int tuiwidth = win->whdf.width;
+	int tuiheight= win->whdf.height;
+
+	struct peroscillo* per = (void*)act->priv_256b;
+
+	short* buf = per->tabbuf[(SLICECOUNT+per->tablen-1)%SLICECOUNT];
+	if(0 == buf)return;
+
+	int x,y,k;
+	int sum;
+	for(x=0;x<64;x++){
+		sum = 0;
+		for(k=0;k<16;k++)sum += buf[x*16+k];
+
+		y = 15-2*sum*30/(32768*16);
+		if(y<0)y=0;
+		if(y+1>tuiheight)y = tuiheight-1;
+
+		tuibuf[4*(tuiwidth*y+x)+0] = 'a';
+		tuibuf[4*(tuiwidth*y+x)+2] = 7;
+	}
+}
 static void oscillo_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
@@ -202,7 +229,27 @@ void oscillo_data(_obj* act, int type, void* buf, int len)
 
 
 
-static void oscillo_read_bycam(_obj* ent,void* slot, _syn* stack,int sp)
+static void oscillo_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
+{
+	switch(wnd->vfmt){
+	case _cli_:
+		break;
+	case _tui_:
+		oscillo_draw_tui(ent,0, wnd, area);
+		break;
+	case _tui256_:
+		oscillo_draw_tui256(ent,0, wnd, area);
+		break;
+	case _rgba8888_:
+		oscillo_draw_pixel(ent,slot, wnd,area);
+		break;
+	case _gl41list_:
+		oscillo_read_bywnd(ent,slot, wnd,area);
+		break;
+	}
+}
+
+static void oscillo_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -210,7 +257,7 @@ static void oscillo_read_bycam(_obj* ent,void* slot, _syn* stack,int sp)
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	switch(wnd->hfmt){
+	switch(wnd->vfmt){
 	case _dx11list_:
 	case _mt20list_:
 	case _gl41list_:
@@ -219,10 +266,6 @@ static void oscillo_read_bycam(_obj* ent,void* slot, _syn* stack,int sp)
 		break;
 	}
 }
-static void oscillo_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
-{
-}
-
 
 
 
@@ -230,20 +273,17 @@ static void oscillo_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 {
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
-//logtoall("fmt=%.8s\n", &sup->hfmt);
+//logtoall("fmt=%.8s\n", &sup->type);
 
-	switch(wnd->hfmt){
+	switch(wnd->type){
 	case _pcm_:
 		oscillo_getpcm(ent, wnd);
 		break;
-	case _rgba_:
-		oscillo_draw_pixel(ent,slot, wnd,area);
-		break;
-	case _gl41list_:
+	case _wnd_:
 		oscillo_read_bywnd(ent,slot, wnd,area);
 		break;
 	default:
-		oscillo_read_bycam(ent,slot, stack,sp);
+		oscillo_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -299,8 +339,8 @@ static void oscillo_create(_obj* act, u8* arg)
 
 void oscillo_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('o', 's', 'c', 'i', 'l', 'l', 'o', 0);
+	p->vfmt = _orig_;
+	p->type = hex64('o', 's', 'c', 'i', 'l', 'l', 'o', 0);
 
 	p->oncreate = (void*)oscillo_create;
 	p->ondelete = (void*)oscillo_delete;

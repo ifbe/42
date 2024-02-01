@@ -181,7 +181,16 @@ static void particle_draw_cli(
 
 
 
-static void particle_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void particle_read_bywnd(_obj* ent,void* slot, _obj* wnd,void* area)
+{
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		break;
+	}
+}
+static void particle_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -205,13 +214,12 @@ static void particle_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,in
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
+		particle_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
-		particle_wrl_cam_wnd(ent,slot, stack,sp);
+		particle_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -272,8 +280,8 @@ static void particle_create(_obj* act)
 
 void particle_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('p', 'a', 'r', 't', 'i', 'c', 'l', 'e');
+	p->vfmt = _orig_;
+	p->type = hex64('p', 'a', 'r', 't', 'i', 'c', 'l', 'e');
 
 	p->oncreate = (void*)particle_create;
 	p->ondelete = (void*)particle_delete;

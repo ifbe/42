@@ -124,7 +124,17 @@ static void algorithm_event(
 
 
 
-static void algorithm_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void algorithm_read_bywnd(_obj* ent,void* slot, _obj* wnd,void* area)
+{
+	switch(wnd->vfmt){
+	case _bgra8888_:
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		break;
+	}
+}
+static void algorithm_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -149,13 +159,12 @@ static void algorithm_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,i
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
+		algorithm_read_bywnd(ent,foot, caller,area);
 		break;
 	default:
-		algorithm_wrl_cam_wnd(ent,foot, stack,sp);
+		algorithm_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -190,8 +199,8 @@ static void algorithm_create(_obj* act)
 
 void algorithm_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex32('a', 'l', 'g', 'o');
+	p->type = hex32('a', 'l', 'g', 'o');
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)algorithm_create;
 	p->ondelete = (void*)algorithm_delete;

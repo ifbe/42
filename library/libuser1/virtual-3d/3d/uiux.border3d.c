@@ -11,7 +11,7 @@ void border3d_draw_gl41(_obj* scene, _obj* wnd)
 	struct fstyle* sty;
 	vec3 tc,tr,tf,tt;
 	int j;
-	//logtoall("@border3d_read: %.8s\n", &scene->hfmt);
+	//logtoall("@border3d_read: %.8s\n", &scene->type);
 
 	rel = scene->orel0;
 	while(1){
@@ -31,11 +31,15 @@ void border3d_draw_gl41(_obj* scene, _obj* wnd)
 			for(j=0;j<3;j++)tc[j] += -tr[j] -tf[j] +tt[j];
 			vec3_setlen(tr, 32);
 			vec3_setlen(tf, 32);
-			gl41string(wnd, 0xffffff, tc,tr,tf, (void*)&ent->hfmt, 8);
+			gl41string(wnd, 0xffffff, tc,tr,tf, (void*)&ent->type, 8);
 		}
 		rel = samesrcnextdst(rel);
 	}
 }
+
+
+
+
 int border3d_read_bycam(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,int key)
 {
 	struct halfrel* aa[2];
@@ -67,14 +71,10 @@ int border3d_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,
 	}
 
 	//caller defined behavior
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
-		break;
+	switch(caller->type){
+	default:
+		return border3d_read_bycam(ent,foot, stack,sp, arg,key);
 	}
-
-	return border3d_read_bycam(ent,foot, stack,sp, arg,key);
 }
 int border3d_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {

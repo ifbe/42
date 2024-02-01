@@ -49,8 +49,9 @@ static void brick_create(_obj* act)
 
 void brick_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('b', 'r', 'i', 'c', 'k', 0, 0, 0);
+	p->kind = _game_;
+	p->type = hex64('b', 'r', 'i', 'c', 'k', 0, 0, 0);
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)brick_create;
 	p->ondelete = (void*)brick_delete;

@@ -239,7 +239,16 @@ static void fractal_event(
 
 
 
-static void fractal_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void fractal_read_bywnd(_obj* ent,void* slot, _obj* wnd,void* area)
+{
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		break;
+	}
+}
+static void fractal_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -264,13 +273,12 @@ static void fractal_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
+		fractal_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
-		fractal_wrl_cam_wnd(ent,slot, stack,sp);
+		fractal_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -327,8 +335,8 @@ static void fractal_create(_obj* act)
 
 void fractal_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('f', 'r', 'a', 'c', 't', 'a', 'l', 0);
+	p->vfmt = _orig_;
+	p->type = hex64('f', 'r', 'a', 'c', 't', 'a', 'l', 0);
 
 	p->oncreate = (void*)fractal_create;
 	p->ondelete = (void*)fractal_delete;

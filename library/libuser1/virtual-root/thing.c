@@ -99,7 +99,7 @@ void obj3d_register(void*);
 void stl3d_register(void*);
 void wrl3d_register(void*);
 
-//game
+//game simple
 void the2048_register(void*);
 void chess_register(void*);
 void klotski_register(void*);
@@ -114,6 +114,9 @@ void tetris_register(void*);
 void weiqi_register(void*);
 void xiangqi_register(void*);
 
+//game complex
+void mario_register(void*);
+
 //hack
 void browser_register(void*);
 void fslist_register(void*);
@@ -123,7 +126,6 @@ void rawdump_register(void*);
 //item
 void clock_register(void*);
 void house_register(void*);
-void mario_register(void*);
 void mobius_register(void*);
 void motor_register(void*);
 void piano_register(void*);
@@ -496,6 +498,9 @@ void thing_init(void* addr)
 	xiangqi_register(tmp);
 	tmp -= sizeof(_obj);
 
+	mario_register(tmp);
+	tmp -= sizeof(_obj);
+
 
 
 
@@ -520,9 +525,6 @@ void thing_init(void* addr)
 	tmp -= sizeof(_obj);
 
 	house_register(tmp);
-	tmp -= sizeof(_obj);
-
-	mario_register(tmp);
 	tmp -= sizeof(_obj);
 
 	mobius_register(tmp);

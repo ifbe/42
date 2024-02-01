@@ -259,18 +259,44 @@ static void vrglass_camera(
 	data->dst.arg[1].data = frus->vc;
 	wnd->gl41list.world[0].camera[0] = act->CAMBUF;
 }
+//world - camera - window
+static int vrglass_visitworld(
+_obj* wor,struct style* geom,
+_obj* ent,void* slot,
+_obj* wnd,struct style* area,
+_syn* stack,int sp)
+{
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		//clear all
+		gl41data_before(wnd);
+		//camera matrix
+		vrglass_ratio(wor, geom, wnd, area);
+		vrglass_frustum(&geom->frustum, &geom->fshape);
+		vrglass_matrix(ent,slot, wor,geom);
+		vrglass_camera(ent,slot, wor,geom, wnd,area);
+		//render data
+		gl41data_taking(wor,0, stack,sp+2, 0,'v', 0,0);
+		//enq++
+		gl41data_after(wnd);
+		break;
+	}
+	return 0;
+}
 
 
 
 
-static int vrglass_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
+static int vrglass_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 
-	switch(wnd->hfmt){
+	switch(wnd->type){
 	case _tui_:
 	case _rgba_:
 		return 0;
@@ -281,6 +307,10 @@ static int vrglass_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,
 }
 static int vrglass_read_bywnd(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
+//[-2,-1]: wnd,area -> cam,togl
+	_obj* wnd = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+
 //find world from camera
 	struct halfrel* tmp[2];
 	relationsearch(ent, _in_, &tmp[0], &tmp[1]);
@@ -291,28 +321,11 @@ static int vrglass_read_bywnd(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,
 	stack[sp+1].pfoot = tmp[1]->pfoot;
 	stack[sp+1].foottype = tmp[1]->foottype;
 
-//[-2,-1]: wnd,area -> cam,togl
 //[+0,+1]: cam,towr -> wor,geom
-	_obj* wnd;struct style* area;
-	_obj* wor;struct style* geom;
-	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
-	wor = stack[sp+1].pchip;geom = stack[sp+1].pfoot;
+	_obj* world = stack[sp+1].pchip;
+	struct style* geom = stack[sp+1].pfoot;
 
-	switch(wnd->hfmt){
-	default:
-		//clear all
-		gl41data_before(wnd);
-		//camera matrix
-		vrglass_ratio(wor, geom, wnd, area);
-		vrglass_frustum(&geom->frustum, &geom->fshape);
-		vrglass_matrix(ent,slot, wor,geom);
-		vrglass_camera(ent,slot, wor,geom, wnd,area);
-		//render data
-		gl41data_taking(wor,0, stack,sp+2, 0,'v', buf,len);
-		//enq++
-		gl41data_after(wnd);
-		break;
-	}
+	vrglass_visitworld(world,geom, ent,slot, wnd,area, stack,sp);
 	return 0;
 }
 
@@ -331,13 +344,11 @@ static int vrglass_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int 
 	}
 
 	//caller defined behavior
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		return vrglass_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);
 	default:
-		return vrglass_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
+		return vrglass_read_byworld_bycam_bywnd(ent,foot, stack,sp, arg,key, buf,len);
 	}
 	return 0;
 }
@@ -363,8 +374,8 @@ static void vrglass_attach(struct halfrel* self, struct halfrel* peer)
 
 void vrglass_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('v', 'r', 'g', 'l', 'a', 's', 's', 0);
+	p->vfmt = _orig_;
+	p->type = hex64('v', 'r', 'g', 'l', 'a', 's', 's', 0);
 
 	p->oncreate = (void*)vrglass_create;
 	p->ondelete = (void*)vrglass_delete;

@@ -68,7 +68,7 @@ static void diamond_draw_cli(
 
 
 
-static void diamond_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void diamond_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -93,13 +93,11 @@ static void diamond_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		break;
 	default:
-		diamond_wrl_cam_wnd(ent,foot, stack,sp);
+		diamond_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -118,8 +116,8 @@ static void diamond_attach(struct halfrel* self, struct halfrel* peer)
 
 void diamond_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('d','i','a','m','o','n','d', 0);
+	p->vfmt = _orig_;
+	p->type = hex64('d','i','a','m','o','n','d', 0);
 
 	p->oncreate = (void*)diamond_create;
 	p->ondelete = (void*)diamond_delete;

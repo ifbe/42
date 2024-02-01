@@ -11,7 +11,7 @@ void guide3d_draw_gl41(_obj* scene, _obj* wnd)
 	struct fstyle* sty;
 	vec3 at = {0.0, 0.0, 0.0};
 	vec3 up = {0.0, 0.0, 1.0};
-	//logtoall("@guide3d_read: %.8s\n", &scene->hfmt);
+	//logtoall("@guide3d_read: %.8s\n", &scene->type);
 
 	rel = scene->orel0;
 	while(1){
@@ -24,6 +24,10 @@ void guide3d_draw_gl41(_obj* scene, _obj* wnd)
 		rel = samesrcnextdst(rel);
 	}
 }
+
+
+
+
 int guide3d_read_bycam(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg, int key)
 {
 	struct halfrel* aa[2];
@@ -55,14 +59,10 @@ int guide3d_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,i
 	}
 
 	//caller defined behavior
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
-		break;
+	switch(caller->type){
+	default:
+		return guide3d_read_bycam(ent,foot, stack,sp, arg,key);
 	}
-
-	return guide3d_read_bycam(ent,foot, stack,sp, arg,key);
 }
 int guide3d_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {

@@ -256,19 +256,20 @@ static void hexedit_read_bycam(_obj* ent,void* slot, _syn* stack,int sp)
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	hexedit_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void hexedit_read_bywnd(_obj* ent,void* foot, _syn* stack,int sp)
+static void hexedit_read_bywnd(_obj* ent,void* foot, _obj* wnd,void* area)
 {
-	_obj* wnd;struct style* area;
-	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
-
 	struct fstyle fs;
-	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
-	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
-	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
-	gl41data_before(wnd);
-	hexedit_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_01cam(wnd);
-	gl41data_after(wnd);
+	switch(wnd->vfmt){
+	case _gl41list_:
+		fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
+		fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+		fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+		gl41data_before(wnd);
+		hexedit_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+		gl41data_01cam(wnd);
+		gl41data_after(wnd);
+		break;
+	}
 }
 
 
@@ -281,9 +282,9 @@ static int hexedit_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int 
 	_obj* caller = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _gl41list_:
-		hexedit_read_bywnd(ent,slot, stack,sp);break;
+	switch(caller->type){
+	case _wnd_:
+		hexedit_read_bywnd(ent,slot, caller,area);break;
 	default:
 		hexedit_read_bycam(ent,slot, stack,sp);break;
 	}
@@ -296,8 +297,8 @@ static int hexedit_giving(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int 
 	_obj* caller = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 	default:
 		hexedit_event(ent,slot, caller,area, buf);break;
 	}
@@ -315,8 +316,8 @@ static void hexedit_attach(struct halfrel* self, struct halfrel* peer)
 
 void hexedit_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('h', 'e', 'x', 'e','d','i','t', 0);
+	p->vfmt = _orig_;
+	p->type = hex64('h', 'e', 'x', 'e','d','i','t', 0);
 
 	p->oncreate = (void*)hexedit_create;
 	p->ondelete = (void*)hexedit_delete;

@@ -1,7 +1,7 @@
-#ifndef _STRUCT_H 
-#define _STRUCT_H
 #include "const/def.h"
 
+#ifndef _STRUCT_H
+#define _STRUCT_H
 
 
 
@@ -60,18 +60,6 @@ struct kv44{
 struct kv88{
 	u64 key;
 	u64 val;
-};
-
-
-
-
-struct pcmdata
-{
-	int fmt;
-	int chan;
-	int rate;
-	int count;
-	short buf[0];
 };
 
 

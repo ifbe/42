@@ -92,8 +92,8 @@ static void arm64_attach(struct halfrel* self, struct halfrel* peer)
 
 void arm64_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('a','r','m','6','4', 0, 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('a','r','m','6','4', 0, 0, 0);
 
 	p->oncreate = (void*)arm64_create;
 	p->ondelete = (void*)arm64_delete;

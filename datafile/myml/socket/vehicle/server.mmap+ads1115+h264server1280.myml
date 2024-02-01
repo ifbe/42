@@ -75,7 +75,7 @@ width:1280
 height:720
 }
 codec{
-fmt:enc
+fmt:venc
 width:1280
 height:720
 }

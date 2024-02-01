@@ -364,7 +364,7 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 			nodedata = j+1;
 			str = -1;
 
-			logtoall("actnode=%.*s\n", j-nodename, buf+nodename);
+			logtoall("nodestr=%.*s\n", j-nodename, buf+nodename);
 			parsenameandtype(buf+nodename, j-nodename, (void*)&hash, (void*)&type);
 			logtoall("name=%.8s,type=%.8s\n", &hash, &type);
 		}
@@ -377,27 +377,32 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 				chip[clen].hash = hash;
 				switch(tier){
 					case _ent_:
-						chip[clen].addr = entity_alloc_prep(0, type, 0, 0);
+						chip[clen].addr = entity_alloc_fromtype(type);
 						if(chip[clen].addr)entity_create(chip[clen].addr, arg, argc, argv);
 						break;
 					case _sup_:
-						chip[clen].addr = supply_alloc_prep(0, type, 0, 0);
+						chip[clen].addr = supply_alloc_fromtype(type);
 						if(chip[clen].addr)supply_create(chip[clen].addr, arg, argc, argv);
 						break;
 					case _art_:
-						chip[clen].addr = artery_create(type, arg, argc, argv);
+						chip[clen].addr = artery_alloc_fromtype(type);
+						if(chip[clen].addr)artery_create(chip[clen].addr, arg, argc, argv);
 						break;
 					case _sys_:
-						chip[clen].addr = system_create(type, arg, argc, argv);
+						chip[clen].addr = system_alloc_frompath(type, arg);
+						if(chip[clen].addr)system_create(chip[clen].addr, arg, argc, argv);
 						break;
 					case _dri_:
-						chip[clen].addr = driver_create(type, arg, argc, argv);
+						chip[clen].addr = driver_alloc_fromtype(type);
+						if(chip[clen].addr)driver_create(chip[clen].addr, arg, argc, argv);
 						break;
 					case _dev_:
-						chip[clen].addr = device_create(type, arg, argc, argv);
+						chip[clen].addr = device_alloc_frompath(type, arg);
+						if(chip[clen].addr)device_create(chip[clen].addr, arg, argc, argv);
 						break;
 					case _wrk_:
-						chip[clen].addr = bootup_create(type, arg, argc, argv);
+						chip[clen].addr = bootup_alloc_fromtype(type);
+						if(chip[clen].addr)bootup_create(chip[clen].addr, arg, argc, argv);
 						break;
 				}
 				logtoall("node%d:tier=%.8s,type=%.8s,hash=%.8s,addr=%p\n",clen, &tier,&type,&hash,chip[clen].addr);

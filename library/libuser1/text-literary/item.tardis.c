@@ -77,7 +77,7 @@ void tardis_pcm(_obj* ent,void* slot, _obj* sup,void* area)
 
 
 
-static void tardis_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void tardis_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -101,16 +101,14 @@ static void tardis_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int 
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
+	switch(caller->type){
 	case _pcm_:
 		tardis_pcm(ent,slot, caller,area);
 		break;
-	case _rgba_:
-		break;
-	case _gl41list_:
+	case _wnd_:
 		break;
 	default:
-		tardis_wrl_cam_wnd(ent,slot, stack,sp);
+		tardis_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -154,8 +152,8 @@ static void tardis_create(_obj* act, void* arg)
 
 void tardis_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('t', 'a', 'r', 'd', 'i', 's', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('t', 'a', 'r', 'd', 'i', 's', 0, 0);
 
 	p->oncreate = (void*)tardis_create;
 	p->ondelete = (void*)tardis_delete;

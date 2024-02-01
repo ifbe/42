@@ -77,8 +77,8 @@ static int vmddr_attach(struct halfrel* self, struct halfrel* peer)
 
 void vmddr_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex32('d','d','r', 0);
+	p->vfmt = _orig_;
+	p->type = hex32('d','d','r', 0);
 
 	p->oncreate = (void*)vmddr_create;
 	p->ondelete = (void*)vmddr_delete;

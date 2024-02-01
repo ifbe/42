@@ -35,7 +35,7 @@ static void palette_draw_pixel(
 	u32* buf = (u32*)(win->rgbanode.buf);
 	u32 pal;
 
-	type = (win->hfmt)&0xffffff;
+	type = (win->type)&0xffffff;
 	if(hex32('r','g','b',0) == type)type = 1;
 	else if(hex32('b','g','r',0) == type)type = 2;
 	else type = 0;
@@ -148,6 +148,15 @@ static void palette_event(
 
 
 
+static void palette_read_bywnd(_obj* ent,void* slot, _obj* wnd,void* area)
+{
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		break;
+	}
+}
 static void palette_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
@@ -173,10 +182,9 @@ static void palette_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
+		palette_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
 		palette_wrl_cam_wnd(ent,slot, stack,sp);
@@ -222,8 +230,8 @@ static void palette_create(_obj* act)
 
 void palette_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('p', 'a', 'l', 'e', 't', 't', 'e', 0);
+	p->vfmt = _orig_;
+	p->type = hex64('p', 'a', 'l', 'e', 't', 't', 'e', 0);
 
 	p->oncreate = (void*)palette_create;
 	p->ondelete = (void*)palette_delete;

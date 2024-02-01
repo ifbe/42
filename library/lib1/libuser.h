@@ -6,8 +6,6 @@
 #include "data/node-outer.h"
 #include "data/wire-inner.h"
 #include "data/wire-outer.h"
-#include "my/draw.h"
-#include "my/carve.h"
 
 
 
@@ -62,6 +60,9 @@ int datastr2decstr(void* dst, void* src, int len);
 int decstr2datastr(void* dst, void* src, int len);
 int hexstr2datastr(void* dst, void* src, int len);
 int datastr2hexstr(void* dst, void* src, int len);
+//
+int str2type32(u8* buf, u8* type);
+int str2type64(u8* buf, u8* type);
 //
 int cmp(void*,void*);
 int ncmp(void*,void*,int);

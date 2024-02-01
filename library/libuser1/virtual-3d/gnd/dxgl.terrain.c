@@ -497,7 +497,16 @@ void terrain_modify_matter(_obj* act, int* src, int len)
 
 
 
-static void terrain_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void terrain_read_bywnd(_obj* ent,void* foot, _obj* wnd,void* area)
+{
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		break;
+	}
+}
+static void terrain_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* dup;struct style* camg;
@@ -505,7 +514,7 @@ static void terrain_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	dup = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	switch(wnd->hfmt){
+	switch(wnd->vfmt){
 	case _dx11list_:terrain_dx11draw(ent,slot, wor,geom, dup,camg, wnd,area);break;
 	case _gl41list_:terrain_gl41draw(ent,slot, wor,geom, dup,camg, wnd,area);break;
 	}
@@ -526,13 +535,12 @@ static void terrain_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
+		terrain_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
-		terrain_wrl_cam_wnd(ent,slot, stack,sp);
+		terrain_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -617,8 +625,8 @@ static void terrain_create(_obj* act, void* arg, int argc, u8** argv)
 
 void terrain_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('t', 'e', 'r', 'r', 'a', 'i', 'n', 0);
+	p->vfmt = _orig_;
+	p->type = hex64('t', 'e', 'r', 'r', 'a', 'i', 'n', 0);
 
 	p->oncreate = (void*)terrain_create;
 	p->ondelete = (void*)terrain_delete;

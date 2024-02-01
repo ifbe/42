@@ -187,6 +187,31 @@ static void orthcam_matrix(
 	struct fstyle* frus = &geom->frus;
 	world2clip_orthznzp_transpose(priv->matbuf, frus);
 }
+//world - camera - window
+static int orthcam_visitworld(
+_obj* wor,struct style* geom,
+_obj* ent,void* slot,
+_obj* wnd,struct style* area,
+_syn* stack,int sp)
+{
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		gl41data_before(wnd);
+
+		orthcam_ratio(wor, geom, wnd, area);
+		orthocam_shape2frustum(&geom->fshape, &geom->frustum);
+		orthcam_matrix(ent,slot, wor,geom);
+		orthcam_camera(ent,slot, wor,geom, wnd,area);
+
+		gl41data_taking(wor,0, stack,sp+2, 0,'v', 0,0);
+
+		gl41data_after(wnd);
+		break;
+	}
+	return 0;
+}
 
 
 
@@ -199,16 +224,18 @@ static int orthcam_byworld_bycam_bywnd_read(_obj* ent,void* foot, _syn* stack,in
 	struct style* slot;
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
-	if(stack&&('v' == key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		orthcam_draw_gl41(ent,slot, wor,geom, wnd,area);
-	}
+	slot = stack[sp-1].pfoot;
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	orthcam_draw_gl41(ent,slot, wor,geom, wnd,area);
 	return 0;
 }
 static int orthcam_bywnd_read(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
+//[-2,-1]: wnd,area -> cam,togl
+	_obj* wnd = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+
 //find world from camera
 	struct halfrel* tmp[2];
 	orthcam_search(ent, 0, &tmp[0], &tmp[1]);
@@ -219,28 +246,11 @@ static int orthcam_bywnd_read(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,
 	stack[sp+1].pfoot = tmp[1]->pfoot;
 	stack[sp+1].foottype = tmp[1]->foottype;
 
-//[-2,-1]: wnd,area -> cam,togl
 //[+0,+1]: cam,towr -> wor,geom
-	struct style* slot;
-	_obj* wnd;struct style* area;
-	_obj* wor;struct style* geom;
-	slot = stack[sp-1].pfoot;
-	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
-	wor = stack[sp+1].pchip;geom = stack[sp+1].pfoot;
-	switch(wnd->hfmt){
-	default:
-		gl41data_before(wnd);
-
-		orthcam_ratio(wor, geom, wnd, area);
-		orthocam_shape2frustum(&geom->fshape, &geom->frustum);
-		orthcam_matrix(ent,slot, wor,geom);
-		orthcam_camera(ent,slot, wor,geom, wnd,area);
-
-		gl41data_taking(wor,0, stack,sp+2, 0,'v', buf,len);
-
-		gl41data_after(wnd);
-		return -1;
-	}
+	struct style* slot = stack[sp-1].pfoot;
+	_obj* world = stack[sp+1].pchip;
+	struct style* geom = stack[sp+1].pfoot;
+	orthcam_visitworld(world,geom, ent,slot, wnd,area, stack,sp);
 	return 0;
 }
 static int orthcam_write_bycam(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
@@ -258,10 +268,8 @@ static int orthcam_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int 
 	_obj* caller = stack[sp-2].pchip;
 	if(0 == caller)return 0;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		return orthcam_bywnd_read(ent,foot, stack,sp, arg,key, buf,len);
 	default:
 		return orthcam_byworld_bycam_bywnd_read(ent,foot, stack,sp, arg,key, buf,len);
@@ -292,8 +300,8 @@ static void orthcam_attach(struct halfrel* self, struct halfrel* peer)
 
 void orthcam_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('o', 'r', 't', 'h', 'c', 'a', 'm', 0);
+	p->vfmt = _orig_;
+	p->type = hex64('o', 'r', 't', 'h', 'c', 'a', 'm', 0);
 
 	p->oncreate = (void*)orthcam_create;
 	p->ondelete = (void*)orthcam_delete;

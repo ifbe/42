@@ -191,13 +191,13 @@ static void rccar_event(
 
 
 
-static void rccar_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void rccar_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	if(_camrts_ == wnd->hfmt)wnd = stack[sp-8].pchip;
+	if(_camrts_ == wnd->type)wnd = stack[sp-8].pchip;
 
 	rccar_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
@@ -217,13 +217,11 @@ static void rccar_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		break;
 	default:
-		rccar_byworld_bycam_bywnd(ent,foot, stack,sp);
+		rccar_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -260,8 +258,8 @@ static void rccar_create(_obj* act)
 
 void rccar_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('r', 'c', 'c', 'a', 'r', 0, 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('r', 'c', 'c', 'a', 'r', 0, 0, 0);
 
 	p->oncreate = (void*)rccar_create;
 	p->ondelete = (void*)rccar_delete;

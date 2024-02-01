@@ -137,7 +137,7 @@ static int aidfont_fill(_obj* win, struct gl41data* data, int id)
 	struct gldst* dst = &data->dst;
 
 	if(0 == src->vs){
-		switch(win->hfmt){
+		switch(win->vfmt){
 		case _gl41list_:
 			src->vs = gl41ascii_vert;
 			src->fs = gl41ascii_frag;

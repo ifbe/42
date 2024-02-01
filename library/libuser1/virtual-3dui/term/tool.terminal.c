@@ -282,7 +282,7 @@ static void terminal_draw_gl41(
 
 
 
-static void terminal_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void terminal_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* cam;struct style* camg;
@@ -292,7 +292,7 @@ static void terminal_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	terminal_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void terminal_wrl_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void terminal_read_byworld_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* mgr;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -303,39 +303,56 @@ static void terminal_wrl_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 	//compute relative position from window
 	int j;
 	struct fstyle fs;
-	if(area){
+
+	//draw it
+	switch(wnd->type){
+	case _rgba8888_:
+	case _bgra8888_:
+		terminal_draw_pixel(ent,slot, wnd,geom);
+		break;
+	case _gl41list_:
+		if(area){
+			for(j=0;j<3;j++)fs.vc[j] = fs.vr[j] = fs.vf[j] = fs.vt[j] = 0.0;
+			fs.vc[0] = (area->fs.vc[0]+area->fs.vq[0]) * wnd->whdf.fbwidth / 2.0;
+			fs.vc[1] = (area->fs.vc[1]+area->fs.vq[1]) * wnd->whdf.fbheight / 2.0;
+			fs.vr[0] = (area->fs.vq[0]-area->fs.vc[0]) * wnd->whdf.fbwidth / 2.0;
+			fs.vf[1] = (area->fs.vq[1]-area->fs.vc[1]) * wnd->whdf.fbheight/ 2.0;
+			fs.vt[2] = 1.0;
+		}
+		terminal_draw_gl41(ent,slot, mgr,(void*)&fs, wnd,area);
+		break;
+	}
+}
+static void terminal_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
+{
+	int j;
+	struct fstyle fs;
+
+	switch(wnd->vfmt){
+	case _tui_:
+	case _tui256_:
+		break;
+	case _rgba8888_:
+	case _bgra8888_:
+		terminal_draw_pixel(ent,slot, wnd,area);
+		break;
+	case _dx11list_:
+	case _mt20list_:
+	case _vk12list_:
+		break;
+	case _gl41list_:
 		for(j=0;j<3;j++)fs.vc[j] = fs.vr[j] = fs.vf[j] = fs.vt[j] = 0.0;
 		fs.vc[0] = (area->fs.vc[0]+area->fs.vq[0]) * wnd->whdf.fbwidth / 2.0;
 		fs.vc[1] = (area->fs.vc[1]+area->fs.vq[1]) * wnd->whdf.fbheight / 2.0;
 		fs.vr[0] = (area->fs.vq[0]-area->fs.vc[0]) * wnd->whdf.fbwidth / 2.0;
 		fs.vf[1] = (area->fs.vq[1]-area->fs.vc[1]) * wnd->whdf.fbheight/ 2.0;
 		fs.vt[2] = 1.0;
-	}
-
-	//draw it
-	switch(wnd->hfmt){
-	case _rgba_:
-		terminal_draw_pixel(ent,slot, wnd,geom);
+		gl41data_before(wnd);
+		gl41data_whcam(wnd, area);
+		terminal_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+		gl41data_after(wnd);
 		break;
-	default:
-		terminal_draw_gl41(ent,slot, mgr,(void*)&fs, wnd,area);
 	}
-}
-static void terminal_wnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
-{
-	int j;
-	struct fstyle fs;
-	for(j=0;j<3;j++)fs.vc[j] = fs.vr[j] = fs.vf[j] = fs.vt[j] = 0.0;
-	fs.vc[0] = (area->fs.vc[0]+area->fs.vq[0]) * wnd->whdf.fbwidth / 2.0;
-	fs.vc[1] = (area->fs.vc[1]+area->fs.vq[1]) * wnd->whdf.fbheight / 2.0;
-	fs.vr[0] = (area->fs.vq[0]-area->fs.vc[0]) * wnd->whdf.fbwidth / 2.0;
-	fs.vf[1] = (area->fs.vq[1]-area->fs.vc[1]) * wnd->whdf.fbheight/ 2.0;
-	fs.vt[2] = 1.0;
-
-	gl41data_before(wnd);
-	gl41data_whcam(wnd, area);
-	terminal_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_after(wnd);
 }
 
 
@@ -357,22 +374,16 @@ static void terminal_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,in
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		terminal_draw_pixel(ent,slot, caller,area);
-		break;
-	case _dx11list_:
-	case _mt20list_:
-	case _gl41list_:
-	case _vk12list_:
-		terminal_wnd(ent,slot, caller,area);
+	switch(caller->type){
+	case _wnd_:
+		terminal_read_bywnd(ent,slot, caller,area);
 		break;
 	case _corner_:
 	case _wndmgr_:
-		terminal_wrl_wnd(ent,slot, stack,sp);
+		terminal_read_byworld_bywnd(ent,slot, stack,sp);
 		break;
 	default:
-		terminal_wrl_cam_wnd(ent,slot, stack,sp);
+		terminal_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 
@@ -398,12 +409,8 @@ static void terminal_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,in
 	case _evby_:terminal_write_bywnd(ent,foot, stack,sp, buf,len);return;
 	}
 
-	switch(wnd->hfmt){
-	case _rgba_:
-	case _dx11list_:
-	case _mt20list_:
-	case _gl41list_:
-	case _vk12list_:
+	switch(wnd->type){
+	case _wnd_:
 	case _wndmgr_:
 		terminal_write_bywnd(ent,foot, stack,sp, buf,len);
 		return;
@@ -477,8 +484,8 @@ static void terminal_create(_obj* act, void* arg, int argc, u8** argv)
 
 void terminal_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex32('t', 'e', 'r', 'm');
+	p->vfmt = _orig_;
+	p->type = hex32('t', 'e', 'r', 'm');
 
 	p->oncreate = (void*)terminal_create;
 	p->ondelete = (void*)terminal_delete;

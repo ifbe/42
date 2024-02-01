@@ -84,7 +84,7 @@ static void h2o_draw_cli(
 
 
 
-static void h2o_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void h2o_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -109,13 +109,11 @@ static void h2o_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		break;
 	default:
-		h2o_wrl_cam_wnd(ent,foot, stack,sp);
+		h2o_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -134,8 +132,8 @@ static void h2o_attach(struct halfrel* self, struct halfrel* peer)
 
 void h2o_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex32('h','2','o', 0);
+	p->vfmt = _orig_;
+	p->type = hex32('h','2','o', 0);
 
 	p->oncreate = (void*)h2o_create;
 	p->ondelete = (void*)h2o_delete;

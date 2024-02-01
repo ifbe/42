@@ -185,7 +185,7 @@ static void skillbar_draw_cli(
 
 
 
-static void skillbar_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void skillbar_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -202,11 +202,11 @@ static void skillbar_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,in
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->hfmt){
-	case _gl41list_:
+	switch(wnd->type){
+	case _wnd_:
 		break;
 	default:
-		skillbar_wrl_cam_wnd(ent,slot, stack,sp);
+		skillbar_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -249,8 +249,8 @@ static void skillbar_create(_obj* act, void* str)
 
 void skillbar_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('s', 'k', 'i', 'l', 'l', 0, 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('s', 'k', 'i', 'l', 'l', 0, 0, 0);
 
 	p->oncreate = (void*)skillbar_create;
 	p->ondelete = (void*)skillbar_delete;

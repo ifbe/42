@@ -86,7 +86,7 @@ static int pinlen = 0;
 
 
 #define maxitem (0x100000/sizeof(_obj))
-void supply_init(u8* addr)
+void supply_init(u8* addr, int size)
 {
 	logtoall("[c,e):supply initing\n");
 
@@ -159,91 +159,79 @@ void* supply_alloc()
 	obj->orel0 = obj->oreln = 0;
 	return obj;
 }
-
-
-
-
-void* supply_prep(_obj* obj, int len, u64 tier, u64 type, u64 hfmt, u64 vfmt)
+void* supply_alloc_fromtype(u64 type)
 {
-	if(len < sizeof(_obj))return 0;
+	_obj* obj = supply_alloc();
+	if(0 == obj)return 0;
 
+	//obj->tier = _sup_;
 	switch(type){
-//---------------------gadget-----------------
-	case _joy_:
-		obj->type = _joy_;
-		obj->hfmt = _joy_;
-		return obj;
-	case _std_:
-		obj->type = _std_;
-		obj->hfmt = _std_;
-		return obj;
-	case _tray_:
-		obj->type = _tray_;
-		obj->hfmt = _tray_;
-		return obj;
-
-//--------------------micphone------------------
+//sound
 	case _mic_:
+		obj->kind = _audio_;
 		obj->type = _mic_;
-		obj->hfmt = hex32('p','c','m',0);
-		return obj;
-
-//--------------------speaker--------------------
+		obj->vfmt = hex32('p','c','m',0);
+		break;
 	case _spk_:
+		obj->kind = _audio_;
 		obj->type = _spk_;
-		obj->hfmt = hex32('p','c','m',0);
-		return obj;
-
-//---------------------camera-------------------
+		obj->vfmt = hex32('p','c','m',0);
+		break;
+//2d
+	case _venc_:
+		obj->kind = _codec_;
+		obj->type = _venc_;
+		obj->vfmt = _h264_;
+		break;
+	case _vdec_:
+		obj->kind = _codec_;
+		obj->type = _vdec_;
+		obj->vfmt = _h264_;
+		break;
+//convert
+	//case _wav2wav_:
+	//case _img2img_:
+//camera
 	case _cam_:
 		obj->type = _cam_;
-		obj->hfmt = hex32('y','u','v',0);
-		return obj;
+		obj->vfmt = hex32('y','u','v',0);
+		break;
 	case _wndcap_:
-		obj->type = _wndcap_;
-		return obj;
-
-//---------------------window----------------
+		obj->kind = _cap_;
+		obj->type = type;
+		obj->vfmt = 0;
+//window
 	case _wnd_:
+		obj->kind = _wnd_;
+		obj->type = type;
+		obj->vfmt = 0;
+	//case _fb_:
+	case _tui_:
+		obj->kind = _wnd_;
 		obj->type = _wnd_;
-		return obj;
-
-	case _dec_:
-		obj->type = _dec_;
-		obj->hfmt = _h264_;
-		return obj;
-	case _enc_:
-		obj->type = _enc_;
-		obj->hfmt = _h264_;
-		return obj;
-
-//---------------------3dinput-------------------
+		obj->vfmt = type;
+//render 3 to 2: input=vertex/texture/xxx, output=image
+	case _render_:
+	case _gl41none_:
+	case _gl41easy_:
+	case _gl41list_:
+	case _gl41cmdq_:
+		obj->kind = _render_;
+		obj->type = type;
+		obj->vfmt = 0;
+		break;
+//capture 2 to 3: input=image, output=vertex/texture/xxx
 	case _cap_:
 		obj->type = _cap_;
-		obj->hfmt = hex32('h','o','l','o');
-		return obj;
-
-//---------------------3doutput-------------------
-	case _gpu_:
-		obj->type = _gpu_;
-		obj->hfmt = _gpu_;
-		return obj;
-	case _gl41none_:
-		obj->type = _wnd_;
-		obj->hfmt = _gl41none_;
-		return obj;
-	case _gl41easy_:
-		obj->type = _wnd_;
-		obj->hfmt = _gl41easy_;
-		return obj;
-	case _gl41list_:
-		obj->type = _wnd_;
-		obj->hfmt = _gl41list_;
-		return obj;
-	case _gl41cmdq_:
-		obj->type = _wnd_;
-		obj->hfmt = _gl41cmdq_;
-		return obj;
+		obj->vfmt = hex32('h','o','l','o');
+		break;
+//other
+	case _joy_:
+	case _std_:
+	case _tray_:
+		obj->type = type;
+		obj->vfmt = type;
+		break;
 	}//switch
 
 	return obj;
@@ -280,8 +268,8 @@ int supply_create(_obj* obj, void* arg, int argc, u8** argv)
 	case _wnd_:
 		window_create(obj, arg, argc, argv);
 		break;
-	case _dec_:
-	case _enc_:
+	case _vdec_:
+	case _venc_:
 		codecv_create(obj, arg, argc, argv);
 		break;
 	case _cap_:
@@ -333,15 +321,17 @@ int supply_delete(_obj* obj)
 	}
 
 	//3.cleanup
+	obj->vfmt = 0;
 	obj->type = 0;
-	obj->hfmt = 0;
+	obj->kind = 0;
+	obj->tier = 0;
 	return 0;
 }
 int supply_reader(_obj* sup,void* foot, p64 arg,int idx, void* buf,int len)
 {
 	switch(sup->type){
-	case _dec_:
-	case _enc_:
+	case _vdec_:
+	case _venc_:
 		return codecv_reader(sup,foot, arg, idx, buf, len);
 	}
 	return 0;
@@ -354,7 +344,7 @@ int supply_writer(_obj* sup,void* foot, p64 arg,int idx, void* buf,int len)
 
 
 
-int supply_attach(struct halfrel* self, struct halfrel* peer)
+int supply_attach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* peer)
 {
 	logtoall("@supplyattach\n");
 
@@ -365,13 +355,14 @@ int supply_attach(struct halfrel* self, struct halfrel* peer)
 
 	return 0;
 }
-int supply_detach(struct halfrel* self, struct halfrel* peer)
+int supply_detach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* peer)
 {
 	logtoall("@supplydetach\n");
 	return 0;
 }
 int supply_takeby(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
+	//logtoall("type=%.4s\n", &sup->type);
 	switch(sup->type){
 		case _std_:return stdio_take(sup,foot, stack,sp, arg,idx, buf,len);
 
@@ -379,17 +370,20 @@ int supply_takeby(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, voi
 		case _spk_:return speaker_take(sup,foot, stack,sp, arg, idx, buf, len);
 
 		case _cam_:return camera_take(sup,foot, stack,sp, arg, idx, buf, len);
-		case _wnd_:return window_take(sup,foot, stack,sp, arg, idx, buf, len);
 		case _wndcap_:return screencap_take(sup,foot, stack,sp, arg, idx, buf, len);
 
-		case _dec_:
-		case _enc_:
+		case _tui_:
+		case _wnd_:return window_take(sup,foot, stack,sp, arg, idx, buf, len);
+
+		case _vdec_:
+		case _venc_:
 			return codecv_take(sup,foot, stack,sp, arg, idx, buf, len);
 	}
 	return 0;
 }
 int supply_giveby(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
+	//logtoall("type=%.4s\n", &sup->type);
 	switch(sup->type){
 		case _std_:return stdio_give(sup,foot, stack,sp, arg,idx, buf,len);
 
@@ -397,57 +391,16 @@ int supply_giveby(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, voi
 		case _spk_:return speaker_give(sup,foot, stack,sp, arg, idx, buf, len);
 
 		case _cam_:return camera_give(sup,foot, stack,sp, arg, idx, buf, len);
-		case _wnd_:return window_give(sup,foot, stack,sp, arg, idx, buf, len);
 		case _wndcap_:return screencap_take(sup,foot, stack,sp, arg, idx, buf, len);
 
-		case _dec_:
-		case _enc_:
+		case _tui_:
+		case _wnd_:
+			return window_give(sup,foot, stack,sp, arg, idx, buf, len);
+
+		case _vdec_:
+		case _venc_:
 			return codecv_give(sup,foot, stack,sp, arg, idx, buf, len);
 	}
-	switch(sup->hfmt){
-		case _ahrs_:return ahrs_give(sup,foot, stack,sp, arg, idx, buf, len);
-		case _slam_:return slam_give(sup,foot, stack,sp, arg, idx, buf, len);
-	}
-
-	return 0;
-}
-
-
-
-
-//helper function
-void* supply_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt)
-{
-	//logtoall("%s:%.8s\n", __func__, &type);
-	_obj* obj = supply_alloc();
-	if(0 == obj)return 0;
-
-	//if(supply_findfmt())supply_prepfromclone(obj, );
-	return supply_prep(obj, sizeof(_obj), tier, type, hfmt, vfmt);
-}
-int supply_unprep_dealloc(_obj* obj)
-{
-	return 0;
-}
-void* supply_alloc_prep_create(u64 tier, u64 type, u64 hfmt, u64 vfmt, int argc, u8** argv)
-{
-	_obj* obj = supply_alloc_prep(tier, type, hfmt, vfmt);
-	if(0 == obj)return 0;
-
-	int ret = supply_create(obj, 0, argc, argv);
-
-	return obj;
-}
-int supply_delete_unprep_dealloc(_obj* obj)
-{
-	return 0;
-}
-void* supply_alloc_prep_create_attach()
-{
-	return 0;
-}
-int supply_detach_delete_unprep_dealloc()
-{
 	return 0;
 }
 
@@ -457,6 +410,11 @@ int supply_detach_delete_unprep_dealloc()
 //cmdline function
 int supplycommand_insert(u8* name, u8* arg)
 {
+	u64 type;
+	str2type64(name, (u8*)&type);
+
+	_obj* obj = supply_alloc_fromtype(type);
+	supply_create(obj, arg, 0, 0);
 	return 0;
 }
 int supplycommand_remove(u8* name)
@@ -470,16 +428,16 @@ int supplycommand_search(u8* name)
 	if(0 == name){
 		for(j=0;j<maxitem;j++){
 			act = &supply[j];
-			if((0 == act->type)&&(0 == act->hfmt))continue;
+			if(0 == act->type)continue;
 			logtoall("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
-				&act->tier, &act->type, &act->hfmt, &act->hfmt);
+				&act->tier, &act->kind, &act->type, &act->vfmt);
 		}
 		if(0 == j)logtoall("empty supply\n");
 	}
 	else{
 		for(j=0;j<0x100;j++){
-			if(0 == supply[j].hfmt)break;
-			if(0 == cmp(&supply[j].hfmt, name))logtoall("name=%d,node=%p\n", name, &supply[j]);
+			if(0 == supply[j].type)break;
+			if(0 == cmp(&supply[j].type, name))logtoall("name=%d,node=%p\n", name, &supply[j]);
 			break;
 		}
 	}

@@ -57,7 +57,7 @@ static void minimap_read_byuiux(_obj* ent,void* slot, _syn* stack,int sp)
 	_obj* wnd;struct style* rect;
 	uuu = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 	wnd = stack[sp-4].pchip;rect = stack[sp-4].pfoot;
-	if(_camrts_ == wnd->hfmt)wnd = stack[sp-6].pchip;
+	if(_camrts_ == wnd->type)wnd = stack[sp-6].pchip;
 
 	float x0,y0,xn,yn;
 	x0 = area->fs.vc[0];
@@ -85,10 +85,10 @@ static void minimap_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 {
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
-//logtoall("fmt=%.8s\n", &sup->hfmt);
+//logtoall("fmt=%.8s\n", &sup->type);
 
-	switch(wnd->hfmt){
-	case _gl41list_:
+	switch(wnd->type){
+	case _wnd_:
 		minimap_read_bywnd(ent,slot, wnd,area);
 		break;
 	case _virtual_:
@@ -130,8 +130,8 @@ static void minimap_create(_obj* act, u8* arg)
 
 void minimap_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('m', 'i', 'n', 'i', 'm', 'a', 'p', 0);
+	p->vfmt = _orig_;
+	p->type = hex64('m', 'i', 'n', 'i', 'm', 'a', 'p', 0);
 
 	p->oncreate = (void*)minimap_create;
 	p->ondelete = (void*)minimap_delete;

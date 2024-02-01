@@ -350,7 +350,7 @@ void e1000_mmioinit(struct item* dev, u8* mmio)
 	dev->take = (void*)e1000_read;
 	dev->give = (void*)e1000_write;
 
-	struct item* eth = device_create(_eth_, 0, 0, 0);
+	struct item* eth = device_alloc_prepobj(_dev_, _eth_, 0, 0);
 	if(eth){
 		relationcreate(eth,0, _dev_,0, dev,0, _dri_,0);
 		eth_linkup(eth, 0, dev, 0);

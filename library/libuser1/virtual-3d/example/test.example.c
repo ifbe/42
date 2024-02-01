@@ -105,7 +105,7 @@ static void example_draw_cli(
 
 
 
-static void example_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void example_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -114,11 +114,18 @@ static void example_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	example_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void example_wrl_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void example_read_byworld_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 }
-static void example_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void example_read_bywnd(_obj* ent,void* slot, _obj* wnd,void* area)
 {
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		example_draw_pixel(ent,slot, wnd, area);
+		break;
+	case _gl41list_:
+		break;
+	}
 }
 
 
@@ -136,18 +143,15 @@ static void example_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		example_draw_pixel(ent,slot, caller, area);
-		break;
-	case _gl41list_:
-		example_wnd(ent,slot, stack,sp);
+	switch(caller->type){
+	case _wnd_:
+		example_read_bywnd(ent,slot, caller,area);
 		break;
 	case _scene3d_:
-		example_wrl_wnd(ent,slot, stack,sp);
+		example_read_byworld_bywnd(ent,slot, stack,sp);
 		break;
 	default:
-		example_wrl_cam_wnd(ent,slot, stack,sp);
+		example_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -184,8 +188,8 @@ static void example_create(_obj* act)
 
 void example_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('e', 'x', 'a', 'm', 'p', 'l', 'e', 0);
+	p->vfmt = _orig_;
+	p->type = hex64('e', 'x', 'a', 'm', 'p', 'l', 'e', 0);
 
 	p->oncreate = (void*)example_create;
 	p->ondelete = (void*)example_delete;

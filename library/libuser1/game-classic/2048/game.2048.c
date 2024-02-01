@@ -175,6 +175,7 @@ static void the2048_draw_gl41(
 	_obj* win, struct style* geom,
 	_obj* ctx, struct style* area)
 {
+	//logtoall("%s\n", __func__);
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
@@ -411,36 +412,51 @@ static void the2048_event(_obj* act, struct event* ev)
 
 
 
-
-static void the2048_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key)
+//2048 - *** - wnd
+static void the2048_read_bywnd(
+_obj* ent,void* slot,
+_obj* wnd,struct style* area,
+_syn* stack,int sp)
 {
-	_obj* wor;struct style* geom;
-	_obj* wnd;struct style* area;
-	if(0 == stack)return;
-
-	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	switch(wnd->hfmt){
+	//logtoall("%s vfmt=%.4s\n", __func__, &wnd->vfmt);
+	switch(wnd->vfmt){
+	case _cli_:
+		the2048_draw_cli(ent,slot, wnd,area);
+		break;
+	case _tui_:
+	case _tui256_:
+		the2048_draw_tui(ent,slot, wnd,area);
+		break;
+	case _rgba_:
+		the2048_draw_pixel(ent,slot, wnd,area);
+		break;
+	case _gl41list_:
+		the2048_draw_gl41_nocam(ent,slot, wnd,area);
+		break;
 	case _dx11list_:
 	case _mt20list_:
-	case _gl41list_:
 	case _vk12list_:
-		the2048_draw_gl41(ent,slot, wor,geom, wnd,area);
+		logtoall("wnd@%p\n", wnd);
 		break;
 	}
 }
-static void the2048_wrl_wnd(_obj* ent,void* slot, _obj* mgr,struct style* geom, _syn* stack,int sp)
+
+//2048 - mgr - wnd
+static void the2048_read_bymgr(
+_obj* ent,void* slot,
+_obj* mgr,struct style* geom,
+_syn* stack,int sp)
 {
-	_obj* wnd;struct style* area;
-	wnd = stack[sp-4].pchip;area = stack[sp-4].pfoot;
+	_obj* wnd = stack[sp-4].pchip;
+	struct style* area = stack[sp-4].pfoot;
 
 	int j;
 	struct fstyle fs;
-	switch(wnd->hfmt){
+	switch(wnd->vfmt){
 	case _rgba_:
 		the2048_draw_pixel(ent,slot, wnd,geom);
 		break;
-	default:
+	case _gl41list_:
 		for(j=0;j<3;j++)fs.vc[j] = fs.vr[j] = fs.vf[j] = fs.vt[j] = 0.0;
 		fs.vr[0] = area->fs.vq[0] * wnd->whdf.fbwidth / 4.0;
 		fs.vf[1] = area->fs.vq[1] * wnd->whdf.fbheight/ 4.0;
@@ -449,44 +465,68 @@ static void the2048_wrl_wnd(_obj* ent,void* slot, _obj* mgr,struct style* geom, 
 	}
 }
 
+//2048 - world - cam - wnd
+static void the2048_read_byworld_bycam_bywnd(
+_obj* ent,void* slot,
+_obj* world,struct style* geom,
+_syn* stack,int sp)
+{
+	//logtoall("%s\n", __func__);
+	if(0 == stack)return;
+
+	_obj* wnd = stack[sp-6].pchip;
+	struct style* area = stack[sp-6].pfoot;
+	switch(wnd->vfmt){
+	case _dx11list_:
+	case _mt20list_:
+	case _gl41list_:
+	case _vk12list_:
+		//logtoall("2222222\n");
+		the2048_draw_gl41(ent,slot, world,geom, wnd,area);
+		break;
+	}
+}
+
+static void the2048_read_byworld(
+_obj* ent,void* slot,
+_obj* world,struct style* geom,
+_syn* stack,int sp)
+{
+	_obj* caller2 = stack[sp-4].pchip;
+	struct style* area = stack[sp-4].pfoot;
+	switch(caller2->type){
+	case _wnd_:
+		the2048_draw_gl41_nocam(ent,slot, caller2,area);
+		break;
+	default:
+		the2048_read_byworld_bycam_bywnd(ent,slot, world,geom, stack,sp);
+	}
+}
+
 
 
 
 static void the2048_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	//logtoall("@the2048_read\n");
+	//logtoall("@the2048_read begin\n");
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _cli_:
-		the2048_draw_cli(ent,slot, caller,area);
-		break;
-	case _tui_:
-		the2048_draw_tui(ent,slot, caller,area);
-		break;
-	case _rgba_:
-		the2048_draw_pixel(ent,slot, caller,area);
-		break;
+	//logtoall("callertype=%.4s\n", &caller->type);
+	switch(caller->type){
 	case _htmlroot_:
 		the2048_draw_html(ent,slot, caller,area);
 		break;
-	case _gl41list_:
-		the2048_draw_gl41_nocam(ent,slot, caller,area);
-		break;
-	case _dx11list_:
-	case _mt20list_:
-	case _vk12list_:
-		logtoall("caller@%p\n", caller);
+	case _wnd_:
+		the2048_read_bywnd(ent,slot, caller,area, stack,sp);
 		break;
 	case _corner_:
 	case _wndmgr_:
-		the2048_wrl_wnd(ent,slot, caller,area, stack,sp);
-		break;
 	default:
-		the2048_read_bycam(ent,slot, stack,sp, arg,key);
+		the2048_read_byworld(ent,slot, caller,area, stack,sp);
 		break;
 	}
+	//logtoall("@the2048_read end\n");
 }
 static void the2048_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
@@ -508,8 +548,9 @@ static void the2048_attach(struct halfrel* self, struct halfrel* peer)
 
 void the2048_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex32('2','0','4','8');
+	p->kind = _game_;
+	p->type = hex32('2','0','4','8');
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)the2048_create;
 	p->ondelete = (void*)the2048_delete;

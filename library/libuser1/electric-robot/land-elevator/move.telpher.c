@@ -43,7 +43,7 @@ static void telpher_draw_gl41(
 	float* vt = geom->fs.vt;
 	gl41line_prism4(wnd, 0xffffff, vc, vr, vf, vt);
 }
-static void telpher_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void telpher_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -68,13 +68,11 @@ static void telpher_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		break;
 	default:
-		telpher_wrl_cam_wnd(ent,foot, stack,sp);
+		telpher_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -109,8 +107,8 @@ static void telpher_create(_obj* act)
 
 void telpher_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('t','e','l','p','h','e','r', 0);
+	p->vfmt = _orig_;
+	p->type = hex64('t','e','l','p','h','e','r', 0);
 
 	p->oncreate = (void*)telpher_create;
 	p->ondelete = (void*)telpher_delete;

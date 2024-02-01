@@ -78,8 +78,9 @@ static void sokoban_create(_obj* act)
 
 void sokoban_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('s', 'o', 'k', 'o', 'b', 'a', 'n', 0);
+	p->kind = _game_;
+	p->type = hex64('s', 'o', 'k', 'o', 'b', 'a', 'n', 0);
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)sokoban_create;
 	p->ondelete = (void*)sokoban_delete;

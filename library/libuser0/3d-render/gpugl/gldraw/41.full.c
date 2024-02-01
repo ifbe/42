@@ -40,7 +40,8 @@ void gpudata_cleanup(u8* ss, u8* ee)
 }
 void gpudata_validate(_obj* wnd)
 {
-	struct gl41world* world = &wnd->gl41list.world[0];
+	struct gl41list* priv = &wnd->gl41list;
+	struct gl41world* world = &priv->world[0];
 	struct gl41data** cam = world->camera;
 	struct gl41data** lit = world->light;
 	struct gl41data** solid = world->solid;
@@ -50,20 +51,20 @@ void gpudata_validate(_obj* wnd)
 	int j;
 	for(j=0;j<16;j++){
 		if(0 == cam[j])break;
-		if(cam[j]->dst.ctxage != wnd->gl41list.ctxage){
+		if(cam[j]->dst.glctxage != priv->glctxage){
 			logtoall("cam %d\n",j);
 			gpudata_cleanup(cam[j]->dst.gpudata_head, cam[j]->dst.gpudata_tail);
-			cam[j]->dst.ctxage = wnd->gl41list.ctxage;
+			cam[j]->dst.glctxage = priv->glctxage;
 		}
 	}
 
 	//light
 	for(j=0;j<1;j++){
 		if(0 == lit[j])break;
-		if(lit[j]->dst.ctxage != wnd->gl41list.ctxage){
+		if(lit[j]->dst.glctxage != priv->glctxage){
 			logtoall("lit %d\n",j);
 			gpudata_cleanup(lit[j]->dst.gpudata_head, lit[j]->dst.gpudata_tail);
-			lit[j]->dst.ctxage = wnd->gl41list.ctxage;
+			lit[j]->dst.glctxage = priv->glctxage;
 		}
 	}
 
@@ -71,10 +72,10 @@ void gpudata_validate(_obj* wnd)
 	for(j=0;j<64;j++)
 	{
 		if(0 == solid[j])continue;
-		if(solid[j]->dst.ctxage != wnd->gl41list.ctxage){
+		if(solid[j]->dst.glctxage != priv->glctxage){
 			logtoall("solid %d\n",j);
 			gpudata_cleanup(solid[j]->dst.gpudata_head, solid[j]->dst.gpudata_tail);
-			solid[j]->dst.ctxage = wnd->gl41list.ctxage;
+			solid[j]->dst.glctxage = priv->glctxage;
 		}
 	}
 
@@ -82,10 +83,10 @@ void gpudata_validate(_obj* wnd)
 	for(j=0;j<64;j++)
 	{
 		if(0 == opaque[j])continue;
-		if(opaque[j]->dst.ctxage != wnd->gl41list.ctxage){
+		if(opaque[j]->dst.glctxage != priv->glctxage){
 			logtoall("opaque %d\n",j);
 			gpudata_cleanup(opaque[j]->dst.gpudata_head, opaque[j]->dst.gpudata_tail);
-			opaque[j]->dst.ctxage = wnd->gl41list.ctxage;
+			opaque[j]->dst.glctxage = priv->glctxage;
 		}
 	}
 }
@@ -283,7 +284,7 @@ void fullwindow_upload(struct gl41world* world, int step)
 	{
 		if(0 == solid[j])continue;
 		if(0 == solid[j]->src.vtx[0].vbuf)continue;
-		//logtoall("%d\n",j);
+		//logtoall("solid %d\n",j);
 		update_onedraw(&solid[j]->dst, &solid[j]->src);
 	}
 
@@ -292,7 +293,7 @@ void fullwindow_upload(struct gl41world* world, int step)
 	{
 		if(0 == opaque[j])continue;
 		if(0 == opaque[j]->src.vtx[0].vbuf)continue;
-		//logtoall("%d\n",j);
+		//logtoall("opaque %d\n",j);
 		update_onedraw(&opaque[j]->dst, &opaque[j]->src);
 	}
 }
@@ -449,6 +450,7 @@ void render_world(struct gl41data* cam, struct gl41data** lit, struct gl41data**
 	for(j=0;j<64;j++){
 		if(0 == solid[j])continue;
 		if(0 == solid[j]->src.vtx[0].vbuf)continue;
+		//logtoall("render solid %d", j);
 		render_material(cam, lit[0], solid[j]);
 	}
 
@@ -460,6 +462,7 @@ void render_world(struct gl41data* cam, struct gl41data** lit, struct gl41data**
 	for(j=0;j<64;j++){
 		if(0 == opaque[j])continue;
 		if(0 == opaque[j]->src.vtx[0].vbuf)continue;
+		//logtoall("render opaque %d", j);
 		render_material(cam, lit[0], opaque[j]);
 	}
 
@@ -546,28 +549,29 @@ void fullwindow_render(struct gl41world* world, int step, _obj* wnd, struct fsty
 }
 void fullwindow_uploadandrender(_obj* wnd, struct fstyle* area)
 {
-	switch(wnd->vfmt){
+	struct gl41list* priv = &wnd->gl41list;
+	switch(priv->rendermode){
 	case _gbuf_:
 		//render to gbuf
-		fullwindow_upload(&wnd->gl41list.world[0], UPLOADSTEP_GBUFWORLD0);
-		fullwindow_render(&wnd->gl41list.world[0], RENDERSTEP_GBUFWORLD0, wnd, area);
+		fullwindow_upload(&priv->world[0], UPLOADSTEP_GBUFWORLD0);
+		fullwindow_render(&priv->world[0], RENDERSTEP_GBUFWORLD0, wnd, area);
 
 		//gbuf to screen
-		fullwindow_upload(&wnd->gl41list.world[1], UPLOADSTEP_GBUFWORLD1);
-		fullwindow_render(&wnd->gl41list.world[1], RENDERSTEP_GBUFWORLD1, wnd, area);
+		fullwindow_upload(&priv->world[1], UPLOADSTEP_GBUFWORLD1);
+		fullwindow_render(&priv->world[1], RENDERSTEP_GBUFWORLD1, wnd, area);
 		break;
 	case _ppll_:
 		//render to screen and ssbo
-		fullwindow_upload(&wnd->gl41list.world[0], UPLOADSTEP_PPLLWORLD0);
-		fullwindow_render(&wnd->gl41list.world[0], RENDERSTEP_PPLLWORLD0, wnd, area);
+		fullwindow_upload(&priv->world[0], UPLOADSTEP_PPLLWORLD0);
+		fullwindow_render(&priv->world[0], RENDERSTEP_PPLLWORLD0, wnd, area);
 
 		//ssbo to screen
-		fullwindow_upload(&wnd->gl41list.world[1], UPLOADSTEP_PPLLWORLD1);
-		fullwindow_render(&wnd->gl41list.world[1], RENDERSTEP_PPLLWORLD1, wnd, area);
+		fullwindow_upload(&priv->world[1], UPLOADSTEP_PPLLWORLD1);
+		fullwindow_render(&priv->world[1], RENDERSTEP_PPLLWORLD1, wnd, area);
 		break;
 	default:
-		fullwindow_upload(&wnd->gl41list.world[0], 0);
-		fullwindow_render(&wnd->gl41list.world[0], 0, wnd, area);
+		fullwindow_upload(&priv->world[0], 0);
+		fullwindow_render(&priv->world[0], 0, wnd, area);
 		break;
 	}
 
@@ -676,7 +680,7 @@ senddone:
 
 int fullwindow_take(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
-	//logtoall("@gl41wnd0_read\n");
+	//logtoall("@%s\n",__func__);
 	//logtoall("%d,%llx@fullwindow_renderwnd\n", rsp, stack);
 	//logtoall("gl41wnd0_read:%llx,%llx,%llx,%x,%llx,%d\n",self,peer,stack,rsp,buf,len);
 
@@ -725,7 +729,7 @@ int fullwindow_give(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int cmd, v
 	u64 callertype = 0;
 	if(sp >= 2){
 		caller = stack[sp-2].pchip;
-		if(caller)callertype = caller->hfmt;
+		if(caller)callertype = caller->type;
 	}
 /*	if(_camrts_ == callertype)
 	{
@@ -748,24 +752,32 @@ void fullwindow_delete(_obj* ogl)
 }
 void fullwindow_create(_obj* ogl, void* arg, int argc, char** argv)
 {
-	int j;
 	logtoall("argc=%d,argv=%p\n",argc,argv);
+
+	int j;
+	u32 rendermode = 0;
 	for(j=0;j<argc;j++){
 		logtoall("arg%d:%.4s\n", j, argv[j]);
-		if(0 == ncmp(argv[j], "vfmt:gbuf", 9))ogl->vfmt = _gbuf_;
-		if(0 == ncmp(argv[j], "vfmt:ppll", 9))ogl->vfmt = _ppll_;
+		if(0 == ncmp(argv[j], "mode:gbuf", 9))rendermode = _gbuf_;
+		if(0 == ncmp(argv[j], "mode:ppll", 9))rendermode = _ppll_;
 	}
 
-	ogl->hfmt = _gl41list_;
-	//ogl->vfmt= _gbuf_;
+#ifdef PPLL_DISABLE
+	if(rendermode==_ppll_)rendermode = 0;
+#endif
 
-	struct gl41world* world = ogl->gl41list.world;
+	ogl->vfmt = _gl41list_;
+
+	struct gl41list* priv = &ogl->gl41list;
+	priv->rendermode = rendermode;
+
+	struct gl41world* world = priv->world;
 	world[0].camera = memoryalloc(0x10000, 0);
 	world[0].light  = memoryalloc(0x10000, 0);
 	world[0].solid  = memoryalloc(0x10000, 0);
 	world[0].opaque = memoryalloc(0x10000, 0);
 
-	if((_gbuf_ == ogl->vfmt)|(_ppll_ == ogl->vfmt)){
+	if((_gbuf_ == priv->rendermode)|(_ppll_ == priv->rendermode)){
 		world[1].camera = memoryalloc(0x10000, 0);
 		world[1].light  = memoryalloc(0x10000, 0);
 		world[1].solid  = memoryalloc(0x10000, 0);

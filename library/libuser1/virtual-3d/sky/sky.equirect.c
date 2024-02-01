@@ -257,7 +257,7 @@ static void equirect_draw_pixel(
 		dst = (win->buf) + (cy-hh+y)*stride*4 + (cx-ww)*4;
 		src = (act->buf) + 4*y*(act->whdf.width);
 		//logtoall("y=%d,%llx,%llx\n",y,dst,src);
-		if('b' == ((win->hfmt)&0xff))
+		if('b' == ((win->type)&0xff))
 		{
 			for(x=0;x<xmax;x++)dst[x] = src[x];
 		}
@@ -302,14 +302,14 @@ static void equirect_event(
 
 
 
-static void equirect_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void equirect_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	switch(wnd->hfmt){
+	switch(wnd->vfmt){
 	case _dx11list_:equirect_dx11draw(ent,slot, wor,geom, wnd,area);break;
 	case _gl41list_:equirect_gl41draw(ent,slot, wor,geom, wnd,area);break;
 	}
@@ -317,8 +317,15 @@ static void equirect_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 static void equirect_wrl_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 }
-static void equirect_wnd(_obj* ent,void* slot, _obj* wnd,void* area)
+static void equirect_read_bywnd(_obj* ent,void* slot, _obj* wnd,void* area)
 {
+	switch(wnd->vfmt){
+	case _rgba8888_:
+	case _bgra8888_:
+		break;
+	case _gl41list_:
+		break;
+	}
 }
 
 
@@ -336,14 +343,12 @@ static void equirect_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,in
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
-		equirect_wnd(ent,slot, caller,area);
+	switch(caller->type){
+	case _wnd_:
+		equirect_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
-		equirect_wrl_cam_wnd(ent,slot, stack,sp);
+		equirect_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -390,8 +395,8 @@ static void equirect_create(_obj* act, void* str)
 
 void equirect_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('e', 'q', 'u', 'i', 'r', 'e', 'c', 't');
+	p->vfmt = _orig_;
+	p->type = hex64('e', 'q', 'u', 'i', 'r', 'e', 'c', 't');
 
 	p->oncreate = (void*)equirect_create;
 	p->ondelete = (void*)equirect_delete;

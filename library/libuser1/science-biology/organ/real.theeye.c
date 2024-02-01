@@ -38,8 +38,8 @@ static void theeye_create(_obj* act, void* str)
 
 void theeye_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('t', 'h', 'e', 'e', 'y', 'e', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('t', 'h', 'e', 'e', 'y', 'e', 0, 0);
 
 	p->oncreate = (void*)theeye_create;
 	p->ondelete = (void*)theeye_delete;

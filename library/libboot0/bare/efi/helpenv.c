@@ -2,10 +2,6 @@
 #include <efi.h>
 #include <efilib.h>
 #include "libboot.h"
-#define _bgra8880_ hex64('b', 'g', 'r', 'a', '8', '8', '8', '0')
-#define _rgba8880_ hex64('r', 'g', 'b', 'a', '8', '8', '8', '0')
-#define _bgra8888_ hex64('b', 'g', 'r', 'a', '8', '8', '8', '8')
-#define _rgba8888_ hex64('r', 'g', 'b', 'a', '8', '8', '8', '8')
 
 
 

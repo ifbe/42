@@ -349,8 +349,7 @@ void window_create(_obj* w)
 	align = (align+0xfffff)&0xfffffffffff00000;
 	w->rgbabuf = (void*)align;
 
-	w->fmt = _rgba_;
-	w->vfmt = hex64('b','g','r','a','8','8','8','8');
+	w->vfmt = _bgra8888_;
 
 	w->width = 1024;
 	w->height = 768;

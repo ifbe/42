@@ -26,7 +26,9 @@ void poller(void*);
 
 static void guiapp_mgr_to_ent(_obj* mgr)
 {
-	_obj* term = entity_alloc_prep_create(_ent_, _term_, 0, 0, 0, 0);
+	_obj* term = entity_alloc_fromtype(_term_);
+	entity_create(term, 0, 0, 0);
+
 	struct style* term_to_mgr = style_alloc();
 	struct style* mgr_to_term = style_alloc();
 	mgr_to_term->fshape.vc[0] = 0.0;
@@ -36,7 +38,7 @@ static void guiapp_mgr_to_ent(_obj* mgr)
 	struct relation* rel1 = relationcreate(term,term_to_mgr, _ent_,0, mgr,mgr_to_term, _ent_,0);
 	relationattach((void*)&rel1->srcchip, (void*)&rel1->dstchip);
 /*
-	_obj* game = entity_alloc_prep_create(_ent_, _2048_,0, 0, 0, 0);
+	_obj* game = entity_alloc_prepobj_create(_ent_, _2048_,0, 0, 0, 0);
 	struct style* game_to_mgr = style_alloc();
 	struct style* mgr_to_game = style_alloc();
 	mgr_to_game->fshape.vc[0] = 0.0;
@@ -49,7 +51,8 @@ static void guiapp_mgr_to_ent(_obj* mgr)
 }
 static void guiapp_wnd_to_mgr(_obj* wnd)
 {
-	_obj* mgr = entity_alloc_prep_create(_ent_, _corner_,0, 0, 0, 0);
+	_obj* mgr = entity_alloc_fromtype(_corner_);
+	entity_create(mgr, 0, 0, 0);
 	struct style* mgr_to_wnd = style_alloc();
 	struct style* wnd_to_mgr = style_alloc();
 	wnd_to_mgr->fshape.vc[0] = 0.0;
@@ -63,10 +66,13 @@ static void guiapp_wnd_to_mgr(_obj* wnd)
 }
 static void guiapp_wnd_to_3d(_obj* wnd)
 {
-	//_obj* abc = entity_alloc_prep_create(_ent_, _texball_,"datafile/jpg/texball-grassland.jpg", 0, 0);
-	_obj* abc = entity_alloc_prep_create(_ent_, _texball_, 0, 0, 1, (u8**)&"datafile/jpg/360d-park.jpg");
-	_obj* wrd = entity_alloc_prep_create(_ent_, _virtual_,0, 0, 0 ,0);
-	_obj* cam = entity_alloc_prep_create(_ent_, _vrbox_,0, 0, 0 ,0);
+	//_obj* abc = entity_alloc_prepobj_create(_ent_, _texball_,"datafile/jpg/texball-grassland.jpg", 0, 0);
+	_obj* abc = entity_alloc_fromtype(_texball_);
+	entity_create(abc, "datafile/jpg/360d-park.jpg", 0, 0);
+	_obj* wrd = entity_alloc_fromtype(_virtual_);
+	entity_create(wrd, 0, 0 ,0);
+	_obj* cam = entity_alloc_fromtype(_vrbox_);
+	entity_create(cam, 0, 0 ,0);
 
 	struct style* wrd_to_cam = style_alloc();
 	struct style* cam_to_wrd = style_alloc();
@@ -133,7 +139,8 @@ void guiapp_delete(struct item* wrk, u8* arg)
 }
 int guiapp_create(struct item* wrk, u8* arg, int argc, u8** argv)
 {
-	bootup_create(_myml_, "datafile/myml/index.myml", 0, 0);
+	_obj* obj = bootup_alloc_fromtype(_myml_);
+	bootup_create(obj, "datafile/myml/index.myml", 0, 0);
 /*
 	_obj* wnd = supply_create(_wnd_, 0, 0, 0);
 	wrk->priv_ptr = wnd;

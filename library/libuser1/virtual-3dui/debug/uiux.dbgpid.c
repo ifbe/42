@@ -92,7 +92,7 @@ static void dbgpid_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int 
 	_obj* caller = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
+	switch(caller->type){
 	case _virtual_:
 		dbgpid_read_byworld_bywnd(ent,foot, stack,sp);
 		break;
@@ -132,8 +132,8 @@ static void dbgpid_create(_obj* act, u8* arg, int argc, u8** argv)
 
 void dbgpid_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('d', 'b', 'g', 'p', 'i', 'd', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('d', 'b', 'g', 'p', 'i', 'd', 0, 0);
 
 	p->oncreate = (void*)dbgpid_create;
 	p->ondelete = (void*)dbgpid_delete;

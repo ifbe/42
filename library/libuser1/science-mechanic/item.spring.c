@@ -85,6 +85,11 @@ void spring_read_force(_obj* ent, _obj* sup, struct joint* jo, int len)
 	vec3_setlen(vt, ent->LVAL/2);
 	gl41solid_cylinder(sup, 0xffffff, vc, vr, vf, vt);
 }
+static void spring_read_byscene_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp, void* buf,int len)
+{
+	_obj* wnd = stack[sp-8].pchip;
+	spring_read_force(ent,wnd, buf,len);
+}
 
 
 
@@ -155,9 +160,17 @@ static void spring_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int 
 {
 	//logtoall("@spring_read: %.4s\n", &self->foottype);
 	switch(stack[sp-1].foottype){
-	case 'a':spring_read_a(ent,key, buf,len);break;
-	case 'b':spring_read_b(ent,key, buf,len);break;
-	case 'f':spring_read_force(ent,stack[sp-8].pchip, buf,len);break;
+	case 'a':spring_read_a(ent,key, buf,len);return;
+	case 'b':spring_read_b(ent,key, buf,len);return;
+	//case 'f':goto below switch
+	}
+
+	_obj* caller = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+	switch(caller->type){
+	default:
+		spring_read_byscene_byworld_bycam_bywnd(ent,foot, stack,sp, buf,len);
+		break;
 	}
 }
 static void spring_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
@@ -209,8 +222,8 @@ static void spring_create(_obj* ent, void* arg, int argc, u8** argv)
 
 void spring_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('s', 'p', 'r', 'i', 'n','g', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('s', 'p', 'r', 'i', 'n','g', 0, 0);
 
 	p->oncreate = (void*)spring_create;
 	p->ondelete = (void*)spring_delete;

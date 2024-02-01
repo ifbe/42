@@ -37,7 +37,7 @@ static void axis3d_perobj(_obj* wnd, float* vc, float* vr, float* vf, float* vt)
 }
 void axis3d_draw_gl41(_obj* scene, _obj* wnd)
 {
-	//logtoall("@axis3d_read: %.8s\n", &scene->hfmt);
+	//logtoall("@axis3d_read: %.8s\n", &scene->type);
 
 	vec3 tc,tr,tf,tt;
 	tc[0] = tc[1] = tc[2] = 0.0;
@@ -55,6 +55,19 @@ void axis3d_draw_gl41(_obj* scene, _obj* wnd)
 		if(sty)axis3d_perobj(wnd, sty->vc, sty->vr, sty->vf, sty->vt);
 
 		rel = samesrcnextdst(rel);
+	}
+}
+
+
+
+
+static void axis3d_read_bywnd(_obj* ent,void* slot, _obj* wnd,void* area)
+{
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		break;
 	}
 }
 int axis3d_read_bycam(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,int key)
@@ -88,14 +101,15 @@ int axis3d_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,in
 	}
 
 	//caller defined behavior
-	switch(caller->hfmt){
-	case _rgba_:
+	switch(caller->type){
+	case _wnd_:
+		axis3d_read_bywnd(ent,foot, caller,area);
 		break;
-	case _gl41list_:
+	default:
+		axis3d_read_bycam(ent,foot, stack,sp, arg,key);
 		break;
 	}
-
-	return axis3d_read_bycam(ent,foot, stack,sp, arg,key);
+	return 0;
 }
 int axis3d_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {

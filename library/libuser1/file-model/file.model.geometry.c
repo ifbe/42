@@ -162,7 +162,16 @@ static void geometry_event(
 
 
 
-static void geometry_world_camera_window(_obj* ent,void* slot, _syn* stack,int sp)
+static void geometry_read_bywnd(_obj* ent,void* slot, _obj* wnd,void* area)
+{
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		break;
+	}
+}
+static void geometry_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* scn;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -187,13 +196,12 @@ static void geometry_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,in
 	}
 
 	//caller defined behavior
-	switch(caller->hfmt){
-	case _rgba_:
-	        break;
-	case _gl41list_:
-	        break;
+	switch(caller->type){
+	case _wnd_:
+		geometry_read_bywnd(ent,slot, caller,area);
+		break;
 	default:
-		geometry_world_camera_window(ent,slot, stack,sp);
+		geometry_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 	}
 }
 static void geometry_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
@@ -243,8 +251,8 @@ static void geometry_create(_obj* act, u8* buf, int argc, u8** argv)
 
 void geometry_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex32('g','e','o','m');
+	p->vfmt = _orig_;
+	p->type = hex32('g','e','o','m');
 
 	p->oncreate = (void*)geometry_create;
 	p->ondelete = (void*)geometry_delete;

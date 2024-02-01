@@ -437,10 +437,10 @@ static int freecam_gl41_mesh(
 
 
 
-static void freecam_gl41gbuf_world1_prep()
+static void freecam_gl41gbuf_world0_prep(_obj* act)
 {
 }
-static void freecam_gl41gbuf_world1_cam(
+static void freecam_gl41gbuf_world0_cam(
 	_obj* act, struct style* part,
 	_obj* wrd, struct style* geom,
 	_obj* wnd, struct style* area)
@@ -469,7 +469,7 @@ static void freecam_gl41gbuf_world1_cam(
 
 	wnd->gl41list.world[0].camera[0] = data;
 }
-static void freecam_gl41gbuf_world2_prep(_obj* act)
+static void freecam_gl41gbuf_world1_prep(_obj* act)
 {
 	struct privdata* own = act->OWNBUF;
 	struct gl41data* data = &own->gl41gbuf;
@@ -507,7 +507,7 @@ static void freecam_gl41gbuf_world2_prep(_obj* act)
 
 	data->src.vbuf_enq = 42;
 }
-static void freecam_gl41gbuf_world2_mesh(
+static void freecam_gl41gbuf_world1_mesh(
 	_obj* act, struct style* slot,
 	_obj* wrd, struct style* geom,
 	_obj* ogl, struct style* area)
@@ -600,10 +600,10 @@ static void freecam_gl41gbuf_world2_mesh(
 
 
 
-static void freecam_gl41ppll_world1_prep()
+static void freecam_gl41ppll_world0_prep(_obj* act)
 {
 }
-static void freecam_gl41ppll_world1_cam(
+static void freecam_gl41ppll_world0_cam(
 	_obj* act, struct style* part,
 	_obj* wrd, struct style* geom,
 	_obj* wnd, struct style* area)
@@ -631,7 +631,7 @@ static void freecam_gl41ppll_world1_cam(
 
 	wnd->gl41list.world[0].camera[0] = data;
 }
-static void freecam_gl41ppll_world2_prep(_obj* act)
+static void freecam_gl41ppll_world1_prep(_obj* act)
 {
 	struct privdata* own = act->OWNBUF;
 	struct gl41data* data = &own->gl41ppll;
@@ -662,7 +662,7 @@ static void freecam_gl41ppll_world2_prep(_obj* act)
 
 	data->src.vbuf_enq = 42;
 }
-static void freecam_gl41ppll_world2_mesh(
+static void freecam_gl41ppll_world1_mesh(
 	_obj* act, struct style* slot,
 	_obj* wrd, struct style* geom,
 	_obj* ogl, struct style* area)
@@ -788,7 +788,7 @@ static void freecam_mt20_cam(
 
 
 
-static int freecam_byworld_bycam_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
+static int freecam_byworld_bycam_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp)
 {
 //[-6,-5]: wnd,area -> cam,togl
 //[-4,-3]: cam,gl41 -> wor,geom		//the camera taking photo
@@ -798,7 +798,7 @@ static int freecam_byworld_bycam_bywnd_read(_obj* ent,void* slot, _syn* stack,in
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 
-	switch(wnd->hfmt){
+	switch(wnd->vfmt){
 	case _tui_:
 	case _rgba_:
 		return 0;
@@ -811,19 +811,25 @@ static int freecam_byworld_bycam_bywnd_read(_obj* ent,void* slot, _syn* stack,in
 
 
 
-static int freecam_generate(_obj* ent,void* slot, _syn* stack,int sp, _obj* wor,struct style* geom, _obj* wnd,struct style* area)
+//world - camera - window
+static int freecam_visitworld(
+_obj* wor,struct style* geom,
+_obj* ent,void* slot,
+_obj* wnd,struct style* area,
+_syn* stack,int sp)
 {
+	//logtoall("%s\n", __func__);
 	struct privdata* own = ent->OWNBUF;
-	switch(wnd->hfmt){
+	switch(wnd->vfmt){
 
 	case _cli_:
-		logtoall("\r%s/%s/%s:%f,%f,%f", &wnd->hfmt, &ent->hfmt, &wor->hfmt, geom->fs.vc[0], geom->fs.vc[1], geom->fs.vc[2]);
+		logtoall("\r%s/%s/%s:%f,%f,%f", &wnd->type, &ent->type, &wor->type, geom->fs.vc[0], geom->fs.vc[1], geom->fs.vc[2]);
 		break;
 
 	case _tui_:
 	case _rgba_:
 		//logtoall("@freecam: raster\n");
-		if(_tui_ == wnd->hfmt)freecam_tui_ratio(wor, geom, wnd, area);
+		if(_tui_ == wnd->type)freecam_tui_ratio(wor, geom, wnd, area);
 		else freecam_ratio(wor, geom, wnd, area);
 
 		freecam_shape2frustum(&geom->fshape, &geom->frustum);
@@ -852,6 +858,7 @@ static int freecam_generate(_obj* ent,void* slot, _syn* stack,int sp, _obj* wor,
 		break;
 
 	case _gl41list_:
+		//logtoall("%s case gl41list\n", __func__);
 		//clear all
 		gl41data_before(wnd);
 		//render data
@@ -863,15 +870,15 @@ static int freecam_generate(_obj* ent,void* slot, _syn* stack,int sp, _obj* wor,
 		freecam_ratio(wor, geom, wnd, area);
 		freecam_shape2frustum(&geom->fshape, &geom->frustum);
 		freecam_frus2wvp(ent,slot, wor,geom);
-		if(_gbuf_ == wnd->vfmt){
+		if(_gbuf_ == wnd->gl41list.rendermode){
 			freecam_frus2pvw(ent,slot, wor,geom);
-			freecam_gl41gbuf_world1_cam(ent,slot, wor,geom, wnd,area);
-			freecam_gl41gbuf_world2_mesh(ent,slot, wor,geom, wnd,area);
+			freecam_gl41gbuf_world0_cam(ent,slot, wor,geom, wnd,area);
+			freecam_gl41gbuf_world1_mesh(ent,slot, wor,geom, wnd,area);
 		}
-		else if(_ppll_ == wnd->vfmt){
+		else if(_ppll_ == wnd->gl41list.rendermode){
 			freecam_frus2pvw(ent,slot, wor,geom);
-			freecam_gl41ppll_world1_cam(ent,slot, wor,geom, wnd,area);
-			freecam_gl41ppll_world2_mesh(ent,slot, wor,geom, wnd,area);
+			freecam_gl41ppll_world0_cam(ent,slot, wor,geom, wnd,area);
+			freecam_gl41ppll_world1_mesh(ent,slot, wor,geom, wnd,area);
 		}
 		else{
 			freecam_gl41_cam(ent,slot, wor,geom, wnd,area);
@@ -902,11 +909,13 @@ static int freecam_generate(_obj* ent,void* slot, _syn* stack,int sp, _obj* wor,
 
 
 
-static int freecam_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
+static int freecam_bywnd_read(_obj* ent,void* slot, _obj* wnd,struct style* area, _syn* stack,int sp)
 {
+	//logtoall("@%s: stack=%p,sp=%d\n",__func__,stack,sp);
 	struct privdata* own = ent->OWNBUF;
 	struct halfrel* self = own->self;
 	struct halfrel* peer = own->peer;
+	//logtoall("ent=%p,own=%p,self=%p,peer=%p\n",ent,own,self,peer);
 	stack[sp+0].pchip = self->pchip;
 	stack[sp+0].pfoot = self->pfoot;
 	stack[sp+0].foottype = self->foottype;
@@ -915,13 +924,9 @@ static int freecam_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,
 	stack[sp+1].foottype = peer->foottype;
 
 //[+0,+1]: cam,towr -> wor,geom
-//[-2,-1]: wnd,area -> cam,togl
-	_obj* wor;struct style* geom;
-	_obj* wnd;struct style* area;
-	wor = stack[sp+1].pchip;geom = stack[sp+1].pfoot;
-	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
-
-	freecam_generate(ent,slot, stack,sp, wor,geom, wnd,area);
+	_obj* wor = stack[sp+1].pchip;
+	struct style* geom = stack[sp+1].pfoot;
+	freecam_visitworld(wor,geom, ent,slot, wnd,area, stack,sp);
 	return 0;
 //logtoall("@freecam_bywnd_read.end\n");
 }
@@ -943,9 +948,14 @@ static int freecam_bywnd_write(_obj* ent,void* ef, _obj* wnd,void* wf, struct ev
 
 
 
-static int freecam_byrts_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
+static int freecam_byrts_bywnd_read(_obj* ent,void* slot, _obj* mixer,void* mixerarea, _syn* stack,int sp)
 {
-	logtoall("@%s\n",__FUNCTION__);
+	//logtoall("@%s: stack=%p,sp=%d\n",__func__,stack,sp);
+//[-2,-1]: mixer,area -> cam,togl
+//[-4,-3]: wnd,0 -> mixer,0
+	_obj* wnd = stack[sp-4].pchip;
+	//struct style* wndarea = stack[sp-2].pfoot;
+
 	struct privdata* own = ent->OWNBUF;
 	struct halfrel* self = own->self;
 	struct halfrel* peer = own->peer;
@@ -957,14 +967,9 @@ static int freecam_byrts_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, p6
 	stack[sp+1].foottype = peer->foottype;
 
 //[+0,+1]: cam,towr -> wor,geom
-//[-2,-1]: mixer,area -> cam,togl
-//[-4,-3]: wnd,0 -> mixer,0
-	_obj* wor;struct style* geom;
-	_obj* wnd;struct style* area;
-	wor = stack[sp+1].pchip;geom = stack[sp+1].pfoot;
-	wnd = stack[sp-4].pchip;area = stack[sp-2].pfoot;
-
-	freecam_generate(ent,slot, stack,sp, wor,geom, wnd,area);
+	_obj* wor = stack[sp+1].pchip;
+	struct style* geom = stack[sp+1].pfoot;
+	freecam_visitworld(wor,geom, ent,slot, wnd,mixerarea, stack,sp);
 	return 0;
 }
 
@@ -973,23 +978,30 @@ static int freecam_byrts_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp, p6
 
 static int freecam_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	//logtoall("@freecam_read\n");
+	//logtoall("@freecam_read begin\n");
 	if(0 == stack)return 0;
 	take_data_from_peer(ent,_mind_, stack,sp, 0,0, 0,0);
 
 	_obj* caller = stack[sp-2].pchip;
 	if(0 == caller)return 0;
+	struct style* area = stack[sp-2].pfoot;
 
+	//logtoall("callertype=%.4s\n", &caller->type);
 	switch(caller->type){
 	case _wnd_:
-		return freecam_bywnd_read(ent,foot, stack,sp, arg,key, buf,len);
+		freecam_bywnd_read(ent,foot, caller, area, stack,sp);
+		break;
 	case _camrts_:
-		return freecam_byrts_bywnd_read(ent,foot, stack,sp, arg,key, buf,len);
+		freecam_byrts_bywnd_read(ent,foot, caller, area, stack,sp);
+		break;
 	//case _?_:
-		//return freecam_byworld_bycam_byrts_bywnd_read(ent,foot, stack,sp, arg,key, buf,len);
+		//freecam_byworld_bycam_byrts_bywnd_read(ent,foot, caller, area, stack,sp);
+		break;
 	default:
-		return freecam_byworld_bycam_bywnd_read(ent,foot, stack,sp, arg,key, buf,len);
+		freecam_byworld_bycam_bywnd_read(ent,foot, stack,sp);
+		break;
 	}
+	//logtoall("@freecam_read end\n");
 	return 0;
 }
 static int freecam_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
@@ -1041,18 +1053,25 @@ static void freecam_attach(struct halfrel* self, struct halfrel* peer)
 	}
 
 	_obj* that = peer->pchip;
-	if( (_virtual_ == that->type) | (_scene3d_ == that->type) ){
+	logtoall("thattype=%.4s\n", &that->type);
+	switch(that->type){
+	case _virtual_:
+	case _scene3d_:
 		own->self = self;
 		own->peer = peer;
 		return;
-	}
-	if(_gbuf_ == that->vfmt){
-		freecam_gl41gbuf_world1_prep();
-		freecam_gl41gbuf_world2_prep(ent);
-	}
-	if(_ppll_ == that->vfmt){
-		freecam_gl41ppll_world1_prep();
-		freecam_gl41ppll_world2_prep(ent);
+	case _wnd_:
+		if(_gl41list_ == that->vfmt){
+			if(_gbuf_ == that->gl41list.rendermode){
+				freecam_gl41gbuf_world0_prep(ent);
+				freecam_gl41gbuf_world1_prep(ent);
+			}
+			if(_ppll_ == that->gl41list.rendermode){
+				freecam_gl41ppll_world0_prep(ent);
+				freecam_gl41ppll_world1_prep(ent);
+			}
+		}
+		break;
 	}
 }
 
@@ -1115,8 +1134,8 @@ static void freecam_create(_obj* act, void* arg, int argc, u8** argv)
 
 void freecam_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('f', 'r', 'e', 'e', 'c', 'a', 'm', 0);
+	p->type = hex64('f', 'r', 'e', 'e', 'c', 'a', 'm', 0);
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)freecam_create;
 	p->ondelete = (void*)freecam_delete;

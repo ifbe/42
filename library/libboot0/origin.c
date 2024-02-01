@@ -24,7 +24,7 @@ static int orilen = 0;
 
 
 #define maxitem (0x100000/sizeof(struct item))
-void origin_init(u8* addr)
+void origin_init(u8* addr, int size)
 {
 	//logtoall("[0,2):origin initing\n");		//dont uncomment, wont output before init stdout
 
@@ -68,15 +68,18 @@ void* origin_alloc()
 	orilen -= 1;
 	return addr;
 }
-void* origin_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt)
+void* origin_alloc_fromtype(u64 type)
 {
-	return 0;
+	_obj* obj = origin_alloc();
+	if(0 == obj)return 0;
+
+	//obj->tier = tier;		//should be tier: origin
+	//obj->kind = kind;		//should be class: usbhost
+	obj->type = type;		//should be type: xhci
+	//obj->vfmt = vfmt;		//should be model: intelxhci
+	return obj;
 }
-
-
-
-
-void* origin_create(u64 type, void* func, int argc, u8** argv)
+void* origin_alloc_fromarg(u64 type, void* func, int argc, u8** argv)
 {
 	int j;
 	struct item* tmp=0;
@@ -120,12 +123,20 @@ void* origin_create(u64 type, void* func, int argc, u8** argv)
 	}
 	return 0;
 }
-int origin_delete(_obj* tmp)
-{
-	if(0 == tmp)return 0;
-	logtoall("origin_delete:%.8s\n", &tmp->type);
 
-	switch(tmp->type){
+
+
+
+int origin_create(_obj* obj, void* func, int argc, u8** argv)
+{
+	return 0;
+}
+int origin_delete(_obj* obj)
+{
+	if(0 == obj)return 0;
+	logtoall("origin_delete:%.8s\n", &obj->type);
+
+	switch(obj->type){
 	case _start_:
 	case _efimain_:{
 		death();
@@ -154,12 +165,12 @@ int origin_writer(struct item* ori,void* foot, p64 arg, int idx, void* buf, int 
 
 
 
-int origin_attach(struct halfrel* self, struct halfrel* peer)
+int origin_attach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* peer)
 {
 	logtoall("@originattach\n");
 	return 0;
 }
-int origin_detach(struct halfrel* self, struct halfrel* peer)
+int origin_detach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* peer)
 {
 	logtoall("@origindetach\n");
 	return 0;
@@ -191,16 +202,16 @@ int origincommand_search(u8* name)
 	if(0 == name){
 		for(j=0;j<maxitem;j++){
 			act = &ori[j];
-			if((0 == act->type)&&(0 == act->hfmt))continue;
+			if(0 == act->type)continue;
 			logtoall("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
-				&act->tier, &act->type, &act->hfmt, &act->hfmt);
+				&act->tier, &act->kind, &act->type, &act->vfmt);
 		}
 		if(0 == j)logtoall("empty origin\n");
 	}
 	else{
 		for(j=0;j<0x100;j++){
-			if(0 == ori[j].hfmt)break;
-			if(0 == cmp(&ori[j].hfmt, name))logtoall("name=%d,node=%p\n", name, &ori[j]);
+			if(0 == ori[j].type)break;
+			if(0 == cmp(&ori[j].type, name))logtoall("name=%d,node=%p\n", name, &ori[j]);
 			break;
 		}
 	}

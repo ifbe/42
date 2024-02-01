@@ -298,7 +298,17 @@ void water_gl41geom_prepare(struct gl41data* data, struct waterbuf* water, char*
 
 
 
-static void water_wrl_cam_wnd(_obj* ent,void* foot, _syn* stack,int sp)
+static void water_read_bywnd(_obj* ent,void* foot, _obj* wnd,void* area)
+{
+	switch(wnd->type){
+	case _bgra8888_:
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		break;
+	}
+}
+static void water_read_byworld_bycam_bywnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
 	if(0 == stack)return;
 
@@ -316,14 +326,20 @@ static void water_wrl_cam_wnd(_obj* ent,void* foot, _syn* stack,int sp)
 	struct waterbuf* water = ent->CTXBUF;
 	if(0 == water)return;
 
-	if(_gl41list_ == wnd->hfmt)world2clip_projznzp_transpose(water->wvp, &geom->frus);
-	else world2clip_projz0z1_transpose(water->wvp, &geom->frus);
+	switch(wnd->vfmt){
+	case _gl41list_:
+		world2clip_projznzp_transpose(water->wvp, &geom->frus);
 
-	//create or update fbo
-	water_gl41fbo_update(ent,foot, wor,geom, dup,camg, (void*)wnd,area);
+		//create or update fbo
+		water_gl41fbo_update(ent,foot, wor,geom, dup,camg, (void*)wnd,area);
 
-	//geom
-	water_gl41geom_update(ent,foot, wor,geom, wnd,area);
+		//geom
+		water_gl41geom_update(ent,foot, wor,geom, wnd,area);
+		break;
+	default:
+		world2clip_projz0z1_transpose(water->wvp, &geom->frus);
+		break;
+	}
 }
 
 
@@ -341,13 +357,12 @@ static void water_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int k
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
+		water_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
-		water_wrl_cam_wnd(ent,slot, stack,sp);
+		water_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -407,8 +422,8 @@ static void water_create(_obj* act, char* str)
 
 void water_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('w', 'a', 't', 'e', 'r', 0, 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('w', 'a', 't', 'e', 'r', 0, 0, 0);
 
 	p->oncreate = (void*)water_create;
 	p->ondelete = (void*)water_delete;

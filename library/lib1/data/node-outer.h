@@ -1,10 +1,13 @@
 #ifndef _BIGNODE_H
 #define _BIGNODE_H
 
-
+//
 #include "const/def.h"
 #include "const/naming.h"
-
+//
+#include "my/audio.h"
+#include "my/draw.h"
+#include "my/carve.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -208,27 +211,6 @@ struct buflen{
 	void* buf3;
 	u64 len3;
 };
-//audio
-struct pcmeasy{
-	struct pcmdata* mic;
-	struct pcmdata* wall;
-	struct pcmdata* data;
-	struct pcmdata* what;
-};
-struct pcmlist{
-	struct pcmdata** mic;
-	struct pcmdata** wall;
-	struct pcmdata** data;
-	struct pcmdata** what;
-};
-struct appleaudioqueue{
-	void* aqbufref[16];	//+0x80
-	void* zero10ms;
-
-	void*  aqref;
-	int    aqenq;
-	int    aqdeq;
-};
 //text
 struct tuitext{
 	void* buf;
@@ -281,90 +263,90 @@ struct rgbawinapi{
 	void* save_stack;
 	int save_sp;
 };
-//directx11
-struct dx11easy{
-	struct dx11data* camera;
-	struct dx11data* light;
-	struct dx11data* solid;
-	struct dx11data* opaque;
-};
-struct dx11world{
-	struct dx11data** camera;
-	struct dx11data** light;
-	struct dx11data** solid;
-	struct dx11data** opaque;
-};
-struct dx11list{
-	struct dx11world world[2];
-	void* hwnd;
-	void* spsave;
-};
-struct dx11cmdq{
-	u64* data;
-	u64* code;
-};
-//opengl
-struct gl41easy{
-	struct gl41data*  camera;
-	struct gl41data*  light;
-	struct gl41data*  solid;
-	struct gl41data*  opaque;
-};
-struct gl41world{
-	struct gl41data** camera;
-	struct gl41data** light;
-	struct gl41data** solid;
-	struct gl41data** opaque;
-};
-struct gl41list{
-	struct gl41world world[2];
 
-	void* glwnd;
-	u32 ctxage;
 
-	u64   gltime;
 
-	void* glevto;
-	void* glsave;
-};
-struct gl41cmdq{
-	u64* data;
-	u64* code;
-};
-//metal
-struct mt20easy{
-	struct mt20data* camera;
-	struct mt20data* light;
-	struct mt20data* solid;
-	struct mt20data* opaque;
-};
-struct mt20world{
-	struct mt20data** camera;
-	struct mt20data** light;
-	struct mt20data** solid;
-	struct mt20data** opaque;
-};
-struct mt20list{
-	struct mt20world world[2];
-
-	void* delegate;
-	void* view;
-};
-struct mt20cmdq{
-	u64* data;
-	u64* code;
-};
 
 
 
 
 //--------------------------------object--------------------------------
+/*
+struct item_common
+{
+	//[00,1f]: type
+	u64 tier;
+	u64 kind;
+	u64 type;
+	u64 vfmt;
+
+	//[20,3f]: wire
+	union{
+		void* irel0;
+		u64 ipad0;
+	};
+	union{
+		void* ireln;
+		u64 ipadn;
+	};
+	union{
+		void* orel0;
+		u64 opad0;
+	};
+	union{
+		void* oreln;
+		u64 opadn;
+	};
+
+	//[40,7f]: func
+	union{
+		int (*oncreate)(struct item* node, void* arg, int argc, u8** argv);
+		char padding0[8];
+	};
+	union{
+		int (*ondelete)(struct item* node);
+		char padding1[8];
+	};
+	union{
+		int (*onreader)(struct item* node,void* foot, p64 arg,int cmd, void* buf,int len);
+		char padding2[8];
+	};
+	union{
+		int (*onwriter)(struct item* node,void* foot, p64 arg,int cmd, void* buf,int len);
+		char padding3[8];
+	};
+	union{
+		int (*onattach)(void* self, void* peer);
+		char padding4[8];
+	};
+	union{
+		int (*ondetach)(void* self, void* peer);
+		char padding5[8];
+	};
+	union{
+		int (*take)(struct item* node,void* foot, struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len);
+		char padding6[8];
+	};
+	union{
+		int (*give)(struct item* node,void* foot, struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len);
+		char padding7[8];
+	};
+
+	//[80,ff]: public
+	union{
+		u8 public_data[0x80];
+		struct whdf_xyzw whdf;
+		struct sock_info sockinfo;
+		struct file_info fileinfo;
+	};
+}__attribute__((packed));
+*/
 struct item
 {
 	//[00,1f]: type
 	u64 tier;
+	u64 kind;
 	u64 type;
-	u64 hfmt;
 	u64 vfmt;
 
 	//[20,3f]: wire
@@ -474,161 +456,156 @@ struct item
 		struct mt20list mt20list;
 	};
 }__attribute__((packed));
-struct item_common
-{
-	//[00,1f]: type
-	u64 tier;
-	u64 type;
-	u64 hfmt;
-	u64 vfmt;
-
-	//[20,3f]: wire
-	union{
-		void* irel0;
-		u64 ipad0;
-	};
-	union{
-		void* ireln;
-		u64 ipadn;
-	};
-	union{
-		void* orel0;
-		u64 opad0;
-	};
-	union{
-		void* oreln;
-		u64 opadn;
-	};
-
-	//[40,7f]: func
-	union{
-		int (*oncreate)(struct item* node, void* arg, int argc, u8** argv);
-		char padding0[8];
-	};
-	union{
-		int (*ondelete)(struct item* node);
-		char padding1[8];
-	};
-	union{
-		int (*onreader)(struct item* node,void* foot, p64 arg,int cmd, void* buf,int len);
-		char padding2[8];
-	};
-	union{
-		int (*onwriter)(struct item* node,void* foot, p64 arg,int cmd, void* buf,int len);
-		char padding3[8];
-	};
-	union{
-		int (*onattach)(void* self, void* peer);
-		char padding4[8];
-	};
-	union{
-		int (*ondetach)(void* self, void* peer);
-		char padding5[8];
-	};
-	union{
-		int (*take)(struct item* node,void* foot, struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len);
-		char padding6[8];
-	};
-	union{
-		int (*give)(struct item* node,void* foot, struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len);
-		char padding7[8];
-	};
-
-	//[80,ff]: public
-	union{
-		u8 public_data[0x80];
-		struct whdf_xyzw whdf;
-		struct sock_info sockinfo;
-		struct file_info fileinfo;
-	};
-}__attribute__((packed));
 typedef struct item _obj;
 
 
 
 
-//--------------------------------function--------------------------------
-void* entity_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt);
-void* entity_alloc_prep_create(u64 tier, u64 type, u64 hfmt, u64 vfmt, int argc, u8** argv);
+//--------------------------------function node--------------------------------
+//entity
+void* entity_alloc();
+void* entity_alloc_fromtype(u64 type);
+void* entity_alloc_frompath(u64 type, u8* path);
+void* entity_alloc_fromfd(u64 type, int fd);
+//
 int entity_create(_obj*, void* addr, int argc, u8** argv);
 int entity_delete(_obj*);
 int entity_reader(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
 int entity_writer(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
-int entity_attach(struct halfrel* self, struct halfrel* peer);
-int entity_detach(struct halfrel* self, struct halfrel* peer);
+//
+int entity_attach(_obj* obj,void* foot, struct halfrel* self, struct halfrel* peer);
+int entity_detach(_obj* obj,void* foot, struct halfrel* self, struct halfrel* peer);
 int entity_takeby(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
 int entity_giveby(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
+
+//supply
+void* supply_alloc();
+void* supply_alloc_fromtype(u64 type);
+void* supply_alloc_frompath(u64 type, u8* path);
+void* supply_alloc_fromfd(u64 type, int fd);
 //
-void* supply_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt);
 int supply_create(_obj*, void* addr, int argc, u8** argv);
 int supply_delete(_obj*);
 int supply_reader(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
 int supply_writer(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
-int supply_attach(struct halfrel* self, struct halfrel* peer);
-int supply_detach(struct halfrel* self, struct halfrel* peer);
+//
+int supply_attach(_obj* obj,void* foot, struct halfrel* self, struct halfrel* peer);
+int supply_detach(_obj* obj,void* foot, struct halfrel* self, struct halfrel* peer);
 int supply_takeby(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
 int supply_giveby(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
+
+//artery
+void* artery_alloc();
+void* artery_alloc_fromtype(u64 type);
+void* artery_alloc_frompath(u64 type, u8* path);
+void* artery_alloc_fromfd(u64 type, int fd);
 //
-void* artery_create(u64 type, void* addr, int argc, u8** argv);
+int artery_create(_obj*, void* addr, int argc, u8** argv);
 int artery_delete(_obj*);
 int artery_reader(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
 int artery_writer(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
-int artery_attach(struct halfrel* self, struct halfrel* peer);
-int artery_detach(struct halfrel* self, struct halfrel* peer);
+//
+int artery_attach(_obj* obj,void* foot, struct halfrel* self, struct halfrel* peer);
+int artery_detach(_obj* obj,void* foot, struct halfrel* self, struct halfrel* peer);
 int artery_takeby(_obj* art,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
 int artery_giveby(_obj* art,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
+
+//system
+void* system_alloc();
+void* system_alloc_fromtype(u64 type);
+void* system_alloc_frompath(u64 type, u8* path);
+void* system_alloc_fromfd(u64 type, int fd);
 //
-void* system_create(u64 type, void* addr, int argc, u8** argv);
+int system_create(_obj* type, void* addr, int argc, u8** argv);
 int system_delete(_obj*);
 int system_reader(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
 int system_writer(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
-int system_attach(struct halfrel* self, struct halfrel* peer);
-int system_detach(struct halfrel* self, struct halfrel* peer);
+//
+int system_attach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* peer);
+int system_detach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* peer);
 int system_takeby(_obj* obj,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
 int system_giveby(_obj* obj,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
+
+//driver
+void* driver_alloc();
+void* driver_alloc_fromtype(u64 type);
+void* driver_alloc_frompath(u64 type, u8* path);
+void* driver_alloc_fromfd(u64 type, int fd);
 //
-void* driver_create(u64 type, void* addr, int argc, u8** argv);
+int driver_create(_obj* obj, void* addr, int argc, u8** argv);
 int driver_delete(_obj*);
 int driver_reader(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
 int driver_writer(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
-int driver_attach(struct halfrel* self, struct halfrel* peer);
-int driver_detach(struct halfrel* self, struct halfrel* peer);
-int driver_takeby(struct item* dri,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
-int driver_giveby(struct item* dri,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
 //
-void* device_create(u64 type, void* addr, int argc, u8** argv);
+int driver_attach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* peer);
+int driver_detach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* peer);
+int driver_takeby(_obj* dri,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
+int driver_giveby(_obj* dri,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
+
+//device
+void* device_alloc();
+void* device_alloc_fromtype(u64 type);
+void* device_alloc_frompath(u64 type, u8* path);
+void* device_alloc_fromfd(u64 type, int fd);
+//
+int device_create(_obj* obj, void* addr, int argc, u8** argv);
 int device_delete(_obj*);
 int device_reader(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
 int device_writer(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
-int device_attach(struct halfrel* self, struct halfrel* peer);
-int device_detach(struct halfrel* self, struct halfrel* peer);
-int device_takeby(struct item* dev,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
-int device_giveby(struct item* dev,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
 //
-void* bootup_create(u64 type, void* addr, int argc, u8** argv);
+int device_attach(_obj* obj,void* foot, struct halfrel* self, struct halfrel* peer);
+int device_detach(_obj* obj,void* foot, struct halfrel* self, struct halfrel* peer);
+int device_takeby(_obj* dev,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
+int device_giveby(_obj* dev,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
+
+//bootup
+void* bootup_alloc();
+void* bootup_alloc_fromtype(u64 type);
+void* bootup_alloc_frompath(u64 type, u8* path);
+void* bootup_alloc_fromfd(u64 type, int fd);
+//
+int bootup_create(_obj* ent, void* addr, int argc, u8** argv);
 int bootup_delete(_obj*);
 int bootup_reader(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
 int bootup_writer(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
-int bootup_attach(struct halfrel* self, struct halfrel* peer);
-int bootup_detach(struct halfrel* self, struct halfrel* peer);
+//
+int bootup_attach(_obj* obj,void* foot, struct halfrel* self, struct halfrel* peer);
+int bootup_detach(_obj* obj,void* foot, struct halfrel* self, struct halfrel* peer);
 int bootup_takeby(struct item* wrk,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
 int bootup_giveby(struct item* wrk,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
+
+//origin
+void* origin_alloc();
+void* origin_alloc_fromarg(u64 type, void* func, int argc, u8** argv);
+void* origin_alloc_fromtype(u64 type);
+void* origin_alloc_frompath(u64 type, u8* path);
+void* origin_alloc_fromfd(u64 type, int fd);
 //
-void* origin_create(u64 type, void* addr, int argc, u8** argv);
+int origin_create(_obj* ent, void* addr, int argc, u8** argv);
 int origin_delete(_obj*);
 int origin_reader(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
 int origin_writer(_obj* ent,void* foot, p64 arg,int idx, void* buf,int len);
-int origin_attach(struct halfrel* self, struct halfrel* peer);
-int origin_detach(struct halfrel* self, struct halfrel* peer);
+//
+int origin_attach(_obj* obj,void* foot, struct halfrel* self, struct halfrel* peer);
+int origin_detach(_obj* obj,void* foot, struct halfrel* self, struct halfrel* peer);
 int origin_takeby(struct item* ori,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
 int origin_giveby(struct item* ori,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
+
+
+
+
+//--------------------------------function relation--------------------------------
+void* relation_alloc();
+void* relation_alloc_fromptr(void*,void*,u32,u32,void*,void*,u32,u32);
+//
+void* relationcreate(void*,void*,u32,u32,void*,void*,u32,u32);
+int relationdelete(_rel* rel);
 //
 int relationdetach(struct halfrel* self, struct halfrel* peer);
 int relationattach(struct halfrel* self, struct halfrel* peer);
+//
 int relationsearch(void* item,u32 foot, struct halfrel** self,struct halfrel** peer);
 int relationmodify(void* item,u32 foot, struct halfrel** self,struct halfrel** peer);
-int relationdelete(_rel* rel);
-void* relationcreate(void*,void*,u32,u32,void*,void*,u32,u32);
 //
 int reading_data_from_peer(void* chip,int ftype, p64 arg,int idx, void* buf,int len);
 int writing_data_into_peer(void* chip,int ftype, p64 arg,int idx, void* buf,int len);
@@ -644,6 +621,207 @@ int take_data_from_peer(void* chip,int ftype, _syn* stack,int sp, p64 arg,int id
 int give_data_into_peer(void* chip,int ftype, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
 int take_data_from_them(void* item,int ftype, _syn* stack,int sp, p64 arg,int key, void* buf,int len);
 int give_data_into_them(void* item,int ftype, _syn* stack,int sp, p64 arg,int key, void* buf,int len);
+
+
+
+
+//--------------------------------function audio--------------------------------
+//void playpcm(_obj* ctx, int fmt, void* buf, int len);
+
+
+
+
+//--------------------------------function draw--------------------------------
+void drawline(          _obj* ctx, u32 rgb, int x1, int y1, int x2, int y2);
+void drawline_arrow(    _obj* ctx, u32 rgb, int x1, int y1, int x2, int y2);
+void drawline_bezier(   _obj* ctx, u32 rgb, int ax, int ay, int bx, int by, int cx, int cy);
+void drawline_triangle( _obj* ctx, u32 rgb, int x1, int y1, int x2, int y2, int x3, int y3);
+void drawline_rect(     _obj* ctx, u32 rgb, int x1, int y1, int x2, int y2);
+void drawline_choose(   _obj* ctx, u32 rgb, int x1, int y1, int x2, int y2);
+void drawline_hexagon(  _obj* ctx, u32 rgb, int cx, int cy, int rx, int ry);
+void drawline_circle(   _obj* ctx, u32 rgb, int cx, int cy, int r);
+void drawline_oval(     _obj* ctx, u32 rgb, int cx, int cy, int rx, int ry, int fx, int fy);
+void drawline_sector(   _obj* ctx, u32 rgb, int cx, int cy, int radius, int start, int end);
+
+void drawsolid_triangle(_obj* ctx, u32 rgb, int x1, int y1, int x2, int y2, int x3, int y3);
+void drawsolid_rect(    _obj* ctx, u32 rgb, int x1, int y1, int x2, int y2);
+void drawsolid_circle(  _obj* ctx, u32 rgb, int cx, int cy, int r);
+void drawsolid_oval(    _obj* ctx, u32 rgb, int cx, int cy, int rx, int ry, int fx, int fy);
+void drawsolid_sector(  _obj* ctx, u32 rgb, int cx, int cy, int radius, int start, int end);
+
+void drawicon_1(        _obj* ctx, u32 rgb, int x0, int y0, int x1, int y1);
+void drawopaque_rect(   _obj* ctx, u32 rgb, int x1, int y1, int x2, int y2);
+void drawopaque_circle( _obj* ctx, u32 rgb, int cx, int cy, int r);
+
+void drawascii(         _obj* ctx, u32 rgb, int cx, int cy, u8 data);
+void drawstring(        _obj* ctx, u32 rgb, int cx, int cy, u8* buf, int len);
+void drawfloat(         _obj* ctx, u32 rgb, int cx, int cy, float z);
+void drawdouble(        _obj* ctx, u32 rgb, int cx, int cy, double z);
+void drawhex8(          _obj* ctx, u32 rgb, int cx, int cy, u8 data);
+void drawhex32(         _obj* ctx, u32 rgb, int cx, int cy, u32 data);
+void drawhexdump(       _obj* ctx, u32 rgb, int cx, int cy, u8* buf, int len);
+void drawhexadecimal(   _obj* ctx, u32 rgb, int cx, int cy, u64 data);
+void drawdec8(          _obj* ctx, u32 rgb, int cx, int cy, u8 data);
+void drawdecimal(       _obj* ctx, u32 rgb, int cx, int cy, int data);
+void drawunicode(       _obj* ctx, u32 rgb, int cx, int cy, u32 unicode);
+void drawutf8(          _obj* ctx, u32 rgb, int cx, int cy, u8* buf, int len);
+
+void drawascii_fit(     _obj* ctx, u32 rgb, int x0, int y0, int x1, int y1, u8 data);
+void drawunicode_fit(   _obj* ctx, u32 rgb, int x0, int y0, int x1, int y1, u32 unicode);
+void drawutf8_fit(      _obj* ctx, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
+void drawstring_fit(    _obj* ctx, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
+void drawdec_fit(       _obj* ctx, u32 rgb, int x0, int y0, int x1, int y1, int);
+void drawhex_fit(       _obj* ctx, u32 rgb, int x0, int y0, int x1, int y1, u64);
+
+int drawtext(           _obj* ctx, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
+int drawtext_reverse(   _obj* ctx, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
+int drawvt100(          _obj* ctx, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
+
+
+
+
+//--------------------------------function carve--------------------------------
+//directx
+void dx11data_before(_obj* wnd);
+void dx11data_after(_obj* wnd);
+void dx11data_nocam(_obj* wnd);
+void dx11data_01cam(_obj* wnd);
+int dx11data_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
+
+void dx11solid_rect(_obj* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+/*
+void dx11point(              _obj* ctx, u32 rgb, vec3 vc);
+
+void dx11line(               _obj* ctx, u32 rgb, vec3 va, vec3 vb);
+void dx11line_rect(          _obj* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+
+void dx11solid_triangle(     _obj* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
+void dx11solid_rect(         _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void dx11solid_prism4(       _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void dx11solid_cylinder(     _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+
+void dx11opaque_rect(        _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void dx11opaque_prism4(      _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+
+void dx11ascii(              _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);
+void dx11ascii_center(       _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);
+void dx11unicode(            _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 uni);
+void dx11unicode_center(     _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 uni);
+void dx11utf8(               _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
+void dx11utf8_center(        _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
+
+void dx11string(              _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
+void dx11string_center(       _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
+void dx11decimal(             _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
+void dx11hexadecimal(         _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
+*/
+
+
+
+
+//metal
+void mt20data_before(_obj* wnd);
+void mt20data_after(_obj* wnd);
+int mt20data_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
+
+
+
+
+//opengl
+void gl41data_before(_obj* wnd);
+void gl41data_after(_obj* wnd);
+void gl41data_nocam(_obj* wnd);
+void gl41data_01cam(_obj* wnd);
+int gl41data_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
+
+void gl41point(              _obj* ctx, u32 rgb, vec3 vc);
+void gl41point_bezier(       _obj* ctx, u32 rgb, vec3 va, vec3 vb, vec3 vt);
+void gl41point_triangle(     _obj* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
+void gl41point_rect(         _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void gl41point_circle(       _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void gl41point_cone(         _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
+void gl41point_cask(         _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
+void gl41point_cylinder(     _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
+void gl41point_dodecahedron( _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void gl41point_icosahedron(  _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void gl41point_sphere(       _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+
+void gl41line(               _obj* ctx, u32 rgb, vec3 va, vec3 vb);
+void gl41line_shorter(       _obj* ctx, u32 rgb, vec3 va, vec3 vb);
+void gl41line_arrow(         _obj* ctx, u32 rgb, vec3 va, vec3 vb, vec3 vn);
+void gl41line_bezier(        _obj* ctx, u32 rgb, vec3 va, vec3 vb, vec3 vt);
+void gl41line_spring(        _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
+void gl41line_yshape(        _obj* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
+void gl41line_triangle(      _obj* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
+void gl41line_rect(          _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void gl41line_rectround(     _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void gl41line_rectselect(    _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void gl41line_hexagon(       _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
+void gl41line_circle(        _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void gl41line_gear(          _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, int tooth);
+void gl41line_rotategear(    _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, int tooth, float a);
+void gl41line_cone(          _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
+void gl41line_prism4(        _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void gl41line_cylinder(      _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
+void gl41line_dodecahedron(  _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void gl41line_icosahedron(   _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void gl41line_sphere(        _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+
+void gl41solid_triangle(     _obj* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
+void gl41solid_rect(         _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void gl41solid_circle(       _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void gl41solid_cone(         _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
+void gl41solid_prism4(       _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void gl41solid_cask(         _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void gl41solid_cylinder(     _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void gl41solid_gear(         _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu, int tooth);
+void gl41solid_rotategear(   _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu, int tooth, float a);
+void gl41solid_dodecahedron( _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void gl41solid_icosahedron(  _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void gl41solid_sphere(       _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void gl41solid_propeller(    _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu, int dir, int dt);
+
+void gl41opaque_triangle(    _obj* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
+void gl41opaque_rect(        _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void gl41opaque_circle(      _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void gl41opaque_cone(        _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
+void gl41opaque_prism4(      _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void gl41opaque_cask(        _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void gl41opaque_cylinder(    _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void gl41opaque_dodecahedron(_obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void gl41opaque_icosahedron( _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void gl41opaque_sphere(      _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void gl41opaque_propeller(   _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu, int dir, int dt);
+
+void gl41ascii(              _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);
+void gl41ascii_center(       _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);
+void gl41unicode(            _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 uni);
+void gl41unicode_center(     _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 uni);
+void gl41utf8(               _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
+void gl41utf8_center(        _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
+
+void gl41decimal(             _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
+void gl41hexadecimal(         _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
+void gl41hex8_center(         _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
+void gl41string(              _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
+void gl41string_center(       _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
+void gl41text(                _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
+void gl41text_reverse(        _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
+void gl41float(               _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, float data);
+void gl41double(              _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, double data);
+
+void gl41axis(                _obj* ctx);
+void gl41frustum(             _obj* ctx, struct fstyle* sty);
+void gl41boundingvolume(      _obj* ctx, u32 rgb, struct fstyle* sty, u32 flag);
+
+
+
+
+void mt20data_before(_obj* wnd);
+void mt20data_after(_obj* wnd);
+void mt20data_nocam(_obj* wnd);
+void mt20data_01cam(_obj* wnd);
+//void mt20solid_rect(         _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
 
 
 

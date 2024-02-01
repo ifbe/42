@@ -140,8 +140,7 @@ int window_create(_obj* wnd)
 {
 	if(0 == wnd)return 0;
 
-	wnd->hfmt = _rgba_;
-	wnd->vfmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
+	wnd->vfmt = _bgra8888_;
 
 	wnd->whdf.width = 1024;
 	wnd->whdf.height = 768;

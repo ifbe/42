@@ -136,7 +136,16 @@ static void clock_draw_cli(
 
 
 
-static void clock_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key)
+static void clock_read_bywnd(_obj* ent,void* slot, _obj* wnd,void* area)
+{
+	switch(wnd->vfmt){
+	case _bgra8888_:
+	case _rgba8888_:
+		clock_draw_pixel(ent,slot, wnd,area);
+		break;
+	}
+}
+static void clock_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -144,7 +153,7 @@ static void clock_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,i
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	switch(wnd->hfmt){
+	switch(wnd->vfmt){
 	case _dx11list_:
 	case _mt20list_:
 	case _gl41list_:
@@ -153,17 +162,21 @@ static void clock_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,i
 		break;
 	}
 }
+
+
+
+
 static void clock_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* wnd;struct style* area;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(wnd->hfmt){
-	case _rgba_:
-		clock_draw_pixel(ent,foot, wnd,area);
+	switch(wnd->type){
+	case _wnd_:
+		clock_read_bywnd(ent,foot, wnd,area);
 		break;
 	default:
-		clock_read_bycam(ent,foot, stack,sp, arg,key);
+		clock_read_byworld_bycam_bywnd(ent,foot, stack,sp, arg,key);
 		break;
 	}
 }
@@ -203,8 +216,8 @@ static void clock_create(_obj* act)
 
 void clock_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('c', 'l', 'o', 'c', 'k', 0, 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('c', 'l', 'o', 'c', 'k', 0, 0, 0);
 
 	p->oncreate = (void*)clock_create;
 	p->ondelete = (void*)clock_delete;

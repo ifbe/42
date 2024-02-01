@@ -232,7 +232,7 @@ static void pmos_write_G(_obj* mos,int key, struct halfrel* stack,int sp, u8* bu
 
 
 
-static void pmos_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void pmos_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -261,13 +261,11 @@ static void pmos_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int ke
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		break;
 	default:
-		pmos_wrl_cam_wnd(ent,foot, stack,sp);
+		pmos_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -329,8 +327,8 @@ static void pmos_create(_obj* ent, void* arg, int argc, u8** argv)
 
 void pmos_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex32('p','m','o','s');
+	p->vfmt = _orig_;
+	p->type = hex32('p','m','o','s');
 
 	p->oncreate = (void*)pmos_create;
 	p->ondelete = (void*)pmos_delete;

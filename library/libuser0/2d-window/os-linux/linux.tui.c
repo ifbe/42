@@ -166,8 +166,7 @@ void window_delete(_obj* w)
 }
 void window_create(_obj* w)
 {
-	w->hfmt = _tui_;
-	w->vfmt = 0;
+	w->vfmt = _tui_;
 
 	w->whdf.width = 80;
 	w->whdf.height= 25;

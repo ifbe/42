@@ -227,7 +227,7 @@ GLSL_VERSION
 static int opaque3d_fill(_obj* win, struct mysrc* src)
 {
 	if(0 == src->vs){
-		switch(win->hfmt){
+		switch(win->vfmt){
 		case _gl41list_:
 			src->vs = gl41opaquetrigon_vert;
 			src->fs = gl41opaquetrigon_frag;

@@ -177,7 +177,7 @@ static void snake_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
+	switch(caller->type){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -228,8 +228,9 @@ static void snake_create(_obj* act)
 
 void snake_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('s', 'n', 'a', 'k', 'e', 0, 0, 0);
+	p->kind = _game_;
+	p->type = hex64('s', 'n', 'a', 'k', 'e', 0, 0, 0);
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)snake_create;
 	p->ondelete = (void*)snake_delete;

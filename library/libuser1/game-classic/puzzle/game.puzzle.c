@@ -49,8 +49,9 @@ static void puzzle_create(_obj* act)
 
 void puzzle_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('p', 'u', 'z', 'z', 'l', 'e', 0, 0);
+	p->kind = _game_;
+	p->type = hex64('p', 'u', 'z', 'z', 'l', 'e', 0, 0);
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)puzzle_create;
 	p->ondelete = (void*)puzzle_delete;

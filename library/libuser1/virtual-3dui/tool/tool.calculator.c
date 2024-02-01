@@ -216,7 +216,7 @@ static void calculator_write_bywnd(_obj* ent,struct style* slot, _obj* wnd,struc
 
 
 
-static void calculator_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void calculator_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -226,18 +226,23 @@ static void calculator_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	calculator_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void calculator_wnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
+static void calculator_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
 {
 	struct fstyle fs;
 	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
 	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
 	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
 	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
-	gl41data_before(wnd);
-	calculator_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_after(wnd);
-
-	gl41data_01cam(wnd);
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		gl41data_before(wnd);
+		calculator_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+		gl41data_01cam(wnd);
+		gl41data_after(wnd);
+		break;
+	}
 }
 
 
@@ -255,14 +260,12 @@ static void calculator_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
-		calculator_wnd(ent,slot, caller,area);
+	switch(caller->type){
+	case _wnd_:
+		calculator_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
-		calculator_wrl_cam_wnd(ent,slot, stack,sp);
+		calculator_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -273,10 +276,10 @@ static void calculator_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->hfmt){
-	case _gl41list_:{
-		calculator_write_bywnd(ent,slot, wnd,area, buf);break;
-	}
+	switch(wnd->type){
+	case _wnd_:
+		calculator_write_bywnd(ent,slot, wnd,area, buf);
+		break;
 	}
 }
 static void calculator_detach(struct halfrel* self, struct halfrel* peer)
@@ -317,8 +320,8 @@ static void calculator_create(_obj* act)
 
 void calculator_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex32('c', 'a', 'l', 'c');
+	p->vfmt = _orig_;
+	p->type = hex32('c', 'a', 'l', 'c');
 
 	p->oncreate = (void*)calculator_create;
 	p->ondelete = (void*)calculator_delete;

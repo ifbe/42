@@ -215,8 +215,8 @@ static void bplus_create(_obj* act)
 
 void bplus_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('b', 'p', 'l', 'u', 's', 0, 0, 0);
+	p->type = hex64('b', 'p', 'l', 'u', 's', 0, 0, 0);
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)bplus_create;
 	p->ondelete = (void*)bplus_delete;

@@ -150,7 +150,16 @@ static void chess_draw_cli(
 
 
 
-static void chess_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void chess_take_bywnd(_obj* ent,void* slot, _obj* caller,void* area, _syn* stack,int sp)
+{
+	switch(caller->vfmt){
+	case _rgba_:
+		break;
+	case _gl41list_:
+		break;
+	}
+}
+static void chess_taking_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -175,13 +184,12 @@ static void chess_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
+		chess_take_bywnd(ent,foot, caller,area, stack,sp);
 		break;
 	default:
-		chess_wrl_cam_wnd(ent,foot, stack,sp);
+		chess_taking_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -258,8 +266,9 @@ static void chess_create(_obj* act)
 
 void chess_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('c', 'h', 'e', 's', 's', 0, 0, 0);
+	p->kind = _game_;
+	p->type = hex64('c', 'h', 'e', 's', 's', 0, 0, 0);
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)chess_create;
 	p->ondelete = (void*)chess_delete;

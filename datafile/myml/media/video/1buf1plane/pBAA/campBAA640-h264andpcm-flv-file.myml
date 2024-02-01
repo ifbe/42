@@ -47,7 +47,7 @@ width:640
 height:480
 }
 codec{
-fmt:enc
+fmt:venc
 }
 </supply>
 

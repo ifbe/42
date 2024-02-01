@@ -37,8 +37,8 @@ static void screen_create(_obj* act, void* str)
 
 void screen_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('s', 'c', 'r', 'e', 'e', 'n', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('s', 'c', 'r', 'e', 'e', 'n', 0, 0);
 
 	p->oncreate = (void*)screen_create;
 	p->ondelete = (void*)screen_delete;

@@ -290,6 +290,22 @@ void mnist_draw_gl41(
 		priv->which_to_learn = (priv->which_to_learn+1)%10000;
 	}
 }
+static void mnist_byglwnd(_obj* ent,void* foot, _syn* stack,int sp)
+{
+//wnd.area -> cam.gl41, cam.slot -> world.geom
+	_obj* wnd;struct style* area;
+	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	struct fstyle fs;
+	fs.vc[0] = 0.5;fs.vc[1] = 0.5;fs.vc[2] = 0.0;
+	fs.vr[0] = 0.5;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+	fs.vf[0] = 0.0;fs.vf[1] = 0.5;fs.vf[2] = 0.0;
+	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-0.5;
+	gl41data_before(wnd);
+	mnist_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+	gl41data_01cam(wnd);
+	gl41data_after(wnd);
+}
 void mnist_draw_pixel(_obj* win, struct style* sty)
 {
 }
@@ -325,7 +341,17 @@ static void mnist_write_bywnd(_obj* ent, struct event* ev)
 
 
 
-static void mnist_byworld_bycam_byglwnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void mnist_read_bywnd(_obj* ent,void* foot, _obj* caller,void* area, _syn* stack,int sp)
+{
+	switch(caller->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		mnist_byglwnd(ent,foot, stack,sp);
+		break;
+	}
+}
+static void mnist_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -333,25 +359,6 @@ static void mnist_byworld_bycam_byglwnd(_obj* ent,void* slot, _syn* stack,int sp
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	mnist_draw_gl41(ent,slot, wor,geom, wnd,area);
-}
-static void mnist_byworld_byglwnd(_obj* ent,void* foot, _syn* stack,int sp)
-{
-}
-static void mnist_byglwnd(_obj* ent,void* foot, _syn* stack,int sp)
-{
-//wnd.area -> cam.gl41, cam.slot -> world.geom
-	_obj* wnd;struct style* area;
-	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
-
-	struct fstyle fs;
-	fs.vc[0] = 0.5;fs.vc[1] = 0.5;fs.vc[2] = 0.0;
-	fs.vr[0] = 0.5;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
-	fs.vf[0] = 0.0;fs.vf[1] = 0.5;fs.vf[2] = 0.0;
-	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-0.5;
-	gl41data_before(wnd);
-	mnist_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_01cam(wnd);
-	gl41data_after(wnd);
 }
 
 
@@ -369,22 +376,20 @@ static void mnist_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
-		mnist_byglwnd(ent,foot, stack,sp);
+	switch(caller->type){
+	case _wnd_:
+		mnist_read_bywnd(ent,foot, caller,area, stack,sp);
 		break;
 	default:
-		mnist_byworld_bycam_byglwnd(ent,foot, stack,sp);
+		mnist_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
 static int mnist_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* xxx = stack[sp-2].pchip;
-	switch(xxx->hfmt){
-	case _gl41list_:mnist_write_bywnd(ent,buf);break;
+	switch(xxx->type){
+	case _wnd_:mnist_write_bywnd(ent,buf);break;
 	}
 	return 0;
 }
@@ -411,8 +416,8 @@ static int mnist_attach(struct halfrel* self, struct halfrel* peer)
 
 void mnist_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('m', 'n', 'i', 's', 't', 0, 0, 0);
+	p->type = hex64('m', 'n', 'i', 's', 't', 0, 0, 0);
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)mnist_create;
 	p->ondelete = (void*)mnist_delete;

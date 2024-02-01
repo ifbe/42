@@ -158,5 +158,5 @@ void easywindow_delete(_obj* win)
 }
 void easywindow_create(_obj* win)
 {
-	win->hfmt = _gl41easy_;
+	win->vfmt = _gl41easy_;
 }

@@ -240,7 +240,7 @@ static void gbuffer_draw_cli(
 
 
 
-static void gbuffer_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void gbuffer_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -250,20 +250,22 @@ static void gbuffer_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 	take_data_from_peer(ent,_fbog_, stack,sp, 0,0, 0,0);
 	gbuffer_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void gbuffer_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void gbuffer_read_bywnd(_obj* ent,void* foot, _obj* wnd,void* area, _syn* stack,int sp)
 {
-	_obj* wnd;struct style* area;
-	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
-
 	struct fstyle fs;
-	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
-	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
-	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
-	gl41data_before(wnd);
-	take_data_from_peer(ent,_fbog_, stack,sp, 0,0, 0,0);
-	gbuffer_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_01cam(wnd);
-	gl41data_after(wnd);
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
+		fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+		fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+		gl41data_before(wnd);
+		take_data_from_peer(ent,_fbog_, stack,sp, 0,0, 0,0);
+		gbuffer_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+		gl41data_01cam(wnd);
+		gl41data_after(wnd);
+	}
 }
 
 
@@ -281,14 +283,12 @@ static void gbuffer_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
-		gbuffer_wnd(ent,slot, stack,sp);
+	switch(caller->type){
+	case _wnd_:
+		gbuffer_read_bywnd(ent,slot, caller,area, stack,sp);
 		break;
 	default:
-		gbuffer_wrl_cam_wnd(ent,slot, stack,sp);
+		gbuffer_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -311,8 +311,8 @@ static void gbuffer_attach(struct halfrel* self, struct halfrel* peer)
 
 void gbuffer_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('g','b','u','f','f','e','r', 0);
+	p->vfmt = _orig_;
+	p->type = hex64('g','b','u','f','f','e','r', 0);
 
 	p->oncreate = (void*)gbuffer_create;
 	p->ondelete = (void*)gbuffer_delete;

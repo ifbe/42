@@ -65,7 +65,7 @@ static void weiqi_draw_pixel(
 	}
 
 	//rgb? bgr?
-	if( ((win->hfmt)&0xffffff) == 0x626772)c = 0x256f8d;
+	if( ((win->type)&0xffffff) == 0x626772)c = 0x256f8d;
 	else c = 0x8d6f25;
 
 	drawsolid_rect(win, c, cx-ww, cy-hh, cx+ww, cy+hh);
@@ -372,7 +372,22 @@ void weiqi_intersect(float* out, vec3 ray[], struct fstyle* sty)
 
 
 
-static void weiqi_taking_bycam(_obj* ent,void* slot, _syn* stack,int sp)
+static void weiqi_taking_bywnd(_obj* ent,void* slot, _obj* caller,void* area, _syn* stack,int sp)
+{
+	switch(caller->vfmt){
+	case _cli_:
+		weiqi_draw_cli(ent,slot, caller,area);
+		break;
+	case _tui_:
+	case _tui256_:
+		weiqi_draw_tui(ent,slot, caller,area);
+		break;
+	case _gl41list_:
+		weiqi_draw_gl41_nocam(ent,slot, caller,area);
+		break;
+	}
+}
+static void weiqi_taking_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	if(0 == stack)return;
 	_obj* wor;struct style* geom;
@@ -380,7 +395,7 @@ static void weiqi_taking_bycam(_obj* ent,void* slot, _syn* stack,int sp)
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	switch(wnd->hfmt){
+	switch(wnd->type){
 	case _dx11list_:
 	case _mt20list_:
 	case _gl41list_:
@@ -389,18 +404,21 @@ static void weiqi_taking_bycam(_obj* ent,void* slot, _syn* stack,int sp)
 		break;
 	}
 }
+
+
+
+
 static void weiqi_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _gl41list_:
-		weiqi_draw_gl41_nocam(ent,slot, caller,area);
-		break;
+	switch(caller->type){
+	case _wnd_:
+		weiqi_taking_bywnd(ent,slot, caller,area, stack,sp);
 	default:
-		weiqi_taking_bycam(ent,slot, stack,sp);
+		weiqi_taking_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -471,8 +489,9 @@ static void weiqi_create(_obj* act, void* str)
 
 void weiqi_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('w', 'e', 'i', 'q','i', 0, 0, 0);
+	p->kind = _game_;
+	p->type = hex64('w', 'e', 'i', 'q','i', 0, 0, 0);
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)weiqi_create;
 	p->ondelete = (void*)weiqi_delete;

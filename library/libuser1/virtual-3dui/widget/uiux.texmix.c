@@ -202,7 +202,23 @@ static void texmix_draw_cli(
 
 
 
-static void texmix_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key)
+static void texmix_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
+{
+	struct fstyle fs;
+	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
+	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+
+	switch(wnd->vfmt){
+	case _gl41list_:
+		gl41data_before(wnd);
+		texmix_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+		gl41data_01cam(wnd);
+		gl41data_after(wnd);
+		break;
+	}
+}
+static void texmix_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -212,17 +228,6 @@ static void texmix_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	texmix_draw_gl41(ent,slot, wor,geom, wnd,area);
 //logtoall("@freecam_read_byeye.end\n");
-}
-static void texmix_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
-{
-	struct fstyle fs;
-	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
-	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
-	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
-	gl41data_before(wnd);
-	texmix_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_01cam(wnd);
-	gl41data_after(wnd);
 }
 
 
@@ -234,12 +239,12 @@ static int texmix_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int k
 	struct style* area = stack[sp-2].pfoot;
 	if(0 == stack)return 0;
 
-	switch(wnd->hfmt){
-	case _gl41list_:
+	switch(wnd->type){
+	case _wnd_:
 		texmix_read_bywnd(ent,slot, wnd,area);
 		break;
 	default:
-		texmix_read_bycam(ent,slot, stack,sp, arg,key);
+		texmix_read_byworld_bycam_bywnd(ent,slot, stack,sp, arg,key);
 		break;
 	}
 	return 0;
@@ -259,8 +264,8 @@ static void texmix_attach(struct halfrel* self, struct halfrel* peer)
 
 void texmix_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('t', 'e', 'x', 'm', 'i', 'x', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('t', 'e', 'x', 'm', 'i', 'x', 0, 0);
 
 	p->oncreate = (void*)texmix_create;
 	p->ondelete = (void*)texmix_delete;

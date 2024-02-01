@@ -706,9 +706,6 @@ void window_delete(_obj* w)
 }
 void window_create(_obj* wnd)
 {
-	//wnd->tier
-	//wnd->type
-	wnd->hfmt = _mt20list_;
 	wnd->vfmt = _mt20list_;
 
 	wnd->whdf.width = 1024;

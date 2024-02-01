@@ -97,7 +97,7 @@ GLSL_VERSION
 static int line3d_fill(_obj* win, struct mysrc* src)
 {
 	if(0 == src->vs){
-		switch(win->hfmt){
+		switch(win->vfmt){
 		case _gl41list_:
 			src->vs = gl41solidline_vert;
 			src->fs = gl41solidline_frag;

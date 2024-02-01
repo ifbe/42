@@ -195,7 +195,7 @@ static void dff_draw_cli(
 
 
 
-static void dff_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void dff_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -220,13 +220,11 @@ static void dff_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		break;
 	default:
-		dff_wrl_cam_wnd(ent,foot, stack,sp);
+		dff_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -261,8 +259,8 @@ static void dff_create(_obj* act, u8* buf)
 
 void dff_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex32('d','f','f', 0);
+	p->vfmt = _orig_;
+	p->type = hex32('d','f','f', 0);
 
 	p->oncreate = (void*)dff_create;
 	p->ondelete = (void*)dff_delete;

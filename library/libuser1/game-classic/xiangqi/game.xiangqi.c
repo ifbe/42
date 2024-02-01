@@ -227,7 +227,7 @@ void xiangqi_draw_pixel(
 	}
 
 	black = 0;
-	if(0x626772 == (win->hfmt&0xffffff))
+	if(0x626772 == (win->vfmt&0xffffff))
 	{
 		temp = 0x256f8d;
 		red = 0xff;
@@ -631,7 +631,22 @@ static void xiangqi_draw_cli(
 
 
 
-static void xiangqi_taking_bycam(_obj* ent,void* foot, _syn* stack,int sp)
+static void xiangqi_taking_bywnd(_obj* ent,void* slot, _obj* caller,void* area, _syn* stack,int sp)
+{
+	switch(caller->vfmt){
+	case _cli_:
+		xiangqi_draw_cli(ent,slot, caller,area);
+		break;
+	case _tui_:
+	case _tui256_:
+		xiangqi_draw_tui(ent,slot, caller,area);
+		break;
+	case _gl41list_:
+		xiangqi_draw_gl41_nocam(ent,slot, caller,area);
+		break;
+	}
+}
+static void xiangqi_taking_byworld_bycam_bywnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
 	if(0 == stack)return;
 	_obj* wor;struct style* geom;
@@ -639,7 +654,7 @@ static void xiangqi_taking_bycam(_obj* ent,void* foot, _syn* stack,int sp)
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	switch(wnd->hfmt){
+	switch(wnd->vfmt){
 	case _dx11list_:
 	case _mt20list_:
 	case _gl41list_:
@@ -648,24 +663,22 @@ static void xiangqi_taking_bycam(_obj* ent,void* foot, _syn* stack,int sp)
 		break;
 	}
 }
+
+
+
+
 static void xiangqi_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _cli_:
-		xiangqi_draw_cli(ent,slot, caller,area);
-		break;
-	case _tui_:
-		xiangqi_draw_tui(ent,slot, caller,area);
-		break;
-	case _gl41list_:
-		xiangqi_draw_gl41_nocam(ent,slot, caller,area);
+	switch(caller->type){
+	case _wnd_:
+		xiangqi_taking_bywnd(ent, slot, caller, area, stack, sp);
 		break;
 	default:
-		xiangqi_taking_bycam(ent,slot, stack,sp);
+		xiangqi_taking_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -733,8 +746,9 @@ logtoall("@xiangqi_create:%llx\n",str);
 
 void xiangqi_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('x', 'i', 'a', 'n', 'g', 'q', 'i', 0);
+	p->kind = _game_;
+	p->type = hex64('x', 'i', 'a', 'n', 'g', 'q', 'i', 0);
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)xiangqi_create;
 	p->ondelete = (void*)xiangqi_delete;

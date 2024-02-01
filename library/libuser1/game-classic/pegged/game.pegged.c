@@ -162,7 +162,7 @@ static void pegged_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int 
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
+	switch(caller->type){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -219,8 +219,9 @@ static void pegged_create(_obj* act)
 
 void pegged_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('p', 'e', 'g', 'g', 'e', 'd', 0, 0);
+	p->kind = _game_;
+	p->type = hex64('p', 'e', 'g', 'g', 'e', 'd', 0, 0);
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)pegged_create;
 	p->ondelete = (void*)pegged_delete;

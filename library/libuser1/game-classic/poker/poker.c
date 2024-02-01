@@ -120,8 +120,9 @@ static void poker_create(_obj* act)
 
 void poker_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('p', 'o', 'k', 'e', 'r', 0, 0, 0);
+	p->kind = _game_;
+	p->type = hex64('p', 'o', 'k', 'e', 'r', 0, 0, 0);
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)poker_create;
 	p->ondelete = (void*)poker_delete;

@@ -551,23 +551,6 @@ void corner_gl41_tearpaper(
 	gl41solid_triangle(win, 0x000000, v0,va,vb);
 	gl41solid_triangle(win, 0xff0000, v1,va,vb);
 }
-void corner_wnd(
-	_obj* ent, struct style* slot,
-	_obj* wnd, struct style* area,
-	_syn* stack,int sp)
-{
-	gl41data_before(wnd);
-	gl41data_whcam(wnd, area);
-
-	corner_gl41_leftbot(ent,slot, wnd,area, stack,sp);
-	corner_gl41_rightbot(ent,slot, wnd,area, stack,sp);
-	corner_gl41_lefttop(ent,slot, wnd,area, stack,sp);
-	corner_gl41_righttop(ent,slot, wnd,area, stack,sp);
-
-	corner_gl41_tearpaper(ent,slot, wnd,area, stack,sp);
-
-	gl41data_after(wnd);
-}
 
 
 
@@ -686,8 +669,8 @@ static int corner_event_twig(
 		if(0 == rel)break;
 		if(_sup_ == rel->dstnodetype){
 			ar = (void*)(rel->dstchip);
-			//if(_ui3d_ == ar->hfmt)goto found;
-			//if(_ui2d_ == ar->hfmt)goto found;
+			//if(_ui3d_ == ar->type)goto found;
+			//if(_ui2d_ == ar->type)goto found;
 		}
 		rel = samesrcnextdst(rel);
 	}
@@ -788,6 +771,34 @@ static int corner_event_root(
 	}
 	return 0;
 }*/
+
+
+
+
+void corner_read_bywnd(
+	_obj* ent, struct style* slot,
+	_obj* wnd, struct style* area,
+	_syn* stack,int sp)
+{
+	switch(wnd->vfmt){
+	case _rgba_:
+		corner_draw_pixel(ent,slot, wnd,area);
+		break;
+	case _gl41list_:
+		gl41data_before(wnd);
+		gl41data_whcam(wnd, area);
+
+		corner_gl41_leftbot(ent,slot, wnd,area, stack,sp);
+		corner_gl41_rightbot(ent,slot, wnd,area, stack,sp);
+		corner_gl41_lefttop(ent,slot, wnd,area, stack,sp);
+		corner_gl41_righttop(ent,slot, wnd,area, stack,sp);
+
+		corner_gl41_tearpaper(ent,slot, wnd,area, stack,sp);
+
+		gl41data_after(wnd);
+		break;
+	}
+}
 static int corner_event(
 	_obj* ent, struct style* slot,
 	_obj* wnd, struct style* area,
@@ -862,12 +873,9 @@ static int corner_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int k
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		corner_draw_pixel(ent,slot, caller,area);
-		break;
-	case _gl41list_:
-		corner_wnd(ent,slot, caller,area, stack,sp);
+	switch(caller->type){
+	case _wnd_:
+		corner_read_bywnd(ent,slot, caller,area, stack,sp);
 		break;
 	}
 	return 0;
@@ -922,8 +930,8 @@ static int corner_create(_obj* act, u8* str)
 
 void corner_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('c', 'o', 'r', 'n', 'e', 'r', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('c', 'o', 'r', 'n', 'e', 'r', 0, 0);
 
 	p->oncreate = (void*)corner_create;
 	p->ondelete = (void*)corner_delete;

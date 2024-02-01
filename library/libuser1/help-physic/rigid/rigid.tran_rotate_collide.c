@@ -261,7 +261,7 @@ int rigidsimu_foreach(_obj* ent)
 	if(0 == rel)return 0;
 
 	world = rel->pdstchip;
-	if((_virtual_ != world->hfmt)&&(_scene3d_ != world->hfmt))return 0;
+	if((_virtual_ != world->type)&&(_scene3d_ != world->type))return 0;
 
 	now = timeread_us();
 	//logtoall("%llx\n", now);

@@ -318,7 +318,7 @@ void drone_write_euler(_obj* act, float* f)
 
 
 
-static void drone_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void drone_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -344,13 +344,11 @@ static void drone_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		break;
 	default:
-		drone_wrl_cam_wnd(ent,foot, stack,sp);
+		drone_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -399,8 +397,8 @@ static void drone_create(_obj* act)
 
 void drone_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('d', 'r', 'o', 'n', 'e', 0, 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('d', 'r', 'o', 'n', 'e', 0, 0, 0);
 
 	p->oncreate = (void*)drone_create;
 	p->ondelete = (void*)drone_delete;

@@ -249,10 +249,14 @@ static void fslist_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct sty
 	fs.vf[1] = (area->fs.vq[1]-area->fs.vc[1]) * wnd->whdf.fbheight/ 2.0;
 	fs.vt[2] = 1.0;
 
-	gl41data_before(wnd);
-	gl41data_whcam(wnd, area);
-	fslist_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_after(wnd);
+	switch(wnd->vfmt){
+	case _gl41list_:
+		gl41data_before(wnd);
+		gl41data_whcam(wnd, area);
+		fslist_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+		gl41data_after(wnd);
+		break;
+	}
 }
 
 
@@ -263,8 +267,8 @@ static void fslist_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int 
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->hfmt){
-	case _gl41list_:
+	switch(wnd->type){
+	case _wnd_:
 		fslist_read_bywnd(ent,slot, wnd,area);
 		break;
 	}
@@ -278,8 +282,8 @@ static void fslist_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int 
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->hfmt){
-	case _gl41list_:
+	switch(wnd->type){
+	case _wnd_:
 		if(0 == key)fslist_write_bywnd(ent,slot, wnd,area, buf);
 		break;
 	}
@@ -334,8 +338,8 @@ static void fslist_create(_obj* act, void* arg, int argc, u8** argv)
 
 void fslist_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('f','s','l','i','s','t', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('f','s','l','i','s','t', 0, 0);
 
 	p->oncreate = (void*)fslist_create;
 	p->ondelete = (void*)fslist_delete;

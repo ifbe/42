@@ -68,16 +68,31 @@ static void graphene_draw_cli(
 
 
 
-static void graphene_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
+static void graphene_read_byworld_bycam_bywnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
 	struct style* slot;
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
-	if(stack&&('v' == key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		graphene_draw_gl41(ent,slot, wor,geom, wnd,area);
+	slot = stack[sp-1].pfoot;
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	graphene_draw_gl41(ent,slot, wor,geom, wnd,area);
+}
+
+
+
+
+static void graphene_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
+{
+	_obj* caller = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+
+	switch(caller->type){
+	case _wnd_:
+		break;
+	default:
+		graphene_read_byworld_bycam_bywnd(ent,foot, stack,sp);
+		break;
 	}
 }
 static void graphene_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
@@ -95,8 +110,8 @@ static void graphene_attach(struct halfrel* self, struct halfrel* peer)
 
 void graphene_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('g','r','a','p','h','e','n','e');
+	p->vfmt = _orig_;
+	p->type = hex64('g','r','a','p','h','e','n','e');
 
 	p->oncreate = (void*)graphene_create;
 	p->ondelete = (void*)graphene_delete;

@@ -25,7 +25,7 @@ void drawentity(_obj* win, int val, int x0, int y0, int xn, int yn)
 			{
 				case 0:buf = &win->tier;break;
 				case 1:buf = &win->type;break;
-				case 2:buf = &win->hfmt; break;
+				case 2:buf = &win->type; break;
 				//case 3:buf = &win->vfmt;break;
 			}
 			drawstring_fit(win, 0xffffff, xa, ya, xb, yb, buf, 8);
@@ -59,7 +59,7 @@ void carveentity(_obj* win, int val, vec3 vc, vec3 vr, vec3 vf)
 			{
 				case 0:buf = &win->tier;break;
 				case 1:buf = &win->type;break;
-				case 2:buf = &win->hfmt; break;
+				case 2:buf = &win->type; break;
 				//case 3:buf = &win->vfmt;break;
 			}
 
@@ -87,7 +87,7 @@ void detail_draw_gl41_node(_obj* ctx, _obj* one, vec3 vc, vec3 vr, vec3 vf)
 		tf[j] = vf[j]*2;
 	}
 	gl41line_circle(ctx, 0x404040, vc,tr,tf);
-	gl41string_center(ctx, 0xff0000, vc,vr,vf, (void*)&one->hfmt, 8);
+	gl41string_center(ctx, 0xff0000, vc,vr,vf, (void*)&one->type, 8);
 }
 void detail_draw_gl41_foot(_obj* ctx, void* aaa, void* bbb, vec3 src, vec3 dst, vec3 vr, vec3 vf, vec3 vt)
 {
@@ -187,7 +187,25 @@ int detail_draw_pixel(
 
 
 
-static void detail_take_bycam(_obj* ent,void* slot, _syn* stack,int sp)
+static void detail_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
+{
+	switch(wnd->vfmt){
+	case _tui_:
+		break;
+	case _rgba_:
+		break;
+	case _htmlroot_:
+		break;
+	case _gl41list_:
+		break;
+	case _dx11list_:
+	case _mt20list_:
+	case _vk12list_:
+		logtoall("caller@%p\n", wnd);
+		break;
+	}
+}
+static void detail_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -207,22 +225,12 @@ static void detail_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int 
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 	if(0 == stack)return;
 
-	switch(caller->hfmt){
-	case _tui_:
-		break;
-	case _rgba_:
-		break;
-	case _htmlroot_:
-		break;
-	case _gl41list_:
-		break;
-	case _dx11list_:
-	case _mt20list_:
-	case _vk12list_:
-		logtoall("caller@%p\n", caller);
+	switch(caller->type){
+	case _wnd_:
+		detail_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
-		detail_take_bycam(ent,slot, stack,sp);
+		detail_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -260,8 +268,8 @@ void detail_create(_obj* act, void* str)
 
 void detail_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('d', 'e', 't', 'a', 'i', 'l', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('d', 'e', 't', 'a', 'i', 'l', 0, 0);
 
 	p->oncreate = (void*)detail_create;
 	p->ondelete = (void*)detail_delete;

@@ -548,18 +548,18 @@ static void stl3d_world_camera_window(_obj* ent,void* slot, _syn* stack,int sp, 
 	wrd = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 
-	if(_rgba_ == wnd->hfmt){
+	if(_rgba_ == wnd->type){
 		if(0==key)stl3d_rgba_raster(ent,slot, scn,geom, wrd,camg, wnd,area, (void*)arg);
 		else stl3d_rgba_raytrace(ent,slot, scn,geom, wrd,camg, wnd,area, (void*)arg);
 		return;
 	}
-	if(_tui_ == wnd->hfmt){
+	if(_tui_ == wnd->type){
 		//stl3d_tui_test(ent,slot, wnd,area);
 		stl3d_tui_raytrace(ent,slot, scn,geom, wrd,camg, wnd,area, (void*)arg);
 		return;
 	}
 
-	switch(wnd->hfmt){
+	switch(wnd->type){
 	case _dx11list_:stl3d_dx11draw(ent,slot, scn,geom, wrd,camg, wnd,area);break;
 	case _gl41list_:stl3d_gl41draw(ent,slot, scn,geom, wrd,camg, wnd,area);break;
 	}
@@ -576,7 +576,7 @@ static void stl3d_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int k
 	}
 
 	//caller defined behavior
-	switch(caller->hfmt){
+	switch(caller->type){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -689,8 +689,8 @@ static void stl3d_create(_obj* act, void* str, int argc, u8** argv)
 
 void stl3d_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('s','t','l','3','d', 0, 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('s','t','l','3','d', 0, 0, 0);
 
 	p->oncreate = (void*)stl3d_create;
 	p->ondelete = (void*)stl3d_delete;

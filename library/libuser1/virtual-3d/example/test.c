@@ -142,8 +142,18 @@ void test_tickpcm(_obj* ent,void* slot, _obj* sup,void* geom)
 
 
 
-
-static void test_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void test_read_bywnd(_obj* ent,void* slot, _obj* wnd,void* area)
+{
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41easy_:
+		test_tickgl(ent,slot, wnd,area);
+	case _gl41list_:
+		break;
+	}
+}
+static void test_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -167,17 +177,15 @@ void test_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
+	switch(caller->type){
 	case _pcm_:
 		test_tickpcm(ent,slot, caller,area);
-	case _rgba_:
 		break;
-	case _gl41easy_:
-		test_tickgl(ent,slot, caller,area);
-	case _gl41list_:
+	case _wnd_:
+		test_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
-		test_wrl_cam_wnd(ent,slot, stack,sp);
+		test_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }

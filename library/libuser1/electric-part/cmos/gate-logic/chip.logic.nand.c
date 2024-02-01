@@ -170,7 +170,7 @@ static void nand_draw_cli(
 
 
 
-static void nand_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void nand_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -195,13 +195,11 @@ static void nand_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int ke
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		break;
 	default:
-		nand_wrl_cam_wnd(ent,foot, stack,sp);
+		nand_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -265,8 +263,8 @@ static void nand_create(_obj* act, u8* buf)
 
 void nand_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex32('n','a','n','d');
+	p->vfmt = _orig_;
+	p->type = hex32('n','a','n','d');
 
 	p->oncreate = (void*)nand_create;
 	p->ondelete = (void*)nand_delete;

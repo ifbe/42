@@ -731,7 +731,7 @@ int socket_give(_obj* oo,int xx, _syn* stack,int sp, p64 arg,int cmd, void* buf,
 
 
 
-
+/*
 int socket_search(_obj* oo,int xx)
 {
 	return 0;
@@ -750,4 +750,4 @@ int socket_modify(_obj* oo,int xx, p64 arg,int cmd, u8* addr,int port)
 		logtoall("reuse this for listen\n");
 	}
 	return 0;
-}
+}*/

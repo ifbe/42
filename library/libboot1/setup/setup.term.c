@@ -12,17 +12,19 @@ void term_delete(struct item* wrk, u8* arg)
 int term_create(struct item* wrk, u8* arg, int argc, u8** argv)
 {
 	//server
-	void* sss = system_create(0, argv[1], 0, 0);
+	void* sss = system_alloc_frompath(0, argv[1]);
 	if(0 == sss)return 0;
+	system_create(sss, 0, 0, 0);
 
 	//client
-	void* ccc = supply_alloc_prep(0, _std_, 0, 0);
-	supply_create(ccc, 0, 0, 0);
+	void* ccc = supply_alloc_fromtype(_std_);
 	if(0 == ccc)return 0;
+	supply_create(ccc, 0, 0, 0);
 
 	//composer
-	void* xxx = artery_create(_vt100_, 0, 0, 0);
+	void* xxx = artery_alloc_fromtype(_vt100_);
 	if(0 == xxx)return 0;
+	artery_create(xxx, 0, 0, 0);
 
 	//composer and input
 	struct relation* crel = relationcreate(xxx,0, _art_,_dst_, ccc,0, _sup_,_dst_);

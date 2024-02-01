@@ -37,8 +37,8 @@ static void speaker_create(_obj* act, void* str)
 
 void speaker_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('s', 'p', 'e', 'a', 'k', 'e', 'r', 0);
+	p->vfmt = _orig_;
+	p->type = hex64('s', 'p', 'e', 'a', 'k', 'e', 'r', 0);
 
 	p->oncreate = (void*)speaker_create;
 	p->ondelete = (void*)speaker_delete;

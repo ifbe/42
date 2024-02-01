@@ -469,13 +469,13 @@
 ./virtual-3dui/tool/tool.wireshark.c
 ./virtual-3dui/tool/uiux.oscillo.c
 ./virtual-3dui/tool/uiux.spectrum.c
-./virtual-3dui/tool/uiux.texmix.c
 ./virtual-3dui/tool/uiux.video.c
 ./virtual-3dui/tool/uiux.voxel.c
 ./virtual-3dui/widget/uiux.button.c
 ./virtual-3dui/widget/uiux.picture.c
 ./virtual-3dui/widget/uiux.qrcode.c
 ./virtual-3dui/widget/uiux.slider.c
+./virtual-3dui/widget/uiux.texmix.c
 ./virtual-root/thing.c
 ./virtual-root/virtual.c
 ./virtual-root/world.c

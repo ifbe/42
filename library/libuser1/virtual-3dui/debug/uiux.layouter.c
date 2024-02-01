@@ -11,7 +11,7 @@ int joystick2style(_obj* win, struct fstyle* sty, int aaa, short* tmp)
 	float c,s;
 	float tx,ty,tz;
 	int x0,y0,sign = -1;
-	//if(_vbo_ == win->hfmt)sign = 1;
+	//if(_vbo_ == win->type)sign = 1;
 
 	x0 = tmp[0];
 	if(x0 < -8192)x0 = -1;
@@ -251,7 +251,7 @@ int joystick2style(_obj* win, struct fstyle* sty, int aaa, short* tmp)
 int keyboard2style(_obj* win, struct fstyle* sty, short* tmp)
 {
 	int sign = -1;
-	//if(_vbo_ == win->hfmt)sign = 1;
+	//if(_vbo_ == win->type)sign = 1;
 	if(0x4b == tmp[0])
 	{
 		//left
@@ -298,7 +298,7 @@ int entityinput_editor_target(_obj* win, struct event* ev)
 	int id = ((ev->why)>>48)&0xffff;
 
 	int sign = -1;
-	//if(_vbo_ == win->hfmt)sign = 1;
+	//if(_vbo_ == win->type)sign = 1;
 
 	orel = win->oreln;
 	if(0 == orel)return 1;
@@ -597,7 +597,7 @@ static int picker_draw(
 		if(_sup_ == rel->dstnodetype)
 		{
 			www = (void*)(rel->dstchip);
-			//if(_fg3d_ == www->hfmt)goto found;
+			//if(_fg3d_ == www->type)goto found;
 		}
 
 		rel = samesrcnextdst(rel);
@@ -642,7 +642,7 @@ static int picker_event(
 		if(_sup_ == rel->dstnodetype)
 		{
 			www = (void*)(rel->dstchip);
-			//if(_fg3d_ == www->hfmt)goto found;
+			//if(_fg3d_ == www->type)goto found;
 		}
 
 		rel = samesrcnextdst(rel);
@@ -708,8 +708,8 @@ static void picker_create(_obj* act, void* addr)
 
 void picker_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('p', 'i', 'c', 'k', 'e', 'r', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('p', 'i', 'c', 'k', 'e', 'r', 0, 0);
 
 	p->oncreate = (void*)picker_create;
 	p->ondelete = (void*)picker_delete;

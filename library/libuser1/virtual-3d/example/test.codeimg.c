@@ -290,7 +290,16 @@ static void codeimg_event(
 
 
 
-static void codeimg_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void codeimg_read_bywnd(_obj* ent,void* slot, _obj* wnd,void* area)
+{
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		break;
+	}
+}
+static void codeimg_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -315,13 +324,12 @@ static void codeimg_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
+		codeimg_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
-		codeimg_wrl_cam_wnd(ent,slot, stack,sp);
+		codeimg_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -404,8 +412,8 @@ static void codeimg_create(_obj* act)
 
 void codeimg_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('c', 'o', 'd', 'e', 'i', 'm', 'g', 0);
+	p->vfmt = _orig_;
+	p->type = hex64('c', 'o', 'd', 'e', 'i', 'm', 'g', 0);
 
 	p->oncreate = (void*)codeimg_create;
 	p->ondelete = (void*)codeimg_delete;

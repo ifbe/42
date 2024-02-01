@@ -381,7 +381,16 @@ static void portal_mesh_prepare(struct gl41data* data)
 
 
 
-static void portal_wrl_cam_wnd(_obj* ent,void* foot, _syn* stack,int sp)
+static void portal_read_bywnd(_obj* ent,void* foot, _obj* wnd,void* area)
+{
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		break;
+	}
+}
+static void portal_read_byworld_bycam_bywnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
 	if(0 == stack)return;
 	//logtoall("@portal_read:%p,%p\n", ent,foot);
@@ -405,14 +414,21 @@ static void portal_wrl_cam_wnd(_obj* ent,void* foot, _syn* stack,int sp)
 
 	//
 	portal_frustum(&geom->frus, camg->frus.vc, selfshap, peershap);
-	if(_gl41list_ == wnd->hfmt)world2clip_projznzp_transpose(selfptr->wvp, &geom->frus);
-	else world2clip_projz0z1_transpose(selfptr->wvp, &geom->frus);
+	switch(wnd->vfmt){
+	case _gl41list_:
+		world2clip_projznzp_transpose(selfptr->wvp, &geom->frus);
 
-	//create or update fbo
-	portal_fbo_update(ent,foot, wor,geom, dup,camg, (void*)wnd,area);
+		//create or update fbo
+		portal_fbo_update(ent,foot, wor,geom, dup,camg, (void*)wnd,area);
 
-	//geom
-	portal_mesh_update(ent,foot, wor,geom, wnd,area);
+		//geom
+		portal_mesh_update(ent,foot, wor,geom, wnd,area);
+		break;
+	default:
+		world2clip_projz0z1_transpose(selfptr->wvp, &geom->frus);
+		break;
+	}
+
 }
 
 
@@ -430,13 +446,12 @@ static void portal_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int 
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
+		portal_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
-		portal_wrl_cam_wnd(ent,slot, stack,sp);
+		portal_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -509,8 +524,8 @@ static void portal_create(_obj* act, void* str)
 
 void portal_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('p', 'o', 'r', 't', 'a', 'l', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('p', 'o', 'r', 't', 'a', 'l', 0, 0);
 
 	p->oncreate = (void*)portal_create;
 	p->ondelete = (void*)portal_delete;

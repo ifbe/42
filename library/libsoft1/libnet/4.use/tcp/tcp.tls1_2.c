@@ -1165,8 +1165,9 @@ int tls1v2master_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int 
 	_obj* child = obj->sockinfo.child;
 	if(0 == child)return 0;
 
-	_obj* ele = artery_create(_Tls1_2_, 0, 0, 0);
+	_obj* ele = artery_alloc_fromtype(_Tls1_2_);
 	if(0 == ele)return 0;
+	artery_create(ele, 0, 0, 0);
 
 	relationcreate(ele, 0, _art_, _src_, child, 0, _sys_, _dst_);
 	stack[sp-2].pchip = child;

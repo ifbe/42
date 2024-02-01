@@ -444,8 +444,9 @@ int wsmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 	if(0 == Tcp)return 0;
 
 	//server
-	_obj* Ws = artery_create(_Ws_, 0, 0, 0);
+	_obj* Ws = artery_alloc_fromtype(_Ws_);
 	if(0 == Ws)return 0;
+	artery_create(Ws, 0, 0, 0);
 
 	//socket -> server
 	relationcreate(Ws, 0, _art_, _src_, Tcp, 0, _sys_, _dst_);
@@ -455,17 +456,19 @@ int wsmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 	wsserver_write(Ws,0, stack,sp, 0,0, buf,len);
 
 	//server -> ???
-	switch(art->hfmt){
+	switch(art->vfmt){
 	case _echo_:{
-		_obj* echo = artery_create(_echo_, 0, 0, 0);
+		_obj* echo = artery_alloc_fromtype(_echo_);
 		if(0 == echo)break;
+		artery_create(echo, 0, 0, 0);
 		relationcreate(Ws, 0, _art_, _dst_, echo, 0, _art_, _src_);
 		//relationstart(&rel->srcchip, &rel->dstchip);
 		break;
 	}//echo
 	case _ptmx_:{
-		_obj* ptmx = system_create(_ptmx_, "/dev/ptmx", 0, 0);
+		_obj* ptmx = system_alloc_frompath(_ptmx_, (u8*)"/dev/ptmx");
 		if(0 == ptmx)break;
+		system_create(ptmx, "/dev/ptmx", 0, 0);
 		relationcreate(Ws, 0, _art_, _dst_, ptmx, 0, _sys_, _dst_);
 		//relationstart(&rel->srcchip, &rel->dstchip);
 		break;
@@ -492,15 +495,15 @@ int wsmaster_create(_obj* ele, u8* url)
 {
 	if(0 == url)goto none;
 	if(0 == ncmp(url, "echo", 4)){
-		ele->hfmt = _echo_;
+		ele->vfmt = _echo_;
 		return 0;
 	}
 	if(0 == ncmp(url, "ptmx", 4)){
-		ele->hfmt = _ptmx_;
+		ele->vfmt = _ptmx_;
 		return 0;
 	}
 
 none:
-	ele->hfmt = 0;
+	ele->vfmt = 0;
 	return 0;
 }

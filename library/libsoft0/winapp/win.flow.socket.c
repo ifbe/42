@@ -798,7 +798,7 @@ int socket_detach()
 
 
 
-
+/*
 int socket_search(_obj* oo)
 {
 	return 0;
@@ -806,4 +806,4 @@ int socket_search(_obj* oo)
 int socket_modify(_obj* oo)
 {
 	return 0;
-}
+}*/

@@ -301,7 +301,16 @@ static void spotlight_mesh_prepare(struct mysrc* src)
 
 
 
-static void spotlight_wrl_cam_wnd(_obj* ent,void* foot, _syn* stack,int sp)
+static void spotlight_read_bywnd(_obj* ent,void* foot, _obj* wnd,void* area)
+{
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		break;
+	}
+}
+static void spotlight_read_byworld_bycam_bywnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
 	if(0 == stack)return;
 
@@ -314,12 +323,19 @@ static void spotlight_wrl_cam_wnd(_obj* ent,void* foot, _syn* stack,int sp)
 
 	struct sunbuf* sun = ent->OWNBUF;
 	spotlight_frustum(&geom->frus, &geom->fs);
-	if(_gl41list_ == wnd->hfmt)world2clip_projznzp_transpose(sun->wvp, &geom->frus);
-	else world2clip_projz0z1_transpose(sun->wvp, &geom->frus);
 
-	spotlight_cam_update(ent,foot, wor,geom, wnd,area);
-	spotlight_lit_update(ent,foot, wor,geom, wnd,area);
-	spotlight_mesh_update(ent,foot, wor,geom, wnd,area);
+	switch(wnd->vfmt){
+	case _gl41list_:
+		world2clip_projznzp_transpose(sun->wvp, &geom->frus);
+
+		spotlight_cam_update(ent,foot, wor,geom, wnd,area);
+		spotlight_lit_update(ent,foot, wor,geom, wnd,area);
+		spotlight_mesh_update(ent,foot, wor,geom, wnd,area);
+		break;
+	default:
+		world2clip_projz0z1_transpose(sun->wvp, &geom->frus);
+		break;
+	}
 }
 
 
@@ -337,13 +353,12 @@ static void spotlight_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,i
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
+		spotlight_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
-		spotlight_wrl_cam_wnd(ent,slot, stack,sp);
+		spotlight_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -409,8 +424,8 @@ static void spotlight_create(_obj* act, void* str)
 
 void spotlight_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('s','p','o','t','l', 'i', 't', 0);
+	p->vfmt = _orig_;
+	p->type = hex64('s','p','o','t','l', 'i', 't', 0);
 
 	p->oncreate = (void*)spotlight_create;
 	p->ondelete = (void*)spotlight_delete;

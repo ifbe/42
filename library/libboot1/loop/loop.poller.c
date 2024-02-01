@@ -52,7 +52,7 @@ int supplyevent(struct halfrel* stack, struct event* e)
 	win = (void*)(ev.where);
 	if(0 == win)return 0;
 
-	switch(win->hfmt)
+	switch(win->type)
 	{
 		case _gl41none_:
 		case _gl41easy_:
@@ -75,14 +75,12 @@ int supplyread_all(struct halfrel* stack)
 		win = &supply[j];
 		if(0 == win->type)continue;
 
-		if(_wnd_ == win->type){
+		switch(win->type){
+		case _wnd_:
 			stack[1].pchip = win;
 			supply_takeby(win,0, stack,2, 0,0, 0,0);
+			break;
 		}
-/*		if(_spk_ == win->type){
-			stack[1].pchip = win;
-			supply_takeby(win,0, stack,2, 0,0, 0,0);
-		}*/
 	}
 	return 0;
 }

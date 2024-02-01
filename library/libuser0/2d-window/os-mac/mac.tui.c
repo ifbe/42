@@ -55,15 +55,22 @@ void* uievent(void* p)
 
 
 
-static void attr(u8 bg, u8 fg)
+static void attr(_obj* wnd, u8 bg, u8 fg)
 {
-	//01  23  456  789
-	char str[16] = {0x1b,0x5b,  '0',';',  '4','0',';',  '3','7','m',  0};
-	if(fg >= 8)str[2] = '1';
-	str[5] = '0' + (bg&7);
-	str[8] = '0' + (fg&7);
-	write(1, str, 10);
-	//printf("%s",str);
+	if(_tui256_ == wnd->vfmt){
+		char str[32] = {};
+		int ret = snprintf(str, 32, "\033[48;5;%dm\033[38;5;%dm", bg, fg);
+		write(1, str, ret);
+	}
+	else{
+		//01  23  456  789
+		char str[16] = {0x1b,0x5b,  '0',';',  '4','0',';',  '3','7','m',  0};
+		if(fg >= 8)str[2] = '1';
+		str[5] = '0' + (bg&7);
+		str[8] = '0' + (fg&7);
+		write(1, str, 10);
+		//printf("%s",str);
+	}
 }
 void windowdraw(_obj* wnd)
 {
@@ -87,7 +94,7 @@ void windowdraw(_obj* wnd)
 				{
 					bg = p[7];
 					fg = p[6];
-					attr(bg, fg);
+					attr(wnd, bg, fg);
 				}
 
 				//这是汉字
@@ -105,7 +112,7 @@ void windowdraw(_obj* wnd)
 				{
 					bg = p[3];
 					fg = p[2];
-					attr(bg, fg);
+					attr(wnd, bg, fg);
 				}
 
 				//这是ascii
@@ -118,6 +125,7 @@ void windowdraw(_obj* wnd)
 		}
 	}
 	write(1, "\033[0m", 4);
+	//fflush(stdout);
 }
 
 
@@ -161,8 +169,8 @@ void window_delete(_obj* w)
 }
 void window_create(_obj* w)
 {
-	w->hfmt = _tui_;;
-	w->vfmt = 0;
+	w->type = _wnd_;
+	w->vfmt = _tui256_;
 
 	w->whdf.width = 80;
 	w->whdf.height = 25;

@@ -77,7 +77,7 @@ static void ch4_draw_cli(
 
 
 
-static void ch4_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void ch4_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -102,13 +102,11 @@ static void ch4_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		break;
 	default:
-		ch4_wrl_cam_wnd(ent,foot, stack,sp);
+		ch4_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -127,8 +125,8 @@ static void ch4_attach(struct halfrel* self, struct halfrel* peer)
 
 void ch4_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex32('c','h','4', 0);
+	p->vfmt = _orig_;
+	p->type = hex32('c','h','4', 0);
 
 	p->oncreate = (void*)ch4_create;
 	p->ondelete = (void*)ch4_delete;

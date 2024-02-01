@@ -106,8 +106,8 @@ static int pointer_create(_obj* act, u8* str)
 
 void pointer_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('p', 'o', 'i', 'n', 't', 'e', 'r', 0);
+	p->vfmt = _orig_;
+	p->type = hex64('p', 'o', 'i', 'n', 't', 'e', 'r', 0);
 
 	p->oncreate = (void*)pointer_create;
 	p->ondelete = (void*)pointer_delete;

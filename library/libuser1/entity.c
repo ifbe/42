@@ -268,7 +268,7 @@ static int stylen = 0;
 
 
 #define maxsz (0x100000/sizeof(_obj))
-void entity_init(u8* addr)
+void entity_init(u8* addr, int size)
 {
 	logtoall("[e,f):entity initing\n");
 
@@ -306,6 +306,16 @@ void entity_exit()
 }
 
 
+void* entity_findfmt(u64 fmt){
+	_obj* tmp = 0x100000 + (void*)entity;
+	int j;
+	for(j=1;j<256;j++){
+		tmp = &tmp[-1];		//prev
+		if(fmt == tmp->type)return tmp;
+	}
+	return 0;
+}
+
 
 
 void* style_alloc()
@@ -338,41 +348,22 @@ void* entity_alloc()
 	max = 0x100000 / sizeof(_obj);
 	for(j=0;j<max;j++){
 		act = &entity[j];
-		if(0 == act->hfmt)return act;
+		if(0 == act->type)return act;
 	}
 	return 0;
 }
-
-
-
-
-void* entity_findfmt(u64 fmt){
-	_obj* tmp = 0x100000 + (void*)entity;
-	int j;
-	for(j=1;j<256;j++){
-		tmp = &tmp[-1];		//prev
-		if(fmt == tmp->hfmt)return tmp;
-	}
-	return 0;
-}
-
-
-
-
-/*
-prep: fill in data structure
-1.mem allocated from here or malloc, then call prep
-2.app define _obj xxx in stack without malloc, then call prep
-*/
-void* entity_prepfromclone(_obj* ent, _obj* tmp)
+void* entity_alloc_fromclone(_obj* tmp)
 {
+	_obj* ent = entity_alloc();
+	if(0 == ent)return 0;
+
 	int j;
 	u8* dst = (void*)ent;
 	for(j=0;j<sizeof(_obj);j++)dst[j] = 0;
 
 	ent->tier = tmp->tier;
+	ent->kind = tmp->kind;
 	ent->type = tmp->type;
-	ent->hfmt = tmp->hfmt;
 	ent->vfmt = tmp->vfmt;
 
 	ent->oncreate = tmp->oncreate;
@@ -386,131 +377,24 @@ void* entity_prepfromclone(_obj* ent, _obj* tmp)
 	ent->ongiving = tmp->ongiving;
 	return ent;
 }
-void* entity_prepfromfile(u64 fmt)
+void* entity_alloc_fromtype(u64 type)
 {
-	return 0;
-}
-void* entity_prep(_obj* act, int len, u64 tier, u64 type, u64 hfmt, u64 vfmt)
-{
-	if(len < sizeof(_obj))return 0;
-
 	_obj* tmp = entity_findfmt(type);
 	if(tmp){
-		entity_prepfromclone(act, tmp);
-		return act;
+		return entity_alloc_fromclone(tmp);
 	}
 
-	switch(type){
-	case _virtual_:
-		act->hfmt = act->type = _virtual_;
-		return act;
-	case _axis3d_:
-		act->hfmt = act->type = _axis3d_;
-		return act;
-	case _guide3d_:
-		act->hfmt = act->type = _guide3d_;
-		return act;
-	case _border3d_:
-		act->hfmt = act->type = _border3d_;
-		return act;
-	case _scene3d_:
-		act->hfmt = act->type = _scene3d_;
-		return act;
+	_obj* obj = entity_alloc();
+	if(0 == obj)return 0;
 
-	case _wndmgr_:
-		act->hfmt = act->type = _wndmgr_;
-		return act;
-	case _border2d_:
-		act->hfmt = act->type = _border2d_;
-		return act;
-	case _htmlroot_:
-		act->hfmt = act->type = _htmlroot_;
-		return act;
-	case _xamlroot_:
-		act->hfmt = act->type = _xamlroot_;
-		return act;
-
-	case _mmio_:
-		act->hfmt = act->type = _mmio_;
-		return act;
-	case _port_:
-		act->hfmt = act->type = _port_;
-		return act;
-
-	case _sch_:
-		act->hfmt = act->type = _sch_;
-		return act;
-	case _pcb_:
-		act->hfmt = act->type = _pcb_;
-		return act;
-	case _analog_:
-		act->hfmt = act->type = _analog_;
-		return act;
-	case _digital_:
-		act->hfmt = act->type = _digital_;
-		return act;
-
- 	case _baby_:
-		act->hfmt = act->type = _baby_;
-		return act;
-	case _test_:
-		act->hfmt = act->type = _test_;
-		return act;
-
-	case _cam1rd_:
-		act->hfmt = act->type = _cam1rd_;
-		return act;
-	case _cam3rd_:
-		act->hfmt = act->type = _cam3rd_;
-		return act;
-	case _camrts_:
-		act->hfmt = act->type = _camrts_;
-		return act;
-
-	case _touchobj_:
-		act->hfmt = act->type = _touchobj_;
-		return act;
-	case _clickray_:
-		act->hfmt = act->type = _clickray_;
-		return act;
-
-	case _virtimu_:
-		act->hfmt = act->type = _virtimu_;
-		return act;
-
-	case _follow_:
-		act->hfmt = act->type = _follow_;
-		return act;
-	case _lookat_:
-		act->hfmt = act->type = _lookat_;
-		return act;
-	case _wander_:
-		act->hfmt = act->type = _wander_;
-		return act;
-
-	case _carcon_:
-		act->hfmt = act->type = _carcon_;
-		return act;
-	case _flycon_:
-		act->hfmt = act->type = _flycon_;
-		return act;
-	case _balancer_:
-		act->hfmt = act->type = _balancer_;
-		return act;
-
-	case _force_:
-		act->hfmt = act->type = _force_;
-		return act;
-	case _graveasy_:
-		act->hfmt = act->type = _graveasy_;
-		return act;
-	case _gravtest_:
-		act->hfmt = act->type = _gravtest_;
-		return act;
-	case _rigidall_:
-		act->hfmt = act->type = _rigidall_;
-		return act;
-	}
+	//obj->tier = tier;		//should be tier: bootup
+	//obj->kind = kind;		//should be class: usb
+	obj->type = type;		//should be type: xhci
+	//obj->vfmt = vfmt;		//should be model: intelxhci
+	return obj;
+}
+void* entity_alloc_fromfile(u64 fmt)
+{
 	return 0;
 }
 
@@ -682,7 +566,7 @@ int entity_writer(_obj* act,void* foot, p64 arg,int key, void* buf,int len)
 
 
 
-int entity_attach(struct halfrel* self, struct halfrel* peer)
+int entity_attach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* peer)
 {
 	if(0 == self)return 0;
 
@@ -747,7 +631,7 @@ int entity_attach(struct halfrel* self, struct halfrel* peer)
 
 	return 0;
 }
-int entity_detach(struct halfrel* self, struct halfrel* peer)
+int entity_detach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* peer)
 {
 	if(0 == self)return 0;
 
@@ -934,48 +818,14 @@ int entity_giveby(_obj* act,void* foot, _syn* stack,int sp, p64 arg,int key, voi
 
 
 
-//helper function
-void* entity_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt)
-{
-	//logtoall("%s:%.8s\n", __func__, &type);
-	_obj* obj = entity_alloc();
-	if(0 == obj)return 0;
-
-	//if(entity_findfmt())entity_prepfromclone(obj, );
-	return entity_prep(obj, sizeof(_obj), tier, type, hfmt, vfmt);
-}
-int entity_unprep_dealloc(_obj* obj)
-{
-	return 0;
-}
-void* entity_alloc_prep_create(u64 tier, u64 type, u64 hfmt, u64 vfmt, int argc, u8** argv)
-{
-	_obj* obj = entity_alloc_prep(tier, type, hfmt, vfmt);
-	if(0 == obj)return 0;
-
-	int ret = entity_create(obj, 0, argc, argv);
-
-	return obj;
-}
-int entity_delete_unprep_dealloc(_obj* obj)
-{
-	return 0;
-}
-void* entity_alloc_prep_create_attach()
-{
-	return 0;
-}
-int entity_detach_delete_unprep_dealloc()
-{
-	return 0;
-}
-
-
-
-
 //cmdline function
 int entitycommand_insert(u8* name, u8* arg)
 {
+	u64 type;
+	str2type64(name, (u8*)&type);
+
+	_obj* obj = entity_alloc_fromtype(type);
+	entity_create(obj, arg, 0, 0);
 	return 0;
 }
 int entitycommand_remove(u8* name)
@@ -989,16 +839,16 @@ int entitycommand_search(u8* name)
 	if(0 == name){
 		for(j=0;j<maxsz;j++){
 			act = &entity[j];
-			if((0 == act->type)&&(0 == act->hfmt))continue;
+			if(0 == act->type)continue;
 			logtoall("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
-				&act->tier, &act->type, &act->hfmt, &act->hfmt);
+				&act->tier, &act->kind, &act->type, &act->vfmt);
 		}
 		if(0 == j)logtoall("empty entity\n");
 	}
 	else{
 		for(j=0;j<0x100;j++){
-			if(0 == entity[j].hfmt)break;
-			if(0 == cmp(&entity[j].hfmt, name))logtoall("name=%d,node=%p\n", name, &entity[j]);
+			if(0 == entity[j].type)break;
+			if(0 == cmp(&entity[j].type, name))logtoall("name=%d,node=%p\n", name, &entity[j]);
 			break;
 		}
 	}

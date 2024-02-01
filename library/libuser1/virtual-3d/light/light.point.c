@@ -84,7 +84,16 @@ static void pointlight_draw_gl41(
 
 
 
-static void pointlight_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void pointlight_read_bywnd(_obj* ent,void* foot, _obj* wnd,void* area)
+{
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		break;
+	}
+}
+static void pointlight_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	if(0 == ent->ONOFF)return;
 
@@ -93,9 +102,11 @@ static void pointlight_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	if(_gl41list_ == wnd->hfmt){
+	switch(wnd->vfmt){
+	case _gl41list_:
 		pointlight_light(ent,slot, wor,geom, wnd,area);
 		pointlight_draw_gl41(ent,slot, wor,geom, wnd,area);
+		break;
 	}
 }
 
@@ -114,13 +125,12 @@ static void pointlight_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
+		pointlight_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
-		pointlight_wrl_cam_wnd(ent,slot, stack,sp);
+		pointlight_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -172,8 +182,8 @@ static void pointlight_create(_obj* act, void* str)
 
 void pointlight_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('p','o','i','n','t','l', 'i', 't');
+	p->vfmt = _orig_;
+	p->type = hex64('p','o','i','n','t','l', 'i', 't');
 
 	p->oncreate = (void*)pointlight_create;
 	p->ondelete = (void*)pointlight_delete;

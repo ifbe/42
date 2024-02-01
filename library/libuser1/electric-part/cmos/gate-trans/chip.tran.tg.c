@@ -59,7 +59,7 @@ static void tg_draw_cli(
 
 
 
-static void tg_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void tg_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -84,13 +84,11 @@ static void tg_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key,
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		break;
 	default:
-		tg_wrl_cam_wnd(ent,foot, stack,sp);
+		tg_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -125,8 +123,8 @@ static void tg_create(_obj* act, u8* buf)
 
 void tg_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex32('t','g', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex32('t','g', 0, 0);
 
 	p->oncreate = (void*)tg_create;
 	p->ondelete = (void*)tg_delete;

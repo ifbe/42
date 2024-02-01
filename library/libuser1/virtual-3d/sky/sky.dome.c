@@ -67,7 +67,7 @@ static void skydome_draw_pixel(
 		dst = (win->buf) + (cy-hh+y)*stride*4 + (cx-ww)*4;
 		src = (act->buf) + 4*y*(act->whdf.width);
 		//logtoall("y=%d,%llx,%llx\n",y,dst,src);
-		if('b' == ((win->hfmt)&0xff))
+		if('b' == ((win->type)&0xff))
 		{
 			for(x=0;x<xmax;x++)dst[x] = src[x];
 		}
@@ -125,7 +125,7 @@ static void skydome_draw_cli(
 
 
 
-static void skydome_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void skydome_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -133,11 +133,18 @@ static void skydome_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 }
-static void skydome_wrl_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void skydome_read_byworld_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 }
-static void skydome_wnd(_obj* ent,void* slot, _obj* wnd,void* area)
+static void skydome_read_bywnd(_obj* ent,void* slot, _obj* wnd,void* area)
 {
+	switch(wnd->vfmt){
+	case _bgra8888_:
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		break;
+	}
 }
 
 
@@ -155,14 +162,12 @@ static void skydome_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
-		skydome_wnd(ent,slot, caller,area);
+	switch(caller->type){
+	case _wnd_:
+		skydome_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
-		skydome_wrl_cam_wnd(ent,slot, stack,sp);
+		skydome_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -237,8 +242,8 @@ static void skydome_create(_obj* act)
 
 void skydome_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('s', 'k', 'y', 'd', 'o', 'm', 'e', 0);
+	p->vfmt = _orig_;
+	p->type = hex64('s', 'k', 'y', 'd', 'o', 'm', 'e', 0);
 
 	p->oncreate = (void*)skydome_create;
 	p->ondelete = (void*)skydome_delete;

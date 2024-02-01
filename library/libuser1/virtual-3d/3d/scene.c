@@ -47,14 +47,6 @@ int scene3d_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, vo
 	switch(stack[sp-1].foottype){
 	}
 
-	//caller defined behavior
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
-		break;
-	}
-
 	scene3d_world_camera_window(ent,foot, stack,sp, arg,key, buf,len);
 	return 0;
 }

@@ -28,7 +28,7 @@ width:1920
 height:1080
 }
 codec{
-fmt:enc
+fmt:venc
 width:1920
 height:1088
 }

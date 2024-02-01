@@ -124,11 +124,8 @@ void* wndmgr_find_close(_obj* wnd, int x, int y)
 
 
 
-int wndmgr_rgba_take(_obj* mgr,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
+int wndmgr_rgba_take(_obj* mgr,void* foot, _obj* wnd,void* area, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	_obj* wnd = mgr;
-	if(_rgba_ != mgr->hfmt)wnd = stack[sp-2].pchip;
-	if(_rgba_ != wnd->hfmt)return 0;
 	//pixel_clearcolor(wnd);
 
 	int mx = mgr->whdf.ix0;
@@ -181,7 +178,7 @@ int wndmgr_rgba_take(_obj* mgr,void* foot, _syn* stack,int sp, p64 arg,int key, 
 
 			//title.name
 			_obj* ent = rel->pdstchip;
-			drawstring_fit((void*)wnd, 0xffffff, tx0,ty0, txn,tyn, (void*)&ent->hfmt, 8);
+			drawstring_fit((void*)wnd, 0xffffff, tx0,ty0, txn,tyn, (void*)&ent->type, 8);
 		}
 next:
 		rel = samesrcnextdst(rel);
@@ -214,8 +211,8 @@ int wndmgr_rgba_give(_obj* mgr,void* foot, _syn* stack,int sp, p64 arg,int key, 
 	//printmemory(buf,16);
 
 	_obj* wnd = mgr;
-	if(_rgba_ != mgr->hfmt)wnd = stack[sp-2].pchip;
-	if(_rgba_ != wnd->hfmt)return 0;
+	if(_wnd_ != mgr->type)wnd = stack[sp-2].pchip;
+	if(_wnd_ != wnd->type)return 0;
 
 	struct event* ev = buf;
 	struct permgr* pw = (void*)mgr->priv_256b;
@@ -299,7 +296,6 @@ int wndmgr_rgba_give(_obj* mgr,void* foot, _syn* stack,int sp, p64 arg,int key, 
 	return 0;
 }
 
-
 int wndmgr_gl41cmdq_take(_obj* mgr,void* foot, _obj* wnd,void* sty)
 {
 	logtoall("wndmgr_gl41cmdq_take\n");
@@ -307,12 +303,26 @@ int wndmgr_gl41cmdq_take(_obj* mgr,void* foot, _obj* wnd,void* sty)
 	return 0;
 }
 
+static void wndmgr_take_bywnd(_obj* mgr,void* foot, _obj* wnd,void* area, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
+{
+	switch(mgr->vfmt){
+	case _bgra8888_:
+	case _rgba8888_:
+		wndmgr_rgba_take(mgr,foot, wnd,area, stack,sp, arg,key, buf,len);
+		break;
+	case _gl41list_:
+		break;
+	case _gl41cmdq_:
+		wndmgr_gl41cmdq_take(mgr,foot, wnd,area);
+		break;
+	}
+}
 
 int wndmgr_take(_obj* mgr,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	//manager called by window
 	_obj* caller;struct style* area;
-	if(_rgba_ == mgr->hfmt){	//wnd=mgr
+	if(_wnd_ == mgr->type){	//wnd=mgr
 		caller = mgr;
 		area = foot;
 	}
@@ -324,14 +334,9 @@ int wndmgr_take(_obj* mgr,void* foot, _syn* stack,int sp, p64 arg,int key, void*
 	//t0
 	u64 t0 = timeread_us();
 
-	switch(caller->hfmt){
-	case _rgba_:
-		wndmgr_rgba_take(mgr,foot, stack,sp, arg,key, buf,len);
-		break;
-	case _gl41list_:
-		break;
-	case _gl41cmdq_:
-		wndmgr_gl41cmdq_take(mgr,foot, caller,area);
+	switch(caller->type){
+	case _wnd_:
+		wndmgr_take_bywnd(mgr,foot, caller,area, stack,sp, arg,key, buf,len);
 		break;
 	}
 

@@ -32,8 +32,7 @@ void window_delete(_obj* wnd)
 }
 void window_create(_obj* wnd)
 {
-	wnd->hfmt = _cli_;
-	wnd->vfmt = 0;
+	wnd->vfmt = _cli_;
 
 	wnd->whdf.width = 80;
 	wnd->whdf.height = 25;

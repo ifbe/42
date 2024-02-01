@@ -51,7 +51,7 @@ static void planet_draw_pixel(
 	for(j=0;j<9;j++)
 	{
 		c = data[j].color;
-		if('r' == (win->hfmt&0xff))c = ((c>>16)&0xff) + (c&0xff00) + ((c&0xff)<<16);
+		if('r' == (win->type&0xff))c = ((c>>16)&0xff) + (c&0xff00) + ((c&0xff)<<16);
 
 		l = ww*data[j].distance/data[8].distance;
 		r = ww*data[j].diameter/data[8].distance;
@@ -138,7 +138,7 @@ static void planet_draw_cli(
 
 
 
-static void planet_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void planet_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -163,13 +163,11 @@ static void planet_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int 
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		break;
 	default:
-		planet_wrl_cam_wnd(ent,foot, stack,sp);
+		planet_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -206,8 +204,8 @@ static void planet_create(_obj* act)
 
 void planet_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('p', 'l', 'a', 'n', 'e', 't', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('p', 'l', 'a', 'n', 'e', 't', 0, 0);
 
 	p->oncreate = (void*)planet_create;
 	p->ondelete = (void*)planet_delete;

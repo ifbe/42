@@ -179,8 +179,7 @@ void window_create(_obj* sup, void* arg)
 
 
 	//
-	sup->hfmt = _rgba_;
-	sup->vfmt = hex64('b','g','r','a','8','8','8','8');
+	sup->vfmt = _bgra8888_;
 
 	sup->whdf.width  = xmax;
 	sup->whdf.height = ymax;

@@ -70,8 +70,7 @@ void window_delete(_obj* w)
 }
 void window_create(_obj* wnd)
 {
-	wnd->fmt = _rgba_;
-	wnd->vfmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
+	wnd->vfmt = _bgra8888_;
 
 	wnd->width = 1024;
 	wnd->height = 768;

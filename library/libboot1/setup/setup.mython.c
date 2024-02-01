@@ -55,18 +55,19 @@ u64 u64fromstr(u8* buf)
 }
 void term_window(int argc, u8** argv)
 {
-	_obj* wnd = supply_alloc_prep(0, _wnd_, 0, 0);
+	_obj* wnd = supply_alloc_fromtype(_wnd_);
 	supply_create(wnd, 0, 0, 0);
 	if(0 == wnd)return;
 	if(argc <=1)return;
 
 	u64 type = u64fromstr(argv[1]);
 
-	struct entity* ent = entity_alloc_prep_create(_ent_, type, 0, 0, 0, 0);
+	_obj* ent = entity_alloc_fromtype(type);
 	if(0 == ent)return;
+	entity_create(ent, 0, 0, 0);
 
 	struct style* toterm = style_alloc();
-	if(_gl41list_ == wnd->hfmt){
+	if(_gl41list_ == wnd->vfmt){
 		toterm->fshape.vc[0] = 0.0;
 		toterm->fshape.vc[1] = 0.0;
 		toterm->fshape.vq[0] = 1.0;
@@ -242,7 +243,7 @@ int mython_create(struct item* wrk, void* arg, int argc, u8** argv)
 		mython_fromfile(argv[j], 0);
 	}
 
-	void* std = supply_alloc_prep(0, _std_, 0, 0);
+	void* std = supply_alloc_fromtype(_std_);
 	supply_create(std, 0, 0, 0);
 	waiter(wrk);
 	return 0;

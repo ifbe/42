@@ -124,7 +124,16 @@ static void calib3d_data(
 
 
 
-static void calib3d_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void calib3d_read_bywnd(_obj* ent,void* slot, _obj* wnd,void* area)
+{
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		break;
+	}
+}
+static void calib3d_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -149,13 +158,12 @@ static void calib3d_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
+		calib3d_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
-		calib3d_wrl_cam_wnd(ent,slot, stack,sp);
+		calib3d_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -273,8 +281,8 @@ static void calib3d_create(_obj* act, void* str)
 
 void calib3d_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('c', 'a', 'l', 'i', 'b', '3', 'd', 0);
+	p->vfmt = _orig_;
+	p->type = hex64('c', 'a', 'l', 'i', 'b', '3', 'd', 0);
 
 	p->oncreate = (void*)calib3d_create;
 	p->ondelete = (void*)calib3d_delete;

@@ -7,8 +7,20 @@ uniform sampler2D tex3;	//heat,velocity
 uniform sampler2D tex4;	//depth
 void main(){
 	vec3 tmp;
-	if(uvw.y < 0.25){
-		if(uvw.x < 0.75){	//albedo
+	if(uvw.y < 0.25){	//albedo
+		if(uvw.x < 0.25){
+			vec3 c = vec3(texture(tex0, uvw).r,0.0,0.0);
+			FragColor = vec4(c, 1.0);
+		}
+		else if(uvw.x < 0.5){
+			vec3 c = vec3(0.0,texture(tex0, uvw).g,0.0);
+			FragColor = vec4(c, 1.0);
+		}
+		else if(uvw.x < 0.75){
+			vec3 c = vec3(0.0,0.0,texture(tex0, uvw).b);
+			FragColor = vec4(c, 1.0);
+		}
+		else{
 			vec3 c = texture(tex0, uvw).rgb;
 			FragColor = vec4(c, 1.0);
 		}
@@ -17,7 +29,7 @@ void main(){
 		tmp = texture(tex1, uvw).rgb;
 		FragColor = vec4(tmp, 1.0);
 	}
-	else if(uvw.y < 0.75){
+	else if(uvw.y < 0.75){	//material
 		if(uvw.x < 0.25){	//metal
 			float c = texture(tex2, uvw).r;
 			FragColor = vec4(vec3(c), 1.0);

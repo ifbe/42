@@ -55,17 +55,38 @@ void button_draw_gl41(
 	}
 	gl41string_center(ctx, 0xff0000, tc, tr ,tf, priv->str, 0);
 }
-static void button_read_byworld_bycam_bywnd(_obj* ent,void* foot, _syn* stack,int sp)
-{
-	struct style* slot;
-	_obj* wor;struct style* geom;
-	_obj* wnd;struct style* area;
-	if(0 == stack)return;
 
-	slot = stack[sp-1].pfoot;
-	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	button_draw_gl41(ent,slot, wor,geom, wnd,area);
+
+
+
+static void button_read_bywnd(_obj* ent,void* foot, _obj* wnd,void* area, _syn* stack,int sp)
+{
+	struct fstyle fs;
+	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.5;
+	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-0.5;
+
+	switch(wnd->vfmt){
+	case _rgba8888_:
+	case _bgra8888_:
+		button_draw_pixel(ent,foot, (void*)wnd,area);
+		break;
+	case _dx11list_:
+		dx11data_before(wnd);
+		dx11data_nocam(wnd);
+		button_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+		dx11data_after(wnd);
+		break;
+	case _gl41list_:
+		gl41data_before(wnd);
+		gl41data_nocam(wnd);
+		button_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+		gl41data_after(wnd);
+		break;
+	//case _mt20list_:
+	//case _vk12list_:
+	}
 }
 static void button_read_byworld_bywnd(_obj* ent,struct style* slot, _syn* stack,int sp)
 {
@@ -89,23 +110,17 @@ static void button_read_byworld_bywnd(_obj* ent,struct style* slot, _syn* stack,
 	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 0.5;
 	button_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
 }
-static void button_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
+static void button_read_byworld_bycam_bywnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
-	struct fstyle fs;
-	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.5;
-	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
-	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
-	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-0.5;
+	struct style* slot;
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
+	if(0 == stack)return;
 
-	if(_dx11list_ == wnd->hfmt){
-		dx11data_nocam(wnd);
-	}
-	else{
-		gl41data_before(wnd);
-		button_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-		gl41data_nocam(wnd);
-		gl41data_after(wnd);
-	}
+	slot = stack[sp-1].pfoot;
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	button_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
 
 
@@ -116,15 +131,9 @@ static void button_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int 
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->hfmt){
-	case _rgba_:
-		button_draw_pixel(ent,foot, (void*)wnd,area);
-		break;
-	case _dx11list_:
-	case _mt20list_:
-	case _gl41list_:
-	case _vk12list_:
-		button_read_bywnd(ent,foot, (void*)wnd,area);
+	switch(wnd->type){
+	case _wnd_:
+		button_read_bywnd(ent,foot, wnd,area, stack,sp);
 		break;
 	case _virtual_:
 		button_read_byworld_bywnd(ent,foot, stack,sp);
@@ -177,8 +186,8 @@ static void button_create(_obj* act, u8* arg, int argc, u8** argv)
 
 void button_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('b', 'u', 't', 't', 'o', 'n', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('b', 'u', 't', 't', 'o', 'n', 0, 0);
 
 	p->oncreate = (void*)button_create;
 	p->ondelete = (void*)button_delete;

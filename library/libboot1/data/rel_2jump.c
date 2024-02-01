@@ -158,14 +158,14 @@ void* samesrcnextdst(void* p)
 int relation_d(struct halfrel* self, struct halfrel* peer)
 {
 	switch(self->nodetype){
-		case _ori_:return origin_detach(self, peer);
-		case _wrk_:return bootup_detach(self, peer);
-		case _dev_:return device_detach(self, peer);
-		case _dri_:return driver_detach(self, peer);
-		case _sys_:return system_detach(self, peer);
-		case _art_:return artery_detach(self, peer);
-		case _sup_:return supply_detach(self, peer);
-		case _ent_:return entity_detach(self, peer);
+		case _ori_:return origin_detach(self->pchip, self, self, peer);
+		case _wrk_:return bootup_detach(self->pchip, self, self, peer);
+		case _dev_:return device_detach(self->pchip, self, self, peer);
+		case _dri_:return driver_detach(self->pchip, self, self, peer);
+		case _sys_:return system_detach(self->pchip, self, self, peer);
+		case _art_:return artery_detach(self->pchip, self, self, peer);
+		case _sup_:return supply_detach(self->pchip, self, self, peer);
+		case _ent_:return entity_detach(self->pchip, self, self, peer);
 	}
 	return 0;
 }
@@ -182,14 +182,14 @@ int relationdetach(struct halfrel* self, struct halfrel* peer)
 int relation_a(struct halfrel* self, struct halfrel* peer)
 {
 	switch(self->nodetype){
-		case _ori_:return origin_attach(self, peer);
-		case _wrk_:return bootup_attach(self, peer);
-		case _dev_:return device_attach(self, peer);
-		case _dri_:return driver_attach(self, peer);
-		case _sys_:return system_attach(self, peer);
-		case _art_:return artery_attach(self, peer);
-		case _sup_:return supply_attach(self, peer);
-		case _ent_:return entity_attach(self, peer);
+		case _ori_:return origin_attach(self->pchip, self, self, peer);
+		case _wrk_:return bootup_attach(self->pchip, self, self, peer);
+		case _dev_:return device_attach(self->pchip, self, self, peer);
+		case _dri_:return driver_attach(self->pchip, self, self, peer);
+		case _sys_:return system_attach(self->pchip, self, self, peer);
+		case _art_:return artery_attach(self->pchip, self, self, peer);
+		case _sup_:return supply_attach(self->pchip, self, self, peer);
+		case _ent_:return entity_attach(self->pchip, self, self, peer);
 	}
 	return 0;
 }

@@ -1,0 +1,38 @@
+<entity>
+spectrum{
+fmt:spectrum
+}
+</entity>
+
+
+<supply>
+usbmic{
+fmt:mic
+}
+window:wnd{
+}
+</supply>
+
+
+<artery>
+fftpcm{
+fmt:fftpcm
+}
+</artery>
+
+
+<style>
+freerect{
+c:256,256,0
+r:256,0,0
+f:0,256,0
+}
+</style>
+
+
+<relation>
+(usbmic, 0, dst) -> (fftpcm, 0, src)
+(fftpcm, 0, dst) -> (spectrum, 0, pcm)
+
+(window, freerect, 0) -> (spectrum, 0, 0)
+</relation>

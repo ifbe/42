@@ -506,7 +506,24 @@ static void sketchpad_event(
 
 
 
-static void sketchpad_take_bycam(_obj* ent,void* slot, _syn* stack,int sp)
+static void sketchpad_read_bywnd(_obj* ent,void* slot, _obj* wnd,void* area)
+{
+	switch(wnd->vfmt){
+	case _tui_:
+		break;
+	case _rgba_:
+		break;
+	case _htmlroot_:
+		break;
+	case _gl41list_:
+		break;
+	case _dx11list_:
+	case _mt20list_:
+	case _vk12list_:
+		break;
+	}
+}
+static void sketchpad_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -526,22 +543,12 @@ static void sketchpad_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,i
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 	if(0 == stack)return;
 
-	switch(caller->hfmt){
-	case _tui_:
-		break;
-	case _rgba_:
-		break;
-	case _htmlroot_:
-		break;
-	case _gl41list_:
-		break;
-	case _dx11list_:
-	case _mt20list_:
-	case _vk12list_:
-		logtoall("caller@%p\n", caller);
+	switch(caller->type){
+	case _wnd_:
+		sketchpad_read_bywnd(ent,slot,caller,area);
 		break;
 	default:
-		sketchpad_take_bycam(ent,slot, stack,sp);
+		sketchpad_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -605,8 +612,8 @@ static void sketchpad_create(_obj* act, void* str, int argc, u8** argv)
 
 void sketchpad_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('s', 'k', 'e', 't', 'c', 'h', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('s', 'k', 'e', 't', 'c', 'h', 0, 0);
 
 	p->oncreate = (void*)sketchpad_create;
 	p->ondelete = (void*)sketchpad_delete;

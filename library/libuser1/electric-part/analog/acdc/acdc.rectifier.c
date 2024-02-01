@@ -188,7 +188,7 @@ static void rectify_draw_cli(
 
 
 
-static void rectify_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void rectify_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -209,13 +209,11 @@ static void rectify_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 	}
 
 	//caller defined behavior
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		break;
 	default:
-		rectify_wrl_cam_wnd(ent,slot, stack,sp);
+		rectify_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 	}
 }
 static void rectify_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
@@ -249,8 +247,8 @@ static void rectify_create(_obj* act, u8* buf)
 
 void rectify_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('r','e','c','t','i','f','y',0);
+	p->vfmt = _orig_;
+	p->type = hex64('r','e','c','t','i','f','y',0);
 
 	p->oncreate = (void*)rectify_create;
 	p->ondelete = (void*)rectify_delete;

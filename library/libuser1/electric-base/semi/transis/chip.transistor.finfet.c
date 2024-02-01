@@ -122,7 +122,19 @@ static void finfet_draw_gl41(
 
 
 
-static void finfet_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void finfet_read_bywnd(_obj* ent,void* foot, _obj* caller,void* area, _syn* stack,int sp)
+{
+	switch(caller->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		break;
+	}
+}
+static void finfet_read_byworld_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
+{
+}
+static void finfet_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -130,12 +142,6 @@ static void finfet_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	finfet_draw_gl41(ent, slot, wor,geom, wnd,area);
-}
-static void finfet_wrl_wnd(_obj* ent,void* slot, _syn* stack,int sp)
-{
-}
-static void finfet_wnd(_obj* ent,void* slot, _syn* stack,int sp)
-{
 }
 
 
@@ -153,14 +159,12 @@ static void finfet_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int 
 	}
 
 	//caller defined behavior
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
-		finfet_wnd(ent,slot, stack,sp);break;
+	switch(caller->type){
+	case _wnd_:
+		finfet_read_bywnd(ent,slot, caller,area, stack,sp);
 		break;
 	default:
-		finfet_wrl_cam_wnd(ent,slot, stack,sp);
+		finfet_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 	}
 }
 static void finfet_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
@@ -194,8 +198,8 @@ static void finfet_create(_obj* act, u8* buf)
 
 void finfet_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('f','i','n','f','e','t', 0, 0);
+	p->type = hex64('f','i','n','f','e','t', 0, 0);
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)finfet_create;
 	p->ondelete = (void*)finfet_delete;

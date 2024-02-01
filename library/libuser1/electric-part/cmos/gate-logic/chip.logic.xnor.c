@@ -355,7 +355,7 @@ static void xnor_draw_cli(
 
 
 
-static void xnor_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void xnor_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -380,13 +380,11 @@ static void xnor_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int ke
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		break;
 	default:
-		xnor_wrl_cam_wnd(ent,foot, stack,sp);
+		xnor_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -434,8 +432,8 @@ static void xnor_create(_obj* act, u8* buf)
 
 void xnor_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex32('x','n','o','r');
+	p->vfmt = _orig_;
+	p->type = hex32('x','n','o','r');
 
 	p->oncreate = (void*)xnor_create;
 	p->ondelete = (void*)xnor_delete;

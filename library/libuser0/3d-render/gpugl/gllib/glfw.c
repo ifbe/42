@@ -58,7 +58,7 @@ t0 = ogl->gl41list.gltime;
 t1 = timeread_us();
 
 	//1: render everything
-	switch(ogl->hfmt){
+	switch(ogl->vfmt){
 		case _gl41none_:nonewindow_take(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _gl41easy_:easywindow_take(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _gl41cmdq_:cmdqwindow_take(ogl,foot, stack,sp, arg,idx, buf,len);break;
@@ -94,7 +94,7 @@ ogl->gl41list.gltime = t3;
 }
 void window_give(_obj* ogl,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
-	switch(ogl->hfmt){
+	switch(ogl->vfmt){
 		case _gl41none_:nonewindow_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _gl41easy_:easywindow_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _gl41cmdq_:cmdqwindow_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
@@ -375,7 +375,7 @@ void window_write(_obj* ogl)
 }
 void window_delete(_obj* ogl)
 {
-	switch(ogl->hfmt){
+	switch(ogl->vfmt){
 		case _gl41none_:nonewindow_delete(ogl);glfwDestroyWindow(ogl->gl41list.glwnd);break;
 		case _gl41easy_:easywindow_delete(ogl);glfwDestroyWindow(ogl->gl41list.glwnd);break;
 		case _gl41cmdq_:cmdqwindow_delete(ogl);glfwDestroyWindow(ogl->gl41list.glwnd);break;
@@ -387,7 +387,7 @@ void window_create(_obj* ogl, void* arg, int argc, char** argv)
 	struct relation* rel = 0;
 	_obj* share = 0;
 
-	switch(ogl->hfmt){
+	switch(ogl->vfmt){
 	case _gl41none_:{
 		ogl->whdf.width = 1024;
 		ogl->whdf.height = 768;
@@ -419,6 +419,7 @@ void window_create(_obj* ogl, void* arg, int argc, char** argv)
 		break;
 	}
 	default:{
+		ogl->vfmt = _gl41list_;
 		ogl->whdf.width = 1024;
 		ogl->whdf.height = 768;
 		ogl->whdf.depth = 1024;

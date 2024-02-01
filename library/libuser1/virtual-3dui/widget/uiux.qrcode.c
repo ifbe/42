@@ -133,7 +133,15 @@ static void qrcode_draw_cli(
 
 
 
-static void qrcode_read_bycam(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key)
+static void qrcode_read_bywnd(_obj* ent,void* foot, _obj* wnd,void* area, _syn* stack,int sp)
+{
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		qrcode_draw_pixel(ent, foot, wnd, area);
+		break;
+	}
+}
+static void qrcode_read_byworld_bycam_bywnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -152,12 +160,12 @@ static void qrcode_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int 
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->hfmt){
-	case _rgba_:
-		qrcode_draw_pixel(ent, foot, wnd, area);
+	switch(wnd->type){
+	case _wnd_:
+		qrcode_read_bywnd(ent,foot, wnd,area, stack,sp);
 		break;
 	default:
-		qrcode_read_bycam(ent,foot, stack,sp, arg,key);
+		qrcode_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -198,8 +206,8 @@ static void qrcode_create(_obj* act)
 
 void qrcode_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('q', 'r', 'c', 'o', 'd', 'e', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('q', 'r', 'c', 'o', 'd', 'e', 0, 0);
 
 	p->oncreate = (void*)qrcode_create;
 	p->ondelete = (void*)qrcode_delete;

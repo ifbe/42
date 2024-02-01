@@ -137,9 +137,22 @@ static void vsrc_read_n(_obj* ent, int key, struct wireindex* sts, int thisone)
 static void vsrc_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	switch(stack[sp-1].foottype){
-		case 'p':vsrc_read_p(ent,key, buf,len);break;
-		case 'n':vsrc_read_n(ent,key, buf,len);break;
-		default:vsrc_read_bycam(ent,foot, stack,sp, arg,key, buf,len);break;
+	case 'p':
+		vsrc_read_p(ent,key, buf,len);
+		return;
+	case 'n':
+		vsrc_read_n(ent,key, buf,len);
+		return;
+	}
+
+	_obj* caller = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+	switch(caller->type){
+	case _wnd_:
+		break;
+	default:
+		vsrc_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
+		break;
 	}
 }
 static void vsrc_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
@@ -187,8 +200,8 @@ static void vsrc_create(_obj* act, void* arg, int argc, u8** argv)
 
 void vsrc_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex32('v','s','r','c');
+	p->vfmt = _orig_;
+	p->type = hex32('v','s','r','c');
 
 	p->oncreate = (void*)vsrc_create;
 	p->ondelete = (void*)vsrc_delete;

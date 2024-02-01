@@ -37,8 +37,8 @@ static void stereo_create(_obj* act)
 
 void stereo_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('s', 't', 'e', 'r', 'e', 'o', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('s', 't', 'e', 'r', 'e', 'o', 0, 0);
 
 	p->oncreate = (void*)stereo_create;
 	p->ondelete = (void*)stereo_delete;

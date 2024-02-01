@@ -104,7 +104,7 @@ static void vmouse_read_bydx11(_obj* ent,struct style* slot, _obj* wnd,struct st
 	dx11data_01cam(wnd);
 	dx11data_after(wnd);
 }*/
-static void vmouse_wnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
+static void vmouse_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
 {
 	struct fstyle fs;
 	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.5;
@@ -112,7 +112,10 @@ static void vmouse_wnd(_obj* ent,struct style* slot, _obj* wnd,struct style* are
 	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
 	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-0.5;
 
-	switch(wnd->hfmt){
+	switch(wnd->vfmt){
+	case _bgra8888_:
+	case _rgba8888_:
+		break;
 	case _dx11list_:
 		dx11data_before(wnd);
 		vmouse_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
@@ -164,20 +167,17 @@ static int vmouse_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int c
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->hfmt){
-	case _dx11list_:
-	case _gl41list_:
-	case _mt20list_:
-		vmouse_wnd(ent,foot, wnd,area);break;
+	switch(wnd->type){
+	case _wnd_:
+		vmouse_read_bywnd(ent,foot, wnd,area);break;
 	}
 	return 0;
 }
 static int vmouse_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	_obj* wnd = stack[sp-2].pchip;
-	switch(wnd->hfmt){
-	case _dx11list_:
-	case _gl41list_:
+	switch(wnd->type){
+	case _wnd_:
 		vmouse_bywnd_event(ent,foot, stack,sp, buf,len);break;
 	}
 	return 0;
@@ -196,8 +196,8 @@ static int vmouse_attach(struct halfrel* self, struct halfrel* peer)
 
 void vmouse_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('v', 'm', 'o', 'u', 's', 'e', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('v', 'm', 'o', 'u', 's', 'e', 0, 0);
 
 	p->oncreate = (void*)vmouse_create;
 	p->ondelete = (void*)vmouse_delete;

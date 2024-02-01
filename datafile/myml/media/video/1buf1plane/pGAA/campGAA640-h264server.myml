@@ -29,7 +29,7 @@ height:480
 log:1
 }
 codec{
-fmt:enc
+fmt:venc
 }
 </supply>
 

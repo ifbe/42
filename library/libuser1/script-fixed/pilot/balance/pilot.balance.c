@@ -86,7 +86,7 @@ void balancer_checkplace(_obj* ent)
 	while(1){
 		if(0 == rel)break;
 		world = rel->psrcchip;
-		if(	(_virtual_ != world->hfmt) | (_scene3d_ != world->hfmt)){
+		if(	(_virtual_ != world->type) | (_scene3d_ != world->type)){
 			ent->REL_WORLD = rel->src;
 			ent->REL_DRONE = rel->dst;
 			return;

@@ -66,7 +66,7 @@ int proxyserver_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int id
 }
 int proxyserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	logtoall("@proxyserver_write:%p,%p, len=%d\n", art, foot, len);
+	logtoall("@proxyserver_write:%p,%p, len=%d{\n", art, foot, len);
 //printmemory(buf, len<16?len:16);
 
 	struct perobj* perobj = (void*)art->priv_256b;
@@ -92,6 +92,8 @@ int proxyserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 		}
 		break;
 	}
+byebye:
+	logtoall("}\n");
 	return 0;
 }
 int proxyserver_detach(struct halfrel* self, struct halfrel* peer)
@@ -171,8 +173,9 @@ int proxymaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 	if(0 == Tcp)return 0;
 
 	//master, servant
-	Proxy = artery_create(_Proxy_, 0, 0, 0);
+	Proxy = artery_alloc_fromtype(_Proxy_);
 	if(0 == Proxy)return 0;
+	artery_create(Proxy, 0, 0, 0);
 
 	//child -> servant
 	relationcreate(Proxy, 0, _art_, 'c', Tcp, 0, _sys_, _dst_);
@@ -200,16 +203,18 @@ int proxymaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 
 //3: server prepare
 	logtoall("target=%s\n", perobj->data);
-	switch(art->hfmt){
+	switch(art->vfmt){
 		case _socks_:{
 			//socksclient -> proxyserver
-			socks = artery_create(_socks_, perobj->data, 0, 0);
+			socks = artery_alloc_fromtype(_socks_);
 			if(0 == socks)break;
+			artery_create(socks, perobj->data, 0, 0);
 			relationcreate(Proxy, 0, _art_, 's', socks, 0, _art_, _dst_);
 
 			//tcpclient -> socksclient
-			client = system_create(_tcp_, artobj->data, 0, 0);
+			client = system_alloc_frompath(_tcp_, artobj->data);
 			if(0 == client)break;
+			system_create(client, artobj->data, 0, 0);
 			rel = relationcreate(socks, 0, _art_, _src_, client, 0, _sys_, _dst_);
 
 			//fake ready from tcpclient to socksclient
@@ -218,8 +223,9 @@ int proxymaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 		}//socks
 		default:{
 			//tcpclient -> proxyserver
-			client = system_create(_tcp_, perobj->data, 0, 0);
+			client = system_alloc_frompath(_tcp_, artobj->data);
 			if(0 == client)break;
+			system_create(client, perobj->data, 0, 0);
 			rel = relationcreate(Proxy, 0, _art_, 's', client, 0, _sys_, _dst_);
 
 			//fake ready from tcpclient to proxyserver
@@ -274,12 +280,12 @@ int proxymaster_create(_obj* art, u8* url)
 			}
 		}
 
-		art->hfmt = _socks_;
+		art->vfmt = _socks_;
 		return 0;
 	}
 
 none:
-	art->hfmt = 0;
+	art->vfmt = 0;
 	logtoall("@proxymaster.ending\n");
 	return 0;
 }

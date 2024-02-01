@@ -81,12 +81,25 @@ static void slider_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct sty
 	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
 	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-0.5;
 
-	gl41data_before(wnd);
-	slider_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_after(wnd);
-
-	if(_dx11list_ == wnd->hfmt)dx11data_nocam(wnd);
-	else gl41data_nocam(wnd);
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
+	case _dx11list_:
+		gl41data_before(wnd);
+		dx11data_nocam(wnd);
+		gl41data_after(wnd);
+		break;
+	case _mt20list_:
+		break;
+	case _gl41list_:
+		gl41data_before(wnd);
+		gl41data_nocam(wnd);
+		slider_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+		gl41data_after(wnd);
+		break;
+	case _vk12list_:
+		break;
+	}
 }
 static void slider_write_bywnd(_obj* ent,void* foot, _syn* stack,int sp, struct event* ev,int len)
 {
@@ -122,25 +135,19 @@ static int slider_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->hfmt){
-	case _rgba_:
-		break;
-	case _dx11list_:
-	case _mt20list_:
-	case _gl41list_:
-	case _vk12list_:
+	switch(wnd->type){
+	case _wnd_:
 		slider_read_bywnd(ent,foot, wnd,area);
-		break;
 	}
 	return 0;
 }
 static int slider_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* wnd = stack[sp-2].pchip;
-	switch(wnd->hfmt){
-	case _gl41list_:{
-		slider_write_bywnd(ent,foot, stack,sp, buf,len);break;
-	}
+	switch(wnd->type){
+	case _wnd_:
+		slider_write_bywnd(ent,foot, stack,sp, buf,len);
+		break;
 	}
 	return 0;
 }
@@ -158,8 +165,8 @@ static int slider_attach(struct halfrel* self, struct halfrel* peer)
 
 void slider_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('s','l','i','d','e','r', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('s','l','i','d','e','r', 0, 0);
 
 	p->oncreate = (void*)slider_create;
 	p->ondelete = (void*)slider_delete;

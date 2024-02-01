@@ -264,7 +264,7 @@ static void tetris_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int 
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
+	switch(caller->type){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -315,8 +315,9 @@ static void tetris_create(_obj* act)
 
 void tetris_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('t', 'e', 't', 'r', 'i', 's', 0, 0);
+	p->kind = _game_;
+	p->type = hex64('t', 'e', 't', 'r', 'i', 's', 0, 0);
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)tetris_create;
 	p->ondelete = (void*)tetris_delete;

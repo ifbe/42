@@ -1,6 +1,7 @@
+#include "const/def.h"
+
 #ifndef _NAMING_H
 #define _NAMING_H
-#include "const/def.h"
 //
 #define _ok_ hex16('o','k')
 #define _no_ hex16('n','o')
@@ -102,9 +103,12 @@
 #define _ext_ hex32('e','x','t',0)
 #define _zfs_ hex32('z','f','s',0)
 //raw family
+#define _tap_ hex32('t','a','p',0)
+#define _tun_ hex32('t','u','n',0)
 #define _RAW_ hex32('R','A','W',0)
 #define _Raw_ hex32('R','a','w',0)
 #define _raw_ hex32('r','a','w',0)
+//
 #define _ICMP_ hex32('I','C','M','P')
 #define _icmp_ hex32('i','c','m','p')
 #define _IGMP_ hex32('I','G','M','P')
@@ -288,6 +292,10 @@
 //motor
 #define _bdc_ hex32('b','d','c',0)
 #define _step_ hex32('s','t','e','p')
+//
+#define _audio_ hex64('a','u','d','i','o',0,0,0)
+#define _video_ hex64('v','i','d','e','o',0,0,0)
+#define _codec_ hex64('c','o','d','e','c',0,0,0)
 //sound
 #define _mic_ hex32('m','i','c',0)
 #define _spk_ hex32('s','p','k',0)
@@ -299,6 +307,7 @@
 #define _cap_ hex32('c','a','p',0)
 #define _holo_ hex32('h','o','l','o')
 #define _gpu_ hex32('g','p','u',0)
+#define _render_ hex64('r','e','n','d','e','r',0,0)
 //
 #define _tray_ hex32('t','r','a','y')	//tray
 #define _std_ hex32('s','t','d', 0)		//cmdline
@@ -349,8 +358,15 @@
 #define _ppll_ hex32('p','p','l','l')
 //
 #define _rgba_ hex32('r','g','b','a')
+#define _bgra8880_ hex64('b', 'g', 'r', 'a', '8', '8', '8', '0')
+#define _rgba8880_ hex64('r', 'g', 'b', 'a', '8', '8', '8', '0')
+#define _bgra8888_ hex64('b', 'g', 'r', 'a', '8', '8', '8', '8')
+#define _rgba8888_ hex64('r', 'g', 'b', 'a', '8', '8', '8', '8')
+//
 #define _cli_ hex32('c','l','i',0)
 #define _tui_ hex32('t','u','i',0)
+#define _tui256_ hex64('t','u','i','2','5','6',0,0)
+//
 #define _func_ hex32('f','u','n','c')
 #define _sch_  hex32('s','c','h',0)
 #define _pcb_  hex32('p','c','b',0)
@@ -361,6 +377,8 @@
 #define _pcm_ hex32('p','c','m',0)
 #define _ctx_ hex32('c','t','x',0)
 #define _8bit_ hex32('8','b','i','t')
+//
+#define _game_ hex32('g','a','m','e')
 //
 #define _orig_ hex32('o','r','i','g')
 #define _ORIG_ hex32('O','R','I','G')
@@ -395,8 +413,11 @@
 #define _y4_uv_ hex64 ('y','4',',','u','v', 0 , 0, 0)
 #define _y4_u_v_ hex64('y','4',',','u',',','v', 0, 0)
 //
-#define _dec_ hex32('d','e','c',0)
-#define _enc_ hex32('e','n','c',0)
+#define _vdec_ hex32('v','d','e','c')
+#define _venc_ hex32('v','e','n','c')
+//
+#define _adec_ hex32('a','d','e','c')
+#define _aenc_ hex32('a','e','n','c')
 //
 #define _mjpg_ hex32('m','j','p','g')
 #define _h264_ hex32('h','2','6','4')

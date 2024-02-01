@@ -262,7 +262,23 @@ static void sudoku_event(
 
 
 
-static void sudoku_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void sudoku_take_bywnd(_obj* ent,void* slot, _obj* caller,void* area, _syn* stack,int sp)
+{
+	switch(caller->vfmt){
+	case _cli_:
+		sudoku_draw_cli(ent,slot, caller,area);
+		break;
+	case _tui_:
+	case _tui256_:
+		sudoku_draw_tui(ent,slot, caller,area);
+		break;
+	case _rgba_:
+		break;
+	case _gl41list_:
+		break;
+	}
+}
+static void sudoku_taking_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -287,19 +303,12 @@ static void sudoku_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int 
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _cli_:
-		sudoku_draw_cli(ent,slot, caller,area);
-		break;
-	case _tui_:
-		sudoku_draw_tui(ent,slot, caller,area);
-		break;
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
+		sudoku_take_bywnd(ent,slot, caller,area, stack,sp);
 		break;
 	default:
-		sudoku_wrl_cam_wnd(ent,slot, stack,sp);
+		sudoku_taking_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -354,8 +363,9 @@ static void sudoku_create(_obj* act, void* str)
 
 void sudoku_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('s', 'u', 'd', 'o', 'k', 'u', 0, 0);
+	p->kind = _game_;
+	p->type = hex64('s', 'u', 'd', 'o', 'k', 'u', 0, 0);
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)sudoku_create;
 	p->ondelete = (void*)sudoku_delete;

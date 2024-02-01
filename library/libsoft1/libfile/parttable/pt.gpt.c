@@ -131,7 +131,7 @@ void mount_gpt_one(_obj* art, struct gptpart* part)
 
 	//logtoall("[%016llx,%016llx]:	type=%.8s, name=%s\n", part->lba_start, part->lba_end, &type, name);
 	if((_efi_ == type)|(_fat_ == type)){
-		_obj* tmp = artery_create(_fat_,0,0,0);
+		_obj* tmp = artery_alloc_prepobj_create(_art_, _fat_,0,0,0, 0);
 		if(0 == tmp)return;
 		struct relation* rel = relationcreate(tmp,0,_art_,_src_, art,(void*)(part->lba_start<<9),_art_,_dst_);
 		if(0 == rel)return;

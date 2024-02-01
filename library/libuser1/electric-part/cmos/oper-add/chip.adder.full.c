@@ -325,7 +325,7 @@ static void fulladd_draw_cli(
 
 
 
-static void fulladd_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void fulladd_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -350,13 +350,11 @@ static void fulladd_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		break;
 	default:
-		fulladd_wrl_cam_wnd(ent,foot, stack,sp);
+		fulladd_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -411,8 +409,8 @@ static void fulladd_create(_obj* act, u8* buf)
 
 void fulladd_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('f','u','l','l','a','d','d', 0);
+	p->vfmt = _orig_;
+	p->type = hex64('f','u','l','l','a','d','d', 0);
 
 	p->oncreate = (void*)fulladd_create;
 	p->ondelete = (void*)fulladd_delete;

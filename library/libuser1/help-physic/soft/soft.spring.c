@@ -182,7 +182,7 @@ int force_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void
 	//}
 
 	//slot type unknown: do work based on caller fmt
-	switch(caller->hfmt){
+	switch(caller->type){
 	case _gl41list_:
 		break;
 	default:

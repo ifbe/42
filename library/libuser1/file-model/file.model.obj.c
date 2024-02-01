@@ -289,23 +289,48 @@ static void obj3d_event(
 
 
 
-static void obj3d_world_camera_window(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key)
+static void obj3d_read_bywnd(_obj* ent,void* slot, _obj* wnd,void* area)
 {
-	_obj* scn;struct style* geom;
-	_obj* wrd;struct style* camg;
-	_obj* wnd;struct style* area;
-
-	scn = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-	wrd = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
-	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-
-	if(_rgba_ == wnd->hfmt){
-		if(0==key)obj3d_draw_raster(ent,slot, scn,geom, wrd,camg, wnd,area, (void*)arg);
-		else obj3d_draw_raytrace(ent,slot, scn,geom, wrd,camg, wnd,area, (void*)arg);
-		return;
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		break;
 	}
+}
+static void obj3d_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
+{
+//-1: obj3d, obj area for world
+//-2: world, world geom for obj3d
+	_obj* scn = stack[sp-2].pchip;
+	struct style* geom = stack[sp-2].pfoot;
 
-	obj3d_draw_gl41(ent,slot, scn,geom, wrd,camg, wnd,area);
+//-3: world, world geom for cam
+//-4: cam, cam part for world
+	_obj* wrd = stack[sp-3].pchip;
+	struct style* camg = stack[sp-3].pfoot;
+	_obj* cam = stack[sp-4].pchip;
+	//struct style* xxxx = ;
+
+//-5: cam, cam part for wnd
+//-6: wnd, wnd area for cam
+	_obj* wnd = stack[sp-6].pchip;
+	struct style* area = stack[sp-6].pfoot;
+
+	switch(wnd->type){
+	case _bgra8888_:
+	case _rgba8888_:
+		if(1){
+			obj3d_draw_raster(ent,slot, scn,geom, wrd,camg, wnd,area, 0);
+		}
+		else{
+			obj3d_draw_raytrace(ent,slot, scn,geom, wrd,camg, wnd,area, 0);
+		}
+		break;
+	case _gl41list_:
+		obj3d_draw_gl41(ent,slot, scn,geom, wrd,camg, wnd,area);
+		break;
+	}
 }
 static void obj3d_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
@@ -319,13 +344,12 @@ static void obj3d_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int k
 	}
 
 	//caller defined behavior
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
+		obj3d_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
-		obj3d_world_camera_window(ent,slot, stack,sp, arg,key);
+		obj3d_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 	}
 }
 static void obj3d_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
@@ -435,8 +459,8 @@ static void obj3d_create(_obj* act, void* arg, int argc, u8** argv)
 
 void obj3d_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('o', 'b', 'j', '3', 'd', 0, 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('o', 'b', 'j', '3', 'd', 0, 0, 0);
 
 	p->oncreate = (void*)obj3d_create;
 	p->ondelete = (void*)obj3d_delete;

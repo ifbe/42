@@ -354,8 +354,7 @@ void window_create(_obj* w)
 	width = bInfo.srWindow.Right - bInfo.srWindow.Left + 1;
 	height = bInfo.srWindow.Bottom - bInfo.srWindow.Top + 1;
 
-	w->hfmt = _tui_;
-	w->vfmt = 0;
+	w->vfmt = _tui_;
 
 	w->whdf.width = width;
 	w->whdf.height = height;

@@ -65,13 +65,13 @@ void initpci_port()
 
 		switch(type >> 16){
 		case 0x0101:
-			xx = device_create(_ide_, 0, 0, 0);
+			xx = device_alloc_prepobj(_dev_, _ide_, 0, 0);
 			ide_portinit(xx, addr);
 			break;
 
 		case 0x0106:
 			if(0x01 == ((type>>8)&0xff)){
-				xx = device_create(_ahci_, 0, 0, 0);
+				xx = device_alloc_prepobj(_dev_, _ahci_, 0, 0);
 				ahci_portinit(xx, addr);
 			}
 			break;
@@ -80,7 +80,7 @@ void initpci_port()
 			switch((type>>8)&0xff){
 			case 0x02:
 			case 0x03:
-				xx = device_create(_nvme_, 0, 0, 0);
+				xx = device_alloc_prepobj(_dev_, _nvme_, 0, 0);
 				nvme_portinit(xx, addr);
 				break;
 			}
@@ -88,7 +88,7 @@ void initpci_port()
 
 		case 0x0200:
 			if(0x100e8086 == idid){
-				xx = device_create(_eth_, 0, 0, 0);
+				xx = device_alloc_prepobj(_dev_, _eth_, 0, 0);
 				e1000_portinit(xx, addr);
 			}
 			break;
@@ -105,11 +105,11 @@ void initpci_port()
 				logtoall("ehci\n");
 				break;
 			case 0x30:
-				xx = device_create(_xhci_, 0, 0, 0);
+				xx = device_alloc_prepobj(_dev_, _xhci_, 0, 0);
 				xhci_portinit(xx, addr);
 				break;
 			case 0x40:
-				xx = device_create(_usb4_, 0, 0, 0);
+				xx = device_alloc_prepobj(_dev_, _usb4_, 0, 0);
 				usb4hia_portinit(xx, addr);
 				break;
 			}//usbver

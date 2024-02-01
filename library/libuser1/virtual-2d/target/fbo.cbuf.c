@@ -206,7 +206,7 @@ static void cbuffer_draw_cli(
 
 
 
-static void cbuffer_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void cbuffer_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -216,20 +216,23 @@ static void cbuffer_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 	take_data_from_peer(ent,_fbo_, stack,sp, 0,0, 0,0);
 	cbuffer_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void cbuffer_wnd(_obj* ent,void* foot, _syn* stack,int sp)
+static void cbuffer_read_bywnd(_obj* ent,void* foot, _obj* wnd,void* area, _syn* stack,int sp)
 {
-	_obj* wnd;struct style* area;
-	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
-
 	struct fstyle fs;
-	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
-	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
-	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
-	gl41data_before(wnd);
-	take_data_from_peer(ent,_fbo_, stack,sp, 0,0, 0,0);
-	cbuffer_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_01cam(wnd);
-	gl41data_after(wnd);
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
+		fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+		fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+		gl41data_before(wnd);
+		take_data_from_peer(ent,_fbo_, stack,sp, 0,0, 0,0);
+		cbuffer_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+		gl41data_01cam(wnd);
+		gl41data_after(wnd);
+		break;
+	}
 }
 
 
@@ -247,14 +250,12 @@ static void cbuffer_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
-		cbuffer_wnd(ent,foot, stack,sp);
+	switch(caller->type){
+	case _wnd_:
+		cbuffer_read_bywnd(ent,foot, caller,area, stack,sp);
 		break;
 	default:
-		cbuffer_wrl_cam_wnd(ent,foot, stack,sp);
+		cbuffer_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -277,8 +278,8 @@ static void cbuffer_attach(struct halfrel* self, struct halfrel* peer)
 
 void cbuffer_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('c','b','u','f','f','e','r', 0);
+	p->vfmt = _orig_;
+	p->type = hex64('c','b','u','f','f','e','r', 0);
 
 	p->oncreate = (void*)cbuffer_create;
 	p->ondelete = (void*)cbuffer_delete;

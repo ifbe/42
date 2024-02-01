@@ -138,6 +138,17 @@ static void mmioedit_draw_cli(
 
 
 
+static void mmioedit_read_bywnd(_obj* ent,void* slot, _obj* wnd,void* area)
+{
+	switch(wnd->vfmt){
+	case _rgba8888_:
+	case _bgra8888_:
+		mmioedit_draw_pixel(ent,slot, wnd,area);
+		break;
+	case _gl41list_:
+		break;
+	}
+}
 static void mmioedit_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
@@ -155,11 +166,9 @@ static void mmioedit_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,in
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->hfmt){
-	case _rgba_:
-		mmioedit_draw_pixel(ent,slot, wnd,area);
-		break;
-	case _gl41list_:
+	switch(wnd->type){
+	case _wnd_:
+		mmioedit_read_bywnd(ent,slot, wnd,area);
 		break;
 	default:
 		mmioedit_wrl_cam_wnd(ent,slot, stack,sp);
@@ -193,8 +202,8 @@ static void mmioedit_attach(struct halfrel* self, struct halfrel* peer)
 
 void mmioedit_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('m','m','i','o','e','d','i','t');
+	p->vfmt = _orig_;
+	p->type = hex64('m','m','i','o','e','d','i','t');
 
 	p->oncreate = (void*)mmioedit_create;
 	p->ondelete = (void*)mmioedit_delete;

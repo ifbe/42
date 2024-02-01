@@ -197,7 +197,7 @@ static void ooxx_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int ke
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
+	switch(caller->type){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -253,8 +253,9 @@ static void ooxx_create(_obj* act)
 
 void ooxx_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex32('o', 'o', 'x', 'x');
+	p->kind = _game_;
+	p->type = hex32('o', 'o', 'x', 'x');
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)ooxx_create;
 	p->ondelete = (void*)ooxx_delete;

@@ -302,8 +302,7 @@ void window_create(_obj* wnd)
 {
 	struct rgbaxlib* per = &wnd->rgbaxlib;
 
-	wnd->hfmt = _rgba_;
-	wnd->vfmt = hex64('b','g','r','a','8','8','8','8');
+	wnd->vfmt = _bgra8888_;
 
 	wnd->whdf.width = 1024;
 	wnd->whdf.height = 768;

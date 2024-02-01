@@ -45,8 +45,8 @@ static void x8664_attach(struct halfrel* self, struct halfrel* peer)
 
 void x8664_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('x','8','6','6','4', 0, 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('x','8','6','6','4', 0, 0, 0);
 
 	p->oncreate = (void*)x8664_create;
 	p->ondelete = (void*)x8664_delete;

@@ -95,7 +95,7 @@ int stepcar_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,i
 	_obj* caller = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
+	switch(caller->type){
 	default:
 		return stepcar_print(ent,foot, stack,sp, buf,len);
 	}

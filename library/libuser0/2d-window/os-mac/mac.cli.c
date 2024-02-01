@@ -51,9 +51,7 @@ void window_delete(_obj* w)
 }
 void window_create(_obj* w)
 {
-	w->hfmt = _cli_;
-	w->vfmt = 0;
-
+	w->vfmt = _cli_;
 }
 
 

@@ -112,7 +112,24 @@ void voxel_data(_obj* act, int type, void* buf, int len)
 
 
 
-static void voxel_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void voxel_read_bywnd(_obj* ent,void* slot, _obj* wnd,void* area)
+{
+	switch(wnd->vfmt){
+	case _tui_:
+		break;
+	case _rgba8888_:
+		break;
+	case _htmlroot_:
+		break;
+	case _gl41list_:
+		break;
+	case _dx11list_:
+	case _mt20list_:
+	case _vk12list_:
+		break;
+	}
+}
+static void voxel_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -133,22 +150,12 @@ static void voxel_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int k
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _tui_:
-		break;
-	case _rgba_:
-		break;
-	case _htmlroot_:
-		break;
-	case _gl41list_:
-		break;
-	case _dx11list_:
-	case _mt20list_:
-	case _vk12list_:
-		logtoall("caller@%p\n", caller);
+	switch(caller->type){
+	case _wnd_:
+		voxel_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
-		voxel_wrl_cam_wnd(ent,slot, stack,sp);
+		voxel_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -191,8 +198,8 @@ static void voxel_create(_obj* act)
 
 void voxel_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('v', 'o', 'x', 'e', 'l', 0, 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('v', 'o', 'x', 'e', 'l', 0, 0, 0);
 
 	p->oncreate = (void*)voxel_create;
 	p->ondelete = (void*)voxel_delete;

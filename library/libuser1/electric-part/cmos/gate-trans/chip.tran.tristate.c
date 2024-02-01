@@ -59,7 +59,7 @@ static void tristate_draw_cli(
 
 
 
-static void tristate_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void tristate_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -84,13 +84,11 @@ static void tristate_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,in
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		break;
 	default:
-		tristate_wrl_cam_wnd(ent,foot, stack,sp);
+		tristate_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -125,8 +123,8 @@ static void tristate_create(_obj* act, u8* buf)
 
 void tristate_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('t','r','i','s','t','a','t','e');
+	p->vfmt = _orig_;
+	p->type = hex64('t','r','i','s','t','a','t','e');
 
 	p->oncreate = (void*)tristate_create;
 	p->ondelete = (void*)tristate_delete;

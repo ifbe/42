@@ -914,7 +914,7 @@ static void rubikscube_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 	
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	switch(wnd->hfmt){
+	switch(wnd->type){
 	case _dx11list_:
 	case _mt20list_:
 	case _gl41list_:
@@ -939,7 +939,7 @@ static void rubikscube_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
+	switch(caller->type){
 	case _rgba_:
 		break;
 	case _gl41list_:
@@ -1002,8 +1002,9 @@ static void rubikscube_create(_obj* act, void* str)
 
 void rubikscube_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('r', 'u', 'b', 'i', 'k', 0, 0, 0);
+	p->kind = _game_;
+	p->type = hex64('r', 'u', 'b', 'i', 'k', 0, 0, 0);
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)rubikscube_create;
 	p->ondelete = (void*)rubikscube_delete;

@@ -110,8 +110,8 @@ static void rawdump_create(_obj* act, u8* buf)
 
 void rawdump_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('r','a','w','d','u','m','p',0);
+	p->vfmt = _orig_;
+	p->type = hex64('r','a','w','d','u','m','p',0);
 
 	p->oncreate = (void*)rawdump_create;
 	p->ondelete = (void*)rawdump_delete;

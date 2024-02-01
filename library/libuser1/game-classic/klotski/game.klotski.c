@@ -111,7 +111,16 @@ static void klotski_draw_cli(
 
 
 
-static void klotski_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void klotski_take_bywnd(_obj* ent,void* slot, _obj* caller,void* area, _syn* stack,int sp)
+{
+	switch(caller->vfmt){
+	case _rgba_:
+		break;
+	case _gl41list_:
+		break;
+	}
+}
+static void klotski_taking_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -136,13 +145,12 @@ static void klotski_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
+		klotski_take_bywnd(ent,foot, caller,area, stack,sp);
 		break;
 	default:
-		klotski_wrl_cam_wnd(ent,foot, stack,sp);
+		klotski_taking_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -176,8 +184,7 @@ static void klotski_delete(_obj* act)
 static void klotski_create(_obj* act)
 {
 	if(0 == act)return;
-	if(_orig_ == act->type)act->listptr.buf0 = data;
-	if(_copy_ == act->type)act->listptr.buf0 = memoryalloc(20, 0);
+	act->listptr.buf0 = memoryalloc(20, 0);
 
 	data[0][1] = data[0][2] = data[1][1] = data[1][2] = caocao;
 	data[0][0] = data[1][0] = machao;
@@ -197,8 +204,9 @@ static void klotski_create(_obj* act)
 
 void klotski_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('k', 'l', 'o', 't', 's', 'k', 'i', 0);
+	p->kind = _game_;
+	p->type = hex64('k', 'l', 'o', 't', 's', 'k', 'i', 0);
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)klotski_create;
 	p->ondelete = (void*)klotski_delete;

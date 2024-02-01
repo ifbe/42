@@ -173,7 +173,7 @@ static void spurgear_write_ray(_obj* gear,void* foot, struct fstyle* geom, float
 
 
 
-static void spurgear_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void spurgear_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -198,13 +198,11 @@ static void spurgear_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,in
 	_obj* caller = stack[sp-2].pchip;
 	//struct style* area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		break;
 	default:
-		spurgear_wrl_cam_wnd(ent,foot, stack,sp);
+		spurgear_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -235,8 +233,8 @@ static void spurgear_attach(struct halfrel* self, struct halfrel* peer)
 
 void spurgear_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('s','p','u','r','g','e','a','r');
+	p->vfmt = _orig_;
+	p->type = hex64('s','p','u','r','g','e','a','r');
 
 	p->oncreate = (void*)spurgear_create;
 	p->ondelete = (void*)spurgear_delete;

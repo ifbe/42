@@ -304,7 +304,16 @@ static void projector_mesh_prepare(struct mysrc* src)
 
 
 
-static void projector_wrl_cam_wnd(_obj* ent,void* foot, _syn* stack,int sp)
+static void projector_read_bywnd(_obj* ent,void* foot, _obj* wnd,void* area)
+{
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		break;
+	}
+}
+static void projector_read_byworld_bycam_bywnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* dup;struct style* camg;
@@ -315,12 +324,19 @@ static void projector_wrl_cam_wnd(_obj* ent,void* foot, _syn* stack,int sp)
 
 	struct sunbuf* sun = ent->OWNBUF;
 	projector_frustum(&geom->frus, &geom->fs);
-	if(_gl41list_ == wnd->hfmt)world2clip_projznzp_transpose(sun->wvp, &geom->frus);
-	else world2clip_projz0z1_transpose(sun->wvp, &geom->frus);
 
-	projector_cam_update(ent,foot, wor,geom, wnd,area);
-	projector_lit_update(ent,foot, wor,geom, wnd,area);
-	projector_mesh_update(ent,foot, wor,geom, wnd,area);
+	switch(wnd->vfmt){
+	case _gl41list_:
+		world2clip_projznzp_transpose(sun->wvp, &geom->frus);
+
+		projector_cam_update(ent,foot, wor,geom, wnd,area);
+		projector_lit_update(ent,foot, wor,geom, wnd,area);
+		projector_mesh_update(ent,foot, wor,geom, wnd,area);
+		break;
+	default:
+		world2clip_projz0z1_transpose(sun->wvp, &geom->frus);
+		break;
+	}
 }
 
 
@@ -338,13 +354,12 @@ static void projector_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,i
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
+		projector_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
-		projector_wrl_cam_wnd(ent,slot, stack,sp);
+		projector_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -408,8 +423,8 @@ static void projector_create(_obj* act, void* str)
 
 void projector_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('p','r','j','t','o', 'r', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('p','r','j','t','o', 'r', 0, 0);
 
 	p->oncreate = (void*)projector_create;
 	p->ondelete = (void*)projector_delete;

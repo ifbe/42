@@ -13,7 +13,7 @@ static void* camrts_find(_obj* ent)
 	struct relation* rel = ent->irel0;
 	while(1){
 		tmp = rel->psrcchip;
-		if(_virtual_ == tmp->hfmt){
+		if(_virtual_ == tmp->type){
 			return rel->psrcfoot;
 		}
 		rel = samedstnextsrc(rel);
@@ -84,16 +84,16 @@ int camrts_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, voi
 
 	_obj* cam = stack[sp-2].pchip;
 	if(0 == cam)return 0;
-	//logtoall("cam.fmt=%.8s\n", &cam->hfmt);
-	if(_freecam_ != cam->hfmt)return 0;
+	//logtoall("cam.fmt=%.8s\n", &cam->type);
+	if(_freecam_ != cam->type)return 0;
 
 	_obj* xxx = stack[sp-4].pchip;
 	if(0 == xxx)return 0;
-	//logtoall("xxx.fmt=%.8s\n", &wnd->hfmt);
+	//logtoall("xxx.fmt=%.8s\n", &wnd->type);
 	if(_wnd_ == xxx->type){		//wnd->cam->this
 		
 	}
-	if(_virtual_ == xxx->hfmt){		//wnd->cam->world->cam->this
+	if(_virtual_ == xxx->type){		//wnd->cam->world->cam->this
 		struct style* sty = stack[sp-4].pfoot;
 		if(0 == sty)return 0;
 		//logtoall("%f,%f,%f\n", sty->fs.vc[0], sty->fs.vc[1], sty->fs.vc[2]);
@@ -108,12 +108,12 @@ int camrts_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, voi
 
 	_obj* cam = stack[sp-2].pchip;
 	if(0 == cam)return 0;
-	//logtoall("cam.fmt=%.8s\n", &cam->hfmt);
-	if(_freecam_ != cam->hfmt)return 0;
+	//logtoall("cam.fmt=%.8s\n", &cam->type);
+	if(_freecam_ != cam->type)return 0;
 
 	_obj* xxx = stack[sp-4].pchip;
 	if(0 == xxx)return 0;
-	//logtoall("xxx.fmt=%.8s\n", &wnd->hfmt);
+	//logtoall("xxx.fmt=%.8s\n", &wnd->type);
 	if(_wnd_ == xxx->type){		//wnd->cam->this
 		struct fstyle* geom = camrts_find(cam);
 		if(0 == geom)return 0;

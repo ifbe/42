@@ -5,7 +5,6 @@
 #define _volt_ hex32('v','o','l','t')
 #define _pin_value_ hex32('p','v', 0, 0)
 #define _pin_mode_value_ hex32('p','m','v', 0)
-void* device_alloc_prep(u64,u64,u64,u64);
 
 
 struct privdata{
@@ -88,7 +87,7 @@ int gpio_attach(struct halfrel* st, struct halfrel* peer)
 }
 int gpio_read(_obj* obj,void* foot, p64 arg,int cmd, u8* buf,int len)
 {
-	logtoall("@gpioread:%p,%x,%p,%x\n", arg, cmd, buf, len);
+	//logtoall("@gpioread:%p,%x,%p,%x\n", arg, cmd, buf, len);
 	struct privdata* priv = (void*)obj->priv_256b;
 
 	int j;
@@ -106,7 +105,7 @@ int gpio_read(_obj* obj,void* foot, p64 arg,int cmd, u8* buf,int len)
 }
 int gpio_write(_obj* obj,void* foot, u8* arg,int cmd, u8* buf,int len)
 {
-	logtoall("@gpiowrite:%p,%x,%p,%x\n", arg, cmd, buf, len);
+	//logtoall("@gpiowrite:%p,%x,%p,%x\n", arg, cmd, buf, len);
 	struct privdata* priv = (void*)obj->priv_256b;
 
 	int j;
@@ -174,10 +173,17 @@ int gpio_create(_obj* obj, void* arg, int argc, void** argv)
 	}
 
 	//my device
-	if(0 == obj)obj = device_alloc_prep(0, _gpio_, 0, 0);
 	struct privdata* priv = (void*)obj->priv_256b;
 	priv->chip = gpiochip;
 	priv->pin = memoryalloc(0x1000, 0);
-
 	return 0;
+}
+
+int gpio_free(_obj* obj)
+{
+	return 0;
+}
+_obj* gpio_alloc(u64 type, u8* buf)
+{
+	return device_alloc_fromtype(type);
 }

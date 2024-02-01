@@ -168,7 +168,8 @@ static void browser_event(
 			if(0 == dat)return;
 			dat->len = 0;
 
-			_obj* http = artery_create(_http_, buf+7, 0, 0);
+			_obj* http = artery_alloc_fromtype(_http_);
+			artery_create(http, buf+7, 0, 0);
 			if(0 == http){
 				logtoall("err@http\n");
 				return;
@@ -180,11 +181,12 @@ static void browser_event(
 			}
 			relationattach((void*)rel1->dst, (void*)rel1->src);
 
-			_obj* sock = system_create(_tcp_, buf+7, 0, 0);
+			_obj* sock = system_alloc_frompath(_tcp_, buf+7);
 			if(0 == sock){
 				logtoall("err@sock\n");
 				return;
 			}
+			system_create(sock, buf+7, 0, 0);
 			struct relation* rel2 = relationcreate(http, 0, _art_, _src_, sock, 0, _sys_, _dst_);
 			if(0 == rel2){
 				logtoall("err@rel2\n");
@@ -254,10 +256,14 @@ static void browser_bywnd_read(_obj* ent,struct style* slot, _obj* wnd,struct st
 	fs.vf[1] = (area->fs.vq[1]-area->fs.vc[1]) * wnd->whdf.fbheight/ 2.0;
 	fs.vt[2] = 1.0;
 
-	gl41data_before(wnd);
-	gl41data_whcam(wnd, area);
-	browser_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_after(wnd);
+	switch(wnd->vfmt){
+	case _gl41list_:
+		gl41data_before(wnd);
+		gl41data_whcam(wnd, area);
+		browser_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+		gl41data_after(wnd);
+		break;
+	}
 }
 
 
@@ -348,8 +354,8 @@ static void browser_create(_obj* act)
 
 void browser_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('b', 'r', 'o', 'w', 's', 'e', 'r', 0);
+	p->vfmt = _orig_;
+	p->type = hex64('b', 'r', 'o', 'w', 's', 'e', 'r', 0);
 
 	p->oncreate = (void*)browser_create;
 	p->ondelete = (void*)browser_delete;

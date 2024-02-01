@@ -59,7 +59,7 @@ static void dram_draw_cli(
 
 
 
-static void dram_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void dram_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -84,13 +84,11 @@ static void dram_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int ke
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		break;
 	default:
-		dram_wrl_cam_wnd(ent,foot, stack,sp);
+		dram_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -125,8 +123,8 @@ static void dram_create(_obj* act, u8* buf)
 
 void dram_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex32('d','r','a','m');
+	p->vfmt = _orig_;
+	p->type = hex32('d','r','a','m');
 
 	p->oncreate = (void*)dram_create;
 	p->ondelete = (void*)dram_delete;

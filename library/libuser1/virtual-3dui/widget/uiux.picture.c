@@ -160,7 +160,7 @@ static void picture_draw_cli(
 
 
 
-static void picture_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
+static void picture_read_byworld_bycam_bywnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -169,6 +169,23 @@ static void picture_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	picture_draw_gl41(ent,foot, wor,geom, wnd,area);
+}
+
+
+
+
+static void picture_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
+{
+	_obj* wnd = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+
+	switch(wnd->type){
+	case _wnd_:
+		break;
+	default:
+		picture_read_byworld_bycam_bywnd(ent,foot, stack,sp);
+		break;
+	}
 }
 static void picture_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
@@ -213,8 +230,8 @@ static void picture_create(_obj* act, void* str)
 
 void picture_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('p', 'i', 'c', 't', 'u', 'r', 'e', 0);
+	p->vfmt = _orig_;
+	p->type = hex64('p', 'i', 'c', 't', 'u', 'r', 'e', 0);
 
 	p->oncreate = (void*)picture_create;
 	p->ondelete = (void*)picture_delete;

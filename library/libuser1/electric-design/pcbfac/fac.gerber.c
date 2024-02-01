@@ -225,7 +225,7 @@ static void gerber_draw_gl41(
 
 
 
-static void gerber_world_camera_window(_obj* ent,void* slot, _syn* stack,int sp)
+static void gerber_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* scn;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -250,13 +250,11 @@ static void gerber_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int 
 	}
 
 	//caller defined behavior
-	switch(caller->hfmt){
-	case _rgba_:
-	        break;
-	case _gl41list_:
-	        break;
+	switch(caller->type){
+	case _wnd_:
+	    break;
 	default:
-		gerber_world_camera_window(ent,slot, stack,sp);
+		gerber_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 	}
 }
 static void gerber_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
@@ -274,8 +272,8 @@ static void gerber_attach(struct halfrel* self, struct halfrel* peer)
 
 void gerber_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('g', 'e', 'r', 'b', 'e','r', 0, 0);
+	p->vfmt = _orig_;
+	p->vfmt = hex64('g', 'e', 'r', 'b', 'e','r', 0, 0);
 
 	p->oncreate = (void*)gerber_create;
 	p->ondelete = (void*)gerber_delete;

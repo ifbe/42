@@ -330,7 +330,7 @@ static int human_event(
 
 
 
-static void human_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void human_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -355,13 +355,11 @@ static void human_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		break;
 	default:
-		human_wrl_cam_wnd(ent,foot, stack,sp);
+		human_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -381,8 +379,8 @@ static void human_attach(struct halfrel* self, struct halfrel* peer)
 
 void human_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('h', 'u', 'm', 'a', 'n', 0, 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('h', 'u', 'm', 'a', 'n', 0, 0, 0);
 
 	p->oncreate = (void*)human_create;
 	p->ondelete = (void*)human_delete;

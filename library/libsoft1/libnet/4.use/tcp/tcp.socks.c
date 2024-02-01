@@ -43,7 +43,7 @@ int socksclient_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx
 	int j,port;
 	u8 tmp[256];
 	struct socks5_request* req;
-	logtoall("@socksclient_write:%llx, %.4s, len=%d\n", art, &foot, len);
+	logtoall("@socksclient_write:%llx, %.4s, len=%d{\n", art, &foot, len);
 	//if(len>0)printmemory(buf, len<16?len:16);
 
 	switch(stack[sp-1].foottype){
@@ -56,7 +56,7 @@ int socksclient_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx
 		if(3 == art->vfmt){
 			//src to dst
 			give_data_into_peer(art,_dst_, stack,sp, 0,0, buf,len);
-			return 0;
+			goto byebye;
 		}
 
 		if(2 == art->vfmt){
@@ -75,7 +75,7 @@ int socksclient_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx
 				give_data_into_peer(art,_dst_, stack,sp, 0,_ok_, 0,0);
 			}
 			art->vfmt = 3;
-			return 0;
+			goto byebye;
 		}
 
 		if(1 == art->vfmt){
@@ -87,10 +87,13 @@ int socksclient_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx
 			give_data_into_peer(art,_src_, stack,sp, 0,0, req,7+req->len);
  
 			art->vfmt = 2;
-			return 0;
+			goto byebye;
 		}//socks5 
 	}//src
 	}//switch
+
+byebye:
+	logtoall("}\n");
 	return 0;
 }
 int socksclient_detach(struct halfrel* self, struct halfrel* peer)
@@ -243,12 +246,14 @@ logtoall("1\n");
 	if(0 == child)return 0;
 logtoall("2\n");
 	//side b
-	void* sys = system_create(_tcp_, tmp, 0, 0);
+	void* sys = system_alloc_frompath(_tcp_, tmp);
 	if(0 == sys)return 0;
+	system_create(sys, tmp, 0, 0);
 logtoall("3\n");
 	//connect s->a s->b
-	void* s5 = artery_create(_Socks_, 0, 0, 0);
+	void* s5 = artery_alloc_fromtype(_Socks_);
 	if(0 == s5)return 0;
+	artery_create(s5, 0, 0, 0);
 	relationcreate(s5, 0, _art_, 'a', child, 0, _sys_, _dst_);
 	relationcreate(s5, 0, _art_, 'b', sys, 0, _sys_, _dst_);
 logtoall("4\n");

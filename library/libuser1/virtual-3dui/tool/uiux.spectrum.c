@@ -76,6 +76,34 @@ static void spectrum_draw_tui(
 	_obj* win, struct style* sty)
 {
 }
+static void spectrum_draw_tui256(
+	_obj* act, struct style* pin,
+	_obj* win, struct style* sty)
+{
+	u8* tuibuf = win->tuitext.buf;
+	int tuiwidth = win->whdf.width;
+	int tuiheight= win->whdf.height;
+
+	struct privdata* priv = (void*)act->priv_256b;
+	int now = priv->TABLEN;
+
+	int idx = (slice-1+now)%slice;
+	short* buf = priv->TABBUF[idx];
+	if(0 == buf)return;
+
+	int x,y,k;
+	for(x=0;x<64;x++){
+		int sum = 0;
+		for(k=0;k<8;k++)sum += buf[x*8+k];
+
+		y = 20-sum/16;
+		if(y<0)y=0;
+		if(y+1>tuiheight)y = tuiheight-1;
+
+		tuibuf[4*(tuiwidth*y+x)+0] = 'a';
+		tuibuf[4*(tuiwidth*y+x)+2] = 7;
+	}
+}
 static void spectrum_draw_cli(
 	_obj* act, struct style* pin,
 	_obj* win, struct style* sty)
@@ -98,7 +126,24 @@ void spectrum_data(_obj* act, void* type, void* buf, int len)
 
 
 
-static void spectrum_take_bycam(_obj* ent,void* slot, _syn* stack,int sp)
+static void spectrum_take_bywnd(_obj* ent,void* slot, _obj* wnd, void* area, _syn* stack,int sp)
+{
+	switch(wnd->vfmt){
+	case _cli_:
+		break;
+	case _tui_:
+		spectrum_draw_tui(ent,0, wnd, area);
+		break;
+	case _tui256_:
+		spectrum_draw_tui256(ent,0, wnd, area);
+		break;
+	case _rgba8888_:
+		spectrum_draw_pixel(ent,0, wnd, area);
+		break;
+	}
+}
+
+static void spectrum_take_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -108,17 +153,22 @@ static void spectrum_take_bycam(_obj* ent,void* slot, _syn* stack,int sp)
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	spectrum_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
+
+
+
+
 static void spectrum_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 	if(0 == stack)return;
 
-	switch(wnd->hfmt){
-	case _gl41list_:
+	switch(wnd->type){
+	case _wnd_:
+		spectrum_take_bywnd(ent,slot, wnd,area, stack,sp);
 		break;
 	default:
-		spectrum_take_bycam(ent,slot, stack,sp);
+		spectrum_take_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -159,8 +209,8 @@ static void spectrum_create(_obj* act)
 
 void spectrum_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('s', 'p', 'e', 'c', 't', 'r', 'u', 'm');
+	p->vfmt = _orig_;
+	p->type = hex64('s', 'p', 'e', 'c', 't', 'r', 'u', 'm');
 
 	p->oncreate = (void*)spectrum_create;
 	p->ondelete = (void*)spectrum_delete;

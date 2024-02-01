@@ -78,6 +78,11 @@ void stick_read_force(_obj* ent, _obj* sup, struct joint* jo, int len)
 	vec3_setlen(vt, ent->LVAL/2);
 	gl41solid_cylinder(sup, 0x808080, vc,vr,vf,vt);
 }
+static void stick_read_byscene_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp, void* buf,int len)
+{
+	_obj* wnd = stack[sp-8].pchip;
+	stick_read_force(ent,wnd, buf,len);
+}
 
 
 
@@ -147,7 +152,15 @@ static void stick_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 	switch(stack[sp-1].foottype){
 	case 'a':stick_read_a(ent,key, buf,len);break;
 	case 'b':stick_read_b(ent,key, buf,len);break;
-	case 'f':stick_read_force(ent,stack[sp-8].pchip, buf,len);break;
+	//case 'f':goto below switch
+	}
+
+	_obj* caller = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+	switch(caller->type){
+	default:
+		stick_read_byscene_byworld_bycam_bywnd(ent,foot, stack,sp, buf,len);
+		break;
 	}
 }
 static void stick_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
@@ -196,8 +209,8 @@ static void stick_create(_obj* ent, void* arg, int argc, u8** argv)
 
 void stick_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('s', 't', 'i', 'c','k', 0, 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('s', 't', 'i', 'c','k', 0, 0, 0);
 
 	p->oncreate = (void*)stick_create;
 	p->ondelete = (void*)stick_delete;

@@ -334,7 +334,7 @@ static void piano_draw_cli(
 
 
 
-static void piano_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void piano_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -343,22 +343,24 @@ static void piano_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	piano_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void piano_wnd(_obj* ent,void* foot, _syn* stack,int sp)
+static void piano_read_bywnd(_obj* ent,void* foot, _obj* wnd,void* area)
 {
-//wnd.area -> cam.gl41, cam.slot -> world.geom
-	_obj* wnd;struct style* area;
-	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
-
 	struct fstyle fs;
-	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.5;
-	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
-	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
-	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-0.5;
-
-	gl41data_before(wnd);
-	piano_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_nocam(wnd);
-	gl41data_after(wnd);
+	switch(wnd->vfmt){
+	case _bgra8888_:
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.5;
+		fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+		fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+		fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-0.5;
+		gl41data_before(wnd);
+		piano_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+		gl41data_nocam(wnd);
+		gl41data_after(wnd);
+		break;
+	}
 }
 
 
@@ -376,14 +378,11 @@ static void piano_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
-		piano_wnd(ent,foot, stack,sp);
-		break;
+	switch(caller->type){
+	case _wnd_:
+		piano_read_bywnd(ent,foot, caller,area);
 	default:
-		piano_wrl_cam_wnd(ent,foot, stack,sp);
+		piano_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -395,7 +394,7 @@ static void piano_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 	}
 
 	_obj* sup = stack[sp-2].pchip;
-	switch(sup->hfmt){
+	switch(sup->type){
 		case _gl41list_:piano_write_bywnd(ent,foot, stack,sp, arg,key, buf,len);break;
 	}
 }
@@ -436,8 +435,8 @@ static void piano_create(_obj* act)
 
 void piano_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('p', 'i', 'a', 'n', 'o', 0, 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('p', 'i', 'a', 'n', 'o', 0, 0, 0);
 
 	p->oncreate = (void*)piano_create;
 	p->ondelete = (void*)piano_delete;

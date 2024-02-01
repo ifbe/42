@@ -121,7 +121,7 @@ static void hbridge_draw_cli(
 
 
 
-static void hbridge_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void hbridge_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -134,21 +134,19 @@ static void hbridge_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 {
 	if(0 == stack)return;
 
-	_obj* caller;struct style* area;
-	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+	_obj* caller = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
 
 	//foot defined behavior
 	switch(stack[sp-1].foottype){
 	}
 
 	//caller defined behavior
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		break;
 	default:
-		hbridge_wrl_cam_wnd(ent,slot, stack,sp);
+		hbridge_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 	}
 }
 static void hbridge_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
@@ -182,8 +180,8 @@ static void hbridge_create(_obj* act, u8* buf)
 
 void hbridge_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('h','b','r','i','d','g','e',0);
+	p->vfmt = _orig_;
+	p->type = hex64('h','b','r','i','d','g','e',0);
 
 	p->oncreate = (void*)hbridge_create;
 	p->ondelete = (void*)hbridge_delete;

@@ -75,7 +75,6 @@ void cmdqwindow_delete(_obj* ogl)
 }
 void cmdqwindow_create(_obj* ogl)
 {
-	ogl->hfmt = _gl41cmdq_;
 	ogl->vfmt = _gl41cmdq_;
 
 	ogl->gl41cmdq.data = memoryalloc(0x100000, 0);

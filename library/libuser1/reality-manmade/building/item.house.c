@@ -159,7 +159,7 @@ static void house_draw_cli(
 
 
 
-static void house_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void house_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -184,13 +184,11 @@ static void house_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		break;
 	default:
-		house_wrl_cam_wnd(ent,foot, stack,sp);
+		house_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -230,8 +228,8 @@ static void house_create(_obj* act)
 
 void house_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('h', 'o', 'u', 's', 'e', 0, 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('h', 'o', 'u', 's', 'e', 0, 0, 0);
 
 	p->oncreate = (void*)house_create;
 	p->ondelete = (void*)house_delete;

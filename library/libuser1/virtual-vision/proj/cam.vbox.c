@@ -274,47 +274,18 @@ static void vrbox_camera(
 	data->dst.arg[1].data = frus->vc;
 	wnd->gl41list.world[0].camera[0] = act->CAMBUF;
 }
-
-
-
-
-static int vrbox_read_bycam(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
+//world - camera - window
+static int vrbox_visitworld(
+_obj* wor,struct style* geom,
+_obj* ent,void* slot,
+_obj* wnd,struct style* area,
+_syn* stack,int sp)
 {
-	_obj* wor;struct style* geom;
-	_obj* wnd;struct style* area;
-	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-
-	switch(wnd->hfmt){
-	case _tui_:
-	case _rgba_:
-		return 0;
+	//logtoall("%s\n", __func__);
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
 	case _gl41list_:
-		 vrbox_draw_gl41(ent,slot, wor,geom, wnd,area);
-	}
-	return 0;
-}
-static int vrbox_read_bywnd(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
-{
-//find world from camera
-	struct halfrel* tmp[2];
-	relationsearch(ent, _in_, &tmp[0], &tmp[1]);
-	stack[sp+0].pchip = tmp[0]->pchip;
-	stack[sp+0].pfoot = tmp[0]->pfoot;
-	stack[sp+0].foottype = tmp[0]->foottype;
-	stack[sp+1].pchip = tmp[1]->pchip;
-	stack[sp+1].pfoot = tmp[1]->pfoot;
-	stack[sp+1].foottype = tmp[1]->foottype;
-
-//[-2,-1]: wnd,area -> cam,togl
-//[+0,+1]: cam,towr -> wor,geom
-	_obj* wnd;struct style* area;
-	_obj* wor;struct style* geom;
-	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
-	wor = stack[sp+1].pchip;geom = stack[sp+1].pfoot;
-
-	switch(wnd->hfmt){
-	default:
 		//clear all
 		gl41data_before(wnd);
 		//camera matrix
@@ -323,7 +294,7 @@ static int vrbox_read_bywnd(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,in
 		vrbox_matrix(ent,slot, wor,geom);
 		vrbox_camera(ent,slot, wor,geom, wnd,area);
 		//render data
-		gl41data_taking(wor,0, stack,sp+2, 0,'v', buf,len);
+		gl41data_taking(wor,0, stack,sp+2, 0,'v', 0,0);
 		//enq++
 		gl41data_after(wnd);
 		break;
@@ -334,19 +305,42 @@ static int vrbox_read_bywnd(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,in
 
 
 
-static void vrbox_search(_obj* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static int vrbox_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+
+	switch(wnd->type){
+	case _tui_:
+	case _rgba_:
+		return 0;
+	case _gl41list_:
+		 vrbox_draw_gl41(ent,slot, wor,geom, wnd,area);
+	}
+	return 0;
 }
-static void vrbox_modify(_obj* act)
+static int vrbox_read_bywnd(_obj* ent,void* slot, _obj* wnd,void* area, _syn* stack,int sp)
 {
-}
-static void vrbox_delete(_obj* act)
-{
-}
-static void vrbox_create(_obj* act, void* str)
-{
-	act->MATBUF = memoryalloc(64*2, 0);
-	act->CAMBUF = memoryalloc(0x1000, 0);
+//[-2,-1]: wnd,area -> cam,togl
+
+//find world from camera
+	struct halfrel* tmp[2];
+	relationsearch(ent, _in_, &tmp[0], &tmp[1]);
+	stack[sp+0].pchip = tmp[0]->pchip;
+	stack[sp+0].pfoot = tmp[0]->pfoot;
+	stack[sp+0].foottype = tmp[0]->foottype;
+	stack[sp+1].pchip = tmp[1]->pchip;
+	stack[sp+1].pfoot = tmp[1]->pfoot;
+	stack[sp+1].foottype = tmp[1]->foottype;
+
+//[+0,+1]: cam,towr -> wor,geom
+	_obj* world = stack[sp+1].pchip;
+	struct style* geom = stack[sp+1].pfoot;
+
+	vrbox_visitworld(world,geom, ent,slot, wnd,area, stack,sp);
+	return 0;
 }
 
 
@@ -356,21 +350,20 @@ static int vrbox_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int cm
 {
 	if(0 == stack)return 0;
 
-	_obj* caller;struct style* area;
-	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+	_obj* caller = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
 
 	//foot defined behavior
 	switch(stack[sp-1].foottype){
 	}
 
 	//caller defined behavior
-	switch(caller->hfmt){
-	case _rgba_:
+	switch(caller->type){
+	case _wnd_:
+		vrbox_read_bywnd(ent,foot, caller,area, stack,sp);
 		break;
-	case _gl41list_:
-		return vrbox_read_bywnd(ent,foot, stack,sp, arg,cmd, buf,len);
 	default:
-		return vrbox_read_bycam(ent,foot, stack,sp, arg,cmd, buf,len);
+		return vrbox_read_byworld_bycam_bywnd(ent,foot, stack,sp, arg,cmd, buf,len);
 	}
 	return 0;
 }
@@ -400,10 +393,28 @@ static void vrbox_attach(struct halfrel* self, struct halfrel* peer)
 
 
 
+static void vrbox_search(_obj* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+{
+}
+static void vrbox_modify(_obj* act)
+{
+}
+static void vrbox_delete(_obj* act)
+{
+}
+static void vrbox_create(_obj* act, void* str)
+{
+	act->MATBUF = memoryalloc(64*2, 0);
+	act->CAMBUF = memoryalloc(0x1000, 0);
+}
+
+
+
+
 void vrbox_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('v', 'r', 'b', 'o', 'x', 0, 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('v', 'r', 'b', 'o', 'x', 0, 0, 0);
 
 	p->oncreate = (void*)vrbox_create;
 	p->ondelete = (void*)vrbox_delete;

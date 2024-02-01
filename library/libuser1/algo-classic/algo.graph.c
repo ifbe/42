@@ -70,7 +70,7 @@ static void graph_draw_pixel(
 			if(orig[i].type == _sup_)
 			{
 				aa = orig[i].addr;
-				p = &(aa->hfmt);
+				p = &(aa->type);
 			}
 			else if(orig[i].type == _ent_)
 			{
@@ -161,8 +161,8 @@ static void graph_draw_gl41(
 		{
 			case _sys_:rgb = 0x0000ff;str = (void*)&tmp->type;break;
 			case _art_:rgb = 0xff0000;str = (void*)&tmp->type;break;
-			case _sup_:rgb = 0xffff00;str = (void*)&tmp->hfmt;break;
-			case _ent_:rgb = 0x00ffff;str = (void*)&tmp->hfmt;break;
+			case _sup_:rgb = 0xffff00;str = (void*)&tmp->type;break;
+			case _ent_:rgb = 0x00ffff;str = (void*)&tmp->type;break;
 			default:rgb = 0xff00ff;str = (void*)"????????";
 		}
 		gl41string_center(win, rgb, &vbuf[j*3], tr, tf, str, 8);
@@ -403,8 +403,8 @@ static void graph_create(_obj* act, void* str)
 
 void graph_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('g', 'r', 'a', 'p', 'h', 0, 0, 0);
+	p->type = hex64('g', 'r', 'a', 'p', 'h', 0, 0, 0);
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)graph_create;
 	p->ondelete = (void*)graph_delete;

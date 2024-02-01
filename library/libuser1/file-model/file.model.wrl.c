@@ -57,7 +57,7 @@ static void wrl3d_world_camera_window(_obj* ent,void* slot, _syn* stack,int sp)
 	wrd = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 
-	switch(wnd->hfmt){
+	switch(wnd->type){
 	case _gl41list_:
 		wrl3d_gl41draw(ent,slot, scn,geom, wrd,camg, wnd,area);
 		break;
@@ -75,7 +75,7 @@ static void wrl3d_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int k
 	}
 
 	//caller defined behavior
-	switch(caller->hfmt){
+	switch(caller->type){
 	case _rgba_:
 	        break;
 	case _gl41list_:
@@ -115,8 +115,8 @@ static void wrl3d_create(_obj* act, void* str, int argc, u8** argv)
 
 void wrl3d_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('w','r','l','3','d', 0, 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('w','r','l','3','d', 0, 0, 0);
 
 	p->oncreate = (void*)wrl3d_create;
 	p->ondelete = (void*)wrl3d_delete;

@@ -84,10 +84,10 @@ static void status_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int 
 {
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
-//logtoall("fmt=%.8s\n", &sup->hfmt);
+//logtoall("fmt=%.8s\n", &sup->type);
 
-	switch(wnd->hfmt){
-	case _gl41list_:
+	switch(wnd->type){
+	case _wnd_:
 		status_read_bywnd(ent,slot, wnd,area);
 		break;
 	case _virtual_:
@@ -129,8 +129,8 @@ static void status_create(_obj* act, u8* arg)
 
 void status_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('s','t','a','t','u','s', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('s','t','a','t','u','s', 0, 0);
 
 	p->oncreate = (void*)status_create;
 	p->ondelete = (void*)status_delete;

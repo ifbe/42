@@ -55,14 +55,17 @@ static void kernel_wndctx(_obj* wnd)
 
 
 	//things
-	_obj* termnode = entity_alloc_prep_create(_ent_, _term_,0, 0, 0, 0);
+	_obj* termnode = entity_alloc_fromtype(_term_);
 	struct style* termfoot = style_alloc();
+	entity_create(termnode, 0, 0, 0);
 
-	_obj* gamenode = entity_alloc_prep_create(_ent_, _clock_,0, 0, 0, 0);
+	_obj* gamenode = entity_alloc_fromtype(_clock_);
 	struct style* gamefoot = style_alloc();
+	entity_create(gamenode, 0, 0, 0);
 
-	_obj* editnode = entity_alloc_prep_create(_ent_, _mmioedit_,0, 0, 0, 0);
+	_obj* editnode = entity_alloc_fromtype(_mmioedit_);
 	struct style* editfoot = style_alloc();
+	entity_create(editnode, 0, 0, 0);
 
 
 	//relation
@@ -255,7 +258,7 @@ int kernel_create(struct item* wrk, void* arg, int argc, u8** argv)
 	inithardware();
 
 	//
-	_obj* wnd = wrk->priv_ptr = supply_alloc_prep(0, _wnd_, 0, 0);
+	_obj* wnd = wrk->priv_ptr = supply_alloc_fromtype(_wnd_);
 	supply_create(wnd, 0, 0, 0);
 	kernel_wndctx(wnd);
 

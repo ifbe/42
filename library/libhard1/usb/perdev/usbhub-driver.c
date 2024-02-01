@@ -383,7 +383,7 @@ int usbhub_checkone(struct item* usb, int id)
 	);
 	if(ret < 0)return -9;
 /*
-	struct item* ccc = device_create(_usb_, 0, 0, 0);
+	struct item* ccc = device_alloc_prepobj(_dev_, _usb_, 0, 0);
 	if(ccc)usbany_linkup(ccc, 0, xhci, slot);
 */
 	return 0;

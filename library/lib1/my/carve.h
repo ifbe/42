@@ -1,5 +1,8 @@
 #include "const/def.h"
-#include "data/node-outer.h"
+
+#ifndef _MYCARVE_H
+#define _MYCARVE_H
+
 //
 #ifdef __ANDROID__
 	#define GLSL_VERSION "#version 320 es\n"
@@ -90,6 +93,7 @@ struct vertex{
 	u8 opaque;		//0=solid, n=opaque
 	u8 flag;		//4b align
 };
+/*
 struct drawqueue{
 	u32 type;		//clean, +tex, +vtx, tex0=tex[0] ...
 	u32 typesub;
@@ -135,7 +139,13 @@ struct per3d{
 	void* mt_vbuf;
 	void* mt_ibuf;
 };
-
+void carvetrigonindex_triangle_v3n3x3(float* vbuf,int vlen, u16* ibuf,int ilen, vec3 v0,vec3 v1,vec3 v2);
+void carvetrigonindex_rect_v3n3x3(    float* vbuf,int vlen, u16* ibuf,int ilen, vec3 vc,vec3 vr,vec3 vf);
+void carvetrigonindex_circle_v3n3x3(  float* vbuf,int vlen, u16* ibuf,int ilen, vec3 vc,vec3 vr,vec3 vf);
+void carvetrigonindex_cask_v3n3x3(    float* vbuf,int vlen, u16* ibuf,int ilen, vec3 vc,vec3 vr,vec3 vf,vec3 vt);
+void carvetrigonindex_prism4_v3n3x3(  float* vbuf,int vlen, u16* ibuf,int ilen, vec3 vc,vec3 vr,vec3 vf,vec3 vt);
+void carvetrigonindex_sphere_v3n3x3(  float* vbuf,int vlen, u16* ibuf,int ilen, vec3 vc,vec3 vr,vec3 vf,vec3 vt);
+*/
 
 
 
@@ -179,6 +189,7 @@ struct my3ddata
 
 
 
+//directx11
 struct dxdst
 {
 	//framebuffer
@@ -222,10 +233,32 @@ struct dx11data
 	struct dxdst dst;
 	u8 opadd[0x200 - sizeof(struct dxdst)];
 };
+struct dx11easy{
+	struct dx11data* camera;
+	struct dx11data* light;
+	struct dx11data* solid;
+	struct dx11data* opaque;
+};
+struct dx11world{
+	struct dx11data** camera;
+	struct dx11data** light;
+	struct dx11data** solid;
+	struct dx11data** opaque;
+};
+struct dx11list{
+	struct dx11world world[2];
+	void* hwnd;
+	void* spsave;
+};
+struct dx11cmdq{
+	u64* data;
+	u64* code;
+};
 
 
 
 
+//opengl
 struct gldst
 {
 /*
@@ -254,7 +287,7 @@ struct gldst
 	char* texname[8];
 
 	//android will distroy context, need check and recreate
-	u32 ctxage;
+	u32 glctxage;
 
 	//
 	u8 gpudata_head[0];
@@ -289,10 +322,44 @@ struct gl41data
 	struct gldst dst;
 	u8 opadd[0x200 - sizeof(struct gldst)];
 };
+//1
+struct gl41easy{
+	struct gl41data*  camera;
+	struct gl41data*  light;
+	struct gl41data*  solid;
+	struct gl41data*  opaque;
+};
+
+struct gl41world{
+	struct gl41data** camera;
+	struct gl41data** light;
+	struct gl41data** solid;
+	struct gl41data** opaque;
+};
+//2
+struct gl41list{
+	struct gl41world world[2];
+	u32 rendermode;
+
+	//context
+	void* glwnd;
+	u32 glctxage;
+	u64 gltime;
+
+	//event
+	void* glevto;
+	void* glsave;
+};
+//3
+struct gl41cmdq{
+	u64* data;
+	u64* code;
+};
 
 
 
 
+//vulkan
 struct vk12dst
 {
 	void* owner;
@@ -311,6 +378,7 @@ struct vk12data
 
 
 
+//metal
 struct mtdst
 {
 	void* owner;
@@ -355,148 +423,34 @@ struct mt20data
 	struct mtdst dst;
 	u8 opadd[0x200 - sizeof(struct mtdst)];
 };
+struct mt20easy{
+	struct mt20data* camera;
+	struct mt20data* light;
+	struct mt20data* solid;
+	struct mt20data* opaque;
+};
+struct mt20world{
+	struct mt20data** camera;
+	struct mt20data** light;
+	struct mt20data** solid;
+	struct mt20data** opaque;
+};
+struct mt20list{
+	struct mt20world world[2];
+
+	void* delegate;
+	void* view;
+};
+struct mt20cmdq{
+	u64* data;
+	u64* code;
+};
 
 
 
 
-//directx
-void dx11data_before(_obj* wnd);
-void dx11data_after(_obj* wnd);
-void dx11data_nocam(_obj* wnd);
-void dx11data_01cam(_obj* wnd);
-int dx11data_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
-
-void dx11solid_rect(_obj* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-/*
-void dx11point(              _obj* ctx, u32 rgb, vec3 vc);
-
-void dx11line(               _obj* ctx, u32 rgb, vec3 va, vec3 vb);
-void dx11line_rect(          _obj* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-
-void dx11solid_triangle(     _obj* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
-void dx11solid_rect(         _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void dx11solid_prism4(       _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void dx11solid_cylinder(     _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-
-void dx11opaque_rect(        _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void dx11opaque_prism4(      _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-
-void dx11ascii(              _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);
-void dx11ascii_center(       _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);
-void dx11unicode(            _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 uni);
-void dx11unicode_center(     _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 uni);
-void dx11utf8(               _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
-void dx11utf8_center(        _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
-
-void dx11string(              _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
-void dx11string_center(       _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
-void dx11decimal(             _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
-void dx11hexadecimal(         _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
-*/
 
 
 
 
-//metal
-void mt20data_before(_obj* wnd);
-void mt20data_after(_obj* wnd);
-int mt20data_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
-
-
-
-
-//opengl
-void gl41data_before(_obj* wnd);
-void gl41data_after(_obj* wnd);
-void gl41data_nocam(_obj* wnd);
-void gl41data_01cam(_obj* wnd);
-int gl41data_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len);
-
-void gl41point(              _obj* ctx, u32 rgb, vec3 vc);
-void gl41point_bezier(       _obj* ctx, u32 rgb, vec3 va, vec3 vb, vec3 vt);
-void gl41point_triangle(     _obj* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
-void gl41point_rect(         _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void gl41point_circle(       _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void gl41point_cone(         _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void gl41point_cask(         _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void gl41point_cylinder(     _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void gl41point_dodecahedron( _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void gl41point_icosahedron(  _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void gl41point_sphere(       _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-
-void gl41line(               _obj* ctx, u32 rgb, vec3 va, vec3 vb);
-void gl41line_shorter(       _obj* ctx, u32 rgb, vec3 va, vec3 vb);
-void gl41line_arrow(         _obj* ctx, u32 rgb, vec3 va, vec3 vb, vec3 vn);
-void gl41line_bezier(        _obj* ctx, u32 rgb, vec3 va, vec3 vb, vec3 vt);
-void gl41line_spring(        _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
-void gl41line_yshape(        _obj* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
-void gl41line_triangle(      _obj* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
-void gl41line_rect(          _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void gl41line_rectround(     _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void gl41line_rectselect(    _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void gl41line_hexagon(       _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void gl41line_circle(        _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void gl41line_gear(          _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, int tooth);
-void gl41line_rotategear(    _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, int tooth, float a);
-void gl41line_cone(          _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void gl41line_prism4(        _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void gl41line_cylinder(      _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void gl41line_dodecahedron(  _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void gl41line_icosahedron(   _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void gl41line_sphere(        _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-
-void gl41solid_triangle(     _obj* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
-void gl41solid_rect(         _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void gl41solid_circle(       _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void gl41solid_cone(         _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void gl41solid_prism4(       _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void gl41solid_cask(         _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void gl41solid_cylinder(     _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void gl41solid_gear(         _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu, int tooth);
-void gl41solid_rotategear(   _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu, int tooth, float a);
-void gl41solid_dodecahedron( _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void gl41solid_icosahedron(  _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void gl41solid_sphere(       _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void gl41solid_propeller(    _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu, int dir, int dt);
-
-void gl41opaque_triangle(    _obj* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
-void gl41opaque_rect(        _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void gl41opaque_circle(      _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void gl41opaque_cone(        _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void gl41opaque_prism4(      _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void gl41opaque_cask(        _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void gl41opaque_cylinder(    _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void gl41opaque_dodecahedron(_obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void gl41opaque_icosahedron( _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void gl41opaque_sphere(      _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void gl41opaque_propeller(   _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu, int dir, int dt);
-
-void gl41ascii(              _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);
-void gl41ascii_center(       _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);
-void gl41unicode(            _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 uni);
-void gl41unicode_center(     _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 uni);
-void gl41utf8(               _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
-void gl41utf8_center(        _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
-
-void gl41decimal(             _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
-void gl41hexadecimal(         _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
-void gl41hex8_center(         _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
-void gl41string(              _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
-void gl41string_center(       _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
-void gl41text(                _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
-void gl41text_reverse(        _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
-void gl41float(               _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, float data);
-void gl41double(              _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, double data);
-
-void gl41axis(                _obj* ctx);
-void gl41frustum(             _obj* ctx, struct fstyle* sty);
-void gl41boundingvolume(      _obj* ctx, u32 rgb, struct fstyle* sty, u32 flag);
-
-
-
-
-void mt20data_before(_obj* wnd);
-void mt20data_after(_obj* wnd);
-void mt20data_nocam(_obj* wnd);
-void mt20data_01cam(_obj* wnd);
-//void mt20solid_rect(         _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+#endif

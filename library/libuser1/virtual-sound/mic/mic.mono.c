@@ -37,8 +37,8 @@ static void monomic_create(_obj* act)
 
 void monomic_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('m', 'o', 'n', 'o', 'm', 'i', 'c', 0);
+	p->vfmt = _orig_;
+	p->type = hex64('m', 'o', 'n', 'o', 'm', 'i', 'c', 0);
 
 	p->oncreate = (void*)monomic_create;
 	p->ondelete = (void*)monomic_delete;

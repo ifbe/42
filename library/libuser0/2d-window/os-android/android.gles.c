@@ -73,9 +73,7 @@ int window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int 
 }
 int window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
-	switch(wnd->hfmt){
-	default:fullwindow_give(wnd,foot, stack,sp, arg,cmd, buf,len);
-	}
+	fullwindow_give(wnd,foot, stack,sp, arg,cmd, buf,len);
 	return 0;
 }
 void window_detach()
@@ -100,17 +98,13 @@ void window_delete(_obj* wnd)
 void window_create(_obj* wnd, void* arg)
 {
 	logtoall("@windowcreate\n");
-	switch(wnd->hfmt){
-	default:{
-		thewnd = wnd;
-		wnd->whdf.fbwidth = wnd->whdf.width = width;
-		wnd->whdf.fbheight= wnd->whdf.height= height;
-		logtoall("w=%d,h=%d\n", width, height);
 
-		fullwindow_create(wnd, 0, 0, 0);
-		break;
-	}//default
-	}//switch
+	thewnd = wnd;
+	wnd->whdf.fbwidth = wnd->whdf.width = width;
+	wnd->whdf.fbheight= wnd->whdf.height= height;
+	logtoall("w=%d,h=%d\n", width, height);
+
+	fullwindow_create(wnd, 0, 0, 0);
 }
 
 
@@ -127,9 +121,9 @@ void* window_alloc()
 void initwindow()
 {
 	while(0==height)checkevent();
-	fusion_easyag = artery_create(_easyag_, 0, 0, 0);
-	//fusion = artery_create(_mahony_, 0, 0, 0);
-	fusion_madgwick = artery_create(_madgwick_, 0, 0, 0);
+	fusion_easyag = artery_alloc_prepobj_create(_art_, _easyag_, 0, 0, 0, 0);
+	//fusion = artery_alloc_prepobj_create(_art_, _mahony_, 0, 0, 0, 0);
+	fusion_madgwick = artery_alloc_prepobj_create(_art_, _madgwick_, 0, 0, 0, 0);
 }
 void freewindow()
 {
@@ -188,7 +182,7 @@ void openwindow(struct android_app* theapp)
 	logtoall("GL Renderer = %s\n", glGetString(GL_RENDERER));
 	logtoall("GL Extensions = %s\n", glGetString(GL_EXTENSIONS));
 
-	if(thewnd)thewnd->gl41list.ctxage += 1;
+	if(thewnd)thewnd->gl41list.glctxage += 1;
 	candraw = 1;
 }
 void closewindow(struct android_app* theapp)

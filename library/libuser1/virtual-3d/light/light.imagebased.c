@@ -141,7 +141,7 @@ static void imagelight_draw_pixel(
 		dst = (win->buf) + (cy-hh+y)*stride*4 + (cx-ww)*4;
 		src = (act->buf) + 4*y*(act->whdf.width);
 		//logtoall("y=%d,%llx,%llx\n",y,dst,src);
-		if('b' == ((win->hfmt)&0xff))
+		if('b' == ((win->type)&0xff))
 		{
 			for(x=0;x<xmax;x++)dst[x] = src[x];
 		}
@@ -186,7 +186,16 @@ static void imagelight_event(
 
 
 
-static void imagelight_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void imagelight_read_bywnd(_obj* ent,void* foot, _obj* wnd,void* area)
+{
+	switch(wnd->vfmt){
+	case _rgba_:
+		break;
+	case _gl41list_:
+		break;
+	}
+}
+static void imagelight_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -195,9 +204,6 @@ static void imagelight_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	imagelight_draw_gl41(ent,slot, wor,geom, wnd,area);
 	imagelight_lightupdate(ent,slot, wnd,area);
-}
-static void imagelight_wnd(_obj* ent,void* foot, _syn* stack,int sp)
-{
 }
 
 
@@ -215,14 +221,12 @@ static void imagelight_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
-		imagelight_wnd(ent,slot, stack,sp);
+	switch(caller->type){
+	case _wnd_:
+		imagelight_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
-		imagelight_wrl_cam_wnd(ent,slot, stack,sp);
+		imagelight_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -271,8 +275,8 @@ static void imagelight_create(_obj* act, void* str)
 
 void imagelight_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('i','m','a','g','e','l','i','t');
+	p->vfmt = _orig_;
+	p->type = hex64('i','m','a','g','e','l','i','t');
 
 	p->oncreate = (void*)imagelight_create;
 	p->ondelete = (void*)imagelight_delete;

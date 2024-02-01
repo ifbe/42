@@ -175,15 +175,22 @@ int vjoy_event(struct event* ev, int x, int y, int z)
 static void vjoy_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
 {
 	struct fstyle fs;
-	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.5;
-	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
-	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
-	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-0.5;
 
-	gl41data_before(wnd);
-	vjoy_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_nocam(wnd);
-	gl41data_after(wnd);
+	switch(wnd->vfmt){
+	case _bgra8888_:
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.5;
+		fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+		fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+		fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-0.5;
+		gl41data_before(wnd);
+		vjoy_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+		gl41data_nocam(wnd);
+		gl41data_after(wnd);
+		break;
+	}
 }
 static void vjoy_write_bywnd(_obj* ent,void* foot, _syn* stack,int sp, struct event* ev,int len)
 {
@@ -239,8 +246,8 @@ static int vjoy_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->hfmt){
-	case _gl41list_:
+	switch(wnd->type){
+	case _wnd_:
 		vjoy_read_bywnd(ent,foot, wnd,area);break;
 	}
 	return 0;
@@ -248,8 +255,8 @@ static int vjoy_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key
 static int vjoy_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	_obj* wnd = stack[sp-2].pchip;
-	switch(wnd->hfmt){
-	case _gl41list_:
+	switch(wnd->type){
+	case _wnd_:
 		vjoy_write_bywnd(ent,foot, stack,sp, buf,len);break;
 	}
 	return 0;
@@ -268,8 +275,8 @@ static int vjoy_attach(struct halfrel* self, struct halfrel* peer)
 
 void vjoy_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex32('v', 'j', 'o', 'y');
+	p->vfmt = _orig_;
+	p->type = hex32('v', 'j', 'o', 'y');
 
 	p->oncreate = (void*)vjoy_create;
 	p->ondelete = (void*)vjoy_delete;

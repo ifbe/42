@@ -123,7 +123,7 @@ static void motor_draw_cli(
 
 
 
-static void motor_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void motor_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -148,13 +148,11 @@ static void motor_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		break;
 	default:
-		motor_wrl_cam_wnd(ent,foot, stack,sp);
+		motor_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -194,8 +192,8 @@ static void motor_create(_obj* act)
 
 void motor_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('m', 'o', 't', 'o', 'r', 0, 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('m', 'o', 't', 'o', 'r', 0, 0, 0);
 
 	p->oncreate = (void*)motor_create;
 	p->ondelete = (void*)motor_delete;

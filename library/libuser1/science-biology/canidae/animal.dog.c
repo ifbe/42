@@ -174,7 +174,7 @@ void robodog_write_int(_obj* act, int* src, int len)
 
 
 
-static void robodog_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void robodog_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -199,13 +199,11 @@ static void robodog_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		break;
 	default:
-		robodog_wrl_cam_wnd(ent,foot, stack,sp);
+		robodog_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -267,8 +265,8 @@ static void robodog_create(_obj* act, u8* arg, int argc, u8** argv)
 
 void robodog_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('r', 'o', 'b', 'o', 'd', 'o', 'g', 0);
+	p->vfmt = _orig_;
+	p->type = hex64('r', 'o', 'b', 'o', 'd', 'o', 'g', 0);
 
 	p->oncreate = (void*)robodog_create;
 	p->ondelete = (void*)robodog_delete;

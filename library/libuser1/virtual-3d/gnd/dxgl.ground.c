@@ -258,7 +258,27 @@ static void ground_draw_cli(
 
 
 
-static void ground_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void ground_read_bywnd(_obj* ent,void* foot, _obj* wnd,void* area)
+{
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		break;
+	}
+}
+static void ground_read_bymgr_bywnd(_obj* ent,void* foot, _obj* mgr,void* mgrarea, _syn* stack,int sp)
+{
+	_obj* wnd = stack[sp-4].pchip;
+	struct style* wndarea = stack[sp-4].pfoot;
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		break;
+	}
+}
+static void ground_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -266,9 +286,22 @@ static void ground_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	if(_camrts_ == wnd->hfmt)wnd = stack[sp-8].pchip;
 
-	switch(wnd->hfmt){
+	switch(wnd->vfmt){
+	case _dx11list_:ground_dx11_draw(ent,slot, wor,geom, wnd,area);break;
+	case _gl41list_:ground_gl41_draw(ent,slot, wor,geom, wnd,area);break;
+	}
+}
+static void ground_read_byworld_bycam_bymgr_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
+{
+	_obj* wor;struct style* geom;
+	_obj* wnd;struct style* area;
+	if(0 == stack)return;
+
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-8].pchip;area = stack[sp-6].pfoot;
+
+	switch(wnd->vfmt){
 	case _dx11list_:ground_dx11_draw(ent,slot, wor,geom, wnd,area);break;
 	case _gl41list_:ground_gl41_draw(ent,slot, wor,geom, wnd,area);break;
 	}
@@ -289,13 +322,15 @@ static void ground_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int 
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
+	switch(caller->type){
+	case _wnd_:
+		ground_read_bywnd(ent,slot, caller,area);
 		break;
-	case _gl41list_:
+	case _camrts_:
+		ground_read_bymgr_bywnd(ent,slot, caller,area, stack,sp);
 		break;
 	default:
-		ground_wrl_cam_wnd(ent,slot, stack,sp);
+		ground_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -387,8 +422,8 @@ static void ground_create(_obj* act, void* str, int argc, u8** argv)
 
 void ground_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('g', 'r', 'o', 'u', 'n', 'd', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('g', 'r', 'o', 'u', 'n', 'd', 0, 0);
 
 	p->oncreate = (void*)ground_create;
 	p->ondelete = (void*)ground_delete;

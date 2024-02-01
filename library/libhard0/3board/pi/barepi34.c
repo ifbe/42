@@ -74,11 +74,11 @@ void initarch()
 	struct item* p;
 
 	//timer
-	p = device_create(_tmr_, 0, 0, 0);
+	p = device_alloc_prepobj(_dev_, _tmr_, 0, 0);
 	initsystmr(p);
 
 	//cpu
-	p = device_create(_cpu_, 0, 0, 0);
+	p = device_alloc_prepobj(_dev_, _cpu_, 0, 0);
 	initcpu_bsp(p);
 	initcpu_ap(p);
 
@@ -113,11 +113,11 @@ void initbcm2837()
 	struct item* p;
 
 	//sdhost: it's sdcard on pi3, it's none on qemu
-	p = device_create(_mmc_, 0, 0, 0);
+	p = device_alloc_prepobj(_dev_, _mmc_, 0, 0);
 	initsdhost(p);
 
 	//sdhci_old: it's wifi on pi3, it's sdcard on qemu
-	p = device_create(_mmc_, 0, 0, 0);
+	p = device_alloc_prepobj(_dev_, _mmc_, 0, 0);
 	initsdhci_bcm283xsdcard(p, SDHCI_OFFS_OLD);
 
 	brcmdwc2_init();
@@ -149,19 +149,19 @@ void initbcm2711()
 	struct item* p;
 
 	//sdhost: can be confiured to use on gpio 22-26(sd0)
-	p = device_create(_mmc_, 0, 0, 0);
+	p = device_alloc_prepobj(_dev_, _mmc_, 0, 0);
 	initsdhost(p);
 
 	//sdhci_new: pi4.sdcard or cm4.emmc
-	p = device_create(_mmc_, 0, 0, 0);
+	p = device_alloc_prepobj(_dev_, _mmc_, 0, 0);
 	initsdhci_bcm2711sdcard(p, SDHCI_OFFS_NEW);
 
 	//sdhci_old: wifi		//todo
-	p = device_create(_wifi_, 0, 0, 0);
+	p = device_alloc_prepobj(_dev_, _wifi_, 0, 0);
 	initsdhci_wifi(p, SDHCI_OFFS_OLD);
 
 	//uart0: bt
-	p = device_create(_bt_, 0, 0, 0);
+	p = device_alloc_prepobj(_dev_, _bt_, 0, 0);
 	initrpibt();
 
 	//typec: dwc2 or internal_xhci

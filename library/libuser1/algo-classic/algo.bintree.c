@@ -212,7 +212,17 @@ static void bintree_event(
 
 
 
-static void bintree_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void bintree_read_bywnd(_obj* ent,void* slot, _obj* wnd,void* area)
+{
+	switch(wnd->vfmt){
+	case _bgra8888_:
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		break;
+	}
+}
+static void bintree_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -237,13 +247,12 @@ static void bintree_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
+		bintree_read_bywnd(ent,foot, caller,area);
 		break;
 	default:
-		bintree_wrl_cam_wnd(ent,foot, stack,sp);
+		bintree_read_byworld_bycam_bywnd(ent,foot, stack,sp);
 		break;
 	}
 }
@@ -283,8 +292,8 @@ static void bintree_create(_obj* act)
 
 void bintree_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('b', 'i', 'n', 't', 'r', 'e', 'e', 0);
+	p->type = hex64('b', 'i', 'n', 't', 'r', 'e', 'e', 0);
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)bintree_create;
 	p->ondelete = (void*)bintree_delete;

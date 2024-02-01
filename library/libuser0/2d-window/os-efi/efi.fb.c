@@ -1,8 +1,4 @@
 #include "libuser.h"
-#define _bgra8880_ hex64('b', 'g', 'r', 'a', '8', '8', '8', '0')
-#define _rgba8880_ hex64('r', 'g', 'b', 'a', '8', '8', '8', '0')
-#define _bgra8888_ hex64('b', 'g', 'r', 'a', '8', '8', '8', '8')
-#define _rgba8888_ hex64('r', 'g', 'b', 'a', '8', '8', '8', '8')
 void stdout_setwindow(void* node);
 void getscreen(void** _buf, u64* _fmt, int* _w, int* _h, int* _fbw, int* _fbh);
 //
@@ -125,7 +121,6 @@ void window_create(_obj* wnd)
 	logtoall("lfb=%p,fmt=%.8s, w=%d,h=%d, fbw=0x%x,fbh=0x%x\n", lfb,&fmt, w,h, fbw,fbh);
 
 	//wnd data
-	wnd->hfmt = _rgba_;
 	wnd->vfmt = fmt;
 
 	wnd->whdf.width = w;

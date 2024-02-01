@@ -49,7 +49,13 @@ static void gaafet_draw_gl41(
 
 
 
-static void gaafet_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void gaafet_read_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
+{
+}
+static void gaafet_read_byworld_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
+{
+}
+static void gaafet_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -57,12 +63,6 @@ static void gaafet_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	gaafet_draw_gl41(ent, slot, wor,geom, wnd,area);
-}
-static void gaafet_wrl_wnd(_obj* ent,void* slot, _syn* stack,int sp)
-{
-}
-static void gaafet_wnd(_obj* ent,void* slot, _syn* stack,int sp)
-{
 }
 
 
@@ -80,14 +80,12 @@ static void gaafet_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int 
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	//caller defined behavior
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
-		gaafet_wnd(ent,slot, stack,sp);break;
+	switch(caller->type){
+	case _wnd_:
+		gaafet_read_bywnd(ent,slot, stack,sp);
 		break;
 	default:
-		gaafet_wrl_cam_wnd(ent,slot, stack,sp);
+		gaafet_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 	}
 }
 static void gaafet_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
@@ -125,8 +123,8 @@ static void gaafet_create(_obj* act, void* arg, int argc, u8** argv)
 
 void gaafet_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('g','a','a','f','e','t', 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('g','a','a','f','e','t', 0, 0);
 
 	p->oncreate = (void*)gaafet_create;
 	p->ondelete = (void*)gaafet_delete;

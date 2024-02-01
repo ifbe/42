@@ -290,7 +290,7 @@ static void texball_draw_pixel(
 		dst = (win->buf) + (cy-hh+y)*stride*4 + (cx-ww)*4;
 		src = (act->buf) + 4*y*(act->whdf.width);
 		//logtoall("y=%d,%llx,%llx\n",y,dst,src);
-		if('b' == ((win->hfmt)&0xff))
+		if('b' == ((win->type)&0xff))
 		{
 			for(x=0;x<xmax;x++)dst[x] = src[x];
 		}
@@ -335,23 +335,29 @@ static void texball_event(
 
 
 
-static void texball_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void texball_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	switch(wnd->hfmt){
+	switch(wnd->type){
 	case _dx11list_:texball_dx11draw(ent,slot, wor,geom, wnd,area);break;
 	case _gl41list_:texball_gl41draw(ent,slot, wor,geom, wnd,area);break;
 	}
 }
-static void texball_wrl_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void texball_read_byworld_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 }
-static void texball_wnd(_obj* ent,void* slot, _obj* wnd,void* area)
+static void texball_read_bywnd(_obj* ent,void* slot, _obj* wnd,void* area)
 {
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		break;
+	}
 }
 
 
@@ -369,14 +375,12 @@ static void texball_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
-		texball_wnd(ent,slot, caller,area);
+	switch(caller->type){
+	case _wnd_:
+		texball_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
-		texball_wrl_cam_wnd(ent,slot, stack,sp);
+		texball_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -425,8 +429,8 @@ static void texball_create(_obj* act, void* str)
 
 void texball_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('t', 'e', 'x', 'b', 'a', 'l', 'l', 0);
+	p->vfmt = _orig_;
+	p->type = hex64('t', 'e', 'x', 'b', 'a', 'l', 'l', 0);
 
 	p->oncreate = (void*)texball_create;
 	p->ondelete = (void*)texball_delete;

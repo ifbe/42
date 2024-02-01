@@ -1,7 +1,3 @@
-#define u64 unsigned long long
-#define u32 unsigned int
-#define u16 unsigned short
-#define u8 unsigned char
 #include<stdio.h>
 #include<stdlib.h>
 #include<fcntl.h>
@@ -9,14 +5,75 @@
 #include<sys/ioctl.h>
 #include<linux/i2c.h>		//if you have problem
 #include<linux/i2c-dev.h>
-void printmemory(void*, int);
-void logtoall(void*, ...);
+#include "libhard.h"
 
 
 
 
-int i2c_read(int fd, int addr, u8* buf, u8 len)
+struct privdata{
+	int fd;
+};
+
+
+
+
+int i2c_free(_obj* obj)
 {
+	return 0;
+}
+_obj* i2c_alloc(u64 type, u8* name)
+{
+	int j;
+	u8 buf[256];
+
+	for(j=0;j<128;j++)
+	{
+		if(name[j] <= 0x20)
+		{
+			buf[j] = 0;
+			break;
+		}
+		else
+		{
+			buf[j] = name[j];
+		}
+	}
+	logtoall("i2c: %s\n", buf);
+
+	int fd = open((void*)buf, O_RDWR);
+
+	_obj* obj = device_alloc_fromfd(_i2c_, fd);
+	struct privdata* priv = (void*)obj->priv_256b;
+	priv->fd = fd;
+
+	return obj;
+}
+
+
+
+
+int i2c_create(_obj* obj,void* foot, int argc, char** argv)
+{
+	return 0;
+}
+int i2c_delete(_obj* obj)
+{
+	if(0 == obj)return 0;
+
+	struct privdata* priv = (void*)obj->priv_256b;
+	if(0 == priv)return 0;
+
+	int fd = priv->fd;
+	if(fd<=0)return 0;
+
+	return close(fd);
+}
+int i2c_read(_obj* obj,void* foot, u8* arg,int addr, u8* buf,int len)
+{
+	//logtoall("@%s:%p,%x,%p,%x\n", __func__, arg, addr, buf, len);
+	struct privdata* priv = (void*)obj->priv_256b;
+	int fd = priv->fd;
+
 	struct i2c_msg messages[2];
 	struct i2c_rdwr_ioctl_data packets;
 	u8 dev = addr>>16;
@@ -45,8 +102,12 @@ int i2c_read(int fd, int addr, u8* buf, u8 len)
 
 	return 1;
 }
-int i2c_write(int fd, int addr, u8* buf, u8 len)
+int i2c_write(_obj* obj,void* foot, u8* arg,int addr, u8* buf,int len)
 {
+	//logtoall("@%s:%p,%x,%p,%x\n", __func__, arg, addr, buf, len);
+	struct privdata* priv = (void*)obj->priv_256b;
+	int fd = priv->fd;
+
 	int j;
 	u8 out[512];
 	struct i2c_msg messages[1];
@@ -75,49 +136,4 @@ int i2c_write(int fd, int addr, u8* buf, u8 len)
 	}
 
 	return 1;
-}
-int i2c_stop(int fd, int dev, int reg, int len)
-{
-	return 0;
-}
-int i2c_linkup(int fd, int dev, int reg, int len)
-{
-	return 0;
-}
-
-
-
-
-int i2c_search()
-{
-	return 0;
-}
-int i2c_modity()
-{
-	return 0;
-}
-int i2c_delete(int fd)
-{
-	return close(fd);
-}
-int i2c_create(u8* name, int flag, int argc, u8** argv)
-{
-	int j;
-	u8 buf[256];
-
-	for(j=0;j<128;j++)
-	{
-		if(name[j] <= 0x20)
-		{
-			buf[j] = 0;
-			break;
-		}
-		else
-		{
-			buf[j] = name[j];
-		}
-	}
-
-	logtoall("i2c: %s\n", buf);
-	return open((void*)buf, O_RDWR);
 }

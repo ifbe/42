@@ -265,14 +265,12 @@ int digital_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, vo
 	}
 
 	//caller defined behavior
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
+		digital_read_board(ent,foot, stack,sp, arg,key);
 		break;
 	}
 
-	digital_read_board(ent,foot, stack,sp, arg,key);
 	return 0;
 }
 int digital_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8* buf,int len)

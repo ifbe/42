@@ -233,7 +233,7 @@ static void nmos_write_G(_obj* mos,int key, struct halfrel* stack,int sp, u8* bu
 
 
 
-static void nmos_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void nmos_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -242,10 +242,10 @@ static void nmos_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	nmos_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void nmos_wrl_wnd(_obj* ent,void* foot, _syn* stack,int sp)
+static void nmos_read_byworld_bywnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
 }
-static void nmos_wnd(_obj* ent,void* foot, _syn* stack,int sp)
+static void nmos_read_bywnd(_obj* ent,void* foot, _syn* stack,int sp)
 {
 	_obj* wnd;struct style* area;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
@@ -271,23 +271,27 @@ static void nmos_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int ke
 
 	//foot defined behavior
 	switch(stack[sp-1].foottype){
-	case 'D':nmos_read_D(ent,key, stack,sp, buf,len);return;
-	case 'S':nmos_read_S(ent,key, stack,sp, buf,len);return;
+	case 'D':
+		nmos_read_D(ent,key, stack,sp, buf,len);
+		return;
+	case 'S':
+		nmos_read_S(ent,key, stack,sp, buf,len);
+		return;
 	//case 'B':nmos_read_B(ent,key, stack,sp, buf,len);return;
-	case 'G':nmos_read_G(ent,key, stack,sp, buf,len);return;
+	case 'G':
+		nmos_read_G(ent,key, stack,sp, buf,len);
+		return;
 	}
 
 	//caller defined behavior
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
-		nmos_wnd(ent,foot, stack,sp);break;
+	switch(caller->type){
+	case _wnd_:
+		nmos_read_bywnd(ent,foot, stack,sp);break;
 	default:
-		nmos_wrl_cam_wnd(ent,foot, stack,sp);break;
+		nmos_read_byworld_bycam_bywnd(ent,foot, stack,sp);break;
 		break;
 	}
 }
@@ -349,8 +353,8 @@ static void nmos_create(_obj* ent, void* arg, int argc, u8** argv)
 
 void nmos_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex32('n','m','o','s');
+	p->vfmt = _orig_;
+	p->type = hex32('n','m','o','s');
 
 	p->oncreate = (void*)nmos_create;
 	p->ondelete = (void*)nmos_delete;

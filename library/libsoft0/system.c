@@ -32,13 +32,18 @@ void* uart_create(void*, int);
 int uart_delete(void*);
 int uart_reader(void*,void*, p64,int, void*,int);
 int uart_writer(void*,void*, p64,int, void*,int);
+//tun
+int inittun(void*);
+int freetun();
+void* tun_create(void*, int);
+int tun_delete(void*);
+int tun_reader(void*,void*, p64,int, void*,int);
+int tun_writer(void*,void*, p64,int, void*,int);
 //socket
 int initsocket(void*);
 int freesocket();
-void* socket_create(int fmt, void* arg);
+void* socket_create(int fmt, u8* path);
 int socket_delete(void*);
-int socket_search(int);
-int socket_modify(int);
 int socket_reader(void*,void*, p64,int, void*,int);
 int socket_writer(void*,void*, p64,int, void*,int);
 //
@@ -60,7 +65,7 @@ static int ppplen = 0;
 
 #define maxitem (0x100000/sizeof(struct item))
 //#define maxfoot 
-void system_init(u8* addr)
+void system_init(u8* addr, int size)
 {
 	logtoall("[8,a):system initing\n");
 
@@ -101,6 +106,18 @@ void system_exit()
 }
 
 
+int system_obj2fd(_obj* obj)
+{
+	u8* a0 = (u8*)sysobj;
+	u8* a1 = (u8*)obj;
+	return (a1-a0)/sizeof(struct item);
+}
+void* system_fd2obj(int fd)
+{
+	return &sysobj[fd];
+}
+
+
 
 
 void system_recycle()
@@ -112,22 +129,25 @@ void* system_alloc()
 	objlen -= 1;
 	return addr;
 }
-void* system_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt)
+void* system_alloc_fromtype(u64 type)
 {
-	return 0;
+	_obj* obj = system_alloc();
+	if(0 == obj)return 0;
+
+	//obj->tier = tier;		//should be tier: bootup
+	//obj->kind = kind;		//should be class: usb
+	obj->type = type;		//should be type: xhci
+	//obj->vfmt = vfmt;		//should be model: intelxhci
+	return obj;
 }
-
-
-
-
-void* system_create(u64 type, void* argstr, int argc, u8** argv)
+void* system_alloc_frompath(u64 type, u8* path)
 {
 	int j,k,ret;
 	u8 host[0x100];	//127.0.0.1
 	int port;	//2222
 
 	u8* t;		//http
-	u8* name = argstr;
+	u8* name = path;
 	if(0 == type){
 		for(j=0;j<16;j++){
 			if(name[j] <= 0x20)break;
@@ -186,6 +206,12 @@ void* system_create(u64 type, void* argstr, int argc, u8** argv)
 		per->type = _uart_;
 		return per;
 
+	case _tap_:
+		break;
+
+	case _tun_:
+		break;
+
 	case _RAW_:		//raw server
 		per = socket_create(_RAW_, name);
 		if(0 == per)return 0;
@@ -236,9 +262,24 @@ void* system_create(u64 type, void* argstr, int argc, u8** argv)
 		return per;
 	}
 
+	return per;
+}
+void* system_alloc_fromfd(u64 type, int fd)
+{
+	_obj* obj = system_fd2obj(fd);
+
+	obj->type = type;
+	return obj;
+}
+
+
+
+
+int system_create(_obj* obj, void* argstr, int argc, u8** argv)
+{
 	return 0;
 }
-int system_delete(struct item* oo)
+int system_delete(_obj* oo)
 {
 	struct relation* rel;
 	if(0 == oo)return 0;
@@ -278,10 +319,10 @@ int system_delete(struct item* oo)
 		socket_delete(oo);
 	}
 	}
-	oo->type = 0;
-	oo->type = 0;
-	oo->hfmt = 0;
 	oo->vfmt = 0;
+	oo->type = 0;
+	oo->kind = 0;
+	oo->tier = 0;
 	return 0;
 }
 int system_reader(_obj* sys,void* foot, p64 arg,int cmd, void* buf,int len)
@@ -306,7 +347,7 @@ int system_writer(_obj* sys,void* foot, p64 arg,int cmd, void* buf,int len)
 
 
 
-int system_attach(struct halfrel* self, struct halfrel* peer)
+int system_attach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* peer)
 {
 	_obj* oo = self->pchip;
 	switch(oo->type){
@@ -336,7 +377,7 @@ int system_attach(struct halfrel* self, struct halfrel* peer)
 	}
 	return 0;
 }
-int system_detach(struct halfrel* self, struct halfrel* peer)
+int system_detach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* peer)
 {
 	_obj* oo = self->pchip;
 	switch(oo->type){
@@ -413,16 +454,16 @@ int systemcommand_search(u8* name)
 	if(0 == name){
 		for(j=0;j<maxitem;j++){
 			act = &sysobj[j];
-			if((0 == act->type)&&(0 == act->hfmt))continue;
+			if(0 == act->type)continue;
 			logtoall("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
-				&act->tier, &act->type, &act->hfmt, &act->hfmt);
+				&act->tier, &act->kind, &act->type, &act->vfmt);
 		}
 		if(0 == j)logtoall("empty system\n");
 	}
 	else{
 		for(j=0;j<0x100;j++){
-			if(0 == sysobj[j].hfmt)break;
-			if(0 == cmp(&sysobj[j].hfmt, name))logtoall("name=%d,node=%p\n", name, &sysobj[j]);
+			if(0 == sysobj[j].type)break;
+			if(0 == cmp(&sysobj[j].type, name))logtoall("name=%d,node=%p\n", name, &sysobj[j]);
 			break;
 		}
 	}

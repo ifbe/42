@@ -157,17 +157,27 @@ static void field_draw_cli(
 
 
 
-static void field_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void field_read_bywnd(_obj* ent,void* slot, _obj* wnd,void* area)
+{
+	switch(wnd->vfmt){
+	case _rgba8888_:
+		break;
+	case _gl41list_:
+		break;
+	}
+}
+static void field_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	switch(wnd->hfmt){
+	switch(wnd->type){
 	case _dx11list_:
 	case _mt20list_:
-	case _gl41list_:
 	case _vk12list_:
+		break;
+	case _gl41list_:
 		field_draw_gl41(ent,slot, wor,geom, wnd,area);
 		break;
 	}
@@ -188,13 +198,12 @@ static void field_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int k
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
+		field_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
-		field_wrl_cam_wnd(ent,slot, stack,sp);
+		field_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -259,8 +268,8 @@ static void field_create(_obj* act)
 
 void field_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('f', 'i', 'e', 'l', 'd', 0, 0, 0);
+	p->vfmt = _orig_;
+	p->type = hex64('f', 'i', 'e', 'l', 'd', 0, 0, 0);
 
 	p->oncreate = (void*)field_create;
 	p->ondelete = (void*)field_delete;

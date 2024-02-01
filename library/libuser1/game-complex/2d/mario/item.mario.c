@@ -63,7 +63,7 @@ static void mario_draw_pixel(
 		dst = (win->rgbanode.buf) + (cy-hh+y)*stride*4 + (cx-ww)*4;
 		src = (act->listptr.buf0) + 4*y*(act->whdf.width);
 		//logtoall("y=%d,%llx,%llx\n",y,dst,src);
-		if('b' == ((win->hfmt)&0xff))
+		if('b' == ((win->type)&0xff))
 		{
 			for(x=0;x<xmax;x++)dst[x] = src[x];
 		}
@@ -348,7 +348,7 @@ static void mario_draw_cli(
 
 
 
-static void mario_wrl_cam_wnd(_obj* ent,void* slot, _syn* stack,int sp)
+static void mario_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
@@ -372,13 +372,11 @@ static void mario_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int k
 	_obj* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(caller->hfmt){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	switch(caller->type){
+	case _wnd_:
 		break;
 	default:
-		mario_wrl_cam_wnd(ent,slot, stack,sp);
+		mario_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -449,8 +447,9 @@ static void mario_create(_obj* act, void* str)
 
 void mario_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('m', 'a', 'r', 'i', 'o', 0, 0, 0);
+	p->kind = _game_;
+	p->type = hex64('m', 'a', 'r', 'i', 'o', 0, 0, 0);
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)mario_create;
 	p->ondelete = (void*)mario_delete;

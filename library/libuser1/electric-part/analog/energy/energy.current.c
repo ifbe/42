@@ -72,8 +72,8 @@ static void isrc_create(_obj* act, u8* buf)
 
 void isrc_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex32('i','s','r','c');
+	p->vfmt = _orig_;
+	p->type = hex32('i','s','r','c');
 
 	p->oncreate = (void*)isrc_create;
 	p->ondelete = (void*)isrc_delete;

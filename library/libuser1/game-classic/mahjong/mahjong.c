@@ -49,8 +49,9 @@ static void mahjong_create(_obj* act)
 
 void mahjong_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('m', 'a', 'h', 'j', 'o', 'n', 'g', 0);
+	p->kind = _game_;
+	p->type = hex64('m', 'a', 'h', 'j', 'o', 'n', 'g', 0);
+	p->vfmt = _orig_;
 
 	p->oncreate = (void*)mahjong_create;
 	p->ondelete = (void*)mahjong_delete;

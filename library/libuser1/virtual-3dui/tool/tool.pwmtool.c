@@ -93,7 +93,15 @@ static void pwmtool_draw_cli(
 
 
 
-static void pwmtool_take_bycam(_obj* ent,void* slot, _syn* stack,int sp)
+static void sketchpad_read_bywnd(_obj* ent,void* slot, _obj* wnd,void* area)
+{
+	switch(wnd->vfmt){
+	case _gl41list_:
+		pwmtool_draw_gl41(ent,slot, wnd,area);
+		break;
+	}
+}
+static void pwmtool_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 }
 
@@ -105,12 +113,12 @@ static void pwmtool_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->hfmt){
-	case _gl41list_:
+	switch(wnd->type){
+	case _wnd_:
 		pwmtool_draw_gl41(ent,slot, wnd,area);
 		break;
 	default:
-		pwmtool_take_bycam(ent,slot, stack,sp);
+		pwmtool_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }
@@ -152,8 +160,8 @@ static void pwmtool_create(_obj* act)
 
 void pwmtool_register(_obj* p)
 {
-	p->type = _orig_;
-	p->hfmt = hex64('p', 'w', 'm', 't', 'o', 'o', 'l', 0);
+	p->vfmt = _orig_;
+	p->type = hex64('p', 'w', 'm', 't', 'o', 'o', 'l', 0);
 
 	p->oncreate = (void*)pwmtool_create;
 	p->ondelete = (void*)pwmtool_delete;

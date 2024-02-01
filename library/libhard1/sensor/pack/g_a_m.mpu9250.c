@@ -32,6 +32,9 @@ enum mpu9250{
 	FIFO_R_W      = 0x74,
 	WHO_AM_I      = 0x75,
 };
+struct privdata{
+	int useproto;
+};
 
 
 
@@ -338,12 +341,14 @@ int mpu9250_read( struct item* dri,void* foot, _syn* stack,int sp, p64 arg,int i
 }
 int mpu9250_write(struct item* dri,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len)
 {
-	int ret;
-	float tmp[10];
 	logtoall("@mpu9250_write:%p,%p\n", dri,foot);
 
+	int ret;
+	float tmp[10];
+	struct privdata* priv = (void*)dri->priv_256b;
+
 	if(_clk_ == stack[sp-1].foottype){
-		switch(dri->hfmt){
+		switch(priv->useproto){
 		case _i2c_:ret = mpu9250_i2cread(dri, tmp);break;
 		case _spi_:ret = mpu9250_spiread(dri, tmp);break;
 		default:return 0;
@@ -359,22 +364,23 @@ int mpu9250_detach(struct halfrel* self, struct halfrel* peer)
 }
 int mpu9250_attach(struct halfrel* self, struct halfrel* peer)
 {
-	struct item* drv;
 	logtoall("@mpu9250_attach: %.4s\n", &self->foottype);
 
-	drv = self->pchip;
+	struct item* drv = self->pchip;
 	if(0 == drv)return 0;
+
+	struct privdata* priv = (void*)drv->priv_256b;
 
 	switch(self->foottype){
 	case _i2c_:{
 		mpu9250_i2cinit(drv);
-		drv->hfmt = _i2c_;
+		priv->useproto = _i2c_;
 		break;
 	}
 	case _spi_:{
 		mpu9250_spiinit(drv);
 		spi9250_slv8963_start(drv);
-		drv->hfmt = _spi_;
+		priv->useproto = _spi_;
 		break;
 	}
 	}

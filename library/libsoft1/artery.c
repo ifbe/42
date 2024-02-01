@@ -734,7 +734,7 @@ static int elelen = 0;
 
 
 #define maxitem (0x100000/sizeof(_obj))
-void artery_init(u8* addr)
+void artery_init(u8* addr, int size)
 {
 	logtoall("[a,c):artery initing\n");
 
@@ -776,1034 +776,408 @@ void* artery_alloc()
 	elelen -= 1;
 	return addr;
 }
-void* artery_alloc_prep(u64 tier, u64 type, u64 hfmt, u64 vfmt)
+void* artery_alloc_fromtype(u64 type)
 {
-	return 0;
+	_obj* obj = artery_alloc();
+	if(0 == obj)return 0;
+
+	//obj->tier = tier;		//should be tier: bootup
+	//obj->kind = kind;		//should be class: usb
+	obj->type = type;		//should be type: xhci
+	//obj->vfmt = vfmt;		//should be model: intelxhci
+	return obj;
+}
+void* artery_alloc_fromurl(u64 type, u8* url)
+{
+	if(0 == type){
+		int ret = parsetypefromurl(url, (void*)&type);
+		if(0 == ret)return 0;	//unknown
+		url += ret;
+	}
+	logtoall("type=%.8s,url=%s\n", (void*)&type, url);
+
+	_obj* obj = artery_alloc_fromtype(type);
+	return obj;
 }
 
 
 
-
-void* artery_create(u64 type, void* arg, int argc, u8** argv)
+int artery_create(_obj* obj, void* url, int argc, u8** argv)
 {
-	int j,fd,ret,port;
-	_obj* e;
-	_obj* f;
-	u8* url = arg;
-	if(0 == type)
-	{
-		ret = parsetypefromurl(url, (void*)&type);
-		if(0 == ret)return 0;	//unknown
+	switch(obj->type){
+	case _control_:
+		control_create(obj, url, argc, argv);
+		break;
+	case _crawler_:
+		crawler_create(obj, url, argc, argv);
+		break;
+	case _search_:
+		search_create(obj, url, argc, argv);
+		break;
+	case _vt100_:
+		vt100_create(obj, url, argc, argv);
+		break;
 
-		url += ret;
-		logtoall("type=%.8s,url=%s\n", (void*)&type, url);
-	}
-
-	//
-	if(_control_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _control_;
-		control_create(e, url, argc, argv);
-		return e;
-	}
-	if(_crawler_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _crawler_;
-		crawler_create(e, url, argc, argv);
-		return e;
-	}
-	if(_search_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _search_;
-		search_create(e, url, argc, argv);
-		return e;
-	}
-	if(_vt100_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _vt100_;
-		vt100_create(e, url, argc, argv);
-		return e;
-	}
-
-	if(_ann_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _ann_;
-		ann_create(e, url, argc, argv);
-		return e;
-	}
+	case _ann_:
+		ann_create(obj, url, argc, argv);
+		break;
 
 	//
-	if(_pump_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _pump_;
-		pump_create(e, url, argc, argv);
-		return e;
-	}
-	if(_stor_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _stor_;
-		stor_create(e, url, argc, argv);
-		return e;
-	}
-	if(_filetype_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _filetype_;
-		filetype_create(e, url, argc, argv);
-		return e;
-	}
-	if(_fileauto_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _fileauto_;
-		fileauto_create(e, url, argc, argv);
-		return e;
-	}
+	case _pump_:
+		pump_create(obj, url, argc, argv);
+		break;
+	case _stor_:
+		stor_create(obj, url, argc, argv);
+		break;
+	case _filetype_:
+		filetype_create(obj, url, argc, argv);
+		break;
+	case _fileauto_:
+		fileauto_create(obj, url, argc, argv);
+		break;
 
 	//part table
-	if(_mbr_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _mbr_;
-		mbrclient_create(e, url, argc, argv);
-		return e;
-	}
-	if(_gpt_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _gpt_;
-		gptclient_create(e, url, argc, argv);
-		return e;
-	}
+	case _mbr_:
+		mbrclient_create(obj, url, argc, argv);
+		break;
+	case _gpt_:
+		gptclient_create(obj, url, argc, argv);
+		break;
 
 	//file system
-	if(_fat_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _fat_;
-		fatclient_create(e, url, argc, argv);
-		return e;
-	}
-	if(_ntfs_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _ntfs_;
-		ntfsclient_create(e, url, argc, argv);
-		return e;
-	}
-	if(_hfs_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _hfs_;
-		hfsclient_create(e, url, argc, argv);
-		return e;
-	}
-	if(_ext_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _ext_;
-		extclient_create(e, url, argc, argv);
-		return e;
-	}
+	case _fat_:
+		fatclient_create(obj, url, argc, argv);
+		break;
+	case _ntfs_:
+		ntfsclient_create(obj, url, argc, argv);
+		break;
+	case _hfs_:
+		hfsclient_create(obj, url, argc, argv);
+		break;
+	case _ext_:
+		extclient_create(obj, url, argc, argv);
+		break;
 
 	//codec
-	if(_h264_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _h264_;
-		h264_create(e, url, argc, argv);
-		return e;
-	}
+	case _h264_:
+		h264_create(obj, url, argc, argv);
+		break;
 
 	//mux
-	if(_easymux_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _easymux_;
-		easymux_create(e, url, argc, argv);
-		return e;
-	}
-	if(_mediamux_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _mediamux_;
-		mediamux_create(e, url, argc, argv);
-		return e;
-	}
-	if(_flvserver_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _flvserver_;
-		flvserver_create(e, url, argc, argv);
-		return e;
-	}
+	case _easymux_:
+		easymux_create(obj, url, argc, argv);
+		break;
+	case _mediamux_:
+		mediamux_create(obj, url, argc, argv);
+		break;
+	case _flvserver_:
+		flvserver_create(obj, url, argc, argv);
+		break;
 
 	//test
-	if(_echo_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _echo_;
-		echo_create(e, url, argc, argv);
-		return e;
-	}
-	if(_dbgf32_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _dbgf32_;
-		dbgf32_create(e, url, argc, argv);
-		return e;
-	}
-	if(_dbghex_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _dbghex_;
-		dbghex_create(e, url, argc, argv);
-		return e;
-	}
-	if(_goslow_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _goslow_;
-		goslow_create(e, url, argc, argv);
-		return e;
-	}
+	case _echo_:
+		echo_create(obj, url, argc, argv);
+		break;
+	case _dbgf32_:
+		dbgf32_create(obj, url, argc, argv);
+		break;
+	case _dbghex_:
+		dbghex_create(obj, url, argc, argv);
+		break;
+	case _goslow_:
+		goslow_create(obj, url, argc, argv);
+		break;
 
 	//
-	if(_fftpcm_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _fftpcm_;
-		fftpcm_create(e, url, argc, argv);
-		return e;
-	}
-	if(_fftrgb_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _fftrgb_;
-		fftrgb_create(e, url, argc, argv);
-		return e;
-	}
+	case _fftpcm_:
+		fftpcm_create(obj, url, argc, argv);
+		break;
+	case _fftrgb_:
+		fftrgb_create(obj, url, argc, argv);
+		break;
 
 	//image
-	if(_img2pbr_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _img2pbr_;
-		img2pbr_create(e, url, argc, argv);
-		return e;
-	}
-	if(_rotate_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _rotate_;
-		rotate_create(e, url, argc, argv);
-		return e;
-	}
-	if(_sobel_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _sobel_;
-		sobel_create(e, url, argc, argv);
-		return e;
-	}
-	if(_picfmt_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _picfmt_;
-		picfmt_create(e, url, argc, argv);
-		return e;
-	}
-	if(_pcmfmt_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _pcmfmt_;
-		pcmfmt_create(e, url, argc, argv);
-		return e;
-	}
+	case _img2pbr_:
+		img2pbr_create(obj, url, argc, argv);
+		break;
+	case _rotate_:
+		rotate_create(obj, url, argc, argv);
+		break;
+	case _sobel_:
+		sobel_create(obj, url, argc, argv);
+		break;
+	case _picfmt_:
+		picfmt_create(obj, url, argc, argv);
+		break;
+	case _pcmfmt_:
+		pcmfmt_create(obj, url, argc, argv);
+		break;
 
 	//
-	if(_recut_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _recut_;
-		recut_create(e, url, argc, argv);
-		return e;
-	}
-	if(_renalu_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _renalu_;
-		renalu_create(e, url, argc, argv);
-		return e;
-	}
-	if(_reline_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _reline_;
-		reline_create(e, url, argc, argv);
-		return e;
-	}
-	if(_reorder_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _reorder_;
-		reorder_create(e, url, argc, argv);
-		return e;
-	}
+	case _recut_:
+		recut_create(obj, url, argc, argv);
+		break;
+	case _renalu_:
+		renalu_create(obj, url, argc, argv);
+		break;
+	case _reline_:
+		reline_create(obj, url, argc, argv);
+		break;
+	case _reorder_:
+		reorder_create(obj, url, argc, argv);
+		break;
 
 	//
-	if(_qu2eu_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _qu2eu_;
-		qu2eu_create(e, url, argc, argv);
-		return e;
-	}
-	if(_str2vec_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _str2vec_;
-		str2vec_create(e, url, argc, argv);
-		return e;
-	}
+	case _qu2eu_:
+		qu2eu_create(obj, url, argc, argv);
+		break;
+	case _str2vec_:
+		str2vec_create(obj, url, argc, argv);
+		break;
 
 	//ahrs
-	if(_easyag_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _easyag_;
-		easyag_create(e, url, argc, argv);
-		return e;
-	}
-	if(_mahony_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _mahony_;
-		mahony_create(e, url, argc, argv);
-		return e;
-	}
-	if(_madgwick_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _madgwick_;
-		madgwick_create(e, url, argc, argv);
-		return e;
-	}
+	case _easyag_:
+		easyag_create(obj, url, argc, argv);
+		break;
+	case _mahony_:
+		mahony_create(obj, url, argc, argv);
+		break;
+	case _madgwick_:
+		madgwick_create(obj, url, argc, argv);
+		break;
 
 	//
-	if(_gcode_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
+	case _gcode_:
+		gcodeclient_create(obj, url, argc, argv);
+		break;
+	case _Gcode_:
+		gcodeserver_create(obj, url, argc, argv);
+		break;
 
-		e->type = _gcode_;
-		gcodeclient_create(e, url, argc, argv);
-		return e;
-	}
-	if(_Gcode_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
+	//
+	case _mavlink_:
+		mavlinkclient_create(obj, url, argc, argv);
+		break;
+	case _Mavlink_:
+		mavlinkserver_create(obj, url, argc, argv);
+		break;
 
-		e->type = _Gcode_;
-		gcodeserver_create(e, url, argc, argv);
-		return e;
-	}
-	if(_mavlink_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
+	//
+	case _nema0183_:
+		nema0183client_create(obj, url, argc, argv);
+		break;
+	case _Nema0183_:
+		nema0183server_create(obj, url, argc, argv);
+		break;
 
-		e->type = _mavlink_;
-		mavlinkclient_create(e, url, argc, argv);
-		return e;
-	}
-	if(_Mavlink_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _Mavlink_;
-		mavlinkserver_create(e, url, argc, argv);
-		return e;
-	}
-	if(_nema0183_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _nema0183_;
-		nema0183client_create(e, url, argc, argv);
-		return e;
-	}
-	if(_Nema0183_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _Nema0183_;
-		nema0183server_create(e, url, argc, argv);
-		return e;
-	}
-	if(_vehicle_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _vehicle_;
-		vehicleclient_create(e, url, argc, argv);
-		return e;
-	}
-	if(_Vehicle_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _Vehicle_;
-		vehicleserver_create(e, url, argc, argv);
-		return e;
-	}
+	//
+	case _vehicle_:
+		vehicleclient_create(obj, url, argc, argv);
+		break;
+	case _Vehicle_:
+		vehicleserver_create(obj, url, argc, argv);
+		break;
 
 	//boop
-	if(_BOOTP_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _BOOTP_;
-		bootpserver_create(e, url, argc, argv);
-		return e;
-	}
-	if(_bootp_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _bootp_;
-		bootpclient_create(e, url, argc, argv);
-		return e;
-	}
+	case _BOOTP_:
+		bootpserver_create(obj, url, argc, argv);
+		break;
+	case _bootp_:
+		bootpclient_create(obj, url, argc, argv);
+		break;
 
 	//dhcp
-	if(_DHCP_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _DHCP_;
-		dhcpserver_create(e, url, argc, argv);
-		return e;
-	}
-	if(_dhcp_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _dhcp_;
-		dhcpclient_create(e, url, argc, argv);
-		return e;
-	}
+	case _DHCP_:
+		dhcpserver_create(obj, url, argc, argv);
+		break;
+	case _dhcp_:
+		dhcpclient_create(obj, url, argc, argv);
+		break;
 
 	//dns
-	if(_DNS_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _DNS_;
-		dnsserver_create(e, url, argc, argv);
-		return e;
-	}
-	if(_dns_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _dns_;
-		dnsclient_create(e, url, argc, argv);
-		return e;
-	}
+	case _DNS_:
+		dnsserver_create(obj, url, argc, argv);
+		break;
+	case _dns_:
+		dnsclient_create(obj, url, argc, argv);
+		break;
 
 	//ntp
-	if(_NTP_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _NTP_;
-		ntpserver_create(e, url, argc, argv);
-		return e;
-	}
-	if(_ntp_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _ntp_;
-		ntpclient_create(e, url, argc, argv);
-		return e;
-	}
+	case _NTP_:
+		ntpserver_create(obj, url, argc, argv);
+		break;
+	case _ntp_:
+		ntpclient_create(obj, url, argc, argv);
+		break;
 
 	//tftp: client,server
-	if(_tftp_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _tftp_;
-		tftpclient_create(e, url, argc, argv);
-		return e;
-	}
-	if(_Tftp_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _Tftp_;
-		tftpserver_create(e, url, argc, argv);
-		return e;
-	}
+	case _tftp_:
+		tftpclient_create(obj, url, argc, argv);
+		break;
+	case _Tftp_:
+		tftpserver_create(obj, url, argc, argv);
+		break;
 
 	//quic: master,server,client
-	if(_QUIC_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _QUIC_;
-		quicmaster_create(e, url, argc, argv);
-		return e;
-	}
-	if(_Quic_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _Quic_;
-		quicserver_create(e, url, argc, argv);
-		return e;
-	}
-	if(_quic_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _quic_;
-		quicclient_create(e, url, argc, argv);
-		return e;
-	}
+	case _QUIC_:
+		quicmaster_create(obj, url, argc, argv);
+		break;
+	case _Quic_:
+		quicserver_create(obj, url, argc, argv);
+		break;
+	case _quic_:
+		quicclient_create(obj, url, argc, argv);
+		break;
 
 	//udptrav: master,server,client
-	if(_UDPTRAV_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _UDPTRAV_;
-		udptravmaster_create(e, url, argc, argv);
-		return e;
-	}
-	if(_Udptrav_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _Udptrav_;
-		udptravserver_create(e, url, argc, argv);
-		return e;
-	}
-	if(_udptrav_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _udptrav_;
-		udptravclient_create(e, url, argc, argv);
-		return e;
-	}
+	case _UDPTRAV_:
+		udptravmaster_create(obj, url, argc, argv);
+		break;
+	case _Udptrav_:
+		udptravserver_create(obj, url, argc, argv);
+		break;
+	case _udptrav_:
+		udptravclient_create(obj, url, argc, argv);
+		break;
 
 	//tcptrav: master,server,client
-	if(_TCPTRAV_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _TCPTRAV_;
-		tcptravmaster_create(e, url, argc, argv);
-		return e;
-	}
-	if(_Tcptrav_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _Tcptrav_;
-		tcptravserver_create(e, url, argc, argv);
-		return e;
-	}
-	if(_tcptrav_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _tcptrav_;
-		tcptravclient_create(e, url, argc, argv);
-		return e;
-	}
+	case _TCPTRAV_:
+		tcptravmaster_create(obj, url, argc, argv);
+		break;
+	case _Tcptrav_:
+		tcptravserver_create(obj, url, argc, argv);
+		break;
+	case _tcptrav_:
+		tcptravclient_create(obj, url, argc, argv);
+		break;
 
 	//
-	if(_PROXY_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _PROXY_;
-		proxymaster_create(e, url, argc, argv);
-		return e;
-	}
-	if(_Proxy_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _Proxy_;
-		proxyserver_create(e, url, argc, argv);
-		return e;
-	}
-	if(_proxy_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _proxy_;
-		proxyclient_create(e, url, argc, argv);
-		return e;
-	}
-	if(_SOCKS_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _SOCKS_;
-		socksmaster_create(e, url, argc, argv);
-		return e;
-	}
-	if(_Socks_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _Socks_;
-		socksserver_create(e, url, argc, argv);
-		return e;
-	}
-	if(_socks_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _socks_;
-		socksclient_create(e, url, argc, argv);
-		return e;
-	}
+	case _PROXY_:
+		proxymaster_create(obj, url, argc, argv);
+		break;
+	case _Proxy_:
+		proxyserver_create(obj, url, argc, argv);
+		break;
+	case _proxy_:
+		proxyclient_create(obj, url, argc, argv);
+		break;
+	case _SOCKS_:
+		socksmaster_create(obj, url, argc, argv);
+		break;
+	case _Socks_:
+		socksserver_create(obj, url, argc, argv);
+		break;
+	case _socks_:
+		socksclient_create(obj, url, argc, argv);
+		break;
 
 	//ssh: master,server,client
-	if(_SSH_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _SSH_;
-		sshmaster_create(e, url, argc, argv);
-
-		return e;
-	}
-	if(_Ssh_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _Ssh_;
-		sshserver_create(e, url, argc, argv);
-
-		return e;
-	}
-	if(_ssh_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _ssh_;
-		sshclient_create(e, url, argc, argv);
-
-		return e;
-	}
+	case _SSH_:
+		sshmaster_create(obj, url, argc, argv);
+		break;
+	case _Ssh_:
+		sshserver_create(obj, url, argc, argv);
+		break;
+	case _ssh_:
+		sshclient_create(obj, url, argc, argv);
+		break;
 
 	//telnet: master,server,client
-	if(_TELNET_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _TELNET_;
-		telnetmaster_create(e, url, argc, argv);
-
-		return e;
-	}
-	if(_Telnet_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _Telnet_;
-		telnetserver_create(e, url, argc, argv);
-
-		return e;
-	}
-	if(_telnet_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _telnet_;
-		telnetclient_create(e, url, argc, argv);
-
-		return e;
-	}
+	case _TELNET_:
+		telnetmaster_create(obj, url, argc, argv);
+		break;
+	case _Telnet_:
+		telnetserver_create(obj, url, argc, argv);
+		break;
+	case _telnet_:
+		telnetclient_create(obj, url, argc, argv);
+		break;
 
 	//rdp: master,server,client
-	if(_RDP_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _RDP_;
-		rdpmaster_create(e, url, argc, argv);
-
-		return e;
-	}
-	if(_Rdp_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _Rdp_;
-		rdpserver_create(e, url, argc, argv);
-
-		return e;
-	}
-	if(_rdp_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _rdp_;
-		rdpclient_create(e, url, argc, argv);
-
-		return e;
-	}
+	case _RDP_:
+		rdpmaster_create(obj, url, argc, argv);
+		break;
+	case _Rdp_:
+		rdpserver_create(obj, url, argc, argv);
+		break;
+	case _rdp_:
+		rdpclient_create(obj, url, argc, argv);
+		break;
 
 	//vnc: master,server,client
-	if(_VNC_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _VNC_;
-		vncmaster_create(e, url, argc, argv);
-
-		return e;
-	}
-	if(_Vnc_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _Vnc_;
-		vncserver_create(e, url, argc, argv);
-
-		return e;
-	}
-	if(_vnc_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _vnc_;
-		vncclient_create(e, url, argc, argv);
-
-		return e;
-	}
+	case _VNC_:
+		vncmaster_create(obj, url, argc, argv);
+		break;
+	case _Vnc_:
+		vncserver_create(obj, url, argc, argv);
+		break;
+	case _vnc_:
+		vncclient_create(obj, url, argc, argv);
+		break;
 
 	//http: master,server,client
-	if(_HTTP_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _HTTP_;
-		httpmaster_create(e, url, argc, argv);
-		return e;
-	}
-	if(_Http_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _Http_;
-		httpserver_create(e, url, argc, argv);
-		return e;
-	}
-	if(_http_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _http_;
-		httpclient_create(e, url, argc, argv);
-
-		return e;
-	}
+	case _HTTP_:
+		httpmaster_create(obj, url, argc, argv);
+		break;
+	case _Http_:
+		httpserver_create(obj, url, argc, argv);
+		break;
+	case _http_:
+		httpclient_create(obj, url, argc, argv);
+		break;
 
 	//http: master,server,client
-	if(_HTTP3_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _HTTP3_;
-		http3master_create(e, url, argc, argv);
-		return e;
-	}
-	if(_Http3_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _Http3_;
-		http3server_create(e, url, argc, argv);
-		return e;
-	}
-	if(_http3_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _http3_;
-		http3client_create(e, url, argc, argv);
-
-		return e;
-	}
+	case _HTTP3_:
+		http3master_create(obj, url, argc, argv);
+		break;
+	case _Http3_:
+		http3server_create(obj, url, argc, argv);
+		break;
+	case _http3_:
+		http3client_create(obj, url, argc, argv);
+		break;
 
 	//ws: master,server,client
-	if(_WS_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _WS_;
-		wsmaster_create(e, url, argc, argv);
-
-		return e;
-	}
-	if(_Ws_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _Ws_;
-		wsserver_create(e, url, argc, argv);
-
-		return e;
-	}
-	if(_ws_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _ws_;
-		wsclient_create(e, url, argc, argv);
-
-		return e;
-	}
+	case _WS_:
+		wsmaster_create(obj, url, argc, argv);
+		break;
+	case _Ws_:
+		wsserver_create(obj, url, argc, argv);
+		break;
+	case _ws_:
+		wsclient_create(obj, url, argc, argv);
+		break;
 
 	//tls: master,server,client
-	if(_TLS1_2_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _TLS1_2_;
-		tls1v2master_create(e, url, argc, argv);
-
-		return e;
-	}
-	if(_Tls1_2_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _Tls1_2_;
-		tls1v2server_create(e, url, argc, argv);
-
-		return e;
-	}
-	if(_tls1_2_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _tls1_2_;
-		tls1v2client_create(e, url, argc, argv);
-
-		return e;
-	}
-	if(_TLS1_3_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _TLS1_3_;
-		tls1v3master_create(e, url, argc, argv);
-
-		return e;
-	}
-	if(_Tls1_3_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _Tls1_3_;
-		tls1v3server_create(e, url, argc, argv);
-
-		return e;
-	}
-	if(_tls1_3_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _tls1_3_;
-		tls1v3client_create(e, url, argc, argv);
-
-		return e;
-	}
+	case _TLS1_2_:
+		tls1v2master_create(obj, url, argc, argv);
+		break;
+	case _Tls1_2_:
+		tls1v2server_create(obj, url, argc, argv);
+		break;
+	case _tls1_2_:
+		tls1v2client_create(obj, url, argc, argv);
+		break;
+	case _TLS1_3_:
+		tls1v3master_create(obj, url, argc, argv);
+		break;
+	case _Tls1_3_:
+		tls1v3server_create(obj, url, argc, argv);
+		break;
+	case _tls1_3_:
+		tls1v3client_create(obj, url, argc, argv);
+		break;
 
 	//serve: master,server,client
-	if(_PARTY_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _PARTY_;
-		partymaster_create(e, url, argc, argv);
-
-		return e;
-	}
-	if(_Party_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _Party_;
-		partyserver_create(e, url, argc, argv);
-
-		return e;
-	}
-	if(_party_ == type)
-	{
-		e = artery_alloc();
-		if(0 == e)return 0;
-
-		e->type = _party_;
-		partyclient_create(e, url, argc, argv);
-
-		return e;
+	case _PARTY_:
+		partymaster_create(obj, url, argc, argv);
+		break;
+	case _Party_:
+		partyserver_create(obj, url, argc, argv);
+		break;
+	case _party_:
+		partyclient_create(obj, url, argc, argv);
+		break;
 	}
 
 	return 0;
@@ -1824,7 +1198,7 @@ int artery_writer(_obj* art,void* foot, p64 arg, int idx, void* buf, int len)
 
 
 
-int artery_attach(struct halfrel* self, struct halfrel* peer)
+int artery_attach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ele;
 	//logtoall("@artery_attach\n");
@@ -1921,7 +1295,7 @@ int artery_attach(struct halfrel* self, struct halfrel* peer)
 	}//switch
 	return 0;
 }
-int artery_detach(struct halfrel* self, struct halfrel* peer)
+int artery_detach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ele;
 	//logtoall("@arterydetach\n");
@@ -2282,16 +1656,16 @@ int arterycommand_search(u8* name)
 	if(0 == name){
 		for(j=0;j<maxitem;j++){
 			act = &ele[j];
-			if((0 == act->type)&&(0 == act->hfmt))continue;
+			if(0 == act->type)continue;
 			logtoall("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
-				&act->tier, &act->type, &act->hfmt, &act->hfmt);
+				&act->tier, &act->kind, &act->type, &act->vfmt);
 		}
 		if(0 == j)logtoall("empty artery\n");
 	}
 	else{
 		for(j=0;j<0x100;j++){
-			if(0 == ele[j].hfmt)break;
-			if(0 == cmp(&ele[j].hfmt, name))logtoall("name=%d,node=%p\n", name, &ele[j]);
+			if(0 == ele[j].type)break;
+			if(0 == cmp(&ele[j].type, name))logtoall("name=%d,node=%p\n", name, &ele[j]);
 			break;
 		}
 	}
