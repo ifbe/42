@@ -48,8 +48,8 @@ static int height = 0;
 static _obj* thewnd = 0;
 static int candraw = 0;
 //
-struct artery* fusion_easyag = 0;
-struct artery* fusion_madgwick = 0;
+struct item* fusion_easyag = 0;
+struct item* fusion_madgwick = 0;
 //
 int age[3] = {0};
 vec3 sensor[3] = {
@@ -121,9 +121,12 @@ void* window_alloc()
 void initwindow()
 {
 	while(0==height)checkevent();
-	fusion_easyag = artery_alloc_prepobj_create(_art_, _easyag_, 0, 0, 0, 0);
-	//fusion = artery_alloc_prepobj_create(_art_, _mahony_, 0, 0, 0, 0);
-	fusion_madgwick = artery_alloc_prepobj_create(_art_, _madgwick_, 0, 0, 0, 0);
+	fusion_easyag = artery_alloc_fromtype(_easyag_);
+	if(fusion_easyag)artery_create(fusion_easyag, 0, 0, 0);
+	//fusion_manohy = artery_alloc_fromtype(_mahony_);
+	//if(fusion_mahony)artery_create(fusion_mahony, 0, 0, 0);
+	fusion_madgwick = artery_alloc_fromtype(_madgwick_);
+	if(fusion_madgwick)artery_create(fusion_madgwick, 0, 0, 0);
 }
 void freewindow()
 {

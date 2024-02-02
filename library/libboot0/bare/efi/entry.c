@@ -12,9 +12,14 @@ EFI_STATUS efi_main(EFI_HANDLE handle, EFI_SYSTEM_TABLE* efitab)
 {
 	sethandleandefitab(handle, efitab);
 
-	void* all = origin_create(_efimain_, efi_main, 0, 0);
-	void* wrk = bootup_create(_kernel_, 0, 0, 0);
-	bootup_delete(wrk);
+	//init world, store args
+	void* all = origin_alloc_fromarg(_efimain_, efi_main, 0 ,0);
+	origin_create(all, 0, 0, 0);
+	//call subcmd, until return
+	void* thr = bootup_alloc_fromtype(_kernel_);
+	bootup_create(thr, 0, 0, 0);
+
+	bootup_delete(thr);
 	origin_delete(all);
 
 	return EFI_SUCCESS;

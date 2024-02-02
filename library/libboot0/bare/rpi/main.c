@@ -21,9 +21,14 @@ int main(u32 dtb)
 {
 	setdtb((void*)(u64)dtb);
 
-	void* all = origin_create(_start_, main, 0, 0);
-	void* wrk = bootup_create(_kernel_, 0, 0, 0);
-	bootup_delete(wrk);
+	//init world, store args
+	void* all = origin_alloc_fromarg(_start_, main, 0 ,0);
+	origin_create(all, 0, 0, 0);
+	//call subcmd, until return
+	void* thr = bootup_alloc_fromtype(_kernel_);
+	bootup_create(thr, 0, 0, 0);
+
+	bootup_delete(thr);
 	origin_delete(all);
 	return 0;
 }

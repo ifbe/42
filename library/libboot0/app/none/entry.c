@@ -13,6 +13,7 @@ int main(int argc, char** argv)
 
 	//init world, store args
 	void* all = origin_alloc_fromarg(_main_, main, argc, (u8**)argv);
+	origin_create(all, 0, argc, (u8**)argv);
 	//call subcmd, until return
 	void* thr = bootup_alloc_fromtype(_subcmd_);
 	bootup_create(thr, 0, argc, (u8**)argv);

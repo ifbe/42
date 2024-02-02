@@ -62,13 +62,14 @@ int filemanager_registerpart(_obj* node, void* foot)
 		case _ntfs_:
 		case _ext_:
 		case _hfs_:
-			fsys = artery_alloc_prepobj_create(_art_, tmp[j].type,0,0,0,0);
+			fsys = artery_alloc_fromtype(tmp[j].type);
 			if(0 == fsys)continue;
+			artery_create(fsys, 0, 0, 0);
 
 			rel = relationcreate(fsys,0,_art_,_src_, node,(void*)(tmp[j].start<<9),_art_,_dst_);
 			if(0 == rel)continue;
 
-			artery_attach((void*)&rel->dst, (void*)&rel->src);
+			relationattach((void*)&rel->dst, (void*)&rel->src);
 
 			filemanager_registerfsys(fsys, 0);
 		}
@@ -87,11 +88,13 @@ int filemanager_registerdisk(void* node, void* foot)
 	//2.check
 
 	//3.check what is in the disk
-	_obj* tmp = artery_alloc_prepobj_create(_art_, _fileauto_,0,0,0,0);
+	_obj* tmp = artery_alloc_fromtype(_fileauto_);
 	if(0 == tmp)return -1;
+	artery_create(tmp, 0, 0, 0);
+
 	struct relation* rel = relationcreate(tmp,0,_art_,_src_, node,foot,_dev_,_dst_);
 	if(0 == rel)return -2;
-	artery_attach((void*)&rel->dst, (void*)&rel->src);
+	relationattach((void*)&rel->dst, (void*)&rel->src);
 
 	//4.mount it
 	switch(tmp->type){

@@ -200,8 +200,13 @@ void android_main(struct android_app* app)
 
 	androidsensor_init(app);
 
-	void* all = origin_create(_ndkmain_, 0, 0, 0);
-	void* thr = bootup_create(_guiapp_, 0, 0, 0);
+	//init world, store args
+	void* all = origin_alloc_fromarg(_ndkmain_, android_main, 0, 0);
+	origin_create(all, 0, 0, 0);
+	//call subcmd, until return
+	void* thr = bootup_alloc_fromtype(_guiapp_);
+	bootup_create(thr, 0, 0, 0);
+
 	bootup_delete(thr);
 	origin_delete(all);
 

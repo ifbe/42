@@ -17,9 +17,13 @@ int main(int argc, char** argv)
 	if(argc <= 1)prep();
 */
 	//init world, store args
-	void* all = origin_create(_win32_, main, argc, (u8**)argv);
-	//call mython, until return
-	void* thr = bootup_create(_subcmd_, 0, argc, (u8**)argv);
+	void* all = origin_alloc_fromarg(_win32_, main, argc, (u8**)argv);
+	origin_create(all, 0, argc, (u8**)argv);
+	//call subcmd, until return
+	void* thr = bootup_alloc_fromtype(_subcmd_);
+	bootup_create(thr, 0, argc, (u8**)argv);
+
+	//main loop
 
 	bootup_delete(thr);
 	origin_delete(all);

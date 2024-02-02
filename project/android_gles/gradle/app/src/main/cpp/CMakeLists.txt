@@ -121,6 +121,7 @@ ${LIB42}/libhard0/device.c
 )
 endif()
 set(libhard1
+${LIB42}/libhard1/gpio/gpio.test.c
 ${LIB42}/libhard1/gpio/gpio.l298n.c
 ${LIB42}/libhard1/map/acpi/devmap.acpi.c
 ${LIB42}/libhard1/map/dts/devmap.dts.c
@@ -251,7 +252,6 @@ ${LIB42}/libsoft1/libauto/estimate/filter/filter.kalman.c
 ${LIB42}/libsoft1/libauto/estimate/filter/filter.lowpass.c
 ${LIB42}/libsoft1/libauto/estimate/filter/filter.median.c
 ${LIB42}/libsoft1/libauto/estimate/fusion/fusion.c
-${LIB42}/libsoft1/libauto/script/script.c
 ${LIB42}/libsoft1/libchem/chem.equation.c
 ${LIB42}/libsoft1/libfile/certificate/cert.pem.c
 ${LIB42}/libsoft1/libfile/certificate/cert.x509.c
@@ -414,7 +414,6 @@ ${LIB42}/libsoft1/libnet/4.use/any/http2.c
 ${LIB42}/libsoft1/libnet/4.use/any/http3.c
 ${LIB42}/libsoft1/libnet/4.use/tcp/tcp.dl.c
 ${LIB42}/libsoft1/libnet/4.use/tcp/tcp.ftp.c
-${LIB42}/libsoft1/libnet/4.use/tcp/tcp.fuckgfw.c
 ${LIB42}/libsoft1/libnet/4.use/tcp/tcp.party.c
 ${LIB42}/libsoft1/libnet/4.use/tcp/tcp.proxy.c
 ${LIB42}/libsoft1/libnet/4.use/tcp/tcp.rdp.c
@@ -993,11 +992,11 @@ ${LIB42}/libuser1/virtual-3dui/tool/tool.sketchpad.c
 ${LIB42}/libuser1/virtual-3dui/tool/tool.wireshark.c
 ${LIB42}/libuser1/virtual-3dui/tool/uiux.oscillo.c
 ${LIB42}/libuser1/virtual-3dui/tool/uiux.spectrum.c
-${LIB42}/libuser1/virtual-3dui/tool/uiux.texmix.c
 ${LIB42}/libuser1/virtual-3dui/tool/uiux.video.c
 ${LIB42}/libuser1/virtual-3dui/tool/uiux.voxel.c
 ${LIB42}/libuser1/virtual-3dui/widget/uiux.button.c
 ${LIB42}/libuser1/virtual-3dui/widget/uiux.picture.c
+${LIB42}/libuser1/virtual-3dui/widget/uiux.texmix.c
 ${LIB42}/libuser1/virtual-3dui/widget/uiux.qrcode.c
 ${LIB42}/libuser1/virtual-3dui/widget/uiux.slider.c
 ${LIB42}/libuser1/virtual-root/thing.c

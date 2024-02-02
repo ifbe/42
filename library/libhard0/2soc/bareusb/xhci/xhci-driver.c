@@ -1534,7 +1534,7 @@ int xhci_newdevunderhub(struct item* xhci, int parentslot, u32* portstatus, int 
 	childctx->parent_port = hubport_countfrom1;
 
 	//let usb do rest
-	struct item* usb = device_alloc_prepobj(_dev_, _usb_, 0, 0);
+	struct item* usb = device_alloc_fromtype(_usb_);
 	if(usb)usbany_linkup(usb, 0, xhci, childslot);
 
 thisdone:
@@ -1801,7 +1801,7 @@ void xhci_acceptport(struct item* xhci, int from0)
 	slotdata->myctx.devctx.hub_portcount = 0;
 
 	//let usb do rest
-	struct item* usb = device_alloc_prepobj(_dev_, _usb_, 0, 0);
+	struct item* usb = device_alloc_fromtype(_usb_);
 	if(usb)usbany_linkup(usb, 0, xhci, slot);
 
 thisdone:

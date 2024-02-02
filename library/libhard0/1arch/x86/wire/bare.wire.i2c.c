@@ -1,50 +1,31 @@
-#define u64 unsigned long long
-#define u32 unsigned int
-#define u16 unsigned short
-#define u8 unsigned char
-void logtoall(char*,...);
+#include "libhard.h"
 
 
 
 
-//
-int i2c_read(u8 dev,u8 reg,u8* buf,u8 count)
+int i2c_read(_obj* obj,u8 reg,u8* buf,u8 count)
 {
 	return 0;
 }
-int i2c_write(u8 dev,u8 reg,u8* buf,u8 count)
+int i2c_write(_obj* obj,u8 reg,u8* buf,u8 count)
 {
 	return 0;
 }
 
-
-
-
-int i2c_list(char* towhere)
+int i2c_create(_obj* obj)
 {
 	return 0;
 }
-int i2c_choose(int num,char* p)
+int i2c_delete(_obj* obj)
 {
 	return 0;
 }
 
-
-
-
-void i2c_linkup(char* p)
+int i2c_free(_obj* obj)
 {
+	return 0;
 }
-void i2c_discon()
+_obj* i2c_alloc(u64 type, void* path)
 {
-}
-
-
-
-
-void i2c_create()
-{
-}
-void i2c_delete()
-{
+	return 0;
 }

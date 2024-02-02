@@ -44,11 +44,11 @@ void initmap()
 void initdbg()
 {
 	//debug serial
-	struct item* uart = device_alloc_prepobj(_dev_, _uart_, 0, 0);
+	struct item* uart = device_alloc_fromtype(_uart_);
 	initboarddebug(uart);
 
 	//debug framebuffer
-	_obj* wnd = supply_alloc_prepobj(0, _wnd_, 0, 0);
+	_obj* wnd = supply_alloc_fromtype(_wnd_);
 	supply_create(wnd, 0, 0, 0);
 
 	//print all pending log
@@ -66,7 +66,7 @@ void initcpu0()
 	localapic_check();
 
 	//cpu_bsp: gdt,paging,idt,apic...
-	p = device_alloc_prepobj(_dev_, _cpu_, 0, 0);
+	p = device_alloc_fromtype(_cpu_);
 	initcpu_bsp(p);
 }
 
@@ -82,11 +82,11 @@ void initarch()
 	struct item* p;
 
 	//ioapic or dual8259
-	p = device_alloc_prepobj(_dev_, _irq_, 0, 0);
+	p = device_alloc_fromtype(_irq_);
 	initirq(p);
 
 	//timer
-	p = device_alloc_prepobj(_dev_, _tmr_, 0, 0);
+	p = device_alloc_fromtype(_tmr_);
 	inittimer();
 
 	//cpu_app: after cpu_bsp and pic and timer
@@ -108,7 +108,7 @@ void initsoc()
 	init8042();
 
 	//pci
-	p = device_alloc_prepobj(_dev_, _pci_, 0, 0);
+	p = device_alloc_fromtype(_pci_);
 	initpci_port(p);
 	initpci_mmio();
 }

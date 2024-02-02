@@ -1,52 +1,31 @@
-#define u64 unsigned long long
-#define u32 unsigned int
-#define u16 unsigned short
-#define u8 unsigned char
-void logtoall(char*,...);
+#include "libhard.h"
 
 
 
 
-//
-int spi_read()
+int spi_read(_obj* obj,u8 reg,u8* buf,u8 count)
 {
 	return 0;
 }
-int spi_write()
+int spi_write(_obj* obj,u8 reg,u8* buf,u8 count)
 {
 	return 0;
 }
 
-
-
-
-int spi_list(char* towhere)
+int spi_create(_obj* obj)
 {
 	return 0;
 }
-int spi_choose(int num,char* p)
+int spi_delete(_obj* obj)
 {
 	return 0;
 }
 
-
-
-
-int spi_linkup(char* p)
+int spi_free(_obj* obj)
 {
 	return 0;
 }
-int spi_discon()
+_obj* spi_alloc(u64 type, void* path)
 {
 	return 0;
-}
-
-
-
-
-void spi_create()
-{
-}
-void spi_delete()
-{
 }
