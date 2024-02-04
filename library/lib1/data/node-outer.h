@@ -483,6 +483,7 @@ void* supply_alloc();
 void* supply_alloc_fromtype(u64 type);
 void* supply_alloc_frompath(u64 type, u8* path);
 void* supply_alloc_fromfd(u64 type, int fd);
+void* supply_findtype(u64 type);
 //
 int supply_create(_obj*, void* addr, int argc, u8** argv);
 int supply_delete(_obj*);

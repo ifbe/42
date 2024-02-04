@@ -141,8 +141,14 @@ void pinid_recycle()
 
 
 
-void supply_recycle()
+void* supply_findtype(u64 type)
 {
+	int j;
+	_obj* obj;
+	for(j=0;j<0x100;j++){
+		if(type == supply[j].type)return &supply[j];
+	}
+	return 0;
 }
 void* supply_alloc()
 {
@@ -235,6 +241,9 @@ void* supply_alloc_fromtype(u64 type)
 	}//switch
 
 	return obj;
+}
+void supply_recycle()
+{
 }
 
 
