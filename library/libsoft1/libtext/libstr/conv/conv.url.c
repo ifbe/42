@@ -2,7 +2,7 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-int decstr2data(void*, void*);
+int decstr2u32(void*, void*);
 int ncmp(void*, void*, int);
 //
 void printmemory(char*, int);
@@ -123,7 +123,7 @@ int parseurl(u8* buf, int len, u8* addr, int* port)
 			addr[j] = 0;
 
 			j++;
-			j += decstr2data(buf+j, port);
+			j += decstr2u32(buf+j, port);
 			return j;
 		}
 	}
@@ -209,7 +209,7 @@ found1:
 	url += j+1;
 	for(j=0;j<8;j++){
 		if(' ' != url[j]){
-			decstr2data(url+j, &val);
+			decstr2u32(url+j, &val);
 			goto found2;
 		}
 	}

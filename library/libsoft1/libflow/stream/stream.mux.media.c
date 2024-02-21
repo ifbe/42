@@ -6,8 +6,8 @@
 #define _a0to_ hex32('a','0','t','o')
 #define _v0by_ hex32('v','0','b','y')
 #define _v0to_ hex32('v','0','t','o')
+int hexstr2u64(void*, void*);
 int sleep_us(int);
-int hexstr2data(void*,void*);
 
 
 
@@ -53,7 +53,7 @@ int mediamux_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx,
 				default:ret = -1;goto error;
 				}
 
-				ret = hexstr2data(buf+1, &art->RECVBYTE);
+				ret = hexstr2u64(buf+1, &art->RECVBYTE);
 				if(ret <= 0){ret = -2;goto error;}
 				if('\n' != buf[1+ret]){ret = -3;goto error;}
 

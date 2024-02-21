@@ -48,17 +48,9 @@ static char dx11opaquetrigon_frag[] =
 "}";
 
 
-#ifdef __APPLE__
-#define PPLL_DISABLE
-#endif
-
-#ifdef __ANDROID__
-#define PPLL_DISABLE
-#endif
 
 
-#ifndef PPLL_DISABLE
-static char gl41opaquetrigon_vert[] =
+static char gl41pplltrigon_vert[] =
 GLSL_VERSION
 GLSL_PRECISION
 "layout(location = 0)in vec3 v;\n"
@@ -77,7 +69,7 @@ GLSL_PRECISION
 "}\n";
 
 //early_fragment_tests: set this, depthtest before pixelshader
-static char gl41opaquetrigon_frag[] =
+static char gl41pplltrigon_frag[] =
 GLSL_VERSION
 GLSL_PRECISION
 "layout(early_fragment_tests) in;\n"
@@ -199,7 +191,7 @@ GLSL_PRECISION
 	"insert(vec4(pbrout, alpha));\n"
 	//"FragColor = vec4(pbrout, alpha);\n"
 "}\n";
-#else
+
 static char gl41opaquetrigon_vert[] =
 GLSL_VERSION
 "layout(location = 0)in mediump vec3 v;\n"
@@ -219,7 +211,6 @@ GLSL_VERSION
 "void main(){\n"
 	"FragColor = colour;\n"
 "}\n";
-#endif
 
 
 
@@ -229,8 +220,14 @@ static int opaque3d_fill(_obj* win, struct mysrc* src)
 	if(0 == src->vs){
 		switch(win->vfmt){
 		case _gl41list_:
+			if(_ppll_ == win->gl41list.rendermode){
+			src->vs = gl41pplltrigon_vert;
+			src->fs = gl41pplltrigon_frag;
+			}
+			else{
 			src->vs = gl41opaquetrigon_vert;
 			src->fs = gl41opaquetrigon_frag;
+			}
 			break;
 		case _dx11list_:
 			src->vs = dx11opaquetrigon_vert;

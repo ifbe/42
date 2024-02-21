@@ -47,28 +47,8 @@ int decstr2u64(u8* src, u64* dst)
 	*dst = tmp;
 	return j;
 }
-int decstr2data(u8* src, void* dst)
-{
-	int j;
-	u64 data=0;
-	for(j=0;j<20;j++)		//64bit的最大数为20个阿拉伯数字
-	{
-		//1.如果<0x20:		//返回取得的总数量
-		if(src[j]<0x30)break;
-		if(src[j]>0x39)break;
 
-		//3.如果是正常值:	//先乘10，再加上这个值，然后搞下一个数
-		data = data*10;
-		data += src[j]-0x30;
-	}
-	//logtoall("data=%llx\n", data);
 
-	if(data>0xffffffff)*(u64*)dst = data;
-	else if(data>0xffff)*(u32*)dst = data;
-	else if(data>0xff)*(u16*)dst = data;
-	else *(u8*)dst = data;
-	return j;
-}
 int decstr2float(u8* src, float* data)
 {
 	int j;
@@ -371,33 +351,8 @@ int hexstr2u64(u8* src, u64* dat)
 	*dat = tmp;
 	return j;
 }
-int hexstr2data(u8* src,u64* data)
-{
-	int j;
-	*data=0;
-	for(j=0;j<16;j++)
-	{
-		//logtoall("%x\n",src[j]);
-		//1.如果小于0x20，那就是结束了
-		if(src[j]<=0x20) return j;
 
-		//2.如果大于0x80，那就返回错误
-		if(src[j]>=0x80) return -1;
 
-		//3.如果是正常值
-		*data=(*data)<<4;
-		if(src[j]>=0x61 && src[j]<=0x66)
-		{
-			*data+=src[j]-0x61+10;
-		}
-		else if(src[j]>=0x30 && src[j]<=0x39)
-		{
-			*data+=src[j]-0x30;
-		}
-		else return -2;
-	}
-	return -999999;	//不会到这里
-}
 int data2hexstr(u64 data,u8* str)
 {
 	int j,max;

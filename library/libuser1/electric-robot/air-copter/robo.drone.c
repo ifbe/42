@@ -24,17 +24,17 @@ static void drone_forgl41_actual(
 
 
 	//debug position
-	gl41line(ctx, 0x000000, vc, geom->desire.displace_x);
+	gl41line(ctx, 0x000000, vc, geom->actual.displace_x);
 
-	for(j=0;j<3;j++){tc[j] = vc[j] + geom->desire.displace_v[j];}
+	for(j=0;j<3;j++){tc[j] = vc[j] + geom->actual.displace_v[j];}
 	gl41line(ctx, 0x808080, vc, tc);
 
-	for(j=0;j<3;j++){tc[j] = vc[j] + geom->desire.displace_a[j];}
+	for(j=0;j<3;j++){tc[j] = vc[j] + geom->actual.displace_a[j];}
 	gl41line(ctx, 0xffffff, vc, tc);
 
 /*
 	//debug rotation
-	float* q = geom->desire.angular_x;
+	float* q = geom->actual.angular_x;
 	tr[0] = 1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0;
 	tr[1] = 2.0 * (q[0]*q[1] + q[2]*q[3]);
 	tr[2] = 2.0 * (q[0]*q[2] - q[1]*q[3]);
@@ -45,10 +45,10 @@ static void drone_forgl41_actual(
 	vec3_setlen(tf, vf[3]);
 	gl41line_rect(ctx, 0x0000ff, vc, tr, tf);
 */
-	for(j=0;j<3;j++){tc[j] = vc[j] + geom->desire.angular_v[j];}
+	for(j=0;j<3;j++){tc[j] = vc[j] + geom->actual.angular_v[j];}
 	gl41line(ctx, 0x00ff00, vc, tc);
 
-	for(j=0;j<3;j++){tc[j] = vc[j] + geom->desire.angular_a[j];}
+	for(j=0;j<3;j++){tc[j] = vc[j] + geom->actual.angular_a[j];}
 	gl41line(ctx, 0xff0000, vc, tc);
 
 
@@ -121,6 +121,12 @@ static void drone_forgl41_estimate(
 	_obj* scn, struct style* geom,
 	_obj* ctx, struct style* area)
 {
+}
+static void drone_forgl41_desire(
+	_obj* act, struct style* part,
+	_obj* scn, struct style* geom,
+	_obj* ctx, struct style* area)
+{
 	int j;
 	float dt;
 	vec3 tc,tr,tf,tu;
@@ -129,21 +135,22 @@ static void drone_forgl41_estimate(
 	float* vr = geom->fshape.vr;
 	float* vf = geom->fshape.vf;
 	float* vt = geom->fshape.vt;
-	gl41line_rect(ctx, 0x0000ff, vc, vr, vf);
+	if(0){
+		gl41opaque_rect(ctx, 0x400000ff, vc, vr, vf);
+	}
+	else{
+		float* q = geom->desire.angular_x;
+		tr[0] = 1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0;
+		tr[1] = 2.0 * (q[0]*q[1] + q[2]*q[3]);
+		tr[2] = 2.0 * (q[0]*q[2] - q[1]*q[3]);
+		vec3_setlen(tr, vr[3]);
+		tf[0] = 2.0 * (q[0]*q[1] - q[2]*q[3]);
+		tf[1] = 1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0;
+		tf[2] = 2.0 * (q[1]*q[2] + q[0]*q[3]);
+		vec3_setlen(tf, vf[3]);
+		gl41opaque_rect(ctx, 0x400000ff, vc, tr, tf);
+	}
 
-/*
-	//debug rotation
-	float* q = geom->desire.angular_x;
-	tr[0] = 1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0;
-	tr[1] = 2.0 * (q[0]*q[1] + q[2]*q[3]);
-	tr[2] = 2.0 * (q[0]*q[2] - q[1]*q[3]);
-	vec3_setlen(tr, vr[3]);
-	tf[0] = 2.0 * (q[0]*q[1] - q[2]*q[3]);
-	tf[1] = 1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0;
-	tf[2] = 2.0 * (q[1]*q[2] + q[0]*q[3]);
-	vec3_setlen(tf, vf[3]);
-	gl41line_rect(ctx, 0x0000ff, vc, tr, tf);
-*/
 	for(j=0;j<3;j++){tc[j] = vc[j] + geom->desire.angular_v[j];}
 	gl41line(ctx, 0x00ff00, vc, tc);
 
@@ -151,7 +158,7 @@ static void drone_forgl41_estimate(
 	gl41line(ctx, 0xff0000, vc, tc);
 
 
-
+/*
 	//board
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] + vt[j]/4;
@@ -215,6 +222,7 @@ static void drone_forgl41_estimate(
 	for(j=0;j<3;j++)tc[j] = vc[j] + vr[j] - vf[j] + vt[j];
 	gl41opaque_propeller(ctx, 0x3fffffff, tc, kr, kf, ku, -1, dt);
 	gl41ascii_center(ctx, 0xffffff, tc, kr, kf, '4');
+*/
 }
 static void drone_draw_pixel(
 	_obj* act, struct style* pin,
@@ -320,17 +328,13 @@ void drone_write_euler(_obj* act, float* f)
 
 static void drone_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
-	_obj* wor;struct style* geom;
-	_obj* wnd;struct style* area;
-	
-	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	if(_imag_ == stack[sp-1].foottype){
-		drone_forgl41_estimate(ent,slot, wor,geom, wnd,area);
-	}
-	else{
-		drone_forgl41_actual(ent,slot, wor,geom, wnd,area);
-	}
+	_obj* wor = stack[sp-2].pchip;
+	struct style* geom = stack[sp-2].pfoot;
+	_obj* wnd = stack[sp-6].pchip;
+	struct style* area = stack[sp-6].pfoot;
+	drone_forgl41_actual(ent,slot, wor,geom, wnd,area);
+	drone_forgl41_estimate(ent,slot, wor,geom, wnd,area);
+	drone_forgl41_desire(ent,slot, wor,geom, wnd,area);
 }
 
 

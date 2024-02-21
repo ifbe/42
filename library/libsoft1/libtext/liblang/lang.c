@@ -7,8 +7,6 @@ int purec_read(void*, int, void*, int);
 int purec_start();
 int ncmp(void*,void*,int);
 int cmp(void*,void*);
-int hexstr2data(void*, void*);
-int decstr2data(void*, void*);
 //
 int openreadclose(void*, u64, void*, u64);
 int openwriteclose(void*, u64, void*, u64);

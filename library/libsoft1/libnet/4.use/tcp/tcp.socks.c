@@ -1,6 +1,6 @@
 #include "libsoft.h"
 #define _ok_ hex16('o','k')
-int decstr2data(void*, void*);
+int decstr2u32(void*, void*);
 
 
 
@@ -149,7 +149,7 @@ int socksclient_create(_obj* ele, char* url)
 	//port
 	if(url[j] != ':')port = 80;
 	else{
-		decstr2data(url+j+1, &port);
+		decstr2u32(url+j+1, &port);
 	}
 	req->url[req->len+0] = (port>>8)&0xff;
 	req->url[req->len+1] = port&0xff;

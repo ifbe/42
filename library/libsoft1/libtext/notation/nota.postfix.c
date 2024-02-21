@@ -17,8 +17,6 @@ int stack_destory(void*);
 int stack_push(void*, void*);
 int stack_pop(void*, void*);
 //
-int hexstr2data(u8*, u64*);
-int decstr2data(u8*, u64*);
 int decstr2double(u8*, double*);
 //
 double getcos(double);

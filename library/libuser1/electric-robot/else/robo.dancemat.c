@@ -155,7 +155,7 @@ static void dancemat_write_data(_obj* ent, _obj* src, u8* buf, int len)
 		if(cnt >= 144)break;
 
 		data = 0;
-		j = decstr2data(buf+k, &data);
+		j = decstr2u64(buf+k, &data);
 		if(j <= 0)break;
 		if(data < 0)break;
 		if(data >= 32767)break;
@@ -254,13 +254,13 @@ static void dancemat_create(_obj* act, u8* arg, int argc, u8** argv)
 		if(0 == ncmp(argv[j], "ballcolor:", 10)){
 			k = 10;
 			while(0x20 == argv[j][k])k++;
-			hexstr2data(argv[j]+k, &tmp);
+			hexstr2u64(argv[j]+k, &tmp);
 			act->whdf.ix0 = tmp;
 		}
 		if(0 == ncmp(argv[j], "linecolor:", 10)){
 			k = 10;
 			while(0x20 == argv[j][k])k++;
-			hexstr2data(argv[j]+k, &tmp);
+			hexstr2u64(argv[j]+k, &tmp);
 			act->whdf.iy0 = tmp;
 		}
 	}

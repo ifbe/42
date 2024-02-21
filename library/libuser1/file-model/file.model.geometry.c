@@ -28,7 +28,7 @@ static void geometry_draw_gl41(
 	int dimen = act->whdf.iw0;
 	int shape = act->whdf.iwn;
 	u32 color = act->whdf.ix0;
-	//logtoall("%d,%d\n",dimen,shape);
+	logtoall("dim=%c,shape=%c,color=%x\n",dimen,shape,color);
 
 	if('q' == shape){
 		gl41point(wnd, color, vc);
@@ -228,22 +228,20 @@ static void geometry_delete(_obj* act, u8* buf)
 }
 static void geometry_create(_obj* act, u8* buf, int argc, u8** argv)
 {
+	int dimen = '4';
+	int shape = 's';
+	u32 color = 0x80808080;
+
 	int j;
-	act->whdf.ix0 = 0xc0808080;
 	for(j=0;j<argc;j++){
 		if(0 == ncmp(argv[j], "color:", 6)){
-			hexstr2data(argv[j]+6, (void*)&act->whdf.ix0);
+			hexstr2u32(argv[j]+6, (void*)&color);
 		}
 	}
 
-	int dimen = '3';
-	int shape = 'p';
-	if(buf){
-		dimen = buf[0];
-		shape = buf[1];
-	}
 	act->whdf.iw0 = dimen;
 	act->whdf.iwn = shape;
+	act->whdf.ix0 = color;
 }
 
 

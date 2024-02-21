@@ -147,6 +147,7 @@ struct imotion{
 };
 struct style
 {
+//--------[00, ff]: renderer--------
 	//[00, 7f]: bounding volume
 	union{
 		//float
@@ -165,7 +166,19 @@ struct style
 		struct fstyle frustum;
 	};
 
+//--------[100, 1ff]: flight control--------
 	//[100, 17f]: current motion
+	union{
+		struct fmotion estimate;
+	};
+
+	//[180, 1ff]: future motion
+	union{
+		struct fmotion desire;
+	};
+
+//--------[200, 3ff]: graphic engine--------
+	//[200, 27f]: actual motion
 	union{
 		struct fmotion actual;
 		struct fmotion fm;
@@ -174,19 +187,16 @@ struct style
 		struct imotion imotion;
 	};
 
-	//[180, 1ff]: future motion
+	//[280, 2ff]: actual motion
 	union{
-		struct fmotion desire;
+		struct fmotion actual111;
 	};
 
-	//[200, 27f]
+	//[300, 37f]
 	vec4 force[8];
 
-	//[280, 2ff]
+	//[380, 3ff]
 	vec4 where[8];
-
-	//[300, 3ff]
-	u8 padd[0x100];
 };
 
 

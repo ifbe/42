@@ -45,14 +45,14 @@ int double2hexstr(double, void*);
 int decstr2u16(void* str, u16* data);
 int decstr2u32(void* str, u32* data);
 int decstr2u64(void* str, u64* data);
-int decstr2data(void* str, u64* data);
+
 int decstr2float(void* src, void* dst);
 int decstr2double(void* src, void* dst);
 
 int hexstr2u16(void* str, u16* data);
 int hexstr2u32(void* str, u32* data);
 int hexstr2u64(void* str, u64* data);
-int hexstr2data(void* str, u64* data);
+
 int hexstr2float(void* src, void* dst);
 int hexstr2double(void* src, void* dst);
 
