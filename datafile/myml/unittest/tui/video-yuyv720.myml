@@ -10,7 +10,7 @@ format:yuvx
 usbcam{
 fmt:cam
 arg:/dev/video0
-format:YUYV
+format:yuyv
 width:1280
 height:720
 }
@@ -27,8 +27,8 @@ srcfmt:yuyv
 srcw:1280
 srch:720
 dstfmt:yuvx
-dstw:640
-dsth:480
+dstw:1280
+dsth:720
 }
 </artery>
 

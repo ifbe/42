@@ -1,0 +1,128 @@
+<entity>
+vid1{
+fmt:video
+}
+vid2{
+fmt:video
+}
+freecam{
+fmt:freecam
+}
+virtual{
+fmt:virtual
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<artery>
+recut{
+fmt:recut
+}
+picfmt{
+fmt:picfmt
+srcfmt:yuyv
+srcw:640
+srch:480
+dstfmt:yuvx
+dstw:640
+dsth:480
+}
+
+recut2{
+fmt:recut
+}
+picfmt2{
+fmt:picfmt
+srcfmt:yuyv
+srcw:640
+srch:480
+dstfmt:yuvx
+dstw:640
+dsth:480
+}
+</artery>
+
+
+<system>
+server{
+fmt:TCP
+arg:0.0.0.0:9999
+}
+server2{
+fmt:TCP
+arg:0.0.0.0:9998
+}
+</system>
+
+
+<style>
+leftslot{
+}
+leftgeom{
+c:-640.0, 0.0, 0.0
+r: 640.0, 0.0, 0.0
+f: 0.0, 480.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+rightslot{
+}
+rightgeom{
+c: 640.0, 0.0, 0.0
+r: 640.0, 0.0, 0.0
+f: 0.0, 480.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+freemodl{
+}
+freegeom{
+c: 0.0, 0.0, 640.0
+r: 640.0, 0.0, 0.0
+t: 0.0, 640.0, 0.0
+f: 0.0, 0.0, -640.0
+L: 0.0, 0.0, 0.0, -1.0
+R: 0.0, 0.0, 0.0, 1.0
+B: 0.0, 0.0, 0.0, -1.0
+T: 0.0, 0.0, 0.0, 1.0
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000000000.0
+}
+
+freerect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<relation>
+#left eye
+(server, 0, dst) -> (recut, 0, src)
+(recut, 0, dst) -> (picfmt, 0, src)
+(picfmt, 0, dst) -> (vid1, 0, yuv)
+
+#right eye
+(server2, 0, dst) -> (recut2, 0, src)
+(recut2, 0, dst) -> (picfmt2, 0, src)
+(picfmt2, 0, dst) -> (vid2, 0, yuv)
+
+#virtual depends on inner objects
+(virtual, leftgeom, 0) -> (vid1, leftslot, 0)
+(virtual, rightgeom, 0) -> (vid2, rightslot, 0)
+(virtual, freegeom, 0) -> (freecam, freemodl, 0)
+
+#glwnd depends on ctx + cam
+(opengl, freerect, 0) -> (freecam, 0, 0)
+</relation>

@@ -433,6 +433,8 @@
 
 //
 #define _ev_ hex16('e','v')
+//
+#define _stride_ hex64('s','t','r','i','d','e',0,0)
 
 
 #endif

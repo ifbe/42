@@ -289,20 +289,29 @@ struct gldst
 	//android will distroy context, need check and recreate
 	u32 glctxage;
 
-	//
+	//--------area to clean when ctx gone--------
 	u8 gpudata_head[0];
+
+	//render target
 	u32 fbo;
 	u32 rbo;
 	u32 ppll_atomic;	//per pixel link list: counter
 	u32 ppll_head;		//per pixel link list: head
 	u32 ppll_data;		//per pixel link list: data
 
+	//shader
 	u32 shader;
+
+	//data
 	u32 ubo;
-	u32 tex[8];
+
+	//vertex
 	u32 vbo;
 	u32 ibo;
 	u32 vao;
+
+	//texture
+	u32 tex[8];
 
 	//dequeue
 	u8 target_deq;
@@ -310,6 +319,8 @@ struct gldst
 	u8 tex_deq[8];
 	u8 vbo_deq;
 	u8 ibo_deq;
+
+	//--------area to clean when ctx gone--------
 	u8 gpudata_tail[0];
 };
 struct gl41data
@@ -322,6 +333,7 @@ struct gl41data
 	struct gldst dst;
 	u8 opadd[0x200 - sizeof(struct gldst)];
 };
+
 //1
 struct gl41easy{
 	struct gl41data*  camera;
@@ -330,13 +342,13 @@ struct gl41easy{
 	struct gl41data*  opaque;
 };
 
+//2
 struct gl41world{
 	struct gl41data** camera;
 	struct gl41data** light;
 	struct gl41data** solid;
 	struct gl41data** opaque;
 };
-//2
 struct gl41list{
 	struct gl41world world[2];
 	u32 rendermode;

@@ -130,10 +130,11 @@ struct mydata{
 	int choosecamera;
 	int fmt;
 	int fps;
+
 	int w;
 	int h;
+	int stride;
 
-	std::unique_ptr<CameraManager> cm;
 	std::shared_ptr<Camera> cam;
 	Stream* stream;
 
@@ -145,9 +146,10 @@ struct mydata{
 
 static void requestComplete(Request *request)
 {
-	struct kv88 kv[6] = {
+	struct kv88 kv[8] = {
 		{'w', 0},
 		{'h', 0},
+		{_stride_, 0},
 		{'f', 0},
 		{'t', 0},
 		{hex16('m','3'), 0},
@@ -229,9 +231,10 @@ static void requestComplete(Request *request)
 			//printmemory(p, 0x20);
 			kv[0].val = my->w;
 			kv[1].val = my->h;
-			kv[2].val = my->fmt;
-			kv[3].val = sensortime;
-			kv[4].val = (u64)ccm;
+			kv[2].val = my->stride;
+			kv[3].val = my->fmt;
+			kv[4].val = sensortime;
+			kv[5].val = (u64)ccm;
 			give_data_into_peer_temp_stack(my->myobj,_dst_, (p64)kv,_kv88_, p, sz);
 		}
 	}
@@ -268,28 +271,45 @@ std::string cameraName(Camera *camera)
 	return name;
 }
 
+//one camera manager in one process !
+std::unique_ptr<CameraManager> g_cammgr = 0;
+int ensurecameramanager()
+{
+	if(g_cammgr)return 1;
+
+	g_cammgr = std::make_unique<CameraManager>();
+	//if()return 0;
+
+	g_cammgr->start();
+	//if()return 0;
+
+	return 1;
+}
 int createcamera(struct mydata* my){
-	my->cm = std::make_unique<CameraManager>();
+	int mgrok = ensurecameramanager();
+	if(0 == mgrok){
+		logtoall((void*)"camera manager not ok!\n");
+		return 0;
+	}
 
-	my->cm->start();
-
-	auto camlist = my->cm->cameras();
+	auto camlist = g_cammgr->cameras();
 	if(camlist.empty()){
 		std::cout << "no camera" << std::endl;
 		return 0;
 	}
 
 	int idx = 0;
+	int chosen = my->choosecamera;
 	for (auto const &camera : camlist){
 		std::cout << idx;
 		std::cout << ": cameraName=" << cameraName(camera.get());
 		std::cout << ", id=" << camera->id();
-		std::cout << (my->choosecamera==idx?", (chosen)":"") << std::endl;
+		std::cout << (chosen==idx?", (chosen)":"") << std::endl;
 		idx += 1;
 	}
 
-	std::string id = camlist[0]->id();
-	my->cam = my->cm->get(id);
+	std::string id = camlist[chosen]->id();
+	my->cam = g_cammgr->get(id);
 	my->cam->acquire();
 
 	//camera config
@@ -300,42 +320,66 @@ int createcamera(struct mydata* my){
 	//std::unique_ptr<CameraConfiguration> camcfg = my->cam->generateConfiguration({StreamRole::StillCapture});
 
 	//stream config
+	std::cout << "streamconfig list:" << std::endl;
 	for(auto cfg : *camcfg){
 		std::cout << "config: " << cfg.toString() << std::endl;
 	}
+
 	StreamConfiguration &stmcfg = camcfg->at(0);
+	std::cout << "default streamconfig = " << stmcfg.toString() << std::endl;
 
 	//foramt
-	auto stcfmt = stmcfg.formats();
-	auto enumfmt = stcfmt.pixelformats();
+	std::cout << "supported format:" << std::endl;
+	auto fmtlist = stmcfg.formats();
+	auto enumfmt = fmtlist.pixelformats();
 	for(auto& fmt: enumfmt){
 		std::cout << "format: " << fmt.toString() <<std::hex<< " fourcc=" << fmt.fourcc() <<std::hex<< " modifier=" << fmt.modifier() << std::endl;
-
-		auto enumsize= stcfmt.sizes(fmt);
+		if(my->log){
+		auto enumsize = fmtlist.sizes(fmt);
 		for(auto& sz: enumsize){
 			std::cout << "size: " << sz.toString() << std::endl;
 		}
+		}
 	}
 
-	//if format set, try my format
+	//if format wanted in config, try my format
 	stmcfg.size.width = my->w;
 	stmcfg.size.height = my->h;
 	switch(my->fmt){
 	case _yuyv_:
 		stmcfg.pixelFormat = libcamera::formats::YUYV;
+		stmcfg.stride = my->w * 2;
 		break;
 	case _uyvy_:
 		stmcfg.pixelFormat = libcamera::formats::UYVY;
+		stmcfg.stride = my->w * 2;
 		break;
 	}
 
 	//check is it valid
 	logtoall((void*)"calling validate\n");
-	camcfg->validate();
+	switch(camcfg->validate()){
+	case libcamera::CameraConfiguration::Invalid:
+		logtoall((void*)"Invalid\n");
+		break;
+	case libcamera::CameraConfiguration::Adjusted:
+		logtoall((void*)"Adjusted\n");
+		std::cout<<"adjusted streamconfig="<<stmcfg.toString()<<std::endl;
+		break;
+	case libcamera::CameraConfiguration::Valid:
+		logtoall((void*)"Valid\n");
+		break;
+	default:
+		logtoall((void*)"unknown\n");
+		break;
+	}
 
 	//if format not set, convert libcam fmt to my fmt
 	u32 libcam_width = stmcfg.size.width;
 	u32 libcam_height = stmcfg.size.height;
+	u32 libcam_stride = stmcfg.stride;
+	u32 libcam_framesize = stmcfg.frameSize;
+	u32 libcam_buffercount = stmcfg.bufferCount;
 	u32 libcam_fourcc = stmcfg.pixelFormat.fourcc();
 	u64 libcam_modifier = stmcfg.pixelFormat.modifier();
 	switch(stmcfg.pixelFormat){
@@ -356,11 +400,17 @@ int createcamera(struct mydata* my){
 		my->fmt = libcam_fourcc;
 		break;
 	}
-	logtoall((void*)"libcam_width=%d, libcam_height=%d, libcam_fourcc=%x, libcam_modifier=%llx\n",
-		libcam_width, libcam_height, libcam_fourcc, libcam_modifier);
+	my->stride = libcam_stride;
+	logtoall((void*)"final param: width=%d,height=%d, stride=%d,framesize=%d,buffercount=%d, fourcc=%x,modifier=%llx\n",
+		libcam_width, libcam_height,
+		libcam_stride, libcam_framesize, libcam_buffercount,
+		libcam_fourcc, libcam_modifier);
 
 	//camera config
-	my->cam->configure(camcfg.get());
+	int cfgret = my->cam->configure(camcfg.get());
+	if(cfgret){
+		logtoall((void*)"configure failed\n");
+	}
 
 	my->allocator = new FrameBufferAllocator(my->cam);
 	for (StreamConfiguration &cfg : *camcfg) {
@@ -374,8 +424,8 @@ int createcamera(struct mydata* my){
 		std::cout << "Allocated " << allocated << " buffers for stream" << std::endl;
 	}
 
-	StreamConfiguration &streamConfig = camcfg->at(0);
-	my->stream = streamConfig.stream();
+	//StreamConfiguration &streamConfig = camcfg->at(0);
+	my->stream = stmcfg.stream();
 	const std::vector<std::unique_ptr<FrameBuffer>> &buffers = my->allocator->buffers(my->stream);
 
 	for (unsigned int i = 0; i < buffers.size(); ++i) {
@@ -433,7 +483,9 @@ int deletecamera(struct mydata* my){
 	delete my->allocator;
 
 	my->cam->release();
-	my->cm->stop();
+
+	//todo: delete camera manager
+	//my->cm->stop();
 	return 0;
 }
 
@@ -479,6 +531,7 @@ int libcam_delete(_obj* cam)
 }
 int libcam_create(_obj* cam, void* arg, int argc, u8** argv)
 {
+static_assert(sizeof(struct mydata) < 256, "struct mydata too big");
 	struct mydata* my = (struct mydata*)cam->priv_256b;
 	my->myobj = cam;
 	my->log = 0;

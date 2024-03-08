@@ -580,6 +580,8 @@ static void video_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 			}
 		}
 		logtoall("video: w=%d,h=%d,t=%lld\n",w,h,ts);
+		own->inw = w;
+		own->inh = h;
 	}
 }
 static void video_detach(struct halfrel* self, struct halfrel* peer)

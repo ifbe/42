@@ -1,7 +1,7 @@
 <system>
 client{
 fmt:tcp
-arg:192.168.2.112:9999
+arg:192.168.5.185:9999
 }
 </system>
 
@@ -19,7 +19,10 @@ fmt:dbghex
 <supply>
 usbcam{
 fmt:cam
-#format:mjpeg
+format:yuyv
+width:1920
+height:1080
+log:1
 }
 </supply>
 

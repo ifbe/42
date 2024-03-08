@@ -1,0 +1,55 @@
+<system>
+client{
+fmt:tcp
+arg:192.168.5.185:9999
+}
+client2{
+fmt:tcp
+arg:192.168.5.185:9998
+}
+</system>
+
+
+<artery>
+goslow{
+fmt:goslow
+}
+goslow2{
+fmt:goslow
+}
+dbghex{
+fmt:dbghex
+}
+</artery>
+
+
+<supply>
+usbcam{
+fmt:cam
+format:yuyv
+width:640
+height:480
+#log:1
+camera:0
+}
+usbcam2{
+fmt:cam
+format:yuyv
+width:640
+height:480
+#log:1
+camera:1
+}
+</supply>
+
+
+<relation>
+(usbcam, 0, dst) -> (goslow, 0, src)
+(goslow, 0, dst) -> (client, 0, src)
+
+(usbcam2, 0, dst) -> (goslow2, 0, src)
+(goslow2, 0, dst) -> (client2, 0, src)
+
+(usbcam, 0, dst) -> (dbghex, 0, src)
+(usbcam2, 0, dst) -> (dbghex, 0, src)
+</relation>

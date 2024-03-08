@@ -123,6 +123,7 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, void
 	int ispart = 0;
 	int srcw = per->srcw;
 	int srch = per->srch;
+	int srcstride = 0;
 	u64 srcfmt = per->srcfmt;
 	u64 ts = 0;
 	float* m3 = 0;
@@ -142,6 +143,9 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, void
 				break;
 			case 'h':
 				srch = kv[j].val;
+				break;
+			case _stride_:
+				srcstride = kv[j].val;
 				break;
 			case 'f':
 				srcfmt = kv[j].val;
@@ -197,6 +201,7 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, void
 	}
 
 	if((_yuyv_ == srcfmt)&&(_yuvx_ == per->dstfmt)){
+		if(srcstride)srcw = srcstride/2;
 		yuyv_to_yuvx(buf, len, srcw, srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
 		goto done;
 	}
