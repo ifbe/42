@@ -9,17 +9,18 @@ struct plannet
 	float distance;
 	float period;
 	u32 color;
+	char* name;
 };
 static struct plannet data[9] = {
-	{1384376.0,          0.0, 999999999.99999, 0xffff00},		//sun
-	{   4880.0,   57910000.0,        87.96900, 0xffc200},		//mercury
-	{  12103.6,  108200000.0,       224.70000, 0xffc200},		//venus
-	{  12756.3,  149600000.0,       365.25636, 0x0000ff},		//earth
-	{   6794.0,  227940000.0,       687.00000, 0xff0000},		//mars
-	{ 142984.0,  778330000.0,      4332.00000, 0x8a36cf},		//jupiter
-	{ 120536.0, 1429400000.0,     10775.00000, 0xf5deb3},		//saturn
-	{  51118.0, 2870990000.0,     30681.50000, 0x87ceeb},		//uranus
-	{  49532.0, 4504000000.0,     60194.00000, 0x191970}		//neptune
+	{1384376.0,          0.0, 999999999.99999, 0xffff00, "sun"},
+	{   4880.0,   57910000.0,        87.96900, 0xffc200, "mercury"},
+	{  12103.6,  108200000.0,       224.70000, 0xffc200, "venus"},
+	{  12756.3,  149600000.0,       365.25636, 0x0000ff, "earth"},
+	{   6794.0,  227940000.0,       687.00000, 0xff0000, "mars"},
+	{ 142984.0,  778330000.0,      4332.00000, 0x8a36cf, "jupiter"},
+	{ 120536.0, 1429400000.0,     10775.00000, 0xf5deb3, "saturn"},
+	{  51118.0, 2870990000.0,     30681.50000, 0x87ceeb, "uranus"},
+	{  49532.0, 4504000000.0,     60194.00000, 0x7979f0, "neptune"}
 };
 
 
@@ -80,6 +81,7 @@ static void planet_draw_gl41(
 
 	for(j=0;j<9;j++)
 	{
+		//orbit
 		l = data[j].distance/data[8].distance;
 		for(k=0;k<3;k++){
 			tr[k] = vr[k]*l;
@@ -87,31 +89,32 @@ static void planet_draw_gl41(
 		}
 		gl41line_circle(wnd, 0x404040, vc, tr, tf);
 
+		//spherebody
 		r = data[j].diameter/data[8].distance/2;
-		//if(j>0)r *= 1024;
+		a = tau*t/data[j].period;
+		c = getcos(a);
+		s = getsin(a);
 		for(k=0;k<3;k++){
 			tr[k] = vr[k]*r;
 			tf[k] = vf[k]*r;
 			tu[k] = vu[k]*r;
+			tc[k] = vc[k] + (vr[k]*c + vf[k]*s)*l;
 		}
-
-		//real size
-		a = tau*t/data[j].period;
-		c = getcos(a);
-		s = getsin(a);
-		tc[0] = vc[0] + (vr[0]*c + vf[0]*s)*l;
-		tc[1] = vc[1] + (vr[1]*c + vf[1]*s)*l;
-		tc[2] = vc[2] + (vr[2]*c + vf[2]*s)*l;
 		gl41solid_sphere(wnd, data[j].color, tc, tr, tf, tu);
 
-		//size*1000, otherwise too small to see
-		if(j==0)continue;
+		//an arrow point from sphere to upper
 		for(k=0;k<3;k++){
-			tr[k] = tr[k]*1000;
-			tf[k] = tf[k]*1000;
-			tu[k] = tu[k]*1000;
+			tu[k] = tc[k] + vu[k]/64;
 		}
-		gl41line_sphere(wnd, data[j].color, tc, tr, tf, tu);
+		gl41line_arrow(wnd, data[j].color, tc, tu, vf);
+
+		//name
+		for(k=0;k<3;k++){
+			tc[k] = tu[k];
+			tr[k] = vr[k]/256;
+			tu[k] = vu[k]/256;
+		}
+		gl41string(wnd, data[j].color, tc, tr, tu, data[j].name, 0);
 	}
 }
 static void planet_draw_json(

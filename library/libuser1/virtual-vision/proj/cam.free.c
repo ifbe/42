@@ -27,7 +27,8 @@ int copypath(void*, void*);
 
 
 
-
+#define FEATURE_LOG 1
+#define FEATURE_AUXLINE 2
 struct unidata{
 	mat4 mat;
 	vec4 vec;
@@ -38,6 +39,8 @@ struct privdata{
 
 	u64 drawtype;
 	u64 evtype;
+	u32 feature;
+	u32 linecolor;
 
 	//common
 	mat4 world2view;	//world to view
@@ -381,8 +384,10 @@ static void freecam_frus2wvp(
 	struct privdata* own = act->OWNBUF;
 	frustum2viewandclip_transpose(frus, own->world2view, own->world2clip);
 
-	//logtoall("wvp:\n");
-	//printmat4(own->world2clip);
+	if(own->feature & FEATURE_LOG){
+		logtoall("[%p]wvp:\n", act);
+		printmat4(own->world2clip[0]);
+	}
 }
 static void freecam_frus2pvw(
 	_obj* act, struct style* part,
@@ -392,8 +397,10 @@ static void freecam_frus2pvw(
 	struct privdata* own = act->OWNBUF;
 	clip2world_projz0z1_transpose(own->clip2world, frus);
 
-	//logtoall("pvw:\n");
-	//printmat4(own->clip2world);
+	if(own->feature & FEATURE_LOG){
+		logtoall("[%p]pvw:\n", act);
+		printmat4(own->clip2world[0]);
+	}
 }
 
 
@@ -424,13 +431,18 @@ static int freecam_gl41_mesh(
 	_obj* win, struct style* geom,
 	_obj* ctx, struct style* none)
 {
-	freecam_shape2frustum(&geom->fshape, &geom->frustum);
+	struct privdata* own = act->OWNBUF;
 
-	//frustum
-	gl41frustum(ctx, &geom->frus);
+	if(own->feature & FEATURE_AUXLINE){
+		//logtoall("FEATURE_AUXLINE\n");
+		freecam_shape2frustum(&geom->fshape, &geom->frustum);
 
-	//ray from eye to far
-	gl41line(ctx, 0, geom->frus.vc, &act->whdf.fx0);
+		//frustum
+		gl41frustum_color(ctx, &geom->frus, own->linecolor);
+
+		//ray from eye to far
+		gl41line(ctx, own->linecolor, geom->frus.vc, &act->whdf.fx0);
+	}
 	return 0;
 }
 
@@ -1097,16 +1109,26 @@ static void freecam_create(_obj* act, void* arg, int argc, u8** argv)
 
 	//privdata
 	struct privdata* own = act->OWNBUF = memoryalloc(0x2000, 0);
-
-	//script
+	own->feature = 0;
 	own->evtype = 0;
-	own->drawtype = random_read()&1;
+	own->drawtype = 0;		//random_read()&1;
+	own->linecolor =
+		(random_read()&0xff) |
+		((random_read()&0xff)<<8) |
+		((random_read()&0xff)<<16);
 
 	own->gbuf_vs[0] = 0;
 	own->gbuf_fs[0] = 0;
 
 	int j;
 	for(j=0;j<argc;j++){
+		if(0 == ncmp(argv[j], "log:", 4)){
+			own->feature |= FEATURE_LOG;
+		}
+		if(0 == ncmp(argv[j], "auxline:", 8)){
+			logtoall("auxline=1\n");
+			own->feature |= FEATURE_AUXLINE;
+		}
 		if(0 == ncmp(argv[j], "render:", 7)){
 			if('0' == argv[j][7])own->drawtype = 0;
 			if('1' == argv[j][7])own->drawtype = 1;

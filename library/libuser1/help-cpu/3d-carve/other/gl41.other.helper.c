@@ -37,7 +37,7 @@ void gl41axis(_obj* win)
 	vb[2] = 10000.0;
 	gl41line(win, 0x0000ff, va, vb);
 }
-void gl41frustum(_obj* ctx, struct fstyle* frus)
+void gl41frustum_color(_obj* ctx, struct fstyle* frus, u32 color)
 {
 	vec3 lbn,rbn,ltn,rtn;
 	vec3 lbf,rbf,ltf,rtf;
@@ -80,24 +80,30 @@ void gl41frustum(_obj* ctx, struct fstyle* frus)
 	rtf[1] = vc[1] + (rtn[1]-vc[1])*1000;
 	rtf[2] = vc[2] + (rtn[2]-vc[2])*1000;
 
-	gl41line(ctx, 0, lbn, rbn);
-	gl41line(ctx, 0, ltn, rtn);
-	gl41line(ctx, 0, lbn, ltn);
-	gl41line(ctx, 0, rbn, rtn);
+	gl41line(ctx, color, lbn, rbn);
+	gl41line(ctx, color, ltn, rtn);
+	gl41line(ctx, color, lbn, ltn);
+	gl41line(ctx, color, rbn, rtn);
 
-	gl41line(ctx, 0, lbf, rbf);
-	gl41line(ctx, 0, ltf, rtf);
-	gl41line(ctx, 0, lbf, ltf);
-	gl41line(ctx, 0, rbf, rtf);
+	gl41line(ctx, color, lbf, rbf);
+	gl41line(ctx, color, ltf, rtf);
+	gl41line(ctx, color, lbf, ltf);
+	gl41line(ctx, color, rbf, rtf);
 
-	gl41line(ctx, 0, lbn, lbf);
-	gl41line(ctx, 0, rbn, rbf);
-	gl41line(ctx, 0, ltn, ltf);
-	gl41line(ctx, 0, rtn, rtf);
+	gl41line(ctx, color, lbn, lbf);
+	gl41line(ctx, color, rbn, rbf);
+	gl41line(ctx, color, ltn, ltf);
+	gl41line(ctx, color, rtn, rtf);
 	//logtoall("(%f,%f,%f)->(%f,%f,%f)\n",lbf[0],lbf[1],lbf[2],rtf[0],rtf[1],rtf[2]);
 	//logtoall("(%f,%f,%f)->(%f,%f,%f)->(%f,%f,%f)\n",vc[0],vc[1],vc[2],lbn[0],lbn[1],lbn[2],rtn[0],rtn[1],rtn[2]);
 	//logtoall("(%f,%f,%f)->(%f,%f,%f)->(%f,%f,%f)\n",vc[0],vc[1],vc[2],lbf[0],lbf[1],lbf[2],rtf[0],rtf[1],rtf[2]);
-}/*
+}
+void gl41frustum(_obj* ctx, struct fstyle* frus)
+{
+	gl41frustum_color(ctx, frus, 0);
+}
+
+/*
 void gl41frustum(_obj* win, struct fstyle* sty)
 {
 	vec3 tc, tr, tf;

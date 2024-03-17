@@ -1,0 +1,70 @@
+<entity>
+gnd{
+fmt:chess
+}
+left{
+fmt:freecam
+}
+world{
+fmt:virtual
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<style>
+gndpart{
+}
+gndgeom{
+c: 0.0, 0.0, 1.0
+r: 0.5, 0.0, 0.0
+f: 0.0, 0.5, 0.0
+t: 0.0, 0.0, 0.5
+}
+
+llllpart{
+L: 0.0, 0.0, 0.0,-0.1
+R: 0.0, 0.0, 0.0, 0.1
+B: 0.0, 0.0, 0.0,-0.1
+T: 0.0, 0.0, 0.0, 0.1
+N: 0.0, 0.0, 0.0, 0.1
+F: 0.0, 0.0, 0.0, 1000000000.0
+}
+llllgeom{
+c: 0, -2.0, 1.5
+r: 0.01, 0.0, 0.0
+f: 0.0, 0.01, 0.0
+t: 0.0, 0.0, 0.01
+
+L: 0.0, 0.0, 0.0,-0.1
+R: 0.0, 0.0, 0.0, 0.1
+B: 0.0, 0.0, 0.0,-0.1
+T: 0.0, 0.0, 0.0, 0.1
+N: 0.0, 0.0, 0.0, 0.1
+F: 0.0, 0.0, 0.0, 1000000000.0
+}
+
+llllrect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<relation>
+(world, gndgeom, 0) -> (gnd, gndpart, 0)
+
+(world, llllgeom, 0) -> (left, llllpart, 0)
+
+(opengl, llllrect, 0) -> (left, 0, a0)
+</relation>

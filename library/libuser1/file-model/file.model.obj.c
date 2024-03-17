@@ -317,7 +317,7 @@ static void obj3d_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int
 	_obj* wnd = stack[sp-6].pchip;
 	struct style* area = stack[sp-6].pfoot;
 
-	switch(wnd->type){
+	switch(wnd->vfmt){
 	case _bgra8888_:
 	case _rgba8888_:
 		if(1){

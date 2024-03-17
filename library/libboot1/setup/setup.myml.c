@@ -405,7 +405,7 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 						if(chip[clen].addr)bootup_create(chip[clen].addr, arg, argc, argv);
 						break;
 				}
-				logtoall("node%d:tier=%.8s,type=%.8s,hash=%.8s,addr=%p\n",clen, &tier,&type,&hash,chip[clen].addr);
+				logtoall("node%d:tier=%.8s,type=%.8s,hash=%.8s,addr=%p\n\n",clen, &tier,&type,&hash,chip[clen].addr);
 
 				nodename = -1;
 				clen += 1;

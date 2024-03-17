@@ -342,7 +342,7 @@ static void texball_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,i
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	switch(wnd->type){
+	switch(wnd->vfmt){
 	case _dx11list_:texball_dx11draw(ent,slot, wor,geom, wnd,area);break;
 	case _gl41list_:texball_gl41draw(ent,slot, wor,geom, wnd,area);break;
 	}

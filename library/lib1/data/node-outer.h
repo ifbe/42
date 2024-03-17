@@ -813,6 +813,7 @@ void gl41double(              _obj* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, dou
 
 void gl41axis(                _obj* ctx);
 void gl41frustum(             _obj* ctx, struct fstyle* sty);
+void gl41frustum_color(       _obj* ctx, struct fstyle* sty, u32 color);
 void gl41boundingvolume(      _obj* ctx, u32 rgb, struct fstyle* sty, u32 flag);
 
 

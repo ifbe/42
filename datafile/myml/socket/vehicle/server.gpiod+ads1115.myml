@@ -1,7 +1,7 @@
 <device>
 gpio{
 fmt:gpio
-arg:/dev/gpiochip4
+arg:/dev/gpiochip0
 }
 i2chost{
 fmt:i2c

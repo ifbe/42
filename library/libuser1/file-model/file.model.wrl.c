@@ -57,7 +57,7 @@ static void wrl3d_world_camera_window(_obj* ent,void* slot, _syn* stack,int sp)
 	wrd = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 
-	switch(wnd->type){
+	switch(wnd->vfmt){
 	case _gl41list_:
 		wrl3d_gl41draw(ent,slot, scn,geom, wrd,camg, wnd,area);
 		break;
@@ -76,10 +76,8 @@ static void wrl3d_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int k
 
 	//caller defined behavior
 	switch(caller->type){
-	case _rgba_:
-	        break;
-	case _gl41list_:
-	        break;
+	case _wnd_:
+		break;
 	default:
 		wrl3d_world_camera_window(ent,slot, stack,sp);
 	}

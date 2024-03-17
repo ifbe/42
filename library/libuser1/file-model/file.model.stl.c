@@ -548,18 +548,18 @@ static void stl3d_world_camera_window(_obj* ent,void* slot, _syn* stack,int sp, 
 	wrd = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 
-	if(_rgba_ == wnd->type){
+	if(_rgba_ == wnd->vfmt){
 		if(0==key)stl3d_rgba_raster(ent,slot, scn,geom, wrd,camg, wnd,area, (void*)arg);
 		else stl3d_rgba_raytrace(ent,slot, scn,geom, wrd,camg, wnd,area, (void*)arg);
 		return;
 	}
-	if(_tui_ == wnd->type){
+	if(_tui_ == wnd->vfmt){
 		//stl3d_tui_test(ent,slot, wnd,area);
 		stl3d_tui_raytrace(ent,slot, scn,geom, wrd,camg, wnd,area, (void*)arg);
 		return;
 	}
 
-	switch(wnd->type){
+	switch(wnd->vfmt){
 	case _dx11list_:stl3d_dx11draw(ent,slot, scn,geom, wrd,camg, wnd,area);break;
 	case _gl41list_:stl3d_gl41draw(ent,slot, scn,geom, wrd,camg, wnd,area);break;
 	}

@@ -67,7 +67,7 @@ void view2clip_orthz0z1(mat4 m, struct fstyle* s)
 	m[2][0] = 0.0;
 	m[2][1] = 0.0;
 	m[2][2] = 1.0 / (f-n);
-	m[2][3] = n / (n-f);
+	m[2][3] = f / (n-f);
 
 	m[3][0] = 0.0;
 	m[3][1] = 0.0;

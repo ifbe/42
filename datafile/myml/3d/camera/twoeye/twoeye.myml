@@ -1,0 +1,119 @@
+<entity>
+sky{
+fmt:equirect
+arg:datafile/jpg/texball-skysphere.jpg
+}
+gnd{
+fmt:ground
+}
+box{
+fmt:geom
+}
+left{
+fmt:freecam
+log:1
+}
+right{
+fmt:freecam
+log:1
+}
+world{
+fmt:virtual
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<style>
+skypart{
+}
+skygeom{
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+gndpart{
+}
+gndgeom{
+c: 0.0, 0.0, 0.0
+r: 10.0, 0.0, 0.0
+f: 0.0, 10.0, 0.0
+t: 0.0, 0.0, 10.0
+}
+
+boxpart{
+}
+boxgeom{
+c: 0.0, 2.0, 0.5
+r: 0.5, 0.0, 0.0
+f: 0.0, 0.5, 0.0
+t: 0.0, 0.0, 0.5
+}
+
+llllpart{
+}
+llllgeom{
+c:-0.032,0.0, 1.5
+r: 0.1, 0.0, 0.0
+f: 0.0, 0.1, 0.0
+t: 0.0, 0.0, 0.1
+
+L: 0.0, 0.0, 0.0,-0.1732
+R: 0.0, 0.0, 0.0, 0.1732
+B: 0.0, 0.0, 0.0,-0.1732
+T: 0.0, 0.0, 0.0, 0.1732
+N: 0.0, 0.0, 0.0, 0.1
+F: 0.0, 0.0, 0.0, 10000.0
+}
+
+rrrrpart{
+}
+rrrrgeom{
+c: 0.032,0.0, 1.5
+r: 0.1, 0.0, 0.0
+f: 0.0, 0.1, 0.0
+t: 0.0, 0.0, 0.1
+
+L: 0.0, 0.0, 0.0,-0.1732
+R: 0.0, 0.0, 0.0, 0.1732
+B: 0.0, 0.0, 0.0,-0.1732
+T: 0.0, 0.0, 0.0, 0.1732
+N: 0.0, 0.0, 0.0, 0.1
+F: 0.0, 0.0, 0.0, 10000.0
+}
+
+llllrect{
+c:0.0, 0.1
+q:0.5, 0.8
+}
+rrrrrect{
+c:0.5, 0.1
+q:0.5, 0.8
+}
+</style>
+
+
+<relation>
+#world depends on tree
+(world, skygeom, 0) -> (sky, skypart, 0)
+(world, gndgeom, 0) -> (gnd, gndpart, 0)
+(world, boxgeom, 0) -> (box, boxpart, 0)
+(world, llllgeom, 0) -> (left, llllpart, 0)
+(world, rrrrgeom, 0) -> (right, rrrrpart, 0)
+
+#glwnd depends on gldata
+(opengl, llllrect, 0) -> (left, 0, a0)
+(opengl, rrrrrect, 0) -> (right, 0, a1)
+</relation>

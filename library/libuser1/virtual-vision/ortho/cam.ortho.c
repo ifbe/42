@@ -4,10 +4,18 @@ void world2clip_orthz0z1_transpose(mat4 mat, struct fstyle* frus);
 void world2clip_orthznzp_transpose(mat4 mat, struct fstyle* frus);
 
 
+#define FEATURE_LOG 1
+#define FEATURE_AUXLINE 2
 struct privdata{
-	mat4 matbuf;
-	struct gl41data* gl41cam;
 	int evtype;
+	u32 feature;
+
+	struct halfrel* self;
+	struct halfrel* peer;
+
+	mat4 matbuf;
+
+	struct gl41data* gl41cam;
 };
 
 
@@ -16,7 +24,7 @@ static void orthcam_search(_obj* act, u32 foot, struct halfrel* self[], struct h
 	struct relation* rel;
 	_obj* world;
 	struct fstyle* obb = 0;
-	//logtoall("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
+	//logtoall("orthcam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
 	rel = act->irel0;
 	while(1){
@@ -36,12 +44,19 @@ static void orthcam_modify(_obj* act)
 static void orthcam_delete(_obj* act)
 {
 }
-static void orthcam_create(_obj* act, void* arg)
+static void orthcam_create(_obj* act, void* arg, int argc, u8** argv)
 {
     logtoall("@orthcam_create\n");
 	struct privdata* priv = (void*)act->priv_256b;
 	priv->gl41cam = memoryalloc(0x1000, 0);
 	priv->evtype = 0;
+
+	int j;
+	for(j=0;j<argc;j++){
+		if(0 == ncmp(argv[j], "log:", 4)){
+			priv->feature |= FEATURE_LOG;
+		}
+	}
 }
 
 
@@ -183,6 +198,9 @@ static void orthcam_matrix(
 	_obj* wrd, struct style* geom)
 {
 	struct privdata* priv = (void*)act->priv_256b;
+	if(priv->feature & FEATURE_LOG){
+		logtoall("orthcam@%p: %f,%f,%f\n", act, geom->fs.vc[0], geom->fs.vc[1], geom->fs.vc[2]);
+	}
 
 	struct fstyle* frus = &geom->frus;
 	world2clip_orthznzp_transpose(priv->matbuf, frus);
@@ -253,8 +271,45 @@ static int orthcam_bywnd_read(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,
 	orthcam_visitworld(world,geom, ent,slot, wnd,area, stack,sp);
 	return 0;
 }
-static int orthcam_write_bycam(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
+
+
+
+
+void orthcam_move(vec3 dst, vec3 src, float t)
 {
+	dst[0] += src[0] * t;
+	dst[1] += src[1] * t;
+	dst[2] += src[2] * t;
+}
+void orthcam_rotate(vec3 a, vec3 b, vec3 axis, float angle)
+{
+	quaternion_operation(a, axis, angle);
+	quaternion_operation(b, axis, angle);
+}
+static int orthcam_bywnd_write(_obj* ent,void* ef, _obj* wnd,void* wf, struct event* ev)
+{
+	struct privdata* priv = (void*)ent->priv_256b;
+	struct halfrel* rel = priv->peer;
+
+	_obj* wor = rel->pchip;
+	struct style* geom = rel->pfoot;
+
+	struct fstyle* obb = &geom->fshape;
+	switch(ev->why){
+		case 'a':orthcam_move(obb->vc, obb->vr,-1.0);break;
+		case 'd':orthcam_move(obb->vc, obb->vr, 1.0);break;
+		case 's':orthcam_move(obb->vc, obb->vf,-1.0);break;
+		case 'w':orthcam_move(obb->vc, obb->vf, 1.0);break;
+		case 'f':orthcam_move(obb->vc, obb->vt,-1.0);break;
+		case 'r':orthcam_move(obb->vc, obb->vt, 1.0);break;
+
+		case 'j':orthcam_rotate(obb->vr, obb->vf, obb->vt, 0.05);break;
+		case 'l':orthcam_rotate(obb->vr, obb->vf, obb->vt,-0.05);break;
+		case 'i':orthcam_rotate(obb->vf, obb->vt, obb->vr, 0.05);break;
+		case 'k':orthcam_rotate(obb->vf, obb->vt, obb->vr,-0.05);break;
+		case 'u':orthcam_rotate(obb->vr, obb->vt, obb->vf,-0.05);break;
+		case 'o':orthcam_rotate(obb->vr, obb->vt, obb->vf, 0.05);break;
+	}
 	return 0;
 }
 
@@ -279,8 +334,16 @@ static int orthcam_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int 
 static int orthcam_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	struct privdata* priv = (void*)ent->priv_256b;
-	if(EVSEND == priv->evtype)give_data_into_peer(ent,_evto_, stack,sp, arg,key, buf,len);
-	return 0;
+	if(EVSEND == priv->evtype){
+		give_data_into_peer(ent,_evto_, stack,sp, arg,key, buf,len);
+		return 0;
+	}
+
+	_obj* selfnode = ent; //stack[sp-1].pchip;
+	void* selffoot = stack[sp-1].pfoot;
+	_obj* callnode = stack[sp-2].pchip;
+	void* callfoot = stack[sp-2].pfoot;
+	return orthcam_bywnd_write(selfnode,selffoot, callnode,callfoot, buf);
 }
 static void orthcam_detach(struct halfrel* self, struct halfrel* peer)
 {
@@ -288,10 +351,21 @@ static void orthcam_detach(struct halfrel* self, struct halfrel* peer)
 static void orthcam_attach(struct halfrel* self, struct halfrel* peer)
 {
     logtoall("@orthcam_attach\n");
+	_obj* cam = self->pchip;
 	if(_evto_ == self->foottype){
-		_obj* cam = self->pchip;
 		struct privdata* priv = (void*)cam->priv_256b;
 		priv->evtype = EVSEND;
+	}
+
+	struct privdata* priv = (void*)cam->priv_256b;
+	_obj* that = peer->pchip;
+	logtoall("thattype=%.4s\n", &that->type);
+	switch(that->type){
+	case _virtual_:
+	case _scene3d_:
+		priv->self = self;
+		priv->peer = peer;
+		return;
 	}
 }
 

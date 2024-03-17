@@ -228,8 +228,8 @@ static void geometry_delete(_obj* act, u8* buf)
 }
 static void geometry_create(_obj* act, u8* buf, int argc, u8** argv)
 {
-	int dimen = '4';
-	int shape = 's';
+	int dimen = '3';
+	int shape = 'p';
 	u32 color = 0x80808080;
 
 	int j;

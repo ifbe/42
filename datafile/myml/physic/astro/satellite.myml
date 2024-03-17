@@ -1,5 +1,5 @@
 <entity>
-gps{
+geosta{
 fmt:satelli
 }
 station{
@@ -8,6 +8,10 @@ fmt:satelli
 earth{
 fmt:texball
 arg:datafile/jpg/texball-earth.jpg
+}
+moon{
+fmt:texball
+arg:datafile/jpg/brickwall.jpg
 }
 virtual{
 fmt:virtual
@@ -52,9 +56,9 @@ satehaha{
 }
 sategeom{
 c: 0.0, 0.0, 0.0
-r: 20200.0, 0.0, 0.0
-f: 0.0, 20200.0, 0.0
-t: 0.0, 0.0, 20200.0
+r: 35800.0, 0.0, 0.0
+f: 0.0, 35800.0, 0.0
+t: 0.0, 0.0, 35800.0
 }
 
 stahaha{
@@ -73,6 +77,15 @@ c: 0.0, 0.0, 0.0
 r: 6400.0, 0.0, 0.0
 f: 0.0, 6400.0, 0.0
 t: 0.0, 0.0, 6400.0
+}
+
+moonhaha{
+}
+moongeom{
+c: 384000.0, 0.0, 0.0
+r: 1738.0, 0.0, 0.0
+f: 0.0, 1738.0, 0.0
+t: 0.0, 0.0, 1738.0
 }
 
 freemodl{
@@ -104,12 +117,13 @@ q:1.0, 1.0
 
 #input
 (@listen, dst) -> (@str2vec, str)
-(@str2vec, vec) -> (@gps, evin)
+(@str2vec, vec) -> (@geosta, evin)
 
 #virtual depends on inner objects
-(@virtual, @sategeom) -> (@gps, geom@satehaha)
+(@virtual, @sategeom) -> (@geosta, geom@satehaha)
 (@virtual, @stageom) -> (@station, geom@stahaha)
 (@virtual, @earthgeom) -> (@earth, geom@earthhaha)
+(@virtual, @moongeom) -> (@moon, geom@moonhaha)
 (@virtual, @freegeom) -> (@freecam, geom@freemodl)
 
 #glwnd depends on cam
