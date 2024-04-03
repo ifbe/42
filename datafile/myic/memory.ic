@@ -3,13 +3,26 @@
 
 mem4t(vdd, gnd, q, nq)
 {
+chip:
+	m1,m2 : pmos
+	m3,m4 : nmos
+
+chipview:
+	m1(s@vdd, d@q, g@nq)
+	m3(d@q, s@gnd, g@nq)
+	m1(s@vdd, d@nq, g@q)
+	m3(d@nq, s@gnd, g@q)
 }
 
-sram6t(vdd, gnd, q, nq, bl, nbl, wl)
+sram6t(vdd, gnd, bl, nbl, wl)
 {
-	m2,m4 -> pmos
-	m1,m3,m5,m6 -> nmos
+wire:
+	q, nq : wire
+chip:
+	m2,m4 : pmos
+	m1,m3,m5,m6 : nmos
 
+wireview:
 	vdd@ m2.s, m4.s
 	gnd@ m1.s, m3.s
 	q  @ m3.d, m4.d, m1.g, m2.g, m6.s
@@ -17,36 +30,12 @@ sram6t(vdd, gnd, q, nq, bl, nbl, wl)
 	bl @ m6.d
 	nbl@ m5.d
 	wl @ m5.g, m6.g
-}
 
-mem8b(vdd, gnd, a0, a1, a2, d0, d1, d2, d3, d4, d5, d6, d7)
-{
-	//dependency
-	s0,s1,s2,s3,s4,s5,s6,s7 -> sram6t
-	dc -> decoder38
-
-	//export
-	vdd@ dc.vdd, s0.vdd, s1.vdd, s2.vdd, s3.vdd, s4.vdd, s5.vdd, s6.vdd, s7.vdd
-	gnd@ dc.gnd, s0.gnd, s1.gnd, s2.gnd, s3.gnd, s4.gnd, s5.gnd, s6.gnd, s7.gnd
-	a0 @ dc.a0
-	a1 @ dc.a1
-	a2 @ dc.a2
-	d0 @ s0.bl
-	d1 @ s1.bl
-	d2 @ s2.bl
-	d3 @ s3.bl
-	d4 @ s4.bl
-	d5 @ s5.bl
-	d6 @ s6.bl
-	d7 @ s7.bl
-
-	//inside
-	w0 @ dc.w0, s0.wl
-	w1 @ dc.w1, s1.wl
-	w2 @ dc.w2, s2.wl
-	w3 @ dc.w3, s3.wl
-	w4 @ dc.w4, s4.wl
-	w5 @ dc.w5, s5.wl
-	w6 @ dc.w6, s6.wl
-	w7 @ dc.w7, s7.wl
+chipview:
+	m1(s@gnd, g@q, d@nq)
+	m2(s@vdd, g@q, d@nq)
+	m3(s@gnd, d@q, g@nq)
+	m4(s@vdd, d@q, g@nq)
+	m5(s@nq, d@nbl, g@wl)
+	m6(s@q, d@bl, g@wl)
 }

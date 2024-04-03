@@ -2,9 +2,15 @@
 
 not(vdd, gnd, i, o)
 {
-	p -> pmos
-	n -> nmos
+chip:
+	p : pmos
+	n : nmos
 
+chipview:
+	p(s@vdd, g@i, d@o)
+	n(s@gnd, g@i, d@o)
+
+wireview:
 	vdd@ p.s
 	gnd@ n.s
 	i  @ p.g, n.g
@@ -13,87 +19,127 @@ not(vdd, gnd, i, o)
 
 nor(vdd, gnd, ia, ib, o)
 {
-	p1, p2 -> pmos
-	n1, n2 -> nmos
-
+wire:
+	tmp : wire
+chip:
+	p1, p2 : pmos
+	n1, n2 : nmos
+wireview:
 	vdd@ p1.s
 	gnd@ n1.s, n2.s
 	ia @ p1.g, n1.g
 	ib @ p2.g, n2.g
 	o  @ p2.d, n1.d, n2.d
-
 	tmp@ p1.d, p2.s
+chipview:
+	p1(s@vdd, g@ia, d@tmp)
+	n1(s@gnd, g@ia, d@o)
+	p2(s@tmp, g@ib, d@o)
+	n2(s@gnd, g@ib, d@o)
 }
 
 or(vdd, gnd, ia, ib, o)
 {
-	nor -> nor
-	not -> not
-
+wire:
+	tmp : wire
+chip:
+	nor : nor
+	not : not
+wireview:
 	vdd@ nor.vdd, not.vdd
 	gnd@ nor.gnd, not.gnd
 	ia @ nor.ia
 	ib @ nor.ib
 	o  @ not.o
-
 	tmp@ nor.o, not.i
+chipview:
+	nor(vdd,gnd,ia,ib,tmp)
+	not(vdd,gnd,tmp,o)
 }
 
 nand(vdd, gnd, ia, ib, o)
 {
-	p1, p2 -> pmos
-	n1, n2 -> nmos
+wire:
+	tmp : wire
+chip:
+	p1, p2 : pmos
+	n1, n2 : nmos
 
+wireview:
 	vdd@ p1.s, p2.s
 	gnd@ n2.s
 	ia @ p1.g, n1.g
 	ib @ p2.g, n2.g
 	o  @ p1.d, p2.d, n1.d
-
 	tmp@ n1.s, n2.d
+
+chipview:
+	p1(s@vdd, g@ia, d@o)
+	p2(s@vdd, g@ib, d@o)
+	n1(s@tmp, g@ia, d@o)
+	n2(s@gnd, g@ib, d@tmp)
 }
 
 and(vdd, gnd, ia, ib, o)
 {
-	nand -> nand
-	not -> not
-
+wire:
+	tmp : wire
+chip:
+	nand : nand
+	not : not
+wireview:
 	vdd@ nand.vdd, not.vdd
 	gnd@ nand.gnd, not.gnd
 	ia @ nand.ia
 	ib @ nand.ib
 	o  @ not.o
-
 	tmp@ nand.o, not.i
+chipview:
+	nand(vdd,gnd, ia,ib, tmp)
+	not(vdd,gnd, tmp, o)
 }
 
 nand3(vdd, gnd, ia, ib, ic, o)
 {
-	p0, p1, p2 -> pmos
-	n0, n1, n2 -> nmos
-
+wire:
+	t01,t02 : wire
+chip:
+	p0, p1, p2 : pmos
+	n0, n1, n2 : nmos
+wireview:
 	vdd@ p0.s, p1.s, p2.s
 	gnd@ n2.s
 	ia @ p0.g, n0.g
 	ib @ p1.g, n1.g
 	ic @ p2.g, n2.g
 	o  @ p0.d, p1.d, p2.d, n0.d
-
 	t01@ n0.s, n1.d
-	t01@ n1.s, n2.d
+	t02@ n1.s, n2.d
+chipview:
+	p0(s@vdd, g@ia, d@o)
+	p1(s@vdd, g@ib, d@o)
+	p2(s@vdd, g@ic, d@o)
+	n0(s@t01, g@ia, d@o)
+	n1(s@t02, g@ib, d@t01)
+	n2(s@gnd, g@ic, d@t02)
 }
 
 and3(vdd, gnd, ia, ib, ic, o)
 {
-	nand3 -> nand3
-	not -> not
-
+wire:
+	tmp : wire
+chip:
+	nand3 : nand3
+	not : not
+wireview:
 	vdd@ nand3.vdd, not.vdd
 	gnd@ nand3.gnd, not.gnd
 	ia @ nand3.ia
 	ib @ nand3.ib
 	ic @ nand3.ic
 	o  @ not.o
-
 	tmp@ nand.o, not.i
+chipview:
+	nand3(vdd,gnd,ia,ib,ic,tmp)
+	not(vdd,gnd,tmp,o)
 }

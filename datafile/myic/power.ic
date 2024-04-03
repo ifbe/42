@@ -3,30 +3,50 @@
 
 buck(vin, gnd, pwm, vo)
 {
+wire:
+	tmp: wire
+chip:
 	d0: diode
 	t0: nmos
 	l0: inductor
 	c0: capacitor
 
+chipview:
+	d0(+@gnd, -@tmp)
+	t0(d@vin, g@pwm, s@tmp)
+	l0(-@vo, +@tmp)
+	c0(-@gnd, +@vo)
+
+wireview:
 	vin@ t0.d
 	gnd@ d0.+, c0.-
 	pwm@ t0.g
 	vo @ c0.+, l0.-
-
 	tmp@ t0.s, d0.-, l0.+
 }
 
 boost(vin, gnd, pwm, vo)
 {
+wire:
+	tmp: wire
+chip:
 	d0: diode
 	t0: nmos
 	l0: inductor
-	ci, co: capacitor
+	ci: capacitor
+	co: capacitor
 
+chipview:
+	d0(-@vo, +@tmp)
+	t0(g@pwm, d@tmp, s@gnd)
+	l0(+@vin, -@tmp)
+	ci(+@vin, -@gnd)
+	co(+@vo, -@gnd)
+
+wireview:
 	vin@ ci.+, l0.+
-	gnd@ ci.-, nmos.s, co.-
+	gnd@ ci.-, t0.s, co.-
 	pwm@ t0.g
 	vo @ d0.-, co.+
-
 	tmp@ t0.d, l0.-, d0.+
 }
