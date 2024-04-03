@@ -204,14 +204,17 @@ int gptclient_attach(struct halfrel* self, struct halfrel* peer)
 	void* buf = ele->listptr.buf0;
 	if(0 == buf)return 0;
 
-	//read
 	if(_src_ == self->foottype){
 		int ret = take_data_from_peer(ele,_src_, 0,0, 0,_pos_, buf,0x4800);
 		if(ret != 0x4800)return 0;
+
+		//check self type, parse or mount
+		parse_gpt(buf, 0);
 	}
 
-	//check self type, parse or mount
-	parse_gpt(buf, 0);
+	if(_dst_ == self->foottype){
+	}
+
 	return 0;
 }
 

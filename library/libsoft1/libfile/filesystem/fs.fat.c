@@ -144,7 +144,7 @@ static void parsefolder(_obj* art, u8* rsi)
 		fatdate2mydate(dir->create_date, dir->create_time_s, date);
 
 		printmemory(rsi+j,0x20);
-		logtoall("clus=%x, size=%x, type=%x, name=%.8s%.3s\n",
+		logtoall("clus=%x, size=%x, attr=%x, name=%.8s%.3s\n",
 			clus,
 			dir->filesize,
 			dir->attr,
@@ -535,28 +535,13 @@ int fat_showinfo(_obj* art)
 
 	return 0;
 }
-
-
-
-
-static int fatclient_ontake(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, u8* buf, int len)
+static int fat_readpath(_obj* art, char* path, void* buf, int len)
 {
-	logtoall("@fatclient_ontake\n");
-	logtoall("%p,%p, %p,%x, %llx,%x, %p,%x\n",art,foot, stack,sp, arg,cmd, buf,len);
-
 	struct perfs* per = art->priv_ptr;
 	if(0 == per)return 0;
 
-	if(_info_ == cmd){
-		return fat_showinfo(art);
-	}
-
-	if(_path_ == cmd){
-		if(arg)logtoall("path=%s\n",(void*)arg);
-	}
-	void* name = (void*)arg;
-	u32 clus = fat_name2clus(art, name);
-	logtoall("name=%s,fat=%x\n", name, clus);
+	u32 clus = fat_name2clus(art, path);
+	logtoall("path=%s,fat=%x\n", path, clus);
 	if(0 == clus){
 		logtoall("wrong file\n");
 		return 0;
@@ -588,6 +573,26 @@ static int fatclient_ontake(_obj* art,void* foot, _syn* stack,int sp, p64 arg, i
 
 	if(debug&&(ret > 0))printmemory(buf, 0x200);
 	return ret;
+}
+
+
+
+
+
+static int fatclient_ontake(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, u8* buf, int len)
+{
+	logtoall("@fatclient_ontake\n");
+	logtoall("%p,%p, %p,%x, %llx,%x, %p,%x\n",art,foot, stack,sp, arg,cmd, buf,len);
+
+	if(_info_ == cmd){
+		return fat_showinfo(art);
+	}
+
+	if(_path_ == cmd){
+		if(arg)logtoall("path=%s\n",(void*)arg);
+	}
+
+	return fat_readpath(art, (void*)arg, buf, len);
 }
 static int fatclient_ongive(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
@@ -634,11 +639,11 @@ int fatclient_detach(struct halfrel* self, struct halfrel* peer)
 
 
 
-static int fatclient_reader(_obj* art,int xxx, void* arg,int cmd, void* buf,int len)
+static int fatclient_reader(_obj* art,int xxx, p64 arg,int cmd, void* buf,int len)
 {
-	return 0;
+	return fat_readpath(art, (void*)arg, buf, len);
 }
-static int fatclient_writer(_obj* art,int xxx, void* arg,int cmd, void* buf,int len)
+static int fatclient_writer(_obj* art,int xxx, p64 arg,int cmd, void* buf,int len)
 {
 	return 0;
 }

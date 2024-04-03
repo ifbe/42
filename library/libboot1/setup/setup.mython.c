@@ -1,7 +1,7 @@
 #include "libboot.h"
 void poweroff();
 //
-void* file_search(void*, int);
+void* filecommand(int argc, void* argv);
 //
 void* threadsearch(void*, int);
 //
@@ -154,11 +154,6 @@ void term_memory(int argc, u8** argv)
 
 	printmemory((void*)addr, len);
 }
-void term_file(int argc, u8** argv)
-{
-	if(argc <= 1)file_search(0, 0);
-	else file_search(argv[1], 0);
-}
 void term_thread(int argc, u8** argv)
 {
 	if(argc <= 1)threadsearch(0, 0);
@@ -192,7 +187,7 @@ int termwrite(u8* buf, int len)
 	else if(0 == ncmp(buf, "poweroff", 8))poweroff();
 	else if(0 == ncmp(buf, "mmio", 4))term_mmio(j, argv);
 	else if(0 == ncmp(buf, "memory", 5))term_memory(j, argv);
-	else if(0 == ncmp(buf, "file", 4))term_file(j, argv);
+	else if(0 == ncmp(buf, "file", 4))filecommand(j, argv);
 	else if(0 == ncmp(buf, "thread", 6))term_thread(j, argv);
 	else if(0 == ncmp(buf, "process", 7))term_process(j, argv);
 	else if(0 == ncmp(buf, "window", 6))term_window(j, argv);

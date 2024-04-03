@@ -9,15 +9,6 @@ void* system_alloc();
 
 
 
-void initfilemgr()
-{
-}
-void freefilemgr()
-{
-}
-void filemanager_registerdisk()
-{
-}
 _obj* getobjfromhandle(HANDLE hh)
 {
 	return 0;
@@ -38,7 +29,6 @@ static u64 getsize(HANDLE hand,char* path,char* dest)
 	//logtoall("%llx\n",*(u64*)path);
 	if( *(u64*)path == 0x737968505c2e5c5c )
 	{
-		//磁盘大小这么拿
 		GET_LENGTH_INFORMATION out;
 		u32 len;
 		int ret;
@@ -66,20 +56,20 @@ static u64 getsize(HANDLE hand,char* path,char* dest)
 	}
 	else
 	{
-		//文件大小这么拿
 		GetFileSizeEx( hand , (PLARGE_INTEGER)dest );
 	}
 }
-void listfile(char* dest)
+void osfile_list(char* dest)
 {
 	//
 	int num=0;
 	int j=0;
+	char tmp[0x1000];
+	if(0==dest)dest = tmp;
 
 	//clear
-	for(num=0;num<0x10000;num++)
+	for(num=0;num<0x1000;num++)
 	{
-		//全部清零
 		dest[num]=0;
 	}
 
@@ -110,14 +100,15 @@ void listfile(char* dest)
 
 			//next
 			CloseHandle(hand);
-			printf("%llx,	%llx:	%s\n" ,
-				*(u64*)(dest+0),
-				*(u64*)(dest+8),
-				(char*)(dest+0x10)
+			printf("%.4s	[%llx,%llx]	%s\n" ,
+				(u64*)(dest+0),
+				*(u64*)(dest+0x10),
+				*(u64*)(dest+0x18),
+				(char*)(dest+0x20)
 			);
 			dest += 0x40;
 		}
-	}//10个记录
+	}
 }
 int file_search(void* buf, int len)
 {
@@ -230,7 +221,7 @@ int file_reader(_obj* oo, int xx, p64 arg, int cmd, void* mem, int len)
 	}//from head
 
 	ret = ReadFile(file, mem, len, &val, 0);
-	if(ret == 0)logtoall("ret=%d,val=%d,error=%d\n", ret, val, GetLastError());
+	if(ret == 0)logtoall("file_reader: ret=%d,val=%d,error=%d\n", ret, val, GetLastError());
 	return val;
 }
 int file_writer(_obj* oo, int xx, p64 arg, int cmd, void* mem, int len)
@@ -246,6 +237,6 @@ int file_writer(_obj* oo, int xx, p64 arg, int cmd, void* mem, int len)
 	}//from head
 
 	ret = WriteFile(file, mem, len, &val, NULL);
-	if(ret == 0)logtoall("ret=%d,val=%d,error=%d\n", ret, val, GetLastError());
+	if(ret == 0)logtoall("file_writer:ret=%d,val=%d,error=%d\n", ret, val, GetLastError());
 	return val;
 }

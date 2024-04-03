@@ -90,6 +90,9 @@
 #define _info_ hex32('i','n','f','o')
 #define _pos_ hex32('p','o','s', 0)
 //
+#define _vhd_ hex32('v','h','d',0)
+#define _vmdk_ hex32('v','m','d','k')
+//
 #define _mbr_ hex32('m','b','r',0)
 #define _gpt_ hex32('g','p','t',0)
 //
