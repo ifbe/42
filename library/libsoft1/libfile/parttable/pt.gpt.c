@@ -205,7 +205,18 @@ int gptclient_attach(struct halfrel* self, struct halfrel* peer)
 	if(0 == buf)return 0;
 
 	if(_src_ == self->foottype){
-		int ret = take_data_from_peer(ele,_src_, 0,0, 0,_pos_, buf,0x4800);
+		int ret;
+		struct item* xxx = peer->pchip;
+		if(xxx->ontaking){
+			ret = xxx->ontaking(xxx,peer->pfoot, 0,0, 0,_pos_, buf, 0x4800);
+		}
+		else if((_sys_ == xxx->tier)|(_art_ == xxx->tier)){
+			_obj* obj = peer->pchip;
+			ret = file_reader(obj,0, 0,_pos_, buf,0x4800);
+		}
+		else{
+			ret = take_data_from_peer(ele,_src_, 0,0, 0,_pos_, buf,0x4800);
+		}
 		if(ret != 0x4800)return 0;
 
 		//check self type, parse or mount

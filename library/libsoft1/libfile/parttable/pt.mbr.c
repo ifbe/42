@@ -218,20 +218,17 @@ int mbrclient_attach(struct halfrel* self, struct halfrel* peer)
 	if(_src_ == self->foottype){
 		int ret;
 		struct item* xxx = peer->pchip;
-		if((_sys_ == xxx->tier)|(_art_ == xxx->tier)){
+		if(xxx->ontaking){
+			ret = xxx->ontaking(xxx,peer->pfoot, 0,0, 0,_pos_, buf, 0x10000);
+		}
+		else if((_sys_ == xxx->tier)|(_art_ == xxx->tier)){
 			_obj* obj = peer->pchip;
 			ret = file_reader(obj,0, 0,_pos_, buf,0x10000);
-			if(0x10000 != ret)return -1;
 		}
 		else{
-			if(xxx->ontaking){
-				ret = xxx->ontaking(xxx,peer->pfoot, 0,0, 0,_pos_, buf, 0x10000);
-			}
-			else{
-				ret = take_data_from_peer(ele,_src_, 0,0, 0,_pos_, ele->listptr.buf0,0x1000);
-			}
-			if(0x10000 != ret)return -1;
+			ret = take_data_from_peer(ele,_src_, 0,0, 0,_pos_, ele->listptr.buf0,0x1000);
 		}
+		if(0x10000 != ret)return -1;
 
 		//check self type, parse or mount
 		parse_mbr(buf, 0);

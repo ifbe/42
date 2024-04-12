@@ -178,6 +178,12 @@ u64 file_check(u8* buf, int len)
 		//logtoall("ntfs\n");
 	}
 
+	//vdisk
+	else if(check_vmdk(buf) != 0){
+		type = _vmdk_;
+		//parse_gpt(buf, len);
+	}
+
 	//parttable
 	else if(check_gpt(buf) != 0){
 		type = _gpt_;

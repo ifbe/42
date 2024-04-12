@@ -5,18 +5,33 @@ int hexstr2u64(void* str, u64* data);
 
 
 
-//disk
-static _obj* disknode[16];
-static void* diskfoot[16];
+//raw data
+struct _perdisk{
+	_obj* node;
+	void* slot;
+}perdisk[16];
 static int diskcount = 0;
-//part
-static _obj* ptblnode[16];
-static void* ptblfoot[16];
+//virt disk
+struct _pervd{
+	_obj* node;
+	void* slot;
+}pervdisk[16];
+static int vdcount = 0;
+//part table
+struct _perptbl{
+	_obj* node;
+	void* slot;
+}perptbl[16];
 static int ptblcount = 0;
-//fsys
-static _obj* fsysnode[16];
-static void* fsysfoot[16];
+//file system
+struct _perfsys{
+	_obj* node;
+	void* slot;
+}perfsys[16];
 static int fsyscount = 0;
+
+
+//
 void initfilemgr()
 {
 }
@@ -29,24 +44,32 @@ void freefilemgr()
 
 int filemanager_registerfsys(_obj* node, void* slot)
 {
-	fsysnode[fsyscount] = node;
-	fsysfoot[fsyscount] = slot;
+	perfsys[fsyscount].node = node;
+	perfsys[fsyscount].slot = slot;
 	fsyscount += 1;
 
 	return 0;
 }
 int filemanager_registerptbl(_obj* node, void* slot)
 {
-	ptblnode[ptblcount] = node;
-	ptblfoot[ptblcount] = slot;
+	perptbl[ptblcount].node = node;
+	perptbl[ptblcount].slot = slot;
 	ptblcount += 1;
+
+	return 0;
+}
+int filemanager_registervdisk(_obj* node, void* slot)
+{
+	pervdisk[vdcount].node = node;
+	pervdisk[vdcount].slot = slot;
+	vdcount += 1;
 
 	return 0;
 }
 int filemanager_registerdisk(_obj* node, void* slot)
 {
-	disknode[diskcount] = node;
-	diskfoot[diskcount] = slot;
+	perdisk[diskcount].node = node;
+	perdisk[diskcount].slot = slot;
 	diskcount += 1;
 
 	return 0;
@@ -138,7 +161,7 @@ int file_mount_raw(_obj* disk, u64 df){
 	switch(tmp->type){
 	case _vhd_:
 	case _vmdk_:
-		//file_mount_vdisk(tmp, 0);
+		filemanager_registervdisk(tmp, 0);
 		break;
 	case _mbr_:
 	case _gpt_:
@@ -196,34 +219,37 @@ int parse_type_and_addr(char* input, u64* type, u64* addr)
 
 
 #define _disk_ hex32('d','i','s','k')
+#define _vdisk_ hex64('v','d','i','s','k', 0, 0, 0)
 #define _ptbl_ hex32('p','t','b','l')
 #define _fsys_ hex32('f','s','y','s')
 int filelist(char* path)
 {
 	int j;
-	_obj** tmp = 0;
 
 	//logtoall("----blkdev----\n");
 	//osfile_list(0);
 
-	logtoall("----disk----\n");
-	tmp = disknode;
+	logtoall("----raw----\n");
 	for(j=0;j<diskcount;j++){
-		logtoall("%d: node=%p,slot=%p\n", j, disknode[j], diskfoot[j]);
+		logtoall("%d: node=%p,slot=%p\n", j, perdisk[j].node, perdisk[j].slot);
 	}
 	if(0 == j)logtoall("no disk registered\n\n");
 
+	logtoall("----vdisk----\n");
+	for(j=0;j<vdcount;j++){
+		logtoall("%d: node=%p,slot=%p\n", j, pervdisk[j].node, pervdisk[j].slot);
+	}
+	if(0 == j)logtoall("no vdisk registered\n\n");
+
 	logtoall("----ptbl----\n");
-	tmp = ptblnode;
 	for(j=0;j<ptblcount;j++){
-		logtoall("%d: node=%p,slot=%p\n", j, ptblnode[j], ptblfoot[j]);
+		logtoall("%d: node=%p,slot=%p\n", j, perptbl[j].node, perptbl[j].slot);
 	}
 	if(0 == j)logtoall("no ptbl registered\n\n");
 
 	logtoall("----fsys----\n");
-	tmp = fsysnode;
 	for(j=0;j<fsyscount;j++){
-		logtoall("%d: node=%p,slot=%p\n", j, fsysnode[j], fsysfoot[j]);
+		logtoall("%d: node=%p,slot=%p\n", j, perfsys[j].node, perfsys[j].slot);
 	}
 	if(0 == j)logtoall("no fsys registered\n\n");
 }
@@ -249,9 +275,15 @@ int filemount(char* path, char* slot)
 	if(type2)logtoall("type2=%.8s, addr2=%p\n", &type2, addr2);
 
 	//mount disk@434140
-	if(_disk_ == type){
+	if( (_disk_ == type) | (_raw_ == type) ){
 		_obj* d = (_obj*)addr;
 		file_mount_raw(d, addr2);
+	}
+
+	//mount vdisk@434140
+	if(_vdisk_ == type){
+		_obj* v = (_obj*)addr;
+		file_mount_raw(v, addr2);
 	}
 
 	//mount ptbl@fff3450.part@0

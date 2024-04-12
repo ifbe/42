@@ -1,5 +1,11 @@
 #include "libsoft.h"
 u64 file_check(u8* buf, int len);
+//
+int vmdk_create(_obj* ele, void* arg, int argc, u8** argv);
+int vmdk_delete(_obj* ele, void* arg);
+int vmdk_attach(struct halfrel* self, struct halfrel* peer);
+int vmdk_detach(struct halfrel* self, struct halfrel* peer);
+//
 int mbrclient_create(_obj* ele, void* arg, int argc, u8** argv);
 int mbrclient_delete(_obj* ele, void* arg);
 int mbrclient_attach(struct halfrel* self, struct halfrel* peer);
@@ -8,6 +14,7 @@ int gptclient_create(_obj* ele, void* arg, int argc, u8** argv);
 int gptclient_delete(_obj* ele, void* arg);
 int gptclient_attach(struct halfrel* self, struct halfrel* peer);
 int gptclient_detach(struct halfrel* self, struct halfrel* peer);
+//
 int fatclient_create(_obj* ele, void* arg, int argc, u8** argv);
 int fatclient_delete(_obj* ele, void* arg);
 int fatclient_attach(struct halfrel* self, struct halfrel* peer);
@@ -165,16 +172,16 @@ int fileauto_attach(struct halfrel* self, struct halfrel* peer)
 
 	int ret;
 	struct item* xxx = peer->pchip;
-	if((_sys_ == xxx->tier)|(_art_ == xxx->tier)){
+	if(xxx->ontaking){
+		ret = xxx->ontaking(xxx,peer->pfoot, 0,0, 0,_pos_, buf, 0x10000);
+		if(0x10000 != ret)return -1;
+	}
+	else if((_sys_ == xxx->tier)|(_art_ == xxx->tier)){
 		_obj* obj = peer->pchip;
 		ret = file_reader(obj,0, 0, _pos_, buf, 0x10000);
 		if(0x10000 != ret)return -1;
 	}
-	else{
-		if(0 == xxx->ontaking)return -1;
-		ret = xxx->ontaking(xxx,peer->pfoot, 0,0, 0,_pos_, buf, 0x10000);
-		if(0x10000 != ret)return -1;
-	}
+	else return -1;
 
 	u64 type = file_check(buf, 0x10000);
 	if(0 == type)return -2;
@@ -188,6 +195,10 @@ int fileauto_attach(struct halfrel* self, struct halfrel* peer)
 
 	//recreate target
 	switch(type){
+	case _vmdk_:
+		vmdk_create(ele,0,0,0);
+		vmdk_attach(self,peer);
+		break;
 	case _mbr_:
 		mbrclient_create(ele,0,0,0);
 		mbrclient_attach(self,peer);
