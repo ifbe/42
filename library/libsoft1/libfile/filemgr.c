@@ -31,15 +31,6 @@ struct _perfsys{
 static int fsyscount = 0;
 
 
-//
-void initfilemgr()
-{
-}
-void freefilemgr()
-{
-}
-
-
 
 
 int filemanager_registerfsys(_obj* node, void* slot)
@@ -175,10 +166,11 @@ int file_mount_raw(_obj* disk, u64 df){
 		break;
 	}
 	logtoall("type=%.8s\n", &tmp->type);
+	return 0;
 }
 
 
-int parse_type(char* input, int end, u64* type)
+int parse_type(u8* input, int end, u64* type)
 {
 	if(end>=8)end = 8;
 
@@ -189,13 +181,14 @@ int parse_type(char* input, int end, u64* type)
 		ptr[j] = input[j];
 	}
 	for(;j<8;j++)ptr[j] = 0;
+	return 0;
 }
-int parse_type_and_addr(char* input, u64* type, u64* addr)
+int parse_type_and_addr(u8* input, u64* type, u64* addr)
 {
 	int j,at=-1;
 	for(j=0;j<64;j++){
 		if(input[j] <= 0x20)break;
-		if('@' == input[j]){
+		if( ('@' == input[j]) | ('.' == input[j]) ){
 			at = j;
 			break;
 		}
@@ -213,6 +206,7 @@ int parse_type_and_addr(char* input, u64* type, u64* addr)
 
 	*addr = 0;
 	hexstr2u64(input+at+1, addr);
+	return 0;
 }
 
 
@@ -252,10 +246,11 @@ int filelist(char* path)
 		logtoall("%d: node=%p,slot=%p\n", j, perfsys[j].node, perfsys[j].slot);
 	}
 	if(0 == j)logtoall("no fsys registered\n\n");
+	return 0;
 }
 
 //file mount srcpath srcpart [dstpath] [dstpart]
-int filemount(char* path, char* slot)
+int filemount(u8* path, u8* slot)
 {
 	u64 type=0, addr=0;
 	parse_type_and_addr(path, &type, &addr);

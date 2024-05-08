@@ -20,18 +20,19 @@
 
 
 
-
+/*
 struct item* obj;
-void initfilemgr(void* addr)
-{
-	obj = addr;
-}
-void freefilemgr()
-{
-}
 void filemanager_registerdisk()
 {
+}*/
+void initosfile(void* addr)
+{
 }
+void freeosfile()
+{
+}
+
+
 int file_search(void* buf, int len)
 {
 	logtoall("@filesearch\n");
@@ -45,6 +46,7 @@ int file_modify(void* buf, int len)
 
 
 
+void* system_fd2obj(int fd);
 _obj* file_create(void* path, int flag)
 {
 	//logtoall("@startfile:%s,%x\n", path, flag);
@@ -61,9 +63,12 @@ _obj* file_create(void* path, int flag)
 	}
 	if(fd < 0)goto fail;
 
+	_obj* oo = system_fd2obj(fd);
 	//logtoall("file_create:obj=%p,fd=%d\n",&obj[fd], fd);
-	obj[fd].fileinfo.fd = fd;
-	return &obj[fd];
+	if(0 == oo)return 0;
+
+	oo->fileinfo.fd = fd;
+	return oo;
 
 fail:
 	printf("@open:fd=%d,err=%d,path=%s\n", fd, errno, pp);

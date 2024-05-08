@@ -23,14 +23,11 @@
 
 
 struct item* obj;
-void initfilemgr(void* addr)
+void initosfile(void* addr)
 {
 	obj = addr;
 }
-void freefilemgr()
-{
-}
-void filemanager_registerdisk()
+void freeosfile()
 {
 }
 

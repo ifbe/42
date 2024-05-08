@@ -30,7 +30,6 @@ linuxarm_c = \
 linuxarm_o = $(patsubst %.c, %.o, $(linuxarm_c))
 
 linuxpi32_c = \
-2soc/chipbcm/bcm2835.gpio.c \
 2soc/inlinux/linux.wire.bt.c \
 2soc/inlinux/linux.wire.i2c.c \
 2soc/inlinux/linux.wire.pci.c \
@@ -40,10 +39,6 @@ linuxpi32_c = \
 2soc/inlinux/linux.math.c \
 2soc/inlinux/hardware.c
 linuxpi32_o = $(patsubst %.c, %.o, $(linuxpi32_c))
-
-armlinux:$(arm_o) $(linuxarm_o)
-
-pi32linux:$(arm_o) $(linuxpi32_o)
 
 
 
@@ -137,6 +132,16 @@ wiringpi_o = $(patsubst %.c, %.o, $(wiringpi_c))
 gpiod_c = \
 2soc/libgpiod/gpiod.c
 gpiod_o = $(patsubst %.c, %.o, $(gpiod_c))
+
+
+
+
+#---------------------gpio-------------------------
+armlinux:$(arm_o) $(linuxarm_o) $(dummygpio_o)
+
+pi32linux:$(arm_o) $(linuxpi32_o) $(bcm2835gpio_o)
+
+pi32linux_gpiod:$(arm_o) $(linuxpi32_o) $(gpiod_o)
 
 arm64linux:$(arm64_o) $(linuxarm64_o) $(dummygpio_o)
 

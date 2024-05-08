@@ -9,6 +9,12 @@ void* system_alloc();
 
 
 
+void initosfile(){
+}
+void freeosfile(){
+}
+
+
 _obj* getobjfromhandle(HANDLE hh)
 {
 	return 0;

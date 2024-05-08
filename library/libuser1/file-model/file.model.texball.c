@@ -10,6 +10,7 @@ void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 struct own{
 	struct texture albedotex;
 	struct texture heighttex;
+	vec4 distance_per_value;
 	struct dx11data dx11;
 	struct gl41data gl41;
 };
@@ -163,11 +164,12 @@ GLSL_PRECISION
 "layout(location = 1)in vec2 texuvw;\n"
 "layout(location = 2)in vec3 normal;\n"
 "uniform mat4 cammvp;\n"
+"uniform vec3 distance_per_value;\n"
 "uniform sampler2D heightmap;\n"
 "out vec2 uvw;\n"
 "void main(){\n"
 	"uvw = texuvw;\n"
-	"vec3 tmpxyz = vertex + normal*texture(heightmap, texuvw).b/10.0;\n"
+	"vec3 tmpxyz = vertex + distance_per_value.x * normalize(normal) * texture(heightmap, texuvw).b;\n"
 	"gl_Position = cammvp * vec4(tmpxyz, 1.0);\n"
 "}\n";
 char* texball_glsl_fs =
@@ -188,6 +190,10 @@ static void texball_gl41prep(struct own* my)
 	data->src.vs = texball_glsl_vs;
 	data->src.fs = texball_glsl_fs;
 	data->src.shader_enq = 42;
+
+	data->dst.arg[0].name = "distance_per_value";
+	data->dst.arg[0].data = my->distance_per_value;
+	data->dst.arg[0].fmt = 'v';
 
 	//texture
 	struct texture* albedomap = &data->src.tex[0];
@@ -242,12 +248,16 @@ static void texball_gl41draw(
 	struct own* my = act->OWNBUF;
 	if(0 == my)return;
 
+	float xxx = 8.848;//vec3_getlen(vr);
+	my->distance_per_value[0] = xxx;
+
 	struct mysrc* src = &my->gl41.src;
 	if(0 == src)return;
 
 	void* vbuf = src->vtx[0].vbuf;
 	void* ibuf = src->vtx[0].ibuf;
 	carveplanet_verttexnorm(vbuf, ibuf, vc, vr, vf, vu);
+
 	src->vbuf_enq += 1;
 	src->ibuf_enq += 1;
 	gl41data_insert(ctx, 's', src, 1);

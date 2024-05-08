@@ -7,8 +7,8 @@ int freeprocess();
 int initthread();
 int freethread();
 //
-int initfilemgr(void*);
-int freefilemgr();
+int initosfile(void*);
+int freeosfile();
 //random
 int initrandom(void*);
 int freerandom();
@@ -84,7 +84,7 @@ void system_init(u8* addr, int size)
 	initshell(addr);
 	inituart(addr);
 	initsocket(addr);
-	initfilemgr(addr);
+	initosfile(addr);
 
 	initprocess();
 	initthread();
@@ -95,6 +95,7 @@ void system_exit()
 {
 	logtoall("[8,a):system exiting\n");
 
+	//freeosfile();
 	freesocket();
 	freeuart();
 	freeshell();

@@ -103,7 +103,7 @@ int gpio_read(_obj* obj,void* foot, p64 arg,int cmd, u8* buf,int len)
 	}
 	return 0;
 }
-int gpio_write(_obj* obj,void* foot, u8* arg,int cmd, u8* buf,int len)
+int gpio_write(_obj* obj,void* foot, p64 arg,int cmd, u8* buf,int len)
 {
 	//logtoall("@gpiowrite:%p,%x,%p,%x\n", arg, cmd, buf, len);
 	struct privdata* priv = (void*)obj->priv_256b;

@@ -114,7 +114,7 @@ static void planet_draw_gl41(
 			tr[k] = vr[k]/256;
 			tu[k] = vu[k]/256;
 		}
-		gl41string(wnd, data[j].color, tc, tr, tu, data[j].name, 0);
+		gl41string(wnd, data[j].color, tc, tr, tu, (u8*)data[j].name, 0);
 	}
 }
 static void planet_draw_json(

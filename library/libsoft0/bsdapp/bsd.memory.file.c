@@ -3,9 +3,9 @@
 
 
 
-void initfilemgr()
+void initosfile()
 {
 }
-void freefilemgr()
+void freeosfile()
 {
 }

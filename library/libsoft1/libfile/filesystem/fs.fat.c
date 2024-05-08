@@ -535,7 +535,7 @@ int fat_showinfo(_obj* art)
 
 	return 0;
 }
-static int fat_readpath(_obj* art, char* path, void* buf, int len)
+static int fat_readpath(_obj* art, u8* path, void* buf, int len)
 {
 	struct perfs* per = art->priv_ptr;
 	if(0 == per)return 0;

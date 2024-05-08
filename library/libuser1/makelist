@@ -101,11 +101,11 @@
 ./entity.c
 ./file-bio/file.biology.dna.c
 ./file-bio/file.biology.fasta.c
-./file-model/file.model.ball.c
 ./file-model/file.model.geometry.c
 ./file-model/file.model.obj.c
 ./file-model/file.model.scad.c
 ./file-model/file.model.stl.c
+./file-model/file.model.texball.c
 ./file-model/file.model.wrl.c
 ./file-prog/assembly/file.program.arm64.c
 ./file-prog/assembly/file.program.mips64.c

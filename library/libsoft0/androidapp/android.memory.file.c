@@ -17,9 +17,9 @@ static AAsset* asset[16] = {0};
 
 
 
-void initfilemgr(void* addr)
+void initosfile(void* addr)
 {
-	logtoall("@initfilemgr\n");
+	logtoall("@initosfile\n");
 	obj = addr;
 	assetMgr = getassetmgr();
 
@@ -31,10 +31,7 @@ void initfilemgr(void* addr)
 	}while (file_list);
 	AAssetDir_close(assetDir);
 }
-void freefilemgr()
-{
-}
-void filemanager_registerdisk()
+void freeosfile()
 {
 }
 
@@ -143,11 +140,11 @@ int readfolder(void* url, int fd, p64 arg, int off, void* buf, int len)
 	struct android_app* app = getapp();
 
 	//logtoall("@AttachCurrentThread\n");
-    JNIEnv* env = 0;
-    (*app->activity->vm)->AttachCurrentThread(app->activity->vm, &env, 0);
+	JNIEnv* env = 0;
+	(*app->activity->vm)->AttachCurrentThread(app->activity->vm, &env, 0);
 
 	//logtoall("@activity\n");
-    jclass activity_class = (*env)->GetObjectClass(env, app->activity->clazz);
+	jclass activity_class = (*env)->GetObjectClass(env, app->activity->clazz);
 	jmethodID getAssets_method = (*env)->GetMethodID(env, activity_class, "getAssets", "()Landroid/content/res/AssetManager;");
 
 	//logtoall("@assetmanager\n");
@@ -155,7 +152,7 @@ int readfolder(void* url, int fd, p64 arg, int off, void* buf, int len)
 	//logtoall("@assetmanager.1\n");
 	jclass assetmanager_class = (*env)->GetObjectClass(env, assetmanager_obj);
 	//logtoall("@assetmanager.2\n");
-    jmethodID list_method = (*env)->GetMethodID(env, assetmanager_class, "list", "(Ljava/lang/String;)[Ljava/lang/String;");
+	jmethodID list_method = (*env)->GetMethodID(env, assetmanager_class, "list", "(Ljava/lang/String;)[Ljava/lang/String;");
 
 	//logtoall("@path\n");
 	jstring path_obj = (*env)->NewStringUTF(env, url);
@@ -181,6 +178,6 @@ int readfolder(void* url, int fd, p64 arg, int off, void* buf, int len)
 	}
 
 	logtoall("@DetachCurrentThread\n");
-    (*app->activity->vm)->DetachCurrentThread(app->activity->vm);
+	(*app->activity->vm)->DetachCurrentThread(app->activity->vm);
 	return olen;
 }

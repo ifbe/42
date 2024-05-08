@@ -81,6 +81,7 @@ int parse_vmdk(struct SparseExtentHeader* h)
 		"compressAlgorithm=%x\n",
 		h->uncleanShutdown, h->singleEndLineChar, h->nonEndLineChar, h->doubleEndLineChar1, h->doubleEndLineChar2, h->compressAlgorithm
 	);
+	return 0;
 }
 
 
@@ -92,7 +93,7 @@ static void* ensure_gd_in_cache(_obj* art, u64 id)
 	struct pervd* vd = art->priv_ptr;
 	if(vd->cachepos_gd != offs_in_gd){
 		struct SparseExtentHeader* h = &vd->h;
-		u64 toreadpos = offs_in_gd + (h->gdOffset)<<9;
+		u64 toreadpos = offs_in_gd + (h->gdOffset<<9);
 		int ret = take_data_from_peer(art,_src_, 0,0, toreadpos,_pos_, vd->cache_gd, cacheblocksize_gd);
 		vd->cachepos_gd = offs_in_gd;
 	}
@@ -156,6 +157,7 @@ static int vmdk_readonegrain(_obj* art, u64 addr, u8* buf, int len){
 	if(len > bytepergrain-offs_in_grain)len = bytepergrain-offs_in_grain;
 	logtoall("offs_in_grain=%llx, lenafter=%x\n", offs_in_grain, len);
 	int ret = take_data_from_peer(art,_src_, 0,0, fileoffs+offs_in_grain,_pos_, buf, len);
+	return ret;
 }
 
 
@@ -163,6 +165,7 @@ static int vmdk_ontake(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cm
 {
 	logtoall("@vmdk_ontake:obj=%p,slot=%p,arg=%llx,cmd=%x,buf=%p,len=%x\n", art,foot, arg,cmd, buf,len);
 	vmdk_readonegrain(art, arg, buf, len);
+	return 0;
 }
 static int vmdk_ongive(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
@@ -201,6 +204,7 @@ int vmdk_attach(struct halfrel* self, struct halfrel* peer)
 		//check self type, parse or mount
 		parse_vmdk(&vd->h);
 	}
+	return 0;
 }
 
 

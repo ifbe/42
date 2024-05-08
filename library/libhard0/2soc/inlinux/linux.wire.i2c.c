@@ -68,7 +68,7 @@ int i2c_delete(_obj* obj)
 
 	return close(fd);
 }
-int i2c_read(_obj* obj,void* foot, u8* arg,int addr, u8* buf,int len)
+int i2c_read(_obj* obj,void* foot, p64 arg,int addr, u8* buf,int len)
 {
 	//logtoall("@%s:%p,%x,%p,%x\n", __func__, arg, addr, buf, len);
 	struct privdata* priv = (void*)obj->priv_256b;
@@ -102,7 +102,7 @@ int i2c_read(_obj* obj,void* foot, u8* arg,int addr, u8* buf,int len)
 
 	return 1;
 }
-int i2c_write(_obj* obj,void* foot, u8* arg,int addr, u8* buf,int len)
+int i2c_write(_obj* obj,void* foot, p64 arg,int addr, u8* buf,int len)
 {
 	//logtoall("@%s:%p,%x,%p,%x\n", __func__, arg, addr, buf, len);
 	struct privdata* priv = (void*)obj->priv_256b;

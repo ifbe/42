@@ -2,7 +2,7 @@
 
 
 
-
+/*
 struct parsed{
 	u64 type;
 	u64 name;
@@ -271,14 +271,35 @@ int file_modify(void* buf, int len)
 {
 	return 0;
 }
+*/
 
 
-
-
-void initfilemgr()
+void initosfile()
 {
-	logtoall("@initfilemgr\n");
+	logtoall("@initosfile\n");
 }
-void freefilemgr()
+void freeosfile()
 {
+}
+
+
+int file_reader(void* obj, int fd, p64 arg, int cmd, u8* buf, int len)
+{
+	logtoall("%s\n",__FILE__);
+	return 0;
+}
+int file_writer(void* obj, int fd, p64 arg, int cmd, u8* buf, int len)
+{
+	logtoall("%s\n",__FILE__);
+	return 0;
+}
+int file_create(char* path)
+{
+	logtoall("%s\n",__FILE__);
+	return 0;
+}
+int file_delete()
+{
+	logtoall("%s\n",__FILE__);
+	return 0;
 }
