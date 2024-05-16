@@ -75,8 +75,8 @@ int file_writer(_obj*, int, p64, int, void*, int);
 int openreadclose(void*, int, void*, int);
 int openwriteclose(void*, int, void*, int);
 //
-int savefilefromtex(char* name, struct texture* tex);
-int loadtexfromfile(struct texture* tex, char* name);
+int savefilefromtex(void* name, struct texture* tex);
+int loadtexfromfile(struct texture* tex, void* name);
 int loadglslfromfile(void* url, int max, void* buf, int len);
 int loadhlslfromfile(void* url, int max, void* buf, int len);
 //

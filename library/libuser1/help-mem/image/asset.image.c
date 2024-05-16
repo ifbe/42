@@ -147,11 +147,11 @@ void loadimgfromtga(u8* buf, int len, int* width, int* height, int* depth, int* 
 
 
 
-int savefilefromtex(char* name, struct texture* tex)
+int savefilefromtex(void* name, struct texture* tex)
 {
 	return 0;
 }
-int loadtexfromfile(struct texture* tex, char* name)
+int loadtexfromfile(struct texture* tex, void* name)
 {
 	int w,h,d,s;
 	int len;

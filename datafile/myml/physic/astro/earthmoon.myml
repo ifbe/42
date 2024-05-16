@@ -1,11 +1,15 @@
 <entity>
 earth{
 fmt:texball
-arg:datafile/jpg/texball-earth.jpg
+albedo:datafile/jpg/earth/earth-albedo-4096.jpg
+height:datafile/jpg/earth/earth-height-4096.jpg
+factor:8.848
 }
 moon{
 fmt:texball
-arg:datafile/jpg/brickwall.jpg
+albedo:datafile/jpg/moon/moon-albedo-4096.jpg
+height:datafile/jpg/moon/moon-height-4096.jpg
+factor:9.0
 }
 virtual{
 fmt:virtual
@@ -89,6 +93,7 @@ q:1.0, 1.0
 <relation>
 #ev
 (@cam3rd, tar@0) -> (@earth, evby@0)
+(@cam3rd, tar@0) -> (@moon, evby@0)
 (@cam3rd, cam@0) -> (@freecam, evto@0)
 
 #input

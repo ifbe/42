@@ -29,22 +29,150 @@ struct privdata{
 };
 
 
-
-
-int cam3rd_movetar(struct fstyle* camgeom, struct fstyle* targeom, int dx, int dy, int dz)
+void* cam3rd_findgeom(_obj* ent)
 {
-	float* tar = targeom->vc;
-	tar[0] += dx;
-	tar[1] += dy;
-	tar[2] += dz;
+	struct relation* rel;
+	_obj* world;
+	if(0 == ent)return 0;
 
-	float* cam = camgeom->vc;
-	cam[0] += dx;
-	cam[1] += dy;
-	cam[2] += dz;
+	rel = ent->irel0;
+	while(1){
+		if(0 == rel)break;
+		world = rel->psrcchip;
+		if(_virtual_ == world->type)return rel->psrcfoot;
+		if(_scene3d_ == world->type)return rel->psrcfoot;
+		rel = samedstnextsrc(rel);
+	}
+
+	rel = ent->orel0;
+	while(1){
+		if(0 == rel)break;
+		world = rel->pdstchip;
+		if(_virtual_ == world->type)return rel->pdstfoot;
+		if(_scene3d_ == world->type)return rel->pdstfoot;
+		rel = samesrcnextdst(rel);
+	}
+
 	return 0;
 }
-int cam3rd_nearfar(struct privdata* own, struct fstyle* cam, struct fstyle* tar, int key, int val)
+int cam3rd_movecam_fix(_obj* ent){
+	struct privdata* own = ent->priv_ptr;
+	if(0 == own)return 0;
+
+	struct style* cam = own->caminworld;
+	if(0 == cam){
+		cam = cam3rd_findgeom(own->cam);
+		if(0 == cam)return 0;
+
+		own->caminworld = cam;
+	}
+
+	struct style* tar = own->tarinworld;
+	if(0 == tar){
+		tar = cam3rd_findgeom(own->tar);
+		if(0 == tar)return 0;
+
+		own->tarinworld = tar;
+	}
+
+	cam->fs.vc[0] = tar->fs.vc[0] - own->cam2tar[0];
+	cam->fs.vc[1] = tar->fs.vc[1] - own->cam2tar[1];
+	cam->fs.vc[2] = tar->fs.vc[2] - own->cam2tar[2];
+
+	cam->fs.vf[0] = own->cam2tar[0];
+	cam->fs.vf[1] = own->cam2tar[1];
+	cam->fs.vf[2] = own->cam2tar[2];
+	vec3_normalize(cam->fs.vf);
+
+	//
+	cam->fs.vr[0] = cam->fs.vf[1];
+	cam->fs.vr[1] =-cam->fs.vf[0];
+	cam->fs.vr[2] = 0.0;
+	vec3_normalize(cam->fs.vr);
+
+	//a × b = [aybz-azby, azbx-axbz, axby-aybx]
+	cam->fs.vt[0] = cam->fs.vr[1]*cam->fs.vf[2] - cam->fs.vr[2]*cam->fs.vf[1];
+	cam->fs.vt[1] = cam->fs.vr[2]*cam->fs.vf[0] - cam->fs.vr[0]*cam->fs.vf[2];
+	cam->fs.vt[2] = cam->fs.vr[0]*cam->fs.vf[1] - cam->fs.vr[1]*cam->fs.vf[0];
+
+	return 0;
+}
+int cam3rd_change_target(_obj* ent)
+{
+	struct privdata* own = ent->priv_ptr;
+	if(0 == own)return 0;
+
+	struct relation* irel_first = 0;
+	struct relation* irel_same = 0;
+	struct relation* iter;
+
+	//1. curr in irel, next in irel
+	iter = ent->irel0;
+	while(1){
+		if(0 == iter)break;
+		if(_tar_ == iter->dstfoottype){
+			if(own->tar != iter->psrcchip){
+				if(0 == irel_first)irel_first = iter;
+				if(irel_same){
+					logtoall("cam3rd_change_target case1: curr=%p,next=%p\n", own->tar, iter->psrcchip);
+					own->tar = iter->psrcchip;
+					own->tarinworld = 0;
+					return 0;
+				}
+			}
+			else{
+				irel_same = iter;
+			}
+		}
+		iter = samedstnextsrc(iter);
+	}
+
+	//2. curr in irel or orel, next in orel
+	struct relation* orel_first = 0;
+	struct relation* orel_same = 0;
+	iter = ent->orel0;
+	while(1){
+		if(0 == iter)break;
+		if(_tar_ == iter->srcfoottype){
+			if(own->tar != iter->pdstchip){
+				if(0 == orel_first)orel_first = iter;
+				if((0!=irel_same) | (0!=orel_same)){
+					logtoall("cam3rd_change_target case2: curr=%p,next=%p\n", own->tar, iter->pdstchip);
+					own->tar = iter->pdstchip;
+					own->tarinworld = 0;
+					return 0;
+				}
+			}
+			else{
+				orel_same = iter;
+			}
+		}
+		iter = samesrcnextdst(iter);
+	}
+
+	//3. irel or orel dont have next, irel have first
+	if(irel_first){
+		logtoall("cam3rd_change_target case3: curr=%p,next=%p\n", own->tar, orel_first->psrcchip);
+		own->tar = irel_first->psrcchip;
+		own->tarinworld = 0;
+		return 0;
+	}
+
+	//4. irel or orel dont have next, irel dont have first, orel have first
+	if(orel_first){
+		logtoall("cam3rd_change_target case4: curr=%p,next=%p\n", own->tar, orel_first->pdstchip);
+		own->tar = orel_first->pdstchip;
+		own->tarinworld = 0;
+		return 0;
+	}
+
+	//5. only one target, dont change
+	logtoall("cam3rd_change_target case5: nochange curr=%p\n", own->tar);
+	return 0;
+}
+
+
+int cam3rd_movecam_nearfar(struct privdata* own, struct fstyle* cam, struct fstyle* tar, int key, int val)
 {
 	float k = 1.0;
 	if('b' == key)k = 1.01 - val*0.01;
@@ -74,7 +202,7 @@ int cam3rd_nearfar(struct privdata* own, struct fstyle* cam, struct fstyle* tar,
 	cam->vt[2] = cam->vr[0]*cam->vf[1] - cam->vr[1]*cam->vf[0];
 	return 0;
 }
-int cam3rd_movecam(struct privdata* own, struct fstyle* cam, struct fstyle* tar, int dx, int dy)
+int cam3rd_movecam_rotate(struct privdata* own, struct fstyle* cam, struct fstyle* tar, int dx, int dy)
 {
 	float a,c,s;
 	float q[4];
@@ -136,30 +264,17 @@ int cam3rd_movecam(struct privdata* own, struct fstyle* cam, struct fstyle* tar,
 	cam->vt[2] = cam->vr[0]*cam->vf[1] - cam->vr[1]*cam->vf[0];
 	return 0;
 }
-void* cam3rd_findgeom(_obj* ent)
+int cam3rd_movetar(struct fstyle* camgeom, struct fstyle* targeom, int dx, int dy, int dz)
 {
-	struct relation* rel;
-	_obj* world;
-	if(0 == ent)return 0;
+	float* tar = targeom->vc;
+	tar[0] += dx;
+	tar[1] += dy;
+	tar[2] += dz;
 
-	rel = ent->irel0;
-	while(1){
-		if(0 == rel)break;
-		world = rel->psrcchip;
-		if(_virtual_ == world->type)return rel->psrcfoot;
-		if(_scene3d_ == world->type)return rel->psrcfoot;
-		rel = samedstnextsrc(rel);
-	}
-
-	rel = ent->orel0;
-	while(1){
-		if(0 == rel)break;
-		world = rel->pdstchip;
-		if(_virtual_ == world->type)return rel->pdstfoot;
-		if(_scene3d_ == world->type)return rel->pdstfoot;
-		rel = samesrcnextdst(rel);
-	}
-
+	float* cam = camgeom->vc;
+	cam[0] += dx;
+	cam[1] += dy;
+	cam[2] += dz;
 	return 0;
 }
 
@@ -168,44 +283,7 @@ void* cam3rd_findgeom(_obj* ent)
 
 int cam3rd_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	struct privdata* own = ent->priv_ptr;
-	if(0 == own)return 0;
-
-	struct style* cam = own->caminworld;
-	if(0 == cam){
-		cam = cam3rd_findgeom(own->cam);
-		if(0 == cam)return 0;
-
-		own->caminworld = cam;
-	}
-
-	struct style* tar = own->tarinworld;
-	if(0 == tar){
-		tar = cam3rd_findgeom(own->tar);
-		if(0 == tar)return 0;
-
-		own->tarinworld = tar;
-	}
-
-	cam->fs.vc[0] = tar->fs.vc[0] - own->cam2tar[0];
-	cam->fs.vc[1] = tar->fs.vc[1] - own->cam2tar[1];
-	cam->fs.vc[2] = tar->fs.vc[2] - own->cam2tar[2];
-
-	cam->fs.vf[0] = own->cam2tar[0];
-	cam->fs.vf[1] = own->cam2tar[1];
-	cam->fs.vf[2] = own->cam2tar[2];
-	vec3_normalize(cam->fs.vf);
-
-	//
-	cam->fs.vr[0] = cam->fs.vf[1];
-	cam->fs.vr[1] =-cam->fs.vf[0];
-	cam->fs.vr[2] = 0.0;
-	vec3_normalize(cam->fs.vr);
-
-	//a × b = [aybz-azby, azbx-axbz, axby-aybx]
-	cam->fs.vt[0] = cam->fs.vr[1]*cam->fs.vf[2] - cam->fs.vr[2]*cam->fs.vf[1];
-	cam->fs.vt[1] = cam->fs.vr[2]*cam->fs.vf[0] - cam->fs.vr[0]*cam->fs.vf[2];
-	cam->fs.vt[2] = cam->fs.vr[0]*cam->fs.vf[1] - cam->fs.vr[1]*cam->fs.vf[0];
+	cam3rd_movecam_fix(ent);
 	return 0;
 }
 int cam3rd_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, struct event* ev, int len)
@@ -213,6 +291,13 @@ int cam3rd_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, str
 	//printmemory(ev,16);
 	struct privdata* own = ent->priv_ptr;
 	if(0 == own)return 0;
+
+	if(_kbd_ == ev->what){
+		logtoall("cam3rd_giving: kbd %x\n", ev->why);
+		cam3rd_change_target(ent);
+		cam3rd_movecam_fix(ent);
+		return 0;
+	}
 
 	struct style* camgeom = own->caminworld;
 	if(0 == camgeom){
@@ -250,13 +335,13 @@ int cam3rd_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, str
 		switch(ch[3]){
 		case 'f':
 		case 'b':{
-			cam3rd_nearfar(own, &camgeom->fshape, &targeom->fshape, ch[3], ch[2]);
+			cam3rd_movecam_nearfar(own, &camgeom->fshape, &targeom->fshape, ch[3], ch[2]);
 			break;
 		}//mouse scroll
 		case 'l':
 		case 'r':{
 			if(0 == own->mousedown_flag)return 0;
-			cam3rd_movecam(own, &camgeom->fshape, &targeom->fshape, ch[0] - own->mousemove_x, ch[1] - own->mousemove_y);
+			cam3rd_movecam_rotate(own, &camgeom->fshape, &targeom->fshape, ch[0] - own->mousemove_x, ch[1] - own->mousemove_y);
 			own->mousemove_x = ch[0];
 			own->mousemove_y = ch[1];
 			break;
@@ -296,7 +381,7 @@ int cam3rd_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, str
 			int dy=0;
 			if((t[0]<-4096)|(t[0]>4096))dx = t[0]/4096;
 			if((t[1]<-4096)|(t[1]>4096))dy =-t[1]/4096;
-			cam3rd_movecam(own, &camgeom->fshape, &targeom->fshape, dx, dy);
+			cam3rd_movecam_rotate(own, &camgeom->fshape, &targeom->fshape, dx, dy);
 			return 0;
 		}
 	}
@@ -313,8 +398,12 @@ int cam3rd_attach(struct halfrel* self, struct halfrel* peer)
 	_obj* ent = self->pchip;
 	struct privdata* own = ent->priv_ptr;
 	switch(self->foottype){
-	case _cam_:own->cam = peer->pchip;break;
-	case _tar_:own->tar = peer->pchip;break;
+	case _cam_:
+		own->cam = peer->pchip;
+		break;
+	case _tar_:
+		if(0 == own->tar)own->tar = peer->pchip;
+		break;
 	}
 	return 0;
 }

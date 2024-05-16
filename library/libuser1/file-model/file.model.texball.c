@@ -14,10 +14,25 @@ struct own{
 	struct dx11data dx11;
 	struct gl41data gl41;
 };
-static void texball_prep(struct own* my, char* albedo, char* height)
+
+
+
+
+static void texball_copypath(u8* dst, u8* src)
+{
+	int j;
+	for(j=0;j<128;j++){
+		if(src[j] <= 0xa){
+			dst[j] = 0;
+			break;
+		}
+		dst[j] = src[j];
+	}
+}
+static void texball_prep(struct own* my, u8* albedo, u8* height)
 {
 	//albedo
-	my->albedotex.data = memoryalloc(4096*2048*4, 4);
+	my->albedotex.data = memoryalloc(8192*4096*4, 4);
 	if(0 == my->albedotex.data)return;
 
 	int ret = loadtexfromfile(&my->albedotex, albedo);
@@ -169,7 +184,7 @@ GLSL_PRECISION
 "out vec2 uvw;\n"
 "void main(){\n"
 	"uvw = texuvw;\n"
-	"vec3 tmpxyz = vertex + distance_per_value.x * normalize(normal) * texture(heightmap, texuvw).b;\n"
+	"vec3 tmpxyz = vertex + distance_per_value.x * normalize(normal) * (texture(heightmap, texuvw).b-0.5);\n"
 	"gl_Position = cammvp * vec4(tmpxyz, 1.0);\n"
 "}\n";
 char* texball_glsl_fs =
@@ -247,9 +262,6 @@ static void texball_gl41draw(
 
 	struct own* my = act->OWNBUF;
 	if(0 == my)return;
-
-	float xxx = 8.848;//vec3_getlen(vr);
-	my->distance_per_value[0] = xxx;
 
 	struct mysrc* src = &my->gl41.src;
 	if(0 == src)return;
@@ -418,18 +430,32 @@ static void texball_delete(_obj* act)
 {
 	if(0 == act)return;
 }
-static void texball_create(_obj* act, void* str)
+static void texball_create(_obj* act, void* arg, int argc, u8** argv)
 {
 	if(0 == act)return;
 
 	struct own* my = act->OWNBUF = memoryalloc(0x1000, 0);
 	if(0 == my)return;
 
-	char* albedo = str;
-	if(0 == str)str = "datafile/jpg/texball-earth.jpg";
-	char* height = "datafile/jpg/texball-earth-height.jpg";
-	texball_prep(my, albedo, height);
+	my->distance_per_value[0] = 0.0;
 
+	int j;
+	u8 albedo[128] = {0};
+	u8 height[128] = {0};
+	for(j=0;j<argc;j++){
+		if(0 == ncmp(argv[j], "factor:", 7)){
+			decstr2float(argv[j]+7, &my->distance_per_value[0]);
+		}
+		if(0 == ncmp(argv[j], "albedo:", 7)){
+			texball_copypath(albedo, argv[j]+7);
+		}
+		if(0 == ncmp(argv[j], "height:", 7)){
+			texball_copypath(height, argv[j]+7);
+		}
+	}
+	if(0==albedo[0])mysnprintf(albedo, 128, "%s", "datafile/jpg/earth/earth-albedo-4096.jpg");
+	if(0==height[0])mysnprintf(albedo, 128, "%s", "datafile/jpg/earth/earth-height-4096.jpg");
+	texball_prep(my, albedo, height);
 	texball_dx11prep(my);
 	texball_gl41prep(my);
 }

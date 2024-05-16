@@ -538,6 +538,9 @@ void carveplanet_verttexnorm(float vbuf[][9], u16* ibuf,
 		vbuf[a+j][3] = (j+0.5)/accx;
 		vbuf[a+j][4] = 1.0;
 		vbuf[a+j][5] = 0.0;
+		vbuf[a+j][6] =-vu[0];
+		vbuf[a+j][7] =-vu[1];
+		vbuf[a+j][8] =-vu[2];
 
 		vbuf[b+j][0] = vc[0] + vu[0];
 		vbuf[b+j][1] = vc[1] + vu[1];
@@ -545,6 +548,9 @@ void carveplanet_verttexnorm(float vbuf[][9], u16* ibuf,
 		vbuf[b+j][3] = (j+0.5)/accx;
 		vbuf[b+j][4] = 0.0;
 		vbuf[b+j][5] = 0.0;
+		vbuf[b+j][6] = vu[0];
+		vbuf[b+j][7] = vu[1];
+		vbuf[b+j][8] = vu[2];
 	}
 
 	a = (accy-1)*(accx-1)*6;

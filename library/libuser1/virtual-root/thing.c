@@ -178,15 +178,18 @@ void gbuffer_register(void*);
 
 //uiux
 void minimap_register(void*);
-void oscillo_register(void*);
 void picture_register(void*);
 void qrcode_register(void*);
-void spectrum_register(void*);
 void skill_register(void*);
 void status_register(void*);
 void texmix_register(void*);
 void video_register(void*);
 void voxel_register(void*);
+
+//
+void radar_register(void*);
+void oscillo_register(void*);
+void spectrum_register(void*);
 
 //debug
 void dbgpid_register(void*);
@@ -695,16 +698,10 @@ void thing_init(void* addr)
 	minimap_register(tmp);
 	tmp -= sizeof(_obj);
 
-	oscillo_register(tmp);
-	tmp -= sizeof(_obj);
-
 	picture_register(tmp);
 	tmp -= sizeof(_obj);
 
 	qrcode_register(tmp);
-	tmp -= sizeof(_obj);
-
-	spectrum_register(tmp);
 	tmp -= sizeof(_obj);
 
 	skill_register(tmp);
@@ -720,6 +717,19 @@ void thing_init(void* addr)
 	tmp -= sizeof(_obj);
 
 	voxel_register(tmp);
+	tmp -= sizeof(_obj);
+
+
+
+
+//-------------------instrument-------------------
+	radar_register(tmp);
+	tmp -= sizeof(_obj);
+
+	oscillo_register(tmp);
+	tmp -= sizeof(_obj);
+
+	spectrum_register(tmp);
 	tmp -= sizeof(_obj);
 
 
