@@ -506,7 +506,7 @@ void render_target(_obj* wnd, struct fstyle* area, struct gl41data* cam, int ste
 	}
 	else{
 		//glDepthMask(GL_TRUE);
-		glClearColor(0.1, 0.1, 0.1, 1.0);
+		glClearColor(0.1, 0.1, 0.1, 0.5);
 		glClear(clear);
 
 		glEnable(GL_SCISSOR_TEST);

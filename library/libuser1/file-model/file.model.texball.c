@@ -266,6 +266,8 @@ static void texball_gl41draw(
 	struct mysrc* src = &my->gl41.src;
 	if(0 == src)return;
 
+	gl41line_circle(ctx, 0xffffff, vc,vr,vf);
+
 	void* vbuf = src->vtx[0].vbuf;
 	void* ibuf = src->vtx[0].ibuf;
 	carveplanet_verttexnorm(vbuf, ibuf, vc, vr, vf, vu);

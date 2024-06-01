@@ -152,13 +152,20 @@ void screen_register(void*);
 void speaker_register(void*);
 
 //robo
-void balance_register(void*);
-void dancemat_register(void*);
+//.air
 void drone_register(void*);
+//.space
+void rocket_register(void*);
+void station_register(void*);
+//.land
+void rccar_register(void*);
+void balance_register(void*);
+//.bionic
 void human_register(void*);
 void otto_register(void*);
-void rccar_register(void*);
 void robodog_register(void*);
+//.else
+void dancemat_register(void*);
 
 //test
 void calib3d_register(void*);
@@ -616,25 +623,32 @@ void thing_init(void* addr)
 
 
 //----------------------robo----------------------
-	balance_register(tmp);
-	tmp -= sizeof(_obj);
-
-	dancemat_register(tmp);
-	tmp -= sizeof(_obj);
-
+//.air
 	drone_register(tmp);
 	tmp -= sizeof(_obj);
+//.space
+	rocket_register(tmp);
+	tmp -= sizeof(_obj);
 
+	station_register(tmp);
+	tmp -= sizeof(_obj);
+//.land
+	rccar_register(tmp);
+	tmp -= sizeof(_obj);
+
+	balance_register(tmp);
+	tmp -= sizeof(_obj);
+//.bionic
 	human_register(tmp);
 	tmp -= sizeof(_obj);
 
 	otto_register(tmp);
 	tmp -= sizeof(_obj);
 
-	rccar_register(tmp);
-	tmp -= sizeof(_obj);
-
 	robodog_register(tmp);
+	tmp -= sizeof(_obj);
+//.else
+	dancemat_register(tmp);
 	tmp -= sizeof(_obj);
 
 

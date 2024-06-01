@@ -272,27 +272,56 @@ static void callback_reshape(GLFWwindow* fw, int w, int h)
 
 
 
-void windowopen_root(_obj* w)
+void windowopen_root(_obj* wnd)
 {
-	int x,y,j;
+	int w,h;
+	GLFWmonitor* primary = 0;
+	if(0){
+		primary = glfwGetPrimaryMonitor();
+		//glfwGetMonitorPhysicalSize(primary, &w, &h);	//wrong, this is length(mm)
+
+		const GLFWvidmode* mode = glfwGetVideoMode(primary);
+		w = mode->width;
+		h = mode->height;
+		wnd->whdf.width = w;
+		wnd->whdf.height = h;
+		printf("%s: w=%d,h=%d\n", __FUNCTION__, w, h);
+	}
+	else{
+		w = wnd->whdf.width;
+		h = wnd->whdf.height;
+	}
 
 	//1.glfw
-	x = w->whdf.width;
-	y = w->whdf.height;
-	GLFWwindow* fw = glfwCreateWindow(x, y, "42", NULL, NULL);
+	GLFWwindow* fw = glfwCreateWindow(w, h, "42", primary, NULL);
 	if(0 == fw)
 	{
 		printf("error@glfwCreateWindow\n");
 		return;
 	}
 
-	//2.setup
-	glfwSetWindowUserPointer(fw, w);
-	w->gl41list.glwnd = fw;
+	//transparency_fullwindow
+	if(0){
+		glfwSetWindowOpacity(fw, 0.8);
+	}
 
-	glfwGetFramebufferSize(fw, &x, &y);
-	w->whdf.fbwidth = x;
-	w->whdf.fbheight = y;
+	//transparency_perpixel
+	if(1){
+		int glfw_trans_fb = glfwGetWindowAttrib(fw, GLFW_TRANSPARENT_FRAMEBUFFER);
+		printf("get GLFW_TRANSPARENT_FRAMEBUFFER = %d\n", glfw_trans_fb);
+		if(glfw_trans_fb){
+			printf("set GLFW_TRANSPARENT_FRAMEBUFFER = true\n");
+			glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
+		}
+	}
+
+	//2.setup
+	glfwGetFramebufferSize(fw, &w, &h);
+	wnd->whdf.fbwidth = w;
+	wnd->whdf.fbheight = h;
+
+	glfwSetWindowUserPointer(fw, wnd);
+	wnd->gl41list.glwnd = fw;
 
 	//3.callback
 	glfwSetDropCallback(fw, callback_drop);
@@ -316,19 +345,22 @@ void windowopen_root(_obj* w)
 	//initshader(w);
 	//inittexture(w);
 	//initvertex(w);
-
+/*
+	glfwSetWindowPos(fw, 0,0);
+	glfwSetWindowSize(fw, 1920, 1080);
+*/
 	glfwPollEvents();		//window will show after this func
 }
-void windowopen_coop(_obj* w, _obj* r)
+void windowopen_coop(_obj* wnd, _obj* r)
 {
-	int x,y,j;
 	GLFWwindow* parent = 0;
 	if(r)parent = r->gl41list.glwnd;
 
 	//1.glfw
-	x = w->whdf.width;
-	y = w->whdf.height;
-	GLFWwindow* fw = glfwCreateWindow(x, y, "coop", NULL, parent);
+	int w,h;
+	w = wnd->whdf.width;
+	h = wnd->whdf.height;
+	GLFWwindow* fw = glfwCreateWindow(w, h, "coop", NULL, parent);
 	if(0 == fw)
 	{
 		printf("error@glfwCreateWindow\n");
@@ -336,12 +368,12 @@ void windowopen_coop(_obj* w, _obj* r)
 	}
 
 	//2.setup
-	glfwSetWindowUserPointer(fw, w);
-	w->gl41list.glwnd = fw;
+	glfwSetWindowUserPointer(fw, wnd);
+	wnd->gl41list.glwnd = fw;
 
-	glfwGetFramebufferSize(fw, &x, &y);
-	w->whdf.fbwidth = x;
-	w->whdf.fbheight = y;
+	glfwGetFramebufferSize(fw, &w, &h);
+	wnd->whdf.fbwidth = w;
+	wnd->whdf.fbheight = h;
 
 	//3.callback
 	glfwSetDropCallback(fw, callback_drop);

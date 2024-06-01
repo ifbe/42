@@ -75,6 +75,10 @@ int cam3rd_movecam_fix(_obj* ent){
 		own->tarinworld = tar;
 	}
 
+	int j;
+	for(j=0;j<3;j++)own->cam2tar[j] = tar->fs.vc[j] - cam->fs.vc[j];
+	own->cam2tar[3] = vec3_getlen(own->cam2tar);
+
 	cam->fs.vc[0] = tar->fs.vc[0] - own->cam2tar[0];
 	cam->fs.vc[1] = tar->fs.vc[1] - own->cam2tar[1];
 	cam->fs.vc[2] = tar->fs.vc[2] - own->cam2tar[2];
