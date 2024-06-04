@@ -31,7 +31,7 @@ void nonewindow_take(_obj* win,void* foot, _syn* stack,int sp, p64 arg,int idx, 
 	float r = x / w;
 	float g = y / h;
 	float b = 0.0;
-	float a = 0.0;
+	float a = 0.5;
 
 	//fbw != w, fbh != h, so ...
 	x *= fbw / w;

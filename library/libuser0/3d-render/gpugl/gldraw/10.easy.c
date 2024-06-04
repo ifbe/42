@@ -55,6 +55,7 @@ static GLuint vao = 0;
 
 void easywindow_example()
 {
+	//logtoall("@easywindow_example\n");
 	//shader
 	if(0 == shader)shader = shaderprogram(vs, fs, 0, 0, 0, 0);
 	glUseProgram(shader);
@@ -134,6 +135,7 @@ void easywindow_drawthis(struct gl41data* pair)
 
 void easywindow_take(_obj* win,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
+	//logtoall("@easywindow_take\n");
 	float w = win->whdf.fbwidth;
 	float h = win->whdf.fbheight;
 
@@ -142,12 +144,22 @@ void easywindow_take(_obj* win,void* foot, _syn* stack,int sp, p64 arg,int idx, 
 	glEnable(GL_DEPTH_TEST);
 
 	//clear screen
-	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glClearColor(0.0, 0.0, 0.0, 0.5);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	if(win->orel0)take_data_from_peer(win,_ctx_, stack,sp, 0,0, 0,0);
-	if(win->gl41easy.solid)easywindow_drawthis(win->gl41easy.solid);
-	else easywindow_example();
+	if(win->orel0){
+		//logtoall("@take_data_from_peer\n");
+		take_data_from_peer(win,_ctx_, stack,sp, 0,0, 0,0);
+	}
+
+	if(win->gl41easy.solid){
+		//logtoall("@win->gl41easy.solid\n");
+		easywindow_drawthis(win->gl41easy.solid);
+	}
+	else{
+		//logtoall("@call easywindow_example\n");
+		easywindow_example();
+	}
 }
 void easywindow_give(_obj* win,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
@@ -159,4 +171,6 @@ void easywindow_delete(_obj* win)
 void easywindow_create(_obj* win)
 {
 	win->vfmt = _gl41easy_;
+
+	win->gl41easy.solid = 0;
 }

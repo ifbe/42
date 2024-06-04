@@ -1001,6 +1001,7 @@ static int freecam_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int 
 	//logtoall("callertype=%.4s\n", &caller->type);
 	switch(caller->type){
 	case _wnd_:
+	case _render_:
 		freecam_bywnd_read(ent,foot, caller, area, stack,sp);
 		break;
 	case _camrts_:

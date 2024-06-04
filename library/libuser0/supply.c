@@ -165,13 +165,13 @@ void* supply_alloc()
 	obj->orel0 = obj->oreln = 0;
 	return obj;
 }
-void* supply_alloc_fromtype(u64 type)
+void* supply_alloc_fromtype(u64 what)
 {
 	_obj* obj = supply_alloc();
 	if(0 == obj)return 0;
 
 	//obj->tier = _sup_;
-	switch(type){
+	switch(what){
 //sound
 	case _mic_:
 		obj->kind = _audio_;
@@ -204,18 +204,16 @@ void* supply_alloc_fromtype(u64 type)
 		break;
 	case _wndcap_:
 		obj->kind = _cap_;
-		obj->type = type;
+		obj->type = what;
 		obj->vfmt = 0;
 //window
 	case _wnd_:
-		obj->kind = _wnd_;
-		obj->type = type;
-		obj->vfmt = 0;
 	//case _fb_:
 	case _tui_:
+		//obj->tier = _sup_;
 		obj->kind = _wnd_;
 		obj->type = _wnd_;
-		obj->vfmt = type;
+		obj->vfmt = what;
 //render 3 to 2: input=vertex/texture/xxx, output=image
 	case _render_:
 	case _gl41none_:
@@ -223,8 +221,8 @@ void* supply_alloc_fromtype(u64 type)
 	case _gl41list_:
 	case _gl41cmdq_:
 		obj->kind = _render_;
-		obj->type = type;
-		obj->vfmt = 0;
+		obj->type = _render_;
+		obj->vfmt = what;
 		break;
 //capture 2 to 3: input=image, output=vertex/texture/xxx
 	case _cap_:
@@ -235,8 +233,8 @@ void* supply_alloc_fromtype(u64 type)
 	case _joy_:
 	case _std_:
 	case _tray_:
-		obj->type = type;
-		obj->vfmt = type;
+		obj->type = what;
+		obj->vfmt = what;
 		break;
 	}//switch
 
@@ -277,6 +275,13 @@ int supply_create(_obj* obj, void* arg, int argc, u8** argv)
 	case _wnd_:
 		window_create(obj, arg, argc, argv);
 		break;
+	//case _gl41none_:
+	//case _gl41easy_:
+	//case _gl41list_:
+	//case _gl41cmdq_:
+	case _render_:
+		window_create(obj, arg, argc, argv);
+		break;
 	case _vdec_:
 	case _venc_:
 		codecv_create(obj, arg, argc, argv);
@@ -286,18 +291,6 @@ int supply_create(_obj* obj, void* arg, int argc, u8** argv)
 		break;
 	case _gpu_:
 		//gpulib_create(obj, arg, argc, argv);
-		break;
-	case _gl41none_:
-		window_create(obj, arg, argc, argv);
-		break;
-	case _gl41easy_:
-		window_create(obj, arg, argc, argv);
-		break;
-	case _gl41list_:
-		window_create(obj, arg, argc, argv);
-		break;
-	case _gl41cmdq_:
-		window_create(obj, arg, argc, argv);
 		break;
 	}//switch
 	return 0;
@@ -316,6 +309,9 @@ int supply_delete(_obj* obj)
 	//2.close
 	switch(obj->type){
 	case _wnd_:
+		window_delete(obj);
+		break;
+	case _render_:
 		window_delete(obj);
 		break;
 	case _cam_:
@@ -371,7 +367,7 @@ int supply_detach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* pe
 }
 int supply_takeby(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
-	//logtoall("type=%.4s\n", &sup->type);
+	//logtoall("type=%.8s\n", &sup->type);
 	switch(sup->type){
 		case _std_:return stdio_take(sup,foot, stack,sp, arg,idx, buf,len);
 
@@ -381,8 +377,12 @@ int supply_takeby(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, voi
 		case _cam_:return camera_take(sup,foot, stack,sp, arg, idx, buf, len);
 		case _wndcap_:return screencap_take(sup,foot, stack,sp, arg, idx, buf, len);
 
-		case _tui_:
 		case _wnd_:return window_take(sup,foot, stack,sp, arg, idx, buf, len);
+
+		//case _gl41none_:
+		//case _gl41easy_:
+		case _render_:
+			return window_take(sup,foot, stack,sp, arg, idx, buf, len);
 
 		case _vdec_:
 		case _venc_:
@@ -392,7 +392,7 @@ int supply_takeby(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, voi
 }
 int supply_giveby(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
-	//logtoall("type=%.4s\n", &sup->type);
+	//logtoall("type=%.8s\n", &sup->type);
 	switch(sup->type){
 		case _std_:return stdio_give(sup,foot, stack,sp, arg,idx, buf,len);
 
@@ -402,8 +402,12 @@ int supply_giveby(_obj* sup,void* foot, _syn* stack,int sp, p64 arg,int idx, voi
 		case _cam_:return camera_give(sup,foot, stack,sp, arg, idx, buf, len);
 		case _wndcap_:return screencap_take(sup,foot, stack,sp, arg, idx, buf, len);
 
-		case _tui_:
 		case _wnd_:
+			return window_give(sup,foot, stack,sp, arg, idx, buf, len);
+
+		//case _gl41none_:
+		//case _gl41easy_:
+		case _render_:
 			return window_give(sup,foot, stack,sp, arg, idx, buf, len);
 
 		case _vdec_:

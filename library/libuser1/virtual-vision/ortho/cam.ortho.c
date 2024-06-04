@@ -325,6 +325,7 @@ static int orthcam_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int 
 
 	switch(caller->type){
 	case _wnd_:
+	case _render_:
 		return orthcam_bywnd_read(ent,foot, stack,sp, arg,key, buf,len);
 	default:
 		return orthcam_byworld_bycam_bywnd_read(ent,foot, stack,sp, arg,key, buf,len);

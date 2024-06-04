@@ -360,6 +360,7 @@ static int vrbox_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int cm
 	//caller defined behavior
 	switch(caller->type){
 	case _wnd_:
+	case _render_:
 		vrbox_read_bywnd(ent,foot, caller,area, stack,sp);
 		break;
 	default:

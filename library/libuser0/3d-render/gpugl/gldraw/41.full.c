@@ -684,11 +684,14 @@ int fullwindow_take(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int cmd, v
 	//logtoall("%d,%llx@fullwindow_renderwnd\n", rsp, stack);
 	//logtoall("gl41wnd0_read:%llx,%llx,%llx,%x,%llx,%d\n",self,peer,stack,rsp,buf,len);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glViewport(0, 0, wnd->whdf.fbwidth, wnd->whdf.fbheight);
-	glScissor(0, 0, wnd->whdf.fbwidth, wnd->whdf.fbheight);
-	glClearColor(0.1, 0.1, 0.1, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//before: clear color and depth
+	if(1){
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, wnd->whdf.fbwidth, wnd->whdf.fbheight);
+		glScissor(0, 0, wnd->whdf.fbwidth, wnd->whdf.fbheight);
+		glClearColor(0.1, 0.1, 0.1, 0.5);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
 
 	//foreach camera
 	struct relation* rel = wnd->orel0;
@@ -717,6 +720,9 @@ int fullwindow_take(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int cmd, v
 next:
 		rel = samesrcnextdst(rel);
 	}
+
+	//after: postprocess or savetofile?
+
 	return 0;
 }
 int fullwindow_give(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int cmd, void* buf,int len)

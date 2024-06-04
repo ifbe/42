@@ -76,6 +76,14 @@ int supplyread_all(struct halfrel* stack)
 		if(0 == win->type)continue;
 
 		switch(win->type){
+		//case _gl41none_:
+		//case _gl41easy_:
+		//case _gl41list_:
+		//case _gl41cmdq_:
+		case _render_:
+			stack[1].pchip = win;
+			supply_takeby(win,0, stack,2, 0,0, 0,0);
+			break;
 		case _wnd_:
 			stack[1].pchip = win;
 			supply_takeby(win,0, stack,2, 0,0, 0,0);

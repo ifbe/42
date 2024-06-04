@@ -47,17 +47,17 @@ static u8 uppercase[] = {
 
 int window_take(_obj* ogl,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
+	//logtoall("@window_take\n");
 	u64 t0,t1,t2,t3;
-	GLFWwindow* fw;
-	//logtoall("@windowread\n");
 t0 = ogl->gl41list.gltime;
 
 	//0: context current
-	fw = ogl->gl41list.glwnd;
+	GLFWwindow* fw = ogl->gl41list.glwnd;
 	glfwMakeContextCurrent(fw);
 t1 = timeread_us();
 
 	//1: render everything
+	//logtoall("vfmt=%.8s\n", &ogl->vfmt);
 	switch(ogl->vfmt){
 		case _gl41none_:nonewindow_take(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _gl41easy_:easywindow_take(ogl,foot, stack,sp, arg,idx, buf,len);break;
@@ -274,6 +274,11 @@ static void callback_reshape(GLFWwindow* fw, int w, int h)
 
 void windowopen_root(_obj* wnd)
 {
+	if(1){
+			printf("set GLFW_TRANSPARENT_FRAMEBUFFER = true\n");
+			glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
+	}
+
 	int w,h;
 	GLFWmonitor* primary = 0;
 	if(0){
@@ -306,14 +311,8 @@ void windowopen_root(_obj* wnd)
 	}
 
 	//transparency_perpixel
-	if(1){
-		int glfw_trans_fb = glfwGetWindowAttrib(fw, GLFW_TRANSPARENT_FRAMEBUFFER);
-		printf("get GLFW_TRANSPARENT_FRAMEBUFFER = %d\n", glfw_trans_fb);
-		if(glfw_trans_fb){
-			printf("set GLFW_TRANSPARENT_FRAMEBUFFER = true\n");
-			glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
-		}
-	}
+	int glfw_trans_fb = glfwGetWindowAttrib(fw, GLFW_TRANSPARENT_FRAMEBUFFER);
+	printf("get GLFW_TRANSPARENT_FRAMEBUFFER = %d\n", glfw_trans_fb);
 
 	//2.setup
 	glfwGetFramebufferSize(fw, &w, &h);
