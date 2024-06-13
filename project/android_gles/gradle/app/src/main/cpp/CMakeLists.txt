@@ -598,8 +598,9 @@ ${LIB42}/libuser1/file-model/file.model.geometry.c
 ${LIB42}/libuser1/file-model/file.model.obj.c
 ${LIB42}/libuser1/file-model/file.model.scad.c
 ${LIB42}/libuser1/file-model/file.model.stl.c
-${LIB42}/libuser1/file-model/file.model.texball.c
 ${LIB42}/libuser1/file-model/file.model.wrl.c
+${LIB42}/libuser1/file-model/file.texball.mercator.c
+${LIB42}/libuser1/file-model/file.texball.simplecylinder.c
 ${LIB42}/libuser1/file-prog/assembly/file.program.arm64.c
 ${LIB42}/libuser1/file-prog/assembly/file.program.mips64.c
 ${LIB42}/libuser1/file-prog/assembly/file.program.x86_64.c
