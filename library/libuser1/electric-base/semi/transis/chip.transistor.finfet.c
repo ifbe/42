@@ -161,6 +161,7 @@ static void finfet_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int 
 	//caller defined behavior
 	switch(caller->type){
 	case _wnd_:
+	case _render_:
 		finfet_read_bywnd(ent,slot, caller,area, stack,sp);
 		break;
 	default:

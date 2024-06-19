@@ -1,9 +1,10 @@
 #include "libuser.h"
 #define OWNBUF listptr.buf0
-void carveplanet_verttexnorm(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carveplanet_verttexnorm(void*, void*, int accx, int accy, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 void dx11data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
-
+#define accx 360
+#define accy 180
 
 
 
@@ -11,6 +12,7 @@ struct own{
 	struct texture albedotex;
 	struct texture heighttex;
 	vec4 distance_per_value;
+	vec4 c_and_len;
 	struct dx11data dx11;
 	struct gl41data gl41;
 };
@@ -125,22 +127,20 @@ static void texball_dx11prep(struct own* my)
 	src->tex_enq[1] = 42;
 
 
-#define accx 64
-#define accy 63
 	struct vertex* vtx = src->vtx;
 	vtx->geometry = 3;
 	vtx->opaque = 0;
 
 	vtx->vbuf_fmt = vbuffmt_333;
 	vtx->vbuf_w = 4*9;
-	vtx->vbuf_h = accx*accy+(accx-1)*2;
+	vtx->vbuf_h = (accx+1)*(accy+1);
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
 	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 	src->vbuf_enq = 0;
 
 	vtx->ibuf_fmt = 0x222;
 	vtx->ibuf_w = 2*3;
-	vtx->ibuf_h = accy*(accx-1)*2;
+	vtx->ibuf_h = accx*(accy-2)*2 + accx*2;
 	vtx->ibuf_len = (vtx->ibuf_w) * (vtx->ibuf_h);
 	vtx->ibuf = memoryalloc(vtx->ibuf_len, 0);
 	src->ibuf_enq = 0;
@@ -162,7 +162,7 @@ static void texball_dx11draw(
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vu = geom->fs.vt;
-	carveplanet_verttexnorm(vbuf, ibuf, vc, vr, vf, vu);
+	carveplanet_verttexnorm(vbuf, ibuf, accx, accy, vc, vr, vf, vu);
 	src->vbuf_enq += 1;
 	src->ibuf_enq += 1;
 
@@ -171,6 +171,83 @@ static void texball_dx11draw(
 
 
 
+#if 1
+
+char* texball_glsl_vs =
+GLSL_VERSION
+GLSL_PRECISION
+"layout(location = 0)in vec3 vertex;\n"
+"layout(location = 1)in vec2 texuvw;\n"
+"layout(location = 2)in vec3 normal;\n"
+"layout(location = 0)out vec3 vo_gi_pos;\n"
+"layout(location = 1)out vec2 vo_gi_uvw;\n"
+"layout(location = 2)out vec3 vo_gi_norm;\n"
+"void main(){\n"
+	"vo_gi_pos = vertex;\n"
+	"vo_gi_uvw = texuvw;\n"
+	"vo_gi_norm = normal;\n"
+"}\n";
+
+char* texball_glsl_gs =
+GLSL_VERSION
+GLSL_PRECISION
+"layout(triangles) in;\n"
+"layout(triangle_strip, max_vertices = 12) out;\n"
+"layout(location = 0)in vec3 vo_gi_pos[];\n"
+"layout(location = 1)in vec2 vo_gi_uvw[];\n"
+"layout(location = 2)in vec3 vo_gi_norm[];\n"
+"uniform mat4 cammvp;\n"
+"uniform vec4 c_and_len;\n"
+"uniform vec3 distance_per_value;\n"
+"uniform sampler2D heightmap;\n"
+"out vec2 uvw;\n"
+"void main(){\n"
+	"vec2 midTex2 = (vo_gi_uvw[0] + vo_gi_uvw[1]) / 2.0;\n"
+	"vec2 midTex0 = (vo_gi_uvw[1] + vo_gi_uvw[2]) / 2.0;\n"
+	"vec2 midTex1 = (vo_gi_uvw[2] + vo_gi_uvw[0]) / 2.0;\n"
+	"vec3 mid2 = (vo_gi_pos[0] + vo_gi_pos[1]) / 2.0;\n"
+	"vec3 mid0 = (vo_gi_pos[1] + vo_gi_pos[2]) / 2.0;\n"
+	"vec3 mid1 = (vo_gi_pos[2] + vo_gi_pos[0]) / 2.0;\n"
+	//"vec3 midNorm2 = normalize((vo_gi_norm[0] + vo_gi_norm[1]) / 2.0);\n"
+	//"vec3 midNorm0 = normalize((vo_gi_norm[1] + vo_gi_norm[2]) / 2.0);\n"
+	//"vec3 midNorm1 = normalize((vo_gi_norm[2] + vo_gi_norm[0]) / 2.0);\n"
+
+	"vec3 mid0fix = c_and_len.xyz + normalize(    mid0    -c_and_len.xyz)*(c_and_len.w + (texture(heightmap, midTex0).b-0.5)*distance_per_value.x*1);\n"
+	"vec3 mid1fix = c_and_len.xyz + normalize(    mid1    -c_and_len.xyz)*(c_and_len.w + (texture(heightmap, midTex1).b-0.5)*distance_per_value.x*1);\n"
+	"vec3 mid2fix = c_and_len.xyz + normalize(    mid2    -c_and_len.xyz)*(c_and_len.w + (texture(heightmap, midTex2).b-0.5)*distance_per_value.x*1);\n"
+	"vec3 pos0fix = c_and_len.xyz + normalize(vo_gi_pos[0]-c_and_len.xyz)*(c_and_len.w + (texture(heightmap, midTex0).b-0.5)*distance_per_value.x*1);\n"
+	"vec3 pos1fix = c_and_len.xyz + normalize(vo_gi_pos[1]-c_and_len.xyz)*(c_and_len.w + (texture(heightmap, midTex1).b-0.5)*distance_per_value.x*1);\n"
+	"vec3 pos2fix = c_and_len.xyz + normalize(vo_gi_pos[2]-c_and_len.xyz)*(c_and_len.w + (texture(heightmap, midTex2).b-0.5)*distance_per_value.x*1);\n"
+
+	"vec4 mid0wvp = cammvp * vec4(mid0fix, 1.0);\n"
+	"vec4 mid1wvp = cammvp * vec4(mid1fix, 1.0);\n"
+	"vec4 mid2wvp = cammvp * vec4(mid2fix, 1.0);\n"
+	"vec4 pos0wvp = cammvp * vec4(pos0fix, 1.0);\n"
+	"vec4 pos1wvp = cammvp * vec4(pos1fix, 1.0);\n"
+	"vec4 pos2wvp = cammvp * vec4(pos2fix, 1.0);\n"
+
+	"gl_Position = pos0wvp;uvw = vo_gi_uvw[0];EmitVertex();\n"
+	"gl_Position = mid1wvp;uvw =      midTex1;EmitVertex();\n"
+	"gl_Position = mid2wvp;uvw =      midTex2;EmitVertex();\n"
+	"EndPrimitive();\n"
+
+	"gl_Position = mid0wvp;uvw =      midTex0;EmitVertex();\n"
+	"gl_Position = pos1wvp;uvw = vo_gi_uvw[1];EmitVertex();\n"
+	"gl_Position = mid2wvp;uvw =      midTex2;EmitVertex();\n"
+	"EndPrimitive();\n"
+
+	"gl_Position = mid0wvp;uvw =      midTex0;EmitVertex();\n"
+	"gl_Position = mid1wvp;uvw =      midTex1;EmitVertex();\n"
+	"gl_Position = pos2wvp;uvw = vo_gi_uvw[2];EmitVertex();\n"
+	"EndPrimitive();\n"
+
+	"gl_Position = mid0wvp;uvw =      midTex0;EmitVertex();\n"
+	"gl_Position = mid1wvp;uvw =      midTex1;EmitVertex();\n"
+	"gl_Position = mid2wvp;uvw =      midTex2;EmitVertex();\n"
+	"EndPrimitive();\n"
+"}\n";
+
+#else
 
 char* texball_glsl_vs =
 GLSL_VERSION
@@ -179,14 +256,20 @@ GLSL_PRECISION
 "layout(location = 1)in vec2 texuvw;\n"
 "layout(location = 2)in vec3 normal;\n"
 "uniform mat4 cammvp;\n"
+"uniform vec4 c_and_len;\n"
 "uniform vec3 distance_per_value;\n"
 "uniform sampler2D heightmap;\n"
 "out vec2 uvw;\n"
 "void main(){\n"
 	"uvw = texuvw;\n"
-	"vec3 tmpxyz = vertex + distance_per_value.x * normalize(normal) * (texture(heightmap, texuvw).b-0.5);\n"
+	"vec3 tmpxyz = c_and_len.xyz + c_and_len.w*normalize(vertex-c_and_len.xyz);\n"
+	"tmpxyz += distance_per_value.x * normalize(normal) * (texture(heightmap, texuvw).b-0.5);\n"
 	"gl_Position = cammvp * vec4(tmpxyz, 1.0);\n"
 "}\n";
+char* texball_glsl_gs = 0;
+
+#endif
+
 char* texball_glsl_fs =
 GLSL_VERSION
 GLSL_PRECISION
@@ -197,18 +280,24 @@ GLSL_PRECISION
 	"FragColor = vec4(texture(albedomap, uvw).bgr, 1.0);\n"
 	//"FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n"
 "}\n";
+
 static void texball_gl41prep(struct own* my)
 {
 	struct gl41data* data = &my->gl41;
 
 	//shader
 	data->src.vs = texball_glsl_vs;
+	data->src.gs = texball_glsl_gs;
 	data->src.fs = texball_glsl_fs;
 	data->src.shader_enq = 42;
 
 	data->dst.arg[0].name = "distance_per_value";
 	data->dst.arg[0].data = my->distance_per_value;
 	data->dst.arg[0].fmt = 'v';
+
+	data->dst.arg[1].name = "c_and_len";
+	data->dst.arg[1].data = my->c_and_len;
+	data->dst.arg[1].fmt = hex16('v','4');
 
 	//texture
 	struct texture* albedomap = &data->src.tex[0];
@@ -227,22 +316,20 @@ static void texball_gl41prep(struct own* my)
 	data->src.tex_enq[1] = 42;
 	//logtoall("w=%d,h=%d\n",data->src.tex[0].w, data->src.tex[0].h);
 
-#define accx 64
-#define accy 63
 	struct vertex* vtx = data->src.vtx;
 	vtx->geometry = 3;
 	vtx->opaque = 0;
 
 	vtx->vbuf_fmt = vbuffmt_333;
 	vtx->vbuf_w = 4*9;
-	vtx->vbuf_h = accx*accy+(accx-1)*2;
+	vtx->vbuf_h = (accx+1)*(accy+1);
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
 	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 	data->src.vbuf_enq = 0;
 
 	vtx->ibuf_fmt = 0x222;
 	vtx->ibuf_w = 2*3;
-	vtx->ibuf_h = accy*(accx-1)*2;
+	vtx->ibuf_h = accx*(accy-2)*2 + accx*2;
 	vtx->ibuf_len = (vtx->ibuf_w) * (vtx->ibuf_h);
 	vtx->ibuf = memoryalloc(vtx->ibuf_len, 0);
 	data->src.ibuf_enq = 0;
@@ -260,17 +347,22 @@ static void texball_gl41draw(
 	//gl41line_sphere(ctx, 0xff00ff, vc, vr, vf, vu);
 	//gl41line_prism4(ctx, 0xff00ff, vc, vr, vf, vu);
 
+	gl41line_circle(ctx, 0xffffff, vc,vr,vf);
+
 	struct own* my = act->OWNBUF;
 	if(0 == my)return;
+
+	my->c_and_len[0] = vc[0];
+	my->c_and_len[1] = vc[1];
+	my->c_and_len[2] = vc[2];
+	my->c_and_len[3] = vec3_getlen(vr);
 
 	struct mysrc* src = &my->gl41.src;
 	if(0 == src)return;
 
-	gl41line_circle(ctx, 0xffffff, vc,vr,vf);
-
 	void* vbuf = src->vtx[0].vbuf;
 	void* ibuf = src->vtx[0].ibuf;
-	carveplanet_verttexnorm(vbuf, ibuf, vc, vr, vf, vu);
+	carveplanet_verttexnorm(vbuf, ibuf, accx, accy, vc, vr, vf, vu);
 
 	src->vbuf_enq += 1;
 	src->ibuf_enq += 1;
@@ -401,6 +493,7 @@ static void texball_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 
 	switch(caller->type){
 	case _wnd_:
+	case _render_:
 		texball_read_bywnd(ent,slot, caller,area);
 		break;
 	default:

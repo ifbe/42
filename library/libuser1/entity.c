@@ -698,6 +698,7 @@ int entity_detach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* pe
 }
 int entity_takeby(_obj* act,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
+	//logtoall("%.8s, %p\n",&act->type, act->ontaking);
 	if(act->ontaking){
 		return act->ontaking(act,foot, stack,sp, arg,key, buf,len);
 	}

@@ -269,6 +269,7 @@ static void fslist_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int 
 
 	switch(wnd->type){
 	case _wnd_:
+	case _render_:
 		fslist_read_bywnd(ent,slot, wnd,area);
 		break;
 	}

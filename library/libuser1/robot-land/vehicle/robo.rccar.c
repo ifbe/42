@@ -219,6 +219,7 @@ static void rccar_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 
 	switch(caller->type){
 	case _wnd_:
+	case _render_:
 		break;
 	default:
 		rccar_read_byworld_bycam_bywnd(ent,foot, stack,sp);

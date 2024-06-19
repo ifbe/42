@@ -93,6 +93,9 @@ static void dbgpid_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int 
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(caller->type){
+	case _wnd_:
+	case _render_:
+		break;
 	case _virtual_:
 		dbgpid_read_byworld_bywnd(ent,foot, stack,sp);
 		break;

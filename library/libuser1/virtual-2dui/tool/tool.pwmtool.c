@@ -115,6 +115,7 @@ static void pwmtool_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 
 	switch(wnd->type){
 	case _wnd_:
+	case _render_:
 		pwmtool_draw_gl41(ent,slot, wnd,area);
 		break;
 	default:

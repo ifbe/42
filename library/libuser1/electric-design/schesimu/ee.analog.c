@@ -208,6 +208,7 @@ int analog_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, voi
 	//caller defined behavior
 	switch(caller->type){
 	case _wnd_:
+	case _render_:
 		analog_read_child(ent,foot, stack,sp, arg,key, buf,len);
 		analog_read_board(ent,foot, stack,sp, arg,key, buf,len);
 		break;

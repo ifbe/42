@@ -1,9 +1,10 @@
 #include "libuser.h"
 #define OWNBUF listptr.buf0
-void carveplanet_verttex(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carveplanet_verttex(void*, void*, int accx, int accy, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 void dx11data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
-
+#define accx 180
+#define accy 180
 
 
 
@@ -86,22 +87,20 @@ static void equirect_dx11prep(struct own* my)
 	tex->h    = my->tex.h;
 	src->tex_enq[0] = 42;
 
-#define accx 64
-#define accy 63
 	struct vertex* vtx = src->vtx;
 	vtx->geometry = 3;
 	vtx->opaque = 0;
 
 	vtx->vbuf_fmt = vbuffmt_33;
 	vtx->vbuf_w = 4*6;
-	vtx->vbuf_h = accx*accy+(accx-1)*2;
+	vtx->vbuf_h = (accx+1)*(accy+1);
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
 	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 	src->vbuf_enq = 0;
 
 	vtx->ibuf_fmt = 0x222;
 	vtx->ibuf_w = 2*3;
-	vtx->ibuf_h = accy*(accx-1)*2;
+	vtx->ibuf_h = accx*(accy-2)*2 + accx*2;
 	vtx->ibuf_len = (vtx->ibuf_w) * (vtx->ibuf_h);
 	vtx->ibuf = memoryalloc(vtx->ibuf_len, 0);
 	src->ibuf_enq = 0;
@@ -123,7 +122,7 @@ static void equirect_dx11draw(
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vu = geom->fs.vt;
-	carveplanet_verttex(vbuf, ibuf, vc, vr, vf, vu);
+	carveplanet_verttex(vbuf, ibuf, accx, accy, vc, vr, vf, vu);
 	src->vbuf_enq += 1;
 	src->ibuf_enq += 1;
 
@@ -173,22 +172,20 @@ static void equirect_gl41prep(struct own* my)
 	data->src.tex_enq[0] = 42;
 	//logtoall("w=%d,h=%d\n",data->src.tex[0].w, data->src.tex[0].h);
 
-#define accx 64
-#define accy 63
 	struct vertex* vtx = data->src.vtx;
 	vtx->geometry = 3;
 	vtx->opaque = 0;
 
 	vtx->vbuf_fmt = vbuffmt_33;
 	vtx->vbuf_w = 4*6;
-	vtx->vbuf_h = accx*accy+(accx-1)*2;
+	vtx->vbuf_h = (accx+1)*(accy+1);
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
 	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 	data->src.vbuf_enq = 0;
 
 	vtx->ibuf_fmt = 0x222;
 	vtx->ibuf_w = 2*3;
-	vtx->ibuf_h = accy*(accx-1)*2;
+	vtx->ibuf_h = accx*(accy-2)*2 + accx*2;
 	vtx->ibuf_len = (vtx->ibuf_w) * (vtx->ibuf_h);
 	vtx->ibuf = memoryalloc(vtx->ibuf_len, 0);
 	data->src.ibuf_enq = 0;
@@ -214,7 +211,7 @@ static void equirect_gl41draw(
 
 	void* vbuf = src->vtx[0].vbuf;
 	void* ibuf = src->vtx[0].ibuf;
-	carveplanet_verttex(vbuf, ibuf, vc, vr, vf, vu);
+	carveplanet_verttex(vbuf, ibuf, accx, accy, vc, vr, vf, vu);
 	src->vbuf_enq += 1;
 	src->ibuf_enq += 1;
 	gl41data_insert(ctx, 's', src, 1);
@@ -345,6 +342,7 @@ static void equirect_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,in
 
 	switch(caller->type){
 	case _wnd_:
+	case _render_:
 		equirect_read_bywnd(ent,slot, caller,area);
 		break;
 	default:

@@ -248,6 +248,7 @@ static int vjoy_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key
 
 	switch(wnd->type){
 	case _wnd_:
+	case _render_:
 		vjoy_read_bywnd(ent,foot, wnd,area);break;
 	}
 	return 0;

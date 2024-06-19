@@ -181,6 +181,7 @@ static void picture_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int
 
 	switch(wnd->type){
 	case _wnd_:
+	case _render_:
 		break;
 	default:
 		picture_read_byworld_bycam_bywnd(ent,foot, stack,sp);

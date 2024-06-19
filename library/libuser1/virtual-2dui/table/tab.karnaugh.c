@@ -221,6 +221,7 @@ static int karnaugh_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 	struct style* area = stack[sp-2].pfoot;
 	switch(wnd->type){
 	case _wnd_:
+	case _render_:
 		karnaugh_read_bywnd(ent,slot, wnd,area);
 		break;
 	}

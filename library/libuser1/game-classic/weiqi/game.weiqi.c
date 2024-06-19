@@ -416,6 +416,7 @@ static void weiqi_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int k
 
 	switch(caller->type){
 	case _wnd_:
+	case _render_:
 		weiqi_taking_bywnd(ent,slot, caller,area, stack,sp);
 	default:
 		weiqi_taking_byworld_bycam_bywnd(ent,slot, stack,sp);

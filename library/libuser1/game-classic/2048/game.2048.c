@@ -518,6 +518,7 @@ static void the2048_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 		the2048_draw_html(ent,slot, caller,area);
 		break;
 	case _wnd_:
+	case _render_:
 		the2048_read_bywnd(ent,slot, caller,area, stack,sp);
 		break;
 	case _corner_:

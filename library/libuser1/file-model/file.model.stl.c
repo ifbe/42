@@ -577,9 +577,8 @@ static void stl3d_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int k
 
 	//caller defined behavior
 	switch(caller->type){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	case _wnd_:
+	case _render_:
 		break;
 	default:
 		stl3d_world_camera_window(ent,slot, stack,sp, arg,key);

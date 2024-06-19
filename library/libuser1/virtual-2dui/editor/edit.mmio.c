@@ -168,6 +168,7 @@ static void mmioedit_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,in
 
 	switch(wnd->type){
 	case _wnd_:
+	case _render_:
 		mmioedit_read_bywnd(ent,slot, wnd,area);
 		break;
 	default:

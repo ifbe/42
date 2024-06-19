@@ -172,6 +172,7 @@ static int vtouch_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int c
 
 	switch(wnd->type){
 	case _wnd_:
+	case _render_:
 		vtouch_read_bywnd(ent,foot, wnd,area);break;
 	}
 	return 0;

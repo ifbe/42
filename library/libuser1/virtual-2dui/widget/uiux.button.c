@@ -133,6 +133,7 @@ static void button_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int 
 
 	switch(wnd->type){
 	case _wnd_:
+	case _render_:
 		button_read_bywnd(ent,foot, wnd,area, stack,sp);
 		break;
 	case _virtual_:

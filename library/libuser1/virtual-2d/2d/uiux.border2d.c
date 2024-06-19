@@ -76,6 +76,9 @@ int border2d_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,
 
 	//caller defined behavior
 	switch(caller->type){
+	case _wnd_:
+	case _render_:
+		break;
 	default:
 		return border2d_read_byworld_bycam_bywnd(ent,foot, stack,sp, arg,key);
 	}

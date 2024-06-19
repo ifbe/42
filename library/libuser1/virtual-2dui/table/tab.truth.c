@@ -176,6 +176,7 @@ static int truth_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int ke
 	struct style* area = stack[sp-2].pfoot;
 	switch(wnd->type){
 	case _wnd_:
+	case _render_:
 		truth_read_bywnd(ent,slot, wnd,area);break;
 	}
 	return 0;

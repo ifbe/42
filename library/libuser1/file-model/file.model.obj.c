@@ -346,6 +346,7 @@ static void obj3d_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int k
 	//caller defined behavior
 	switch(caller->type){
 	case _wnd_:
+	case _render_:
 		obj3d_read_bywnd(ent,slot, caller,area);
 		break;
 	default:

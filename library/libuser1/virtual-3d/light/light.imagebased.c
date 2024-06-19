@@ -1,9 +1,10 @@
 #include "libuser.h"
 #define CTXBUF listptr.buf0
 #define LITBUF listptr.buf1
-void carveplanet_verttex(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carveplanet_verttex(void*, void*, int accx, int accy, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
-
+#define accx 90
+#define accy 90
 
 
 
@@ -62,21 +63,19 @@ void imagelight_ctxforwnd(struct mysrc* src, char* str)
 	src->fs = imagelight_glsl_f;
 	src->shader_enq = 42;
 
-#define accx 64
-#define accy 63
 	struct vertex* vtx = src->vtx;
 	vtx->geometry = 3;
 	vtx->opaque = 0;
 
 	vtx->vbuf_fmt = vbuffmt_33;
 	vtx->vbuf_w = 4*6;
-	vtx->vbuf_h = accx*accy+(accx-1)*2;
+	vtx->vbuf_h = (accx+1)*(accy+1);
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
 	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
 
 	vtx->ibuf_fmt = 0x222;
 	vtx->ibuf_w = 2*3;
-	vtx->ibuf_h = accy*(accx-1)*2;
+	vtx->ibuf_h = accx*(accy-2)*2 + accx*2;
 	vtx->ibuf_len = (vtx->ibuf_w) * (vtx->ibuf_h);
 	vtx->ibuf = memoryalloc(vtx->ibuf_len, 0);
 
@@ -97,7 +96,7 @@ static void imagelight_draw_gl41(
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vu = geom->fs.vt;
-	carveplanet_verttex(vbuf, ibuf, vc, vr, vf, vu);
+	carveplanet_verttex(vbuf, ibuf, accx, accy, vc, vr, vf, vu);
 	src->vbuf_enq += 1;
 	src->ibuf_enq += 1;
 
@@ -223,6 +222,7 @@ static void imagelight_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,
 
 	switch(caller->type){
 	case _wnd_:
+	case _render_:
 		imagelight_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
@@ -256,10 +256,9 @@ static void imagelight_delete(_obj* act)
 }
 static void imagelight_create(_obj* act, void* str)
 {
-	void* buf;
 	if(0 == act)return;
 
-	buf = memoryalloc(0x1000, 0);
+	void* buf = memoryalloc(0x1000, 0);
 	if(0 == buf)return;
 
 	act->CTXBUF = buf;

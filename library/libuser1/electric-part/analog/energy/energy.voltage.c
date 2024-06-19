@@ -149,6 +149,7 @@ static void vsrc_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int ke
 	struct style* area = stack[sp-2].pfoot;
 	switch(caller->type){
 	case _wnd_:
+	case _render_:
 		break;
 	default:
 		vsrc_read_bycam(ent,foot, stack,sp, arg,key, buf,len);

@@ -204,6 +204,7 @@ static void skillbar_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,in
 
 	switch(wnd->type){
 	case _wnd_:
+	case _render_:
 		break;
 	default:
 		skillbar_read_byworld_bycam_bywnd(ent,slot, stack,sp);

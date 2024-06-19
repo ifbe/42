@@ -252,6 +252,7 @@ static void cbuffer_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int
 
 	switch(caller->type){
 	case _wnd_:
+	case _render_:
 		cbuffer_read_bywnd(ent,foot, caller,area, stack,sp);
 		break;
 	default:

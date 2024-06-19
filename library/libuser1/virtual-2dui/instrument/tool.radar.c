@@ -114,6 +114,7 @@ static void radar_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int k
 
 	switch(wnd->type){
 	case _wnd_:
+	case _render_:
 		radar_read_bywnd(ent,slot, wnd,area);
 		break;
 	default:

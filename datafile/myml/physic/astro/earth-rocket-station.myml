@@ -61,12 +61,13 @@ t:   0.0,-0.020, 0.0
 
 rockslot{
 }
-#北纬19°19′0.18 ″,东经 109°48′0.15″
+#north=19.614484, east=110.950745
+#10m, 10m, 120m
 rockgeom{
-c: 2045.8789807853425, -5682.6474793099505, 2117.0490834822385
-r: 0.005, 0.0, 0.0
-f: 0.0, 0.005, 0.0
-t: 0.0, 0.0, 0.110
+c: 2155.6267507182033, -5630.061288690543, 2148.414112124632
+r: 0.00933888, 0.00357565, 0.0
+f: -0.00120031, 0.00313497, 0.00941973
+t: 0.040418, -0.10556365, 0.04028276
 }
 
 earthhaha{
@@ -125,9 +126,10 @@ q:1.0, 1.0
 (uiroot, statrect, 0) -> (status, 0, 0)
 
 (opengl, aaaarect, 0) -> (cam0, 0, a0)
-(opengl, bbbbrect, 0) -> (uiroot, 0, a0)
+#(opengl, bbbbrect, 0) -> (uiroot, 0, a0)
 
 #mouse: 3rd controller
-(cam3rd, 0, tar) -> (station, 0, evby)
-(cam3rd, 0, cam) -> (cam0, 0, mind)
+(@cam3rd, tar@0) -> (@station, evby@0)
+(@cam3rd, tar@0) -> (@rocket, evby@0)
+(@cam3rd, cam@0) -> (@cam0, evto@0)
 </relation>

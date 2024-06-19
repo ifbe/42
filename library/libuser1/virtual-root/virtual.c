@@ -100,6 +100,7 @@ int virtual_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, vo
 		caller_1 = stack[sp-4].pchip;
 		//fallthrough
 	case _wnd_:
+	case _render_:
 		gl41data_before(caller_1);
 		gl41data_01cam(caller_1);
 		virtual_takeall(ent,foot, stack,sp, arg,key);
@@ -125,7 +126,9 @@ int virtual_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, vo
 
 	//default 2d: from window
 	int ret = 0;
-	if(_wnd_ == caller->type){
+	switch(caller->type){
+	case _wnd_:
+	case _render_:
 		if(_01_ == per->camtype){
 			return virtual_bywnd_ongive(ent,foot, stack,sp, arg,key, buf,len);
 		}

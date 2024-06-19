@@ -390,18 +390,22 @@ void carveskydome(float vbuf[][6], u16* ibuf,
 
 
 
-void carveplanet_verttex(float vbuf[][6], u16* ibuf,
+void carveplanet_verttex(float vbuf[][6], u16* ibuf, int accx, int accy,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
-#define accx 64
-#define accy 63
 	int a,b,j,k;
 	float c,s;
 	vec3 tc, tr, tf;
 
-	for(k=0;k<accy;k++)
+	//cnt = accy+1
+	for(k=0;k<=accy;k++)
 	{
-		s = (2*k-accy+1)*PI/(2*accy+2);
+		/*
+		0: PI*(0*2-64)/(64*2) = PI*(-64)/(64*2) =-PI/2
+		32: PI*(32*2-64)/(64*2) = 0
+		64: PI*(64*2-64)/(64*2) = PI*(64)/(64*2) = PI/2
+		*/
+		s = PI * (2*k-accy) / (accy*2);
 		c = getcos(s);
 		s = getsin(s);
 
@@ -415,76 +419,70 @@ void carveplanet_verttex(float vbuf[][6], u16* ibuf,
 		tf[1] = vf[1]*c;
 		tf[2] = vf[2]*c;
 
-		for(j=0;j<accx;j++)
+		//cnt = accx+1
+		for(j=0;j<=accx;j++)
 		{
-			s = j*tau/(accx-1);
+			/*
+			0: 0			#north pole cnt=accx: same vert diff texuv
+			1: tau/64
+			32: tau/2
+			63: tau*63/64
+			64: tau			#south pole cnt=accx: same vert diff texuv
+			*/
+			s = tau*j/accx;
 			c = getcos(s);
 			s = getsin(s);
 
-			a = k*accx + j;
+			a = k*(accx+1) + j;
 			vbuf[a][0] = tc[0] + tr[0]*c + tf[0]*s;
 			vbuf[a][1] = tc[1] + tr[1]*c + tf[1]*s;
 			vbuf[a][2] = tc[2] + tr[2]*c + tf[2]*s;
-			vbuf[a][3] = j/(accx-1.0);
-			vbuf[a][4] = 1.0-(k+1.0)/(accy+1.0);
+			vbuf[a][3] = (float)j/accx;
+			vbuf[a][4] = 1.0-(float)k/accy;
 			vbuf[a][5] = 0.0;
 
-			if(j >= accx-1)continue;
+			if(k < 1)continue;
 			if(k >= accy-1)continue;
+			if(j >= accx)continue;
 
-			b = ((accx-1)*k+j)*6;
-			ibuf[b+0] = (k*accx)+j;
-			ibuf[b+1] = (k*accx)+j+1;
-			ibuf[b+2] = (k*accx)+accx+j;
-			ibuf[b+3] = (k*accx)+j+1;
-			ibuf[b+4] = (k*accx)+accx+j;
-			ibuf[b+5] = (k*accx)+accx+j+1;
+			b = (accx*(k-1)+j)*6;
+			ibuf[b+0] = (accx+1)*(k+0) + j;
+			ibuf[b+1] = (accx+1)*(k+0) + (j+1);
+			ibuf[b+2] = (accx+1)*(k+1) + j;
+			ibuf[b+3] = (accx+1)*(k+0) + (j+1);
+			ibuf[b+4] = (accx+1)*(k+1) + j;
+			ibuf[b+5] = (accx+1)*(k+1) + (j+1);
 		}
 	}
 
-	a = accx*accy;
-	b = accx*accy + accx-1;
-	for(j=0;j<accx-1;j++)
-	{
-		vbuf[a+j][0] = vc[0] - vu[0];
-		vbuf[a+j][1] = vc[1] - vu[1];
-		vbuf[a+j][2] = vc[2] - vu[2];
-		vbuf[a+j][3] = (j+0.5)/accx;
-		vbuf[a+j][4] = 1.0;
-		vbuf[a+j][5] = 0.0;
-
-		vbuf[b+j][0] = vc[0] + vu[0];
-		vbuf[b+j][1] = vc[1] + vu[1];
-		vbuf[b+j][2] = vc[2] + vu[2];
-		vbuf[b+j][3] = (j+0.5)/accx;
-		vbuf[b+j][4] = 0.0;
-		vbuf[b+j][5] = 0.0;
-	}
-
-	a = (accy-1)*(accx-1)*6;
-	for(j=0;j<accx-1;j++)
+	a = accx*(accy-2)*6;
+	for(j=0;j<accx;j++)
 	{
 		b = a + j*6;
-		ibuf[b + 0] = accx*accy+j;
-		ibuf[b + 1] = j;
-		ibuf[b + 2] = j+1;
-		ibuf[b + 3] = accx*accy+accx-1+j;
-		ibuf[b + 4] = accx*(accy-1)+j;
-		ibuf[b + 5] = accx*(accy-1)+j+1;
+		ibuf[b + 0] = (accx+1)*(accy+0) + j;		//lat=90
+		ibuf[b + 1] = (accx+1)*(accy-1) + j;
+		ibuf[b + 2] = (accx+1)*(accy-1) + (j+1);
+		ibuf[b + 3] = (accx+1) + j;
+		ibuf[b + 4] = (accx+1) + (j+1);
+		ibuf[b + 5] = j;		//lat=0
 	}
 }
-void carveplanet_verttexnorm(float vbuf[][9], u16* ibuf,
+void carveplanet_verttexnorm(float vbuf[][9], u16* ibuf, int accx, int accy,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
-#define accx 64
-#define accy 63
 	int a,b,j,k;
 	float c,s;
 	vec3 tc, tr, tf;
 
-	for(k=0;k<accy;k++)
+	//cnt = accy+1
+	for(k=0;k<=accy;k++)
 	{
-		s = (2*k-accy+1)*PI/(2*accy+2);
+		/*
+		0: PI*(0*2-64)/(64*2) = PI*(-64)/(64*2) =-PI/2
+		32: PI*(32*2-64)/(64*2) = 0
+		64: PI*(64*2-64)/(64*2) = PI*(64)/(64*2) = PI/2
+		*/
+		s = PI * (2*k-accy) / (accy*2);
 		c = getcos(s);
 		s = getsin(s);
 
@@ -498,71 +496,55 @@ void carveplanet_verttexnorm(float vbuf[][9], u16* ibuf,
 		tf[1] = vf[1]*c;
 		tf[2] = vf[2]*c;
 
-		for(j=0;j<accx;j++)
+		//cnt = accx+1
+		for(j=0;j<=accx;j++)
 		{
-			s = j*tau/(accx-1);
+			/*
+			0: 0			#north pole cnt=accx: same vert diff texuv
+			1: tau/64
+			32: tau/2
+			63: tau*63/64
+			64: tau			#south pole cnt=accx: same vert diff texuv
+			*/
+			s = tau*j/accx;
 			c = getcos(s);
 			s = getsin(s);
 
-			a = k*accx + j;
+			a = k*(accx+1) + j;
 			vbuf[a][0] = tc[0] + tr[0]*c + tf[0]*s;
 			vbuf[a][1] = tc[1] + tr[1]*c + tf[1]*s;
 			vbuf[a][2] = tc[2] + tr[2]*c + tf[2]*s;
-			vbuf[a][3] = j/(accx-1.0);
-			vbuf[a][4] = 1.0-(k+1.0)/(accy+1.0);
+			vbuf[a][3] = (float)j/accx;
+			vbuf[a][4] = 1.0-(float)k/accy;
 			vbuf[a][5] = 0.0;
 			vbuf[a][6] = vbuf[a][0] - vc[0];
 			vbuf[a][7] = vbuf[a][1] - vc[1];
 			vbuf[a][8] = vbuf[a][2] - vc[2];
 
-			if(j >= accx-1)continue;
+			if(k < 1)continue;
 			if(k >= accy-1)continue;
+			if(j >= accx)continue;
 
-			b = ((accx-1)*k+j)*6;
-			ibuf[b+0] = (k*accx)+j;
-			ibuf[b+1] = (k*accx)+j+1;
-			ibuf[b+2] = (k*accx)+accx+j;
-			ibuf[b+3] = (k*accx)+j+1;
-			ibuf[b+4] = (k*accx)+accx+j;
-			ibuf[b+5] = (k*accx)+accx+j+1;
+			b = (accx*(k-1)+j)*6;
+			ibuf[b+0] = (accx+1)*(k+0) + j;
+			ibuf[b+1] = (accx+1)*(k+0) + (j+1);
+			ibuf[b+2] = (accx+1)*(k+1) + j;
+			ibuf[b+3] = (accx+1)*(k+0) + (j+1);
+			ibuf[b+4] = (accx+1)*(k+1) + j;
+			ibuf[b+5] = (accx+1)*(k+1) + (j+1);
 		}
 	}
 
-	a = accx*accy;
-	b = accx*accy + accx-1;
-	for(j=0;j<accx-1;j++)
-	{
-		vbuf[a+j][0] = vc[0] - vu[0];
-		vbuf[a+j][1] = vc[1] - vu[1];
-		vbuf[a+j][2] = vc[2] - vu[2];
-		vbuf[a+j][3] = (j+0.5)/accx;
-		vbuf[a+j][4] = 1.0;
-		vbuf[a+j][5] = 0.0;
-		vbuf[a+j][6] =-vu[0];
-		vbuf[a+j][7] =-vu[1];
-		vbuf[a+j][8] =-vu[2];
-
-		vbuf[b+j][0] = vc[0] + vu[0];
-		vbuf[b+j][1] = vc[1] + vu[1];
-		vbuf[b+j][2] = vc[2] + vu[2];
-		vbuf[b+j][3] = (j+0.5)/accx;
-		vbuf[b+j][4] = 0.0;
-		vbuf[b+j][5] = 0.0;
-		vbuf[b+j][6] = vu[0];
-		vbuf[b+j][7] = vu[1];
-		vbuf[b+j][8] = vu[2];
-	}
-
-	a = (accy-1)*(accx-1)*6;
-	for(j=0;j<accx-1;j++)
+	a = accx*(accy-2)*6;
+	for(j=0;j<accx;j++)
 	{
 		b = a + j*6;
-		ibuf[b + 0] = accx*accy+j;
-		ibuf[b + 1] = j;
-		ibuf[b + 2] = j+1;
-		ibuf[b + 3] = accx*accy+accx-1+j;
-		ibuf[b + 4] = accx*(accy-1)+j;
-		ibuf[b + 5] = accx*(accy-1)+j+1;
+		ibuf[b + 0] = (accx+1)*(accy+0) + j;		//lat=90
+		ibuf[b + 1] = (accx+1)*(accy-1) + j;
+		ibuf[b + 2] = (accx+1)*(accy-1) + (j+1);
+		ibuf[b + 3] = (accx+1) + j;
+		ibuf[b + 4] = (accx+1) + (j+1);
+		ibuf[b + 5] = j;		//lat=0
 	}
 }
 

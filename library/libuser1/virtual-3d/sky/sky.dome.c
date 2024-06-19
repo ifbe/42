@@ -164,6 +164,7 @@ static void skydome_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 
 	switch(caller->type){
 	case _wnd_:
+	case _render_:
 		skydome_read_bywnd(ent,slot, caller,area);
 		break;
 	default:

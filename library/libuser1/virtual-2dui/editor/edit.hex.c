@@ -284,6 +284,7 @@ static int hexedit_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int 
 
 	switch(caller->type){
 	case _wnd_:
+	case _render_:
 		hexedit_read_bywnd(ent,slot, caller,area);break;
 	default:
 		hexedit_read_bycam(ent,slot, stack,sp);break;

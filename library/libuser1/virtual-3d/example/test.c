@@ -182,6 +182,7 @@ void test_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void
 		test_tickpcm(ent,slot, caller,area);
 		break;
 	case _wnd_:
+	case _render_:
 		test_read_bywnd(ent,slot, caller,area);
 		break;
 	default:

@@ -280,6 +280,7 @@ static void oscillo_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 		oscillo_getpcm(ent, wnd);
 		break;
 	case _wnd_:
+	case _render_:
 		oscillo_read_bywnd(ent,slot, wnd,area);
 		break;
 	default:

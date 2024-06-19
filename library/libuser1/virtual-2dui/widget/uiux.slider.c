@@ -137,6 +137,7 @@ static int slider_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 
 	switch(wnd->type){
 	case _wnd_:
+	case _render_:
 		slider_read_bywnd(ent,foot, wnd,area);
 	}
 	return 0;
@@ -146,6 +147,7 @@ static int slider_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 	_obj* wnd = stack[sp-2].pchip;
 	switch(wnd->type){
 	case _wnd_:
+	case _render_:
 		slider_write_bywnd(ent,foot, stack,sp, buf,len);
 		break;
 	}

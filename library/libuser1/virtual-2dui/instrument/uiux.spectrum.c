@@ -165,6 +165,7 @@ static void spectrum_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,in
 
 	switch(wnd->type){
 	case _wnd_:
+	case _render_:
 		spectrum_take_bywnd(ent,slot, wnd,area, stack,sp);
 		break;
 	default:

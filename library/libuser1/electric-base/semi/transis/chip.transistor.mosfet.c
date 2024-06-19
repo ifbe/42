@@ -82,6 +82,7 @@ static void mosfet_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int 
 	//caller defined behavior
 	switch(caller->type){
 	case _wnd_:
+	case _render_:
 		mosfet_read_bywnd(ent,slot, stack,sp);
 		break;
 	default:

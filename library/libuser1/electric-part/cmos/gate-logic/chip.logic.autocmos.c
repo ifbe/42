@@ -163,6 +163,7 @@ static void autocmos_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,in
 
 	switch(caller->type){
 	case _wnd_:
+	case _render_:
 		autocmos_read_bywnd(ent,foot, stack,sp);break;
 	default:
 		autocmos_read_byworld_bycam_bywnd(ent,foot, stack,sp);break;

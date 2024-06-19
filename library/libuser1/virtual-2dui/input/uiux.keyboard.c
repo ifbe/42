@@ -370,6 +370,7 @@ static int vkbd_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int cmd
 
 	switch(wnd->type){
 	case _wnd_:
+	case _render_:
 		vkbd_read_bywnd(ent,foot, wnd,area);
 		break;
 	}

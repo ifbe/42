@@ -267,6 +267,7 @@ int digital_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, vo
 	//caller defined behavior
 	switch(caller->type){
 	case _wnd_:
+	case _render_:
 		digital_read_board(ent,foot, stack,sp, arg,key);
 		break;
 	}

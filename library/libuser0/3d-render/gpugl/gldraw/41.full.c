@@ -339,18 +339,20 @@ void updatearg(u32 shader, struct gl41data* data)
 		if(iii < 0)continue;
 
 		switch(dst->arg[j].fmt){
-			case 'm':{
-				glUniformMatrix4fv(iii, 1, GL_FALSE, dst->arg[j].data);
-				break;
-			}//mat4
-			case 'v':{
-				glUniform3fv(iii, 1, dst->arg[j].data);
-				break;
-			}//vertex
-			case 'f':{
-				glUniform1fv(iii, 1, dst->arg[j].data);
-				break;
-			}//float
+		case hex16('m','4'):
+		case 'm':
+			glUniformMatrix4fv(iii, 1, GL_FALSE, dst->arg[j].data);
+			break;
+		case hex16('v','3'):
+		case 'v':
+			glUniform3fv(iii, 1, dst->arg[j].data);
+			break;
+		case hex16('v','4'):
+			glUniform4fv(iii, 1, dst->arg[j].data);
+			break;
+		case 'f':
+			glUniform1fv(iii, 1, dst->arg[j].data);
+			break;
 		}//switch
 	}//for
 }

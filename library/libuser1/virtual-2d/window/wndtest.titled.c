@@ -336,6 +336,7 @@ int wndmgr_take(_obj* mgr,void* foot, _syn* stack,int sp, p64 arg,int key, void*
 
 	switch(caller->type){
 	case _wnd_:
+	case _render_:
 		wndmgr_take_bywnd(mgr,foot, caller,area, stack,sp, arg,key, buf,len);
 		break;
 	}

@@ -178,9 +178,8 @@ static void snake_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	switch(caller->type){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	case _wnd_:
+	case _render_:
 		break;
 	default:
 		snake_wrl_cam_wnd(ent,foot, stack,sp);

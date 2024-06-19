@@ -376,9 +376,8 @@ static void maze_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int ke
 	//struct style* area = stack[sp-2].pfoot;
 
 	switch(caller->type){
-	case _rgba_:
-		break;
-	case _gl41list_:
+	case _wnd_:
+	case _render_:
 		break;
 	default:
 		maze_wrl_cam_wnd(ent,foot, stack,sp);

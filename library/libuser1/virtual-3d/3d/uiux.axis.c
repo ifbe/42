@@ -103,6 +103,7 @@ int axis3d_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,in
 	//caller defined behavior
 	switch(caller->type){
 	case _wnd_:
+	case _render_:
 		axis3d_read_bywnd(ent,foot, caller,area);
 		break;
 	default:

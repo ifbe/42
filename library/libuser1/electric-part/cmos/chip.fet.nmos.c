@@ -289,6 +289,7 @@ static void nmos_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int ke
 
 	switch(caller->type){
 	case _wnd_:
+	case _render_:
 		nmos_read_bywnd(ent,foot, stack,sp);break;
 	default:
 		nmos_read_byworld_bycam_bywnd(ent,foot, stack,sp);break;

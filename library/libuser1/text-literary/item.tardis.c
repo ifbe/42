@@ -106,6 +106,7 @@ static void tardis_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int 
 		tardis_pcm(ent,slot, caller,area);
 		break;
 	case _wnd_:
+	case _render_:
 		break;
 	default:
 		tardis_read_byworld_bycam_bywnd(ent,slot, stack,sp);

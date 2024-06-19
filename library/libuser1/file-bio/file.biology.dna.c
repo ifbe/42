@@ -123,6 +123,7 @@ static void dna_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key
 	//caller defined behavior
 	switch(caller->type){
 	case _wnd_:
+	case _render_:
 		break;
 	default:
 		dna_read_byworld_bycam_bywnd(ent,slot, stack,sp);

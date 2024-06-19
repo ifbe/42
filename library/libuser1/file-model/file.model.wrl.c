@@ -77,6 +77,7 @@ static void wrl3d_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int k
 	//caller defined behavior
 	switch(caller->type){
 	case _wnd_:
+	case _render_:
 		break;
 	default:
 		wrl3d_world_camera_window(ent,slot, stack,sp);

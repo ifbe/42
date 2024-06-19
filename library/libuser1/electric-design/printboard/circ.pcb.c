@@ -118,6 +118,7 @@ int printboard_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key,
 
 	switch(caller->type){
 	case _wnd_:
+	case _render_:
 		break;
 	default:
 		printboard_read_byworld_bycam_bywnd(ent,slot, stack,sp, arg,key);

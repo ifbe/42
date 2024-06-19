@@ -283,6 +283,7 @@ static void browser_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int
 
 	switch(caller->type){
 	case _wnd_:
+	case _render_:
 		browser_bywnd_read(ent,slot, caller,area);
 		break;
 	default:
