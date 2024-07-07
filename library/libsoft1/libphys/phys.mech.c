@@ -1,15 +1,17 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
-#define G 6.67259e-11
+
+#define G 6.67259e-11		//N*(m^2)/(kg^2) = N*(km^2)/(t^2)
+#include "libsoft.h"
 
 
 
 
-double gravity(double m1,double m2,double r)
+float gravity_f32(float m1,float m2,float r)
 {
-	return G*m1*m1/r/r;
+	return G*m1*m2/r/r;
+}
+double gravity_f64(double m1,double m2,double r)
+{
+	return G*m1*m2/r/r;
 }
 
 

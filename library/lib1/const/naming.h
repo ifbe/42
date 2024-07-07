@@ -281,12 +281,14 @@
 #define _graveasy_ hex64('g','r','a','v','e','a','s','y')
 #define _gravtest_ hex64('g','r','a','v','t','e','s','t')
 #define _rigidall_ hex64('r','i','g','i','d','a','l','l')
+#define _gravity_ hex64('g','r','a','v','i','t','y',0)
 //control
-#define _virtimu_ hex64('v','i','r','t','i','m','u', 0)
 #define _carcon_ hex64('c','a','r','c','o','n', 0, 0)
-#define _flycon_ hex64('f','l','y','c','o','n', 0, 0)
 #define _balancer_ hex64('b','a','l','a','n','c','e','r')
+#define _dronecontrol_ hex64('d','r','o','n','e','c','o','n')
+#define _rocketcontrol_ hex64('r','o','c','k','e','t','c','o')
 //sensor
+#define _virtimu_ hex64('v','i','r','t','i','m','u', 0)
 #define _sensor_ hex64('s','e','n','s','o','r',0,0)
 #define _lidar_ hex64('l','i','d','a','r',0,0,0)
 #define _radar_ hex64('r','a','d','a','r',0,0,0)

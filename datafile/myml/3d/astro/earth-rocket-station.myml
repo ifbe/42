@@ -1,0 +1,137 @@
+<entity>
+station{
+fmt:station
+}
+rocket{
+fmt:rocket
+}
+earth{
+fmt:texball
+albedo:datafile/jpg/earth/earth-albedo-4096.jpg
+height:datafile/jpg/earth/earth-height-4096.jpg
+factor:8.848
+}
+scene{
+fmt:scene3d
+}
+
+cam0{
+fmt:freecam
+}
+world{
+fmt:virtual
+}
+
+button{
+fmt:button
+}
+status{
+fmt:dbgpid
+}
+uiroot{
+fmt:virtual
+}
+
+cam3rd{
+fmt:cam3rd
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<style>
+staslot{
+}
+stageom{
+c: 0.0, -6800.0, 0.0
+r: 0.110,   0.0, 0.0
+f:   0.0,   0.0, 0.080
+t:   0.0,-0.020, 0.0
+}
+
+rockslot{
+}
+#north=19.614484, east=110.950745
+#10m, 10m, 120m
+rockgeom{
+c: 2155.6267507182033, -5630.061288690543, 2148.414112124632
+r: 0.00933888, 0.00357565, 0.0
+f: -0.00120031, 0.00313497, 0.00941973
+t: 0.040418, -0.10556365, 0.04028276
+}
+
+earthhaha{
+}
+earthgeom{
+c: 0.0, 0.0, 0.0
+r: 6400.0, 0.0, 0.0
+f: 0.0, 6400.0, 0.0
+t: 0.0, 0.0, 6400.0
+}
+
+aaaapart{
+}
+aaaageom{
+c: 0.0, -7000.0, 0.0
+r: 1.0, 0.0, 0.0
+f: 0.0, 1.0, 0.0
+t: 0.0, 0.0, 1.0
+
+L: 0.0, 0.0, 0.0,-0.01
+R: 0.0, 0.0, 0.0, 0.01
+B: 0.0, 0.0, 0.0,-0.01
+T: 0.0, 0.0, 0.0, 0.01
+N: 0.0, 0.0, 0.0, 0.01
+F: 0.0, 0.0, 0.0, 1000000.0
+}
+butnrect{
+c:0.0, 0.0
+q:0.1, 0.1
+}
+statrect{
+c:0.9, 0.0
+q:1.0, 0.1
+}
+
+aaaarect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+bbbbrect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<relation>
+#scene item
+(scene, stageom, 0) -> (station, staslot, 0)
+(scene, rockgeom, 0) -> (rocket, rockslot, 0)
+(scene, earthgeom, 0) -> (earth, earthhaha, 0)
+
+#3d item
+(world, 0, 0) -> (scene, 0, 0)
+(world, aaaageom, 0) -> (cam0, aaaapart, 0)
+
+(uiroot, butnrect, 0) -> (button, 0, 0)
+(uiroot, statrect, 0) -> (status, 0, 0)
+
+(opengl, aaaarect, 0) -> (cam0, 0, a0)
+#(opengl, bbbbrect, 0) -> (uiroot, 0, a0)
+
+#mouse: 3rd controller
+(@cam3rd, tar@0) -> (@station, evby@0)
+(@cam3rd, tar@0) -> (@rocket, evby@0)
+(@cam3rd, cam@0) -> (@cam0, mind@0)
+</relation>

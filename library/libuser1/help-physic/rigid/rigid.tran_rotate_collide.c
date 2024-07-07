@@ -2,7 +2,7 @@
 #define TIME listu64.data0
 #define FLAG listu64.data1
 #define TEST listu64.data2
-void inertia_tensor_of_block(mat3 Ival, mat3 Iinv, float M, float lx, float ly, float lz);
+void inertia_tensor_of_block(mat3 Ival, float M, float lx, float ly, float lz);
 void mat3_transposefrom(void* o, void* i);
 void mat3_multiplyfrom(void* o, void* l, void* r);
 void quaternion_multiplyfrom(void* o, void* l, void* r);
@@ -65,7 +65,7 @@ void rigidsimu_realforce(struct style* geom)
 	geom->fm.displace_a[2] = totalforce[2] / mass - 9.81;
 
 	mat3 localinertia;
-	inertia_tensor_of_block(localinertia, 0, mass,
+	inertia_tensor_of_block(localinertia, mass,
 		geom->fs.vr[3]*2.0,
 		geom->fs.vf[3]*2.0,
 		geom->fs.vt[3]*2.0);

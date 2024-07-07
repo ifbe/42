@@ -13,7 +13,7 @@ struct privdata{
 	struct style* tarinworld;
 
 	vec4 cam2tar;
-	vec4 tar2tmp;	//shoulder surfing
+	//vec4 tar2tmp;	//shoulder surfing
 
 	int mousedown_x;
 	int mousedown_y;
@@ -75,9 +75,10 @@ int cam3rd_movecam_fix(_obj* ent){
 		own->tarinworld = tar;
 	}
 
-	int j;
-	for(j=0;j<3;j++)own->cam2tar[j] = tar->fs.vc[j] - cam->fs.vc[j];
-	own->cam2tar[3] = vec3_getlen(own->cam2tar);
+	//int j;
+	//for(j=0;j<3;j++)own->cam2tar[j] = tar->fs.vc[j] - cam->fs.vc[j];
+	//own->cam2tar[3] = vec3_getlen(own->cam2tar);
+	vec3_setlen(own->cam2tar, own->cam2tar[3]);
 
 	cam->fs.vc[0] = tar->fs.vc[0] - own->cam2tar[0];
 	cam->fs.vc[1] = tar->fs.vc[1] - own->cam2tar[1];
@@ -321,7 +322,7 @@ int cam3rd_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, str
 
 	int j;
 	for(j=0;j<3;j++)own->cam2tar[j] = targeom->fs.vc[j] - camgeom->fs.vc[j];
-	own->cam2tar[3] = vec3_getlen(own->cam2tar);
+	//own->cam2tar[3] = vec3_getlen(own->cam2tar);
 
 	if(0x2d70 == ev->what){
 		own->mousedown_flag = 0;
@@ -433,6 +434,6 @@ int cam3rd_create(_obj* act, void* flag)
 	own->cam2tar[0] = 0.0;
 	own->cam2tar[1] = 7.07;
 	own->cam2tar[2] =-7.07;
-	own->cam2tar[3] = 10.0;
+	own->cam2tar[3] = 1.0;
 	return 0;
 }

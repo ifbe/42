@@ -165,10 +165,10 @@ int myvsnprintf(u8* buf, int len, u8* fmt, __builtin_va_list arg)
 		{
 			if('f' == fmt[tmp]){
 				if(size > 0){
-					j = float2decstr(__builtin_va_arg(arg, double), buf+dst);	//gcc: use double not float
+					j = double2decstr(__builtin_va_arg(arg, double), buf+dst);
 				}
 				else{
-					j = double2decstr(__builtin_va_arg(arg, double), buf+dst);
+					j = float2decstr(__builtin_va_arg(arg, double), buf+dst);	//gcc: use double not float
 				}
 			}
 			else if('d' == fmt[tmp]){

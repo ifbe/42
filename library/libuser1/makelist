@@ -197,6 +197,7 @@
 ./help-physic/field/field.grav.c
 ./help-physic/field/field.magnet.c
 ./help-physic/fluid/fluid.simple.c
+./help-physic/rigid/rigid.rotate.c
 ./help-physic/rigid/rigid.tran.c
 ./help-physic/rigid/rigid.tran_rotate.c
 ./help-physic/rigid/rigid.tran_rotate_collide.c
@@ -354,8 +355,11 @@
 ./script-fixed/movement/object/lookat/pilot.lookat.c
 ./script-fixed/movement/object/surround/pilot.surround.c
 ./script-fixed/movement/object/wander/pilot.wander.c
+./script-fixed/pilot/aircraft/pilot.aircraft.c
 ./script-fixed/pilot/balance/pilot.balance.c
 ./script-fixed/pilot/drone/pilot.drone.c
+./script-fixed/pilot/rocket/pilot.rocket.c
+./script-fixed/pilot/satellite/pilot.satellite.c
 ./script-fixed/pilot/vehicle/pilot.vehicle.c
 ./script-marklang/html/html.a.c
 ./script-marklang/html/html.audio.c

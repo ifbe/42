@@ -65,7 +65,7 @@ stage0:
 
 stage1:
 	temp = 0.0;
-	for(j=0;j<20;j++)
+	for(j=0;j<34;j++)
 	{
 		if((src[j] >= '0') && (src[j] <= '9'))
 		{
@@ -86,7 +86,7 @@ stage1:
 
 stage2:
 	asdf = 0.1;
-	for(;j<30;j++)
+	for(;j<34;j++)
 	{
 		if((src[j] >= '0') && (src[j] <= '9'))
 		{
@@ -166,7 +166,7 @@ byebye:
 int data2decstr(long long data, u8* str)
 {
 	int j,k,f;
-	char temp[32];
+	char temp[64];
 
 	if(0 == data){str[0] = '0';return 1;}
 	if(data > 0)f = 0;
@@ -194,51 +194,58 @@ int float2decstr(float data, u8* str)
 {
 	float temp;
 	int offset;
-	int count;
+	int j,count;
 
 	//符号部分
-	offset=0;
-	if(data<0)
+	offset = 0;
+	if(data < 0)
 	{
-		str[0]='-';
-		offset+=1;
+		str[0] = '-';
+		offset += 1;
 
-		data=-data;
+		data = -data;
 	}
 
 	//整数部分
-	offset+=data2decstr( (u64)data , str+offset );
+	if(data > 1e12){
+		offset += data2decstr( (u64)(data/1e12) , str+offset );
+		for(j=0;j<12;j++)str[offset+j] = '0';
+		offset += 12;
+	}
+	else{
+		offset += data2decstr( (u64)data , str+offset );
+	}
 
 	//小数点
-	str[offset]='.';
+	str[offset] = '.';
 	offset++;
 
 	//小数部分
-	temp=(float)(u64)data;
-	temp=data-temp;
+	temp = (float)(u64)data;
+	temp = data-temp;
 
-	if(temp<0.0000000000000000000000000000000001)
+	if(temp < 0.0000000000000000000000000000000001)
 	{
 		//特别小
-		str[offset]=0x30;
+		str[offset] = 0x30;
 		offset++;
 	}
 	else
 	{
 		//一般小数
-		while(temp<0.1)
+		while(temp < 0.1)
 		{
-			temp*=10;
-			str[offset]=0x30;
+			temp *= 10;
+			str[offset] = 0x30;
 			offset++;
 		}
-		temp=temp*10000000;
-		count=data2decstr( (u64)temp , str+offset );
-		offset+=count;
+		temp = temp*10000000;
+		count = data2decstr( (u64)temp , str+offset );
+		offset += count;
 	}
 
 	//0
-	str[offset]=0;
+	str[offset] = 0;
 	return offset;
 }
 int double2decstr(double data, u8* str)

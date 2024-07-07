@@ -423,19 +423,31 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 
 
 
-
-int role_test_style(struct footlist foot[], int flen, u8* buf, int len)
+#define _geom_ hex32('g','e','o','m')	//geometry
+#define _frus_ hex32('f','r','u','s')	//frustum
+#define _tran_ hex32('t','r','a','n')	//translation
+#define _rota_ hex32('r','o','t','a')	//rotation
+#define _iner_ hex32('i','n','e','r')	//inertia
+#define _mass_ hex32('m','a','s','s')	//mass
+int role_test_foot(struct footlist foot[], int flen, u8* buf, int len)
 {
 	//logtoall("style:\n%.*s\n", len, buf);
-	u64 hash;
 	struct style* sty;
 
 	int j,k;
 	int str = -1;
 
+	//geom{}
 	int nodename = -1;
 	int nodedata = -1;
+	u64 hash = 0;
 
+	//inertia{}
+	int subname = -1;
+	int subdata = -1;
+	u64 subhash = 0;
+
+	//x: 1.0, 2.0, 3.0
 	int propname = -1;
 	int propdata = -1;
 
@@ -470,75 +482,127 @@ int role_test_style(struct footlist foot[], int flen, u8* buf, int len)
 		//propname: ...
 		if(':' == k) {
 			//in <type> && in node{} && have str
-			if( (nodename >= 0) && (str >= 0) ) {
-				//logtoall("propname = %.*s\n", j-str, buf+str);
-				propdata = j+1;
-				propname = str;
-				str = -1;
+			if(nodename < 0)continue;
+			if(str < 0)continue;
 
-				switch(buf[propname]){
-					case 'l':parsefv(sty->fshape.vl, 4, buf+propdata, 99);break;
-					case 'r':parsefv(sty->fshape.vr, 4, buf+propdata, 99);break;
-					case 'b':parsefv(sty->fshape.vb, 4, buf+propdata, 99);break;
-					case 't':parsefv(sty->fshape.vt, 4, buf+propdata, 99);break;
-					case 'n':parsefv(sty->fshape.vn, 4, buf+propdata, 99);break;
-					case 'f':parsefv(sty->fshape.vf, 4, buf+propdata, 99);break;
-					case 'q':parsefv(sty->fshape.vq, 4, buf+propdata, 99);break;
-					case 'c':parsefv(sty->fshape.vc, 4, buf+propdata, 99);break;
+			//logtoall("propname = %.*s\n", j-str, buf+str);
+			propdata = j+1;
+			propname = str;
+			str = -1;
 
-					case 'L':parsefv(sty->frustum.vl, 4, buf+propdata, 99);break;
-					case 'R':parsefv(sty->frustum.vr, 4, buf+propdata, 99);break;
-					case 'B':parsefv(sty->frustum.vb, 4, buf+propdata, 99);break;
-					case 'T':parsefv(sty->frustum.vt, 4, buf+propdata, 99);break;
-					case 'N':parsefv(sty->frustum.vn, 4, buf+propdata, 99);break;
-					case 'F':parsefv(sty->frustum.vf, 4, buf+propdata, 99);break;
-					case 'Q':parsefv(sty->frustum.vq, 4, buf+propdata, 99);break;
-					case 'C':parsefv(sty->frustum.vc, 4, buf+propdata, 99);break;
-
-					case 'x':parsefv(sty->fmotion.displace_x, 4, buf+propdata, 99);break;
-					case 'v':parsefv(sty->fmotion.displace_v, 4, buf+propdata, 99);break;
-					case 'a':parsefv(sty->fmotion.displace_a, 4, buf+propdata, 99);break;
-					case 'j':parsefv(sty->fmotion.displace_j, 4, buf+propdata, 99);break;
-					case '0':parsefv(sty->fmotion.angular_x, 4, buf+propdata, 99);break;
-					case '1':parsefv(sty->fmotion.angular_v, 4, buf+propdata, 99);break;
-					case '2':parsefv(sty->fmotion.angular_a, 4, buf+propdata, 99);break;
-					case '3':parsefv(sty->fmotion.angular_j, 4, buf+propdata, 99);break;
-				}
+			if( (0 == subhash) | (_geom_ == subhash) ){
+			switch(buf[propname]){
+			case 'l':parsefv(sty->fshape.vl, 4, buf+propdata, 99);break;
+			case 'r':parsefv(sty->fshape.vr, 4, buf+propdata, 99);break;
+			case 'b':parsefv(sty->fshape.vb, 4, buf+propdata, 99);break;
+			case 't':parsefv(sty->fshape.vt, 4, buf+propdata, 99);break;
+			case 'n':parsefv(sty->fshape.vn, 4, buf+propdata, 99);break;
+			case 'f':parsefv(sty->fshape.vf, 4, buf+propdata, 99);break;
+			case 'q':parsefv(sty->fshape.vq, 4, buf+propdata, 99);break;
+			case 'c':parsefv(sty->fshape.vc, 4, buf+propdata, 99);break;
+			}//switch
 			}
+
+			if( (0 == subhash) | (_frus_ == subhash) ){
+			switch(buf[propname]){
+			case 'L':parsefv(sty->frustum.vl, 4, buf+propdata, 99);break;
+			case 'R':parsefv(sty->frustum.vr, 4, buf+propdata, 99);break;
+			case 'B':parsefv(sty->frustum.vb, 4, buf+propdata, 99);break;
+			case 'T':parsefv(sty->frustum.vt, 4, buf+propdata, 99);break;
+			case 'N':parsefv(sty->frustum.vn, 4, buf+propdata, 99);break;
+			case 'F':parsefv(sty->frustum.vf, 4, buf+propdata, 99);break;
+			case 'Q':parsefv(sty->frustum.vq, 4, buf+propdata, 99);break;
+			case 'C':parsefv(sty->frustum.vc, 4, buf+propdata, 99);break;
+			}//switch
+			}
+
+			if( (0 == subhash) | (_tran_ == subhash) ){
+			switch(buf[propname]){
+			case 'x':parsefv(sty->fmotion.displace_x, 4, buf+propdata, 99);break;
+			case 'v':parsefv(sty->fmotion.displace_v, 4, buf+propdata, 99);break;
+			case 'a':parsefv(sty->fmotion.displace_a, 4, buf+propdata, 99);break;
+			case 'j':parsefv(sty->fmotion.displace_j, 4, buf+propdata, 99);break;
+			}//switch
+			}
+
+			if( (0 == subhash) | (_rota_ == subhash) ){
+			switch(buf[propname]){
+			case '0':parsefv(sty->fmotion.angular_x, 4, buf+propdata, 99);break;
+			case '1':parsefv(sty->fmotion.angular_v, 4, buf+propdata, 99);break;
+			case '2':parsefv(sty->fmotion.angular_a, 4, buf+propdata, 99);break;
+			case '3':parsefv(sty->fmotion.angular_j, 4, buf+propdata, 99);break;
+			}//switch
+			}
+
+			if( (0 == subhash) | (_iner_ == subhash) ){
+			switch(buf[propname]){
+			case 'x':
+				decstr2float(buf+propdata, &sty->physic.inertiatensor[0][0]);
+				sty->physic.inertiatensor[0][1] = 0;
+				sty->physic.inertiatensor[0][2] = 0;
+				break;
+			case 'y':
+				sty->physic.inertiatensor[1][0] = 0;
+				decstr2float(buf+propdata, &sty->physic.inertiatensor[1][1]);
+				sty->physic.inertiatensor[1][2] = 0;
+				break;
+			case 'z':
+				sty->physic.inertiatensor[2][0] = 0;
+				sty->physic.inertiatensor[2][1] = 0;
+				decstr2float(buf+propdata, &sty->physic.inertiatensor[2][2]);
+				break;
+			}//switch
+			}
+
+			if( (0 == subhash) | (_mass_ == subhash) ){
+				decstr2float(buf+propdata, &sty->physic.inertiatensor[3][3]);
+				logtoall("%f(%x)\n", sty->physic.inertiatensor[3][3], *(u32*)&sty->physic.inertiatensor[3][3]);
+				printf("%f(%x)\n", sty->physic.inertiatensor[3][3], *(u32*)&sty->physic.inertiatensor[3][3]);
+			}
+
 			continue;
-		}
+		}//:
 
 		//nodename{...}
 		if('{' == k) {
-			nodename = str;
-			nodedata = j+1;
-			str = -1;
+			if(nodename < 0){
+				nodename = str;
+				nodedata = j+1;
+				str = -1;
+				//logtoall("stynode=%.*s\n", j-nodename, buf+nodename);
 
-			//logtoall("stynode=%.*s\n", j-nodename, buf+nodename);
-
-			parsefmt((void*)&hash, buf+nodename);
-
-			sty = style_alloc();
+				parsefmt((void*)&hash, buf+nodename);
+				sty = style_alloc();
+				logtoall("slot%d:hash=%.8s,addr=%p{\n",flen,&hash,sty);
+			}
+			else{
+				subname = str;
+				subdata = j+1;
+				str = -1;
+				parsefmt((void*)&subhash, buf+subname);
+				logtoall("subhash=%.8s{\n",&subhash);
+				subhash &= 0xffffffff;
+			}
 		}
 		if('}' == k) {
-			if(nodename >= 0){
-				nodename = -1;
-/*
-				logtoall("l:%f, %f, %f\n", sty->vl[0], sty->vl[1], sty->vl[2]);
-				logtoall("r:%f, %f, %f\n", sty->vr[0], sty->vr[1], sty->vr[2]);
-				logtoall("b:%f, %f, %f\n", sty->vb[0], sty->vb[1], sty->vb[2]);
-				logtoall("u:%f, %f, %f\n", sty->vu[0], sty->vu[1], sty->vu[2]);
-				logtoall("n:%f, %f, %f\n", sty->vn[0], sty->vn[1], sty->vn[2]);
-				logtoall("f:%f, %f, %f\n", sty->vf[0], sty->vf[1], sty->vf[2]);
-				logtoall("q:%f, %f, %f\n", sty->vq[0], sty->vq[1], sty->vq[2]);
-				logtoall("c:%f, %f, %f\n", sty->vc[0], sty->vc[1], sty->vc[2]);
-*/
-				foot[flen].hash = hash;
-				foot[flen].addr = sty;
-				logtoall("slot%d:hash=%.8s,addr=%p\n",flen,&hash,sty);
+			if(subname > 0){
+				logtoall("}subhash=%.8s\n",&subhash);
+				subname = -1;
+				subhash = 0;
+			}
+			else{
+				if(nodename >= 0){
+					nodename = -1;
+					subname = -1;
 
-				flen += 1;
-			}//if innode
+					foot[flen].hash = hash;
+					foot[flen].addr = sty;
+					logtoall("}slot%d:hash=%.8s,addr=%p\n",flen,&hash,sty);
+
+					hash = 0;
+					flen += 1;
+				}//if innode
+			}
 		}//if }
 	}//for
 
@@ -633,7 +697,7 @@ void role_test1(u8* buf, int len)
 					);
 				}
 				if(0 == ncmp(buf+typename, "style", 5)) {
-					flen = role_test_style(
+					flen = role_test_foot(
 						fbuf, flen,
 						buf + typedata, j-typedata
 					);

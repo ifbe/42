@@ -31,7 +31,7 @@ fmt:virtual
 }
 
 control{
-fmt:flycon
+fmt:dronecon
 }
 gravity{
 fmt:gravtest
@@ -142,8 +142,11 @@ q:1.0, 1.0
 
 
 <relation>
-#scene depends on ???
+#scene item
 (scene, drongeom, 0) -> (drone, dronslot, 0)
+(gravity, 0, 0) -> (scene, 0, 0)
+
+#3d item
 (world, 0, 0) -> (scene, 0, 0)
 (world, skygeom, 0) -> (sky, skypart, 0)
 (world, gndgeom, 0) -> (gnd, gndpart, 0)
@@ -155,17 +158,14 @@ q:1.0, 1.0
 (opengl, aaaarect, 0) -> (cam0, 0, a0)
 (opengl, bbbbrect, 0) -> (uiroot, 0, a0)
 
-#
-(button, 0, evto) -> (gravity, 0, ioby)
-
-#mouse: 3rd controller
+#control.mouse: 3rd controller
 (cam3rd, 0, tar) -> (drone, 0, evby)
 (cam3rd, 0, cam) -> (cam0, 0, mind)
 
-#gravity
-(gravity, 0, 0) -> (scene, 0, 0)
+#control.button
+(button, 0, evto) -> (gravity, 0, ioby)
 
-#control
+#control.uidata
 (control, 0, dst) -> (drone, 0, con)
 (control, 0, dbg) -> (status, 0, data)
 

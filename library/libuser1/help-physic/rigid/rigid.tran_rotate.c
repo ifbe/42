@@ -2,10 +2,10 @@
 #define TIME listu64.data0
 #define FLAG listu64.data1
 #define TEST listu64.data2
-void inertia_tensor_of_block(mat3 Ival, mat3 Iinv, float M, float lx, float ly, float lz);
 void mat3_transposefrom(void* o, void* i);
 void mat3_multiplyfrom(void* o, void* l, void* r);
 void quaternion_multiplyfrom(void* o, void* l, void* r);
+void inertia_tensor_of_block(mat3 Ival, float M, float lx, float ly, float lz);
 
 
 
@@ -34,6 +34,21 @@ void gravtest_testforce(struct style* geom)
 }
 
 
+
+void gravtest_force2accel_displace(struct style* geom)
+{
+	float mass = 1.0;
+	vec4* worldforce = geom->force;
+
+	//centroid displace
+	vec3 totalforce;
+	totalforce[0] = worldforce[0][0] + worldforce[1][0] + worldforce[2][0] + worldforce[3][0];
+	totalforce[1] = worldforce[0][1] + worldforce[1][1] + worldforce[2][1] + worldforce[3][1];
+	totalforce[2] = worldforce[0][2] + worldforce[1][2] + worldforce[2][2] + worldforce[3][2];
+	geom->fm.displace_a[0] = totalforce[0] / mass;
+	geom->fm.displace_a[1] = totalforce[1] / mass;
+	geom->fm.displace_a[2] = totalforce[2] / mass - 9.81;
+}
 
 
 void inertiatensor_local2world(mat3 Iworld, mat3 Ilocal, struct fstyle* sty, float mass)
@@ -74,23 +89,14 @@ void inertiatensor_angularalpha(vec3 a, vec3 t, mat3 m)
 	a[1] = m[1][0]*t[1] + m[1][1]*t[1] + m[1][2]*t[1];
 	a[2] = m[2][0]*t[2] + m[2][1]*t[2] + m[2][2]*t[2];
 }
-void gravtest_realforce(struct style* geom)
+void gravtest_force2accel_angular(struct style* geom)
 {
 	float mass = 1.0;
 	vec4* worldforce = geom->force;
 	vec4* worldvector = geom->where;
 
-	//centroid displace
-	vec3 totalforce;
-	totalforce[0] = worldforce[0][0] + worldforce[1][0] + worldforce[2][0] + worldforce[3][0];
-	totalforce[1] = worldforce[0][1] + worldforce[1][1] + worldforce[2][1] + worldforce[3][1];
-	totalforce[2] = worldforce[0][2] + worldforce[1][2] + worldforce[2][2] + worldforce[3][2];
-	geom->fm.displace_a[0] = totalforce[0] / mass;
-	geom->fm.displace_a[1] = totalforce[1] / mass;
-	geom->fm.displace_a[2] = totalforce[2] / mass - 9.81;
-
 	mat3 localinertia;
-	inertia_tensor_of_block(localinertia, 0, mass,
+	inertia_tensor_of_block(localinertia, mass,
 		geom->fs.vr[3]*2.0,
 		geom->fs.vf[3]*2.0,
 		geom->fs.vt[3]*2.0);
@@ -132,8 +138,32 @@ void gravtest_realforce(struct style* geom)
 
 
 
+int gravtest_displace(struct style* geom, float dt)
+{
+	struct fmotion* final = &geom->actual;
 
-int gravtest_effect(struct style* geom, float dt)
+	//displacement
+	final->displace_v[0] += final->displace_a[0] * dt;
+	final->displace_v[1] += final->displace_a[1] * dt;
+	final->displace_v[2] += final->displace_a[2] * dt;
+	final->displace_x[0] += final->displace_v[0] * dt;
+	final->displace_x[1] += final->displace_v[1] * dt;
+	final->displace_x[2] += final->displace_v[2] * dt;
+
+	//collide
+	if(final->displace_x[2] < 0.0){
+		final->displace_x[2] = 0.00001;
+		final->displace_v[2] = -0.5 * final->displace_v[2];
+	}
+	//logtoall("%f,%f\n", final->displace_v[2], final->displace_x[2]);
+
+	//writeback position
+	geom->fs.vc[0] = final->displace_x[0];
+	geom->fs.vc[1] = final->displace_x[1];
+	geom->fs.vc[2] = final->displace_x[2];
+	return 0;
+}
+int gravtest_angular(struct style* geom, float dt)
 {
 	vec4 v,ql,qr;
 	float a,invn,sbyn;
@@ -203,27 +233,6 @@ int gravtest_effect(struct style* geom, float dt)
 	}
 //logtoall("omega_new=%f,%f,%f,%f\n",final->angular_v[0],final->angular_v[1],final->angular_v[2],final->angular_v[3]);
 
-
-	//displacement
-	final->displace_v[0] += final->displace_a[0] * dt;
-	final->displace_v[1] += final->displace_a[1] * dt;
-	final->displace_v[2] += final->displace_a[2] * dt;
-	final->displace_x[0] += final->displace_v[0] * dt;
-	final->displace_x[1] += final->displace_v[1] * dt;
-	final->displace_x[2] += final->displace_v[2] * dt;
-
-
-	//collide
-	if(final->displace_x[2] < 0.0){
-		final->displace_x[2] = 0.00001;
-		final->displace_v[2] = -0.5 * final->displace_v[2];
-	}
-	//logtoall("%f,%f\n", final->displace_v[2], final->displace_x[2]);
-
-	//writeback position
-	geom->fs.vc[0] = final->displace_x[0];
-	geom->fs.vc[1] = final->displace_x[1];
-	geom->fs.vc[2] = final->displace_x[2];
 	return 0;
 }
 int gravtest_foreach(_obj* ent)
@@ -251,15 +260,25 @@ int gravtest_foreach(_obj* ent)
 		if(0 == rel)break;
 
 		geom = rel->psrcfoot;
+
+		//1
 		if(ent->TEST){
-			//gravtest_testforce(geom);
-			gravtest_realforce(geom);
 			if(ent->TEST < 0x80000000)ent->TEST--;
+		}
+		else if(0){
+			gravtest_testforce(geom);
 		}
 		else{
 			gravtest_resistance(geom);
 		}
-		gravtest_effect(geom, dt);
+
+		//2
+		gravtest_force2accel_displace(geom);
+		gravtest_force2accel_angular(geom);
+
+		//3
+		gravtest_displace(geom, dt);
+		gravtest_angular(geom, dt);
 
 		rel = samesrcnextdst(rel);
 	}

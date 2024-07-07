@@ -125,6 +125,8 @@ struct istyle{
 	int uq[4];
 	int uc[4];
 };
+
+
 struct fmotion{
 	vec4 displace_j;	//jerk
 	vec4 displace_a;	//accel
@@ -145,6 +147,14 @@ struct imotion{
 	int xa[4];
 	int xd[4];
 };
+
+
+struct physprop{
+	mat4 inertiatensor;
+	mat4 inertiainverse;
+};
+
+
 struct style
 {
 //--------[00, ff]: renderer--------
@@ -177,7 +187,7 @@ struct style
 		struct fmotion desire;
 	};
 
-//--------[200, 3ff]: graphic engine--------
+//--------[200, 2ff]: graphic engine--------
 	//[200, 27f]: actual motion
 	union{
 		struct fmotion actual;
@@ -189,9 +199,10 @@ struct style
 
 	//[280, 2ff]: actual motion
 	union{
-		struct fmotion actual111;
+		struct physprop physic;
 	};
 
+//--------[300, 3ff]: force position--------
 	//[300, 37f]
 	vec4 force[8];
 

@@ -1,7 +1,4 @@
 <entity>
-station{
-fmt:station
-}
 rocket{
 fmt:rocket
 }
@@ -35,6 +32,11 @@ fmt:virtual
 cam3rd{
 fmt:cam3rd
 }
+gravity:gravity{
+}
+control{
+fmt:rocketcon
+}
 </entity>
 
 
@@ -49,34 +51,57 @@ depth:1024
 </supply>
 
 
-<style>
-staslot{
+<bootup>
+pulser{
+fmt:pulser
 }
-stageom{
-c: 0.0, -6800.0, 0.0
-r: 0.110,   0.0, 0.0
-f:   0.0,   0.0, 0.080
-t:   0.0,-0.020, 0.0
-}
+</bootup>
 
+
+<style>
 rockslot{
 }
 #north=19.614484, east=110.950745
 #10m, 10m, 120m
 rockgeom{
+geom{
 c: 2155.6267507182033, -5630.061288690543, 2148.414112124632
 r: 0.00933888, 0.00357565, 0.0
 f: -0.00120031, 0.00313497, 0.00941973
 t: 0.040418, -0.10556365, 0.04028276
 }
+translation{
+j: 0.0, 0.0, 0.0
+a: 0.0, 0.0, 0.0
+v: 0.0, 0.0, 20.0
+x: 2155.6267507182033, -5630.061288690543, 2148.414112124632
+}
+rotation{
+0: 0.0, 0.0, 0.0, 1.0
+1: 0.0, 0.0, 1.0, 0.0
+}
+inertia{
+x:6031250000.0
+y:6031250000.0
+z:62500000.0
+}
+mass{
+m:5000
+}
+}
 
 earthhaha{
 }
 earthgeom{
+geom{
 c: 0.0, 0.0, 0.0
 r: 6400.0, 0.0, 0.0
 f: 0.0, 6400.0, 0.0
 t: 0.0, 0.0, 6400.0
+}
+mass{
+m:5965000000000000000000
+}
 }
 
 aaaapart{
@@ -115,10 +140,16 @@ q:1.0, 1.0
 
 
 <relation>
-#scene depends on ???
-(scene, stageom, 0) -> (station, staslot, 0)
+#scene item
 (scene, rockgeom, 0) -> (rocket, rockslot, 0)
 (scene, earthgeom, 0) -> (earth, earthhaha, 0)
+(control, 0, dst) -> (rocket, 0, con)
+(gravity, 0, 0) -> (scene, 0, 0)
+
+(pulser, 0, clk) -> (control, 0, clk)
+(pulser, 0, clk) -> (gravity, 0, clk)
+
+#3d item
 (world, 0, 0) -> (scene, 0, 0)
 (world, aaaageom, 0) -> (cam0, aaaapart, 0)
 
@@ -128,8 +159,7 @@ q:1.0, 1.0
 (opengl, aaaarect, 0) -> (cam0, 0, a0)
 #(opengl, bbbbrect, 0) -> (uiroot, 0, a0)
 
-#mouse: 3rd controller
-(@cam3rd, tar@0) -> (@station, evby@0)
+#control.3rdcam
 (@cam3rd, tar@0) -> (@rocket, evby@0)
-(@cam3rd, cam@0) -> (@cam0, evto@0)
+(@cam3rd, cam@0) -> (@cam0, mind@0)
 </relation>
