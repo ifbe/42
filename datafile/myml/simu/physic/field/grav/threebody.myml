@@ -1,0 +1,162 @@
+<entity>
+one{
+fmt:geom
+}
+two{
+fmt:geom
+}
+three{
+fmt:geom
+}
+scene{
+fmt:scene3d
+}
+
+cam0{
+fmt:freecam
+}
+world{
+fmt:virtual
+}
+
+gravity:gravity{
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<bootup>
+pulser{
+fmt:pulser
+thread:main
+}
+</bootup>
+
+
+<style>
+oneslot{
+}
+#north=19.614484, east=110.950745
+#10m, 10m, 120m
+onegeom{
+geom{
+c:-30, 20, 0
+r: 1, 0, 0
+f: 0, 1, 0
+t: 0, 0, 1
+}
+translation{
+j: 0.0, 0.0, 0.0
+a: 0.0, 0.0, 0.0
+v: 1.0, 0.0, 0.0
+x:-30, 20, 0
+}
+mass{
+m:7000000000000000000
+}
+}
+
+twohaha{
+}
+twogeom{
+geom{
+c: 30.0, -10.0, 0.0
+r: 1, 0, 0
+f: 0, 1, 0
+t: 0, 0.5, 1
+}
+translation{
+j: 0.0, 0.0, 0.0
+a: 0.0, 0.0, 0.0
+v: -1, 0, 0.0
+x: 30.0, -10.0, 0.0
+}
+mass{
+m:5000000000000000000
+}
+}
+
+threehaha{
+}
+threegeom{
+geom{
+c: 0.0, 0.0, 10.0
+r: 1, 0, 0
+f: 0, 1, 0
+t: 0, 0, 1
+}
+translation{
+j: 0.0, 0.0, 0.0
+a: 0.0, 0.0, 0.0
+v: 0, 0, 0.0
+x: 0.0, 0.0, 10.0
+}
+mass{
+m:3000000000000000000
+}
+}
+
+aaaapart{
+}
+aaaageom{
+c: 0.0, 0.0, 100.0
+r: 1.0, 0.0, 0.0
+t: 0.0, 1.0, 0.0
+f: 0.0, 0.0,-1.0
+
+L: 0.0, 0.0, 0.0,-0.01
+R: 0.0, 0.0, 0.0, 0.01
+B: 0.0, 0.0, 0.0,-0.01
+T: 0.0, 0.0, 0.0, 0.01
+N: 0.0, 0.0, 0.0, 0.01
+F: 0.0, 0.0, 0.0, 1000000.0
+}
+butnrect{
+c:0.0, 0.0
+q:0.1, 0.1
+}
+statrect{
+c:0.9, 0.0
+q:1.0, 0.1
+}
+
+aaaarect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+bbbbrect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<relation>
+#scene item
+(scene, onegeom, 0) -> (one, oneslot, 0)
+(scene, twogeom, 0) -> (two, twohaha, 0)
+(scene, threegeom, 0) -> (three, threehaha, 0)
+
+#3d item
+(world, 0, 0) -> (scene, 0, 0)
+(world, aaaageom, 0) -> (cam0, aaaapart, 0)
+
+(opengl, aaaarect, 0) -> (cam0, 0, a0)
+
+#control.gravity
+(gravity, 0, 0) -> (scene, 0, 0)
+
+#clock
+(@pulser, clk@1) @ (@gravity, clk)
+(@pulser, clk@2) @ (@opengl, clk)
+</relation>

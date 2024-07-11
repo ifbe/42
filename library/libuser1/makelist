@@ -149,7 +149,8 @@
 ./help-cpu/3d-carve/text/gl41.text.ascii.c
 ./help-cpu/3d-carve/text/gl41.text.unicode.c
 ./help-cpu/3to2-raster/raster.c
-./help-cpu/3to2-raytrace/raytrace.c
+./help-cpu/3to2-raytrace/raytrace.lens.c
+./help-cpu/3to2-raytrace/raytrace.pinhole.c
 ./help-cpu/forcpu.c
 ./help-cpu/intersect/intersect.obb.c
 ./help-cpu/intersect/intersect.ray.c

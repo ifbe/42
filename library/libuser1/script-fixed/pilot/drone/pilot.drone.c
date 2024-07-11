@@ -207,46 +207,51 @@ void dronecontrol_force2motor(float ln, float rn, float lf, float rf, struct sty
 	vt[1] = 2.0 * (q[1]*q[2] - q[0]*q[3]);
 	vt[2] = 1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0;
 
+	struct forceinfo* fi = &sty->forceinfo;
+
 	//force
 	vec3 yaw;
 	yaw[0] = (-vr[0]+vf[0])*0.2;
 	yaw[1] = (-vr[1]+vf[1])*0.2;
 	yaw[2] = (-vr[2]+vf[2])*0.2;
-	sty->force[0][0] = (vt[0]+yaw[0]) * ln;
-	sty->force[0][1] = (vt[1]+yaw[1]) * ln;
-	sty->force[0][2] = (vt[2]+yaw[2]) * ln;
+	fi->force[0][0] = (vt[0]+yaw[0]) * ln;
+	fi->force[0][1] = (vt[1]+yaw[1]) * ln;
+	fi->force[0][2] = (vt[2]+yaw[2]) * ln;
 	yaw[0] = (vr[0]+vf[0])*0.2;
 	yaw[1] = (vr[1]+vf[1])*0.2;
 	yaw[2] = (vr[2]+vf[2])*0.2;
-	sty->force[1][0] = (vt[0]+yaw[0]) * rn;
-	sty->force[1][1] = (vt[1]+yaw[1]) * rn;
-	sty->force[1][2] = (vt[2]+yaw[2]) * rn;
+	fi->force[1][0] = (vt[0]+yaw[0]) * rn;
+	fi->force[1][1] = (vt[1]+yaw[1]) * rn;
+	fi->force[1][2] = (vt[2]+yaw[2]) * rn;
 	yaw[0] = (-vr[0]-vf[0])*0.2;
 	yaw[1] = (-vr[1]-vf[1])*0.2;
 	yaw[2] = (-vr[2]-vf[2])*0.2;
-	sty->force[2][0] = (vt[0]+yaw[0]) * lf;
-	sty->force[2][1] = (vt[1]+yaw[1]) * lf;
-	sty->force[2][2] = (vt[2]+yaw[2]) * lf;
+	fi->force[2][0] = (vt[0]+yaw[0]) * lf;
+	fi->force[2][1] = (vt[1]+yaw[1]) * lf;
+	fi->force[2][2] = (vt[2]+yaw[2]) * lf;
 	yaw[0] = (vr[0]-vf[0])*0.2;
 	yaw[1] = (vr[1]-vf[1])*0.2;
 	yaw[2] = (vr[2]-vf[2])*0.2;
-	sty->force[3][0] = (vt[0]+yaw[0]) * rf;
-	sty->force[3][1] = (vt[1]+yaw[1]) * rf;
-	sty->force[3][2] = (vt[2]+yaw[2]) * rf;
+	fi->force[3][0] = (vt[0]+yaw[0]) * rf;
+	fi->force[3][1] = (vt[1]+yaw[1]) * rf;
+	fi->force[3][2] = (vt[2]+yaw[2]) * rf;
 
 	//dist
-	sty->where[0][0] =-vr[0] -vf[0];
-	sty->where[0][1] =-vr[1] -vf[1];
-	sty->where[0][2] =-vr[2] -vf[2];
-	sty->where[1][0] = vr[0] -vf[0];
-	sty->where[1][1] = vr[1] -vf[1];
-	sty->where[1][2] = vr[2] -vf[2];
-	sty->where[2][0] =-vr[0] +vf[0];
-	sty->where[2][1] =-vr[1] +vf[1];
-	sty->where[2][2] =-vr[2] +vf[2];
-	sty->where[3][0] = vr[0] +vf[0];
-	sty->where[3][1] = vr[1] +vf[1];
-	sty->where[3][2] = vr[2] +vf[2];
+	fi->where[0][0] =-vr[0] -vf[0];
+	fi->where[0][1] =-vr[1] -vf[1];
+	fi->where[0][2] =-vr[2] -vf[2];
+	fi->where[1][0] = vr[0] -vf[0];
+	fi->where[1][1] = vr[1] -vf[1];
+	fi->where[1][2] = vr[2] -vf[2];
+	fi->where[2][0] =-vr[0] +vf[0];
+	fi->where[2][1] =-vr[1] +vf[1];
+	fi->where[2][2] =-vr[2] +vf[2];
+	fi->where[3][0] = vr[0] +vf[0];
+	fi->where[3][1] = vr[1] +vf[1];
+	fi->where[3][2] = vr[2] +vf[2];
+
+	//cnt
+	fi->cnt = 4;
 }
 void dronecontrol_consider(_obj* ent)
 {

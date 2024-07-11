@@ -38,7 +38,7 @@ void gravtest_testforce(struct style* geom)
 void gravtest_force2accel_displace(struct style* geom)
 {
 	float mass = 1.0;
-	vec4* worldforce = geom->force;
+	vec4* worldforce = geom->forceinfo.force;
 
 	//centroid displace
 	vec3 totalforce;
@@ -92,8 +92,8 @@ void inertiatensor_angularalpha(vec3 a, vec3 t, mat3 m)
 void gravtest_force2accel_angular(struct style* geom)
 {
 	float mass = 1.0;
-	vec4* worldforce = geom->force;
-	vec4* worldvector = geom->where;
+	vec4* worldforce = geom->forceinfo.force;
+	vec4* worldvector = geom->forceinfo.where;
 
 	mat3 localinertia;
 	inertia_tensor_of_block(localinertia, mass,

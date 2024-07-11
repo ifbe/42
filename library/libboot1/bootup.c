@@ -140,19 +140,19 @@ int bootup_create(_obj* tmp, void* arg, int argc, u8** argv)
 	//
 	case _exiter_:
 		exiter_create(tmp, arg, argc, argv);
-		threadcreate(exiter, tmp);
+		//threadcreate(exiter, tmp);
 		break;
 	case _pulser_:
 		pulser_create(tmp, arg, argc, argv);
-		threadcreate(pulser, tmp);
+		//threadcreate(pulser, tmp);
 		break;
 	case _poller_:
 		poller_create(tmp, arg, argc, argv);
-		threadcreate(poller, tmp);
+		//threadcreate(poller, tmp);
 		break;
 	case _waiter_:
 		waiter_create(tmp, arg, argc, argv);
-		threadcreate(waiter, tmp);
+		//threadcreate(waiter, tmp);
 		break;
 	}
 

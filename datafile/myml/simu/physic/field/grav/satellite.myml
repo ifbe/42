@@ -1,0 +1,210 @@
+<entity>
+chn{
+fmt:station
+}
+glob{
+fmt:station
+}
+earth{
+fmt:texball
+albedo:datafile/jpg/earth/earth-albedo-4096.jpg
+height:datafile/jpg/earth/earth-height-4096.jpg
+factor:8.848
+}
+scene{
+fmt:scene3d
+}
+
+cam0{
+fmt:freecam
+}
+world{
+fmt:virtual
+}
+
+button{
+fmt:button
+}
+status{
+fmt:dbgpid
+}
+uiroot{
+fmt:virtual
+}
+
+cam3rd{
+fmt:cam3rd
+}
+gravity:gravity{
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<bootup>
+pulser{
+fmt:pulser
+thread:main
+}
+</bootup>
+
+
+<style>
+chnslot{
+}
+#110, 80, 20(m)
+#180(t)
+#7.68(km/s)
+chngeom{
+geom{
+c: 0.0, -6800.0, 0.0
+r: 0.110,   0.0, 0.0
+f:   0.0,   0.0, 0.080
+t:   0.0,-0.020, 0.0
+}
+translation{
+j: 0.0, 0.0, 0.0
+a: 0.0, 0.0, 0.0
+v: 5.430580079512685, 0.0, 5.430580079512685
+x: 0.0, -6800.0, 0.0
+}
+rotation{
+0: 0.0, 0.0, 0.0, 1.0
+1: 0.0, 0.0, 1.0, 0.0
+}
+inertia{
+x:6031250000.0
+y:6031250000.0
+z:62500000.0
+}
+mass{
+m:180
+}
+}
+
+globslot{
+}
+#110, 80, 20(m)
+#180(t)
+#7.68(km/s)
+globgeom{
+geom{
+c: 6800.0, 0.0, 0.0
+r:  0.0, 0.110, 0.0
+f:  0.0,   0.0, 0.080
+t: -0.020, 0.0, 0.0
+}
+translation{
+j: 0.0, 0.0, 0.0
+a: 0.0, 0.0, 0.0
+v: 0.0, 6.651075101064489, 3.8399999999999994
+x: 6800.0, 0.0, 0.0
+}
+rotation{
+0: 0.0, 0.0, 0.0, 1.0
+1: 0.0, 0.0, 0.0, 0.0
+}
+inertia{
+x:6031250000.0
+y:6031250000.0
+z:62500000.0
+}
+mass{
+m:180
+}
+}
+
+earthhaha{
+}
+#r=6400(km)
+#w=7.292e-5(rad/sec)
+#m=5.965e21(ton)
+earthgeom{
+geom{
+c: 0.0, 0.0, 0.0
+r: 6400.0, 0.0, 0.0
+f: 0.0, 6400.0, 0.0
+t: 0.0, 0.0, 6400.0
+}
+rotation{
+0: 0.0, 0.0, 0.0, 1.0
+1: 0.0, 0.0, 0.0000364599999919221, 0.9999999993353342
+}
+mass{
+m:5965000000000000000000
+}
+}
+
+aaaapart{
+}
+aaaageom{
+c: 0.0, -7000.0, 0.0
+r: 1.0, 0.0, 0.0
+f: 0.0, 1.0, 0.0
+t: 0.0, 0.0, 1.0
+
+L: 0.0, 0.0, 0.0,-0.01
+R: 0.0, 0.0, 0.0, 0.01
+B: 0.0, 0.0, 0.0,-0.01
+T: 0.0, 0.0, 0.0, 0.01
+N: 0.0, 0.0, 0.0, 0.01
+F: 0.0, 0.0, 0.0, 1000000.0
+}
+butnrect{
+c:0.0, 0.0
+q:0.1, 0.1
+}
+statrect{
+c:0.9, 0.0
+q:1.0, 0.1
+}
+
+aaaarect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+bbbbrect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<relation>
+#scene item
+(scene, chngeom, 0) -> (chn, chnslot, 0)
+(scene, globgeom, 0) -> (glob, globslot, 0)
+(scene, earthgeom, 0) -> (earth, earthhaha, 0)
+
+#3d item
+(world, 0, 0) -> (scene, 0, 0)
+(world, aaaageom, 0) -> (cam0, aaaapart, 0)
+
+(uiroot, butnrect, 0) -> (button, 0, 0)
+(uiroot, statrect, 0) -> (status, 0, 0)
+
+(opengl, aaaarect, 0) -> (cam0, 0, a0)
+#(opengl, bbbbrect, 0) -> (uiroot, 0, a0)
+
+#control.3rdcam
+(@cam3rd, tar@0) -> (@chn, evby@0)
+(@cam3rd, tar@0) -> (@glob, evby@0)
+(@cam3rd, cam@0) -> (@cam0, mind@0)
+
+#control.gravity
+(gravity, 0, 0) -> (scene, 0, 0)
+
+#clock
+(@pulser, clk@1) @ (@gravity, clk)
+(@pulser, clk@2) @ (@opengl, clk)
+</relation>

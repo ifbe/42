@@ -8,8 +8,14 @@ int parsefv(float* fbuf, int flen, u8* sbuf, int slen);
 int openreadclose(void*,int,void*,int);
 int openwriteclose(void*,int,void*,int);
 //
+void* waiter_alloc();
+void waiter(void*);
+//
 void* poller_alloc();
 void poller(void*);
+//
+void* pulser_alloc();
+void pulser(void*);
 
 
 
@@ -19,12 +25,30 @@ struct chiplist{
 	u64 type;
 
 	u64 hash;
+	union{
+	u64 addr_u64;
 	void* addr;
+	};
 };
 struct footlist{
 	u64 hash;
+	union{
+	u64 addr_u64;
 	void* addr;
+	};
 };
+struct mymlctx{
+	u8 path[0x1000];
+	u8 buff[0xf000];
+	struct chiplist cbuf[80];
+	struct footlist fbuf[80];
+
+	int pathlen;
+	int bufflen;
+	int clen;
+	int flen;
+};
+
 
 
 
@@ -207,7 +231,7 @@ void parsehalfrel(u8* buf, int len,
 	}
 	logtoall("footaddr=%p\n", rel->pfoot);
 }
-void role_test_relation(
+void role_fromtext_relation(
 	struct chiplist chip[], int clen,
 	struct footlist foot[], int flen,
 	u8* buf, int len)
@@ -289,7 +313,7 @@ void role_test_relation(
 
 
 
-int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf, int len)
+int role_fromtext_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf, int len)
 {
 	int j,k;
 	int str = -1;
@@ -429,7 +453,7 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 #define _rota_ hex32('r','o','t','a')	//rotation
 #define _iner_ hex32('i','n','e','r')	//inertia
 #define _mass_ hex32('m','a','s','s')	//mass
-int role_test_foot(struct footlist foot[], int flen, u8* buf, int len)
+int role_fromtext_foot(struct footlist foot[], int flen, u8* buf, int len)
 {
 	//logtoall("style:\n%.*s\n", len, buf);
 	struct style* sty;
@@ -557,7 +581,6 @@ int role_test_foot(struct footlist foot[], int flen, u8* buf, int len)
 			if( (0 == subhash) | (_mass_ == subhash) ){
 				decstr2float(buf+propdata, &sty->physic.inertiatensor[3][3]);
 				logtoall("%f(%x)\n", sty->physic.inertiatensor[3][3], *(u32*)&sty->physic.inertiatensor[3][3]);
-				printf("%f(%x)\n", sty->physic.inertiatensor[3][3], *(u32*)&sty->physic.inertiatensor[3][3]);
 			}
 
 			continue;
@@ -608,7 +631,7 @@ int role_test_foot(struct footlist foot[], int flen, u8* buf, int len)
 
 	return flen;
 }
-void role_test1(u8* buf, int len)
+void role_fromtext(struct item* obj, u8* buf, int len)
 {
 	int j,k;
 
@@ -618,11 +641,7 @@ void role_test1(u8* buf, int len)
 	int typename = -1;
 	int typedata = -1;
 
-	int clen = 0;
-	struct chiplist cbuf[80];
-
-	int flen = 0;
-	struct footlist fbuf[80];
+	struct mymlctx* priv = obj->priv_ptr;
 
 	logtoall("parsing myml\n");
 	for(j=0;j<=len;j++) {
@@ -655,57 +674,57 @@ void role_test1(u8* buf, int len)
 			}
 			else {
 				if(0 == ncmp(buf+typename, "bootup", 6)) {
-					clen = role_test_node(
-						_wrk_, 0, cbuf, clen,
+					priv->clen = role_fromtext_node(
+						_wrk_, 0, priv->cbuf, priv->clen,
 						buf + typedata, j-typedata
 					);
 				}
 				if(0 == ncmp(buf+typename, "device", 6)) {
-					clen = role_test_node(
-						_dev_, 0, cbuf, clen,
+					priv->clen = role_fromtext_node(
+						_dev_, 0, priv->cbuf, priv->clen,
 						buf + typedata, j-typedata
 					);
 				}
 				if(0 == ncmp(buf+typename, "driver", 6)) {
-					clen = role_test_node(
-						_dri_, 0, cbuf, clen,
+					priv->clen = role_fromtext_node(
+						_dri_, 0, priv->cbuf, priv->clen,
 						buf + typedata, j-typedata
 					);
 				}
 				if(0 == ncmp(buf+typename, "system", 6)) {
-					clen = role_test_node(
-						_sys_, 0, cbuf, clen,
+					priv->clen = role_fromtext_node(
+						_sys_, 0, priv->cbuf, priv->clen,
 						buf + typedata, j-typedata
 					);
 				}
 				if(0 == ncmp(buf+typename, "artery", 6)) {
-					clen = role_test_node(
-						_art_, 0, cbuf, clen,
+					priv->clen = role_fromtext_node(
+						_art_, 0, priv->cbuf, priv->clen,
 						buf + typedata, j-typedata
 					);
 				}
 				if(0 == ncmp(buf+typename, "supply", 6)) {
-					clen = role_test_node(
-						_sup_, 0, cbuf, clen,
+					priv->clen = role_fromtext_node(
+						_sup_, 0, priv->cbuf, priv->clen,
 						buf + typedata, j-typedata
 					);
 				}
 				if(0 == ncmp(buf+typename, "entity", 6)) {
-					clen = role_test_node(
-						_ent_, 0, cbuf, clen,
+					priv->clen = role_fromtext_node(
+						_ent_, 0, priv->cbuf, priv->clen,
 						buf + typedata, j-typedata
 					);
 				}
 				if(0 == ncmp(buf+typename, "style", 5)) {
-					flen = role_test_foot(
-						fbuf, flen,
+					priv->flen = role_fromtext_foot(
+						priv->fbuf, priv->flen,
 						buf + typedata, j-typedata
 					);
 				}
 				if(0 == ncmp(buf+typename, "relation", 8)) {
-					role_test_relation(
-						cbuf, clen,
-						fbuf, flen,
+					role_fromtext_relation(
+						priv->cbuf, priv->clen,
+						priv->fbuf, priv->flen,
 						buf + typedata, j-typedata
 					);
 				}
@@ -732,17 +751,19 @@ void role_test1(u8* buf, int len)
 	}
 */
 }
-int role_fromfile(u8* str, int len)
+int role_fromfile(struct item* obj, u8* str, int len)
 {
-	u8 buf[0x2000];
+	struct mymlctx* priv = obj->priv_ptr;
+	priv->pathlen = 0;
+	priv->bufflen = 0;
+	priv->clen = 0;
+	priv->flen = 0;
 
-	len = openreadclose(str, 0, buf, 0x2000);
+	len = openreadclose(str, 0, priv->buff, 0x2000);
 	if(len <= 0)return 0;
-	//logtoall("%s", buf);
+	//logtoall("%s", priv->buff);
 
-    logtoall("----read done, now parse----\n");
-
-	role_test1(buf, len);
+	role_fromtext(obj, priv->buff, len);
 	return 1;
 }
 
@@ -752,23 +773,31 @@ int role_fromfile(u8* str, int len)
 int myml_create(struct item* obj, void* arg, int argc, u8** argv)
 {
 	int j;
+	struct mymlctx* priv = memoryalloc(0x100000, 0);
+	obj->priv_ptr = priv;
+
 	if(arg){
-		role_fromfile(arg, 0);
+		role_fromfile(obj, arg, 0);
 	}
 	else if(0 == argv){
-		role_fromfile((u8*)"datafile/myml/index.myml", 0);
+		role_fromfile(obj, (u8*)"datafile/myml/index.myml", 0);
 	}
 	else{
 		for(j=1;j<argc;j++){
 			logtoall("arg[%d]=%s\n", j, argv[j]);
-			role_fromfile(argv[j], 0);
+			role_fromfile(obj, argv[j], 0);
 		}
 	}
 
     logtoall("----parse done, now loop or exit----\n");
-
-	void* mpoller = poller_alloc();
-	if(mpoller)poller(mpoller);
+	for(j=0;j<priv->clen;j++){
+		if(_wrk_ == priv->cbuf[j].tier){
+			logtoall("%d: %.8s@%p\n", j, &priv->cbuf[j].hash, priv->cbuf[j].addr);
+		}
+	}
+	//void* mpoller = poller_alloc();
+	//if(mpoller)poller(mpoller);
+	pulser(0);
 
 	logtoall("myml@%p exiting\n",obj);
 	return 0;

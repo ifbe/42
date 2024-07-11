@@ -199,6 +199,7 @@ void* supply_alloc_fromtype(u64 what)
 	//case _img2img_:
 //camera
 	case _cam_:
+		obj->kind = _cap_;
 		obj->type = _cam_;
 		obj->vfmt = hex32('y','u','v',0);
 		break;
@@ -206,6 +207,11 @@ void* supply_alloc_fromtype(u64 what)
 		obj->kind = _cap_;
 		obj->type = what;
 		obj->vfmt = 0;
+//capture 2 to 3: input=image, output=vertex/texture/xxx
+	case _cap_:
+		obj->type = _cap_;
+		obj->vfmt = hex32('h','o','l','o');
+		break;
 //window
 	case _wnd_:
 	//case _fb_:
@@ -223,11 +229,6 @@ void* supply_alloc_fromtype(u64 what)
 		obj->kind = _render_;
 		obj->type = _render_;
 		obj->vfmt = what;
-		break;
-//capture 2 to 3: input=image, output=vertex/texture/xxx
-	case _cap_:
-		obj->type = _cap_;
-		obj->vfmt = hex32('h','o','l','o');
 		break;
 //other
 	case _joy_:

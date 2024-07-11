@@ -54,6 +54,7 @@ depth:1024
 <bootup>
 pulser{
 fmt:pulser
+thread:main
 }
 </bootup>
 
@@ -73,7 +74,7 @@ t: 0.040418, -0.10556365, 0.04028276
 translation{
 j: 0.0, 0.0, 0.0
 a: 0.0, 0.0, 0.0
-v: 0.0, 0.0, 20.0
+v: 0.0, 0.0, 0.0
 x: 2155.6267507182033, -5630.061288690543, 2148.414112124632
 }
 rotation{
@@ -143,11 +144,6 @@ q:1.0, 1.0
 #scene item
 (scene, rockgeom, 0) -> (rocket, rockslot, 0)
 (scene, earthgeom, 0) -> (earth, earthhaha, 0)
-(control, 0, dst) -> (rocket, 0, con)
-(gravity, 0, 0) -> (scene, 0, 0)
-
-(pulser, 0, clk) -> (control, 0, clk)
-(pulser, 0, clk) -> (gravity, 0, clk)
 
 #3d item
 (world, 0, 0) -> (scene, 0, 0)
@@ -162,4 +158,15 @@ q:1.0, 1.0
 #control.3rdcam
 (@cam3rd, tar@0) -> (@rocket, evby@0)
 (@cam3rd, cam@0) -> (@cam0, mind@0)
+
+#control.rocket
+(control, 0, dst) -> (rocket, 0, con)
+
+#control.gravity
+(gravity, 0, 0) -> (scene, 0, 0)
+
+#clock
+(@pulser, clk@0) @ (@control, clk)
+(@pulser, clk@1) @ (@gravity, clk)
+(@pulser, clk@2) @ (@opengl, clk)
 </relation>

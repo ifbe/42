@@ -1,11 +1,8 @@
 #include "libsoft.h"
 #define DEBUG 0
-
-#define mass_earth 5.965e21				//T
-#define mass_rocket_longmarch 869		//T
-#define mass_rocket_starship 5000		//T
 float gravity_f32(float m1,float m2,float r);
 float vec3_getlen(vec3 v);
+float vec3_setlen(vec3 v, float f);
 
 
 struct privdata{
@@ -18,100 +15,119 @@ struct privdata{
 void gravity_computeforce(struct style** geom, int count)
 {
 	float len;
-	float v[4];
 	float Mself,Mpeer;
+	struct forceinfo* fi;
 
-	int j,k,t=0;
+	int j,k;
 	for(j=0;j<count;j++){
 		for(k=0;k<count;k++){
 			if(j==k)continue;
 
-			//vector self to peer
-			v[0] = geom[k]->fm.displace_x[0] - geom[j]->fm.displace_x[0];
-			v[1] = geom[k]->fm.displace_x[1] - geom[j]->fm.displace_x[1];
-			v[2] = geom[k]->fm.displace_x[2] - geom[j]->fm.displace_x[2];
+			fi = &geom[j]->forceinfo;
+
+			//F dir
+			fi->force[fi->cnt][0] = geom[k]->fm.displace_x[0] - geom[j]->fm.displace_x[0];
+			fi->force[fi->cnt][1] = geom[k]->fm.displace_x[1] - geom[j]->fm.displace_x[1];
+			fi->force[fi->cnt][2] = geom[k]->fm.displace_x[2] - geom[j]->fm.displace_x[2];
 
 			//F size
-			len = vec3_getlen(v);
-			if(len < 1000){
-				geom[j]->force[t][3] = 0.0;
+			len = vec3_getlen(fi->force[fi->cnt]);
+			if(len < 1e-21){
+				fi->force[fi->cnt][3] = 0.0;
 			}
 			else{
 				Mself = geom[j]->physic.inertiatensor[3][3];
 				Mpeer = geom[k]->physic.inertiatensor[3][3];
-				geom[j]->force[t][3] = gravity_f32(Mself, Mpeer, len);
+				fi->force[fi->cnt][3] = gravity_f32(Mself, Mpeer, len);
 			}
-
-			//F dir
-			len = 1/len;
-			geom[j]->force[t][0] = v[0] * len;
-			geom[j]->force[t][1] = v[1] * len;
-			geom[j]->force[t][2] = v[2] * len;
+			vec3_setlen(fi->force[fi->cnt], fi->force[fi->cnt][3]);
 
 			//F point
-			geom[j]->where[t][0] = geom[j]->fm.displace_x[0];
-			geom[j]->where[t][1] = geom[j]->fm.displace_x[1];
-			geom[j]->where[t][2] = geom[j]->fm.displace_x[2];
+			fi->where[fi->cnt][0] = geom[j]->fm.displace_x[0];
+			fi->where[fi->cnt][1] = geom[j]->fm.displace_x[1];
+			fi->where[fi->cnt][2] = geom[j]->fm.displace_x[2];
 
 			//log
 			if(DEBUG)logtoall("computeforce j=%d,k=%d,t=%d: force=%f,%f,%f,%f, where=%f,%f,%f, I=%f,%f,%f,%f\n",
-				j,k,t,
-				geom[j]->force[t][0],geom[j]->force[t][1],geom[j]->force[t][2],geom[j]->force[t][3],
-				geom[j]->where[t][0],geom[j]->where[t][1],geom[j]->where[t][2],
+				j, k, fi->cnt,
+				fi->force[fi->cnt][0],fi->force[fi->cnt][1],fi->force[fi->cnt][2],fi->force[fi->cnt][3],
+				fi->where[fi->cnt][0],fi->where[fi->cnt][1],fi->where[fi->cnt][2],
 				geom[j]->physic.inertiatensor[0][0], geom[j]->physic.inertiatensor[1][1], geom[j]->physic.inertiatensor[2][2], geom[j]->physic.inertiatensor[3][3]
 			);
 
 			//+1
-			t++;
+			fi->cnt += 1;
 		}
 	}
 }
 
 void gravity_force2accel(struct style** geom, int count)
 {
+	struct forceinfo* fi;
 	float mass_inv;
 	int j,k;
 	for(j=0;j<count;j++){
+		fi = &geom[j]->forceinfo;
+
 		vec3 totalforce = {0,0,0};
-		for(k=0;k<1;k++){
-			totalforce[0] += geom[j]->force[k][0] * geom[j]->force[k][3];
-			totalforce[1] += geom[j]->force[k][1] * geom[j]->force[k][3];
-			totalforce[2] += geom[j]->force[k][2] * geom[j]->force[k][3];
+		for(k=0;k<fi->cnt;k++){
+			if(vec3_getlen(fi->force[k]) < 1e-12)continue;
+			totalforce[0] += fi->force[k][0];
+			totalforce[1] += fi->force[k][1];
+			totalforce[2] += fi->force[k][2];
 		}
-		mass_inv = 1.0/(geom[j]->physic.inertiatensor[3][3]*1000);
+
+		//N/kg = N/(ton*1000)
+		//km/(s^2) = [m/(s^2)]/1000 = [N/kg]/1000 = N/(ton*1000)/1000 = N/(ton*1000000)
+		mass_inv = 1.0/(geom[j]->physic.inertiatensor[3][3]*1000000);
 		geom[j]->fm.displace_a[0] = totalforce[0] * mass_inv;
 		geom[j]->fm.displace_a[1] = totalforce[1] * mass_inv;
 		geom[j]->fm.displace_a[2] = totalforce[2] * mass_inv;
-		if(DEBUG)logtoall("force2accel j=%d: m=%f, f=%f,%f,%f, a=%f,%f,%f,%f\n",
+
+		if(DEBUG)logtoall("force2accel j=%d: m=%f, f=%f,%f,%f,%f, a=%f,%f,%f,%f\n",
 			j, geom[j]->physic.inertiatensor[3][3],
-			totalforce[0], totalforce[1], totalforce[2],
+			totalforce[0], totalforce[1], totalforce[2], vec3_getlen(totalforce),
 			geom[j]->fm.displace_a[0], geom[j]->fm.displace_a[1], geom[j]->fm.displace_a[2], vec3_getlen(geom[j]->fm.displace_a));
+	}
+
+	for(j=0;j<count;j++){
+		geom[j]->forceinfo.cnt = 0;
 	}
 }
 
 void gravity_acceltime(struct style** geom, int count, float dt)
 {
 	int j;
+	float la,lv,lx;
 	struct fmotion* final = 0;
 	for(j=0;j<count;j++){
 		final = &geom[j]->actual;
 
+		la = vec3_getlen(final->displace_a);
+		if(la > 1e-12){
+			final->displace_v[0] += final->displace_a[0] * dt;
+			final->displace_v[1] += final->displace_a[1] * dt;
+			final->displace_v[2] += final->displace_a[2] * dt;
+		}
+
 		//displacement
-		final->displace_v[0] += final->displace_a[0] * dt;
-		final->displace_v[1] += final->displace_a[1] * dt;
-		final->displace_v[2] += final->displace_a[2] * dt;
-		final->displace_x[0] += final->displace_v[0] * dt;
-		final->displace_x[1] += final->displace_v[1] * dt;
-		final->displace_x[2] += final->displace_v[2] * dt;
-		if(DEBUG)logtoall("acceltime j=%d: v=%f,%f,%f,%f, x=%f,%f,%f,%f\n", j,
-			geom[j]->fm.displace_v[0], geom[j]->fm.displace_v[1], geom[j]->fm.displace_v[2], vec3_getlen(geom[j]->fm.displace_v),
-			geom[j]->fm.displace_x[0], geom[j]->fm.displace_x[1], geom[j]->fm.displace_x[2], vec3_getlen(geom[j]->fm.displace_x)
-		);
+		lv = vec3_getlen(final->displace_v);
+		if(lv > 1e-12){
+			final->displace_x[0] += final->displace_v[0] * dt;
+			final->displace_x[1] += final->displace_v[1] * dt;
+			final->displace_x[2] += final->displace_v[2] * dt;
+		}
 
 		//writeback position
+		lx = vec3_getlen(final->displace_x);
 		geom[j]->fs.vc[0] = final->displace_x[0];
 		geom[j]->fs.vc[1] = final->displace_x[1];
 		geom[j]->fs.vc[2] = final->displace_x[2];
+
+		if(DEBUG)logtoall("acceltime j=%d: v=%f,%f,%f,%f, x=%f,%f,%f,%f\n", j,
+			geom[j]->fm.displace_v[0], geom[j]->fm.displace_v[1], geom[j]->fm.displace_v[2], lv,
+			geom[j]->fm.displace_x[0], geom[j]->fm.displace_x[1], geom[j]->fm.displace_x[2], lx
+		);
 	}
 }
 

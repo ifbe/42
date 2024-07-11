@@ -83,31 +83,35 @@ void carcon_applyforce(_obj* ent)
 	if(rf <-MAXVAL)rf =-MAXVAL;
 	logtoall("ln,rn,lf,rf = %f,%f,%f,%f\n",ln,rn,lf,rf);
 
-	sty->force[0][0] = vf[0] * ln;
-	sty->force[0][1] = vf[1] * ln;
-	sty->force[0][2] = vf[2] * ln;
-	sty->force[1][0] = vf[0] * rn;
-	sty->force[1][1] = vf[1] * rn;
-	sty->force[1][2] = vf[2] * rn;
-	sty->force[2][0] = vf[0] * lf;
-	sty->force[2][1] = vf[1] * lf;
-	sty->force[2][2] = vf[2] * lf;
-	sty->force[3][0] = vf[0] * rf;
-	sty->force[3][1] = vf[1] * rf;
-	sty->force[3][2] = vf[2] * rf;
+	struct forceinfo* fi = &sty->forceinfo;
 
-	sty->where[0][0] =-vr[0] -vf[0];
-	sty->where[0][1] =-vr[1] -vf[1];
-	sty->where[0][2] =-vr[2] -vf[2];
-	sty->where[1][0] = vr[0] -vf[0];
-	sty->where[1][1] = vr[1] -vf[1];
-	sty->where[1][2] = vr[2] -vf[2];
-	sty->where[2][0] =-vr[0] +vf[0];
-	sty->where[2][1] =-vr[1] +vf[1];
-	sty->where[2][2] =-vr[2] +vf[2];
-	sty->where[3][0] = vr[0] +vf[0];
-	sty->where[3][1] = vr[1] +vf[1];
-	sty->where[3][2] = vr[2] +vf[2];
+	fi->force[0][0] = vf[0] * ln;
+	fi->force[0][1] = vf[1] * ln;
+	fi->force[0][2] = vf[2] * ln;
+	fi->force[1][0] = vf[0] * rn;
+	fi->force[1][1] = vf[1] * rn;
+	fi->force[1][2] = vf[2] * rn;
+	fi->force[2][0] = vf[0] * lf;
+	fi->force[2][1] = vf[1] * lf;
+	fi->force[2][2] = vf[2] * lf;
+	fi->force[3][0] = vf[0] * rf;
+	fi->force[3][1] = vf[1] * rf;
+	fi->force[3][2] = vf[2] * rf;
+
+	fi->where[0][0] =-vr[0] -vf[0];
+	fi->where[0][1] =-vr[1] -vf[1];
+	fi->where[0][2] =-vr[2] -vf[2];
+	fi->where[1][0] = vr[0] -vf[0];
+	fi->where[1][1] = vr[1] -vf[1];
+	fi->where[1][2] = vr[2] -vf[2];
+	fi->where[2][0] =-vr[0] +vf[0];
+	fi->where[2][1] =-vr[1] +vf[1];
+	fi->where[2][2] =-vr[2] +vf[2];
+	fi->where[3][0] = vr[0] +vf[0];
+	fi->where[3][1] = vr[1] +vf[1];
+	fi->where[3][2] = vr[2] +vf[2];
+
+	fi->cnt = 4;
 }
 void carcon_checkplace(_obj* ent)
 {

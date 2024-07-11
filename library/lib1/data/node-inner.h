@@ -155,6 +155,19 @@ struct physprop{
 };
 
 
+struct forceinfo{
+	//[0,0x6f]
+	vec4 force[7];
+
+	//[0x70,0xdf]
+	vec4 where[7];
+
+	//[0xe0,0xff]
+	int cnt;
+	int padd[7];
+};
+
+
 struct style
 {
 //--------[00, ff]: renderer--------
@@ -203,11 +216,7 @@ struct style
 	};
 
 //--------[300, 3ff]: force position--------
-	//[300, 37f]
-	vec4 force[8];
-
-	//[380, 3ff]
-	vec4 where[8];
+	struct forceinfo forceinfo;
 };
 
 

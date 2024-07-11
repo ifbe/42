@@ -47,6 +47,7 @@ void rocketcontrol_sensor2state(_obj* ent)
 //2: desire
 void rocketcontrol_state2desire(_obj* ent)
 {
+/*
     struct privdata* priv = (void*)ent->priv_256b;
 
 	struct halfrel* rel = priv->REL_WORLD;
@@ -55,10 +56,35 @@ void rocketcontrol_state2desire(_obj* ent)
 	struct style* sty = rel->pfoot;
 	if(0 == sty)return;
     logtoall("xyz:%f,%f,%f\n",sty->fm.displace_x[0],sty->fm.displace_x[1],sty->fm.displace_x[2]);
+*/
 }
 
 
 //3: pid
+void rocketcontrol_calcpid(_obj* ent)
+{
+    struct privdata* priv = (void*)ent->priv_256b;
+
+	struct halfrel* rel = priv->REL_WORLD;
+	if(0 == rel)return;
+
+	struct style* sty = rel->pfoot;
+	if(0 == sty)return;
+
+    //logtoall("x:%f,%f,%f,%f\n",sty->fm.displace_x[0],sty->fm.displace_x[1],sty->fm.displace_x[2],vec3_getlen(sty->fm.displace_x));
+    //logtoall("v:%f,%f,%f,%f\n",sty->fm.displace_v[0],sty->fm.displace_v[1],sty->fm.displace_v[2],vec3_getlen(sty->fm.displace_v));
+
+	struct forceinfo* fi = &sty->forceinfo;
+
+	fi->force[fi->cnt][0] = sty->fm.displace_x[0];
+	fi->force[fi->cnt][1] = sty->fm.displace_x[1];
+	fi->force[fi->cnt][2] = sty->fm.displace_x[2];
+	vec3_setlen(fi->force[fi->cnt], sty->physic.inertiatensor[3][3] * 14 * 1000);
+
+	fi->cnt += 1;
+}
+
+
 
 
 int rocketcontrol_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
@@ -79,6 +105,7 @@ int rocketcontrol_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
         rocketcontrol_state2desire(ent);
 
         //3: pid
+		rocketcontrol_calcpid(ent);
 	}
 	return 0;
 }

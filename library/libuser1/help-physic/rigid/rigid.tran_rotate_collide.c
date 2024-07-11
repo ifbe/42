@@ -52,8 +52,8 @@ void rigidsimu_inertiatensor_angularalpha(vec3 a, vec3 t, mat3 m)
 void rigidsimu_realforce(struct style* geom)
 {
 	float mass = 1.0;
-	vec4* worldforce = geom->force;
-	vec4* worldvector = geom->where;
+	vec4* worldforce = geom->forceinfo.force;
+	vec4* worldvector = geom->forceinfo.where;
 
 	//centroid displace
 	vec3 totalforce;

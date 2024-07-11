@@ -12,6 +12,8 @@ static void station_draw_gl41(
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vt = geom->fs.vt;
+	logtoall("%f,%f,%f,%f\n",vc[0],vc[1],vc[2],vec3_getlen(vc));
+	logtoall("%f,%f,%f,%f\n",geom->fm.displace_v[0],geom->fm.displace_v[1],geom->fm.displace_v[2],vec3_getlen(geom->fm.displace_v));
 	gl41line_prism4(ctx, 0xffff00, vc, vr, vf, vt);
 
     vec4 tc,tr,tf,tt;

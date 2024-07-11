@@ -144,7 +144,6 @@ q:1.0, 1.0
 <relation>
 #scene item
 (scene, drongeom, 0) -> (drone, dronslot, 0)
-(gravity, 0, 0) -> (scene, 0, 0)
 
 #3d item
 (world, 0, 0) -> (scene, 0, 0)
@@ -163,6 +162,7 @@ q:1.0, 1.0
 (cam3rd, 0, cam) -> (cam0, 0, mind)
 
 #control.button
+(gravity, 0, 0) -> (scene, 0, 0)
 (button, 0, evto) -> (gravity, 0, ioby)
 
 #control.uidata
@@ -172,4 +172,5 @@ q:1.0, 1.0
 #
 (pulser, 0, clk) -> (control, 0, clk)
 (pulser, 0, clk) -> (gravity, 0, clk)
+(@pulser, clk@2) @ (@opengl, clk)
 </relation>

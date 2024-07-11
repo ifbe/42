@@ -43,11 +43,8 @@ static u8 uppercase[] = {
 };
 
 
-
-
-int window_take(_obj* ogl,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
+int window_draw(_obj* ogl,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
-	//logtoall("@window_take\n");
 	u64 t0,t1,t2,t3;
 t0 = ogl->gl41list.gltime;
 
@@ -92,8 +89,25 @@ ogl->gl41list.gltime = t3;
 
 	return 0;
 }
-void window_give(_obj* ogl,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
+
+
+int window_take(_obj* ogl,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
+	//logtoall("@window_take\n");
+	window_draw(ogl,foot, stack,sp, arg,idx, buf,len);
+	return 0;
+}
+int window_give(_obj* ogl,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
+{
+	//logtoall("@window_give: stack=%p,sp=%d\n", stack, sp);
+	if(stack && (sp>=2)){
+		if(_clk_ == idx){
+			window_draw(ogl,foot, stack,sp, arg,idx, buf,len);
+			return 0;
+		}
+	}
+
+	//logtoall("@window_give:%.8s\n", &ogl->vfmt);
 	switch(ogl->vfmt){
 		case _gl41none_:nonewindow_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _gl41easy_:easywindow_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
@@ -101,6 +115,7 @@ void window_give(_obj* ogl,void* foot, _syn* stack,int sp, p64 arg,int idx, void
 		case _gl41list_:
 		default:fullwindow_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
 	}
+	return 0;
 }
 void window_attach(struct halfrel* self, struct halfrel* peer)
 {
