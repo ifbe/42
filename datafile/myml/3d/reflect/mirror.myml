@@ -1,7 +1,7 @@
 <entity>
 texball{
 fmt:equirect
-arg:datafile/jpg/texball-skysphere.jpg
+arg:datafile/jpg/360d/texball-skysphere.jpg
 }
 tree{
 fmt:tree

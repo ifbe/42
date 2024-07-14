@@ -783,23 +783,13 @@ int myml_create(struct item* obj, void* arg, int argc, u8** argv)
 		role_fromfile(obj, (u8*)"datafile/myml/index.myml", 0);
 	}
 	else{
-		for(j=1;j<argc;j++){
+		for(j=0;j<argc;j++){
 			logtoall("arg[%d]=%s\n", j, argv[j]);
 			role_fromfile(obj, argv[j], 0);
 		}
 	}
 
-    logtoall("----parse done, now loop or exit----\n");
-	for(j=0;j<priv->clen;j++){
-		if(_wrk_ == priv->cbuf[j].tier){
-			logtoall("%d: %.8s@%p\n", j, &priv->cbuf[j].hash, priv->cbuf[j].addr);
-		}
-	}
-	//void* mpoller = poller_alloc();
-	//if(mpoller)poller(mpoller);
-	pulser(0);
-
-	logtoall("myml@%p exiting\n",obj);
+	logtoall("myml_create: %p end\n",obj);
 	return 0;
 }
 int myml_delete(struct item* obj)

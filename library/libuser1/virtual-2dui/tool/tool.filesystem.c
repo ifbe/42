@@ -283,8 +283,10 @@ static void fslist_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int 
 	_obj* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
+	//logtoall("%.8s\n", &wnd->type);
 	switch(wnd->type){
 	case _wnd_:
+	case _render_:
 		if(0 == key)fslist_write_bywnd(ent,slot, wnd,area, buf);
 		break;
 	}

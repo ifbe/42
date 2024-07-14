@@ -111,10 +111,14 @@ int camrts_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, voi
 	//logtoall("cam.fmt=%.8s\n", &cam->type);
 	if(_freecam_ != cam->type)return 0;
 
+	//wnd->cam->this
 	_obj* xxx = stack[sp-4].pchip;
 	if(0 == xxx)return 0;
 	//logtoall("xxx.fmt=%.8s\n", &wnd->type);
-	if(_wnd_ == xxx->type){		//wnd->cam->this
+
+	switch(xxx->type){
+	case _wnd_:
+	case _render_:
 		struct fstyle* geom = camrts_find(cam);
 		if(0 == geom)return 0;
 

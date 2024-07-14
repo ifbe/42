@@ -5,8 +5,6 @@ int cleanevent(struct halfrel stack[]);
 
 
 
-static _obj* mpoller = 0;
-//
 static _obj* supply = 0;
 static _obj* entity = 0;
 
@@ -71,7 +69,7 @@ void poller(void* poller)
 		tn = timeread_us();
 		//logtoall("dt=%d\n", delta);
 		if(tn < t0+16000){
-			logtoall("%llx,%llx,%llx\n",t0,tn,tn-t0);
+			//logtoall("%llx,%llx,%llx\n",t0,tn,tn-t0);
 			sleep_us(16000-(tn-t0));
 		}
 		t0 = tn;
@@ -88,6 +86,9 @@ void poller_delete(struct item* wrk, u8* arg)
 }
 void poller_create(struct item* wrk, u8* arg, int argc, u8** argv)
 {
+	wrk->kind = _loop_;
+	wrk->type = _poller_;
+	wrk->vfmt = _main_;
 }
 
 
@@ -95,10 +96,8 @@ void poller_create(struct item* wrk, u8* arg, int argc, u8** argv)
 
 void* poller_alloc()
 {
-	if(mpoller)return 0;
-
-	mpoller = bootup_alloc();
-	return mpoller;
+	void* p = bootup_alloc();
+	return p;
 }
 
 

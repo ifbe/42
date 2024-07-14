@@ -28,7 +28,13 @@
 #define _ndkmain_ hex64('n','d','k','m','a','i','n', 0)
 #define _win32_ hex64('w','i','n','3','2', 0, 0, 0)
 #define _winmain_ hex64('w','i','n','m','a','i','n', 0)
+//
+#define _thread_ hex64('t','h','r','e','a','d', 0, 0)
+#define _coroutine_ hex64('c','o','r','o','u','t','i','n')
 //worker
+#define _setup_ hex64('s','e','t','u','p', 0, 0, 0)
+#define _loop_ hex32('l','o','o','p')
+//
 #define _subcmd_ hex64('s','u','b','c','m','d', 0, 0)
 #define _compiler_ hex64('c','o','m','p','i','l','e','r')
 #define _kernel_ hex64('k','e','r','n','e','l', 0, 0)

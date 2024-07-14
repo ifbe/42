@@ -7,8 +7,6 @@ static _obj* mpulser = 0;
 
 void pulser(struct item* pulser)
 {
-	if(0 == pulser)pulser = mpulser;
-
 	u64 t0;
 	u64 dt;
 	struct halfrel stack[0x80];
@@ -30,11 +28,31 @@ void pulser(struct item* pulser)
 
 
 
+void* pulser_alloc()
+{
+	void* p = bootup_alloc();
+	return p;
+}
+
+
+
+
 void pulser_delete(struct item* wrk, u8* arg)
 {
 }
 void pulser_create(struct item* wrk, u8* arg, int argc, u8** argv)
 {
 	logtoall("@pulser_create\n");
-	mpulser = wrk;
+	wrk->kind = _loop_;
+	wrk->type = _pulser_;
+	wrk->vfmt = _main_;
+
+	int j;
+	for(j=0;j<argc;j++){
+		if(0 == ncmp(argv[j], "thread:new", 10)){
+			wrk->vfmt = _thread_;
+			logtoall("pulser create: thread new\n");
+			threadcreate(pulser, wrk);
+		}
+	}
 }

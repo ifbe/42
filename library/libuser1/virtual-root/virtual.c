@@ -17,9 +17,9 @@ struct perworld{
 int virtual_inside_01(struct style* sty, float x, float y)
 {
 	if(x < sty->fs.vc[0])return 0;
-	if(x > sty->fs.vq[0])return 0;
+	if(x > sty->fs.vc[0]+sty->fs.vq[0])return 0;
 	if(y < sty->fs.vc[1])return 0;
-	if(y > sty->fs.vq[1])return 0;
+	if(y > sty->fs.vc[1]+sty->fs.vq[1])return 0;
 	return 1;
 }
 
@@ -66,8 +66,9 @@ int virtual_bywnd_ongive(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int k
 			if(0 == rel)break;
 			sty = (void*)(rel->srcfoot);
 			if(sty){
-				//logtoall("testtest: (%f,%f),(%f,%f)\n", sty->fs.vc[0], sty->fs.vc[1], sty->fs.vq[0], sty->fs.vq[1]);
+				//logtoall("xy=(%f,%f) c=(%f,%f) q=(%f,%f)\n", x,y, sty->fs.vc[0], sty->fs.vc[1], sty->fs.vq[0], sty->fs.vq[1]);
 				if(virtual_inside_01(sty, x, y)){
+					//logtoall("1111\n");
 					stack[sp+0].pchip = rel->psrcchip;
 					stack[sp+0].pfoot = rel->psrcfoot;
 					stack[sp+1].pchip = rel->pdstchip;
@@ -129,9 +130,7 @@ int virtual_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, vo
 	switch(caller->type){
 	case _wnd_:
 	case _render_:
-		if(_01_ == per->camtype){
-			return virtual_bywnd_ongive(ent,foot, stack,sp, arg,key, buf,len);
-		}
+		return virtual_bywnd_ongive(ent,foot, stack,sp, arg,key, buf,len);
 	}
 
 	//default 3d: from camera

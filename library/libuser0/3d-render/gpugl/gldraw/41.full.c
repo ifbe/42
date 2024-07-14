@@ -591,6 +591,7 @@ void fullwindow_uploadandrender(_obj* wnd, struct fstyle* area)
 
 int fullwindow_trytosend(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int cmd, struct relation* rel, struct event* ev)
 {
+	//logtoall("fullwindow_trytosend\n");
 	stack[sp+0].pchip = rel->psrcchip;
 	stack[sp+0].pfoot = rel->psrcfoot;
 	stack[sp+0].foottype = rel->srcfoottype;

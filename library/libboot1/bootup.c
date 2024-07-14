@@ -66,6 +66,8 @@ void bootup_init(u8* addr, int size)
 	initstdev( addr+0x100000);
 	initstdrel(addr+0x180000);
 
+	subcmd_init(wrk);
+
 	kernel_init(addr - 0x200000);
 	mython_init(addr - 0x200000);
 
