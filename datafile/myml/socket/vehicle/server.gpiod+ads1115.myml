@@ -20,6 +20,7 @@ adc3:7.4v
 }
 l298n{
 fmt:l298n
+wheel:omni_o
 lfe:13
 lf:5,6
 lbe:26

@@ -222,7 +222,7 @@ static void pollerthread(_obj* ele)
 		//v[0] *= 1.0;
 		v[1] *= 2.0;
 		v[2] *= 2.0;
-		v[3] *= 3.2;
+		v[3] *= 3.0;
 		logtoall("volt=%f,%f,%f,%f\n", v[0], v[1], v[2], v[3]);
 
 		*(u32*)(buf+0) = _v0v2_;

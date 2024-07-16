@@ -50,21 +50,113 @@ static char pin_value[12][2] = {
 	{26, 0},
 };
 static char pin_mode_value[12][3] = {
-	{22, 'o', 0},	//left, front, en
+	{22, 'o', 0},	//(left, front) en,n,p
 	{ 4, 'o', 0},
 	{27, 'o', 0},
-	{13, 'o', 0},	//left, near, en
+	{13, 'o', 0},	//(left, near)
 	{ 5, 'o', 0},
 	{ 6, 'o', 0},
-	{17, 'o', 0},	//right, front, en
+	{17, 'o', 0},	//(right, front)
 	{15, 'o', 0},
 	{14, 'o', 0},
-	{12, 'o', 0},	//right, near, en
+	{12, 'o', 0},	//(right, near)
 	{ 1, 'o', 0},
 	{26, 'o', 0},
 };
 
 
+//lf ln rf rn
+signed char action_stop[][4] = {
+	{0, 0, 0, 0}
+};
+signed char action_test[][4] = {
+	{ 1, 0, 0, 0},	//1
+	{-1, 0, 0, 0},	//2
+	{ 0, 1, 0, 0},	//3
+	{ 0,-1, 0, 0},	//4
+	{ 0, 0, 1, 0},	//5
+	{ 0, 0,-1, 0},	//6
+	{ 0, 0, 0, 1},	//7
+	{ 0, 0, 0,-1},	//8
+	{}
+};
+signed char action_simple[][4] = {
+	{ 1, 1, 1, 1},	//w
+	{-1,-1,-1,-1},	//x
+	{ 0, 0, 0, 0},	//a
+	{ 0, 0, 0, 0},	//d
+	{ 0, 0, 0, 0},	//e
+	{ 0, 0, 0, 0},	//z
+	{ 0, 0, 0, 0},	//q
+	{ 0, 0, 0,-0},	//c
+	{-1,-1, 1, 1},	//j
+	{ 1, 1,-1,-1},	//k
+	{}
+};
+signed char action_omni_o[][4] = {
+	{ 1, 1, 1, 1},	//w
+	{-1,-1,-1,-1},	//x
+	{-1, 1, 1,-1},	//a
+	{ 1,-1,-1, 1},	//d
+	{ 1, 0, 0, 1},	//e
+	{-1, 0, 0,-1},	//z
+	{ 0, 1, 1, 0},	//q
+	{ 0,-1,-1, 0},	//c
+	{-1,-1, 1, 1},	//j
+	{ 1, 1,-1,-1},	//k
+	{}
+};
+signed char action_omni_x[][4] = {
+	{ 1, 1, 1, 1},	//w
+	{-1,-1,-1,-1},	//x
+	{ 1,-1,-1, 1},	//a
+	{-1, 1, 1,-1},	//d
+	{ 0, 1, 1, 0},	//e
+	{ 0,-1,-1, 0},	//z
+	{ 1, 0, 0, 1},	//q
+	{-1, 0, 0,-1},	//c
+	{ 1, 1, 0, 0},	//j
+	{ 0, 0, 1, 1},	//k
+	{}
+};
+signed char action_mecanam_o[][4] = {
+	{}
+};
+signed char action_mecanam_x[][4] = {
+	{ 1, 1, 1, 1},	//w
+	{-1,-1,-1,-1},	//x
+	{-1, 1,-1, 1},	//a
+	{ 1,-1, 1,-1},	//d
+	{ 1, 0, 1, 0},	//e
+	{-1, 0,-1, 0},	//z
+	{ 0, 1, 0, 1},	//q
+	{ 0,-1, 0,-1},	//c
+	{-1,-1, 1, 1},	//j
+	{ 1, 1,-1,-1},	//k
+	{}
+};
+struct privdata{
+	signed char (*action)[4];
+};
+
+
+//careful: some compiler must use "signed" char
+void action2pinval(signed char* act, char (*pv)[2])
+{
+	int k;
+	int en,val;
+	for(k=0;k<4;k++){
+		en = act[k]&1;
+		pin_value[k*3+0][1] = en;
+
+		if(en){
+			val = (act[k]>0) ? 1 : 0;
+			logtoall("k=%d,act=%d,val=%d\n",k,act[k],val);
+			pin_value[k*3+1][1] =!val;
+			pin_value[k*3+2][1] = val;
+		}
+	}
+}
 
 
 int l298n_take(_obj* obj,void* foot, _syn* stack,int sp, p64 arg, int idx, void* buf, int len)
@@ -77,61 +169,102 @@ int l298n_give(_obj* obj,void* foot, _syn* stack,int sp, p64 arg, int idx, void*
 {
 	int k;
 	u32 in = *(u8*)buf;
+	struct privdata* priv = (void*)obj->priv_256b;
 	logtoall("vehicleserver_sock:%x\n",in);
 	switch(in){
+	case '1':
+		action2pinval(action_test[0], pin_value);
+		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
+		sleep_us(300*1000);
+		break;
+	case '2':
+		action2pinval(action_test[1], pin_value);
+		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
+		sleep_us(300*1000);
+		break;
+	case '3':
+		action2pinval(action_test[2], pin_value);
+		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
+		sleep_us(300*1000);
+		break;
+	case '4':
+		action2pinval(action_test[3], pin_value);
+		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
+		sleep_us(300*1000);
+		break;
+	case '5':
+		action2pinval(action_test[4], pin_value);
+		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
+		sleep_us(300*1000);
+		break;
+	case '6':
+		action2pinval(action_test[5], pin_value);
+		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
+		sleep_us(300*1000);
+		break;
+	case '7':
+		action2pinval(action_test[6], pin_value);
+		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
+		sleep_us(300*1000);
+		break;
+	case '8':
+		action2pinval(action_test[7], pin_value);
+		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
+		sleep_us(300*1000);
+		break;
 	case 'w':
-		for(k=0;k<4;k++){
-			pin_value[k*3+0][1] = 1;
-			pin_value[k*3+1][1] = 0;
-			pin_value[k*3+2][1] = 1;
-		}
+		action2pinval(priv->action[0], pin_value);
 		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
 		sleep_us(300*1000);
 		break;
 	case 's':
-		for(k=0;k<4;k++){
-			pin_value[k*3+0][1] = 1;
-			pin_value[k*3+1][1] = 1;
-			pin_value[k*3+2][1] = 0;
-		}
+		action2pinval(priv->action[1], pin_value);
 		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
 		sleep_us(300*1000);
 		break;
 	case 'a':
-		for(k=0;k<2;k++){
-			pin_value[k*3+0][1] = 1;
-			pin_value[k*3+1][1] = 1;
-			pin_value[k*3+2][1] = 0;
-		}
-		for(k=2;k<4;k++){
-			pin_value[k*3+0][1] = 1;
-			pin_value[k*3+1][1] = 0;
-			pin_value[k*3+2][1] = 1;
-		}
+		action2pinval(priv->action[2], pin_value);
 		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
 		sleep_us(300*1000);
 		break;
 	case 'd':
-		for(k=0;k<2;k++){
-			pin_value[k*3+0][1] = 1;
-			pin_value[k*3+1][1] = 0;
-			pin_value[k*3+2][1] = 1;
-		}
-		for(k=2;k<4;k++){
-			pin_value[k*3+0][1] = 1;
-			pin_value[k*3+1][1] = 1;
-			pin_value[k*3+2][1] = 0;
-		}
+		action2pinval(priv->action[3], pin_value);
+		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
+		sleep_us(300*1000);
+		break;
+	case 'e':
+		action2pinval(priv->action[4], pin_value);
+		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
+		sleep_us(300*1000);
+		break;
+	case 'z':
+		action2pinval(priv->action[5], pin_value);
+		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
+		sleep_us(300*1000);
+		break;
+	case 'q':
+		action2pinval(priv->action[6], pin_value);
+		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
+		sleep_us(300*1000);
+		break;
+	case 'c':
+		action2pinval(priv->action[7], pin_value);
+		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
+		sleep_us(300*1000);
+		break;
+	case 'j':
+		action2pinval(priv->action[8], pin_value);
+		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
+		sleep_us(300*1000);
+		break;
+	case 'k':
+		action2pinval(priv->action[9], pin_value);
 		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
 		sleep_us(300*1000);
 		break;
 	}
 
-	for(k=0;k<4;k++){
-		pin_value[k*3+0][1] = 0;
-		pin_value[k*3+1][1] = 0;
-		pin_value[k*3+2][1] = 0;
-	}
+	action2pinval(action_stop[0], pin_value);
 	writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
 	return 0;
 }
@@ -172,6 +305,41 @@ int l298n_write(_obj* obj,void* foot,p64 arg, int idx, u8* buf, int len)
 int l298n_create(_obj* obj, void* arg, int argc, u8** argv)
 {
 	logtoall("@l298n_create\n");
+	struct privdata* priv = (void*)obj->priv_256b;
+
+	int j;
+	int type = 1;
+	for(j=0;j<argc;j++){
+		if(0 == ncmp(argv[j], "wheel:", 6)){
+			if(0 == ncmp(argv[j]+6, "none", 4))type = 0;
+			else if(0 == ncmp(argv[j]+6, "simple", 6))type = 1;
+			else if(0 == ncmp(argv[j]+6, "meca_o", 6))type = 2;
+			else if(0 == ncmp(argv[j]+6, "meca_x", 6))type = 3;
+			else if(0 == ncmp(argv[j]+6, "omni_o", 6))type = 4;
+			else if(0 == ncmp(argv[j]+6, "omni_x", 6))type = 5;
+			logtoall("wheel=%d\n", type);
+		}
+	}
+
+	switch(type){
+	case 0:
+		priv->action = 0;
+	case 1:
+		priv->action = action_simple;
+		break;
+	case 2:
+		priv->action = action_mecanam_o;
+		break;
+	case 3:
+		priv->action = action_mecanam_x;
+		break;
+	case 4:
+		priv->action = action_omni_o;
+		break;
+	case 5:
+		priv->action = action_omni_x;
+		break;
+	}
 	return 1;
 }
 int l298n_delete(_obj* ele)
