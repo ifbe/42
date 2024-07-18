@@ -116,13 +116,15 @@ int camrts_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, voi
 	if(0 == xxx)return 0;
 	//logtoall("xxx.fmt=%.8s\n", &wnd->type);
 
+	struct fstyle* geom;
+	struct event* ev;
 	switch(xxx->type){
 	case _wnd_:
 	case _render_:
-		struct fstyle* geom = camrts_find(cam);
+		geom = camrts_find(cam);
 		if(0 == geom)return 0;
 
-		struct event* ev = buf;
+		ev = buf;
 		if(_char_ == ev->what){
 			switch(ev->why){
 				case 'a':geom->vc[0] -= 100;break;

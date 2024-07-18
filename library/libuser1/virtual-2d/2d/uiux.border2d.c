@@ -82,6 +82,7 @@ int border2d_taking(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,
 	default:
 		return border2d_read_byworld_bycam_bywnd(ent,foot, stack,sp, arg,key);
 	}
+	return 0;
 }
 int border2d_giving(_obj* ent,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {

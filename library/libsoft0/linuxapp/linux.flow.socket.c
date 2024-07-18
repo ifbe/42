@@ -656,9 +656,16 @@ int socket_writer(_obj* oo,int xx, p64 arg,int cmd, void* buf,int len)
 
 	int fd = oo->sockinfo.fd;
 	if(fd <= 0)return 0;
-
-	int ret, cnt, socklen;
+	//
+	int ret;
+	int pos;
+	int socklen;
 	struct sockaddr_in* tmp;
+	//
+	int dbgcnt = 0;
+	u64 dbgtime_old = 0;
+	u64 dbgtime_new = 0;
+	//
 	switch(oo->type){
 	case _UDP_:
 	case _udp_:
@@ -677,20 +684,27 @@ int socket_writer(_obj* oo,int xx, p64 arg,int cmd, void* buf,int len)
 		break;
 	default:
 		//must check, don't trust
-		cnt = 0;
+		pos = 0;
 		while(1){
-			logtoall("@write: pos=%x,len=%x\n", cnt, len-cnt);
-			ret = write(fd, buf+cnt, len-cnt);
+			logtoall("@write: pos=%x,len=%x\n", pos, len-pos);
+			ret = write(fd, buf+pos, len-pos);
 			if(ret < 0){
-				logtoall("@writesocket: ret=%d,errno=%d\n", ret, errno);
+				//print log or shutup
+				dbgcnt += 1;
+				dbgtime_new = timeread_us();
+				if( (EAGAIN != errno) | (dbgtime_new > dbgtime_old+1000*1000) ){
+					logtoall("@writesocket: ret=%d,errno=%d,dbgcnt=%d\n", ret, errno,  dbgcnt);
+					dbgtime_old = dbgtime_new;
+				}
+
 				if(EAGAIN != errno)return -1;
 
 				usleep(1000);
 				continue;
 			}
 
-			cnt += ret;
-			if(cnt == len)break;
+			pos += ret;
+			if(pos == len)break;
 		}
 	}
 	return len;
