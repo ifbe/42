@@ -36,12 +36,13 @@ fmt:h264dec
 vehicle{
 fmt:vehicle
 }
-renalu{
-fmt:renalu
+recut{
+fmt:recut
+arg:614400
 }
 picfmt{
 fmt:picfmt
-srcfmt:y4,u,v
+srcfmt:yuyv
 srcw:640
 srch:480
 dstfmt:yuvx
@@ -54,12 +55,11 @@ dsth:480
 <system>
 tcpcmd{
 fmt:tcp
-arg:pi3-car.local:10000
+arg:192.168.5.150:10000
 }
 tcpvid{
 fmt:tcp
-#arg:pi3-car.local:9999
-arg:pi3-car.local:9999
+arg:192.168.5.150:9999
 }
 </system>
 
@@ -107,9 +107,8 @@ q:0.8, 0.4
 (@vkbd, evto@0) -> (@vehicle, std@0)
 
 #canvas depends on usbcam
-(tcpvid, 0, dst) -> (renalu, 0, src)
-(renalu, 0, dst) -> (codec, 0, bs)
-(codec, 0, img) -> (picfmt, 0, src)
+(tcpvid, 0, dst) -> (recut, 0, src)
+(recut, 0, dst) -> (picfmt, 0, src)
 (picfmt, 0, dst) -> (canvas, 0, rgb)
 
 #virtual depends on inner objects

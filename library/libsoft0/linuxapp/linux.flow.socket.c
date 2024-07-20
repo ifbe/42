@@ -686,14 +686,17 @@ int socket_writer(_obj* oo,int xx, p64 arg,int cmd, void* buf,int len)
 		//must check, don't trust
 		pos = 0;
 		while(1){
-			logtoall("@write: pos=%x,len=%x\n", pos, len-pos);
+			//logtoall("@write: pos=%x,len=%x\n", pos, len-pos);
 			ret = write(fd, buf+pos, len-pos);
 			if(ret < 0){
 				//print log or shutup
 				dbgcnt += 1;
 				dbgtime_new = timeread_us();
 				if( (EAGAIN != errno) | (dbgtime_new > dbgtime_old+1000*1000) ){
-					logtoall("@writesocket: ret=%d,errno=%d,dbgcnt=%d\n", ret, errno,  dbgcnt);
+					logtoall("@writesocket: pos=%d,len=%d, ret=%d,errno=%d,dbgcnt=%d\n",
+						pos, len-pos,
+						ret, errno,  dbgcnt
+					);
 					dbgtime_old = dbgtime_new;
 				}
 
@@ -704,7 +707,10 @@ int socket_writer(_obj* oo,int xx, p64 arg,int cmd, void* buf,int len)
 			}
 
 			pos += ret;
-			if(pos == len)break;
+			if(pos == len){
+				logtoall("write finish: dbgcnt=%d\n", dbgcnt);
+				break;
+			}
 		}
 	}
 	return len;

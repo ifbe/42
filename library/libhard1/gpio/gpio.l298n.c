@@ -255,12 +255,12 @@ int l298n_give(_obj* obj,void* foot, _syn* stack,int sp, p64 arg, int idx, void*
 	case 'j':
 		action2pinval(priv->action[8], pin_value);
 		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
-		sleep_us(300*1000);
+		sleep_us(50*1000);
 		break;
 	case 'k':
 		action2pinval(priv->action[9], pin_value);
 		writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
-		sleep_us(300*1000);
+		sleep_us(50*1000);
 		break;
 	}
 

@@ -51,31 +51,21 @@ int vehicleclient_std(_obj* art,void* foot, u8* buf, int len)
 	ch[1] = *(u32*)buf;
 
 	switch(ch[1]){
-	case 'w':
 	case 0x415b1b:
-		logtoall("front\n");
 		ch[1] = 'w';
 		break;
-	case 's':
 	case 0x425b1b:
-		logtoall("back\n");
 		ch[1] = 's';
 		break;
-	case 'a':
 	case 0x445b1b:
-		logtoall("left\n");
 		ch[1] = 'a';
 		break;
-	case 'd':
 	case 0x435b1b:
-		logtoall("right\n");
 		ch[1] = 'd';
 		break;
-	default:
-		logtoall("other\n");
-		ch[1] = 0;
 	}
 
+	logtoall("sending %x(%c)\n", ch[1], ch[1]);
 	give_data_into_peer_temp_stack(art, _sock_, 0,0, ch, 8);
 	return 0;
 }

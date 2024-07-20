@@ -381,6 +381,7 @@ static int vkbd_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int cmd
 	_obj* wnd = stack[sp-2].pchip;
 	switch(wnd->type){
 	case _wnd_:
+	case _render_:
 		if(0 == cmd)vkbd_bywnd_event(ent,foot, stack,sp, buf,len);break;
 	}
 	return 0;

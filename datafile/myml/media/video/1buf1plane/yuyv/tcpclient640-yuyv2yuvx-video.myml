@@ -1,4 +1,3 @@
-
 <entity>
 canvas{
 fmt:video
@@ -12,36 +11,25 @@ fmt:freecam
 virtual{
 fmt:virtual
 }
-vkbd{
-fmt:vkbd
-}
 </entity>
 
 
 <supply>
-std{
-fmt:std
-}
 opengl{
 fmt:wnd
 title:"42"
-}
-codec{
-fmt:h264dec
 }
 </supply>
 
 
 <artery>
-vehicle{
-fmt:vehicle
-}
-renalu{
-fmt:renalu
+recut{
+fmt:recut
+arg:614400
 }
 picfmt{
 fmt:picfmt
-srcfmt:y4,u,v
+srcfmt:yuyv
 srcw:640
 srch:480
 dstfmt:yuvx
@@ -52,14 +40,10 @@ dsth:480
 
 
 <system>
-tcpcmd{
+server{
 fmt:tcp
-arg:pi3-car.local:10000
-}
-tcpvid{
-fmt:tcp
-#arg:pi3-car.local:9999
-arg:pi3-car.local:9999
+arg:192.168.5.150:9999
+#arg:pi0w.deepstack.tech:9999
 }
 </system>
 
@@ -93,23 +77,13 @@ freerect{
 c:0.0, 0.0
 q:1.0, 1.0
 }
-vkbdrect{
-c:0.1, 0.0
-q:0.8, 0.4
-}
 </style>
 
 
 <relation>
-#vehicle client
-(@tcpcmd, dst@0) -> (@vehicle, sock@0)
-(@std, dst@0) -> (@vehicle, std@0)
-(@vkbd, evto@0) -> (@vehicle, std@0)
-
 #canvas depends on usbcam
-(tcpvid, 0, dst) -> (renalu, 0, src)
-(renalu, 0, dst) -> (codec, 0, bs)
-(codec, 0, img) -> (picfmt, 0, src)
+(server, 0, dst) -> (recut, 0, src)
+(recut, 0, dst) -> (picfmt, 0, src)
 (picfmt, 0, dst) -> (canvas, 0, rgb)
 
 #virtual depends on inner objects
@@ -118,5 +92,4 @@ q:0.8, 0.4
 
 #glwnd depends on ctx + cam
 (opengl, freerect, 0) -> (freecam, 0, 0)
-(opengl, vkbdrect, 0) @ (vkbd, 0, 0)
 </relation>

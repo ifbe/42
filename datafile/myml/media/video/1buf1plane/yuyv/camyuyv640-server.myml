@@ -1,0 +1,33 @@
+<system>
+server{
+fmt:TCP
+arg:0.0.0.0:9999
+}
+</system>
+
+
+<artery>
+goslow{
+fmt:goslow
+}
+dbghex{
+fmt:dbghex
+}
+</artery>
+
+
+<supply>
+usbcam{
+fmt:cam
+format:yuyv
+width:640
+height:480
+log:1
+}
+</supply>
+
+
+<relation>
+(usbcam, 0, dst) -> (goslow, 0, src)
+(goslow, 0, dst) -> (server, 0, src)
+</relation>
