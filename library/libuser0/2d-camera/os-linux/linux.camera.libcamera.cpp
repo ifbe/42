@@ -128,7 +128,7 @@ struct mydata{
 	int log;
 
 	int choosecamera;
-	int fmt;
+	u64 fmt;
 	int fps;
 
 	int w;
@@ -139,7 +139,7 @@ struct mydata{
 	Stream* stream;
 
 	FrameBufferAllocator* allocator;	//const std::vector<std::unique_ptr<FrameBuffer>> &buffers = my->allocator->buffers(my->stream);
-	uint8_t* mem[8][2];	//void* mem = mmap(NULL, plane.length, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
+	uint8_t* mem[8][3];	//void* mem = mmap(NULL, plane.length, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
 
 	std::vector<std::unique_ptr<Request>> requests;
 };
@@ -153,6 +153,7 @@ static void requestComplete(Request *request)
 		{'f', 0},
 		{'t', 0},
 		{hex16('m','3'), 0},
+		{hex16('p','l'), 0},		//plane
 		{0,0}
 	};
 	if (request->status() == Request::RequestCancelled)return;
@@ -235,6 +236,7 @@ static void requestComplete(Request *request)
 			kv[3].val = my->fmt;
 			kv[4].val = sensortime;
 			kv[5].val = (u64)ccm;
+			kv[6].val = j;
 			give_data_into_peer_temp_stack(my->myobj,_dst_, (p64)kv,_kv88_, p, sz);
 		}
 	}
@@ -354,6 +356,22 @@ int createcamera(struct mydata* my){
 		stmcfg.pixelFormat = libcamera::formats::UYVY;
 		stmcfg.stride = my->w * 2;
 		break;
+	case _y4_uv_:
+		stmcfg.pixelFormat = libcamera::formats::NV12;
+		stmcfg.stride = my->w;
+		break;
+	case _y4_vu_:
+		stmcfg.pixelFormat = libcamera::formats::NV21;
+		stmcfg.stride = my->w;
+		break;
+	case _y4_u_v_:
+		stmcfg.pixelFormat = libcamera::formats::YUV420;
+		stmcfg.stride = my->w;
+		break;
+	case _y4_v_u_:
+		stmcfg.pixelFormat = libcamera::formats::YVU420;
+		stmcfg.stride = my->w;
+		break;
 	}
 
 	//check is it valid
@@ -394,6 +412,18 @@ int createcamera(struct mydata* my){
 		break;
 	case libcamera::formats::UYVY:
 		my->fmt = _uyvy_;
+		break;
+	case libcamera::formats::NV12:
+		my->fmt = _y4_uv_;
+		break;
+	case libcamera::formats::NV21:
+		my->fmt = _y4_vu_;
+		break;
+	case libcamera::formats::YUV420:
+		my->fmt = _y4_u_v_;
+		break;
+	case libcamera::formats::YVU420:
+		my->fmt = _y4_v_u_;
 		break;
 	case libcamera::formats::SBGGR16:
 	default:
@@ -511,6 +541,19 @@ int libcam_detach()
 }
 
 
+void copyfmt64(u8* src, u8* dst)
+{
+	int j;
+	for(j=0;j<8;j++){
+		if( (src[j]==',') |
+		((src[j]>='a') && (src[j]<='z')) |
+		((src[j]>='0') && (src[j]<='9')) ){
+			dst[j] = src[j];
+		}
+		else break;
+	}
+	for(;j<8;j++)dst[j] = 0;
+}
 
 
 int libcam_reader(_obj* cam,void* foot, p64 arg,int idx, u8* buf,int len)
@@ -523,22 +566,26 @@ int libcam_writer(_obj* cam,void* foot, p64 arg,int idx, u8* buf,int len)
 }
 int libcam_delete(_obj* cam)
 {
-	struct mydata* my = (struct mydata*)cam->priv_256b;
-	my->myobj = cam;
+	if(cam->priv_ptr){
+		struct mydata* my = (struct mydata*)cam->priv_ptr;
+		deletecamera(my);
+		sleep_us(1000);
 
-	deletecamera(my);
+		memoryfree(cam->priv_ptr);
+		cam->priv_ptr = 0;
+	}
 	return 0;
 }
 int libcam_create(_obj* cam, void* arg, int argc, u8** argv)
 {
-static_assert(sizeof(struct mydata) < 256, "struct mydata too big");
-	struct mydata* my = (struct mydata*)cam->priv_256b;
+static_assert(sizeof(struct mydata) < 0x1000, "struct mydata too big");
+	struct mydata* my = (struct mydata*)memoryalloc(0x1000, 0);
 	my->myobj = cam;
 	my->log = 0;
 
 	int j;
 	u32 choosecamera = 0;
-	u32 fmt = 0;
+	u64 fmt = 0;
 	u32 w = 640;
 	u32 h = 480;
 	for(j=1;j<argc;j++){
@@ -546,7 +593,8 @@ static_assert(sizeof(struct mydata) < 256, "struct mydata too big");
 			decstr2u32(argv[j]+7, &choosecamera);
 		}
 		if(0 == ncmp(argv[j], (void*)"format:", 7)){
-			fmt = *(u32*)(argv[j]+7);
+			copyfmt64(argv[j]+7, (u8*)&fmt);
+			logtoall((void*)"libcam_create: fmtin=%.8s, fmtout=%.8s", argv[j]+7, &fmt);
 		}
 		if(0 == ncmp(argv[j], (void*)"width:", 6)){
 			decstr2u32(argv[j]+6, &w);
@@ -566,6 +614,7 @@ static_assert(sizeof(struct mydata) < 256, "struct mydata too big");
 	my->w = w;
 	my->h = h;
 
+	cam->priv_ptr = my;
 	createcamera(my);
 	return 0;
 }

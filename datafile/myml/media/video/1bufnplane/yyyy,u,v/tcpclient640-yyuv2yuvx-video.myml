@@ -1,0 +1,94 @@
+<entity>
+canvas{
+fmt:video
+format:yuvx
+width:640
+height:480
+}
+freecam{
+fmt:freecam
+}
+virtual{
+fmt:virtual
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+}
+</supply>
+
+
+<artery>
+recut{
+fmt:recut
+arg:460800
+}
+picfmt{
+fmt:picfmt
+srcfmt:y4,u,v
+srcw:640
+srch:480
+dstfmt:yuvx
+dstw:640
+dsth:480
+}
+</artery>
+
+
+<system>
+server{
+fmt:tcp
+arg:192.168.5.191:9999
+}
+</system>
+
+
+<style>
+skyhaha{
+}
+skygeom{
+c: 0.0, 0.0, 0.0
+r: 640.0, 0.0, 0.0
+f: 0.0, 480.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+freemodl{
+}
+freegeom{
+c: 0.0, 0.0, 640.0
+r: 640.0, 0.0, 0.0
+t: 0.0, 640.0, 0.0
+f: 0.0, 0.0, -640.0
+L: 0.0, 0.0, 0.0, -1.0
+R: 0.0, 0.0, 0.0, 1.0
+B: 0.0, 0.0, 0.0, -1.0
+T: 0.0, 0.0, 0.0, 1.0
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000000000.0
+}
+
+freerect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<relation>
+#canvas depends on usbcam
+(server, 0, dst) -> (recut, 0, src)
+(recut, 0, dst) -> (picfmt, 0, src)
+(picfmt, 0, dst) -> (canvas, 0, rgb)
+
+#virtual depends on inner objects
+(virtual, skygeom, 0) -> (canvas, skyhaha, 0)
+(virtual, freegeom, 0) -> (freecam, freemodl, 0)
+
+#glwnd depends on ctx + cam
+(opengl, freerect, 0) -> (freecam, 0, 0)
+</relation>

@@ -1,0 +1,22 @@
+
+<system>
+server{
+fmt:TCP
+arg:0.0.0.0:9999
+}
+</system>
+
+
+<supply>
+usbcam{
+fmt:cam
+format:y4,uv
+width:640
+height:480
+}
+</supply>
+
+
+<relation>
+(usbcam, 0, dst) -> (server, 0, src)
+</relation>

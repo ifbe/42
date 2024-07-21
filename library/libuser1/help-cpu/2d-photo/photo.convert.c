@@ -707,6 +707,40 @@ void y4_uv_to_yuvx(
 }
 
 
+/*
+yyyy
+yyyy
+uu
+vv
+*/
+void y4_u_v_to_yuvx(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth)
+{
+	if(0 == srcbuf)return;
+	if(0 == dstbuf)return;
+	//printmemory(srcbuf, 0x10);
+
+	int x,y;
+	u8* dst;
+	u8* srcp0;
+	u8* srcp1;
+	u8* srcp2;
+	for(y=0;y<dsth;y++)
+	{
+		dst = dstbuf + (y*dstw*4);
+		srcp0 = srcbuf + srcw*y;
+		srcp1 = srcbuf + srcw*srch + (srcw/2)*(y/2);
+		srcp2 = srcbuf + srcw*srch + (srcw/2)*(srch/2) + (srcw/2)*(y/2);
+		for(x=0;x<dstw;x++)
+		{
+			dst[4*x + 0] = srcp0[x];
+			dst[4*x + 1] = srcp1[x/2];
+			dst[4*x + 2] = srcp2[x/2];
+		}
+	}
+}
+
 
 void gbgbxrgrgx_to_rgba(
 	u8* srcbuf, int srclen, int srcw, int srch,

@@ -51,6 +51,16 @@ void uyvy_to_yuvx(
 void y4_uv_to_yuvx(
 	u8* srcbuf, int srclen, int srcw, int srch,
 	u8* dstbuf, int dstlen, int dstw, int dsth);
+void y4_vu_to_yuvx(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth);
+//
+void y4_u_v_to_yuvx(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth);
+void y4_v_u_to_yuvx(
+	u8* srcbuf, int srclen, int srcw, int srch,
+	u8* dstbuf, int dstlen, int dstw, int dsth);
 //
 void yuvx_to_rgba(
 	u8* srcbuf, int srclen, int srcw, int srch,
@@ -116,7 +126,7 @@ int picfmt_take(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, void
 }
 int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, void* buf, int len)
 {
-	//logtoall("@picfmt_give\n");
+	//logtoall("@picfmt_give: len=%d\n", len);
 	struct perobj* per = (void*)art->priv_256b;
 
 	//process metadata
@@ -213,6 +223,18 @@ int picfmt_give(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, void
 		y4_uv_to_yuvx(buf, len, srcw, srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
 		goto done;
 	}
+/*	if((_y4_vu_ == srcfmt)&&(_yuvx_ == per->dstfmt)){
+		y4_vu_to_yuvx(buf, len, srcw, srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
+		goto done;
+	}*/
+	if((_y4_u_v_ == srcfmt)&&(_yuvx_ == per->dstfmt)){
+		y4_u_v_to_yuvx(buf, len, srcw, srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
+		goto done;
+	}
+/*	if((_y4_v_u_ == srcfmt)&&(_yuvx_ == per->dstfmt)){
+		y4_v_u_to_yuvx(buf, len, srcw, srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);
+		goto done;
+	}*/
 
 	if((_rgb_ == srcfmt)&&(_rgbx_ == per->dstfmt)){
 		rgb_to_rgba(buf, len, srcw, srch,    per->dstbuf[0], per->dstlen, per->dstw, per->dsth);

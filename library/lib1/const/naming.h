@@ -422,7 +422,9 @@
 #define _yuyv_ hex32('y','u','y','v')
 #define _uyvy_ hex32('u','y','v','y')
 #define _y4_uv_ hex64 ('y','4',',','u','v', 0 , 0, 0)
+#define _y4_vu_ hex64 ('y','4',',','v','u', 0 , 0, 0)
 #define _y4_u_v_ hex64('y','4',',','u',',','v', 0, 0)
+#define _y4_v_u_ hex64('y','4',',','v',',','u', 0, 0)
 //
 #define _vdec_ hex32('v','d','e','c')
 #define _venc_ hex32('v','e','n','c')
