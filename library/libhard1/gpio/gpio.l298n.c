@@ -65,7 +65,10 @@ static char pin_mode_value[12][3] = {
 };
 
 
-//lf ln rf rn
+/*
+0=lf /  \ 3=rf
+1=ln \  / 2=rn
+ */
 signed char action_stop[][4] = {
 	{0, 0, 0, 0}
 };
@@ -88,41 +91,12 @@ signed char action_simple[][4] = {
 	{ 0, 0, 0, 0},	//e
 	{ 0, 0, 0, 0},	//z
 	{ 0, 0, 0, 0},	//q
-	{ 0, 0, 0,-0},	//c
+	{ 0, 0, 0, 0},	//c
 	{-1,-1, 1, 1},	//j
 	{ 1, 1,-1,-1},	//k
 	{}
 };
 signed char action_omni_o[][4] = {
-	{ 1, 1, 1, 1},	//w
-	{-1,-1,-1,-1},	//x
-	{-1, 1, 1,-1},	//a
-	{ 1,-1,-1, 1},	//d
-	{ 1, 0, 0, 1},	//e
-	{-1, 0, 0,-1},	//z
-	{ 0, 1, 1, 0},	//q
-	{ 0,-1,-1, 0},	//c
-	{-1,-1, 1, 1},	//j
-	{ 1, 1,-1,-1},	//k
-	{}
-};
-signed char action_omni_x[][4] = {
-	{ 1, 1, 1, 1},	//w
-	{-1,-1,-1,-1},	//x
-	{ 1,-1,-1, 1},	//a
-	{-1, 1, 1,-1},	//d
-	{ 0, 1, 1, 0},	//e
-	{ 0,-1,-1, 0},	//z
-	{ 1, 0, 0, 1},	//q
-	{-1, 0, 0,-1},	//c
-	{ 1, 1, 0, 0},	//j
-	{ 0, 0, 1, 1},	//k
-	{}
-};
-signed char action_mecanam_o[][4] = {
-	{}
-};
-signed char action_mecanam_x[][4] = {
 	{ 1, 1, 1, 1},	//w
 	{-1,-1,-1,-1},	//x
 	{-1, 1,-1, 1},	//a
@@ -313,10 +287,7 @@ int l298n_create(_obj* obj, void* arg, int argc, u8** argv)
 		if(0 == ncmp(argv[j], "wheel:", 6)){
 			if(0 == ncmp(argv[j]+6, "none", 4))type = 0;
 			else if(0 == ncmp(argv[j]+6, "simple", 6))type = 1;
-			else if(0 == ncmp(argv[j]+6, "meca_o", 6))type = 2;
-			else if(0 == ncmp(argv[j]+6, "meca_x", 6))type = 3;
-			else if(0 == ncmp(argv[j]+6, "omni_o", 6))type = 4;
-			else if(0 == ncmp(argv[j]+6, "omni_x", 6))type = 5;
+			else if(0 == ncmp(argv[j]+6, "omni_o", 6))type = 2;
 			logtoall("wheel=%d\n", type);
 		}
 	}
@@ -328,16 +299,7 @@ int l298n_create(_obj* obj, void* arg, int argc, u8** argv)
 		priv->action = action_simple;
 		break;
 	case 2:
-		priv->action = action_mecanam_o;
-		break;
-	case 3:
-		priv->action = action_mecanam_x;
-		break;
-	case 4:
 		priv->action = action_omni_o;
-		break;
-	case 5:
-		priv->action = action_omni_x;
 		break;
 	}
 	return 1;
