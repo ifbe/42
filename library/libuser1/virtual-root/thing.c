@@ -153,6 +153,7 @@ void speaker_register(void*);
 
 //robo
 //.air
+void aircraft_register(void*);
 void drone_register(void*);
 //.space
 void rocket_register(void*);
@@ -624,6 +625,9 @@ void thing_init(void* addr)
 
 //----------------------robo----------------------
 //.air
+	aircraft_register(tmp);
+	tmp -= sizeof(_obj);
+
 	drone_register(tmp);
 	tmp -= sizeof(_obj);
 //.space

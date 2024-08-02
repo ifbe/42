@@ -74,6 +74,7 @@
 ./file-model/file.model.scad.c
 ./file-model/file.model.stl.c
 ./file-model/file.model.wrl.c
+./file-model/file.texball.equalearth.c
 ./file-model/file.texball.mercator.c
 ./file-model/file.texball.simplecylinder.c
 ./file-prog/assembly/file.program.arm64.c
@@ -236,9 +237,9 @@
 ./reality-manmade/indoor/item.clock.c
 ./reality-manmade/indoor/item.piano.c
 ./reality-manmade/indoor/real.screen.c
+./robot-air/aerobat/robo.aircraft.c
 ./robot-air/aerobat/robo.airship.c
 ./robot-air/aerobat/robo.hotairballoon.c
-./robot-air/aerobat/robo.plane.c
 ./robot-air/copter/copter-hexa.c
 ./robot-air/copter/copter-octo.c
 ./robot-air/copter/copter-quad.c

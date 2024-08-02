@@ -1,0 +1,113 @@
+<entity>
+sky{
+fmt:equirect
+arg:datafile/jpg/texball-skysphere.jpg
+}
+ground{
+fmt:ground
+}
+drone{
+fmt:aircraft
+}
+freecam{
+fmt:freecam
+}
+virtual{
+fmt:virtual
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<artery>
+reline{
+fmt:reline
+}
+conv{
+fmt:str2vec
+}
+</artery>
+
+
+<system>
+udphost{
+fmt:UDP
+arg:0.0.0.0:9999
+}
+</system>
+
+
+<style>
+skyhaha{
+}
+skygeom{
+c: 0.0, 0.0, 0.0
+r: 1000000.0, 0.0, 0.0
+f: 0.0, 1000000.0, 0.0
+t: 0.0, 0.0, 1000000.0
+}
+
+gndhaha{
+}
+gndgeom{
+c: 0.0, 0.0, 0.0
+r: 10000.0, 0.0, 0.0
+f: 0.0, 10000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+itemhaha{
+}
+itemgeom{
+c: 0.0, 0.0, 1000.0
+r: 1000.0, 0.0, 0.0, 1000
+f: 0.0, 1000.0, 0.0, 1000
+t: 0.0, 0.0, 1000.0, 1000
+}
+
+freemodl{
+}
+freegeom{
+c: 0.0, -4000.0, 4000.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 866.0,-500.0
+t: 0.0, 500.0, 866.0
+L: 0.0, 0.0, 0.0, -1.0
+R: 0.0, 0.0, 0.0, 1.0
+B: 0.0, 0.0, 0.0, -1.0
+T: 0.0, 0.0, 0.0, 1.0
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000000000.0
+}
+
+freerect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<relation>
+#virtual depends on inner objects
+(virtual, skygeom, 0) -> (sky, skyhaha, 0)
+(virtual, gndgeom, 0) -> (ground, gndhaha, 0)
+(virtual, itemgeom, 0) -> (drone, itemhaha, 0)
+(virtual, freegeom, 0) -> (freecam, freemodl, 0)
+
+#glwnd depends on cam
+(opengl, freerect, mvp) -> (freecam, 0, 0)
+
+(udphost, 0, dst) -> (reline, 0, src)
+(reline, 0, dst) -> (conv, 0, str)
+(conv, 0, vec) -> (drone, 0, 0)
+</relation>
