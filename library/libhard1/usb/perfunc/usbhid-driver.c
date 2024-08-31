@@ -707,17 +707,25 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 //------------------------callback------------------------
 	usb->ongiving = (void*)usbhid_ongive;
 	if(0 == intfdesc->bInterfaceProtocol){
+		usb->kind = _usb_;
+		usb->type = _mouse_;
 		if( (0x0627 == devdesc->idVendor) && (0x0001 == devdesc->idProduct) ){
+			usb->vfmt = _qemu_;
 			usb->ongiving = (void*)parsemouse_qemu;
 		}
 		if( (0x80ee == devdesc->idVendor) && (0x0021 == devdesc->idProduct) ){
+			usb->vfmt = _vbox_;
 			usb->ongiving = (void*)parsemouse_vbox;
 		}
 	}
 	else if(1 == intfdesc->bInterfaceProtocol){
+		usb->kind = _usb_;
+		usb->type = _kbd_;
 		usb->ongiving = (void*)parsekeyboard;
 	}
 	else if(2 == intfdesc->bInterfaceProtocol){
+		usb->kind = _usb_;
+		usb->type = _mouse_;
 		if( (0x046d == devdesc->idVendor) && (0xc092 == devdesc->idProduct) ){
 			usb->ongiving = (void*)parsemouse_g502;
 		}

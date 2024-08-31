@@ -1,6 +1,6 @@
 #include "libuser.h"
 int input(void*, int);
-int role_fromfile(void* path, int len);
+int myml_create(struct item* obj, void* arg, int argc, u8** argv);
 
 
 //
@@ -27,7 +27,8 @@ int supplyevent(struct halfrel* stack, struct event* e)
 			return 0;
 		}
 		if(_myml_ == ev.what){
-			role_fromfile((void*)ev.why, 0);
+			_obj* obj = bootup_alloc_fromtype(_myml_);
+			myml_create(obj, (void*)ev.why, 0, 0);
 			return 0;
 		}
 

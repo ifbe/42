@@ -219,7 +219,6 @@ barex64_c = \
 0cpu/x86/cpu64kern/x64.paging.c \
 0cpu/x86/cpu64virt/vt/x64.vt.c \
 0cpu/x86/cpu64virt/svm/x64.svm.c \
-1arch/x86/bus/input/8042.c \
 1arch/x86/bus/ethernet/e1000.c \
 1arch/x86/bus/pciport/pciport.c \
 1arch/x86/bus/pciport/pciport.ahci.c \
@@ -245,7 +244,6 @@ barex64_c = \
 1arch/x86/wire/bare.wire.spi.c \
 1arch/x86/wire/bare.wire.uart.c \
 1arch/x86/wire/bare.wire.wifi.c \
-1arch/x86/vmtool/vmware.c \
 2soc/bareusb/ehci/ehci-driver.c \
 2soc/bareusb/xhci/xhci-driver.c \
 2soc/barestor/ahci/ahci-driver.c \
@@ -259,14 +257,16 @@ barex64:$(x64_o) $(barex64_o)
 	yasm -a x86 -m amd64 -f elf64 0cpu/x86/cpu64kern/x64.asmhelp.asm     -o $(DIR)/x64.asmhelp.o
 	$(CC) $(CF) 0cpu/x86/cpu64kern/x64.boot.c                            -o $(DIR)/x64.boot.o
 	yasm -a x86 -m amd64 -f elf64 0cpu/x86/cpu64kern/x64.boothelp.asm    -o $(DIR)/x64.boothelp.o
-	$(CC) $(CF) 0cpu/x86/cpu64kern/x64.gdt.c                             -o $(DIR)/x64.gdt.o
+	$(CC) $(CF) -mgeneral-regs-only 0cpu/x86/cpu64kern/x64.gdt.c         -o $(DIR)/x64.gdt.o
 	yasm -a x86 -m amd64 -f elf64 0cpu/x86/cpu64kern/x64.gdthelp.asm     -o $(DIR)/x64.gdthelp.o
 	$(CC) $(CF) -mgeneral-regs-only 0cpu/x86/cpu64kern/x64.idt.c         -o $(DIR)/x64.idt.o
 	yasm -a x86 -m amd64 -f elf64 0cpu/x86/cpu64kern/x64.idthelp.asm     -o $(DIR)/x64.idthelp.o
-	$(CC) $(CF) -mgeneral-regs-only 0cpu/x86/cpu64kern/x64.syscall.handler.c     -o $(DIR)/x64.syscall.handler_c.o
+	$(CC) $(CF) -mgeneral-regs-only 0cpu/x86/cpu64kern/x64.syscall.handler.c -o $(DIR)/x64.syscall.handler_c.o
 	yasm -a x86 -m amd64 -f elf64 0cpu/x86/cpu64kern/x64.syscall.handler.asm -o $(DIR)/x64.syscall.handler_asm.o
-	$(CC) $(CF) -mgeneral-regs-only 0cpu/x86/cpu64user/x64.syscall.caller.c     -o $(DIR)/x64.syscall.caller_c.o
-	yasm -a x86 -m amd64 -f elf64 0cpu/x86/cpu64user/x64.syscall.caller.asm -o $(DIR)/x64.syscall.caller_asm.o
+	$(CC) $(CF) -mgeneral-regs-only 0cpu/x86/cpu64user/x64.syscall.caller.c  -o $(DIR)/x64.syscall.caller_c.o
+	yasm -a x86 -m amd64 -f elf64 0cpu/x86/cpu64user/x64.syscall.caller.asm  -o $(DIR)/x64.syscall.caller_asm.o
+	$(CC) $(CF) -mgeneral-regs-only 1arch/x86/bus/input/8042.c               -o $(DIR)/8042.o
+	$(CC) $(CF) -mgeneral-regs-only 1arch/x86/vmtool/vmware.c                -o $(DIR)/vmware.o
 
 
 #---------------------x64 myos-------------------------

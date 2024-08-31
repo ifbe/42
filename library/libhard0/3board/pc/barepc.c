@@ -22,6 +22,8 @@ void inittimer();
 void init8042();
 //
 void initboarddebug(void*);
+void lowlevelserial_disable();
+//
 void initvmtool();
 
 
@@ -46,6 +48,7 @@ void initdbg()
 	//debug serial
 	struct item* uart = device_alloc_fromtype(_uart_);
 	initboarddebug(uart);
+	lowlevelserial_disable();
 
 	//debug framebuffer
 	_obj* wnd = supply_alloc_fromtype(_wnd_);

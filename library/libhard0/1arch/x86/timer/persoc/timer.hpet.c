@@ -47,23 +47,23 @@ struct hpetmmio{
 // 12:8	       NUM_TIM_CAP	//The amount of timers - 1.
 //  7:0	            REV_ID	//Indicates which revision of the function is implemented; must not be 0.
 	//0x00-0x0f
-	u32 cap_lo32;
-	u32 cap_hi32_COUNTER_CLK_PERIOD;
+	volatile u32 cap_lo32;
+	volatile u32 cap_hi32_COUNTER_CLK_PERIOD;
 	u64 pad08;
 
 //63:2	Reserved
 // . 1	LEG_RT_CNF	//0 - "legacy replacement mapping is disabled", 1="legacy replacement mapping is enabled"
 // . 0	ENABLE_CNF	//Overall enable	//0="main counter is halted, timer interrupts are disabled", 1="main counter is running, timer interrupts are allowed if enabled"
 	//0x10-0x1f
-	u32 cfg_lo32;
-	u32 cfg_hi32;
+	volatile u32 cfg_lo32;
+	volatile u32 cfg_hi32;
 	u64 pad18;
 
 //63:32	Reserved
 // .  n	Tn_INT_STS	//For level-triggered: the default value is 0. When a corresponding timer interrupt is active, this bit is set. If it is set, software can clear it by writing 1 to this bit. Writes of 0 have no effect, For edge-triggered: this bit should be ignored. It is always set to 0.
 	//0x20-0x2f
-	u32 isr_lo32;
-	u32 isr_hi32;
+	volatile u32 isr_lo32;
+	volatile u32 isr_hi32;
 	u64 pad28;
 
 	//0x30-0xef

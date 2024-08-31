@@ -1,7 +1,7 @@
 <entity>
 equirect{
 fmt:equirect
-arg:datafile/jpg/texball-atlantic.jpg
+arg:datafile/jpg/360d/texball-atlantic.jpg
 }
 freecam{
 fmt:freecam
@@ -28,9 +28,9 @@ skyhaha{
 }
 skygeom{
 c: 0.0, 0.0, 0.0
-r: 10000000.0, 0.0, 0.0
-f: 0.0, 10000000.0, 0.0
-t: 0.0, 0.0, 10000000.0
+r: 1000000.0, 0.0, 0.0
+f: 0.0, 1000000.0, 0.0
+t: 0.0, 0.0, 1000000.0
 }
 
 freemodl{

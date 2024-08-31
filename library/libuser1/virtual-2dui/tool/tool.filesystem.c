@@ -6,6 +6,9 @@ void gl41data_after(_obj* wnd);
 void gl41data_whcam(_obj* wnd, struct style* area);
 void gl41data_convert(_obj* wnd, struct style* area, struct event* ev, vec3 v);
 
+void gl41string_center_linebreak(_obj* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, float, float, u8* buf, int len);
+
 
 static u32 rainbow[8] = {
 0xff0000, 0xff8000, 0xffff00, 0x00ff00,
@@ -222,10 +225,11 @@ static void fslist_draw_gl41(
 
 			for(j=0;j<3;j++){
 				tc[j] += vt[j]/100.0;
-				tr[j] = tr[j]/4.0;
-				tf[j] = tf[j]/4.0;
+				//tr[j] *= 0.25;
+				//tf[j] *= 0.25;
 			}
-			gl41string_center(wnd,fg, tc,tr,tf, list->buf+head,tail-head);
+			//gl41string_center(wnd,fg, tc,tr,tf, list->buf+head,tail-head);
+			gl41string_center_linebreak(wnd,fg, tc,tr,tf, 0.25, 0.25, list->buf+head,tail-head);
 
 			cnt += 1;
 			head = tail+1;

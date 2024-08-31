@@ -1,7 +1,8 @@
 <entity>
 texball{
 fmt:texball
-arg:datafile/jpg/texball-earth.jpg
+albedo:datafile/jpg/earth/earth-albedo-4096.jpg
+height:datafile/jpg/earth/earth-height-4096.jpg
 }
 virtual{
 fmt:virtual

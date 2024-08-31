@@ -759,5 +759,8 @@ int usbhub_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 		(p64)perfunc->buf, pktlen,
 		usb, 0
 	);
+
+	usb->kind = _usb_;
+	usb->type = _hub_;
 	return 0;
 }

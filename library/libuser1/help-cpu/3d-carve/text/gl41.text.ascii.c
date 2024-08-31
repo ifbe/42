@@ -487,28 +487,60 @@ void gl41string(_obj* win, u32 rgb,
 void gl41string_center(_obj* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8* buf, int len)
 {
-	float dx;
-	int j,k,cnt;
+	int j,k;
 	vec3 tc,tr,tf;
 
 	if(0 == buf)return;
 	if(0 == len){
 		while(buf[len] >= 0x20)len++;
 		if(0 == len)return;
-
-		cnt = len;
 	}
-	else{
-		for(cnt=0;cnt<len;cnt++){
-			if(buf[cnt] <= 0x20)break;
-		}
-	}
-	dx = (len-cnt)/2.0;
 
 	for(j=0;j<len;j++)
 	{
 		for(k=0;k<3;k++)tc[k] = vc[k] +vr[k]*(j-len/2.0)/2 -vf[k]/2;
 		gl41ascii(win, rgb, tc, vr, vf, buf[j]);
+	}
+}
+void gl41string_center_linebreak(_obj* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, float sx, float sy, u8* buf, int len)
+{
+	if(0 == len){
+		while(buf[len] >= 0x20)len++;
+		if(0 == len)return;
+	}
+
+	int j;
+	int prev = -100;
+	int cntlb = 0;
+	for(j=0;j<len;j++){
+		if(buf[j]<0x20)break;
+		if('-' == buf[j]){
+			if(prev+1!=j)cntlb++;
+			prev = j;
+		}
+	}
+
+	for(j=0;j<3;j++){
+		vr[j] *= sx;
+		vf[j] *= sy;
+		vc[j] += vf[j]*(cntlb)/2;
+	}
+
+	int k=0;
+	int t;
+	prev = -100;
+	for(j=0;j<=len;j++){
+		if('-' == buf[j]){
+			prev = j;
+			continue;
+		}
+
+		if( (prev+1 == j) | (j==len) ){
+			gl41string_center(win, rgb, vc, vr, vf, buf+k, j-k);
+			for(t=0;t<3;t++)vc[t] -= vf[t];
+			k = j;
+		}
 	}
 }
 

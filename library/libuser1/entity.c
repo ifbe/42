@@ -417,7 +417,7 @@ void* entity_alloc_fromfile(u64 fmt)
 
 int entity_create(_obj* act, void* buf, int argc, u8** argv)
 {
-	//logtoall("%llx,%llx\n", type, buf);
+	//logtoall("%p,%p   %p\n", act, buf, act->oncreate);
 	if(act->oncreate){
 		return act->oncreate(act, buf, argc, argv);
 	}

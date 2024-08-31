@@ -818,9 +818,11 @@ void ahci_mmioinit(struct item* dev, struct HBA_MEM* abar)
 	my->onemega = ptr;
 	my->cmdlist = ptr+commandlist;
 	my->fisrecv = ptr+receivefis;
+
+	dev->kind = _stor_;
+	dev->type = _ahci_;
 	dev->ongiving = (void*)ahci_ongive;
 	dev->ontaking = (void*)ahci_ontake;
-
 
 	//
 	ahci_list(dev, 0, ptr, 0x100000, ptr+receivebuf, 0x10000);

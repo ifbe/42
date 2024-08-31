@@ -212,12 +212,12 @@ GLSL_PRECISION
 	//"vec3 midNorm0 = normalize((vo_gi_norm[1] + vo_gi_norm[2]) / 2.0);\n"
 	//"vec3 midNorm1 = normalize((vo_gi_norm[2] + vo_gi_norm[0]) / 2.0);\n"
 
-	"vec3 mid0fix = c_and_len.xyz + normalize(    mid0    -c_and_len.xyz)*(c_and_len.w + (texture(heightmap, midTex0).b-0.5)*distance_per_value.x*1);\n"
-	"vec3 mid1fix = c_and_len.xyz + normalize(    mid1    -c_and_len.xyz)*(c_and_len.w + (texture(heightmap, midTex1).b-0.5)*distance_per_value.x*1);\n"
-	"vec3 mid2fix = c_and_len.xyz + normalize(    mid2    -c_and_len.xyz)*(c_and_len.w + (texture(heightmap, midTex2).b-0.5)*distance_per_value.x*1);\n"
-	"vec3 pos0fix = c_and_len.xyz + normalize(vo_gi_pos[0]-c_and_len.xyz)*(c_and_len.w + (texture(heightmap, midTex0).b-0.5)*distance_per_value.x*1);\n"
-	"vec3 pos1fix = c_and_len.xyz + normalize(vo_gi_pos[1]-c_and_len.xyz)*(c_and_len.w + (texture(heightmap, midTex1).b-0.5)*distance_per_value.x*1);\n"
-	"vec3 pos2fix = c_and_len.xyz + normalize(vo_gi_pos[2]-c_and_len.xyz)*(c_and_len.w + (texture(heightmap, midTex2).b-0.5)*distance_per_value.x*1);\n"
+	"vec3 mid0fix = c_and_len.xyz + normalize(    mid0    -c_and_len.xyz)*(c_and_len.w + (texture(heightmap, midTex0).b-0.5)*distance_per_value.x);\n"
+	"vec3 mid1fix = c_and_len.xyz + normalize(    mid1    -c_and_len.xyz)*(c_and_len.w + (texture(heightmap, midTex1).b-0.5)*distance_per_value.x);\n"
+	"vec3 mid2fix = c_and_len.xyz + normalize(    mid2    -c_and_len.xyz)*(c_and_len.w + (texture(heightmap, midTex2).b-0.5)*distance_per_value.x);\n"
+	"vec3 pos0fix = c_and_len.xyz + normalize(vo_gi_pos[0]-c_and_len.xyz)*(c_and_len.w + (texture(heightmap, midTex0).b-0.5)*distance_per_value.x);\n"
+	"vec3 pos1fix = c_and_len.xyz + normalize(vo_gi_pos[1]-c_and_len.xyz)*(c_and_len.w + (texture(heightmap, midTex1).b-0.5)*distance_per_value.x);\n"
+	"vec3 pos2fix = c_and_len.xyz + normalize(vo_gi_pos[2]-c_and_len.xyz)*(c_and_len.w + (texture(heightmap, midTex2).b-0.5)*distance_per_value.x);\n"
 
 	"vec4 mid0wvp = cammvp * vec4(mid0fix, 1.0);\n"
 	"vec4 mid1wvp = cammvp * vec4(mid1fix, 1.0);\n"
@@ -549,7 +549,7 @@ static void texball_create(_obj* act, void* arg, int argc, u8** argv)
 		}
 	}
 	if(0==albedo[0])mysnprintf(albedo, 128, "%s", "datafile/jpg/earth/earth-albedo-4096.jpg");
-	if(0==height[0])mysnprintf(albedo, 128, "%s", "datafile/jpg/earth/earth-height-4096.jpg");
+	if(0==height[0])mysnprintf(height, 128, "%s", "datafile/jpg/earth/earth-height-4096.jpg");
 	texball_prep(my, albedo, height);
 	texball_dx11prep(my);
 	texball_gl41prep(my);

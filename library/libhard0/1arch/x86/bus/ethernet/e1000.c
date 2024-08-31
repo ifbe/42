@@ -115,7 +115,7 @@ struct RecvDesc
     volatile u8 errors;
     volatile u16 special;
 };
-static int e1000_read(struct item* e1000,void* foot, void* stack,int sp, void* arg,int cmd, void* buf,int len)
+static int e1000_take(struct item* e1000,void* foot, void* stack,int sp, void* arg,int cmd, void* buf,int len)
 {
 	struct perdev* per = (void*)(e1000->priv_256b);
 	if(0 == per->mmioaddr)return -1;
@@ -160,7 +160,7 @@ struct TransDesc
     volatile u8 css;
     volatile u16 special;
 };
-static int e1000_write(struct item* e1000,void* foot, void* stack,int sp, void* arg,int cmd, u8* buf, int len)
+static int e1000_give(struct item* e1000,void* foot, void* stack,int sp, void* arg,int cmd, u8* buf, int len)
 {
 	struct perdev* per = (void*)(e1000->priv_256b);
 	if(0 == per->mmioaddr)return -1;
@@ -247,6 +247,10 @@ static u32 eepromread(u8* mmio, u32 addr)
 }
 void e1000_mmioinit(struct item* dev, u8* mmio)
 {
+	if(0 == dev){
+		dev = device_alloc_fromtype(_eth_);
+	}
+
 	struct perdev* per = (void*)(dev->priv_256b);
 	per->mmioaddr = mmio;
 	logtoall("e1000@mmio:%llx{\n", mmio);
@@ -346,15 +350,14 @@ void e1000_mmioinit(struct item* dev, u8* mmio)
 	//----------------------------------------------
 
 
-	logtoall("}\n");
-	dev->take = (void*)e1000_read;
-	dev->give = (void*)e1000_write;
 
-	struct item* eth = device_alloc_fromtype(_eth_);
-	if(eth){
-		relationcreate(eth,0, _dev_,0, dev,0, _dri_,0);
-		eth_linkup(eth, 0, dev, 0);
-	}
+	dev->kind = _eth_;
+	dev->type = _e1000_;
+	dev->vfmt = _mmio_;
+	dev->take = (void*)e1000_take;
+	dev->give = (void*)e1000_give;
+
+	logtoall("}e1000_mmioinit\n");
 }
 void e1000_portinit(struct item* dev, u64 addr)
 {
@@ -378,7 +381,10 @@ void e1000_portinit(struct item* dev, u64 addr)
 	out32(0xcf8, addr+0x10);
 	temp = in32(0xcfc)&0xfffffff0;
 
-	logtoall("}\n");
-
+	dev->kind = _eth_;
+	dev->type = _e1000_;
+	dev->vfmt = _port_;
 	e1000_mmioinit(dev, (void*)(u64)temp);
+
+	logtoall("}e1000_portinit\n");
 }

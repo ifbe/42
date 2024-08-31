@@ -5,6 +5,12 @@
 %define ApToBsp_message 0xfff0
 %define BspToAp_command 0xfff8
 
+%define BSPCMD_16to64 64
+%define BSPCMD_asmtoc 88
+
+%define APMSG_16bit 16
+%define APMSG_64bit 64
+
 %define KERNCODE 0x10
 %define KERNDATA 0x18
 
@@ -33,14 +39,14 @@ trampoline16_start:
 	mov ds, ax
 	mov es, ax
 
-setflag16:
+setflag_16bit:
 	mov di, ApToBsp_message
-	mov al, 16
+	mov al, APMSG_16bit
 	mov [es:di], al
 
-wait4cmd:
-	cmp word [es:BspToAp_command],"go"
-	jne wait4cmd
+waitcmd_16to64:
+	cmp word [es:BspToAp_command], BSPCMD_16to64
+	jne waitcmd_16to64
 
 at16to64:
 	;inc word [es:0]		;test code
@@ -74,11 +80,6 @@ at16to64:
 
 	a32 lgdt [TEMPGDTR]
 
-setflag64:
-	mov di, ApToBsp_message
-	mov al, 64
-	mov [es:di], al
-
 lastjump:
 	mov eax, TRAMPOLINE64
 	jmp dword KERNCODE:TEMPJUMP
@@ -99,12 +100,23 @@ trampoline64_start:
 	mov fs, ax
 	mov gs, ax
 
+setflag_64bit:
+	mov edi, ApToBsp_message
+	mov al, APMSG_64bit
+	mov [edi], al
+
+waitcmd_asmtoc:
+	cmp word [BspToAp_command], BSPCMD_asmtoc
+	jne waitcmd_asmtoc
+
+asmtoc:
 	mov rax, [FromBsp_rsp]
 	mov rsp, rax
 
 	mov rax, [FromBsp_rip]
 	jmp rax
 trampoline64_end:
+
 
 global get_trampoline16_start
 get_trampoline16_start:

@@ -1,84 +1,149 @@
 #include "libuser.h"
+void stdout_setwindow(void* node);
+void getscreen(void** _buf, u64* _fmt, int* _w, int* _h, int* _fbw, int* _fbh);
+//
 void* supply_alloc();
 void* supply_recycle(void*);
-int wndmgr_take(void*,void*, void*,int, void*,int, void*,int);
-int wndmgr_give(void*,void*, void*,int, void*,int, void*,int);
+//
+int wndmgr_take(void*,void*, void*,int, p64,int, void*,int);
+int wndmgr_give(void*,void*, void*,int, p64,int, void*,int);
 
 
 
 
-struct fbinfo{
-	u32 buf;
-	u32 pad0;
-
-	u32 fmt;
-	u32 pad1;
-
-	u16 w;
-	u16 zerow;
-	u32 padd2;
-
-	u16 h;
-	u16 zeroh;
-	u32 padd3;
-};
-static u32* screen = 0;
-static u32 format = 4;
 //
 void* cachedwindow = 0;
+//
+static void* lfb = 0;
+static u64 fmt;
+static int w = 0;
+static int h = 0;
+static int fbw = 0;
+static int fbh = 0;
+void window_update(_obj* wnd,void* test, int x0,int y0, int xn,int yn)
+{
+	if(0 == lfb)return;
+	if(x0 < 0)x0 = 0;
+	if(y0 < 0)y0 = 0;
+	if(xn > w)xn = w;
+	if(yn > h)yn = h;
+//logtoall("%d,%d,%d,%d\n",x0,y0,xn,yn);
+	int bpp;
+	switch(fmt){
+	case _bgra8888_:
+	case _rgba8888_:
+		bpp = 4;
+		break;
+	case _bgra8880_:
+	case _rgba8880_:
+		bpp = 3;
+		break;
+	default:
+		return;
+	}
+
+	int x,y;
+	u32* ibuf = wnd->rgbanode.buf;
+	u32* obuf = lfb;
+	for(y=y0;y<yn;y++){
+		obuf = lfb + y*fbw + x0*bpp;
+		for(x=x0;x<xn;x++){
+			*obuf = ibuf[y*w + x];
+			obuf = (void*)obuf + bpp;
+
+			if((x == w-1) && (y == h-1))break;
+		}
+	}
+}
 
 
 
 
 void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	//logtoall("wnd=%p,stack=%p\n",wnd,stack);
+	if(0 == lfb)return;
+	u64 t0 = timeread_us();
+
 	wndmgr_take(wnd,foot, stack,sp, arg,key, buf,len);
 
-	int j;
-	u32* ibuf = wnd->rgbabuf;
-	u32* obuf = screen;
-	for(j=0;j<1024*768;j++)
-	{
-		obuf = (void*)obuf + format;
-		*obuf = ibuf[j];
-	}
+	u64 t1 = timeread_us();
+	wnd->whdf.iw0 = t1 - t0;
+
+	//10fps? update whole window
+	window_update(wnd,0, 0,0, w,h);
+
+	u64 t2 = timeread_us();
+	wnd->whdf.iwn = t2 - t1;
 }
 void window_give(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	//printmemory(buf, 0x20);
-	wndmgr_give(wnd,0, stack,sp, 0,0, buf,len);
-}
-void window_attach()
-{
+	if(0 == lfb)return;
+	if(foot){
+		//update area
+		int w = wnd->whdf.width;
+		int h = wnd->whdf.height + (key<<4);
+		drawsolid_rect((void*)wnd,0, 0,h, w,h+16);
+		drawstring((void*)wnd,0xff00ff, 0,h, buf,len);
+		window_update(wnd,0, 0,h, w,h+16);
+	}
+	else{
+		//printmemory(buf, 32);
+		wndmgr_give(wnd,0, stack,sp, 0,0, buf,len);
+
+		//only update mouse area
+		int x = wnd->whdf.ix0;
+		int y = wnd->whdf.iy0;
+		//logtoall("x=%d,y=%d\n",x,y);
+		window_update(wnd,0, x-16,y-16, x+16,y+16);
+	}
 }
 void window_detach()
 {
 }
-
-
-
-
-void window_read()
+void window_attach()
 {
 }
-void window_write()
+
+
+
+
+void window_read(_obj* wnd)
 {
 }
-void window_delete(_obj* w)
+void window_write(_obj* wnd)
+{
+}
+void window_delete(_obj* wnd)
 {
 }
 void window_create(_obj* wnd)
 {
-	wnd->vfmt = _bgra8888_;
+	getscreen(&lfb, &fmt, &w, &h, &fbw, &fbh);
+	logtoall("lfb=%p,fmt=%.8s, w=%d,h=%d, fbw=0x%x,fbh=0x%x\n", lfb,&fmt, w,h, fbw,fbh);
+	switch(fmt){
+	case _bgra8880_:
+		wnd->vfmt = _bgra8888_;
+		break;
+	case _rgba8880_:
+		wnd->vfmt = _rgba8888_;
+		break;
+	default:
+		wnd->vfmt = fmt;
+		break;
+	}
 
-	wnd->width = 1024;
-	wnd->height = 768;
+	wnd->whdf.width = w;
+	wnd->whdf.height = h;
 
-	wnd->fbwidth = 1024*4;
+	wnd->whdf.fbwidth = w*4;
 	//wnd->fbheight = 0;
 
-	wnd->rgbabuf = (void*)0x4000000;
+	wnd->rgbanode.buf = (void*)0x4000000;
+
+	//early console
+	stdout_setwindow(wnd);
+
+	cachedwindow = wnd;
 }
 
 
@@ -96,12 +161,6 @@ void* window_alloc()
 void initwindow()
 {
 	cachedwindow = 0;
-
-#define screeninfo 0x2000
-	struct fbinfo* fb = (struct fbinfo*)0x2000;
-
-	screen = (u32*)(u64)(fb->buf);
-	format = fb->fmt;
 }
 void freewindow()
 {

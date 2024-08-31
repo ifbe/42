@@ -95,15 +95,17 @@ struct tss{
 #define OFFS_RSP 0x10000
 void fillgdt(u8* buf)
 {
+	logtoall("fillgdt:clean %p\n",buf);
 	int j;
-	for(j=0;j<0x10000;j++)buf[j] = 0;
+	//for(j=0;j<0x2000;j++)buf[j] = 0;
 
+	logtoall("build tss:\n");
 	struct tss* tss = (void*)(buf+OFFS_TSS);
 	tss->rsp0 = (u64)buf + OFFS_RSP;
 	tss->iopb = 0x68;
-	logtoall("tss:\n");
 	printmemory(tss, 0x68);
 
+	logtoall("build gdt 0-28\n");
 	struct gdt* gdt = (void*)buf;
 	*(u64*)(buf+0x00) =                  0;		//must null
 	*(u64*)(buf+0x08) =                  0;		//myown unused
@@ -112,6 +114,7 @@ void fillgdt(u8* buf)
 	*(u64*)(buf+USERCODE) = 0x0020fa0000000000;		//user code
 	*(u64*)(buf+USERDATA) = 0x0000f20000000000;		//user data
 
+	logtoall("build gdt 30:\n");
 	struct gdt_tss* gt = (void*)(buf+0x30);
 	gt->limit_00_15 = 0x67;		//103;
 	gt->base_00_15  = ((u64)tss)&0xffff;

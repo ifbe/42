@@ -674,7 +674,8 @@ ${LIB42}/libuser1/help-cpu/3d-carve/simple/gl41.solid.voxel.c
 ${LIB42}/libuser1/help-cpu/3d-carve/text/gl41.text.ascii.c
 ${LIB42}/libuser1/help-cpu/3d-carve/text/gl41.text.unicode.c
 ${LIB42}/libuser1/help-cpu/3to2-raster/raster.c
-${LIB42}/libuser1/help-cpu/3to2-raytrace/raytrace.c
+${LIB42}/libuser1/help-cpu/3to2-raytrace/raytrace.lens.c
+${LIB42}/libuser1/help-cpu/3to2-raytrace/raytrace.pinhole.c
 ${LIB42}/libuser1/help-cpu/forcpu.c
 ${LIB42}/libuser1/help-cpu/intersect/intersect.obb.c
 ${LIB42}/libuser1/help-cpu/intersect/intersect.ray.c
@@ -759,7 +760,7 @@ ${LIB42}/libuser1/reality-manmade/indoor/dxgl.curtain.c
 ${LIB42}/libuser1/reality-manmade/indoor/item.clock.c
 ${LIB42}/libuser1/reality-manmade/indoor/item.piano.c
 ${LIB42}/libuser1/reality-manmade/indoor/real.screen.c
-${LIB42}/libuser1/robot-air/aerobat/robo.plane.c
+${LIB42}/libuser1/robot-air/aerobat/robo.aircraft.c
 ${LIB42}/libuser1/robot-air/copter/copter-hexa.c
 ${LIB42}/libuser1/robot-air/copter/copter-octo.c
 ${LIB42}/libuser1/robot-air/copter/copter-quad.c
@@ -879,6 +880,7 @@ ${LIB42}/libuser1/script-fixed/movement/object/surround/pilot.surround.c
 ${LIB42}/libuser1/script-fixed/movement/object/wander/pilot.wander.c
 ${LIB42}/libuser1/script-fixed/pilot/balance/pilot.balance.c
 ${LIB42}/libuser1/script-fixed/pilot/drone/pilot.drone.c
+${LIB42}/libuser1/script-fixed/pilot/rocket/pilot.rocket.c
 ${LIB42}/libuser1/script-fixed/pilot/vehicle/pilot.vehicle.c
 ${LIB42}/libuser1/script-marklang/html/html.a.c
 ${LIB42}/libuser1/script-marklang/html/html.audio.c

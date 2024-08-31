@@ -146,6 +146,7 @@ void* supply_findtype(u64 type)
 	int j;
 	_obj* obj;
 	for(j=0;j<0x100;j++){
+		logtoall("%d: %p: %llx\n", j, &supply[j], supply[j].type);
 		if(type == supply[j].type)return &supply[j];
 	}
 	return 0;
@@ -207,6 +208,7 @@ void* supply_alloc_fromtype(u64 what)
 		obj->kind = _cap_;
 		obj->type = what;
 		obj->vfmt = 0;
+		break;
 //capture 2 to 3: input=image, output=vertex/texture/xxx
 	case _cap_:
 		obj->type = _cap_;
@@ -220,6 +222,7 @@ void* supply_alloc_fromtype(u64 what)
 		obj->kind = _wnd_;
 		obj->type = _wnd_;
 		obj->vfmt = what;
+		break;
 //render 3 to 2: input=vertex/texture/xxx, output=image
 	case _render_:
 	case _gl41none_:

@@ -92,7 +92,7 @@ eficli_c = \
 eficli_o = $(patsubst %.c, %.o, $(eficli_c))
 
 efifb_c = \
-2d-window/os-efi/efi.fb.c
+2d-window/os-bare/bare.fb.c
 efifb_o = $(patsubst %.c, %.o, $(efifb_c))
 
 .PHONY:eficli

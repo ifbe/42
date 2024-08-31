@@ -20,6 +20,8 @@ void* style_recycle();
 //
 void* poller_alloc();
 void poller(void*);
+//
+void decide_loop_or_exit();
 
 
 
@@ -141,6 +143,8 @@ int guiapp_create(struct item* wrk, u8* arg, int argc, u8** argv)
 {
 	_obj* obj = bootup_alloc_fromtype(_myml_);
 	bootup_create(obj, "datafile/myml/index.myml", 0, 0);
+
+	decide_loop_or_exit();
 /*
 	_obj* wnd = supply_create(_wnd_, 0, 0, 0);
 	wrk->priv_ptr = wnd;

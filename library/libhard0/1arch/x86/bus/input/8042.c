@@ -125,8 +125,10 @@ void init8042()
 	logtoall("@init8042\n");
 	if(0 == acpi_have8042()){
 		enablepolling = 0;
-		logtoall("no 8042 found, enablepoll=%d\n\n", enablepolling);
+		logtoall("no 8042 found, enablepoll=%d\n", enablepolling);
 	}
+
+	logtoall("\n");
 }
 
 

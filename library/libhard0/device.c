@@ -91,10 +91,10 @@ void* device_alloc_fromtype(u64 type)
 	_obj* obj = device_alloc();
 	if(0 == obj)return 0;
 
-	//obj->tier = tier;		//should be tier: bootup
-	//obj->kind = kind;		//should be class: usb
-	obj->type = type;		//should be type: xhci
-	//obj->vfmt = vfmt;		//should be model: intelxhci
+	//obj->tier = tier;		//should be tier: dev
+	//obj->kind = kind;		//should be class:   usbhost, usbdualrole,  usbdevice
+	obj->type = type;		//should be type:       xhci,        dwc2,  composite,kbd,mouse,      
+	//obj->vfmt = vfmt;		//should be model: intelxhci,            ,  ...
 	return obj;
 }
 void* device_alloc_frompath(u64 type, u8* path)

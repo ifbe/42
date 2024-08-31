@@ -12,7 +12,6 @@ int usbany_linkup(void*,int,void*,int);
 #define _addr_ hex32('a','d','d','r')	//prepare slotctx+ep0ctx
 #define _eval_ hex32('e','v','a','l')	//modify epctx
 #define _conf_ hex32('c','o','n','f')	//prepare ep*ctx
-#define _hub_  hex32('h','u','b', 0 )	//notify it is hub
 #define _new_  hex32('n','e','w', 0 )	//notify it is hub
 struct UsbRequest{
 	//[0,3]
@@ -88,7 +87,7 @@ struct EndpointDescriptor{
 #define SPEED_SSP_2x1 5
 #define SPEED_SSP_1x2 6
 #define SPEED_SSP_2x2 7
-char* speed2string[] = {
+static char* speed2string[] = {
 "unknown",			//0
 
 "usb1 12mbps",		//1
@@ -113,7 +112,7 @@ char* speed2string[] = {
 #define SLOTSTATE_DEFAULT 1
 #define SLOTSTATE_ADDRESSED 2
 #define SLOTSTATE_CONFIGURED 3
-char* slotstate2string[] = {
+static char* slotstate2string[] = {
 "disabled/enabled",		//0
 "default",				//1
 "addressed",			//2
@@ -127,7 +126,7 @@ char* slotstate2string[] = {
 #define EPSTATE_HALTED 2
 #define EPSTATE_STOPPED 3
 #define EPSTATE_ERROR 4
-char* epstate2string[] = {
+static char* epstate2string[] = {
 "disabled",		//0
 "running",		//1
 "halted",		//2
@@ -145,7 +144,7 @@ char* epstate2string[] = {
 #define EPType_IsochIn      5
 #define EPType_BulkIn       6
 #define EPType_InterruptIn  7
-char* eptype2string[] = {
+static char* eptype2string[] = {
 "invalid",		//0
 "isoch,out",	//1
 "bulk,out",		//2
@@ -826,7 +825,7 @@ int xhci_parseevent(struct item* xhci, u32* ev)
 		cbslot = endpdata->cbslot;
 		if(cbnode){
 			if(cbnode->ongiving){
-				cbnode->ongiving(cbnode,(void*)cbslot, xhci,endp, *(p64*)ev,0, 0,0);
+				cbnode->ongiving(cbnode,(void*)cbslot, (void*)xhci,endp, *(p64*)ev,0, 0,0);
 				break;
 			}
 		}
@@ -2301,6 +2300,8 @@ int xhci_mmioinit(struct item* xhci, u8* xhciaddr)
 	xhci_NoOp(xhci);
 
 	//callback functions
+	xhci->kind = _usb_;
+	xhci->type = _xhci_;
 	xhci->onreader = (void*)xhci_reader;
 	xhci->onwriter = (void*)xhci_writer;
 	xhci->ontaking = (void*)xhci_takeby;

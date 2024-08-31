@@ -73,11 +73,11 @@ static void kernel_wndctx(_obj* wnd)
 	rel = relationcreate(termnode,termfoot, _ent_,0, wnd,toterm, _ent_,0);
 	relationattach((void*)&rel->srcchip, (void*)&rel->dstchip);
 
-	rel = relationcreate(gamenode,gamefoot, _ent_,0, wnd,togame, _ent_,0);
-	relationattach((void*)&rel->srcchip, (void*)&rel->dstchip);
+	//rel = relationcreate(gamenode,gamefoot, _ent_,0, wnd,togame, _ent_,0);
+	//relationattach((void*)&rel->srcchip, (void*)&rel->dstchip);
 
-	rel = relationcreate(editnode,editfoot, _ent_,0, wnd,toedit, _ent_,0);
-	relationattach((void*)&rel->srcchip, (void*)&rel->dstchip);
+	//rel = relationcreate(editnode,editfoot, _ent_,0, wnd,toedit, _ent_,0);
+	//relationattach((void*)&rel->srcchip, (void*)&rel->dstchip);
 }
 
 
@@ -102,7 +102,7 @@ static int kernel_pollloop(struct item* wrk)
 
 		for(j=-10;j<10;j++){
 			dev = &device[(j>=0) ? j : (maxdevlen+j)];
-			if( (_xhci_ == dev->type) | (_eth_ == dev->type) ){
+			if( (_xhci_ == dev->type) | (_e1000_ == dev->type) ){
 				if(dev->ontaking)dev->ontaking(dev,0, 0,0, 0,0, 0,0);
 			}
 		}
@@ -260,8 +260,8 @@ int kernel_create(struct item* wrk, void* arg, int argc, u8** argv)
 	//
 	_obj* wnd = supply_findtype(_wnd_);
 	if(0 == wnd){
-		logtoall("cannot find exiting window, creating one\n");
-		supply_alloc_fromtype(_wnd_);
+		logtoall("cannot find existing window, creating one\n");
+		wnd = supply_alloc_fromtype(_wnd_);
 		supply_create(wnd, 0, 0, 0);
 	}
 	kernel_wndctx(wnd);

@@ -2,10 +2,7 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-#define BIOSDATA 0x400
-#define UARTPORT 0x3f8
-u8 in8(u32 port);
-void out8(u32 port, u8 data);
+int bootservice_input(void* buf);
 int bootservice_output(char* buf, int len);
 
 
@@ -18,24 +15,20 @@ static int enable = 0;
 
 int read8250_one(u8* buf)
 {
-	int j = 0;
-	if(0 == enable)return 0xffff;
-	if((in8(UARTPORT + 5) & 1) != 0)
-	{
-		buf[0] = in8(UARTPORT);
-		j = 1;
-	}
-	return j;
+	if(0 == enable)return -1;
+
+	return bootservice_input(buf);
 }
 int lowlevel_input(u8* buf, int len)
 {
+	if(0 == enable)return -1;
+
 	int j,ret;
-	if(0 == enable)return 0xffff;
-	for(j=0;j<len;j++)
-	{
+	for(j=0;j<len;j++){
 		ret = read8250_one(buf+j);
 		if(ret == 0)break;
 	}
+
 	return j;
 }
 
@@ -44,24 +37,23 @@ int lowlevel_input(u8* buf, int len)
 
 int write8250_one(u8 data)
 {
-	int j=0;
-	if(0 == enable)return 0xffff;
-	while((in8(UARTPORT + 5) & 0x20) == 0)
-	{
-		j++;
-		if(j>0xffffff)return 0;
-	}
-	out8(UARTPORT, data);
-	return 1;
+	if(0 == enable)return -1;
+	return 0;
 }
 int lowlevel_output(char* buf, int len)
 {
-	int j;
-	bootservice_output(buf, len);
-	if(0 == enable)return 0xffff;
+	if(0 == enable)return -1;
 
-	for(j=0;j<len;j++)write8250_one(buf[j]);
-	return j;
+	bootservice_output(buf, len);
+
+	return 0;
+}
+
+
+
+
+void lowlevelserial_disable(){
+	enable = 0;
 }
 
 
@@ -69,19 +61,10 @@ int lowlevel_output(char* buf, int len)
 
 void freeserial()
 {
+	enable = 0;
 }
 void initserial()
 {
-	if(UARTPORT != *(u16*)(BIOSDATA+0))return;
 	enable = 1;
-
-	out8(UARTPORT + 1, 0x00);//Disable all interrupts
-	out8(UARTPORT + 3, 0x80);//Enable DLAB (set baud rate divisor)
-	out8(UARTPORT + 0, 0x01);//1=115200, 3=38400
-	out8(UARTPORT + 1, 0x00);//(high byte)
-	out8(UARTPORT + 3, 0x03);//8 bits, no parity, one stop bit
-	out8(UARTPORT + 2, 0xC7);//Enable FIFO, clear them, with 14-byte threshold
-	out8(UARTPORT + 4, 0x0B);//IRQs enabled, RTS/DSR set
-
 	lowlevel_output("42!\n", 4);
 }

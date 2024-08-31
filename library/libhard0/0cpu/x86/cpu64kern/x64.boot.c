@@ -1,10 +1,4 @@
 #include "libhard.h"
-#define TRAMPOLINE16 0x8000
-#define TRAMPOLINE64 0x9000
-#define FromBsp_rsp 0xffe0
-#define FromBsp_rip 0xffe8
-#define ApToBsp_message 0xfff0
-#define BspToAp_command 0xfff8
 //
 #define APPCPU 0x20000		//[20000,2ffff]
 #define APPCPU_GDT (APPCPU+0x000)
@@ -23,6 +17,40 @@
 
 
 
+#define TRAMPOLINE16 0x8000
+#define TRAMPOLINE64 0x9000
+//
+#define FromBsp_rsp 0xffe0
+#define FromBsp_rip 0xffe8
+#define ApToBsp_message 0xfff0
+#define BspToAp_command 0xfff8
+//
+#define APMSG_16bit 16
+#define APMSG_64bit 64
+#define APMSG_asmtoc 88
+#define APMSG_finish 0xff
+void sendmsg_ap_to_bsp(int val)
+{
+	*(volatile u64*)ApToBsp_message = val;
+}
+int get_msg_from_ap()
+{
+	return *(volatile u64*)ApToBsp_message;
+}
+#define BSPCMD_16to64 64
+#define BSPCMD_asmtoc 88
+#define BSPCMD_finish 0xff
+void msg_bsp_to_ap(int val)
+{
+	*(volatile u64*)BspToAp_command = val;
+}
+int get_msg_from_bsp()
+{
+	return *(volatile u64*)BspToAp_command;
+}
+
+
+
 
 //acpi
 u64 acpi_getknowncores();
@@ -37,6 +65,7 @@ void fpu_xsave(u64 addr);
 void fpu_rstor(u64 addr);
 //
 void initpaging(void*, int, void*, int);
+void pagetable_use(u8* cr3);
 //
 void initgdt(void*);
 void initgdt_ap(void*);
@@ -398,15 +427,19 @@ void initcpu_other()
 
 
 
-static u32 shit = 0;
 static void trampoline_appcpu()
 {
-//----------------set flag--------------
 	asm("cli");
-	shit = hex32('f','u','c','k');
+
+//----------------set flag,wait cmd--------------
+	sendmsg_ap_to_bsp(APMSG_asmtoc);
+	while(get_msg_from_bsp() != BSPCMD_finish);
 
 //----------------init cpu---------------
 	initcpu_other();
+
+//----------------set flag,wait cmd--------------
+	sendmsg_ap_to_bsp(APMSG_finish);
 
 //----------------goto sleep----------------
 	logtoall("appcpu: sleep wait for int\n");
@@ -453,56 +486,92 @@ void initcpu_onecore(int coreid)
 	logtoall("trampoline64: [%p,%p) -> [%p,%p)\n", trampoline64_start, trampoline64_end, buf, buf+len);
 	printmemory(buf, len);
 
-	logtoall("sending INIT IPI\n");
-	//send INIT IPI
-	int ret = localapic_sendinit(coreid);
-	if(ret < 0)goto failreturn;
-
-	//wait 10ms
-	logtoall("wait 10ms\n");
-	sleep_us(10*1000);
-
 	//prep flag
-	logtoall("write flag=0\n");
+	logtoall("reset flag=0\n");
 	volatile u8* flag = (u8*)ApToBsp_message;
 	*flag = 0;
 
-	//send SIPI IPI, wait for flag
+	//send INIT IPI
+	logtoall("+++sending INIT IPI\n");
+	int ret = localapic_sendinit(coreid);
+	if(ret < 0)goto fail;
+	logtoall("---sent\n\n");
+
+	//wait 10ms
+	logtoall("wait 10ms\n\n");
+	sleep_us(10*1000);
+
+	//send SIPI IPI
+	int isdone = 0;
+	logtoall("+++sending START IPI\n");
 	for(j=0;j<2;j++){
-		logtoall("sending START IPI %d\n",j);
+		logtoall("START IPI %d\n",j);
 		//send SIPI IPI
 		localapic_sendstart(coreid, TRAMPOLINE16>>12);
 
-		//wait 200us, check flag
+		//wait 200us
 		sleep_us(1000);
-		logtoall("flag=%x\n", *flag);
-		if(16 == *flag){
-			logtoall("ap in 16bit mode\n");
-			goto givecmdtoap;
+
+		//check flag
+		if(get_msg_from_ap() == APMSG_16bit){
+			logtoall("---ap in 16bit mode\n\n");
+			isdone = 1;
+			break;
 		}
+		else logtoall("---flag=%x\n", get_msg_from_ap());
 	}
-failreturn:
-	logtoall("fail@AP silent\n\n");
-	return;
+	if(0 == isdone){
+		goto fail;
+	}
 
 givecmdtoap:
+	//wait 1000us, check flag
+	logtoall("+++sending 16to64\n");
+	msg_bsp_to_ap(BSPCMD_16to64);		//must after rip & rsp
+	sleep_us(1000);
+	if(APMSG_64bit == get_msg_from_ap()){
+		logtoall("---ap in 64bit mode\n\n");
+	}
+	else{
+		logtoall("---flag=%x\n", get_msg_from_ap());
+		goto fail;
+	}
+
 	*(volatile u64*)FromBsp_rip = (u64)trampoline_appcpu;
 	*(volatile u64*)FromBsp_rsp = (u64)memoryalloc(0x100000, 0) + 0x100000 - 0x100;
-	logtoall("rip=%llx,rsp=%llx\n", *(volatile u64*)FromBsp_rip, *(volatile u64*)FromBsp_rsp);
-	*(volatile u64*)BspToAp_command = hex32('g','o','g','o');		//must after rip & rsp
+	logtoall("rip=%llx,rsp=%llx\n\n", *(volatile u64*)FromBsp_rip, *(volatile u64*)FromBsp_rsp);
 
-	//bsp wait 2s, until ap done, then check flag
-	sleep_us(1000*2000);
-	logtoall("flag=%x\n", *flag);
-	if(64 == *flag){
-		logtoall("ap in 64bit mode\n");
+	//wait 1000us, check flag
+	logtoall("+++sending asmtoc\n");
+	msg_bsp_to_ap(BSPCMD_asmtoc);
+	sleep_us(1000);
+	if(APMSG_asmtoc == get_msg_from_ap()){
+		logtoall("---ap in c code\n\n");
+	}
+	else{
+		logtoall("---flag=%x\n", get_msg_from_ap());
+		goto fail;
+	}
+
+	//bsp wait 1s, until ap done, then check flag
+	logtoall("+++sending finish\n");
+	msg_bsp_to_ap(BSPCMD_finish);
+	sleep_us(1000*1000);
+	if(APMSG_finish == get_msg_from_ap()){
+		logtoall("---ap finish\n\n");
 		goto allgood;
 	}
+	else{
+		logtoall("---flag=%x\n", get_msg_from_ap());
+		goto fail;
+	}
+
+fail:
 	logtoall("fail@AP error\n\n");
 	return;
 
 allgood:
-	logtoall("ap working: %x\n\n", shit);
+	return;
 }
 
 

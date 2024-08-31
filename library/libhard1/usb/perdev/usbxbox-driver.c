@@ -320,5 +320,9 @@ int usbxbox_driver(struct item* usb, int xxx, struct item* xhci, int slot)
 		intfnode = (void*)perusb + intfnode->rfellow;
 		intfdesc = (void*)perusb + intfnode->real;
 	}
+
+	usb->kind = _usb_;
+	usb->type = _gpad_;
+	usb->vfmt = _xbox_;
 	return 0;
 }

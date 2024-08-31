@@ -54,10 +54,13 @@
 #define _bus_ hex32('b','u','s',0)
 #define _pci_ hex32('p','c','i',0)
 //
-#define _eth_ hex32('e','t','h',0)
 #define _wifi_ hex32('w','i','f','i')
 #define _bt_ hex32('b','t',0,0)
 //
+#define _eth_ hex32('e','t','h',0)
+#define _e1000_ hex64('e','1','0','0','0', 0, 0, 0)
+//
+#define _stor_ hex32('s','t','o','r')
 #define _mmc_ hex32('m','m','c',0)
 #define _ide_ hex32('i','d','e',0)
 #define _ahci_ hex32('a','h','c','i')
@@ -75,6 +78,13 @@
 #define _ptmx_ hex32('p','t','m','x')
 #define _uart_ hex32('u','a','r','t')
 #define _usb_ hex32('u','s','b',0)
+//
+#define _vmware_ hex64('v','m','w','a','r','e', 0, 0)
+#define _vbox_ hex32('v','b','o','x')
+#define _qemu_ hex32('q','e','m','u')
+//
+#define _xbox_ hex32('x','b','o','x')
+#define _sony_ hex32('s','o','n','y')
 //
 #define _src_ hex32('s','r','c',0)
 #define _dst_ hex32('d','s','t',0)
@@ -265,7 +275,7 @@
 #define _reality_ hex64('r','e','a','l','i','t','y', 0)
 #define _virtual_ hex64('v','i','r','t','u','a','l', 0)
 #define _mmio_ hex32('m','m','i','o')
-#define _port_ hex32('p','p','r','t')
+#define _port_ hex32('p','o','r','t')
 //
 #define _htmlroot_ hex64('h','t','m','l','r','o','o','t')
 #define _jsonroot_ hex64('j','s','o','n','r','o','o','t')
@@ -368,12 +378,6 @@
 #define _gbuf_ hex32('g','b','u','f')
 #define _ppll_ hex32('p','p','l','l')
 //
-#define _rgba_ hex32('r','g','b','a')
-#define _bgra8880_ hex64('b', 'g', 'r', 'a', '8', '8', '8', '0')
-#define _rgba8880_ hex64('r', 'g', 'b', 'a', '8', '8', '8', '0')
-#define _bgra8888_ hex64('b', 'g', 'r', 'a', '8', '8', '8', '8')
-#define _rgba8888_ hex64('r', 'g', 'b', 'a', '8', '8', '8', '8')
-//
 #define _cli_ hex32('c','l','i',0)
 #define _tui_ hex32('t','u','i',0)
 #define _tui256_ hex64('t','u','i','2','5','6',0,0)
@@ -398,7 +402,11 @@
 //
 #define _char_ hex32('c','h','a','r')
 #define _joy_ hex32('j','o','y',0)
-#define _kbd_ hex32('k','b','d',0)
+//
+#define _hub_ hex32('h','u','b',0)
+#define _kbd_ hex32('k','b','d', 0)
+#define _mouse_ hex64('m','o','u','s','e', 0, 0, 0)
+#define _gpad_ hex32('g','p','a','d')
 //
 #define _drag_ hex32('d','r','a','g')
 #define _drag_str_ hex64('d','r','a','g','s','t','r',0)
@@ -407,6 +415,12 @@
 #define _rgb_ hex32('r','g','b',0)
 #define _bgr_ hex32('b','g','r',0)
 #define _rgbx_ hex32('r','g','b','x')
+#define _rgba_ hex32('r','g','b','a')
+//
+#define _bgra8880_ hex64('b', 'g', 'r', 'a', '8', '8', '8', '0')
+#define _rgba8880_ hex64('r', 'g', 'b', 'a', '8', '8', '8', '0')
+#define _bgra8888_ hex64('b', 'g', 'r', 'a', '8', '8', '8', '8')
+#define _rgba8888_ hex64('r', 'g', 'b', 'a', '8', '8', '8', '8')
 //
 #define _bggr_ hex32('b','g','g','r')
 #define _rggb_ hex32('r','g','g','b')

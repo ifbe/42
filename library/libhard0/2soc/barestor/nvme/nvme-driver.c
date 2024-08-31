@@ -48,6 +48,10 @@ int nvme_mmioinit(struct item* dev, u8* mmio)
 {
 	nvme_print("mmio@%p{\n", mmio);
 	printmmio(mmio, 32);
+
+	dev->kind = _stor_;
+	dev->type = _nvme_;
+
 	nvme_print("}\n");
 	return 0;
 }

@@ -1,4 +1,5 @@
 #include "libhard.h"
+#define BIOSDATA 0x400
 #define PORT 0x3f8
 //
 u8 in8(u32 port);
@@ -94,6 +95,7 @@ void initboarddebug(struct item* dev)
 	if(0 == oemid)return;
 
 	if(0 == ncmp(oemid, "BOCHS ",6)){
+		//if(PORT != *(u16*)(BIOSDATA+0))return;
 		initboardserial();
 
         dev->onreader = (void*)boardserial_read;

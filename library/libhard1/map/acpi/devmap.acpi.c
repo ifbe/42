@@ -223,7 +223,7 @@ u64 acpi_getknowncores()
 
 
 static void* pcietable_addr = 0;
-int pcietable_size = 0;
+static int pcietable_size = 0;
 int acpi_getpcie(void** addr, int* size)
 {
 	if(0 == pcietable_addr)return 0;
@@ -269,8 +269,8 @@ void* acpi_getredirtbl()
 
 
 
-void* hpet_addr = 0;
-int hpet_replacepit = 0;
+static void* hpet_addr = 0;
+static int hpet_replacepit = 0;
 void* acpi_hpet_addr()
 {
 	return hpet_addr;
@@ -309,10 +309,13 @@ void acpi_DSDT(void* p)
 void acpi_FACP(void* p)
 {
 	struct FADT* fadt = p;
+	logtoall("FACP:ver=%d\n", fadt->h.revision);
 
 	u16 BootArchitectureFlags = fadt->BootArchitectureFlags;
 	logtoall("BootArchFlag:offs=%d,data=%x\n", (void*)&fadt->BootArchitectureFlags-p, BootArchitectureFlags);
-	if(0 == (BootArchitectureFlags&2))have8042 = 0;
+	if((fadt->h.revision > 1) && (0 == (BootArchitectureFlags&2)) ){
+		have8042 = 0;
+	}
 	if(BootArchitectureFlags&0x20)cmos_rtc_not_present = 1;
 
 	u16 port;

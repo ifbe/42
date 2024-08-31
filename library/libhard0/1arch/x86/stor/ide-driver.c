@@ -32,5 +32,9 @@ void ide_portinit(struct item* dev, u32 addr)
 	out32(0xcf8, addr+0x24);
 	logtoall("bar5=%x\n", in32(0xcfc));
 
+	dev->kind = _stor_;
+	dev->type = _ide_;
+	dev->vfmt = _port_;
+
     logtoall("}\n");
 }

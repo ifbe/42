@@ -760,7 +760,10 @@ int role_fromfile(struct item* obj, u8* str, int len)
 	priv->flen = 0;
 
 	len = openreadclose(str, 0, priv->buff, 0x2000);
-	if(len <= 0)return 0;
+	if(len <= 0){
+		logtoall("openreadclose: len=%d\n", len);
+		return 0;
+	}
 	//logtoall("%s", priv->buff);
 
 	role_fromtext(obj, priv->buff, len);
@@ -772,6 +775,7 @@ int role_fromfile(struct item* obj, u8* str, int len)
 
 int myml_create(struct item* obj, void* arg, int argc, u8** argv)
 {
+	logtoall("myml_create: %p enter\n",obj);
 	int j;
 	struct mymlctx* priv = memoryalloc(0x100000, 0);
 	obj->priv_ptr = priv;
@@ -789,7 +793,7 @@ int myml_create(struct item* obj, void* arg, int argc, u8** argv)
 		}
 	}
 
-	logtoall("myml_create: %p end\n",obj);
+	logtoall("myml_create: %p leave\n",obj);
 	return 0;
 }
 int myml_delete(struct item* obj)

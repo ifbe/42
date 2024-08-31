@@ -289,11 +289,11 @@ int bootservice_input(void* buf)
 	if(0 == H)return 0;
 
 	int ret;
-	while(1)
-	{
+	while(1){
 		ret = T->ConIn->ReadKeyStroke(T->ConIn, buf);
 		if(ret == EFI_SUCCESS)return 1;
 	}
+	return 0;
 }
 int bootservice_output(char* buf, int len)
 {

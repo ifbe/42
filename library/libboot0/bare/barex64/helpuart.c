@@ -8,12 +8,16 @@ void out8(u32 port, u8 data);
 
 
 
+static int enable = 0;
+
+
 
 int read8250_one(u8* buf)
 {
+	if(0 == enable)return -1;
+
 	int j = 0;
-	if((in8(PORT + 5) & 1) != 0)
-	{
+	if( (in8(PORT + 5) & 1) != 0 ){
 		buf[0] = in8(PORT);
 		j = 1;
 	}
@@ -21,9 +25,10 @@ int read8250_one(u8* buf)
 }
 int lowlevel_input(u8* buf, int len)
 {
+	if(0 == enable)return -1;
+
 	int j,ret;
-	for(j=0;j<len;j++)
-	{
+	for(j=0;j<len;j++){
 		ret = read8250_one(buf+j);
 		if(ret == 0)break;
 	}
@@ -35,9 +40,10 @@ int lowlevel_input(u8* buf, int len)
 
 int write8250_one(u8 data)
 {
+	if(0 == enable)return -1;
+
 	int j=0;
-	while((in8(PORT + 5) & 0x20) == 0)
-	{
+	while((in8(PORT + 5) & 0x20) == 0){
 		j++;
 		if(j>0xffffff)return 0;
 	}
@@ -46,6 +52,8 @@ int write8250_one(u8 data)
 }
 int lowlevel_output(char* buf, int len)
 {
+	if(0 == enable)return -1;
+
 	int j;
 	for(j=0;j<len;j++)write8250_one(buf[j]);
 	return j;
@@ -54,8 +62,16 @@ int lowlevel_output(char* buf, int len)
 
 
 
+void lowlevelserial_disable(){
+	enable = 0;
+}
+
+
+
+
 void freeserial()
 {
+	enable = 0;
 }
 void initserial()
 {
@@ -67,5 +83,6 @@ void initserial()
 	out8(PORT + 2, 0xC7);//Enable FIFO, clear them, with 14-byte threshold
 	out8(PORT + 4, 0x0B);//IRQs enabled, RTS/DSR set
 
+	enable = 1;
 	lowlevel_output("42!\n", 4);
 }

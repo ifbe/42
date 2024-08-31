@@ -698,6 +698,10 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	perstor->bulkout = outaddr;
 	perstor->blocksize = blocksize;
 	perstor->totalsize = totalsize;
+
+//------------------------important infomation------------------
+	usb->kind = _usb_;
+	usb->type = _stor_;
 	usb->ongiving = (void*)usbstor_ongive;
 	usb->ontaking = (void*)usbstor_ontake;
 

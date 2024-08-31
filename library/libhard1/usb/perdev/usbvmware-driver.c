@@ -222,5 +222,7 @@ int usbvmware_driver(struct item* usb,int xxx, struct item* xhci,int slot)
 	intfdesc = usbdesc_offs2addr(perusb, intfnode->real);
 	usbvmware_perintf(usb,xxx, xhci,slot, intfnode,intfdesc);
 
+	usb->type = _mouse_;
+	usb->vfmt = _vmware_;
 	return 0;
 }

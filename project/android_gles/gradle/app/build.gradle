@@ -40,8 +40,8 @@ android {
         }
     }
     namespace 'com.example.native_activity'
-
 }
+
 beforeEvaluate {
     println "app beforeEvaluate"
 }
@@ -56,7 +56,7 @@ afterEvaluate {
         println "copy.before"
         copy{
             from "../../../../datafile"
-            into "build/intermediates/assets/debug/datafile"
+            into "build/intermediates/assets/debug/mergeDebugAssets/datafile"
         }
         println "copy.after"
     }
