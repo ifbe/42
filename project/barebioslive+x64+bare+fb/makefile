@@ -1,23 +1,34 @@
 project=$(shell pwd)
 library?=../../library
-linker?=ld
-elf2bin?=objcopy
-CC:=gcc
-CF="-c -O2 -I../lib1 -fPIC -ffreestanding -fno-stack-protector -mno-sse2 -mno-red-zone -Wno-address-of-packed-member"
+
+CC=gcc
+CF="-c -O2 -fPIC -ffreestanding -fno-stack-protector -mno-sse2 -mno-red-zone -Wno-address-of-packed-member -I../lib1"
+
+LD=ld
+LF=-T link.ld
+
+CP=objcopy
 
 ifeq ($(filter cross,$(MAKECMDGOALS)),cross)
     CC := x86_64-elf-gcc
+	LD := x86_64-elf-ld
+	CP := x86_64-elf-objcopy
 endif
+
+
+
 
 linux:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	make -s link
+	make -s elf2bin
 cross:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
-	make -s link linker=x86_64-elf-ld elf2bin=x86_64-elf-objcopy
+	make -s link LD=$(LD)
+	make -s elf2bin CP=$(CP)
 
 .PHONY:libboot0
 libboot0:
 	mkdir -p $@
-	make -s -C $(library)/$@ DIR=$(project)/$@ CC=$(CC) CF=$(CF) bare
+	make -s -C $(library)/$@ DIR=$(project)/$@ CC=$(CC) CF=$(CF) barebioslive
 .PHONY:libboot1
 libboot1:
 	mkdir -p $@
@@ -48,13 +59,15 @@ libuser1:
 	make -s -C $(library)/$@ DIR=$(project)/$@ CC=$(CC) CF=$(CF)
 link:
 	mv libboot0/entry.o .
-	$(linker) -T link.ld entry.o \
+	$(LD) $(LF) \
+	entry.o \
 	libboot0/*.o libboot1/*.o \
 	libhard0/*.o libhard1/*.o \
 	libsoft0/*.o libsoft1/*.o \
 	libuser0/*.o libuser1/*.o \
 	-o 42.elf
-	$(elf2bin) -O binary 42.elf 42.bin
+elf2bin:
+	$(CP) -O binary 42.elf 42.bin
 
 copy:
 	cp 42.bin ../../../live/mntdir/

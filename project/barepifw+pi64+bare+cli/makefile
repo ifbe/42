@@ -19,7 +19,7 @@ all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	$(library)/libuser1/*.o
 	aarch64-elf-objcopy 42.elf -O binary kernel8.img
 libboot0:
-	make -s -C $(library)/libboot0 AS=$(AS) CC=$(CC) CF=$(CF) rpi
+	make -s -C $(library)/libboot0 AS=$(AS) CC=$(CC) CF=$(CF) barerpi
 libboot1:
 	make -s -C $(library)/libboot1 AS=$(AS) CC=$(CC) CF=$(CF)
 libhard0:

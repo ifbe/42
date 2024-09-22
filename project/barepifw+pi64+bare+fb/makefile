@@ -17,7 +17,7 @@ all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 .PHONY:libboot0
 libboot0:
 	mkdir -p $@
-	make -s -C $(library)/$@ DIR=$(project)/$@ AS=$(AS) CC=$(CC) CF=$(CF) rpi
+	make -s -C $(library)/$@ DIR=$(project)/$@ AS=$(AS) CC=$(CC) CF=$(CF) barerpi
 .PHONY:libboot1
 libboot1:
 	mkdir -p $@

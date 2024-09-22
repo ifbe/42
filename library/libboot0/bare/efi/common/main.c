@@ -1,11 +1,7 @@
-#include <stdint.h>
-#include <efi.h>
-#include <efilib.h>
+#include <lib/data.c>
 #include "libboot.h"
 void gethandleandefitab(void** handle, void** table);
 void sethandleandefitab(void* handle, void* table);
-
-
 
 
 EFI_STATUS efi_main(EFI_HANDLE handle, EFI_SYSTEM_TABLE* efitab)
@@ -24,4 +20,6 @@ EFI_STATUS efi_main(EFI_HANDLE handle, EFI_SYSTEM_TABLE* efitab)
 
 	return EFI_SUCCESS;
 }
-//void atexit(){}
+void _relocate()
+{
+}
