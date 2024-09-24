@@ -21,6 +21,9 @@ SECTIONS
    *(.text)
    *(.text.*)
    *(.gnu.linkonce.t.*)
+_binary_start_ = .;
+   *(.binary)
+_binary_end_ = .;
    . = ALIGN(16);
   }
   _etext = .;
@@ -49,9 +52,6 @@ SECTIONS
    *(.bss)
    *(COMMON)
    *(.rel.local)
-_binary_start_ = .;
-   *(.binary)
-_binary_end_ = .;
   }
   .note.gnu.build-id : { *(.note.gnu.build-id) }
 

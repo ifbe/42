@@ -1,21 +1,25 @@
 project=$(shell pwd)
 library=../../library
 
+
+
+
+#asm
 AS=as
 AF=
-
+#c
 CC=gcc
 CF=-c -fPIC -ffreestanding -fno-stack-protector -mno-sse2 -mno-red-zone -Wno-address-of-packed-member -I$(library)/lib1
 CF_GNUEFI=-fshort-wchar -DGNU_EFI_USE_MS_ABI -I$(library)/lib0/gnu-efi -I$(library)/lib0/gnu-efi/inc -I$(library)/lib0/gnu-efi/inc/x86_64 -I$(library)/lib0/gnu-efi/inc/protocol
-
+#link
 LD=ld
 LF=-nostdlib -znocombreloc -T link.ld -shared -Bsymbolic
-
+#objcopy
 CP=objcopy
 
 ifeq ($(filter cross,$(MAKECMDGOALS)),cross)
 	AS := x86_64-elf-as
-    CC := x86_64-elf-gcc
+	CC := x86_64-elf-gcc
 	LD := x86_64-elf-ld
 	CP := x86_64-elf-objcopy
 endif
@@ -64,8 +68,9 @@ libuser1:
 	make -s -C $(library)/$@ DIR=$(project)/$@ CC=$(CC) CF="$(CF)"
 link:
 	mv libboot0/start.o .
+	mv libboot0/main.o .
 	$(LD) $(LF) \
-	start.o \
+	start.o main.o \
 	libboot0/*.o libboot1/*.o \
 	libhard0/*.o libhard1/*.o \
 	libsoft0/*.o libsoft1/*.o \
