@@ -3,11 +3,11 @@
 .globl _start
 _start:
 	subq $8, %rsp
-.newabi:
+
 	movq %rcx, %rdi
 	movq %rdx, %rsi
 	call efi_main
-.exit:
+
 	addq $8, %rsp
 	ret
 

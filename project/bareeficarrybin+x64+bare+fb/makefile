@@ -5,40 +5,103 @@ library=../../library
 
 
 #asm
-AS=x86_64-elf-as
+AS=as
 AF=
 #c
-CC=x86_64-elf-gcc
-CF=-c -fPIC -ffreestanding -fno-stack-protector -mno-sse2 -mno-red-zone -Wno-address-of-packed-member -I$(library)/lib1
+CC=gcc
+CF=-c -O2 -fPIC -ffreestanding -fno-stack-protector -mno-sse2 -mno-red-zone -Wno-address-of-packed-member -I$(library)/lib1
 CF_GNUEFI=-fshort-wchar -DGNU_EFI_USE_MS_ABI -I$(library)/lib0/gnu-efi -I$(library)/lib0/gnu-efi/inc -I$(library)/lib0/gnu-efi/inc/x86_64 -I$(library)/lib0/gnu-efi/inc/protocol
 #link
-LD=x86_64-elf-ld
-LF=-nostdlib -znocombreloc -T link.ld -shared -Bsymbolic
+LD=ld
+LF=-T kernel.ld
 #objcopy
-CP=x86_64-elf-objcopy
+CP=objcopy
+#linux(make), non-linux(make cross)
+ifeq ($(filter cross,$(MAKECMDGOALS)),cross)
+	AS := x86_64-elf-as
+	CC := x86_64-elf-gcc
+	LD := x86_64-elf-ld
+	CP := x86_64-elf-objcopy
+endif
 
 
 
 
-all:
-	make -s gnuefi
-	make -s addbin
+linux:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	make -s link
-	make -s elf2pe
-gnuefi:
-	$(AS) $(AF) $(library)/libboot0/bare/efi/carrybin/start.S -o start.o
-	$(CC) $(CF) $(CF_GNUEFI) $(library)/libboot0/bare/efi/carrybin/main.c -o main.o
-addbin:
-	dd if=/dev/zero of=test.bin bs=1M count=1
-	$(CP) --add-section .binary=test.bin main.o
+	make -s elf2bin
+	make -f makefile.bin2pe
+cross:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
+	make -s link LD=$(LD)
+	make -s elf2bin CP=$(CP)
+	make -f makefile.bin2pe cross
+
+.PHONY:libboot0
+libboot0:
+	mkdir -p $@
+	make -s -C $(library)/$@ DIR=$(project)/$@ AS=$(AS) AF=$(AF) CC=$(CC) CF="$(CF) $(CF_GNUEFI)" bareeficarrybin
+.PHONY:libboot1
+libboot1:
+	mkdir -p $@
+	make -s -C $(library)/$@ DIR=$(project)/$@ CC=$(CC) CF="$(CF)"
+.PHONY:libhard0
+libhard0:
+	mkdir -p $@
+	make -s -C $(library)/$@ DIR=$(project)/$@ CC=$(CC) CF="$(CF)" barex64
+.PHONY:libhard1
+libhard1:
+	mkdir -p $@
+	make -s -C $(library)/$@ DIR=$(project)/$@ CC=$(CC) CF="$(CF)"
+.PHONY:libsoft0
+libsoft0:
+	mkdir -p $@
+	make -s -C $(library)/$@ DIR=$(project)/$@ CC=$(CC) CF="$(CF)" bare
+.PHONY:libsoft1
+libsoft1:
+	mkdir -p $@
+	make -s -C $(library)/$@ DIR=$(project)/$@ CC=$(CC) CF="$(CF)"
+.PHONY:libuser0
+libuser0:
+	mkdir -p $@
+	make -s -C $(library)/$@ DIR=$(project)/$@ CC=$(CC) CF="$(CF)" barefb
+.PHONY:libuser1
+libuser1:
+	mkdir -p $@
+	make -s -C $(library)/$@ DIR=$(project)/$@ CC=$(CC) CF="$(CF)"
 link:
-	$(LD) $(LF) start.o main.o -o bootx64.so
-elf2pe:
-	$(CP) -j .text -j .sdata -j .data -j .dynamic -j .dynsym -j .rel -j .rela -j .reloc --target=efi-app-x86_64 bootx64.so bootx64.efi
+	mv libboot0/main.o kernel-main.o
+	$(LD) $(LF) \
+	kernel-main.o \
+	libboot0/*.o libboot1/*.o \
+	libhard0/*.o libhard1/*.o \
+	libsoft0/*.o libsoft1/*.o \
+	libuser0/*.o libuser1/*.o \
+	-o kernel.elf
+elf2bin:
+	$(CP) -O binary kernel.elf kernel.bin
+
+
+
+
+macmount:
+	hdiutil attach -mountpoint mntdir test.img
+	mkdir -p mntdir/efi/boot
+	ls -l mntdir/efi/boot
+maccopy:
+	cp BOOTX64.EFI mntdir/efi/boot
+	ls -l mntdir/efi/boot
+macumount:
+	hdiutil detach mntdir
+macremove:
+	rm test.img
+macall:
+	make -s macmount
+	make -s maccopy
+	make -s macumount
 
 
 
 
 clean:
 	rm -rf lib*/*.o
-	rm -f *.o *.so *.efi *.EFI
+	rm -f *.o *.so *.elf *.efi *.EFI *.bin

@@ -1,14 +1,18 @@
 project=$(shell pwd)
 library?=../../library
 
+
+
+
+#c
 CC=gcc
 CF="-c -O2 -fPIC -ffreestanding -fno-stack-protector -mno-sse2 -mno-red-zone -Wno-address-of-packed-member -I../lib1"
-
+#link
 LD=ld
 LF=-T link.ld
-
+#objcopy
 CP=objcopy
-
+#linux(make), non-linux(make cross)
 ifeq ($(filter cross,$(MAKECMDGOALS)),cross)
     CC := x86_64-elf-gcc
 	LD := x86_64-elf-ld

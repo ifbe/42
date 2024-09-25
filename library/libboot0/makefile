@@ -74,6 +74,20 @@ bareefisysvabi_c_o = $(patsubst %.c, %.o, $(bareefisysvabi_c))
 bareefisysvabi:$(bareefisysvabi_s_o) $(bareefisysvabi_c_o)
 
 
+bareeficarrybin_c = \
+bare/efi/common/main.c \
+bare/efi/common/helpenv.c \
+bare/efi/common/helpkbd.c \
+bare/efi/common/helpuart.c \
+bare/initer.c \
+bare/memory.c \
+origin.c
+bareeficarrybin_o = $(patsubst %.c, %.o, $(bareeficarrybin_c))
+
+.PHONY:bareeficarrybin
+bareeficarrybin:$(bareeficarrybin_o)
+
+
 
 
 #--------app myos--------
