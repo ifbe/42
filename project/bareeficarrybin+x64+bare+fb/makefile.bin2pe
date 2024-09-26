@@ -27,25 +27,17 @@ endif
 
 
 
-linux:
-	make -f makefile.bin2pe gnuefi
-	make -f makefile.bin2pe addbin
-	make -f makefile.bin2pe link
-	make -f makefile.bin2pe elf2pe
-cross:
-	make -f makefile.bin2pe gnuefi AS=$(AS) CC=$(CC)
-	make -f makefile.bin2pe addbin CP=$(CP)
-	make -f makefile.bin2pe link LD=$(LD)
-	make -f makefile.bin2pe elf2pe CP=$(CP)
-gnuefi:
+linux:pe
+cross:pe
+pe:so
+	$(CP) -j .text -j .sdata -j .data -j .dynamic -j .dynsym -j .rel -j .rela -j .reloc --target=efi-app-x86_64 loader.so loader.efi
+so:objx
+	$(LD) $(LF) loader-start.o loader-main.o -o loader.so
+objx:obj
+	$(CP) --add-section .binary=kernel.bin loader-main.o
+obj:
 	$(AS) $(AF) $(library)/libboot0/bare/efi/carrybin/loader-start.S -o loader-start.o
 	$(CC) $(CF) $(CF_GNUEFI) $(library)/libboot0/bare/efi/carrybin/loader-main.c -o loader-main.o
-addbin:
-	$(CP) --add-section .binary=kernel.bin loader-main.o
-link:
-	$(LD) $(LF) loader-start.o loader-main.o -o loader.so
-elf2pe:
-	$(CP) -j .text -j .sdata -j .data -j .dynamic -j .dynsym -j .rel -j .rela -j .reloc --target=efi-app-x86_64 loader.so loader.efi
 
 
 

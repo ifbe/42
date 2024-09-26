@@ -27,13 +27,22 @@ endif
 
 
 
-linux:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
-	make -s link
-	make -s elf2pe
-cross:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
-	make -s link LD=$(LD)
-	make -s elf2pe CP=$(CP)
-
+linux:pe
+cross:pe
+pe:so
+	$(CP) -j .text -j .sdata -j .data -j .dynamic -j .dynsym -j .rel -j .rela -j .reloc --target=efi-app-x86_64 bootx64.so bootx64.efi
+so:elf
+	mv libboot0/start.o .
+	mv libboot0/main.o .
+	$(LD) $(LF) \
+	start.o main.o \
+	libboot0/*.o libboot1/*.o \
+	libhard0/*.o libhard1/*.o \
+	libsoft0/*.o libsoft1/*.o \
+	libuser0/*.o libuser1/*.o \
+	-o bootx64.so
+elf:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
+	echo 1111
 .PHONY:libboot0
 libboot0:
 	mkdir -p $@
@@ -66,18 +75,6 @@ libuser0:
 libuser1:
 	mkdir -p $@
 	make -s -C $(library)/$@ DIR=$(project)/$@ CC=$(CC) CF="$(CF)"
-link:
-	mv libboot0/start.o .
-	mv libboot0/main.o .
-	$(LD) $(LF) \
-	start.o main.o \
-	libboot0/*.o libboot1/*.o \
-	libhard0/*.o libhard1/*.o \
-	libsoft0/*.o libsoft1/*.o \
-	libuser0/*.o libuser1/*.o \
-	-o bootx64.so
-elf2pe:
-	$(CP) -j .text -j .sdata -j .data -j .dynamic -j .dynsym -j .rel -j .rela -j .reloc --target=efi-app-x86_64 bootx64.so bootx64.efi
 
 
 

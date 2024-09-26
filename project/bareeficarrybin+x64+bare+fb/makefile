@@ -27,15 +27,21 @@ endif
 
 
 
-linux:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
-	make -s link
-	make -s elf2bin
+linux:bin
 	make -f makefile.bin2pe
-cross:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
-	make -s link LD=$(LD)
-	make -s elf2bin CP=$(CP)
+cross:bin
 	make -f makefile.bin2pe cross
-
+bin:elf
+	$(CP) -O binary kernel.elf kernel.bin
+elf:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
+	mv libboot0/main.o kernel-main.o
+	$(LD) $(LF) \
+	kernel-main.o \
+	libboot0/*.o libboot1/*.o \
+	libhard0/*.o libhard1/*.o \
+	libsoft0/*.o libsoft1/*.o \
+	libuser0/*.o libuser1/*.o \
+	-o kernel.elf
 .PHONY:libboot0
 libboot0:
 	mkdir -p $@
@@ -68,17 +74,6 @@ libuser0:
 libuser1:
 	mkdir -p $@
 	make -s -C $(library)/$@ DIR=$(project)/$@ CC=$(CC) CF="$(CF)"
-link:
-	mv libboot0/main.o kernel-main.o
-	$(LD) $(LF) \
-	kernel-main.o \
-	libboot0/*.o libboot1/*.o \
-	libhard0/*.o libhard1/*.o \
-	libsoft0/*.o libsoft1/*.o \
-	libuser0/*.o libuser1/*.o \
-	-o kernel.elf
-elf2bin:
-	$(CP) -O binary kernel.elf kernel.bin
 
 
 
@@ -104,4 +99,5 @@ macall:
 
 clean:
 	rm -rf lib*/*.o
+	rmdir lib*
 	rm -f *.o *.so *.elf *.efi *.EFI *.bin

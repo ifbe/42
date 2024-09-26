@@ -21,6 +21,9 @@ SECTIONS
    *(.text)
    *(.text.*)
    *(.gnu.linkonce.t.*)
+_binary_start_ = .;
+   *(.binary)
+_binary_end_ = .;
    . = ALIGN(16);
   }
   _etext = .;
@@ -36,9 +39,6 @@ SECTIONS
   .data :
   {
    _data = .;
-_binary_start_ = .;
-   *(.binary)
-_binary_end_ = .;
    *(.rodata*)
    *(.got.plt)
    *(.got)
