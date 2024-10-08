@@ -7,18 +7,18 @@ CF:=-c -O2 -fPIC
 
 #--------bare rpi os--------
 barerpi_c = \
-bare/rpi/main.c \
-bare/rpi/helpenv.c \
-bare/rpi/helpgpio.c \
-bare/rpi/helpuart.c \
+bare/rpi/fw/main.c \
+bare/rpi/fw/helpenv.c \
+bare/rpi/fw/helpgpio.c \
+bare/rpi/fw/helpuart.c \
 bare/initer.c \
 bare/memory.c \
 origin.c
-barerpi_o = $(patsubst %.c, %.o, $(rpi_c))
+barerpi_o = $(patsubst %.c, %.o, $(barerpi_c))
 
 .PHONY:barerpi
 barerpi:$(barerpi_o)
-	$(AS) -c bare/rpi/entry.s -o $(DIR)/entry.o
+	$(AS) -c bare/rpi/fw/entry.s -o $(DIR)/entry.o
 
 
 

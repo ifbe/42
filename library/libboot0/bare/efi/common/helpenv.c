@@ -9,7 +9,16 @@
 //
 static EFI_HANDLE H;
 static EFI_SYSTEM_TABLE* T;
-//tables
+//memmap
+#define BYTE_PER_DESC 0x30
+#define DESC_PER_UEFI 4096
+struct meminfo_t{
+	UINTN byteperdesc;
+	UINTN byteperuefi;
+	u8 memmap[BYTE_PER_DESC * DESC_PER_UEFI];
+}__attribute__((packed));
+static struct meminfo_t meminfo;
+//devmap
 static u8 table_mps[]     = {0x2f, 0x2d, 0x9d, 0xeb, 0x88, 0x2d, 0xd3, 0x11, 0x9a, 0x16, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d};
 static u8 table_acpi[]    = {0x30, 0x2d, 0x9d, 0xeb, 0x88, 0x2d, 0xd3, 0x11, 0x9a, 0x16, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d};
 static u8 table_acpi2[]   = {0x71, 0xe8, 0x68, 0x88, 0xf1, 0xe4, 0xd3, 0x11, 0xbc, 0x22, 0x00, 0x80, 0xc7, 0x3c, 0x88, 0x81};
@@ -24,10 +33,6 @@ static int w = 0;
 static int h = 0;
 static int fbw = 0;
 static int fbh = 0;
-//memmap
-#define BYTE_PER_DESC 0x30
-#define DESC_PER_UEFI 4096
-static u8 memmap[BYTE_PER_DESC * DESC_PER_UEFI];
 
 
 
@@ -42,6 +47,34 @@ void sethandleandefitab(void* handle, void* table)
 	H = handle;
 	T = table;
 }
+
+
+
+
+u32 memmap_type()
+{
+	return _efi_;
+}
+void* memmap_addr()
+{
+	return &meminfo;
+}
+
+
+
+
+u32 devmap_type()
+{
+	return _acpi_;
+}
+void* devmap_addr()
+{
+    return rsdptr;
+}
+
+
+
+
 void getscreen(void** _buf, u64* _fmt, int* _w, int* _h, int* _fbw, int* _fbh)
 {
 	*_buf = lfb;
@@ -51,18 +84,49 @@ void getscreen(void** _buf, u64* _fmt, int* _w, int* _h, int* _fbw, int* _fbh)
 	*_fbw = fbw;
 	*_fbh = fbh;
 }
-void* getmemmap()
+
+
+
+
+int bootservice_input(void* buf)
 {
-	return memmap;
+	if(0 == H)return 0;
+
+	int ret;
+	while(1){
+		ret = T->ConIn->ReadKeyStroke(T->ConIn, buf);
+		if(ret == EFI_SUCCESS)return 1;
+	}
+	return 0;
 }
-void* getdevmap()
+int bootservice_output(char* buf, int len)
 {
-    return rsdptr;
+	if(0 == H)return 0;
+
+	int j;
+	unsigned short temp[2] = {0,0};
+	for(j=0;j<len;j++)
+	{
+		if(buf[j] == '\n')
+		{
+			T->ConOut->OutputString(T->ConOut, L"\r\n");
+		}
+		else
+		{
+			temp[0] = buf[j];
+			T->ConOut->OutputString(T->ConOut, temp);
+		}
+	}
+	return 0;
 }
 
 
 
 
+void uefi_version()
+{
+	logtoall("efiver=%x\n", T->Hdr.Revision);
+}
 void runtimeservice_reboot()
 {
 	//wrong
@@ -72,6 +136,54 @@ void runtimeservice_gettime()
 {
 	//wrong
 	T->RuntimeServices->GetTime(0, 0);
+}
+
+
+
+
+void uefi_tables()
+{
+	//uefi version
+	int j;
+	for(j=0;j<T->NumberOfTableEntries;j++){
+		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_mps, 16)){
+			logtoall("@%p: mps\n", T->ConfigurationTable[j].VendorTable);
+			printmemory(T->ConfigurationTable[j].VendorTable, 16);
+			continue;
+		}
+		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_acpi, 16)){
+			logtoall("@%p: acpi\n", T->ConfigurationTable[j].VendorTable);
+			printmemory(T->ConfigurationTable[j].VendorTable, 16);
+			rsdptr = T->ConfigurationTable[j].VendorTable;
+			continue;
+		}
+		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_acpi2, 16)){
+			logtoall("@%p: acpi2\n", T->ConfigurationTable[j].VendorTable);
+			printmemory(T->ConfigurationTable[j].VendorTable, 16);
+			rsdptr = T->ConfigurationTable[j].VendorTable;
+			continue;
+		}
+		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_smbios, 16)){
+			logtoall("@%p: smbios\n", T->ConfigurationTable[j].VendorTable);
+			printmemory(T->ConfigurationTable[j].VendorTable, 16);
+			continue;
+		}
+		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_smbios3, 16)){
+			logtoall("@%p: smbios3\n", T->ConfigurationTable[j].VendorTable);
+			printmemory(T->ConfigurationTable[j].VendorTable, 16);
+			continue;
+		}
+		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_sal, 16)){
+			logtoall("@%p: sal\n", T->ConfigurationTable[j].VendorTable);
+			printmemory(T->ConfigurationTable[j].VendorTable, 16);
+			continue;
+		}
+		else{
+			u32* p = (u32*)&T->ConfigurationTable[j].VendorGuid;
+			logtoall("@%p: unknown: 0x%x,0x%x,0x%x,0x%x\n", T->ConfigurationTable[j].VendorTable, p[0], p[1], p[2], p[3]);
+			printmemory(T->ConfigurationTable[j].VendorTable, 16);
+		}
+	}
 }
 
 
@@ -214,18 +326,21 @@ int bootservice_graphic()
 
 	return 0;
 }
+
+
+
+
 int bootservice_exit()
 {
 	//GetMemoryMap
 	UINT32 ver;
 	UINTN key;
-	UINTN byteperuefi = BYTE_PER_DESC * DESC_PER_UEFI;
-	UINTN byteperdesc;
+	meminfo.byteperuefi = BYTE_PER_DESC * DESC_PER_UEFI;
 	int ret = T->BootServices->GetMemoryMap(
-		&byteperuefi,
-		(EFI_MEMORY_DESCRIPTOR*)memmap,
+		&meminfo.byteperuefi,
+		(EFI_MEMORY_DESCRIPTOR*)meminfo.memmap,
 		&key,
-		&byteperdesc,
+		&meminfo.byteperdesc,
 		&ver
 	);
 	if(EFI_SUCCESS != ret){
@@ -233,17 +348,15 @@ int bootservice_exit()
 		return -1;
 	}
 	else{
-		logtoall("@GetMemoryMap:buf=%p,len=%x,key=%x,sz=%x,ver=%x\n",
-			memmap, byteperuefi,
-			key,
-			byteperdesc,
-			ver
+		logtoall("@GetMemoryMap:buf=%p,onelen=%x,alllen=%x,key=%x,ver=%x\n",
+			meminfo.memmap, meminfo.byteperdesc, meminfo.byteperuefi,
+			key, ver
 		);
 
 		int j;
 		EFI_MEMORY_DESCRIPTOR* desc;
-		for(j=0;j<byteperuefi / byteperdesc;j++){
-			desc = (void*)(memmap + byteperdesc*j);
+		for(j=0;j<meminfo.byteperuefi / meminfo.byteperdesc;j++){
+			desc = (void*)(meminfo.memmap + meminfo.byteperdesc*j);
 			logtoall("%04x: type=%x, pbuf=%llx, vbuf=%llx, size=%llx, attr=%llx\n",
 				j,
 				desc->Type,
@@ -260,12 +373,12 @@ int bootservice_exit()
 	for(j=0;j<3;j++){
 		//key may change after each call to exitbootservice
 
-		byteperuefi = BYTE_PER_DESC * DESC_PER_UEFI;
+		meminfo.byteperuefi = BYTE_PER_DESC * DESC_PER_UEFI;
 		ret = T->BootServices->GetMemoryMap(
-			&byteperuefi,
-			(EFI_MEMORY_DESCRIPTOR*)memmap,
+			&meminfo.byteperuefi,
+			(EFI_MEMORY_DESCRIPTOR*)meminfo.memmap,
 			&key,
-			&byteperdesc,
+			&meminfo.byteperdesc,
 			&ver
 		);
 		if(EFI_SUCCESS != ret){
@@ -283,89 +396,6 @@ int bootservice_exit()
 	}
 
 	return 0;
-}
-int bootservice_input(void* buf)
-{
-	if(0 == H)return 0;
-
-	int ret;
-	while(1){
-		ret = T->ConIn->ReadKeyStroke(T->ConIn, buf);
-		if(ret == EFI_SUCCESS)return 1;
-	}
-	return 0;
-}
-int bootservice_output(char* buf, int len)
-{
-	if(0 == H)return 0;
-
-	int j;
-	unsigned short temp[2] = {0,0};
-	for(j=0;j<len;j++)
-	{
-		if(buf[j] == '\n')
-		{
-			T->ConOut->OutputString(T->ConOut, L"\r\n");
-		}
-		else
-		{
-			temp[0] = buf[j];
-			T->ConOut->OutputString(T->ConOut, temp);
-		}
-	}
-	return 0;
-}
-
-
-
-
-void uefi_version()
-{
-	logtoall("efiver=%x\n", T->Hdr.Revision);
-}
-void uefi_tables()
-{
-	//uefi version
-	int j;
-	for(j=0;j<T->NumberOfTableEntries;j++){
-		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_mps, 16)){
-			logtoall("@%p: mps\n", T->ConfigurationTable[j].VendorTable);
-			printmemory(T->ConfigurationTable[j].VendorTable, 16);
-			continue;
-		}
-		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_acpi, 16)){
-			logtoall("@%p: acpi\n", T->ConfigurationTable[j].VendorTable);
-			printmemory(T->ConfigurationTable[j].VendorTable, 16);
-			rsdptr = T->ConfigurationTable[j].VendorTable;
-			continue;
-		}
-		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_acpi2, 16)){
-			logtoall("@%p: acpi2\n", T->ConfigurationTable[j].VendorTable);
-			printmemory(T->ConfigurationTable[j].VendorTable, 16);
-			rsdptr = T->ConfigurationTable[j].VendorTable;
-			continue;
-		}
-		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_smbios, 16)){
-			logtoall("@%p: smbios\n", T->ConfigurationTable[j].VendorTable);
-			printmemory(T->ConfigurationTable[j].VendorTable, 16);
-			continue;
-		}
-		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_smbios3, 16)){
-			logtoall("@%p: smbios3\n", T->ConfigurationTable[j].VendorTable);
-			printmemory(T->ConfigurationTable[j].VendorTable, 16);
-			continue;
-		}
-		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_sal, 16)){
-			logtoall("@%p: sal\n", T->ConfigurationTable[j].VendorTable);
-			printmemory(T->ConfigurationTable[j].VendorTable, 16);
-			continue;
-		}
-		else{
-			u32* p = (u32*)&T->ConfigurationTable[j].VendorGuid;
-			logtoall("@%p: unknown: 0x%x,0x%x,0x%x,0x%x\n", T->ConfigurationTable[j].VendorTable, p[0], p[1], p[2], p[3]);
-			printmemory(T->ConfigurationTable[j].VendorTable, 16);
-		}
-	}
 }
 
 

@@ -1,10 +1,12 @@
 #include "libhard.h"
 //
-void* getmemmap();
+u32 memmap_type();
+void* memmap_addr();
 void parsememmap_bios(void*);
 void parsememmap_uefi(void*);
 //
-void* getdevmap();
+u32 devmap_type();
+void* devmap_addr();
 void parsedevmap_acpi(void*);
 void parsedevmap_dts(void*);
 //
@@ -32,11 +34,27 @@ void initvmtool();
 //must run before every thing else, (this cant print to serial or screen)
 void initmap()
 {
-	//mem
-	parsememmap_uefi(getmemmap());
+	//memmap
+	u32 mt = memmap_type();
+	if(_bios_ == mt){
+		struct item* memmap = driver_alloc_fromtype(_memmap_);
+		parsememmap_uefi(memmap_addr());
+	}
+	else if(_efi_ == mt){
+		struct item* memmap = driver_alloc_fromtype(_memmap_);
+		parsememmap_uefi(memmap_addr());
+	}
 
-	//acpi
-	parsedevmap_acpi(getdevmap());
+	//devmap
+	u32 dt = devmap_type();
+	if(_acpi_ == dt){
+		struct item* devmap = driver_alloc_fromtype(_devmap_);
+		parsedevmap_acpi(devmap_addr());
+	}
+	else if(_dtb_ == dt){
+		struct item* devmap = driver_alloc_fromtype(_devmap_);
+		parsedevmap_acpi(devmap_addr());
+	}
 }
 
 

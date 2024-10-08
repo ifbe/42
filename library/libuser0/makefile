@@ -66,7 +66,7 @@ barefb_c = \
 barefb_o = $(patsubst %.c, %.o, $(barefb_c))
 
 pibarefb_c = \
-2d-window/os-bare/bare.pibarefb.c
+2d-window/os-bare/bare.rpifb.c
 pibarefb_o = $(patsubst %.c, %.o, $(pibarefb_c))
 
 .PHONY:barecli

@@ -22,7 +22,7 @@ void initsdhci_bcm2711sdcard(void*, int offs);
 //bt
 void initrpibt();
 //typec
-void brcmxhci_init();
+void brcmxhci_init(void*);
 void brcmdwc2_init();
 //pcie
 void brcmpcie_init();
@@ -39,6 +39,7 @@ void initdevmap()
 	void* dtb = getdtb();
 	if(0 == dtb)return;
 
+	struct item* devmap = driver_alloc_fromtype(_devmap_);
 	parsedevmap_dtb(dtb);
 }
 void initmap()
@@ -74,15 +75,16 @@ void initarch()
 	struct item* p;
 
 	//timer
-	p = device_alloc_prepobj(_dev_, _tmr_, 0, 0);
+	p = device_alloc_fromtype(_tmr_);
 	initsystmr(p);
 
 	//cpu
-	p = device_alloc_prepobj(_dev_, _cpu_, 0, 0);
+	p = device_alloc_fromtype(_cpu_);
 	initcpu_bsp(p);
 	initcpu_ap(p);
 
 	//mbox
+	p = device_alloc_fromtype(_mbox_);
 	initmbox();
 }
 
@@ -113,13 +115,14 @@ void initbcm2837()
 	struct item* p;
 
 	//sdhost: it's sdcard on pi3, it's none on qemu
-	p = device_alloc_prepobj(_dev_, _mmc_, 0, 0);
+	p = device_alloc_fromtype(_mmc_);
 	initsdhost(p);
 
 	//sdhci_old: it's wifi on pi3, it's sdcard on qemu
-	p = device_alloc_prepobj(_dev_, _mmc_, 0, 0);
+	p = device_alloc_fromtype(_mmc_);
 	initsdhci_bcm283xsdcard(p, SDHCI_OFFS_OLD);
 
+	p = device_alloc_fromtype(_dwc2_);
 	brcmdwc2_init();
 }
 
@@ -149,32 +152,42 @@ void initbcm2711()
 	struct item* p;
 
 	//sdhost: can be confiured to use on gpio 22-26(sd0)
-	p = device_alloc_prepobj(_dev_, _mmc_, 0, 0);
+	p = device_alloc_fromtype(_mmc_);
 	initsdhost(p);
 
 	//sdhci_new: pi4.sdcard or cm4.emmc
-	p = device_alloc_prepobj(_dev_, _mmc_, 0, 0);
+	p = device_alloc_fromtype(_mmc_);
 	initsdhci_bcm2711sdcard(p, SDHCI_OFFS_NEW);
 
 	//sdhci_old: wifi		//todo
-	p = device_alloc_prepobj(_dev_, _wifi_, 0, 0);
+	p = device_alloc_fromtype(_wifi_);
 	initsdhci_wifi(p, SDHCI_OFFS_OLD);
-
+/*
 	//uart0: bt
-	p = device_alloc_prepobj(_dev_, _bt_, 0, 0);
+	p = device_alloc_fromtype(_bt_);
 	initrpibt();
-
+*/
 	//typec: dwc2 or internal_xhci
-	brcmxhci_init();
-	brcmdwc2_init();
-
+	if(0){
+		p = device_alloc_fromtype(_xhci_);
+		brcmxhci_init(p);
+	}
+	else{
+		p = device_alloc_fromtype(_dwc2_);
+		brcmdwc2_init();
+	}
+/*
 	//pcie: a lot of things
+	p = device_alloc_fromtype(_pcie_);
 	brcmpcie_init();
 	//rpiextxhci_init();
+*/
 }
 void initsoc()
 {
 	//pinctrl
+	struct item* p;
+	p = device_alloc_fromtype(_pinmgr_);
 	initpinmgr();
 
 	//soc, board

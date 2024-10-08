@@ -92,7 +92,7 @@ void* origin_alloc_fromarg(u64 type, void* func, int argc, u8** argv)
 		tmp = memoryalloc(0x1000000, 0);
 		//openreadclose("universe.bin", 0, ori, 0x1000000);
 		birth(tmp);
-		logtoall("type=%.8s, func@%p, argc=%d, argv@%p\n", &type, func, argc, argv);
+		logtoall("type=%.8s, func@%p, argc=%d, argv@%p\n\n", &type, func, argc, argv);
 		tmp->type = type;
 		return tmp;
 	}
@@ -102,7 +102,7 @@ void* origin_alloc_fromarg(u64 type, void* func, int argc, u8** argv)
 	case _efimain_:{
 		tmp = (void*)(0x1000000);
 		birth(tmp);
-		logtoall("type=%.8s, func@%p, argc=%d, argv@%p\n", &type, func, argc, argv);
+		logtoall("type=%.8s, func@%p, argc=%d, argv@%p\n\n", &type, func, argc, argv);
 
 		tmp->type = type;
 		tmp->priv_ptr = argv;

@@ -325,21 +325,33 @@ void pinmgr_gpio4653_sdhcinew()
 
 
 
-int gpioread()
+int gpio_read()
 {
 	return 0;
 }
-int gpiowrite()
+int gpio_write()
 {
 	return 0;
 }
-int gpiostop()
+
+
+int gpio_delete()
 {
 	return 0;
 }
-int gpiostart()
+int gpio_create()
 {
 	return 0;
+}
+
+
+int gpio_free(_obj* obj)
+{
+        return 0;
+}
+_obj* gpio_alloc(u64 type, char* path)
+{
+        return 0;
 }
 
 

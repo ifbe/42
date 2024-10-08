@@ -1,8 +1,8 @@
 #include "libuser.h"
 void* supply_alloc();
 void* supply_recycle(void*);
-int wndmgr_take(void*,void*, void*,int, void*,int, void*,int);
-int wndmgr_give(void*,void*, void*,int, void*,int, void*,int);
+int wndmgr_take(void*,void*, void*,int, p64,int, void*,int);
+int wndmgr_give(void*,void*, void*,int, p64,int, void*,int);
 //
 int mbox_call(unsigned char ch);
 

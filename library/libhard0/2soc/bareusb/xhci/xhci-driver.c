@@ -87,6 +87,7 @@ struct EndpointDescriptor{
 #define SPEED_SSP_2x1 5
 #define SPEED_SSP_1x2 6
 #define SPEED_SSP_2x2 7
+/*
 static char* speed2string[] = {
 "unknown",			//0
 
@@ -105,6 +106,26 @@ static char* speed2string[] = {
 //"usb4 20gbps"
 //"usb4 20gbps 2lane"
 };
+*/
+char* speed2string(int id){
+	switch(id){
+	case 1:
+		return "usb1 12mbps";
+	case 2:
+		return "usb1 1.5mbps";
+	case 3:
+		return "usb2 480mbps";
+	case 4:
+		return "usb3 5gbps";
+	case 5:
+		return "usb3 10gbps";
+	case 6:
+		return "usb3 5gbps 2lane";
+	case 7:
+		return "usb3 10gbps 2lane";
+	}
+	return "unknown";
+}
 
 
 //
@@ -112,12 +133,27 @@ static char* speed2string[] = {
 #define SLOTSTATE_DEFAULT 1
 #define SLOTSTATE_ADDRESSED 2
 #define SLOTSTATE_CONFIGURED 3
+/*
 static char* slotstate2string[] = {
 "disabled/enabled",		//0
 "default",				//1
 "addressed",			//2
 "configured"			//3
 };
+*/
+char* slotstate2string(int id){
+	switch(id){
+	case 0:
+		return "disabled/enabled";
+	case 1:
+		return "default";
+	case 2:
+		return "addressed";
+	case 3:
+		return "configured";
+	}
+	return "unknown";
+}
 
 
 //
@@ -126,6 +162,7 @@ static char* slotstate2string[] = {
 #define EPSTATE_HALTED 2
 #define EPSTATE_STOPPED 3
 #define EPSTATE_ERROR 4
+/*
 static char* epstate2string[] = {
 "disabled",		//0
 "running",		//1
@@ -133,6 +170,22 @@ static char* epstate2string[] = {
 "stopped",		//3
 "error",		//4
 };
+*/
+char* epstate2string(int id){
+	switch(id){
+	case 0:
+		return "disabled";
+	case 1:
+		return "running";
+	case 2:
+		return "halted";
+	case 3:
+		return "stopped";
+	case 4:
+		return "error";
+	}
+	return "unknown";
+}
 
 
 //eptype
@@ -144,6 +197,7 @@ static char* epstate2string[] = {
 #define EPType_IsochIn      5
 #define EPType_BulkIn       6
 #define EPType_InterruptIn  7
+/*
 static char* eptype2string[] = {
 "invalid",		//0
 "isoch,out",	//1
@@ -154,6 +208,28 @@ static char* eptype2string[] = {
 "bulk,in",		//6
 "interrupt,in",	//7
 };
+*/
+char* eptype2string(int id){
+	switch(id){
+	case 0:
+		return "invalid";
+	case 1:
+		return "isoch,out";
+	case 2:
+		return "bulk,out";
+	case 3:
+		return "interrupt,out";
+	case 4:
+		return "control,bidir";
+	case 5:
+		return "isoch,in";
+	case 6:
+		return "bulk,in";
+	case 7:
+		return "interrupt,in";
+	}
+	return "unknown";
+}
 
 
 //commmon
@@ -1132,7 +1208,7 @@ int xhci_AddressDevice(struct item* xhci, int slot)
 	xhci_print("rootport=%x,routestring=%x\n",rootport,routestring);
 
 	u32 usbspeed = slotdata->myctx.devctx.usbspeed;
-	xhci_print("speed=%s\n", speed2string[usbspeed&7]);
+	xhci_print("speed=%s\n", speed2string(usbspeed&7));
 
 //-------------from speed know maxpacksz-------------
 	u32 packetsize;
@@ -1194,7 +1270,7 @@ int xhci_AddressDevice(struct item* xhci, int slot)
 	u32 slotstate,ep0state;
 	slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
 	ep0state = (*(u32*)(slotdata->hcctx + contextsize))&0x3;
-	if((slotstate<SLOTSTATE_ADDRESSED)|(ep0state!=EPSTATE_RUNNING))xhci_print("slotstate=%s, epstate=%s\n", slotstate2string[slotstate%4], epstate2string[ep0state%5]);
+	if((slotstate<SLOTSTATE_ADDRESSED)|(ep0state!=EPSTATE_RUNNING))xhci_print("slotstate=%s, epstate=%s\n", slotstate2string(slotstate%4), epstate2string(ep0state%5));
 
 	//command
 	lo = ((u64)incon) & 0xffffffff;
@@ -1209,7 +1285,7 @@ int xhci_AddressDevice(struct item* xhci, int slot)
 	//after
 	slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
 	ep0state = (*(u32*)(slotdata->hcctx + contextsize))&0x3;
-	if((slotstate<SLOTSTATE_ADDRESSED)|(ep0state!=EPSTATE_RUNNING))xhci_print("slotstate=%s, epstate=%s\n", slotstate2string[slotstate%4], epstate2string[ep0state%5]);
+	if((slotstate<SLOTSTATE_ADDRESSED)|(ep0state!=EPSTATE_RUNNING))xhci_print("slotstate=%s, epstate=%s\n", slotstate2string(slotstate%4), epstate2string(ep0state%5));
 
 	xhci_print("}AddressDevice\n");
 	return 1;
@@ -1254,7 +1330,7 @@ int xhci_EvaluateContext_hub(struct item* xhci, int slot, struct HubDescriptor* 
 	u32 slotstate,ep0state;
 	slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
 	ep0state = (*(u32*)(slotdata->hcctx + contextsize))&0x3;
-	if((slotstate<SLOTSTATE_ADDRESSED)|(ep0state!=EPSTATE_RUNNING))xhci_print("slotstate=%s, epstate=%s\n", slotstate2string[slotstate%4], epstate2string[ep0state%5]);
+	if((slotstate<SLOTSTATE_ADDRESSED)|(ep0state!=EPSTATE_RUNNING))xhci_print("slotstate=%s, epstate=%s\n", slotstate2string(slotstate%4), epstate2string(ep0state%5));
 
 	//command
 	lo = ((u64)incon) & 0xffffffff;
@@ -1268,7 +1344,7 @@ int xhci_EvaluateContext_hub(struct item* xhci, int slot, struct HubDescriptor* 
 	//after
 	slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
 	ep0state = (*(u32*)(slotdata->hcctx + contextsize))&0x3;
-	if((slotstate<SLOTSTATE_ADDRESSED)|(ep0state!=EPSTATE_RUNNING))xhci_print("slotstate=%s, epstate=%s\n", slotstate2string[slotstate%4], epstate2string[ep0state%5]);
+	if((slotstate<SLOTSTATE_ADDRESSED)|(ep0state!=EPSTATE_RUNNING))xhci_print("slotstate=%s, epstate=%s\n", slotstate2string(slotstate%4), epstate2string(ep0state%5));
 
 	xhci_print("}EvaluateContext.ishub\n");
 	return 0;
@@ -1337,7 +1413,7 @@ int xhci_EvaluateContext(struct item* xhci, int slot, u8* devdesc, int len)
 	u32 slotstate,ep0state;
 	slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
 	ep0state = (*(u32*)(slotdata->hcctx + contextsize))&0x3;
-	if((slotstate<SLOTSTATE_ADDRESSED)|(ep0state!=EPSTATE_RUNNING))xhci_print("slotstate=%s, epstate=%s\n", slotstate2string[slotstate%4], epstate2string[ep0state%5]);
+	if((slotstate<SLOTSTATE_ADDRESSED)|(ep0state!=EPSTATE_RUNNING))xhci_print("slotstate=%s, epstate=%s\n", slotstate2string(slotstate%4), epstate2string(ep0state%5));
 
 	//command
 	lo = ((u64)incon) & 0xffffffff;
@@ -1352,7 +1428,7 @@ int xhci_EvaluateContext(struct item* xhci, int slot, u8* devdesc, int len)
 	//after
 	slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
 	ep0state = (*(u32*)(slotdata->hcctx + contextsize))&0x3;
-	if((slotstate<SLOTSTATE_ADDRESSED)|(ep0state!=EPSTATE_RUNNING))xhci_print("slotstate=%s, epstate=%s\n", slotstate2string[slotstate%4], epstate2string[ep0state%5]);
+	if((slotstate<SLOTSTATE_ADDRESSED)|(ep0state!=EPSTATE_RUNNING))xhci_print("slotstate=%s, epstate=%s\n", slotstate2string(slotstate%4), epstate2string(ep0state%5));
 
 byebye:
 	xhci_print("}EvaluateContext\n");
@@ -1472,7 +1548,7 @@ int xhci_ConfigureEndpoint(struct item* xhci, int slot, struct EndpointDescripto
 	u32 slotstate,epstate;
 	slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
 	epstate = (*(u32*)(slotdata->hcctx + contextsize*DCI))&0x3;
-	if((slotstate<SLOTSTATE_ADDRESSED)|(epstate!=EPSTATE_RUNNING))xhci_print("slotstate=%s, epstate=%s\n", slotstate2string[slotstate%4], epstate2string[epstate%5]);
+	if((slotstate<SLOTSTATE_ADDRESSED)|(epstate!=EPSTATE_RUNNING))xhci_print("slotstate=%s, epstate=%s\n", slotstate2string(slotstate%4), epstate2string(epstate%5));
 
 	//command
 	u32 lo = ((u64)incon) & 0xffffffff;
@@ -1487,7 +1563,7 @@ int xhci_ConfigureEndpoint(struct item* xhci, int slot, struct EndpointDescripto
 	//after
 	slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
 	epstate = (*(u32*)(slotdata->hcctx + contextsize*DCI))&0x3;
-	if((slotstate<SLOTSTATE_ADDRESSED)|(epstate!=EPSTATE_RUNNING))xhci_print("slotstate=%s, epstate=%s\n", slotstate2string[slotstate%4], epstate2string[epstate%5]);
+	if((slotstate<SLOTSTATE_ADDRESSED)|(epstate!=EPSTATE_RUNNING))xhci_print("slotstate=%s, epstate=%s\n", slotstate2string(slotstate%4), epstate2string(epstate%5));
 
 	xhci_print("}ConfigureEndpoint\n");
 	return 0;
@@ -1523,7 +1599,7 @@ int xhci_newdevunderhub(struct item* xhci, int parentslot, u32* portstatus, int 
 		speed = SPEED_FS;
 		if(portstatus[0] & HSHUB_PORTSTATUS_LOWSPEED)speed = SPEED_LS;
 		if(portstatus[0] & HSHUB_PORTSTATUS_HIGHSPEED)speed = SPEED_HS;
-		xhci_print("newdevunderhub: speed=%s\n", speed2string[speed&7]);
+		xhci_print("newdevunderhub: speed=%s\n", speed2string(speed&7));
 	}
 	childctx->rootport = parentctx->rootport;
 	childctx->routestring = hubport_countfrom1;
@@ -1567,7 +1643,7 @@ int xhci_ControlTransfer(struct item* xhci, int slot, struct UsbRequest* req, in
 	u32 slotstate,epstate;
 	slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
 	epstate = (*(u32*)(slotdata->hcctx + contextsize*DCI))&0x3;
-	if((slotstate<SLOTSTATE_ADDRESSED)|(epstate!=EPSTATE_RUNNING))xhci_print("slotstate=%s, epstate=%s\n", slotstate2string[slotstate%4], epstate2string[epstate%5]);
+	if((slotstate<SLOTSTATE_ADDRESSED)|(epstate!=EPSTATE_RUNNING))xhci_print("slotstate=%s, epstate=%s\n", slotstate2string(slotstate%4), epstate2string(epstate%5));
 
 	//
 	xhci_giveorder(xhci, slot | (DCI<<8));
@@ -1580,7 +1656,7 @@ int xhci_ControlTransfer(struct item* xhci, int slot, struct UsbRequest* req, in
 byebye:
 	slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
 	epstate = (*(u32*)(slotdata->hcctx + contextsize*DCI))&0x3;
-	if((slotstate<SLOTSTATE_ADDRESSED)|(epstate!=EPSTATE_RUNNING))xhci_print("slotstate=%s, epstate=%s\n", slotstate2string[slotstate%4], epstate2string[epstate%5]);
+	if((slotstate<SLOTSTATE_ADDRESSED)|(epstate!=EPSTATE_RUNNING))xhci_print("slotstate=%s, epstate=%s\n", slotstate2string(slotstate%4), epstate2string(epstate%5));
 /*	if(EPSTATE_HALTED == epstate){
 		xhci_ResetEndpoint(xhci, slot, 1);
 	}*/
@@ -1782,7 +1858,7 @@ void xhci_acceptport(struct item* xhci, int from0)
 	tmp = port[from0].PORTSC;
 	u32 state = (tmp >> 5) & 0xf;
 	u32 speed = (tmp >> 10) & 0xf;
-	xhci_print("portsc=%08x,linkstate=%x,speed=%s\n", tmp, state, speed2string[speed&7]);
+	xhci_print("portsc=%08x,linkstate=%x,speed=%s\n", tmp, state, speed2string(speed&7));
 
 	//alloc slot
 	int slot = xhci_EnableSlot(xhci);

@@ -5,10 +5,12 @@ SRC= \
 eth/eth.c \
 gpio/gpio.test.c \
 gpio/gpio.l298n.c \
-map/acpi/devmap.acpi.c \
-map/dts/devmap.dts.c \
-map/bios/memmap.bios.c \
-map/uefi/memmap.uefi.c \
+mapofdev/acpi/devmap.acpi.c \
+mapofdev/dts/devmap.dts.c \
+mapofdev/devmap.c \
+mapofmem/bios/memmap.bios.c \
+mapofmem/uefi/memmap.uefi.c \
+mapofmem/memmap.c \
 sensor/baro/baro.ms5611.c \
 sensor/gyro/gyro.l3gd20.c \
 sensor/pack/g_a_b.icm20789.c \

@@ -100,7 +100,7 @@ static int kernel_pollloop(struct item* wrk)
 		t0 = timeread_us();
 		heartbeat_poll = t0+1;
 
-		for(j=-10;j<10;j++){
+		for(j=-20;j<20;j++){
 			dev = &device[(j>=0) ? j : (maxdevlen+j)];
 			if( (_xhci_ == dev->type) | (_e1000_ == dev->type) ){
 				if(dev->ontaking)dev->ontaking(dev,0, 0,0, 0,0, 0,0);

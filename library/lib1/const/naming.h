@@ -48,11 +48,23 @@
 #define _pulser_ hex64('p','u','l','s','e','r', 0, 0)
 #define _waiter_ hex64('w','a','i','t','e','r', 0, 0)
 //
+#define _bios_ hex32('b','i','o','s')
+#define _efi_ hex32('e','f','i', 0)
+#define _coreboot_ hex64('c','o','r','e','b','o','o','t')
+#define _iboot_ hex64('i','b','o','o','t', 0, 0, 0)
+//
+#define _memmap_ hex64('m','e','m','m','a','p', 0, 0)
+#define _devmap_ hex64('d','e','v','m','a','p', 0, 0)
+//
+#define _acpi_ hex32('a','c','p','i')
+#define _dtb_ hex32('d','t','b', 0)
+//
 #define _cpu_ hex32('c','p','u',0)
 #define _irq_ hex32('i','r','q',0)
 #define _tmr_ hex32('t','m','r',0)
 #define _bus_ hex32('b','u','s',0)
-#define _pci_ hex32('p','c','i',0)
+#define _mbox_ hex32('m','b','o','x')
+#define _pinmgr_ hex64('p','i','n','m','g','r', 0, 0)
 //
 #define _wifi_ hex32('w','i','f','i')
 #define _bt_ hex32('b','t',0,0)
@@ -66,9 +78,19 @@
 #define _ahci_ hex32('a','h','c','i')
 #define _nvme_ hex32('n','v','m','e')
 //
+#define _uhci_ hex32('u','h','c','i')
+#define _ohci_ hex32('o','h','c','i')
 #define _ehci_ hex32('e','h','c','i')
 #define _xhci_ hex32('x','h','c','i')
+#define _dwc2_ hex32('d','w','c','2')
+//
+#define _usb_ hex32('u','s','b',0)
+#define _usb2_ hex32('u','s','b','2')
+#define _usb3_ hex32('u','s','b','3')
 #define _usb4_ hex32('u','s','b','4')
+//
+#define _pci_ hex32('p','c','i',0)
+#define _pcie_ hex32('p','c','i','e')
 //
 #define _dbg_ hex32('d','b','g',0)
 #define _i2c_ hex32('i','2','c',0)
@@ -77,7 +99,6 @@
 //
 #define _ptmx_ hex32('p','t','m','x')
 #define _uart_ hex32('u','a','r','t')
-#define _usb_ hex32('u','s','b',0)
 //
 #define _vmware_ hex64('v','m','w','a','r','e', 0, 0)
 #define _vbox_ hex32('v','b','o','x')
@@ -113,7 +134,7 @@
 #define _gpt_ hex32('g','p','t',0)
 //
 #define _bbp_ hex32('b','b','p',0)
-#define _efi_ hex32('e','f','i',0)
+#define _esp_ hex32('e','s','p',0)
 #define _fat_ hex32('f','a','t',0)
 #define _ntfs_ hex32('n','t','f','s')
 #define _rsvd_ hex32('r','s','v','d')
