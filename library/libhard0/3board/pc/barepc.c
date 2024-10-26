@@ -38,7 +38,7 @@ void initmap()
 	u32 mt = memmap_type();
 	if(_bios_ == mt){
 		struct item* memmap = driver_alloc_fromtype(_memmap_);
-		parsememmap_uefi(memmap_addr());
+		parsememmap_bios(memmap_addr());
 	}
 	else if(_efi_ == mt){
 		struct item* memmap = driver_alloc_fromtype(_memmap_);

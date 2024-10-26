@@ -118,10 +118,10 @@ static int kernel_pollloop(struct item* wrk)
 			supply_giveby(wnd,0, stack,2, 0,0, ev,0);
 		}
 
-		//200 time per sec
+		//100 time per sec
 		while(1){
 			t1 = timeread_us();
-			if(t0+5000 < t1)break;
+			if(t0+10000 < t1)break;
 			haltwaitforint();
 		}
 	}

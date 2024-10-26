@@ -15,11 +15,23 @@
 [C8000,EFFFF] BIOS Expansions
 [F0000,FFFFF] Motherboard BIOS
 */
-void* getmemmap()
+u32 memmap_type()
+{
+	return _bios_;
+}
+void* memmap_addr()
 {
 	return (void*)0x1000;
 }
-void* getdevmap()
+
+
+
+
+u32 devmap_type()
+{
+	return _acpi_;
+}
+void* devmap_addr()
 {
 	int j;
 	u64* p = (void*)0xe0000;
