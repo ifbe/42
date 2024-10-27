@@ -1,0 +1,29 @@
+<entity>
+x86core{
+fmt:x8664
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<style>
+freerect{
+c:0.1, 0.1
+q:0.8, 0.8
+}
+</style>
+
+
+<relation>
+(@opengl, @freerect) @ (@x86core, 0)
+</relation>
