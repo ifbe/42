@@ -123,10 +123,12 @@ endif()
 set(libhard1
 ${LIB42}/libhard1/gpio/gpio.test.c
 ${LIB42}/libhard1/gpio/gpio.l298n.c
-${LIB42}/libhard1/map/acpi/devmap.acpi.c
-${LIB42}/libhard1/map/dts/devmap.dts.c
-${LIB42}/libhard1/map/bios/memmap.bios.c
-${LIB42}/libhard1/map/uefi/memmap.uefi.c
+${LIB42}/libhard1/mapofdev/acpi/devmap.acpi.c
+${LIB42}/libhard1/mapofdev/dts/devmap.dts.c
+${LIB42}/libhard1/mapofdev/devmap.c
+${LIB42}/libhard1/mapofmem/bios/memmap.bios.c
+${LIB42}/libhard1/mapofmem/uefi/memmap.uefi.c
+${LIB42}/libhard1/mapofmem/memmap.c
 ${LIB42}/libhard1/sensor/baro/baro.ms5611.c
 ${LIB42}/libhard1/sensor/gyro/gyro.l3gd20.c
 ${LIB42}/libhard1/sensor/pack/g_a_b.icm20789.c

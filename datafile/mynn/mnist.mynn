@@ -1,0 +1,37 @@
+mnist(weight, bias, in, out){
+data:
+    dw
+    db
+chip:
+    forward : ann_forward
+    loss : squarediff
+    backward : backward
+wiring:
+    forward(weight, bias, in, out)
+    loss(in, out, dw, db)
+    backward(weight, bias, dw, db)
+}
+
+ann_forward(weight, bias, in, out){
+    out = in * weight + bias
+}
+
+squarediff(in, out, dw, db){
+data:
+    loss
+    d_out_w
+    d_out_b
+wiring:
+    loss = (out-in)**2 = (out**2) - (2*out*in) + (in**2)
+    //out = in * w + b
+    d_loss_out = 2*out - 2*in
+    d_out_w = in
+    d_out_b = 1
+    dw = d_loss_out * d_out_w = 2*(out-in)*in
+    db = 2*(out-in)
+}
+
+backward(weight, bias, dw, db){
+    weight -= dw * rate
+    bias -= dw * rate
+}

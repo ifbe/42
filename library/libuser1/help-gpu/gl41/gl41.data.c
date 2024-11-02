@@ -93,9 +93,9 @@ void gl41data_whcam(_obj* wnd, struct fstyle* area)
 	}
 
 	//x@[0,w), y@[0,h), z@[0,1024) -> x@[-1,1], y@[-1,1], z@[0.9,0.1]
-	v[0] = 0.0;
-	v[1] = 0.0;
-	v[2] = 2.0;
+	v[0] = wnd->whdf.fbwidth/2;
+	v[1] = wnd->whdf.fbheight/2;
+	v[2] = 500.0;
 	m[0][0] = 2.0 / ((area->vq[0]-area->vc[0]) * wnd->whdf.fbwidth);
 	m[0][3] =-1.0;
 	m[1][1] = 2.0 / ((area->vq[1]-area->vc[1]) * wnd->whdf.fbheight);
