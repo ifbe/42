@@ -33,8 +33,7 @@ static void x8664_create(_obj* act, void* arg, int argc, u8** argv)
 
 
 
-static char* reg = "ipivdpdvr0r1r1r3";
-static char* mod = "jmp\0calladd\0sub\0and\0orr\0mul\0div\0";
+
 static void x86core_draw_gl41_instructiondecoder(
 	_obj* act, struct style* part,
 	_obj* win, struct style* geom,
@@ -57,23 +56,18 @@ static void x86core_draw_gl41_instructiondecoder(
 	}
 	gl41string_center(ctx, 0x888888, vc,fs.vr,fs.vf, (u8*)"x8664", 5);
 }
-static float kreg[] = {
--3.5/4, -0.5,
--2.5/4, -0.5,
--1.5/4, -0.5,
--0.5/4, -0.5,
- 0.5/4, -0.5,
- 1.5/4, -0.5,
- 2.5/4, -0.5,
- 3.5/4, -0.5,
-};
+
+
+
+
 static float kkkk[] = {
-0.25, 0.25,
-0.75, 0.25,
-0.25, 0.75,
-0.75, 0.75,
+-0.5, 0.75,
+ 0.5, 0.75,
+-0.5, 0.25,
+ 0.5, 0.25,
 };
-static void x86core_draw_gl41_onecore(
+static char* ari = "jmp\0calladd\0sub\0and\0orr\0mul\0div\0";
+static void x86core_draw_gl41_arithmetic(
 	_obj* act, struct style* part,
 	_obj* win, struct style* geom,
 	_obj* ctx, struct style* area)
@@ -87,60 +81,159 @@ static void x86core_draw_gl41_onecore(
 
 	int j,k;
 	vec3 tc,tr,tf;
-
-	//instructiondecoder
-	struct fstyle fs;
-	for(j=0;j<3;j++){
-		fs.vr[j] = vr[j] * 0.45;
-		fs.vf[j] = vf[j] * 0.45;
-		fs.vt[j] = vu[j];
-		fs.vc[j] = vc[j] - vr[j]/2 + vf[j]/2 + vu[j]*0.1;
-	}
-	x86core_draw_gl41_instructiondecoder(act,part, win,(void*)&fs, ctx,area);
-
-
-	//add,sub,jmp...
-	for(j=0;j<3;j++){
-		fs.vr[j] = vr[j] * 0.45;
-		fs.vf[j] = vf[j] * 0.45;
-		fs.vt[j] = vu[j];
-		fs.vc[j] = vc[j] + vr[j]/2 + vf[j]/2 + vu[j]*0.1;
-	}
-	gl41line_rect(ctx, 0x888888, fs.vc,fs.vr,fs.vf);
-
 	for(j=0;j<3;j++){
 		tr[j] = vr[j] / 9;
 		tf[j] = vf[j] / 9;
 	}
 	for(j=0;j<4;j++){
-		for(k=0;k<3;k++)tc[k] = vc[k] + + vr[k]*kkkk[j*2+0] + vf[k]*kkkk[j*2+1] + vu[k]*0.1;
+		for(k=0;k<3;k++)tc[k] = vc[k] + vr[k]*kkkk[j*2+0] + vf[k]*kkkk[j*2+1] + vu[k]*0.1;
 		gl41solid_rect(ctx, 0x444444, tc, tr, tf);
 		for(k=0;k<3;k++)tc[k] += vu[k]*0.1;
-		gl41string_center(ctx, 0xff0000, tc, tr, tf, (u8*)mod+4*j, 4);
+		gl41string_center(ctx, 0xff0000, tc, tr, tf, (u8*)ari+4*j, 4);
 	}
+}
 
 
-	//ip,code,dp,data,r0,r1,r2,r3...
+
+
+static float kmc[] = {
+-0.5,  0,
+ 0.5,  0,
+};
+static char* mreg = "addrdata";
+static void x86core_draw_gl41_memorycontroller(
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
+{
+	//logtoall("%s\n", __func__);
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
+	gl41line_rect(ctx, 0x888888, vc,vr,vf);
+
+	int j,k;
+	vec3 tc,tr,tf;
+	for(j=0;j<3;j++){
+		tr[j] = vr[j] / 9;
+		tf[j] = vf[j] / 9;
+	}
+	for(j=0;j<2;j++){
+		for(k=0;k<3;k++)tc[k] = vc[k] + vr[k]*kmc[j*2+0] + vf[k]*kmc[j*2+1] + vu[k]*0.1;
+		gl41solid_rect(ctx, 0x444444, tc, tr, tf);
+		for(k=0;k<3;k++)tc[k] += vu[k]*0.1;
+		gl41string_center(ctx, 0xff, tc, tr, tf, (u8*)mreg+4*j, 4);
+	}
+}
+
+
+
+
+static float kreg[] = {
+-0.75,  0.5,
+-0.25,  0.5,
+ 0.25,  0.5,
+ 0.75,  0.5,
+-0.75, -0.5,
+-0.25, -0.5,
+ 0.25, -0.5,
+ 0.75, -0.5,
+};
+static char* reg = "ipivdpdvr0r1r1r3";
+static void x86core_draw_gl41_register(
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
+{
+	//logtoall("%s\n", __func__);
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
+	gl41line_rect(ctx, 0x888888, vc,vr,vf);
+
+	int j,k;
+	vec3 tc,tr,tf;
+	for(j=0;j<3;j++){
+		tr[j] = vr[j] / 9;
+		tf[j] = vf[j] / 9;
+	}
 	for(j=0;j<8;j++){
 		for(k=0;k<3;k++)tc[k] = vc[k] + vr[k]*kreg[j*2+0] + vf[k]*kreg[j*2+1] + vu[k]*0.1;
 		gl41solid_rect(ctx, 0x444444, tc, tr, tf);
 		for(k=0;k<3;k++)tc[k] += vu[k]*0.1;
 		gl41string_center(ctx, 0xff, tc, tr, tf, (u8*)reg+2*j, 2);
 	}
+}
 
+
+
+
+static float kwire[] = {
+-0.5,-0.1,-0.5, 0.1,		//insdec - memctrl
+-0.1, 0.5, 0.1, 0.5,		//insdec - ari
+-0.1, 0.1, 0.1,-0.1,		//insdec - reg
+-0.1,-0.5, 0.1,-0.5,		//memctrl - reg
+ 0.5, 0.1, 0.5,-0.1,		//ari - reg
+};
+static void x86core_draw_gl41_onecore(
+	_obj* act, struct style* part,
+	_obj* win, struct style* geom,
+	_obj* ctx, struct style* area)
+{
+	//logtoall("%s\n", __func__);
+	int j,k;
+	struct fstyle fs;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
+	gl41line_rect(ctx, 0x888888, vc,vr,vf);
+
+	//instructiondecoder
+	for(j=0;j<3;j++){
+		fs.vr[j] = vr[j] * 0.4;
+		fs.vf[j] = vf[j] * 0.4;
+		fs.vt[j] = vu[j];
+		fs.vc[j] = vc[j] - vr[j]/2 + vf[j]/2 + vu[j]*0.1;
+	}
+	x86core_draw_gl41_instructiondecoder(act,part, win,(void*)&fs, ctx,area);
+
+	//add,sub,jmp...
+	for(j=0;j<3;j++){
+		fs.vr[j] = vr[j] * 0.4;
+		fs.vf[j] = vf[j] * 0.4;
+		fs.vt[j] = vu[j];
+		fs.vc[j] = vc[j] + vr[j]/2 + vf[j]/2 + vu[j]*0.1;
+	}
+	x86core_draw_gl41_arithmetic(act,part, win,(void*)&fs, ctx,area);
+
+	//addr,data
+	for(j=0;j<3;j++){
+		fs.vr[j] = vr[j] * 0.4;
+		fs.vf[j] = vf[j] * 0.4;
+		fs.vt[j] = vu[j];
+		fs.vc[j] = vc[j] - vr[j]/2 - vf[j]/2 + vu[j]*0.1;
+	}
+	x86core_draw_gl41_memorycontroller(act,part, win,(void*)&fs, ctx,area);
+
+	//ip,dp,data,r0,r1,r2,r3...
+	for(j=0;j<3;j++){
+		fs.vr[j] = vr[j] * 0.4;
+		fs.vf[j] = vf[j] * 0.4;
+		fs.vt[j] = vu[j];
+		fs.vc[j] = vc[j] + vr[j]/2 - vf[j]/2 + vu[j]*0.1;
+	}
+	x86core_draw_gl41_register(act,part, win,(void*)&fs, ctx,area);
+
+	//wiring
 	vec3 ta;
 	vec3 tb;
-	for(j=0;j<4;j++){
+	for(j=0;j<5;j++){
 		for(k=0;k<3;k++){
-			ta[k] = vc[k] - 0.1*vr[k] + 0.5*vf[k] + vu[k]*0.1;
-			tb[k] = vc[k] + vr[k]*kkkk[j*2+0] + vf[k]*kkkk[j*2+1] + vu[k]*0.1;
-		}
-		gl41line(ctx, 0xff00ff, ta, tb);
-	}
-	for(j=0;j<8;j++){
-		for(k=0;k<3;k++){
-			ta[k] = vc[k] - 0.5*vr[k] + 0.1*vf[k] + vu[k]*0.1;
-			tb[k] = vc[k] + vr[k]*kreg[j*2+0] + vf[k]*kreg[j*2+1] + vu[k]*0.1;
+			ta[k] = vc[k] + vr[k]*kwire[j*4+0] + vf[k]*kwire[j*4+1] + vu[k]*0.1;
+			tb[k] = vc[k] + vr[k]*kwire[j*4+2] + vf[k]*kwire[j*4+3] + vu[k]*0.1;
 		}
 		gl41line(ctx, 0xff00ff, ta, tb);
 	}

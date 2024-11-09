@@ -33,7 +33,8 @@ static int vtouch_delete(_obj* act)
 static int vtouch_create(_obj* act, u8* str)
 {
 	struct privdata* priv = (void*)act->priv_256b;
-	priv->f[0].down.w0 = 0;
+	int j=0;
+	for(j=0;j<8;j++)priv->f[j].down.w0 = 0;
 	return 0;
 }
 
@@ -68,17 +69,20 @@ void vtouch_draw_gl41(
 		tf[j] = vf[j]/20;
 	}
 
-	ta[0] = (priv->f[0].curr.x0 / (float)wnd->whdf.width)*2-1.0;
-	ta[1] = 1.0-(priv->f[0].curr.y0 / (float)wnd->whdf.height)*2;
-	ta[2] = 0.5;
-	gl41solid_circle(wnd, 0x0000ff, ta,tr,tf);
+	int id;
+	for(id=0;id<8;id++){
+		ta[0] = (priv->f[id].curr.x0 / (float)wnd->whdf.width)*2-1.0;
+		ta[1] = 1.0-(priv->f[id].curr.y0 / (float)wnd->whdf.height)*2;
+		ta[2] = 0.5;
+		gl41solid_circle(wnd, 0x0000ff, ta,tr,tf);
 
-	if(priv->f[0].down.w0){
-		tb[0] = (priv->f[0].down.x0 / (float)wnd->whdf.width)*2-1.0;
-		tb[1] = 1.0-(priv->f[0].down.y0 / (float)wnd->whdf.height)*2;
-		tb[2] = 0.5;
-		gl41solid_circle(wnd, 0xff0000, tb,tr,tf);
-		gl41line_arrow(wnd, 0xffffff, tb, ta, vt);
+		if(priv->f[id].down.w0){
+			tb[0] = (priv->f[id].down.x0 / (float)wnd->whdf.width)*2-1.0;
+			tb[1] = 1.0-(priv->f[id].down.y0 / (float)wnd->whdf.height)*2;
+			tb[2] = 0.5;
+			gl41solid_circle(wnd, 0xff0000, tb,tr,tf);
+			gl41line_arrow(wnd, 0xffffff, tb, ta, vt);
+		}
 	}
 }
 void vtouch_draw_html(_obj* win, struct style* sty)
@@ -149,7 +153,24 @@ static void vtouch_bywnd_event(_obj* ent,void* foot, _syn* stack,int sp, struct 
 	int type = (ev->what&0xff);
 	int subt = (ev->what>>8)&0xff;
 	//logtoall("type=%x,subt=%x\n",type,subt);
-	if( ('t'==type) | ('p'==type) ){
+	if(0){
+	}
+	else if('t'==type){
+		struct privdata* priv = (void*)ent->priv_256b;
+
+		short* data = (void*)&ev->why;
+		int id = data[3]&0x7;
+		*(u64*)&priv->f[id].curr = ev->why;
+
+		if('+' == subt){
+			*(u64*)&priv->f[id].down = ev->why;
+			priv->f[id].down.w0 = 1;
+		}
+		else if('-' == subt){
+			priv->f[id].down.w0 = 0;
+		}
+	}
+	else if('p'==type){
 		struct privdata* priv = (void*)ent->priv_256b;
 		*(u64*)&priv->f[0].curr = ev->why;
 		if('+' == subt){
