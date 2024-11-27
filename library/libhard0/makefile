@@ -133,10 +133,6 @@ gpiod_c = \
 2soc/libgpiod/gpiod.c
 gpiod_o = $(patsubst %.c, %.o, $(gpiod_c))
 
-
-
-
-#---------------------gpio-------------------------
 armlinux:$(arm_o) $(linuxarm_o) $(dummygpio_o)
 
 pi32linux:$(arm_o) $(linuxpi32_o) $(bcm2835gpio_o)
@@ -151,6 +147,23 @@ pi64linux_wiringpi:$(arm64_o) $(linuxpi64_o) $(wiringpi_o)
 
 pi64linux_gpiod:$(arm64_o) $(linuxpi64_o) $(gpiod_o)
 
+
+
+
+#---------------------arm64 mac-------------------------
+macarm64_c = \
+2soc/inmac/mac.wire.bt.c \
+2soc/inmac/mac.wire.i2c.c \
+2soc/inmac/mac.wire.gpio.c \
+2soc/inmac/mac.wire.pci.c \
+2soc/inmac/mac.wire.spi.c \
+2soc/inmac/mac.wire.usb.c \
+2soc/inmac/mac.wire.wifi.c \
+2soc/inmac/mac.math.c \
+2soc/inmac/hardware.c
+macarm64_o = $(patsubst %.c, %.o, $(macarm64_c))
+
+macarm64:$(arm64_o) $(macarm64_o)
 
 
 
