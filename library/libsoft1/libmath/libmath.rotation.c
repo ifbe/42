@@ -169,15 +169,15 @@ void quaternion4eulerian(float* q, float* e)
 void quaternion2matthree(float* q, float* m)
 {
 	m[0] = 1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0;
-	m[1] = 2.0 * (q[0]*q[1] + q[2]*q[3]);
-	m[2] = 2.0 * (q[0]*q[2] - q[1]*q[3]);
+	m[1] =       (q[0]*q[1] + q[2]*q[3]) * 2.0;
+	m[2] =       (q[0]*q[2] - q[1]*q[3]) * 2.0;
 
-	m[3] = 2.0 * (q[0]*q[1] - q[2]*q[3]);
+	m[3] =       (q[0]*q[1] - q[2]*q[3]) * 2.0;
 	m[4] = 1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0;
-	m[5] = 2.0 * (q[1]*q[2] + q[0]*q[3]);
+	m[5] =       (q[1]*q[2] + q[0]*q[3]) * 2.0;
 
-	m[6] = 2.0 * (q[0]*q[2] + q[1]*q[3]);
-	m[7] = 2.0 * (q[1]*q[2] - q[0]*q[3]);
+	m[6] =       (q[0]*q[2] + q[1]*q[3]) * 2.0;
+	m[7] =       (q[1]*q[2] - q[0]*q[3]) * 2.0;
 	m[8] = 1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0;
 }
 //out(qx,qy,qz,qw) <- in(matrix)
@@ -195,21 +195,21 @@ void quaternion4matthree(float* q, float (*m)[3])
 //in(qx,qy,qz,qw) -> out(matrix)
 void quaternion2matfour(float* q, float* m)
 {
-	//1-2*(y*y+z*z), 2*(x*y-z*w), 2*(x*z+y*w)
-	//2*(x*y+z*w), 1-2*(x*x+z*z), 2*(y*z-x*w)
-	//2*(x*z-y*w), 2*(y*z+x*w), 1-2*(x*x+y*y)
+	//1-2*(y*y+z*z),   2*(x*y-z*w),   2*(x*z+y*w)
+	//  2*(x*y+z*w), 1-2*(x*x+z*z),   2*(y*z-x*w)
+	//  2*(x*z-y*w),   2*(y*z+x*w), 1-2*(x*x+y*y)
 	m[ 0] = 1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0;
-	m[ 1] = 2.0 * (q[0]*q[1] + q[2]*q[3]);
-	m[ 2] = 2.0 * (q[0]*q[2] - q[1]*q[3]);
+	m[ 1] =       (q[0]*q[1] + q[2]*q[3]) * 2.0;
+	m[ 2] =       (q[0]*q[2] - q[1]*q[3]) * 2.0;
 	m[ 3] = 0.0;
 
-	m[ 4] = 2.0 * (q[0]*q[1] - q[2]*q[3]);
+	m[ 4] =       (q[0]*q[1] - q[2]*q[3]) * 2.0;
 	m[ 5] = 1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0;
-	m[ 6] = 2.0 * (q[1]*q[2] + q[0]*q[3]);
+	m[ 6] =       (q[1]*q[2] + q[0]*q[3]) * 2.0;
 	m[ 7] = 0.0;
 
-	m[ 8] = 2.0 * (q[0]*q[2] + q[1]*q[3]);
-	m[ 9] = 2.0 * (q[1]*q[2] - q[0]*q[3]);
+	m[ 8] =       (q[0]*q[2] + q[1]*q[3]) * 2.0;
+	m[ 9] =       (q[1]*q[2] - q[0]*q[3]) * 2.0;
 	m[10] = 1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0;
 	m[11] = 0.0;
 
@@ -229,6 +229,18 @@ void quaternion4matfour(float* q, float (*m)[4])
 		q[1] = m[0][2] - m[2][0];
 		q[2] = m[1][0] - m[0][1];
 	}
+}
+void quaternion_aa(float* v, float* aa)
+{
+	float q[4];
+	quaternion4axismulangle(q, aa);
+	quaternion_rotate(v, q);
+}
+void quaternion_operation(float* v, float* axis, float angle)
+{
+	float q[4];
+	quaternion4axisandangle(q, axis, angle);
+	quaternion_rotate(v, q);
 }
 
 
@@ -282,12 +294,6 @@ void axismulangle4axisandangle(float* a, float* axis, float angle)
 	a[1] = axis[1] * tmp;
 	a[2] = axis[2] * tmp;
 }
-void quaternion_aa(float* v, float* aa)
-{
-	float q[4];
-	quaternion4axismulangle(q, aa);
-	quaternion_rotate(v, q);
-}
 
 
 
@@ -301,12 +307,6 @@ void axisandangle2quaternion(float* axis, float angle, float* q)
 void axisandangle4quaternion(float* axis, float* angle, float* q)
 {
 	quaternion2axisandangle(q, axis, angle);
-}
-void quaternion_operation(float* v, float* axis, float angle)
-{
-	float q[4];
-	quaternion4axisandangle(q, axis, angle);
-	quaternion_rotate(v, q);
 }
 
 

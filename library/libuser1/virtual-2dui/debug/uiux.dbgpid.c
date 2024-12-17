@@ -12,54 +12,80 @@ void dbgpid_draw_gl41(
 	float* vr = geom->fshape.vr;
 	float* vf = geom->fshape.vf;
 	float* vt = geom->fshape.vt;
-	gl41opaque_rect(ctx, 0x40ffd010, vc, vr, vf);
+	gl41opaque_rect(ctx, 0x44000000, vc, vr, vf);
 
 	struct style* sty = act->priv_ptr;
 	if(0 == sty)return;
 
-	int j;
+	float dw = ctx->whdf.fbwidth * vec3_getlen(vr) * 2;
+	float dh = ctx->whdf.fbheight* vec3_getlen(vf) * 2;
+	float sw = 30*8;
+	float eachsize = dw / sw;
+	float sh = dh / (eachsize*2);
+	logtoall("%f,%f\n", dw,dh);
+
+	int j,k;
 	vec3 tc,tr,tf,tt;
 	for(j=0;j<3;j++){
-		tc[j] = vc[j]-vr[j]+vf[j]*7/8;
-		tr[j] = vr[j]/20;
-		tf[j] = vf[j]/20;
+		tr[j] = vr[j] * 8 / sw;
+		tf[j] = vf[j] * 8 / sh;
 	}
-	gl41float(ctx,0xff0000, tc,tr,tf, sty->actual.displace_x[0]);
-	for(j=0;j<3;j++)tc[j] = vc[j]-vr[j]*2/3+vf[j]*7/8;
-	gl41float(ctx,0xff0000, tc,tr,tf, sty->actual.displace_x[1]);
-	for(j=0;j<3;j++)tc[j] = vc[j]-vr[j]/3+vf[j]*7/8;
-	gl41float(ctx,0xff0000, tc,tr,tf, sty->actual.displace_x[2]);
-	for(j=0;j<3;j++)tc[j] = vc[j]-vr[j]+vf[j]*6/8;
-	gl41float(ctx,0xff0000, tc,tr,tf, sty->actual.displace_v[0]);
-	for(j=0;j<3;j++)tc[j] = vc[j]-vr[j]*2/3+vf[j]*6/8;
-	gl41float(ctx,0xff0000, tc,tr,tf, sty->actual.displace_v[1]);
-	for(j=0;j<3;j++)tc[j] = vc[j]-vr[j]/3+vf[j]*6/8;
-	gl41float(ctx,0xff0000, tc,tr,tf, sty->actual.displace_v[2]);
-	for(j=0;j<3;j++)tc[j] = vc[j]-vr[j]+vf[j]*5/8;
-	gl41float(ctx,0xff0000, tc,tr,tf, sty->actual.displace_a[0]);
-	for(j=0;j<3;j++)tc[j] = vc[j]-vr[j]*2/3+vf[j]*5/8;
-	gl41float(ctx,0xff0000, tc,tr,tf, sty->actual.displace_a[1]);
-	for(j=0;j<3;j++)tc[j] = vc[j]-vr[j]/3+vf[j]*5/8;
-	gl41float(ctx,0xff0000, tc,tr,tf, sty->actual.displace_a[2]);
 
-	for(j=0;j<3;j++)tc[j] = vc[j]+vf[j]*7/8;
-	gl41float(ctx,0x0000ff, tc,tr,tf, sty->desire.displace_x[0]);
-	for(j=0;j<3;j++)tc[j] = vc[j]+vr[j]/3+vf[j]*7/8;
-	gl41float(ctx,0x0000ff, tc,tr,tf, sty->desire.displace_x[1]);
-	for(j=0;j<3;j++)tc[j] = vc[j]+vr[j]*2/3+vf[j]*7/8;
-	gl41float(ctx,0x0000ff, tc,tr,tf, sty->desire.displace_x[2]);
-	for(j=0;j<3;j++)tc[j] = vc[j]+vf[j]*6/8;
-	gl41float(ctx,0x0000ff, tc,tr,tf, sty->desire.displace_v[0]);
-	for(j=0;j<3;j++)tc[j] = vc[j]+vr[j]/3+vf[j]*6/8;
-	gl41float(ctx,0x0000ff, tc,tr,tf, sty->desire.displace_v[1]);
-	for(j=0;j<3;j++)tc[j] = vc[j]+vr[j]*2/3+vf[j]*6/8;
-	gl41float(ctx,0x0000ff, tc,tr,tf, sty->desire.displace_v[2]);
-	for(j=0;j<3;j++)tc[j] = vc[j]+vf[j]*5/8;
-	gl41float(ctx,0x0000ff, tc,tr,tf, sty->desire.displace_a[0]);
-	for(j=0;j<3;j++)tc[j] = vc[j]+vr[j]/3+vf[j]*5/8;
-	gl41float(ctx,0x0000ff, tc,tr,tf, sty->desire.displace_a[1]);
-	for(j=0;j<3;j++)tc[j] = vc[j]+vr[j]*2/3+vf[j]*5/8;
-	gl41float(ctx,0x0000ff, tc,tr,tf, sty->desire.displace_a[2]);
+	//actual displace
+	for(k=0;k<4;k++){
+		for(j=0;j<3;j++)tc[j] = vc[j] - vr[j]*(4-k)/4 + vf[j] - tf[j]*1;
+		gl41float(ctx,0xff0000, tc,tr,tf, sty->actual.displace_x[k]);
+	}
+	for(k=0;k<4;k++){
+		for(j=0;j<3;j++)tc[j] = vc[j] - vr[j]*(4-k)/4 + vf[j] - tf[j]*2;
+		gl41float(ctx,0xff0000, tc,tr,tf, sty->actual.displace_v[k]);
+	}
+	for(k=0;k<4;k++){
+		for(j=0;j<3;j++)tc[j] = vc[j] - vr[j]*(4-k)/4 + vf[j] - tf[j]*3;
+		gl41float(ctx,0xff0000, tc,tr,tf, sty->actual.displace_a[k]);
+	}
+
+	//actual angular
+	for(k=0;k<4;k++){
+		for(j=0;j<3;j++)tc[j] = vc[j] - vr[j]*(4-k)/4 - tf[j]*1;
+		gl41float(ctx,0xff0077, tc,tr,tf, sty->actual.angular_x[k]);
+	}
+	for(k=0;k<4;k++){
+		for(j=0;j<3;j++)tc[j] = vc[j] - vr[j]*(4-k)/4 - tf[j]*2;
+		gl41float(ctx,0xff0077, tc,tr,tf, sty->actual.angular_v[k]);
+	}
+	for(k=0;k<4;k++){
+		for(j=0;j<3;j++)tc[j] = vc[j] - vr[j]*(4-k)/4 - tf[j]*3;
+		gl41float(ctx,0xff0077, tc,tr,tf, sty->actual.angular_a[k]);
+	}
+
+	//desire displace
+	for(k=0;k<4;k++){
+		for(j=0;j<3;j++)tc[j] = vc[j] + vr[j]*k/4 + vf[j] - tf[j]*1;
+		gl41float(ctx,0x0000ff, tc,tr,tf, sty->desire.displace_x[k]);
+	}
+	for(k=0;k<4;k++){
+		for(j=0;j<3;j++)tc[j] = vc[j] + vr[j]*k/4 + vf[j] - tf[j]*2;
+		gl41float(ctx,0x0000ff, tc,tr,tf, sty->desire.displace_v[k]);
+	}
+	for(k=0;k<4;k++){
+		for(j=0;j<3;j++)tc[j] = vc[j] + vr[j]*k/4 + vf[j] - tf[j]*3;
+		gl41float(ctx,0x0000ff, tc,tr,tf, sty->desire.displace_a[k]);
+	}
+
+	//desire angular
+	for(k=0;k<4;k++){
+		for(j=0;j<3;j++)tc[j] = vc[j] + vr[j]*k/4 - tf[j]*1;
+		gl41float(ctx,0x7700ff, tc,tr,tf, sty->desire.angular_x[k]);
+	}
+	for(k=0;k<4;k++){
+		for(j=0;j<3;j++)tc[j] = vc[j] + vr[j]*k/4 - tf[j]*2;
+		gl41float(ctx,0x7700ff, tc,tr,tf, sty->desire.angular_v[k]);
+	}
+	for(k=0;k<4;k++){
+		for(j=0;j<3;j++)tc[j] = vc[j] + vr[j]*k/4 - tf[j]*3;
+		gl41float(ctx,0x7700ff, tc,tr,tf, sty->desire.angular_a[k]);
+	}
 }
 static void dbgpid_read_byworld_bywnd(_obj* ent,struct style* slot, _syn* stack,int sp)
 {

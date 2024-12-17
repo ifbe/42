@@ -447,6 +447,7 @@ int role_fromtext_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* 
 
 
 
+#define _shap_ hex32('s','h','a','p')	//shape
 #define _geom_ hex32('g','e','o','m')	//geometry
 #define _frus_ hex32('f','r','u','s')	//frustum
 #define _tran_ hex32('t','r','a','n')	//translation
@@ -514,7 +515,7 @@ int role_fromtext_foot(struct footlist foot[], int flen, u8* buf, int len)
 			propname = str;
 			str = -1;
 
-			if( (0 == subhash) | (_geom_ == subhash) ){
+			if( (0 == subhash) | (_geom_ == subhash) | (_shap_ == subhash) ){
 			switch(buf[propname]){
 			case 'l':parsefv(sty->fshape.vl, 4, buf+propdata, 99);break;
 			case 'r':parsefv(sty->fshape.vr, 4, buf+propdata, 99);break;
@@ -551,10 +552,14 @@ int role_fromtext_foot(struct footlist foot[], int flen, u8* buf, int len)
 
 			if( (0 == subhash) | (_rota_ == subhash) ){
 			switch(buf[propname]){
-			case '0':parsefv(sty->fmotion.angular_x, 4, buf+propdata, 99);break;
-			case '1':parsefv(sty->fmotion.angular_v, 4, buf+propdata, 99);break;
-			case '2':parsefv(sty->fmotion.angular_a, 4, buf+propdata, 99);break;
-			case '3':parsefv(sty->fmotion.angular_j, 4, buf+propdata, 99);break;
+			case '0':
+			case 'x':parsefv(sty->fmotion.angular_x, 4, buf+propdata, 99);break;
+			case '1':
+			case 'v':parsefv(sty->fmotion.angular_v, 4, buf+propdata, 99);break;
+			case '2':
+			case 'a':parsefv(sty->fmotion.angular_a, 4, buf+propdata, 99);break;
+			case '3':
+			case 'j':parsefv(sty->fmotion.angular_j, 4, buf+propdata, 99);break;
 			}//switch
 			}
 

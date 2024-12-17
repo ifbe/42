@@ -1,0 +1,176 @@
+<entity>
+drone{
+fmt:drone
+}
+scene{
+fmt:scene3d
+}
+
+sky{
+fmt:equirect
+arg:datafile/jpg/360d/texball-skysphere.jpg
+}
+gnd{
+fmt:ground
+}
+cam0{
+fmt:freecam
+}
+world{
+fmt:virtual
+}
+
+button{
+fmt:button
+}
+status{
+fmt:dbgpid
+}
+uiroot{
+fmt:virtual
+}
+
+control{
+fmt:dronecon
+}
+gravity{
+fmt:gravtest
+}
+cam3rd{
+fmt:cam3rd
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<bootup>
+pulser{
+fmt:pulser
+}
+</bootup>
+
+
+<style>
+carslot{
+}
+cargeom{
+c: 5.0, 0.0, 0.0
+r: 0.25, 0.0, 0.0
+f: 0.0, 0.25, 0.0
+t: 0.0, 0.0, 0.25
+
+0: 0.0, 0.0, 1.0, 0.5
+1: 0.0, 0.0, 1.0, 0.05235987755982988
+}
+
+dronslot{
+}
+drongeom{
+r: 0.25, 0.0, 0.0, 0.25
+f: 0.0, 0.25, 0.0, 0.25
+t: 0.0, 0.0, 0.05, 0.05
+
+j: 0.0, 0.0, 0.0
+a: 0.0, 0.0, 0.0
+v: 0.0, 0.0, 20.0
+x:-5.0, 0.0, 0.0
+0: 0.0, 0.0, 0.0, 1.0
+1: 0.0, 0.5, 0.8660254037844387, 3.0
+}
+
+skypart{
+}
+skygeom{
+c: 0.0, 0.0, 0.0
+r: 10000.0, 0.0, 0.0
+f: 0.0, 10000.0, 0.0
+t: 0.0, 0.0, 10000.0
+}
+
+gndpart{
+}
+gndgeom{
+c: 0.0, 0.0, 0.0
+r: 50.0, 0.0, 0.0
+f: 0.0, 50.0, 0.0
+t: 0.0, 0.0, 1.0
+}
+
+aaaapart{
+}
+aaaageom{
+c: 0.0, -2.0, 1.0
+r: 1.0, 0.0, 0.0
+f: 0.0, 1.0, 0.0
+t: 0.0, 0.0, 1.0
+
+L: 0.0, 0.0, 0.0,-0.01
+R: 0.0, 0.0, 0.0, 0.01
+B: 0.0, 0.0, 0.0,-0.01
+T: 0.0, 0.0, 0.0, 0.01
+N: 0.0, 0.0, 0.0, 0.01
+F: 0.0, 0.0, 0.0, 1000000000.0
+}
+butnrect{
+c:0.0, 0.0
+q:0.1, 0.1
+}
+statrect{
+c:0.5, 0.0
+q:1.0, 0.2
+}
+
+aaaarect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+bbbbrect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<relation>
+#scene item
+(scene, drongeom, 0) -> (drone, dronslot, 0)
+
+#3d item
+(world, 0, 0) -> (scene, 0, 0)
+(world, skygeom, 0) -> (sky, skypart, 0)
+(world, gndgeom, 0) -> (gnd, gndpart, 0)
+(world, aaaageom, 0) -> (cam0, aaaapart, 0)
+
+(uiroot, butnrect, 0) -> (button, 0, 0)
+(uiroot, statrect, 0) -> (status, 0, 0)
+
+(opengl, aaaarect, 0) -> (cam0, 0, a0)
+(opengl, bbbbrect, 0) -> (uiroot, 0, a0)
+
+#control.mouse: 3rd controller
+(cam3rd, 0, tar) -> (drone, 0, evby)
+(cam3rd, 0, cam) -> (cam0, 0, mind)
+
+#control.button
+(gravity, 0, 0) -> (scene, 0, 0)
+(button, 0, evto) -> (gravity, 0, ioby)
+
+#control.uidata
+(control, 0, dst) -> (drone, 0, con)
+(control, 0, dbg) -> (status, 0, data)
+
+#
+(pulser, 0, clk) -> (control, 0, clk)
+(pulser, 0, clk) -> (gravity, 0, clk)
+(@pulser, clk@2) @ (@opengl, clk)
+</relation>

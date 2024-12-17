@@ -1,6 +1,6 @@
 <entity>
-drone{
-fmt:drone
+aircraft{
+fmt:aircraft
 }
 scene{
 fmt:scene3d
@@ -31,7 +31,7 @@ fmt:virtual
 }
 
 control{
-fmt:dronecon
+fmt:aircraftcon
 }
 gravity{
 fmt:gravtest
@@ -61,73 +61,67 @@ fmt:pulser
 
 
 <style>
-carslot{
-}
-cargeom{
-c: 5.0, 0.0, 0.0
-r: 0.25, 0.0, 0.0
-f: 0.0, 0.25, 0.0
-t: 0.0, 0.0, 0.25
-
-0: 0.0, 0.0, 1.0, 0.5
-1: 0.0, 0.0, 1.0, 0.05235987755982988
-}
-
 dronslot{
 }
 drongeom{
-r: 0.25, 0.0, 0.0, 0.25
-f: 0.0, 0.25, 0.0, 0.25
-t: 0.0, 0.0, 0.05, 0.05
-
-j: 0.0, 0.0, 0.0
+shape{
+c: 0, 0, 10000
+r: 22.5, 0.0, 0.0
+f: 0.0, 23.5, 0.0
+t: 0.0, 0.0, 15
+}
+translation{
+j: 0.0, 0.0, 10000.0
 a: 0.0, 0.0, 0.0
 v: 0.0, 0.0, 20.0
 x:-5.0, 0.0, 0.0
+}
+rotation{
 0: 0.0, 0.0, 0.0, 1.0
 1: 0.0, 0.5, 0.8660254037844387, 3.0
+}
 }
 
 skypart{
 }
 skygeom{
 c: 0.0, 0.0, 0.0
-r: 10000.0, 0.0, 0.0
-f: 0.0, 10000.0, 0.0
-t: 0.0, 0.0, 10000.0
+r: 1000000.0, 0.0, 0.0
+f: 0.0, 1000000.0, 0.0
+t: 0.0, 0.0, 1000000.0
 }
 
 gndpart{
 }
 gndgeom{
 c: 0.0, 0.0, 0.0
-r: 50.0, 0.0, 0.0
-f: 0.0, 50.0, 0.0
+r: 10000.0, 0.0, 0.0
+f: 0.0, 10000.0, 0.0
 t: 0.0, 0.0, 1.0
 }
 
 aaaapart{
 }
 aaaageom{
-c: 0.0, -2.0, 1.0
+c: 0.0, -100.0, 100.0
 r: 1.0, 0.0, 0.0
 f: 0.0, 1.0, 0.0
 t: 0.0, 0.0, 1.0
 
-L: 0.0, 0.0, 0.0,-0.01
-R: 0.0, 0.0, 0.0, 0.01
-B: 0.0, 0.0, 0.0,-0.01
-T: 0.0, 0.0, 0.0, 0.01
-N: 0.0, 0.0, 0.0, 0.01
-F: 0.0, 0.0, 0.0, 1000000000.0
+L: 0.0, 0.0, 0.0,-0.1
+R: 0.0, 0.0, 0.0, 0.1
+B: 0.0, 0.0, 0.0,-0.1
+T: 0.0, 0.0, 0.0, 0.1
+N: 0.0, 0.0, 0.0, 0.1
+F: 0.0, 0.0, 0.0, 1000000000000.0
 }
 butnrect{
 c:0.0, 0.0
 q:0.1, 0.1
 }
 statrect{
-c:0.4, 0.0
-q:1.0, 0.4
+c:0.5, 0.0
+q:1.0, 0.2
 }
 
 aaaarect{
@@ -143,7 +137,7 @@ q:1.0, 1.0
 
 <relation>
 #scene item
-(scene, drongeom, 0) -> (drone, dronslot, 0)
+(scene, drongeom, 0) -> (aircraft, dronslot, 0)
 
 #3d item
 (world, 0, 0) -> (scene, 0, 0)
@@ -158,7 +152,7 @@ q:1.0, 1.0
 (opengl, bbbbrect, 0) -> (uiroot, 0, a0)
 
 #control.mouse: 3rd controller
-(cam3rd, 0, tar) -> (drone, 0, evby)
+(cam3rd, 0, tar) -> (aircraft, 0, evby)
 (cam3rd, 0, cam) -> (cam0, 0, mind)
 
 #control.button
@@ -166,11 +160,11 @@ q:1.0, 1.0
 (button, 0, evto) -> (gravity, 0, ioby)
 
 #control.uidata
-(control, 0, dst) -> (drone, 0, con)
-(control, 0, dbg) -> (status, 0, data)
+#(control, 0, dst) -> (aircraft, 0, con)
+#(control, 0, dbg) -> (status, 0, data)
 
 #
-(pulser, 0, clk) -> (control, 0, clk)
-(pulser, 0, clk) -> (gravity, 0, clk)
+#(pulser, 0, clk) -> (control, 0, clk)
+#(pulser, 0, clk) -> (gravity, 0, clk)
 (@pulser, clk@2) @ (@opengl, clk)
 </relation>

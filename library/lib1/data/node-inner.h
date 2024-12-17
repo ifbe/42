@@ -164,7 +164,8 @@ struct forceinfo{
 
 	//[0xe0,0xff]
 	int cnt;
-	int padd[7];
+	int cntlast;
+	int padd[6];
 };
 
 

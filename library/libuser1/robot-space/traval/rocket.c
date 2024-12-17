@@ -8,13 +8,46 @@ static void rocket_forgl41_actual(
 	_obj* scn, struct style* geom,
 	_obj* ctx, struct style* area)
 {
-	float* vc = geom->fs.vc;
-	float* vr = geom->fs.vr;
-	float* vf = geom->fs.vf;
-	float* vt = geom->fs.vt;
+	struct fmotion* physic = &geom->actual;
+	float* q = physic->angular_x;
 
-    vec4 tc,tt;
+	vec3 vr;
+	vr[0] = (1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0);
+	vr[1] = (2.0 * (q[0]*q[1] + q[2]*q[3]));
+	vr[2] = (2.0 * (q[0]*q[2] - q[1]*q[3]));
+	vec3_setlen(vr, vec3_getlen(geom->fshape.vr));
+
+	vec3 vf;
+	vf[0] = (2.0 * (q[0]*q[1] - q[2]*q[3]));
+	vf[1] = (1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0);
+	vf[2] = (2.0 * (q[1]*q[2] + q[0]*q[3]));
+	vec3_setlen(vf, vec3_getlen(geom->fshape.vf));
+
+	vec3 vt;
+	vt[0] = (2.0 * (q[0]*q[2] + q[1]*q[3]));
+	vt[1] = (2.0 * (q[1]*q[2] - q[0]*q[3]));
+	vt[2] = (1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0);
+	vec3_setlen(vt, vec3_getlen(geom->fshape.vt));
+
+	vec3 vc;
+	vc[0] = physic->displace_x[0];
+	vc[1] = physic->displace_x[1];
+	vc[2] = physic->displace_x[2];
+
+	//float* vc = geom->fs.vc;
+	//float* vr = geom->fs.vr;
+	//float* vf = geom->fs.vf;
+	//float* vt = geom->fs.vt;
+	//logtoall("(%f,%f,%f)(%f,%f,%f)(%f,%f,%f)(%f,%f,%f)\n", vc[0],vc[1],vc[2], vr[0],vr[1],vr[2], vf[0],vf[1],vf[2], vt[0],vt[1],vt[2]);
+
     int j;
+    vec4 tc,tt;
+	for(j=0;j<3;j++){
+		tc[j] = vc[j]-vf[j];
+		tt[j] = tc[j]+vt[j];
+	}
+	gl41line(ctx, 0xff, tc,tt);
+
     for(j=0;j<3;j++){
         tc[j] = vc[j]+vt[j]/2;
         tt[j] = vt[j]/2;
@@ -25,6 +58,17 @@ static void rocket_forgl41_actual(
         tc[j] = vc[j]-vt[j];
     }
     gl41solid_cone(ctx, 0xffff00, tc,vr,vt);
+
+
+	struct forceinfo* fi = &geom->forceinfo;
+	int k;
+	for(k=0;k<fi->cntlast;k++){
+		for(j=0;j<3;j++){
+			tc[j] = fi->where[k][j];
+			tt[j] = fi->where[k][j] + fi->force[k][j];
+		}
+		gl41line(ctx, 0xffffff, tc, tt);
+	}
 }
 static void rocket_draw_pixel(
 	_obj* act, struct style* pin,

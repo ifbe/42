@@ -3,10 +3,13 @@
 #define FLAG listu64.data1
 #define TEST listu64.data2
 void inertia_tensor_of_block(mat3 Ival, float M, float lx, float ly, float lz);
+//
 void mat3_transposefrom(void* o, void* i);
 void mat3_multiplyfrom(void* o, void* l, void* r);
-void quaternion_multiplyfrom(void* o, void* l, void* r);
+//
+void quaternion_normalize(float* q);
 void quaternion2eulerian(float* q, float* a);
+void quaternion_multiplyfrom(void* o, void* l, void* r);
 
 
 
@@ -117,9 +120,10 @@ void rigidsimu_computeforce(_obj* ent, struct style* geom)
 		geom->fm.displace_a[1] = -geom->fm.displace_v[1] * 0.1;
 		geom->fm.displace_a[2] = -geom->fm.displace_v[2] * 0.1 - 9.8;
 	}
-
-	rigidsimu_realforce(geom);
-	if(ent->TEST < 0x80000000)ent->TEST--;
+	else{
+		rigidsimu_realforce(geom);
+	}
+	//if(ent->TEST < 0x80000000)ent->TEST--;
 }
 
 
@@ -150,65 +154,55 @@ int rigidsimu_applyangular(_obj* ent, struct style* geom, float dt)
 
 
 //logtoall("omega_old=%f,%f,%f,%f\n",final->angular_v[0],final->angular_v[1],final->angular_v[2],final->angular_v[3]);
-	//omega_now
-	v[0] = final->angular_v[0] * final->angular_v[3];
-	v[1] = final->angular_v[1] * final->angular_v[3];
-	v[2] = final->angular_v[2] * final->angular_v[3];
+	//new_angular_speed = old_angular_speed + angular_accel*dt
+	v[0] = final->angular_v[0] * final->angular_v[3] + final->angular_a[0] * dt;
+	v[1] = final->angular_v[1] * final->angular_v[3] + final->angular_a[1] * dt;
+	v[2] = final->angular_v[2] * final->angular_v[3] + final->angular_a[2] * dt;
 
-	//omega_new = omega_now + alpha * dt
-	v[0] += final->angular_a[0] * dt;
-	v[1] += final->angular_a[1] * dt;
-	v[2] += final->angular_a[2] * dt;
-
-	//alpha
+	//angular_speed < threshold: dont change
 	a = vec3_getlen(v);
-	if(a < 1e-36){
-		final->angular_v[0] = 0.0;
-		final->angular_v[1] = 0.0;
-		final->angular_v[2] = 1.0;
-		final->angular_v[3] = 0.0;
-	}
-	else{
-		//update palstance
-		invn = 1.0 / a;
-		final->angular_v[0] = v[0] * invn;
-		final->angular_v[1] = v[1] * invn;
-		final->angular_v[2] = v[2] * invn;
-		final->angular_v[3] = a;
+	if(a < 1e-36)return 0;
 
-		//update attitude: ql=change, qr=current
-		sbyn = getsin(dt*a/2) * invn;
-		ql[0] = v[0] * sbyn;
-		ql[1] = v[1] * sbyn;
-		ql[2] = v[2] * sbyn;
-		ql[3] = getcos(dt*a/2);
-		qr[0] = geom->fm.angular_x[0];
-		qr[1] = geom->fm.angular_x[1];
-		qr[2] = geom->fm.angular_x[2];
-		qr[3] = geom->fm.angular_x[3];
-		//logtoall("ql=%f,%f,%f,%f\n",ql[0],ql[1],ql[2],ql[3]);
-		//logtoall("qr=%f,%f,%f,%f\n",qr[0],qr[1],qr[2],qr[3]);
-		quaternion_multiplyfrom(q, ql, qr);
-		//logtoall("q?=%f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
-		quaternion_normalize(q);
-		//logtoall("q!=%f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
+	//update palstance
+	invn = 1.0 / a;
+	final->angular_v[0] = v[0] * invn;
+	final->angular_v[1] = v[1] * invn;
+	final->angular_v[2] = v[2] * invn;
+	final->angular_v[3] = a;
 
-		//writeback attitude
-		a = geom->fshape.vr[3];
-		geom->fshape.vr[0] = a * (1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0);
-		geom->fshape.vr[1] = a * (2.0 * (q[0]*q[1] + q[2]*q[3]));
-		geom->fshape.vr[2] = a * (2.0 * (q[0]*q[2] - q[1]*q[3]));
+	//update attitude: ql=change, qr=current
+	sbyn = getsin(dt*a/2) * invn;
+	ql[0] = v[0] * sbyn;
+	ql[1] = v[1] * sbyn;
+	ql[2] = v[2] * sbyn;
+	ql[3] = getcos(dt*a/2);
+	qr[0] = geom->fm.angular_x[0];
+	qr[1] = geom->fm.angular_x[1];
+	qr[2] = geom->fm.angular_x[2];
+	qr[3] = geom->fm.angular_x[3];
+	//logtoall("ql=%f,%f,%f,%f\n",ql[0],ql[1],ql[2],ql[3]);
+	//logtoall("qr=%f,%f,%f,%f\n",qr[0],qr[1],qr[2],qr[3]);
+	quaternion_multiplyfrom(q, ql, qr);
+	//logtoall("q?=%f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
+	quaternion_normalize(q);
+	//logtoall("q!=%f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
 
-		a = geom->fshape.vf[3];
-		geom->fshape.vf[0] = a * (2.0 * (q[0]*q[1] - q[2]*q[3]));
-		geom->fshape.vf[1] = a * (1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0);
-		geom->fshape.vf[2] = a * (2.0 * (q[1]*q[2] + q[0]*q[3]));
+	//writeback attitude
+	a = geom->fshape.vr[3];
+	geom->fshape.vr[0] = a * (1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0);
+	geom->fshape.vr[1] = a * (2.0 * (q[0]*q[1] + q[2]*q[3]));
+	geom->fshape.vr[2] = a * (2.0 * (q[0]*q[2] - q[1]*q[3]));
 
-		a = geom->fshape.vt[3];
-		geom->fshape.vt[0] = a * (2.0 * (q[0]*q[2] + q[1]*q[3]));
-		geom->fshape.vt[1] = a * (2.0 * (q[1]*q[2] - q[0]*q[3]));
-		geom->fshape.vt[2] = a * (1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0);
-	}
+	a = geom->fshape.vf[3];
+	geom->fshape.vf[0] = a * (2.0 * (q[0]*q[1] - q[2]*q[3]));
+	geom->fshape.vf[1] = a * (1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0);
+	geom->fshape.vf[2] = a * (2.0 * (q[1]*q[2] + q[0]*q[3]));
+
+	a = geom->fshape.vt[3];
+	geom->fshape.vt[0] = a * (2.0 * (q[0]*q[2] + q[1]*q[3]));
+	geom->fshape.vt[1] = a * (2.0 * (q[1]*q[2] - q[0]*q[3]));
+	geom->fshape.vt[2] = a * (1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0);
+
 //logtoall("omega_new=%f,%f,%f,%f\n",final->angular_v[0],final->angular_v[1],final->angular_v[2],final->angular_v[3]);
 	return 0;
 }
