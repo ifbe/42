@@ -22,7 +22,7 @@ void dbgpid_draw_gl41(
 	float sw = 30*8;
 	float eachsize = dw / sw;
 	float sh = dh / (eachsize*2);
-	logtoall("%f,%f\n", dw,dh);
+	//logtoall("%f,%f\n", dw,dh);
 
 	int j,k;
 	vec3 tc,tr,tf,tt;

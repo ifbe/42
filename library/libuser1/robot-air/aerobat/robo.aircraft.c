@@ -12,13 +12,39 @@ static void aircraft_forgl41(
 	_obj* scn, struct style* geom,
 	_obj* ctx, struct style* area)
 {
+	struct fmotion* physic = &geom->actual;
+	float* q = physic->angular_x;
+
+	vec3 vr;
+	vr[0] = (1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0);
+	vr[1] = (2.0 * (q[0]*q[1] + q[2]*q[3]));
+	vr[2] = (2.0 * (q[0]*q[2] - q[1]*q[3]));
+	vec3_setlen(vr, vec3_getlen(geom->fshape.vr));
+
+	vec3 vf;
+	vf[0] = (2.0 * (q[0]*q[1] - q[2]*q[3]));
+	vf[1] = (1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0);
+	vf[2] = (2.0 * (q[1]*q[2] + q[0]*q[3]));
+	vec3_setlen(vf, vec3_getlen(geom->fshape.vf));
+
+	vec3 vt;
+	vt[0] = (2.0 * (q[0]*q[2] + q[1]*q[3]));
+	vt[1] = (2.0 * (q[1]*q[2] - q[0]*q[3]));
+	vt[2] = (1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0);
+	vec3_setlen(vt, vec3_getlen(geom->fshape.vt));
+
+	vec3 vc;
+	vc[0] = physic->displace_x[0];
+	vc[1] = physic->displace_x[1];
+	vc[2] = physic->displace_x[2];
+/*
 	float* vc = geom->fshape.vc;
 	float* vr = geom->fshape.vr;
 	float* vf = geom->fshape.vf;
 	float* vt = geom->fshape.vt;
 	gl41line_rect(ctx, 0x00ff00, vc, vr, vf);
 	gl41line_prism4(ctx, 0x00ff00, vc, vr, vf, vt);
-
+*/
 	int j;
 	vec3 tc,tr,tf,tt;
 

@@ -68,6 +68,7 @@ void skydome_register(void*);
 void equirect_register(void*);
 void texbox_register(void*);
 //.terrain
+void dbggnd_register(void*);
 void ground_register(void*);
 void terrain_register(void*);
 //.else
@@ -418,6 +419,9 @@ void thing_init(void* addr)
 	tmp -= sizeof(_obj);
 
 //.terrain
+	dbggnd_register(tmp);
+	tmp -= sizeof(_obj);
+
 	ground_register(tmp);
 	tmp -= sizeof(_obj);
 

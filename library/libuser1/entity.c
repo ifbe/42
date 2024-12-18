@@ -70,6 +70,12 @@ int dronecontrol_attach(void*, void*);
 int dronecontrol_detach(void*, void*);
 int dronecontrol_taking(void*,void*, void*,int, p64,int, void*,int);
 int dronecontrol_giving(void*,void*, void*,int, p64,int, void*,int);
+int planecontrol_create(void*, void*, int, u8**);
+int planecontrol_delete(void*, void*);
+int planecontrol_attach(void*, void*);
+int planecontrol_detach(void*, void*);
+int planecontrol_taking(void*,void*, void*,int, p64,int, void*,int);
+int planecontrol_giving(void*,void*, void*,int, p64,int, void*,int);
 int rocketcontrol_create(void*, void*, int, u8**);
 int rocketcontrol_delete(void*, void*);
 int rocketcontrol_attach(void*, void*);
@@ -119,12 +125,6 @@ int digital_giving(void*,void*, void*,int, p64,int, void*,int);
 int digital_taking(void*,void*, void*,int, p64,int, void*,int);
 
 //
-int force_create(void*, void*, int, u8**);
-int force_delete(void*, void*);
-int force_attach(void*, void*);
-int force_detach(void*, void*);
-int force_giving(void*,void*, void*,int, p64,int, void*,int);
-int force_taking(void*,void*, void*,int, p64,int, void*,int);
 int graveasy_create(void*, void*, int, u8**);
 int graveasy_delete(void*, void*);
 int graveasy_attach(void*, void*);
@@ -137,12 +137,6 @@ int gravtest_attach(void*, void*);
 int gravtest_detach(void*, void*);
 int gravtest_giving(void*,void*, void*,int, p64,int, void*,int);
 int gravtest_taking(void*,void*, void*,int, p64,int, void*,int);
-int rigidsimu_create(void*, void*, int, u8**);
-int rigidsimu_delete(void*, void*);
-int rigidsimu_attach(void*, void*);
-int rigidsimu_detach(void*, void*);
-int rigidsimu_giving(void*,void*, void*,int, p64,int, void*,int);
-int rigidsimu_taking(void*,void*, void*,int, p64,int, void*,int);
 int gravity_create(void*, void*, int, u8**);
 int gravity_delete(void*, void*);
 int gravity_reading(void*,void*, p64,int, void*,int);
@@ -151,6 +145,19 @@ int gravity_attach(void*, void*);
 int gravity_detach(void*, void*);
 int gravity_giving(void*,void*, void*,int, p64,int, void*,int);
 int gravity_taking(void*,void*, void*,int, p64,int, void*,int);
+//
+int force_create(void*, void*, int, u8**);
+int force_delete(void*, void*);
+int force_attach(void*, void*);
+int force_detach(void*, void*);
+int force_giving(void*,void*, void*,int, p64,int, void*,int);
+int force_taking(void*,void*, void*,int, p64,int, void*,int);
+int rigidsimu_create(void*, void*, int, u8**);
+int rigidsimu_delete(void*, void*);
+int rigidsimu_attach(void*, void*);
+int rigidsimu_detach(void*, void*);
+int rigidsimu_giving(void*,void*, void*,int, p64,int, void*,int);
+int rigidsimu_taking(void*,void*, void*,int, p64,int, void*,int);
 
 //scene
 int virtual_create(void*, void*, int, u8**);
@@ -524,27 +531,30 @@ int entity_create(_obj* act, void* buf, int argc, u8** argv)
 	case _dronecontrol_:
 		dronecontrol_create(act, buf, argc, argv);
 		break;
+	case _planecontrol_:
+		planecontrol_create(act, buf, argc, argv);
+		break;
 	case _rocketcontrol_:
 		rocketcontrol_create(act, buf, argc, argv);
 		break;
 
 //----------------rule----------------
-
 	//physic
-	case _force_:
-		force_create(act, buf, argc, argv);
-		break;
 	case _graveasy_:
 		graveasy_create(act, buf, argc, argv);
 		break;
 	case _gravtest_:
 		gravtest_create(act, buf, argc, argv);
 		break;
-	case _rigidall_:
-		rigidsimu_create(act, buf, argc, argv);
-		break;
 	case _gravity_:
 		gravity_create(act, buf, argc, argv);
+		break;
+	//rigid
+	case _force_:
+		force_create(act, buf, argc, argv);
+		break;
+	case _rigidsim_:
+		rigidsimu_create(act, buf, argc, argv);
 		break;
 	}//switch
 
@@ -614,7 +624,7 @@ int entity_attach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* pe
 	case _force_:return force_attach(self, peer);
 	case _graveasy_:return graveasy_attach(self, peer);
 	case _gravtest_:return gravtest_attach(self, peer);
-	case _rigidall_:return rigidsimu_attach(self, peer);
+	case _rigidsim_:return rigidsimu_attach(self, peer);
 	case _gravity_:return gravity_attach(self, peer);
 
 	case _sch_:return schematic_attach(self, peer);
@@ -630,6 +640,7 @@ int entity_attach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* pe
 	case _carcon_:return carcon_attach(self, peer);
 	case _balancer_:return balancer_attach(self, peer);
 	case _dronecontrol_:return dronecontrol_attach(self, peer);
+	case _planecontrol_:return planecontrol_attach(self, peer);
 	case _rocketcontrol_:return rocketcontrol_attach(self, peer);
 
 	case _virtual_:return virtual_attach(self, peer);
@@ -681,7 +692,7 @@ int entity_detach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* pe
 	case _force_:return force_detach(self, peer);
 	case _graveasy_:return graveasy_detach(self, peer);
 	case _gravtest_:return gravtest_detach(self, peer);
-	case _rigidall_:return rigidsimu_detach(self, peer);
+	case _rigidsim_:return rigidsimu_detach(self, peer);
 	case _gravity_:return gravity_detach(self, peer);
 
 	case _sch_:return schematic_detach(self, peer);
@@ -697,6 +708,7 @@ int entity_detach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* pe
 	case _carcon_:return carcon_detach(self, peer);
 	case _balancer_:return balancer_detach(self, peer);
 	case _dronecontrol_:return dronecontrol_detach(self, peer);
+	case _planecontrol_:return planecontrol_detach(self, peer);
 	case _rocketcontrol_:return rocketcontrol_detach(self, peer);
 
 	case _virtual_:return virtual_detach(self, peer);
@@ -742,7 +754,7 @@ int entity_takeby(_obj* act,void* foot, _syn* stack,int sp, p64 arg,int key, voi
 	case _force_:return force_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _graveasy_:return graveasy_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _gravtest_:return gravtest_taking(act,foot, stack,sp, arg,key, buf,len);
-	case _rigidall_:return rigidsimu_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _rigidsim_:return rigidsimu_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _gravity_:return gravity_taking(act,foot, stack,sp, arg,key, buf,len);
 
 	case _sch_:return schematic_taking(act,foot, stack,sp, arg,key, buf,len);
@@ -758,6 +770,7 @@ int entity_takeby(_obj* act,void* foot, _syn* stack,int sp, p64 arg,int key, voi
 	case _carcon_:return carcon_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _balancer_:return balancer_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _dronecontrol_:return dronecontrol_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _planecontrol_:return planecontrol_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _rocketcontrol_:return rocketcontrol_taking(act,foot, stack,sp, arg,key, buf,len);
 
 	case _virtual_:return virtual_taking(act,foot, stack,sp, arg,key, buf,len);
@@ -803,7 +816,7 @@ int entity_giveby(_obj* act,void* foot, _syn* stack,int sp, p64 arg,int key, voi
 	case _force_:return force_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _graveasy_:return graveasy_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _gravtest_:return gravtest_giving(act,foot, stack,sp, arg,key, buf,len);
-	case _rigidall_:return rigidsimu_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _rigidsim_:return rigidsimu_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _gravity_:return gravity_giving(act,foot, stack,sp, arg,key, buf,len);
 
 	case _sch_:return schematic_giving(act,foot, stack,sp, arg,key, buf,len);
@@ -819,6 +832,7 @@ int entity_giveby(_obj* act,void* foot, _syn* stack,int sp, p64 arg,int key, voi
 	case _carcon_:return carcon_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _balancer_:return balancer_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _dronecontrol_:return dronecontrol_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _planecontrol_:return planecontrol_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _rocketcontrol_:return rocketcontrol_giving(act,foot, stack,sp, arg,key, buf,len);
 
 	case _virtual_:return virtual_giving(act,foot, stack,sp, arg,key, buf,len);

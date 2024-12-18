@@ -37,6 +37,9 @@ fmt:cam3rd
 }
 gravity:gravity{
 }
+rigid{
+fmt:rigidsim
+}
 </entity>
 
 
@@ -203,8 +206,10 @@ q:1.0, 1.0
 
 #control.gravity
 (gravity, 0, 0) -> (scene, 0, 0)
+(rigid, 0, 0) -> (scene, 0, 0)
 
 #clock
-(@pulser, clk@1) @ (@gravity, clk)
-(@pulser, clk@2) @ (@opengl, clk)
+(@pulser, clk) @ (@gravity, clk)
+(@pulser, clk) @ (@rigid, clk)
+(@pulser, clk) @ (@opengl, clk)
 </relation>

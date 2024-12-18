@@ -11,7 +11,7 @@ fmt:equirect
 arg:datafile/jpg/360d/texball-skysphere.jpg
 }
 gnd{
-fmt:ground
+fmt:dbggnd
 }
 cam0{
 fmt:freecam
@@ -31,10 +31,13 @@ fmt:virtual
 }
 
 control{
-fmt:aircraftcon
+fmt:planecon
 }
 gravity{
-fmt:gravtest
+fmt:gravity
+}
+rigid{
+fmt:rigidsim
 }
 cam3rd{
 fmt:cam3rd
@@ -71,14 +74,16 @@ f: 0.0, 23.5, 0.0
 t: 0.0, 0.0, 15
 }
 translation{
-j: 0.0, 0.0, 10000.0
 a: 0.0, 0.0, 0.0
-v: 0.0, 0.0, 20.0
-x:-5.0, 0.0, 0.0
+v: 0.0, 200.0, 0.0
+x: 0.0, 0.0, 10000.0
 }
 rotation{
 0: 0.0, 0.0, 0.0, 1.0
-1: 0.0, 0.5, 0.8660254037844387, 3.0
+1: 0.0, 0.0, 0.0, 0.0
+}
+mass{
+m:200
 }
 }
 
@@ -95,8 +100,8 @@ gndpart{
 }
 gndgeom{
 c: 0.0, 0.0, 0.0
-r: 10000.0, 0.0, 0.0
-f: 0.0, 10000.0, 0.0
+r: 1000000.0, 0.0, 0.0
+f: 0.0, 1000000.0, 0.0
 t: 0.0, 0.0, 1.0
 }
 
@@ -157,14 +162,16 @@ q:1.0, 1.0
 
 #control.button
 (gravity, 0, 0) -> (scene, 0, 0)
+(rigid, 0, 0) -> (scene, 0, 0)
 (button, 0, evto) -> (gravity, 0, ioby)
 
 #control.uidata
-#(control, 0, dst) -> (aircraft, 0, con)
-#(control, 0, dbg) -> (status, 0, data)
+(control, 0, dst) -> (aircraft, 0, con)
+(control, 0, dbg) -> (status, 0, data)
 
 #
-#(pulser, 0, clk) -> (control, 0, clk)
-#(pulser, 0, clk) -> (gravity, 0, clk)
-(@pulser, clk@2) @ (@opengl, clk)
+(@pulser, clk@0) -> (control, 0, clk)
+(@pulser, clk@1) -> (gravity, 0, clk)
+(@pulser, clk@2) -> (rigid, 0, clk)
+(@pulser, clk@3) @ (@opengl, clk)
 </relation>

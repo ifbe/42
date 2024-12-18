@@ -34,7 +34,7 @@ control{
 fmt:balancer
 }
 gravity{
-fmt:rigidall
+fmt:rigidsim
 }
 cam3rd{
 fmt:cam3rd
