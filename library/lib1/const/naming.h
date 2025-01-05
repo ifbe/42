@@ -326,6 +326,7 @@
 #define _dronecontrol_ hex64('d','r','o','n','e','c','o','n')
 #define _planecontrol_ hex64('p','l','a','n','e','c','o','n')
 #define _rocketcontrol_ hex64('r','o','c','k','e','t','c','o')
+#define _satellitecontrol_ hex64('s','a','t','e','c','o','n', 0)
 //sensor
 #define _virtimu_ hex64('v','i','r','t','i','m','u', 0)
 #define _sensor_ hex64('s','e','n','s','o','r',0,0)

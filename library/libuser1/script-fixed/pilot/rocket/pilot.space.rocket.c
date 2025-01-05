@@ -62,7 +62,7 @@ void rocketcontrol_state2desire(_obj* ent)
 }
 
 //masscenter, localtoworldmat, localspaceshape -> output
-void compute_position(float* cm, float (*m)[3], struct fstyle* s, float* p)
+void rocket_compute_position(float* cm, float (*m)[3], struct fstyle* s, float* p)
 {
 	//vec3 vr = {m[0][0], m[0][1], m[0][2]};
 	//vec3 vf = {m[1][0], m[1][1], m[1][2]};
@@ -78,7 +78,7 @@ void compute_position(float* cm, float (*m)[3], struct fstyle* s, float* p)
 }
 
 //localtoworldmat, localspaceshape, angle -> output
-void compute_direction(float (*m)[3], struct fstyle* fs, float angle, float* d)
+void rocket_compute_direction(float (*m)[3], struct fstyle* fs, float angle, float* d)
 {
 	float c = getcos(angle);
 	float s = getsin(angle);
@@ -116,7 +116,7 @@ void rocketcontrol_calcpid(_obj* ent)
 	//fi->where[fi->cnt][0] = sty->fm.displace_x[0];
 	//fi->where[fi->cnt][1] = sty->fm.displace_x[1];
 	//fi->where[fi->cnt][2] = sty->fm.displace_x[2];
-	compute_position(sty->fm.displace_x, m, &sty->fshape, fi->where[fi->cnt]);
+	rocket_compute_position(sty->fm.displace_x, m, &sty->fshape, fi->where[fi->cnt]);
 
 	//direction = bias 7 to 8 degree = vr*sin8 + vt*cos8
 	//fi->force[fi->cnt][0] = sty->fm.displace_x[0];
@@ -124,7 +124,7 @@ void rocketcontrol_calcpid(_obj* ent)
 	//fi->force[fi->cnt][2] = sty->fm.displace_x[2];
 	u64 time = timeread_ms();
 	float bias = 10 * getsin(tau * (time%60000)/60000);
-	compute_direction(m, &sty->fshape, bias*PI/180, fi->force[fi->cnt]);
+	rocket_compute_direction(m, &sty->fshape, bias*PI/180, fi->force[fi->cnt]);
 
 	//strength = mass_kg * 14 = mass_ton*1000*14
 	float fval = sty->physic.inertiatensor[3][3] * 14 * 1000;

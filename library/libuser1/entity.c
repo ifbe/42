@@ -82,6 +82,12 @@ int rocketcontrol_attach(void*, void*);
 int rocketcontrol_detach(void*, void*);
 int rocketcontrol_taking(void*,void*, void*,int, p64,int, void*,int);
 int rocketcontrol_giving(void*,void*, void*,int, p64,int, void*,int);
+int satellitecontrol_create(void*, void*, int, u8**);
+int satellitecontrol_delete(void*, void*);
+int satellitecontrol_attach(void*, void*);
+int satellitecontrol_detach(void*, void*);
+int satellitecontrol_taking(void*,void*, void*,int, p64,int, void*,int);
+int satellitecontrol_giving(void*,void*, void*,int, p64,int, void*,int);
 
 /*
 int toycar_create(void*, void*, int, u8**);
@@ -537,6 +543,9 @@ int entity_create(_obj* act, void* buf, int argc, u8** argv)
 	case _rocketcontrol_:
 		rocketcontrol_create(act, buf, argc, argv);
 		break;
+	case _satellitecontrol_:
+		satellitecontrol_create(act, buf, argc, argv);
+		break;
 
 //----------------rule----------------
 	//physic
@@ -642,6 +651,7 @@ int entity_attach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* pe
 	case _dronecontrol_:return dronecontrol_attach(self, peer);
 	case _planecontrol_:return planecontrol_attach(self, peer);
 	case _rocketcontrol_:return rocketcontrol_attach(self, peer);
+	case _satellitecontrol_:return satellitecontrol_attach(self, peer);
 
 	case _virtual_:return virtual_attach(self, peer);
 	case _scene3d_:return scene3d_attach(self, peer);
@@ -710,6 +720,7 @@ int entity_detach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* pe
 	case _dronecontrol_:return dronecontrol_detach(self, peer);
 	case _planecontrol_:return planecontrol_detach(self, peer);
 	case _rocketcontrol_:return rocketcontrol_detach(self, peer);
+	case _satellitecontrol_:return satellitecontrol_detach(self, peer);
 
 	case _virtual_:return virtual_detach(self, peer);
 	case _scene3d_:return scene3d_detach(self, peer);
@@ -772,6 +783,7 @@ int entity_takeby(_obj* act,void* foot, _syn* stack,int sp, p64 arg,int key, voi
 	case _dronecontrol_:return dronecontrol_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _planecontrol_:return planecontrol_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _rocketcontrol_:return rocketcontrol_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _satellitecontrol_:return satellitecontrol_taking(act,foot, stack,sp, arg,key, buf,len);
 
 	case _virtual_:return virtual_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _scene3d_:return scene3d_taking(act,foot, stack,sp, arg,key, buf,len);
@@ -834,6 +846,7 @@ int entity_giveby(_obj* act,void* foot, _syn* stack,int sp, p64 arg,int key, voi
 	case _dronecontrol_:return dronecontrol_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _planecontrol_:return planecontrol_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _rocketcontrol_:return rocketcontrol_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _satellitecontrol_:return satellitecontrol_giving(act,foot, stack,sp, arg,key, buf,len);
 
 	case _virtual_:return virtual_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _scene3d_:return scene3d_giving(act,foot, stack,sp, arg,key, buf,len);

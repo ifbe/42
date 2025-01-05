@@ -8,40 +8,105 @@ static void station_draw_gl41(
 	_obj* win, struct style* geom,		//world,mygeom
 	_obj* ctx, struct style* none)		//gldata
 {
+	struct fmotion* physic = &geom->actual;
+	float* q = physic->angular_x;
+
+	vec3 vr;
+	vr[0] = (1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0);
+	vr[1] = (2.0 * (q[0]*q[1] + q[2]*q[3]));
+	vr[2] = (2.0 * (q[0]*q[2] - q[1]*q[3]));
+	vec3_setlen(vr, vec3_getlen(geom->fshape.vr));
+
+	vec3 vf;
+	vf[0] = (2.0 * (q[0]*q[1] - q[2]*q[3]));
+	vf[1] = (1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0);
+	vf[2] = (2.0 * (q[1]*q[2] + q[0]*q[3]));
+	vec3_setlen(vf, vec3_getlen(geom->fshape.vf));
+
+	vec3 vt;
+	vt[0] = (2.0 * (q[0]*q[2] + q[1]*q[3]));
+	vt[1] = (2.0 * (q[1]*q[2] - q[0]*q[3]));
+	vt[2] = (1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0);
+	vec3_setlen(vt, vec3_getlen(geom->fshape.vt));
+
+	vec3 vc;
+	vc[0] = physic->displace_x[0];
+	vc[1] = physic->displace_x[1];
+	vc[2] = physic->displace_x[2];
+/*
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vt = geom->fs.vt;
-	//logtoall("%f,%f,%f,%f\n",vc[0],vc[1],vc[2],vec3_getlen(vc));
-	//logtoall("%f,%f,%f,%f\n",geom->fm.displace_v[0],geom->fm.displace_v[1],geom->fm.displace_v[2],vec3_getlen(geom->fm.displace_v));
+*/
+	//logtoall("(%f,%f,%f)(%f,%f,%f)(%f,%f,%f)(%f,%f,%f)\n", vc[0],vc[1],vc[2], vr[0],vr[1],vr[2], vf[0],vf[1],vf[2], vt[0],vt[1],vt[2]);
 	gl41line_prism4(ctx, 0xffff00, vc, vr, vf, vt);
 
-    vec4 tc,tr,tf,tt;
     int j;
+    vec4 tc,tr,tf,tt;
+
+	//core
+	float lent3 = vec3_getlen(vt)/3;
+	for(j=0;j<3;j++){
+		tr[j] = vr[j];
+		tf[j] = vf[j];
+		tt[j] = vt[j];
+	}
+	vec3_setlen(tr, lent3);
+	vec3_setlen(tf, lent3);
+	vec3_setlen(tt, lent3);
+	gl41solid_sphere(ctx, 0xffffff, vc, tr, tf, tt);
 
     //right
     for(j=0;j<3;j++){
-        tc[j] = vc[j]+vr[j]/2;
         tr[j] =-vf[j];
         tf[j] =-vt[j];
-        tt[j] = vr[j] * 0.49;
+        tt[j] = vr[j] * 0.46;
+        tc[j] = vc[j]+vr[j]-tt[j];
     }
     vec3_setlen(tr, 0.005);
     vec3_setlen(tf, 0.005);
     gl41solid_cylinder(ctx, 0xffffff, tc,tr,tf,tt);
+	//right.solarpanel
+    for(j=0;j<3;j++){
+        tr[j] = vr[j]*0.1;
+        tf[j] = vf[j]*0.45;
+        tc[j] = vc[j] +vr[j]-tr[j] +vf[j]-tf[j];
+    }
+	gl41solid_rect(ctx, 0xffffff, tc,tr,tf);
+    for(j=0;j<3;j++){
+        tc[j] = vc[j] +vr[j]-tr[j] -vf[j]+tf[j];
+    }
+	gl41solid_rect(ctx, 0xffffff, tc,tr,tf);
 
     //left
     for(j=0;j<3;j++){
-        tc[j] = vc[j]-vr[j]/2;
+        tr[j] =-vf[j];
+        tf[j] =-vt[j];
+        tt[j] = vr[j] * 0.46;
+        tc[j] = vc[j]-vr[j]+tt[j];
     }
+    vec3_setlen(tr, 0.005);
+    vec3_setlen(tf, 0.005);
     gl41solid_cylinder(ctx, 0xffffff, tc,tr,tf,tt);
+	//left.solarpanel
+    for(j=0;j<3;j++){
+        tr[j] = vr[j]*0.1;
+        tf[j] = vf[j]*0.45;
+        tc[j] = vc[j] -vr[j]+tr[j] +vf[j]-tf[j];
+    }
+	gl41solid_rect(ctx, 0xffffff, tc,tr,tf);
+    for(j=0;j<3;j++){
+        tc[j] = vc[j] -vr[j]+tr[j] -vf[j]+tf[j];
+    }
+	gl41solid_rect(ctx, 0xffffff, tc,tr,tf);
 
     //to north
     for(j=0;j<3;j++){
-        tc[j] = vc[j]+vf[j]/2;
         tr[j] = vr[j];
         tf[j] =-vt[j];
-        tt[j] = vf[j] * 0.49;
+        tt[j] = vf[j] * 0.46;
+        tc[j] = vc[j]+vf[j]-tt[j];
     }
     vec3_setlen(tr, 0.005);
     vec3_setlen(tf, 0.005);
@@ -49,10 +114,10 @@ static void station_draw_gl41(
 
     //to earth
     for(j=0;j<3;j++){
-        tc[j] = vc[j]-vt[j]/2;
         tr[j] = vr[j];
         tf[j] = vf[j];
-        tt[j] =-vt[j]*0.49;
+        tt[j] = vt[j]*0.40;
+        tc[j] = vc[j]-vt[j]+tt[j];
     }
     vec3_setlen(tr, 0.005);
     vec3_setlen(tf, 0.005);
