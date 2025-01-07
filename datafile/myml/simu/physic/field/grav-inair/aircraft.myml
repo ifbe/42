@@ -34,7 +34,7 @@ control{
 fmt:planecon
 }
 gravity{
-fmt:gravity
+fmt:graveasy
 }
 rigid{
 fmt:rigidsim
@@ -81,6 +81,11 @@ x: 0.0, 0.0, 10000.0
 rotation{
 0: 0.0, 0.0, 0.0, 1.0
 1: 0.0, 0.0, 0.0, 0.0
+}
+inertia{
+x:12954
+y:12187
+z:17641
 }
 mass{
 m:200

@@ -9,14 +9,14 @@ struct joint{
 	int exist;
 
 	float grad[3];
-	int sure;
+	int fixed;
 };
 static int parsejoint_oneline(u8* buf, struct joint* jo)
 {
 	int j;
 	if(buf[0] < '0')return 0;
 	if(buf[0] > '1')return 0;
-	jo->sure = buf[0] - '0';
+	jo->fixed = buf[0] - '0';
 
 	for(j=1;j<8;j++){
 		if('-' == buf[j])goto found;
@@ -31,6 +31,7 @@ found:
 }
 static int parsejoint(struct joint* jo, u8* buf)
 {
+	logtoall("@parsejoing\n");
 	int j,k;
 	int tmp=0,ioff=0;
 	for(j=0;j<0x8000;j++){
@@ -61,7 +62,7 @@ static void force_decent_spring(_obj* ent, struct joint* jo, _syn* stack,int sp)
 	int j;
 	for(j=0;j<16;j++){
 		if(0 == jo[j].exist)break;
-		if(0 != jo[j].sure)continue;
+		if(0 != jo[j].fixed)continue;
 
 		jo[j].grad[0] = 0.0;
 		jo[j].grad[1] = 0.0;
@@ -71,7 +72,7 @@ static void force_decent_spring(_obj* ent, struct joint* jo, _syn* stack,int sp)
 
 	for(j=0;j<16;j++){
 		if(0 == jo[j].exist)break;
-		if(0 != jo[j].sure)continue;
+		if(0 != jo[j].fixed)continue;
 
 		jo[j].here[0] -= jo[j].grad[0];
 		jo[j].here[1] -= jo[j].grad[1];
@@ -84,7 +85,7 @@ static void force_decent_stick(_obj* ent, struct joint* jo, _syn* stack,int sp)
 	int j;
 	for(j=1;j<16;j++){
 		if(0 == jo[j].exist)break;
-		if(0 != jo[j].sure)continue;
+		if(0 != jo[j].fixed)continue;
 
 		jo[j].grad[0] = 0.0;
 		jo[j].grad[1] = 0.0;
@@ -93,7 +94,7 @@ static void force_decent_stick(_obj* ent, struct joint* jo, _syn* stack,int sp)
 	}
 	for(j=1;j<16;j++){
 		if(0 == jo[j].exist)break;
-		if(0 != jo[j].sure)continue;
+		if(0 != jo[j].fixed)continue;
 
 		jo[j].here[0] -= jo[j].grad[0];
 		jo[j].here[1] -= jo[j].grad[1];
@@ -140,7 +141,6 @@ void force_read_board(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key)
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
 	if(0 == stack)return;
-	if('v' != key)return;
 
 	//joint
 	slot = stack[sp-1].pfoot;
@@ -183,9 +183,10 @@ int force_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void
 
 	//slot type unknown: do work based on caller fmt
 	switch(caller->type){
-	case _gl41list_:
+	case _wnd_:
+	case _render_:
 		break;
-	default:
+	case _virtual_:
 		if(jo[0].exist){
 			force_decent_spring(ent,jo, stack,sp);
 			force_decent_stick(ent,jo, stack,sp);

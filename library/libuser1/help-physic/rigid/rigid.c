@@ -1,6 +1,6 @@
 #include "libsoft.h"
-#define DEBUG 0
-#define DEBUG_DETAIL 0
+#define DEBUG 1
+#define DEBUG_DETAIL 1
 float rigidsimu_f32(float m1,float m2,float r);
 //
 float vec3_getlen(vec3 v);

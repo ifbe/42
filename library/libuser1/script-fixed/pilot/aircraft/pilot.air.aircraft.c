@@ -1,39 +1,37 @@
 #include "libuser.h"
-#define DEBUG 0
+#define DEBUG 1
 void quaternion2matthree(float* q, float* m);
 
 
 struct privdata{
-    void* REL_WORLD;
-    void* REL_ROCKET;
-	void* ENT_DBGUI;
+	//
+	_obj* aircraft_obj;
+    void* aircraft_geom;
+	//
+	void* dbgui;
 };
 
 
 //0: check
 void planecontrol_check(_obj* ent)
 {
-	struct halfrel* tmp[2];
-	int ret = relationsearch(ent, _dst_, &tmp[0], &tmp[1]);
-	if(ret <= 0)return;
-
-	_obj* rocket = tmp[1]->pchip;
-	if(0 == rocket)return;
-
     struct privdata* priv = (void*)ent->priv_256b;
-
 	_obj* world;
-	struct relation* rel = rocket->irel0;
+
+	_obj* satellite = priv->aircraft_obj;
+	if(0 == satellite)return;
+	struct relation* rel = satellite->irel0;
 	while(1){
 		if(0 == rel)break;
 		world = rel->psrcchip;
 		if(	(_virtual_ != world->type) | (_scene3d_ != world->type)){
-			priv->REL_WORLD = rel->src;
-			priv->REL_ROCKET = rel->dst;
-			return;
+			priv->aircraft_geom = rel->psrcfoot;
+			//logtoall("sate.geom=%p\n", priv->satellite_geom);
+			break;
 		}
 		rel = samedstnextsrc(rel);
 	}
+
 }
 
 
@@ -54,6 +52,20 @@ void planecontrol_state2desire(_obj* ent)
 //3: pid
 void planecontrol_calcpid(_obj* ent)
 {
+    struct privdata* priv = (void*)ent->priv_256b;
+
+	struct style* sty = priv->aircraft_geom;
+	if(0 == sty)return;
+    if(DEBUG)logtoall("xx:%f,%f,%f,%f\n",sty->fm.displace_x[0],sty->fm.displace_x[1],sty->fm.displace_x[2],vec3_getlen(sty->fm.displace_x));
+    if(DEBUG)logtoall("xv:%f,%f,%f,%f\n",sty->fm.displace_v[0],sty->fm.displace_v[1],sty->fm.displace_v[2],vec3_getlen(sty->fm.displace_v));
+
+	int j;
+	struct forceinfo* fi = &sty->forceinfo;
+	for(j=0;j<3;j++){
+		fi->where[fi->cnt][j] = sty->fmotion.displace_x[j] + sty->fshape.vr[j] - sty->fshape.vf[j] + sty->fshape.vt[j]/10;
+		fi->force[fi->cnt][j] = sty->fshape.vf[j];
+	}
+	fi->cnt++;
 }
 
 
@@ -63,17 +75,14 @@ void planecontrol_report(_obj* ent)
 {
     struct privdata* priv = (void*)ent->priv_256b;
 
-	struct halfrel* rel = priv->REL_WORLD;
-	if(0 == rel)return;
+	struct style* geom = priv->aircraft_geom;
+	if(0 == geom)return;
 
-	struct style* sty = rel->pfoot;
-	if(0 == sty)return;
-
-	_obj* dbg = priv->ENT_DBGUI;
+	_obj* dbg = priv->dbgui;
 	if(0 == dbg)return;
 
 	//logtoall("%s\n",__func__);
-	dbg->onwriter(dbg, 0, 0, 0, sty, 0);
+	dbg->onwriter(dbg, 0, 0, 0, geom, 0);
 }
 
 
@@ -86,7 +95,7 @@ int planecontrol_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int ke
 }
 int planecontrol_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, u8* buf,int len)
 {
-	//if(DEBUG)logtoall("@planecontrol_give:%.4s\n",&foot);
+	if(DEBUG)logtoall("@planecontrol_give:%.4s\n",&foot);
 	if(_clk_ == stack[sp-1].foottype){
         //0
 		planecontrol_check(ent);
@@ -111,13 +120,18 @@ int planecontrol_detach(struct halfrel* self, struct halfrel* peer)
 int planecontrol_attach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ent = self->pchip;
-	_obj* dbg = peer->pchip;
-	logtoall("%s: %.4s, %.8s\n", __func__, &self->foottype, &dbg->type);
+	_obj* obj = peer->pchip;
+	logtoall("%s: %.8s.%.4s -> %.8s.%.4s\n", __func__, &ent->type, &self->foottype, &obj->type, &peer->foottype);
 
     struct privdata* priv = (void*)ent->priv_256b;
 	switch(self->foottype){
 	case _dbg_:
-		priv->ENT_DBGUI = dbg;
+		priv->dbgui = obj;
+		logtoall("dbgui@%p\n", obj);
+		break;
+	case _dst_:
+		priv->aircraft_obj = obj;
+		logtoall("sate@%p\n", obj);
 		break;
 	}
 	return 0;

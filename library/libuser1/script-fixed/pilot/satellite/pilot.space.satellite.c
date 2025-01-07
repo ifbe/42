@@ -1,6 +1,7 @@
 #include "libuser.h"
 #define DEBUG 1
 void quaternion2matthree(float* q, float* m);
+void quaternion_rotate(float* v, float* q);
 
 
 struct privdata{
@@ -121,8 +122,49 @@ void satellitecontrol_calcpid(_obj* ent)
     if(DEBUG)logtoall("sate.x:%f,%f,%f,%f\n",sty->fm.displace_x[0],sty->fm.displace_x[1],sty->fm.displace_x[2],vec3_getlen(sty->fm.displace_x));
     if(DEBUG)logtoall("sate.v:%f,%f,%f,%f\n",sty->fm.displace_v[0],sty->fm.displace_v[1],sty->fm.displace_v[2],vec3_getlen(sty->fm.displace_v));
 
-	//q to m
+	//direction current
 	float* q = sty->fm.angular_x;
+	vec3 vec = {0,0,-1};
+	quaternion_rotate(vec, q);
+
+	//direction target
+	vec3 tar = {
+		sty->fmotion.displace_x[0] - sty_earth->fmotion.displace_x[0],
+		sty->fmotion.displace_x[1] - sty_earth->fmotion.displace_x[1],
+		sty->fmotion.displace_x[2] - sty_earth->fmotion.displace_x[2]
+	};
+
+	//distance
+	vec3 dist = {tar[0]-vec[0], tar[1]-vec[1], tar[2]-vec[2]};
+	if(DEBUG)logtoall("dist=%f\n", vec3_getlen(dist));
+
+	//rotate axis
+	vec3 axis;
+	vec3_cross(axis, vec, tar);
+	float sinval = vec3_getlen(axis) / (vec3_getlen(vec) * vec3_getlen(tar));
+	if(DEBUG)logtoall("sin(angle)=%f\n", sinval);
+
+	//
+	vec3 offs;
+	vec3_cross(offs, vec, axis);
+	vec3_setlen(offs, 1000);
+	vec3 strong;
+	vec3_cross(strong, axis, offs);
+	vec3_setlen(strong, 1000);
+
+	//apply 2 force
+	int j;
+	struct forceinfo* fi = &sty->forceinfo;
+	for(j=0;j<3;j++){
+		fi->where[fi->cnt][j] = sty->fmotion.displace_x[j] + offs[j];
+		fi->force[fi->cnt][j] = -strong[j];
+	}
+	fi->cnt++;
+	for(j=0;j<3;j++){
+		fi->where[fi->cnt][j] = sty->fmotion.displace_x[j] - offs[j];
+		fi->force[fi->cnt][j] = strong[j];
+	}
+	fi->cnt++;
 }
 
 

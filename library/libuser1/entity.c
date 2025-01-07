@@ -552,18 +552,19 @@ int entity_create(_obj* act, void* buf, int argc, u8** argv)
 	case _graveasy_:
 		graveasy_create(act, buf, argc, argv);
 		break;
-	case _gravtest_:
-		gravtest_create(act, buf, argc, argv);
-		break;
 	case _gravity_:
 		gravity_create(act, buf, argc, argv);
 		break;
 	//rigid
-	case _force_:
-		force_create(act, buf, argc, argv);
+	case _gravtest_:
+		gravtest_create(act, buf, argc, argv);
 		break;
 	case _rigidsim_:
 		rigidsimu_create(act, buf, argc, argv);
+		break;
+	//softbody
+	case _force_:
+		force_create(act, buf, argc, argv);
 		break;
 	}//switch
 
