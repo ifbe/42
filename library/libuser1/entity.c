@@ -152,12 +152,12 @@ int gravity_detach(void*, void*);
 int gravity_giving(void*,void*, void*,int, p64,int, void*,int);
 int gravity_taking(void*,void*, void*,int, p64,int, void*,int);
 //
-int force_create(void*, void*, int, u8**);
-int force_delete(void*, void*);
-int force_attach(void*, void*);
-int force_detach(void*, void*);
-int force_giving(void*,void*, void*,int, p64,int, void*,int);
-int force_taking(void*,void*, void*,int, p64,int, void*,int);
+int elastic_create(void*, void*, int, u8**);
+int elastic_delete(void*, void*);
+int elastic_attach(void*, void*);
+int elastic_detach(void*, void*);
+int elastic_giving(void*,void*, void*,int, p64,int, void*,int);
+int elastic_taking(void*,void*, void*,int, p64,int, void*,int);
 int rigidsimu_create(void*, void*, int, u8**);
 int rigidsimu_delete(void*, void*);
 int rigidsimu_attach(void*, void*);
@@ -559,13 +559,15 @@ int entity_create(_obj* act, void* buf, int argc, u8** argv)
 	case _gravtest_:
 		gravtest_create(act, buf, argc, argv);
 		break;
-	case _rigidsim_:
+	case _rigidsimu_:
 		rigidsimu_create(act, buf, argc, argv);
 		break;
-	//softbody
-	case _force_:
-		force_create(act, buf, argc, argv);
+	//elasticbody
+	case _elasticsimu_:
+		elastic_create(act, buf, argc, argv);
 		break;
+	//softbody
+	//case _softsimu_:
 	}//switch
 
 	return 0;
@@ -631,11 +633,12 @@ int entity_attach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* pe
 
 	//case _field_:return field_attach(self, peer);
 	//case _fluid_:return fluid_attach(self, peer);
-	case _force_:return force_attach(self, peer);
 	case _graveasy_:return graveasy_attach(self, peer);
 	case _gravtest_:return gravtest_attach(self, peer);
-	case _rigidsim_:return rigidsimu_attach(self, peer);
 	case _gravity_:return gravity_attach(self, peer);
+
+	case _rigidsimu_:return rigidsimu_attach(self, peer);
+	case _elasticsimu_:return elastic_attach(self, peer);
 
 	case _sch_:return schematic_attach(self, peer);
 	case _pcb_:return printboard_attach(self, peer);
@@ -700,11 +703,12 @@ int entity_detach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* pe
 
 	//case _field_:return field_detach(self, peer);
 	//case _fluid_:return fluid_detach(self, peer);
-	case _force_:return force_detach(self, peer);
 	case _graveasy_:return graveasy_detach(self, peer);
 	case _gravtest_:return gravtest_detach(self, peer);
-	case _rigidsim_:return rigidsimu_detach(self, peer);
 	case _gravity_:return gravity_detach(self, peer);
+
+	case _rigidsimu_:return rigidsimu_detach(self, peer);
+	case _elasticsimu_:return elastic_detach(self, peer);
 
 	case _sch_:return schematic_detach(self, peer);
 	case _pcb_:return printboard_detach(self, peer);
@@ -763,11 +767,12 @@ int entity_takeby(_obj* act,void* foot, _syn* stack,int sp, p64 arg,int key, voi
 
 	//case _field_:return field_taking(act,foot, stack,sp, arg,key, buf,len);
 	//case _fluid_:return fluid_taking(act,foot, stack,sp, arg,key, buf,len);
-	case _force_:return force_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _graveasy_:return graveasy_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _gravtest_:return gravtest_taking(act,foot, stack,sp, arg,key, buf,len);
-	case _rigidsim_:return rigidsimu_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _gravity_:return gravity_taking(act,foot, stack,sp, arg,key, buf,len);
+
+	case _rigidsimu_:return rigidsimu_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _elasticsimu_:return elastic_taking(act,foot, stack,sp, arg,key, buf,len);
 
 	case _sch_:return schematic_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _pcb_:return printboard_taking(act,foot, stack,sp, arg,key, buf,len);
@@ -826,11 +831,12 @@ int entity_giveby(_obj* act,void* foot, _syn* stack,int sp, p64 arg,int key, voi
 
 	//case _field_:return field_giving(act,foot, stack,sp, arg,key, buf,len);
 	//case _fluid_:return fluid_giving(act,foot, stack,sp, arg,key, buf,len);
-	case _force_:return force_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _graveasy_:return graveasy_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _gravtest_:return gravtest_giving(act,foot, stack,sp, arg,key, buf,len);
-	case _rigidsim_:return rigidsimu_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _gravity_:return gravity_giving(act,foot, stack,sp, arg,key, buf,len);
+
+	case _rigidsimu_:return rigidsimu_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _elasticsimu_:return elastic_giving(act,foot, stack,sp, arg,key, buf,len);
 
 	case _sch_:return schematic_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _pcb_:return printboard_giving(act,foot, stack,sp, arg,key, buf,len);

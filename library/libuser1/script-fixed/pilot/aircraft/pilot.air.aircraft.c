@@ -1,6 +1,8 @@
 #include "libuser.h"
 #define DEBUG 1
 void quaternion2matthree(float* q, float* m);
+void quaternion_rotatefrom(float*, float*, float*);
+void quaternion2eulerian(float* q, float* e);
 
 
 struct privdata{
@@ -59,11 +61,54 @@ void planecontrol_calcpid(_obj* ent)
     if(DEBUG)logtoall("xx:%f,%f,%f,%f\n",sty->fm.displace_x[0],sty->fm.displace_x[1],sty->fm.displace_x[2],vec3_getlen(sty->fm.displace_x));
     if(DEBUG)logtoall("xv:%f,%f,%f,%f\n",sty->fm.displace_v[0],sty->fm.displace_v[1],sty->fm.displace_v[2],vec3_getlen(sty->fm.displace_v));
 
+	float* q = sty->fmotion.angular_x;
+	vec3 e;
+	quaternion2eulerian(q, e);
+	if(DEBUG)logtoall("eulerian:%f,%f,%f\n", e[0], e[1], e[2]);
+
+	//local space
 	int j;
+	vec3 tr,tf,tt;
+	for(j=0;j<3;j++){
+		tr[j] = sty->fshape.vr[j];
+		tf[j] = sty->fshape.vf[j];
+		tt[j] = sty->fshape.vt[j];
+	}
+	vec3_setlen(tr, 20);		//10m
+	vec3_setlen(tf, 2);		//10m
+	vec3_setlen(tt, 0.1);		//10m
+
+	vec3 localwhere_l;
+	vec3 localwhere_r;
+	vec3 localforce_l;
+	vec3 localforce_r;
+	for(j=0;j<3;j++){
+		localwhere_l[j] =-tr[j]+tf[j]+tt[j];
+		localwhere_r[j] = tr[j]+tf[j]+tt[j];
+		localforce_l[j] = sty->fshape.vf[j];
+		localforce_r[j] = sty->fshape.vf[j];
+	}
+	vec3_setlen(localforce_l, 15*1000);		//15 tun
+	vec3_setlen(localforce_r, 15.1*1000);		//15.1 tun
+
+	//world space
+	vec3 worldwhere_l, worldwhere_r;
+	vec3 worldforce_l, worldforce_r;
+	quaternion_rotatefrom(worldwhere_l, localwhere_l, sty->fmotion.angular_x);
+	quaternion_rotatefrom(worldwhere_r, localwhere_r, sty->fmotion.angular_x);
+	quaternion_rotatefrom(worldforce_l, localforce_l, sty->fmotion.angular_x);
+	quaternion_rotatefrom(worldforce_r, localforce_r, sty->fmotion.angular_x);
+
+	//apply
 	struct forceinfo* fi = &sty->forceinfo;
 	for(j=0;j<3;j++){
-		fi->where[fi->cnt][j] = sty->fmotion.displace_x[j] + sty->fshape.vr[j] - sty->fshape.vf[j] + sty->fshape.vt[j]/10;
-		fi->force[fi->cnt][j] = sty->fshape.vf[j];
+		fi->where[fi->cnt][j] = sty->fmotion.displace_x[j] + worldwhere_l[j];
+		fi->force[fi->cnt][j] = worldforce_l[j];
+	}
+	fi->cnt++;
+	for(j=0;j<3;j++){
+		fi->where[fi->cnt][j] = sty->fmotion.displace_x[j] + worldwhere_r[j];
+		fi->force[fi->cnt][j] = worldforce_r[j];
 	}
 	fi->cnt++;
 }

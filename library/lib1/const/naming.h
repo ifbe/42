@@ -315,7 +315,10 @@
 //physic
 #define _phys_ hex32('p','h','y','s')
 #define _collide_ hex64('c','o','l','l','i','d','e',0)
-#define _rigidsim_ hex64('r','i','g','i','d','s','i','m')
+//
+#define _rigidsimu_ hex64('r','i','g','i','d','s','i','m')
+#define _elasticsimu_ hex64('e','l','a','s','t','i','c', 0)
+#define _softsimu_ hex64('s','o','f','t','s','i','m','u')
 //
 #define _graveasy_ hex64('g','r','a','v','e','a','s','y')
 #define _gravtest_ hex64('g','r','a','v','t','e','s','t')

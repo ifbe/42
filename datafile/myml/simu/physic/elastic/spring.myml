@@ -1,9 +1,4 @@
 <entity>
-s0{
-fmt:spring
-k:50
-l:50
-}
 s1{
 fmt:spring
 k:50
@@ -16,16 +11,12 @@ l:50
 }
 s3{
 fmt:spring
-k:25
-l:75
-}
-stick{
-fmt:stick
-l:1000
+k:100
+l:50
 }
 scn{
-fmt:force
-arg:datafile/xyz/complex.xyz
+fmt:elastic
+arg:datafile/xyz/spring.xyz
 }
 cam{
 fmt:freecam
@@ -76,16 +67,12 @@ q: 1.0, 1.0
 
 
 <relation>
-(scn, 0, a) -> (s0, 0, a)
-(scn, 0, b) -> (s1, 0, a)
-(scn, 0, c) -> (s2, 0, a)
-(scn, 0, d) -> (s3, 0, a)
-(scn, 0, e) -> (s0, 0, b)
-(scn, 0, e) -> (s1, 0, b)
-(scn, 0, e) -> (stick, 0, a)
-(scn, 0, f) -> (s2, 0, b)
-(scn, 0, f) -> (s3, 0, b)
-(scn, 0, f) -> (stick, 0, b)
+(scn, 0, a) -> (s1, 0, a)
+(scn, 0, b) -> (s2, 0, a)
+(scn, 0, c) -> (s3, 0, a)
+(scn, 0, d) -> (s1, 0, b)
+(scn, 0, d) -> (s2, 0, b)
+(scn, 0, d) -> (s3, 0, b)
 
 (world, scngeom, 0) -> (scn, scnslot, 0)
 (world, camgeom, 0) -> (cam, camslot, 0)

@@ -57,7 +57,7 @@ static int parsejoint(struct joint* jo, u8* buf)
 
 
 
-static void force_decent_spring(_obj* ent, struct joint* jo, _syn* stack,int sp)
+static void elastic_decent_spring(_obj* ent, struct joint* jo, _syn* stack,int sp)
 {
 	int j;
 	for(j=0;j<16;j++){
@@ -77,10 +77,10 @@ static void force_decent_spring(_obj* ent, struct joint* jo, _syn* stack,int sp)
 		jo[j].here[0] -= jo[j].grad[0];
 		jo[j].here[1] -= jo[j].grad[1];
 		jo[j].here[2] -= jo[j].grad[2];
-		logtoall("@force_decent_spring: %f,%f,%f\n",jo[j].here[0], jo[j].here[1], jo[j].here[2]);
+		logtoall("@elastic_decent_spring: %f,%f,%f\n",jo[j].here[0], jo[j].here[1], jo[j].here[2]);
 	}
 }
-static void force_decent_stick(_obj* ent, struct joint* jo, _syn* stack,int sp)
+static void elastic_decent_stick(_obj* ent, struct joint* jo, _syn* stack,int sp)
 {
 	int j;
 	for(j=1;j<16;j++){
@@ -99,14 +99,14 @@ static void force_decent_stick(_obj* ent, struct joint* jo, _syn* stack,int sp)
 		jo[j].here[0] -= jo[j].grad[0];
 		jo[j].here[1] -= jo[j].grad[1];
 		jo[j].here[2] -= jo[j].grad[2];
-		logtoall("force_decent_stick:%f,%f,%f\n",jo[j].here[0], jo[j].here[1], jo[j].here[2]);
+		logtoall("elastic_decent_stick:%f,%f,%f\n",jo[j].here[0], jo[j].here[1], jo[j].here[2]);
 	}
 }
 
 
 
 
-static void force_draw_gl41(
+static void elastic_draw_gl41(
 	_obj* act, struct style* slot,
 	_obj* scn, struct style* geom,
 	_obj* wnd, struct style* area)
@@ -135,7 +135,7 @@ static void force_draw_gl41(
 		gl41ascii_center(wnd, 0xff0000, jo[j].here,tr,tu,'a'+j);
 	}
 }
-void force_read_board(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key)
+void elastic_read_board(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key)
 {
 	struct style* slot;
 	_obj* wor;struct style* geom;
@@ -146,9 +146,9 @@ void force_read_board(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key)
 	slot = stack[sp-1].pfoot;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	force_draw_gl41(ent,slot, wor,geom, wnd,area);
+	elastic_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-void force_read_inner(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key)
+void elastic_read_inner(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key)
 {
 	//spring, stick
 	struct joint* jo = ent->listptr.buf0;
@@ -169,7 +169,7 @@ void force_read_inner(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key)
 		entity_takeby(tab[j],0, stack,sp+2, 0,0, jo,0);
 	}
 }
-int force_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
+int elastic_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	struct joint* jo = ent->listptr.buf0;
 	if(0 == stack)return 0;
@@ -188,28 +188,28 @@ int force_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void
 		break;
 	case _virtual_:
 		if(jo[0].exist){
-			force_decent_spring(ent,jo, stack,sp);
-			force_decent_stick(ent,jo, stack,sp);
+			elastic_decent_spring(ent,jo, stack,sp);
+			elastic_decent_stick(ent,jo, stack,sp);
 		}
-		force_read_board(ent,foot, stack,sp, arg,key);
-		force_read_inner(ent,foot, stack,sp, arg,key);
+		elastic_read_board(ent,foot, stack,sp, arg,key);
+		elastic_read_inner(ent,foot, stack,sp, arg,key);
 		break;
 	}
 	return 0;
 }
-int force_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
+int elastic_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int force_detach(struct halfrel* self, struct halfrel* peer)
+int elastic_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int force_attach(struct halfrel* self, struct halfrel* peer)
+int elastic_attach(struct halfrel* self, struct halfrel* peer)
 {
 	int j;
 	if(0 == self)return 0;
-	logtoall("@force_attach: %.4s\n", &self->foottype);
+	logtoall("@elastic_attach: %.4s\n", &self->foottype);
 
 	j = self->foottype;
 	if('a' > j)return 0;
@@ -231,23 +231,23 @@ int force_attach(struct halfrel* self, struct halfrel* peer)
 
 
 
-int force_search(_obj* scene)
+int elastic_search(_obj* scene)
 {
 	return 0;
 }
-int force_modify(_obj* scene)
+int elastic_modify(_obj* scene)
 {
 	return 0;
 }
-int force_delete(_obj* scene)
+int elastic_delete(_obj* scene)
 {
 	return 0;
 }
-int force_create(_obj* scene, void* arg, int argc, u8** argv)
+int elastic_create(_obj* scene, void* arg, int argc, u8** argv)
 {
 	int ret;
 	void* buf;
-	logtoall("@force_create\n");
+	logtoall("@elastic_create\n");
 	if(0 == arg)return 0;
 
 	scene->listptr.buf0 = memoryalloc(0x10000, 0);

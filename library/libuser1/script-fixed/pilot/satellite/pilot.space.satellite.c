@@ -1,5 +1,5 @@
 #include "libuser.h"
-#define DEBUG 1
+#define DEBUG 0
 void quaternion2matthree(float* q, float* m);
 void quaternion_rotate(float* v, float* q);
 

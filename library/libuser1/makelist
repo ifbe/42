@@ -200,9 +200,10 @@
 ./help-physic/field/field.grav.surface.c
 ./help-physic/field/field.magnet.c
 ./help-physic/fluid/fluid.simple.c
-./help-physic/rigid/rigid.tran_rotate.c
-./help-physic/rigid/rigid.c
-./help-physic/soft/soft.spring.c
+./help-physic/body-rigid/rigid.tran_rotate.c
+./help-physic/body-rigid/rigid.c
+./help-physic/body-soft/softbody.c
+./help-physic/body-elastic/elasticbody.c
 ./help-spu/al10/al10.c
 ./help-spu/sl10/sl10.c
 ./help-spu/spu.pcm.c

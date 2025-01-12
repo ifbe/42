@@ -38,6 +38,7 @@ fmt:graveasy
 }
 rigid{
 fmt:rigidsim
+unit:kg_m
 }
 cam3rd{
 fmt:cam3rd
@@ -64,9 +65,10 @@ fmt:pulser
 
 
 <style>
-dronslot{
+planeslot{
 }
-drongeom{
+planegeom{
+#22.5, 23.5, 15(m)
 shape{
 c: 0, 0, 10000
 r: 22.5, 0.0, 0.0
@@ -83,12 +85,13 @@ rotation{
 1: 0.0, 0.0, 0.0, 0.0
 }
 inertia{
-x:12954
-y:12187
-z:17641
+x:12954000
+y:12187000
+z:17641000
 }
+#200(ton)=200000(kg)
 mass{
-m:200
+m:200000
 }
 }
 
@@ -147,7 +150,7 @@ q:1.0, 1.0
 
 <relation>
 #scene item
-(scene, drongeom, 0) -> (aircraft, dronslot, 0)
+(scene, planegeom, 0) -> (aircraft, planeslot, 0)
 
 #3d item
 (world, 0, 0) -> (scene, 0, 0)

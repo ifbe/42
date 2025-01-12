@@ -8,7 +8,7 @@ fmt:stick
 l:1414
 }
 scn{
-fmt:force
+fmt:elastic
 arg:datafile/xyz/stick.xyz
 }
 cam{

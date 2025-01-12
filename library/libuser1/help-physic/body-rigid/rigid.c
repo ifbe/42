@@ -1,7 +1,9 @@
 #include "libsoft.h"
-#define DEBUG 1
-#define DEBUG_DETAIL 1
-float rigidsimu_f32(float m1,float m2,float r);
+#define DEBUG 0
+#define DEBUG_DETAIL 0
+//
+#define unit_kg_m 0
+#define unit_ton_km 1
 //
 float vec3_getlen(vec3 v);
 float vec3_setlen(vec3 v, float f);
@@ -17,14 +19,17 @@ void quaternion_rotatefrom(float* o, float* v, float* q);
 
 
 struct privdata{
-    u64 time;
-	u64 count;
 	struct style* geom[6];
+	u64 count;
+	//
+    u64 time;
+	int unit;	//0=kg,m    1=ton,km
 };
 
 
-void rigidsimu_force2accel(struct style** geom, int count)
+void rigidsimu_force2accel(_obj* ent, struct style** geom, int count)
 {
+    struct privdata* priv = (void*)ent->priv_256b;
 	struct forceinfo* fi;
 	float mass_inv;
 	int j,k;
@@ -43,25 +48,34 @@ void rigidsimu_force2accel(struct style** geom, int count)
 				fi->where[k][0] - geom[j]->fm.displace_x[0],
 				fi->where[k][1] - geom[j]->fm.displace_x[1],
 				fi->where[k][2] - geom[j]->fm.displace_x[2]};
+			if(DEBUG_DETAIL)logtoall("relcm=(%f,%f,%f)-(%f,%f,%f)=(%f,%f,%f)\n",
+				fi->where[k][0], fi->where[k][1], fi->where[k][2],
+				geom[j]->fm.displace_x[0], geom[j]->fm.displace_x[1], geom[j]->fm.displace_x[2],
+				world_relcm_where[0],world_relcm_where[1],world_relcm_where[2]
+				);
+
 			vec3 torque;
 			vec3_cross(torque, world_relcm_where, fi->force[k]);
 			world_relcm_torque[0] += torque[0];
 			world_relcm_torque[1] += torque[1];
 			world_relcm_torque[2] += torque[2];
-			if(DEBUG_DETAIL)logtoall("(%f,%f,%f)-(%f,%f,%f)=(%f,%f,%f)\n",
-				fi->where[k][0], fi->where[k][1], fi->where[k][2],
-				geom[j]->fm.displace_x[0], geom[j]->fm.displace_x[1], geom[j]->fm.displace_x[2],
-				world_relcm_where[0],world_relcm_where[1],world_relcm_where[2]
-				);
-			if(DEBUG_DETAIL)logtoall("(%f,%f,%f)X(%f,%f,%f)=(%f,%f,%f)\n",
+			if(DEBUG_DETAIL)logtoall("torque=(%f,%f,%f)X(%f,%f,%f)=(%f,%f,%f)\n",
 				world_relcm_where[0],world_relcm_where[1],world_relcm_where[2],
 				fi->force[k][0], fi->force[k][1], fi->force[k][2],
 				torque[0], torque[1], torque[2]);
 		}
 
 		//displace
-		//a = km/(s^2) = [m/(s^2)]/1000 = F/M = [F/kg]/1000 = F/(ton*1000)/1000 = F/(ton*1000000)
-		mass_inv = 1.0/(geom[j]->physic.inertiatensor[3][3]*1000000);
+		switch(priv->unit){
+		case unit_kg_m:
+			//a = m/(s^2) = F/M = F/kg
+			mass_inv = 1.0 / geom[j]->physic.inertiatensor[3][3];
+			break;
+		case unit_ton_km:
+			//a = km/(s^2) = [m/(s^2)]/1000 = F/M = [F/kg]/1000 = F/(ton*1000)/1000 = F/(ton*1000000)
+			mass_inv = 1.0 / (geom[j]->physic.inertiatensor[3][3]*1000000);
+			break;
+		}
 		geom[j]->fm.displace_a[0] = world_force[0] * mass_inv;
 		geom[j]->fm.displace_a[1] = world_force[1] * mass_inv;
 		geom[j]->fm.displace_a[2] = world_force[2] * mass_inv;
@@ -171,7 +185,7 @@ void rigidsimu_acceltime_angular(struct style* geom, float dt)
 	quaternion_multiplyfrom(q, ql, qr);
 	quaternion_normalize(q);
 }
-void rigidsimu_acceltime(struct style** geom, int count, float dt)
+void rigidsimu_acceltime(_obj* ent, struct style** geom, int count, float dt)
 {
 	int j;
 	struct fmotion* final = 0;
@@ -216,9 +230,9 @@ int rigidsimu_foreach(_obj* ent)
 		rel = samesrcnextdst(rel);
 	}
 
-	rigidsimu_force2accel(priv->geom, priv->count);
+	rigidsimu_force2accel(ent, priv->geom, priv->count);
 
-	rigidsimu_acceltime(priv->geom, priv->count, dt);
+	rigidsimu_acceltime(ent, priv->geom, priv->count, dt);
 
 	if(DEBUG)logtoall("\n");
 
@@ -273,8 +287,20 @@ int rigidsimu_delete(_obj* ent)
 {
 	return 0;
 }
-int rigidsimu_create(_obj* ent, void* str)
+int rigidsimu_create(_obj* ent, void* str, int argc, u8** argv)
 {
-	logtoall("@rigidsimu_create\n");
+	logtoall("@rigidsimu_create:argc=%d\n", argc);
+
+    struct privdata* priv = (void*)ent->priv_256b;
+	int j;
+	int unit = unit_ton_km;
+	for(j=0;j<argc;j++){
+		logtoall("%d:%.8s\n", j, argv[j]);
+		if(0 == ncmp(argv[j], "unit:", 5)){
+			if(ncmp(argv[j]+5, "kg_m", 4)==0)unit = unit_kg_m;
+			if(ncmp(argv[j]+5, "ton_km", 6)==0)unit = unit_ton_km;
+		}
+	}
+	priv->unit = unit;
 	return 0;
 }
