@@ -5,6 +5,10 @@
 #define _imag_ hex32('i','m','a','g')
 
 
+struct privdata{
+	_obj* worldobj;
+	void* worldgeom;
+};
 
 
 static void aircraft_forgl41(
@@ -144,6 +148,12 @@ static void aircraft_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,
 	struct style* area = stack[sp-6].pfoot;
 	aircraft_forgl41(ent,slot, wor,geom, wnd,area);
 }
+static void aircraft_write_quaternion(struct style* sty, float* q)
+{
+	//logtoall("aircraft_write_quaternion: %f,%f,%f,%f\n", q[0], q[1], q[2], q[3]);
+	int j;
+	for(int j=0;j<4;j++)sty->fmotion.angular_x[j] = q[j];
+}
 
 
 
@@ -167,12 +177,30 @@ static void aircraft_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,in
 }
 static void aircraft_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
+	struct privdata* priv = (void*)ent->priv_256b;
+
+	u32 type = stack[sp-1].foottype;
+	switch(type){
+	case _quat_:
+		aircraft_write_quaternion(priv->worldgeom, buf);
+		break;
+	}
 }
 static void aircraft_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void aircraft_attach(struct halfrel* self, struct halfrel* peer)
 {
+	_obj* me = self->pchip;
+	_obj* you = peer->pchip;
+	struct privdata* priv = (void*)me->priv_256b;
+
+	switch(you->type){
+	case _virtual_:
+		priv->worldobj = you;
+		priv->worldgeom = peer->pfoot;
+		break;
+	}
 }
 
 

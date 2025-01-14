@@ -1,7 +1,7 @@
 <entity>
 sky{
 fmt:equirect
-arg:datafile/jpg/texball-skysphere.jpg
+arg:datafile/jpg/360d/texball-warehouse.jpg
 }
 ground{
 fmt:ground
@@ -72,7 +72,7 @@ itemgeom{
 c: 0.0, 0.0, 1000.0
 r: 1000.0, 0.0, 0.0, 1000
 f: 0.0, 1000.0, 0.0, 1000
-t: 0.0, 0.0, 1000.0, 1000
+t: 0.0, 0.0, 100.0, 100
 }
 
 freemodl{
@@ -99,15 +99,15 @@ q:1.0, 1.0
 
 <relation>
 #virtual depends on inner objects
-(virtual, skygeom, 0) -> (sky, skyhaha, 0)
-(virtual, gndgeom, 0) -> (ground, gndhaha, 0)
-(virtual, itemgeom, 0) -> (drone, itemhaha, 0)
-(virtual, freegeom, 0) -> (freecam, freemodl, 0)
+(@virtual, @skygeom) -> (@sky, @skyhaha)
+#(@virtual, @gndgeom) -> (@ground, @gndhaha)
+(@virtual, @itemgeom) -> (@drone, @itemhaha)
+(@virtual, @freegeom) -> (@freecam, @freemodl)
 
 #glwnd depends on cam
-(opengl, freerect, mvp) -> (freecam, 0, 0)
+(@opengl, mvp@freerect) -> (@freecam, 0)
 
-(udphost, 0, dst) -> (reline, 0, src)
-(reline, 0, dst) -> (conv, 0, str)
-(conv, 0, vec) -> (drone, 0, 0)
+(@udphost, dst) -> (reline, src)
+(@reline, dst) -> (conv, str)
+(@conv, vec) -> (drone, quat)
 </relation>

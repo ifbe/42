@@ -2,11 +2,10 @@
 #define _src_ hex32('s','r','c',0)
 #define _dst_ hex32('d','s','t',0)
 double squareroot(double);
-
-#define T 0.001
-#define Kp 1.0
-#define Ki 0.001
-
+//
+#define deltaT 0.01            //10ms
+#define twoKp 1.0
+#define twoKi 0.0001
 //
 static float q[4];
 #define qx q[0]
@@ -18,8 +17,14 @@ static float integralx, integraly, integralz;
 
 
 
+//origin code: https://github.com/PaulStoffregen/MahonyAHRS
+//axis system: east-north-sky, right-front-top
+//input ax/ay/az: accel direction and strength, unit=m*(s^2), when lay flat value=(0,0,-9.8)
+//input gx/gy/gz: speed of rotate around x/y/z axis, unit=rad/s, right hand law, value>0
 
-//https://github.com/PaulStoffregen/MahonyAHRS
+
+
+
 static float invSqrt(float x) {
 	float halfx = 0.5f * x;
 	float y = x;
@@ -39,11 +44,6 @@ void mahonyupdate6(
 	float halfex, halfey, halfez;
 	float qa, qb, qc;
 
-	// Convert gyroscope degrees/sec to radians/sec
-	gx *= 0.0174533f;
-	gy *= 0.0174533f;
-	gz *= 0.0174533f;
-
 	// Compute feedback only if accelerometer measurement valid
 	// (avoids NaN in accelerometer normalisation)
 	if(!((ax == 0.0f) && (ay == 0.0f) && (az == 0.0f))) {
@@ -57,20 +57,19 @@ void mahonyupdate6(
 		// Estimated direction of gravity
 		halfvx = qx * qz - qw * qy;
 		halfvy = qw * qx + qy * qz;
-		halfvz = qw * qw - 0.5f + qz * qz;
+		halfvz = qw * qw + qz * qz - 0.5f;
 
-		// Error is sum of cross product between estimated
-		// and measured direction of gravity
-		halfex = (ay * halfvz - az * halfvy);
-		halfey = (az * halfvx - ax * halfvz);
-		halfez = (ax * halfvy - ay * halfvx);
+		// Error = cross(estimated_grav_dir, measured_grav_dir)
+		halfex = (halfvy * az - halfvz * ay);
+		halfey = (halfvz * ax - halfvx * az);
+		halfez = (halfvx * ay - halfvy * ax);
 
 		// Compute and apply integral feedback if enabled
-		if(Ki > 0.0f) {
+		if(twoKi > 0.0f) {
 			// integral error scaled by Ki
-			integralx += Ki * halfex * T;
-			integraly += Ki * halfey * T;
-			integralz += Ki * halfez * T;
+			integralx += twoKi * halfex * deltaT;
+			integraly += twoKi * halfey * deltaT;
+			integralz += twoKi * halfez * deltaT;
 			gx += integralx;	// apply integral feedback
 			gy += integraly;
 			gz += integralz;
@@ -81,22 +80,25 @@ void mahonyupdate6(
 		}
 
 		// Apply proportional feedback
-		gx += Kp * halfex;
-		gy += Kp * halfey;
-		gz += Kp * halfez;
+		gx += twoKp * halfex;
+		gy += twoKp * halfey;
+		gz += twoKp * halfez;
 	}
 
 	// Integrate rate of change of quaternion
-	gx *= (0.5f * T);		// pre-multiply common factors
-	gy *= (0.5f * T);
-	gz *= (0.5f * T);
-	qa = qw;
-	qb = qx;
-	qc = qy;
-	qw += (-qb * gx - qc * gy - qz * gz);
-	qx += (qa * gx + qc * gz - qz * gy);
-	qy += (qa * gy - qb * gz + qz * gx);
-	qz += (qa * gz + qb * gy - qc * gx);
+	gx *= (0.5f * deltaT);		// pre-multiply common factors
+	gy *= (0.5f * deltaT);
+	gz *= (0.5f * deltaT);
+
+	//
+	float pw = qw;
+	float px = qx;
+	float py = qy;
+	float pz = qz;
+	qx += (  0 * px +gz * py -gy * pz +gx * pw);
+	qy += (-gz * px + 0 * py +gx * pz +gy * pw);
+	qz += ( gy * px -gx * py + 0 * px +gz * pw);
+	qw += (-gx * px -gy * py -gz * pz + 0 * pw);
 
 	// Normalise quaternion
 	recipNorm = invSqrt(qw * qw + qx * qx + qy * qy + qz * qz);
@@ -115,8 +117,6 @@ void mahonyupdate9(
 	float hx, hy, bx, bz;
 	float halfvx, halfvy, halfvz, halfwx, halfwy, halfwz;
 	float halfex, halfey, halfez;
-	float qa, qb, qc;
-
 
 	// Normalise acc, mag
 	norm = squareroot(ax * ax + ay * ay + az * az);
@@ -129,7 +129,6 @@ void mahonyupdate9(
 	my /= norm;
 	mz /= norm;   
 
-
 	// Auxiliary variables to avoid repeated arithmetic
 	qwqw = qw * qw;
 	qwqx = qw * qx;
@@ -140,40 +139,43 @@ void mahonyupdate9(
 	qxqz = qx * qz;
 	qyqy = qy * qy;
 	qyqz = qy * qz;
-	qzqz = qz * qz;   
+	qzqz = qz * qz;
+
+	//gravity: Estimated direction
+	halfvx = qx * qz - qw * qy;
+	halfvy = qw * qx + qy * qz;
+	halfvz = qw * qw + qz * qz - 0.5f;
+
+	//gravity: error = cross(estimated, measured)
+	halfex = halfvy * az - halfvz * ay;
+	halfey = halfvz * ax - halfvx * az;
+	halfez = halfvx * ay - halfvy * ax;
 
 
-	// Reference direction of Earth's magnetic field
+	//magnetic: estimated direction
 	hx = 2.0f * (mx * (0.5f - qyqy - qzqz) + my * (qxqy - qwqz) + mz * (qxqz + qwqy));
 	hy = 2.0f * (mx * (qxqy + qwqz) + my * (0.5f - qxqx - qzqz) + mz * (qyqz - qwqx));
 
 	bx = squareroot(hx * hx + hy * hy);
 	bz = 2.0f * (mx * (qxqz - qwqy) + my * (qyqz + qwqx) + mz * (0.5f - qxqx - qyqy));
 
-
-	// Estimated direction of gravity and magnetic field
-	halfvx = qxqz - qwqy;
-	halfvy = qwqx + qyqz;
-	halfvz = qwqw - 0.5f + qzqz;
-
 	halfwx = bx * (0.5f - qyqy - qzqz) + bz * (qxqz - qwqy);
 	halfwy = bx * (qxqy - qwqz) + bz * (qwqx + qyqz);
 	halfwz = bx * (qwqy + qxqz) + bz * (0.5f - qxqx - qyqy);  
 
-
-	// Error is sum of cross product between estimated direction and measured direction of field vectors
-	halfex = (ay * halfvz - az * halfvy) + (my * halfwz - mz * halfwy);
-	halfey = (az * halfvx - ax * halfvz) + (mz * halfwx - mx * halfwz);
-	halfez = (ax * halfvy - ay * halfvx) + (mx * halfwy - my * halfwx);
+	//magnetic: error = cross(estimated, measured)
+	halfex += halfwy * mz - halfwz * my;
+	halfey += halfwz * mx - halfwx * mz;
+	halfez += halfwx * my - halfwy * mx;
 
 
 	// Compute and apply integral feedback if enabled
-	if(Ki > 0.0f)
+	if(twoKi > 0.0f)
 	{
 		// integral error scaled by Ki
-		integralx += Ki * halfex * T;
-		integraly += Ki * halfey * T;
-		integralz += Ki * halfez * T;
+		integralx += twoKi * halfex * deltaT;
+		integraly += twoKi * halfey * deltaT;
+		integralz += twoKi * halfez * deltaT;
 
 		gx += integralx;	// apply integral feedback
 		gy += integraly;
@@ -187,36 +189,31 @@ void mahonyupdate9(
 	}
 
 	// Apply proportional feedback
-	gx += Kp * halfex;
-	gy += Kp * halfey;
-	gz += Kp * halfez;
-	
+	gx += twoKp * halfex;
+	gy += twoKp * halfey;
+	gz += twoKp * halfez;
 
 	// Integrate rate of change of quaternion
-	gx *= 0.5f * T;		// pre-multiply common factors
-	gy *= 0.5f * T;
-	gz *= 0.5f * T;
-	qa = qw;
-	qb = qx;
-	qc = qy;
-	qw += (-qb * gx - qc * gy - qz * gz);
-	qx += (qa * gx + qc * gz - qz * gy);
-	qy += (qa * gy - qb * gz + qz * gx);
-	qz += (qa * gz + qb * gy - qc * gx); 
-	
+	gx *= 0.5f * deltaT;		// pre-multiply common factors
+	gy *= 0.5f * deltaT;
+	gz *= 0.5f * deltaT;
 
+	//
+	float pw = qw;
+	float px = qx;
+	float py = qy;
+	float pz = qz;
+	qx += (  0 * px +gz * py -gy * pz +gx * pw);
+	qy += (-gz * px + 0 * py +gx * pz +gy * pw);
+	qz += ( gy * px -gx * py + 0 * px +gz * pw);
+	qw += (-gx * px -gy * py -gz * pz + 0 * pw);
+	
 	// Normalise quaternion
 	norm = squareroot(qw * qw + qx * qx + qy * qy + qz * qz);
 	qw /= norm;
 	qx /= norm;
 	qy /= norm;
 	qz /= norm;
-
-
-	//gx = arctanyx(2*(qw*qx+qy*qz),1-2*(qx*qx+qy*qy))*180/3.141592653;
-	//gy = arcsin(2*qw*qy - 2*qx*qz)*180/3.141592653;
-	//gz = arctanyx(2*(qw*qz+qx*qy),1-2*(qy*qy+qz*qz))*180/3.141592653;
-	//logtoall("euler:	%f	%f	%f\n", gx, gy, gz);
 }
 
 

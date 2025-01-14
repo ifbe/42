@@ -62,6 +62,24 @@ void quaternion_rotatefrom(float* o, float* v, float* q)
 	o[1] = v[1] + q[3]*t[1] + q[2]*t[0]-q[0]*t[2];
 	o[2] = v[2] + q[3]*t[2] + q[0]*t[1]-q[1]*t[0];
 }
+void quaternion_integral(float* q, float* w)
+{
+#define qx q[0]
+#define qy q[1]
+#define qz q[2]
+#define qw q[3]
+#define wx w[0]
+#define wy w[1]
+#define wz w[2]
+	float px = qx;
+	float py = qy;
+	float pz = qz;
+	float pw = qw;
+	qx += (  0 *px +wz *py -wy *pz +wx *pw);
+	qy += (-wz *px + 0 *py +wx *pz +wy *pw);
+	qz += ( wy *px -wx *py + 0 *px +wz *pw);
+	qw += (-wx *px -wy *py -wz *pz + 0 *pw);
+}
 //v <- v, q
 void quaternion_rotate(float* v, float* q)
 {
