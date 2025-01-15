@@ -1,13 +1,17 @@
 #include "libuser.h"
-#define REL_WORLD listptr.buf0
-#define REL_DRONE listptr.buf1
-#define ENT_DBGUI listptr.buf2
 void quaternion2axismulangle(float* q, float* a);
 void axismulangle2quaternion(float* a, float* q);
 void quaternion_multiplyfrom(float* o, float* l, float* r);
 
 
 #define dronelog if(0)logtoall
+struct privdata{
+	vec4 prev1;
+	vec4 prev2;
+	void* REL_WORLD;
+	void* REL_DRONE;
+	void* ENT_DBGUI;
+};
 
 
 #define POS_p 1.0
@@ -125,8 +129,9 @@ void dronecontrol_att2aacc_palstance2aacc(_obj* ent, struct style* sty)
 	dronelog("A_v_differ: %f,%f,%f\n",e0[0],e0[1],e0[2]);
 
 	//pidout: compute
-	float* e1 = &ent->whdf.fx0;
-	float* e2 = &ent->whdf.fxn;
+	struct privdata* priv = (void*)ent->priv_256b;
+	float* e1 = priv->prev1;
+	float* e2 = priv->prev2;
 	float* out = sty->desire.angular_a;
 	out[0] += Kp*(e0[0]-e1[0]) + Ki*e0[0] + Kd*(e0[0]+e2[0]-e1[0]*2);
 	out[1] += Kp*(e0[1]-e1[1]) + Ki*e0[1] + Kd*(e0[1]+e2[1]-e1[1]*2);
@@ -255,7 +260,9 @@ void dronecontrol_force2motor(float ln, float rn, float lf, float rf, struct sty
 }
 void dronecontrol_consider(_obj* ent)
 {
-	struct halfrel* rel = ent->REL_WORLD;
+	struct privdata* priv = (void*)ent->priv_256b;
+
+	struct halfrel* rel = priv->REL_WORLD;
 	if(0 == rel)return;
 
 	struct style* sty = rel->pfoot;
@@ -272,7 +279,9 @@ void dronecontrol_consider(_obj* ent)
 }
 void dronecontrol_operate(_obj* ent)
 {
-	struct halfrel* rel = ent->REL_WORLD;
+	struct privdata* priv = (void*)ent->priv_256b;
+
+	struct halfrel* rel = priv->REL_WORLD;
 	if(0 == rel)return;
 
 	struct style* sty = rel->pfoot;
@@ -305,6 +314,8 @@ void dronecontrol_operate(_obj* ent)
 
 void dronecontrol_checkplace(_obj* ent)
 {
+	struct privdata* priv = (void*)ent->priv_256b;
+
 	struct halfrel* tmp[2];
 	int ret = relationsearch(ent, _dst_, &tmp[0], &tmp[1]);
 	if(ret <= 0)return;
@@ -318,8 +329,8 @@ void dronecontrol_checkplace(_obj* ent)
 		if(0 == rel)break;
 		world = rel->psrcchip;
 		if(	(_virtual_ != world->type) | (_scene3d_ != world->type)){
-			ent->REL_WORLD = rel->src;
-			ent->REL_DRONE = rel->dst;
+			priv->REL_WORLD = rel->src;
+			priv->REL_DRONE = rel->dst;
 			return;
 		}
 		rel = samedstnextsrc(rel);
@@ -331,7 +342,9 @@ void dronecontrol_checkplace(_obj* ent)
 
 void dronecontrol_setdesire(_obj* ent)
 {
-	struct halfrel* rel = ent->REL_WORLD;
+	struct privdata* priv = (void*)ent->priv_256b;
+
+	struct halfrel* rel = priv->REL_WORLD;
 	if(0 == rel)return;
 
 	struct style* sty = rel->pfoot;
@@ -344,7 +357,9 @@ void dronecontrol_setdesire(_obj* ent)
 }
 void dronecontrol_changedesire(_obj* ent, float angle)
 {
-	struct halfrel* rel = ent->REL_WORLD;
+	struct privdata* priv = (void*)ent->priv_256b;
+
+	struct halfrel* rel = priv->REL_WORLD;
 	if(0 == rel)return;
 
 	struct style* sty = rel->pfoot;
@@ -362,13 +377,15 @@ void dronecontrol_changedesire(_obj* ent, float angle)
 
 void dronecontrol_report(_obj* ent)
 {
-	struct halfrel* rel = ent->REL_WORLD;
+	struct privdata* priv = (void*)ent->priv_256b;
+
+	struct halfrel* rel = priv->REL_WORLD;
 	if(0 == rel)return;
 
 	struct style* sty = rel->pfoot;
 	if(0 == sty)return;
 
-	_obj* dbg = ent->ENT_DBGUI;
+	_obj* dbg = priv->ENT_DBGUI;
 	if(0 == dbg)return;
 
 	//logtoall("%s\n",__func__);
@@ -420,9 +437,10 @@ int dronecontrol_attach(struct halfrel* self, struct halfrel* peer)
 	_obj* dbg = peer->pchip;
 	logtoall("%s: %.4s, %.8s\n", __func__, &self->foottype, &dbg->type);
 
+	struct privdata* priv = (void*)ent->priv_256b;
 	switch(self->foottype){
 	case _dbg_:
-		ent->ENT_DBGUI = dbg;
+		priv->ENT_DBGUI = dbg;
 		break;
 	}
 	return 0;
@@ -446,10 +464,16 @@ int dronecontrol_delete(_obj* ent)
 int dronecontrol_create(_obj* ent, void* str)
 {
 	dronelog("@dronecontrol_create\n");
-	ent->REL_WORLD = 0;
-	ent->REL_DRONE = 0;
-	ent->ENT_DBGUI = 0;
-	ent->whdf.fx0 = ent->whdf.fy0 = ent->whdf.fz0 = 0.0;
-	ent->whdf.fxn = ent->whdf.fyn = ent->whdf.fzn = 0.0;
+
+	struct privdata* priv = (void*)ent->priv_256b;
+	priv->REL_WORLD = 0;
+	priv->REL_DRONE = 0;
+	priv->ENT_DBGUI = 0;
+
+	int j;
+	for(j=0;j<4;j++){
+		priv->prev1[j] = 0;
+		priv->prev2[j] = 0;
+	}
 	return 0;
 }

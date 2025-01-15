@@ -94,14 +94,14 @@ void quaternion_slerp(float* out,float* q0,float* q1,float t)
 
 //in(qx,qy,qz,qw) -> out(vx,vy,vz)
 void quaternion2axismulangle(float* q, float* a)
-{
+{/*
 	float l,t;
 
 	l = q[0]*q[0] + q[1]*q[1] + q[2]*q[2];
 	if(l < 1e-12){
 		a[0] = 0.0;
 		a[1] = 0.0;
-		a[2] = 1.0;
+		a[2] = 0.0;
 	}
 	else{
 		l = squareroot(l);
@@ -110,12 +110,24 @@ void quaternion2axismulangle(float* q, float* a)
 		a[1] = q[1] * t;
 		a[2] = q[2] * t;
 	}
+*/
+	float l2 = 1 - q[3]*q[3];	//=q[0]*q[0] + q[1]*q[1] + q[2]*q[2]
+	if(l2 < 1e-12){
+		a[0] = a[1] = a[2] = 0.0;
+	}
+	else{
+		float angle = 2.0 * arccos(q[3]);
+		float angle_invl = angle / squareroot(l2);
+		a[0] = q[0] * angle_invl;
+		a[1] = q[1] * angle_invl;
+		a[2] = q[2] * angle_invl;
+	}
 }
 //out(qx,qy,qz,qw) <- in(vx,vy,vz)
 void quaternion4axismulangle(float* q, float* a)
 {
 	float n2 = a[0]*a[0] + a[1]*a[1] * a[2]*a[2];
-	if(n2 < 1e-18){
+	if(n2 < 1e-12){
 		q[0] = 0.0;
 		q[1] = 0.0;
 		q[2] = 0.0;
@@ -133,11 +145,19 @@ void quaternion4axismulangle(float* q, float* a)
 //in(qx,qy,qz,qw) -> out((vx,vy,vz),angle)
 void quaternion2axisandangle(float* q, float* axis, float* angle)
 {
-	float n = 1.0 / squareroot(q[0]*q[0] + q[1]*q[1] + q[2]*q[2]);
-	axis[0] = q[0] * n;
-	axis[1] = q[1] * n;
-	axis[2] = q[2] * n;
-	*angle = arccos(q[3]) * 2.0;
+	float l2 = 1 - q[3]*q[3];	//=q[0]*q[0] + q[1]*q[1] + q[2]*q[2]
+	if(l2 < 1e-12){
+		axis[0] = axis[1] = 0.0;
+		axis[2] = 1.0;
+		angle[0] = 0.0;
+	}
+	else{
+		float invl = 1.0 / squareroot(l2);
+		axis[0] = q[0] * invl;
+		axis[1] = q[1] * invl;
+		axis[2] = q[2] * invl;
+		*angle = arccos(q[3]) * 2.0;
+	}
 }
 //out(qx,qy,qz,qw) <- in((vx,vy,vz),angle)
 void quaternion4axisandangle(float* q, float* a, float angle)
