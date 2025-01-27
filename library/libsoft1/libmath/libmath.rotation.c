@@ -203,19 +203,60 @@ void quaternion4eulerian(float* q, float* e)
 	q[2] = cospitch*cosyaw*sinroll - sinpitch*sinyaw*cosroll;
 	q[3] = cospitch*cosyaw*cosroll + sinpitch*sinyaw*sinroll;
 }
+
+void quaternion2worldspacebodyaxis(float* q, float* r, float* f, float* t)
+{
+	if(r){
+	r[0] = 1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0;
+	r[1] =       (q[0]*q[1] + q[2]*q[3]) * 2.0;
+	r[2] =       (q[0]*q[2] - q[1]*q[3]) * 2.0;
+	}
+	if(f){
+	f[0] =       (q[0]*q[1] - q[2]*q[3]) * 2.0;
+	f[1] = 1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0;
+	f[2] =       (q[1]*q[2] + q[0]*q[3]) * 2.0;
+	}
+	if(t){
+	t[0] =       (q[0]*q[2] + q[1]*q[3]) * 2.0;
+	t[1] =       (q[1]*q[2] - q[0]*q[3]) * 2.0;
+	t[2] = 1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0;
+	}
+}
+
+void quaternion2bodyspaceworldaxis(float* q, float* r, float* f, float* t)
+{
+	if(r){
+	r[0] = 1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0;
+	r[1] =       (q[0]*q[1] - q[2]*q[3]) * 2.0;
+	r[2] =       (q[0]*q[2] + q[1]*q[3]) * 2.0;
+	}
+	if(f){
+	f[0] =       (q[0]*q[1] + q[2]*q[3]) * 2.0;
+	f[1] = 1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0;
+	f[2] =       (q[1]*q[2] - q[0]*q[3]) * 2.0;
+	}
+	if(t){
+	t[0] =       (q[0]*q[2] - q[1]*q[3]) * 2.0;
+	t[1] =       (q[1]*q[2] + q[0]*q[3]) * 2.0;
+	t[2] = 1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0;
+	}
+}
+
 //in(qx,qy,qz,qw) -> out(matrix)
 void quaternion2matthree(float* q, float* m)
 {
+	//not change axis: r=m[*][0], f=m[*][1], t=m[*][2]
+	//    change axis: r=m[0][*], f=m[1][*], t=m[2][*]
 	m[0] = 1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0;
-	m[1] =       (q[0]*q[1] + q[2]*q[3]) * 2.0;
-	m[2] =       (q[0]*q[2] - q[1]*q[3]) * 2.0;
+	m[1] =       (q[0]*q[1] - q[2]*q[3]) * 2.0;
+	m[2] =       (q[0]*q[2] + q[1]*q[3]) * 2.0;
 
-	m[3] =       (q[0]*q[1] - q[2]*q[3]) * 2.0;
+	m[3] =       (q[0]*q[1] + q[2]*q[3]) * 2.0;
 	m[4] = 1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0;
-	m[5] =       (q[1]*q[2] + q[0]*q[3]) * 2.0;
+	m[5] =       (q[1]*q[2] - q[0]*q[3]) * 2.0;
 
-	m[6] =       (q[0]*q[2] + q[1]*q[3]) * 2.0;
-	m[7] =       (q[1]*q[2] - q[0]*q[3]) * 2.0;
+	m[6] =       (q[0]*q[2] - q[1]*q[3]) * 2.0;
+	m[7] =       (q[1]*q[2] + q[0]*q[3]) * 2.0;
 	m[8] = 1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0;
 }
 //out(qx,qy,qz,qw) <- in(matrix)
@@ -233,21 +274,20 @@ void quaternion4matthree(float* q, float (*m)[3])
 //in(qx,qy,qz,qw) -> out(matrix)
 void quaternion2matfour(float* q, float* m)
 {
-	//1-2*(y*y+z*z),   2*(x*y-z*w),   2*(x*z+y*w)
-	//  2*(x*y+z*w), 1-2*(x*x+z*z),   2*(y*z-x*w)
-	//  2*(x*z-y*w),   2*(y*z+x*w), 1-2*(x*x+y*y)
+	//not change axis: r=m[*][0], f=m[*][1], t=m[*][2]
+	//    change axis: r=m[0][*], f=m[1][*], t=m[2][*]
 	m[ 0] = 1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0;
-	m[ 1] =       (q[0]*q[1] + q[2]*q[3]) * 2.0;
-	m[ 2] =       (q[0]*q[2] - q[1]*q[3]) * 2.0;
+	m[ 1] =       (q[0]*q[1] - q[2]*q[3]) * 2.0;
+	m[ 2] =       (q[0]*q[2] + q[1]*q[3]) * 2.0;
 	m[ 3] = 0.0;
 
-	m[ 4] =       (q[0]*q[1] - q[2]*q[3]) * 2.0;
+	m[ 4] =       (q[0]*q[1] + q[2]*q[3]) * 2.0;
 	m[ 5] = 1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0;
-	m[ 6] =       (q[1]*q[2] + q[0]*q[3]) * 2.0;
+	m[ 6] =       (q[1]*q[2] - q[0]*q[3]) * 2.0;
 	m[ 7] = 0.0;
 
-	m[ 8] =       (q[0]*q[2] + q[1]*q[3]) * 2.0;
-	m[ 9] =       (q[1]*q[2] - q[0]*q[3]) * 2.0;
+	m[ 8] =       (q[0]*q[2] - q[1]*q[3]) * 2.0;
+	m[ 9] =       (q[1]*q[2] + q[0]*q[3]) * 2.0;
 	m[10] = 1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0;
 	m[11] = 0.0;
 
