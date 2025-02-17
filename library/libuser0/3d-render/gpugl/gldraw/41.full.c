@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "libuser.h"
+#include "const/config.h"		//REVERSE_Z
 #define _quat_ hex32('q','u','a','t')
 
 #ifdef __ANDROID__
@@ -508,6 +509,11 @@ void render_target(_obj* wnd, struct fstyle* area, struct gl41data* cam, int ste
 	}
 	else{
 		//glDepthMask(GL_TRUE);
+#if REVERSE_Z==1
+		//glDepthRange(0.0, 1.0);
+		glDepthFunc(GL_GEQUAL);
+		glClearDepth(0.0);
+#endif
 		glClearColor(0.1, 0.1, 0.1, 0.5);
 		glClear(clear);
 
@@ -527,6 +533,7 @@ void fullwindow_render(struct gl41world* world, int step, _obj* wnd, struct fsty
 	struct gl41data** solid = world->solid;
 	struct gl41data** opaque = world->opaque;
 
+	//shadow map or other
 	int j;
 	for(j=8;j>0;j--){
 		if(0 == cam[j])continue;
@@ -537,6 +544,7 @@ void fullwindow_render(struct gl41world* world, int step, _obj* wnd, struct fsty
 		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
+	//off screen?
 	if(cam[0] && cam[0]->dst.fbo){
 		glBindFramebuffer(GL_FRAMEBUFFER, cam[0]->dst.fbo);
 		render_target(wnd,area, cam[0], step);
@@ -692,6 +700,10 @@ int fullwindow_take(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int cmd, v
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, wnd->whdf.fbwidth, wnd->whdf.fbheight);
 		glScissor(0, 0, wnd->whdf.fbwidth, wnd->whdf.fbheight);
+#if REVERSE_Z==1
+		glDepthFunc(GL_GEQUAL);
+		glClearDepth(0.0);
+#endif
 		glClearColor(0.1, 0.1, 0.1, 0.5);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
@@ -792,4 +804,6 @@ void fullwindow_create(_obj* ogl, void* arg, int argc, char** argv)
 		world[1].solid  = memoryalloc(0x10000, 0);
 		world[1].opaque = memoryalloc(0x10000, 0);
 	}
+
+	glDepthRange(0.0, 1.0);		//this seems not working, matrix set z=[0,1], but z=0 mapped to 0.5 !
 }

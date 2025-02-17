@@ -91,6 +91,12 @@
 ./libauto/control/control.pid.c
 ./libauto/control/motor/motor.foc.c
 ./libauto/dataio/vehicleio.c
+./libauto/estimate/ahrs/ahrs.ekf.c
+./libauto/estimate/ahrs/ahrs.madgwick.c
+./libauto/estimate/ahrs/ahrs.mahony.c
+./libauto/estimate/ahrs/ahrs.only_g.c
+./libauto/estimate/ahrs/ahrs.only_ga.c
+./libauto/estimate/ahrs/ahrs.ukf.c
 ./libauto/estimate/filter/filter.average.c
 ./libauto/estimate/filter/filter.bandpass.c
 ./libauto/estimate/filter/filter.highpass.c
@@ -160,12 +166,6 @@
 ./libfile/vdisk/disk.raw.c
 ./libfile/vdisk/disk.vhd.c
 ./libfile/vdisk/disk.vmdk.c
-./libflow/ahrs/ahrs.ekf.c
-./libflow/ahrs/ahrs.madgwick.c
-./libflow/ahrs/ahrs.mahony.c
-./libflow/ahrs/ahrs.only_g.c
-./libflow/ahrs/ahrs.only_ga.c
-./libflow/ahrs/ahrs.ukf.c
 ./libflow/file/stream.test.pump.c
 ./libflow/file/stream.test.stor.c
 ./libflow/html/stream.help.control.c

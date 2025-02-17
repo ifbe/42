@@ -1,0 +1,1 @@
+#define REVERSE_Z 1     //3d renderer z-axis magic for z-accuracy: near=1, far=0

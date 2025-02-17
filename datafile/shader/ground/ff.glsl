@@ -98,6 +98,7 @@ vec3 spotlight(){
 	vec4 tmp = sunmvp * vec4(objxyz, 1.0);
 	tmp.x /= tmp.w;
 	tmp.y /= tmp.w;
+	tmp.z /= tmp.w;
 
 	//out of light
 	float val = tmp.x*tmp.x + tmp.y*tmp.y;
@@ -105,10 +106,10 @@ vec3 spotlight(){
 
 	//compute color
 	vec3 colour = albedo*mix(sunrgb, vec3(0.1), val);
-	tmp = (tmp+1.0)*0.5;
 
 	//in the shadow
-	if(tmp.z+0.45 > tmp.w*texture(shadowmap, tmp.xy).r)return colour*0.2;
+	float z_it = texture(shadowmap, (tmp.xy+1.0)*0.5).r*2.0-1.0;
+	if(tmp.z+0.000001 < z_it)return colour*0.2;
 
 	//regular light
 	return colour;
@@ -119,17 +120,18 @@ vec3 projector(){
 	vec4 tmp = sunmvp * vec4(objxyz, 1.0);
 	tmp.x /= tmp.w;
 	tmp.y /= tmp.w;
-	tmp = (tmp+1.0)*0.5;
+	tmp.z /= tmp.w;
 
 	//out of light
-	if(	(tmp.x < 0.0) || (tmp.x > 1.0) ||
-		(tmp.y < 0.0) || (tmp.y > 1.0) )return albedo*0.1;
+	if(	(tmp.x < -1.0) || (tmp.x > 1.0) ||
+		(tmp.y < -1.0) || (tmp.y > 1.0) )return albedo*0.1;
 
 	//in the shadow
-	if(tmp.z+0.45 > tmp.w*texture(shadowmap, tmp.xy).r)return albedo*0.2;
+	float z_it = texture(shadowmap, (tmp.xy+1.0)*0.5).r*2.0-1.0;
+	if(tmp.z+0.000001 < z_it)return albedo*0.2;
 
 	//regular light
-	return albedo*texture(prjtormap, tmp.xy).bgr;
+	return albedo*texture(prjtormap, (tmp.xy+1.0)*0.5).bgr;
 }
 vec3 pointlight(){
 	vec3 albedo = texture(tex0, objuvw).bgr;

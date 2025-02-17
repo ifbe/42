@@ -1,17 +1,22 @@
+#include "const/config.h"
 #include "libuser.h"
 void printmat4(void*);
 void world2view_rh2lh(mat4 m, struct fstyle* s);
 void view2world_lh2rh(mat4 m, struct fstyle* s);
 //
-void view2clip_orthz0z1(mat4 m, struct fstyle* s);
-void clip2view_orthz0z1(mat4 m, struct fstyle* s);
 void view2clip_orthznzp(mat4 m, struct fstyle* s);
 void clip2view_orthznzp(mat4 m, struct fstyle* s);
+void view2clip_orthz0z1(mat4 m, struct fstyle* s);
+void clip2view_orthz0z1(mat4 m, struct fstyle* s);
+void view2clip_orthz0z1_reversez(mat4 m, struct fstyle* s);
+void clip2view_orthz0z1_reversez(mat4 m, struct fstyle* s);
 //
-void view2clip_projz0z1(mat4 m, struct fstyle* s);
-void clip2view_projz0z1(mat4 m, struct fstyle* s);
 void view2clip_projznzp(mat4 m, struct fstyle* s);
 void clip2view_projznzp(mat4 m, struct fstyle* s);
+void view2clip_projz0z1(mat4 m, struct fstyle* s);
+void clip2view_projz0z1(mat4 m, struct fstyle* s);
+void view2clip_projz0z1_reversez(mat4 m, struct fstyle* s);
+void clip2view_projz0z1_reversez(mat4 m, struct fstyle* s);
 
 
 
@@ -20,12 +25,23 @@ void world2clip_orthz0z1(mat4 mat, struct fstyle* sty)
 {
 	mat4 t;
 	world2view_rh2lh(t, sty);
-
+#if REVERSE_Z==1
+	view2clip_orthz0z1_reversez(mat, sty);
+#else
 	view2clip_orthz0z1(mat, sty);
+#endif
 	mat4_multiply(mat, t);
 }
 void clip2world_orthz0z1(mat4 mat, struct fstyle* sty)
 {
+	mat4 q;
+#if REVERSE_Z==1
+	clip2view_orthz0z1_reversez(q, sty);
+#else
+	clip2view_orthz0z1(q, sty);
+#endif
+	view2world_lh2rh(mat, sty);
+	mat4_multiply(mat, q);
 }
 void world2clip_orthz0z1_transpose(mat4 mat, struct fstyle* sty)
 {
@@ -70,8 +86,11 @@ void world2clip_projz0z1(mat4 mat, struct fstyle* sty)
 {
 	mat4 t;
 	world2view_rh2lh(t, sty);
-
+#if REVERSE_Z==1
+	view2clip_projz0z1_reversez(mat, sty);
+#else
 	view2clip_projz0z1(mat, sty);
+#endif
 	mat4_multiply(mat, t);
 }
 void world2clip_projz0z1_transpose(mat4 mat, struct fstyle* sty)
@@ -79,14 +98,14 @@ void world2clip_projz0z1_transpose(mat4 mat, struct fstyle* sty)
 	world2clip_projz0z1(mat, sty);
 	mat4_transpose(mat);
 }
-
-
-
-
 void clip2world_projz0z1(mat4 mat, struct fstyle* frus)
 {
 	mat4 q;
+#if REVERSE_Z==1
+	clip2view_projz0z1_reversez(q, frus);
+#else
 	clip2view_projz0z1(q, frus);
+#endif
 	view2world_lh2rh(mat, frus);
 	mat4_multiply(mat, q);
 }
@@ -112,10 +131,6 @@ void world2clip_projznzp_transpose(mat4 mat, struct fstyle* frus)
 	world2clip_projznzp(mat, frus);
 	mat4_transpose(mat);
 }
-
-
-
-
 void clip2world_projznzp(mat4 mat, struct fstyle* frus)
 {
 	mat4 q;
@@ -134,7 +149,11 @@ void clip2world_projznzp_transpose(mat4 mat, struct fstyle* frus)
 
 void frustum2viewandclip(struct fstyle* frus, mat4 w2v, mat4 w2c)
 {
+#if REVERSE_Z==1
+	view2clip_projz0z1_reversez(w2c, frus);
+#else
 	view2clip_projz0z1(w2c, frus);
+#endif
 	world2view_rh2lh(w2v, frus);
 	mat4_multiply(w2c, w2v);
 }

@@ -6,7 +6,6 @@ void gl41data_addlit(_obj* wnd, struct gl41data* data);
 void gl41data_insert(_obj* ctx, int type, struct gl41data* src, int cnt);
 
 
-#define OWNBUF listptr.buf0
 struct sunbuf{
 	mat4 wvp;
 	vec4 rgb;
@@ -38,10 +37,11 @@ GLSL_PRECISION
 "uniform sampler2D shadowmap;\n"
 "uniform sampler2D prjtormap;\n"
 "void main(){\n"
-	"float n = 1.0;\n"
-	"float f = 10000.0;\n"
 	"float d = texture(shadowmap, uvw).r;\n"
-	"float c = (2.0 * n) / (f + n - d * (f - n));\n"
+	//"float n = 1.0;\n"
+	//"float f = 10000.0;\n"
+	//"float c = (2.0 * n) / (f + n - d * (f - n));\n"
+	"float c = (d*2-1)*1000;\n"
 	"vec3 tmp = 0.9*vec3(c) + 0.1*texture(prjtormap, uvw).bgr;\n"
 	"FragColor = vec4(tmp, 1.0);\n"
 "}\n";
@@ -132,7 +132,7 @@ static void projector_lit_update(
 	_obj* win, struct style* geom,
 	_obj* wnd, struct style* area)
 {
-	struct sunbuf* sun = act->OWNBUF;
+	struct sunbuf* sun = act->priv_ptr;
 	if(0 == sun)return;
 
 	struct gl41data* data = &sun->lit;
@@ -182,7 +182,7 @@ static void projector_cam_update(
 	_obj* wrd, struct style* geom,
 	_obj* wnd, struct style* area)
 {
-	struct sunbuf* sun = act->OWNBUF;
+	struct sunbuf* sun = act->priv_ptr;
 	if(0 == sun)return;
 	struct gl41data* data = &sun->cam;
 	if(0 == data)return;
@@ -222,14 +222,43 @@ static void projector_mesh_update(
 	float* vf = geom->fs.vf;
 	float* vt = geom->fs.vt;
 	gl41line_rect(ctx, 0xffffff, vc, vr, vt);
-
+/*
 	tt[0] = - vf[0];
 	tt[1] = - vf[1];
 	tt[2] = - vf[2];
 	gl41solid_cone(ctx, 0xffffff, vc, vr, tt);
+*/
+	vec3 ta;
+	vec3 tb;
+	float fbyn;
+	int j;
+	for(j=0;j<3;j++){		//r,t
+		fbyn = geom->frus.vf[3] / geom->frus.vn[3];
+		ta[j] = geom->frus.vc[j] + geom->frus.vr[j]*geom->frus.vr[3] + geom->frus.vt[j]*geom->frus.vt[3] + geom->frus.vn[j]*geom->frus.vn[3];
+		tb[j] = geom->frus.vc[j] + geom->frus.vr[j]*geom->frus.vr[3]*fbyn + geom->frus.vt[j]*geom->frus.vt[3]*fbyn + geom->frus.vf[j]*geom->frus.vf[3];
+	}
+	gl41line(ctx, 0xffffff, ta, tb);
+	for(j=0;j<3;j++){		//r,b
+		fbyn = geom->frus.vf[3] / geom->frus.vn[3];
+		ta[j] = geom->frus.vc[j] + geom->frus.vr[j]*geom->frus.vr[3] - geom->frus.vt[j]*geom->frus.vt[3] + geom->frus.vn[j]*geom->frus.vn[3];
+		tb[j] = geom->frus.vc[j] + geom->frus.vr[j]*geom->frus.vr[3]*fbyn - geom->frus.vt[j]*geom->frus.vt[3]*fbyn + geom->frus.vf[j]*geom->frus.vf[3];
+	}
+	gl41line(ctx, 0xffffff, ta, tb);
+	for(j=0;j<3;j++){		//l,t
+		fbyn = geom->frus.vf[3] / geom->frus.vn[3];
+		ta[j] = geom->frus.vc[j] - geom->frus.vr[j]*geom->frus.vr[3] + geom->frus.vt[j]*geom->frus.vt[3] + geom->frus.vn[j]*geom->frus.vn[3];
+		tb[j] = geom->frus.vc[j] - geom->frus.vr[j]*geom->frus.vr[3]*fbyn + geom->frus.vt[j]*geom->frus.vt[3]*fbyn + geom->frus.vf[j]*geom->frus.vf[3];
+	}
+	gl41line(ctx, 0xffffff, ta, tb);
+	for(j=0;j<3;j++){		//l,b
+		fbyn = geom->frus.vf[3] / geom->frus.vn[3];
+		ta[j] = geom->frus.vc[j] - geom->frus.vr[j]*geom->frus.vr[3] - geom->frus.vt[j]*geom->frus.vt[3] + geom->frus.vn[j]*geom->frus.vn[3];
+		tb[j] = geom->frus.vc[j] - geom->frus.vr[j]*geom->frus.vr[3]*fbyn - geom->frus.vt[j]*geom->frus.vt[3]*fbyn + geom->frus.vf[j]*geom->frus.vf[3];
+	}
+	gl41line(ctx, 0xffffff, ta, tb);
 
 	//depth fbo (for debug)
-	struct sunbuf* sun = act->OWNBUF;
+	struct sunbuf* sun = act->priv_ptr;
 	if(0 == sun)return;
 	struct gl41data* mesh = &sun->ctx;
 	if(0 == mesh)return;
@@ -322,19 +351,18 @@ static void projector_read_byworld_bycam_bywnd(_obj* ent,void* foot, _syn* stack
 	dup = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 
-	struct sunbuf* sun = ent->OWNBUF;
+	struct sunbuf* sun = ent->priv_ptr;
 	projector_frustum(&geom->frus, &geom->fs);
 
 	switch(wnd->vfmt){
 	case _gl41list_:
-		world2clip_projznzp_transpose(sun->wvp, &geom->frus);
+		world2clip_projz0z1_transpose(sun->wvp, &geom->frus);
 
 		projector_cam_update(ent,foot, wor,geom, wnd,area);
 		projector_lit_update(ent,foot, wor,geom, wnd,area);
 		projector_mesh_update(ent,foot, wor,geom, wnd,area);
 		break;
 	default:
-		world2clip_projz0z1_transpose(sun->wvp, &geom->frus);
 		break;
 	}
 }
@@ -407,7 +435,7 @@ static void projector_create(_obj* act, void* str)
 	struct sunbuf* sun;
 	if(0 == act)return;
 
-	sun = act->OWNBUF = memoryalloc(0x10000, 0);
+	sun = act->priv_ptr = memoryalloc(0x10000, 0);
 	sun->rgb[0] = 1.0;
 	sun->rgb[1] = 1.0;
 	sun->rgb[2] = 1.0;
