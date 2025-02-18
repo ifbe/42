@@ -203,7 +203,7 @@ static void orthcam_matrix(
 	}
 
 	struct fstyle* frus = &geom->frus;
-	world2clip_orthznzp_transpose(priv->matbuf, frus);
+	world2clip_orthz0z1_transpose(priv->matbuf, frus);
 }
 //world - camera - window
 static int orthcam_visitworld(

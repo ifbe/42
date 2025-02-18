@@ -38,8 +38,13 @@ GLSL_PRECISION
 "in vec2 uvw;\n"
 "layout(location = 0)out vec4 FragColor;\n"
 "void main(){\n"
-	"float d = 10.0 * texture(shadowmap, uvw).r;"
-	"FragColor = vec4(d, d, d, 1.0);\n"
+	"float d = texture(shadowmap, uvw).r;\n"
+	"float c = 1.0-(1.0-d)*3;\n"
+	"FragColor = vec4(c, c, c, 1.0);\n"
+	//"float r=(d>0.5)?1.0:0.0;\n"
+	//"float g=(d>0.8)?1.0:0.0;\n"
+	//"float b=1.0-(1.0-d)*2;\n"
+	//"FragColor = vec4(r, g, b, 1.0);\n"
 "}\n";
 
 
@@ -125,7 +130,7 @@ static void dirlight_frustum(struct fstyle* d, struct fstyle* s)
 	d->vn[0] = d->vf[0];
 	d->vn[1] = d->vf[1];
 	d->vn[2] = d->vf[2];
-	d->vn[3] = 1.0;
+	d->vn[3] = 0.1;			//must > 0
 }
 static void dirlight_lit_update(
 	_obj* act, struct style* slot,
@@ -215,18 +220,18 @@ static void dirlight_mesh_update(
 	//light ray (for debug)
 	struct sunbuf* sun = act->OWNBUF;
 	for(y=-1;y<2;y+=2){
-	for(x=-10;x<11;x++){
+	for(x=-4;x<=4;x++){
 		for(j=0;j<3;j++){
-			ta[j] = vc[j] + x*vr[j]/10.0 + y*vt[j];
+			ta[j] = vc[j] + x*vr[j]/4.0 + y*vt[j];
 			tb[j] = ta[j] + vf[j];
 		}
 		gl41line(ctx, sun->u_rgb, ta, tb);
 	}
 	}
 	for(x=-1;x<2;x+=2){
-	for(y=-10;y<11;y++){
+	for(y=-4;y<=4;y++){
 		for(j=0;j<3;j++){
-			ta[j] = vc[j] + x*vr[j] + y*vt[j]/10.0;
+			ta[j] = vc[j] + x*vr[j] + y*vt[j]/4.0;
 			tb[j] = ta[j] + vf[j];
 		}
 		gl41line(ctx, sun->u_rgb, ta, tb);
@@ -331,14 +336,13 @@ static void dirlight_read_byworld_bycam_bywnd(_obj* ent,void* foot, _syn* stack,
 
 	switch(wnd->vfmt){
 	case _gl41list_:
-		world2clip_orthznzp_transpose(sun->wvp, &geom->frus);
+		world2clip_orthz0z1_transpose(sun->wvp, &geom->frus);
 
 		dirlight_cam_update(ent,foot, wor,geom, wnd,area);
 		dirlight_lit_update(ent,foot, wor,geom, wnd,area);
 		dirlight_mesh_update(ent,foot, wor,geom, wnd,area);
 		break;
 	default:
-		world2clip_orthz0z1_transpose(sun->wvp, &geom->frus);
 		break;
 	}
 }
