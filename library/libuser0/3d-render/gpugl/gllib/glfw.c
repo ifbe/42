@@ -45,11 +45,17 @@ static u8 uppercase[] = {
 
 int window_draw(_obj* ogl,void* foot, _syn* stack,int sp, p64 arg,int idx, void* buf,int len)
 {
+	GLFWwindow* fw = ogl->gl41list.glwnd;
+	if(0 == fw){
+		logtoall("%s: fw=0\n", __FUNCTION__, fw);
+		sleep_ms(1000);
+		return 0;
+	}
+
 	u64 t0,t1,t2,t3;
 t0 = ogl->gl41list.gltime;
 
 	//0: context current
-	GLFWwindow* fw = ogl->gl41list.glwnd;
 	glfwMakeContextCurrent(fw);
 t1 = timeread_us();
 
@@ -283,6 +289,9 @@ static void callback_reshape(GLFWwindow* fw, int w, int h)
 	ogl->whdf.width = w;
 	ogl->whdf.height = h;
 }
+static void callback_error(int err, const char* msg) {
+	logtoall("err=%d, msg=%s\n", err, msg);
+}
 
 
 
@@ -290,8 +299,8 @@ static void callback_reshape(GLFWwindow* fw, int w, int h)
 void windowopen_root(_obj* wnd)
 {
 	if(1){
-			printf("set GLFW_TRANSPARENT_FRAMEBUFFER = true\n");
-			glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
+		printf("set GLFW_TRANSPARENT_FRAMEBUFFER = true\n");
+		glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
 	}
 
 	int w,h;
@@ -317,6 +326,7 @@ void windowopen_root(_obj* wnd)
 	if(0 == fw)
 	{
 		printf("error@glfwCreateWindow\n");
+		sleep_ms(1000);
 		return;
 	}
 
@@ -351,6 +361,7 @@ void windowopen_root(_obj* wnd)
 	if(glewInit() != GLEW_OK)
 	{
 		printf("error@glewInit\n");
+		sleep_ms(1000);
 		return;
 	}
 
@@ -488,21 +499,31 @@ void* window_alloc()
 
 
 
-void freewindow()
-{
-	glfwTerminate();
-}
 void initwindow()
 {
+	glfwSetErrorCallback(callback_error);
+
 	if(glfwInit() == 0)
 	{
 		printf("error@glfwInit\n");
+		sleep_ms(1000);
 		return;
 	}
 
-	glfwWindowHint(GLFW_SAMPLES, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	if(0){		//mac use 3.3, but macbookpro2018+windows glfwcreatewindow still fail
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	}
+	else{
+		glfwWindowHint(GLFW_SAMPLES, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	}
+}
+void freewindow()
+{
+	glfwTerminate();
 }

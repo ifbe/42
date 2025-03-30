@@ -21,15 +21,17 @@ GLSL_VERSION
 GLSL_PRECISION
 "in vec2 uvw;\n"
 "layout(location = 0)out vec4 FragColor;\n"
+"uniform float size;\n"
 "void main(){\n"
-	"float x = mod(abs(uvw.x), 1000.0);\n"
-	"float y = mod(abs(uvw.y), 1000.0);\n"
-	"if( (x>5.0) && (x<995.0) && (y>5.0) && (y<995.0) )discard;\n"
+	"float x = mod(abs(uvw.x), size);\n"
+	"float y = mod(abs(uvw.y), size);\n"
+	"if( (x>size*0.005) && (x<size*0.995) && (y>size*0.005) && (y<size*0.995) )discard;\n"
 	"FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n"
 "}\n";
 
 struct privdata{
 	struct gl41data gl41;
+	float size;
 };
 void dbggnd_singlepiece(float (*vbuf)[6], float* vc,float* vr,float* vf)
 {
@@ -61,8 +63,9 @@ void dbggnd_singlepiece(float (*vbuf)[6], float* vc,float* vr,float* vf)
 
 
 
-static void dbggnd_gl41_prep(struct gl41data* data, char* vs, char* fs)
+static void dbggnd_gl41_prep(struct privdata* own, char* vs, char* fs)
 {
+	struct gl41data* data = &own->gl41;
 	//shader
 	data->src.vs = vs;
 	data->src.fs = fs;
@@ -78,6 +81,11 @@ static void dbggnd_gl41_prep(struct gl41data* data, char* vs, char* fs)
 	vtx->vbuf_h = 6;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
 	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
+
+	//
+	data->dst.arg[0].fmt = 'f';
+	data->dst.arg[0].name = "size";
+	data->dst.arg[0].data = &own->size;
 }
 static void dbggnd_gl41_draw(
 	_obj* act, struct style* part,
@@ -239,7 +247,17 @@ static void dbggnd_create(_obj* act, void* str, int argc, u8** argv)
 	struct privdata* own = act->priv_ptr = memoryalloc(0x1000, 0);
 	if(0 == own)return;
 
-	dbggnd_gl41_prep(&own->gl41, dbggnd_glsl_v, dbggnd_glsl_f);
+	own->size = 1000;
+
+	int j;
+	for(j=0;j<argc;j++){
+		//logtoall("%d:%.8s\n", j, argv[j]);
+		if(0 == ncmp(argv[j], "size:", 5)){
+			decstr2float(argv[j]+5, &own->size);
+		}
+	}
+
+	dbggnd_gl41_prep(own, dbggnd_glsl_v, dbggnd_glsl_f);
 }
 
 

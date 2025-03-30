@@ -512,7 +512,12 @@ void render_target(_obj* wnd, struct fstyle* area, struct gl41data* cam, int ste
 #if REVERSE_Z==1
 		//glDepthRange(0.0, 1.0);
 		glDepthFunc(GL_GEQUAL);
+
+		#ifdef __ANDROID__
+		glClearDepthf(0.0);
+		#else
 		glClearDepth(0.0);
+		#endif
 #endif
 		glClearColor(0.1, 0.1, 0.1, 0.5);
 		glClear(clear);
@@ -702,7 +707,12 @@ int fullwindow_take(_obj* wnd,void* foot, _syn* stack,int sp, p64 arg,int cmd, v
 		glScissor(0, 0, wnd->whdf.fbwidth, wnd->whdf.fbheight);
 #if REVERSE_Z==1
 		glDepthFunc(GL_GEQUAL);
+
+		#ifdef __ANDROID__
+		glClearDepthf(0.0);
+		#else
 		glClearDepth(0.0);
+		#endif
 #endif
 		glClearColor(0.1, 0.1, 0.1, 0.5);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -805,5 +815,5 @@ void fullwindow_create(_obj* ogl, void* arg, int argc, char** argv)
 		world[1].opaque = memoryalloc(0x10000, 0);
 	}
 
-	glDepthRange(0.0, 1.0);		//this seems not working, matrix set z=[0,1], but z=0 mapped to 0.5 !
+	//glDepthRange(0.0, 1.0);		//this seems not working, matrix set z=[0,1], but z=0 mapped to 0.5 !
 }

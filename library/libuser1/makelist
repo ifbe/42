@@ -281,17 +281,6 @@
 ./science-biology/felidae/tiger.c
 ./science-biology/organ/real.theear.c
 ./science-biology/organ/real.theeye.c
-./science-biology/person/animal.human.c
-./science-biology/person/baby/baby.c
-./science-biology/person/gary/gary.c
-./science-biology/person/john/john.c
-./science-biology/person/kali/kali.c
-./science-biology/person/kirk/kirk.c
-./science-biology/person/lara/lara.c
-./science-biology/person/lily/lily.c
-./science-biology/person/musk/musk.c
-./science-biology/person/rose/rose.c
-./science-biology/person/yoda/yoda.c
 ./science-biology/plant/item.flower.c
 ./science-biology/plant/item.grass.c
 ./science-biology/plant/item.tree.c

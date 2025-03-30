@@ -87,16 +87,12 @@ void rigidsimu_force2accel(_obj* ent, struct style** geom, int count)
 		vec3 local_relcm_torque;
 		quaternion_rotatefrom(local_relcm_torque, world_relcm_torque, q_inv);
 		//local inertia
-		mat3 local_relcm_inertia_tensor = {
-			geom[j]->physic.inertiatensor[0][0],
-			geom[j]->physic.inertiatensor[0][1],
-			geom[j]->physic.inertiatensor[0][2],
-			geom[j]->physic.inertiatensor[1][0],
-			geom[j]->physic.inertiatensor[1][1],
-			geom[j]->physic.inertiatensor[1][2],
-			geom[j]->physic.inertiatensor[2][0],
-			geom[j]->physic.inertiatensor[2][1],
-			geom[j]->physic.inertiatensor[2][2]};
+		mat3 local_relcm_inertia_tensor;
+		for(int y=0;y<3;y++){
+		for(int x=0;x<3;x++){
+			local_relcm_inertia_tensor[y][x] = geom[j]->physic.inertiatensor[y][x];
+		}
+		}
 		mat3 local_relcm_inertia_inverse;
 		mat3_inverse(&local_relcm_inertia_inverse[0][0], &local_relcm_inertia_tensor[0][0]);
 		//local_angular_accel = L / I

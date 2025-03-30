@@ -12,12 +12,6 @@ void world_init(void*);
 void world_exit();
 
 //
-int baby_create(void*, void*, int, u8**);
-int baby_delete(void*, void*);
-int baby_attach(void*, void*);
-int baby_detach(void*, void*);
-int baby_taking(void*,void*, void*,int, p64,int, void*,int);
-int baby_giving(void*,void*, void*,int, p64,int, void*,int);
 int test_create(void*, void*, int, u8**);
 int test_delete(void*, void*);
 int test_attach(void*, void*);
@@ -487,9 +481,6 @@ int entity_create(_obj* act, void* buf, int argc, u8** argv)
 		break;
 
 //----------------mind----------------
- 	case _baby_:
-		baby_create(act, buf, argc, argv);
-		break;
 	case _test_:
 		test_create(act, buf, argc, argv);
 		break;
@@ -673,7 +664,6 @@ int entity_attach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* pe
 	case _bdc_:return toycar_attach(self, peer);
 */
 	case _test_:return test_attach(self, peer);
-	case _baby_:return baby_attach(self, peer);
 	}
 
 	return 0;
@@ -743,7 +733,6 @@ int entity_detach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* pe
 	case _bdc_:return toycar_detach(self, peer);
 */
 	case _test_:return test_detach(self, peer);
-	case _baby_:return baby_detach(self, peer);
 	}
 
 	return 0;
@@ -808,7 +797,6 @@ int entity_takeby(_obj* act,void* foot, _syn* stack,int sp, p64 arg,int key, voi
 	case _bdc_:return toycar_taking(act,foot, stack,sp, arg,key, buf,len);
 */
 	case _test_:return test_taking(act,foot, stack,sp, arg,key, buf,len);
-	case _baby_:return baby_taking(act,foot, stack,sp, arg,key, buf,len);
 	}
 	return 0;
 }
@@ -872,7 +860,6 @@ int entity_giveby(_obj* act,void* foot, _syn* stack,int sp, p64 arg,int key, voi
 	case _bdc_:return toycar_giving(act,foot, stack,sp, arg,key, buf,len);
 */
 	case _test_:return test_giving(act,foot, stack,sp, arg,key, buf,len);
-	case _baby_:return baby_giving(act,foot, stack,sp, arg,key, buf,len);
 	}
 
 	return 0;
