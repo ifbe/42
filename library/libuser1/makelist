@@ -250,6 +250,7 @@
 ./robot-bionic/humanoid/robot-man.c
 ./robot-bionic/part/robot-arm.c
 ./robot-bionic/part/robot-leg.c
+./robot-bionic/part/robot-joint.c
 ./robot-else/robo.dancemat.c
 ./robot-factory/3d-printer.c
 ./robot-factory/3d-router.c

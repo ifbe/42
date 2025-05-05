@@ -402,6 +402,7 @@ int parsefv(float* vec, int flen, u8* str, int slen)
 
 		for(k=0;k<16;k++){
 			//normally finished
+			if('#' == str[j+k])return cnt+1;
 			if('\n' == str[j+k])return cnt+1;
 
 			//havenot finished
@@ -410,9 +411,10 @@ int parsefv(float* vec, int flen, u8* str, int slen)
 				break;
 			}
 		}
-		if(16 == k)return cnt+1;
 
 		cnt += 1;
+		if(16 == k)return cnt;
+		if(cnt>=flen)return cnt;
 	}
 
 	//something wrong

@@ -25,8 +25,8 @@ GLSL_PRECISION
 "void main(){\n"
 	"float x = mod(abs(uvw.x), size);\n"
 	"float y = mod(abs(uvw.y), size);\n"
-	"if( (x>size*0.005) && (x<size*0.995) && (y>size*0.005) && (y<size*0.995) )discard;\n"
-	"FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n"
+	"if( (x<size*0.01) || (x>size*0.99) || (y<size*0.01) || (y>size*0.99) )discard;\n"
+	"FragColor = vec4(0.5, 0.5, 0.5, 1.0);\n"
 "}\n";
 
 struct privdata{

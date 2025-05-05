@@ -1,5 +1,7 @@
 #include "libuser.h"
+void quaternion_rotatefrom(float* o, float* v, float* q);
 void gl41solid_bodypart(_obj*, u32, vec3, vec3);
+void quaternion_multiplyfrom(float* o, float* l, float* r);
 
 
 
@@ -173,7 +175,21 @@ static void human_draw_gl41(
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vt = geom->fs.vt;
-	gl41line_prism4(ctx, 0xff00ff, vc, vr, vf, vt);
+
+	vec3 tc,tt;
+	int j;
+
+	for(j=0;j<3;j++){
+		tt[j] = vt[j]/2;
+		tc[j] = vc[j]+tt[j];
+	}
+	gl41solid_prism4(ctx, 0xc000c0, tc, vr, vf, tt);
+
+	for(j=0;j<3;j++){
+		tt[j] = vt[j]/2;
+		tc[j] = vc[j]-tt[j];
+	}
+	gl41solid_prism4(ctx, 0xff00ff, tc, vr, vf, tt);
 }
 static void human_draw_pixel(
 	_obj* act, struct style* pin,
@@ -342,14 +358,79 @@ static int human_event(
 
 
 
+static void human_read_traverse(_obj* ent,_obj* node, _syn* stack,int sp, struct style* geom, vec4 quat)
+{
+	logtoall("ent=%p,node=%p\n", ent, node);
+	int j;
+	vec4 q;
+	struct style tmp;
+	//
+	struct style* part;
+	struct style* bias;
+
+	struct relation* rel = node->orel0;
+	_obj* child;
+	while(rel){
+		if(rel->pdstchip){
+			bias = rel->pdstfoot;
+			part = rel->psrcfoot;
+
+			//local space vector
+			tmp.fs.vr[0] = 1.0;tmp.fs.vr[1] = 0.0;tmp.fs.vr[2] = 0.0;
+			tmp.fs.vf[0] = 0.0;tmp.fs.vf[1] = 1.0;tmp.fs.vf[2] = 0.0;
+			tmp.fs.vt[0] = 0.0;tmp.fs.vt[1] = 0.0;tmp.fs.vt[2] = 1.0;
+			vec3_setlen(tmp.fs.vr, 0.1);
+			vec3_setlen(tmp.fs.vf, 0.1);
+			vec3_setlen(tmp.fs.vt, 0.02);
+
+			//world space vector
+			quaternion_multiplyfrom(q, quat, part->fshape.vq);
+			quaternion_rotate(tmp.fs.vr, q);
+			quaternion_rotate(tmp.fs.vf, q);
+			quaternion_rotate(tmp.fs.vt, q);
+
+			quaternion_rotatefrom(tmp.fs.vc, part->fs.vc, quat);
+			for(j=0;j<3;j++)tmp.fs.vc[j] += geom->fs.vc[j];
+
+			logtoall("%f,%f,%f    %f,%f,%f    %f,%f,%f,    %f,%f,%f\n",
+				tmp.fs.vr[0], tmp.fs.vr[1], tmp.fs.vr[2],
+				tmp.fs.vf[0], tmp.fs.vf[1], tmp.fs.vf[2],
+				tmp.fs.vt[0], tmp.fs.vt[1], tmp.fs.vt[2],
+				tmp.fs.vc[0], tmp.fs.vc[1], tmp.fs.vc[2]
+			);
+			
+
+			//call child
+			stack[sp+0].pchip = ent;		//node=human
+			stack[sp+0].pfoot = rel->psrcfoot;
+			stack[sp+1].pchip = rel->pdstchip;
+			stack[sp+1].pfoot = rel->pdstfoot;
+			child = rel->pdstchip;
+			//logtoall("%p %p %p %d    %p\n", child, rel->dst, stack, sp+2, child->ontaking);
+			//printmemory(&stack[sp], 0x80);
+			child->ontaking(child, rel->dst, stack, sp+2, 0, 0, &tmp, 0);
+			//logtoall("-----%p %p %p %d    %p\n", child, rel->dst, stack, sp+2, child->ontaking);
+
+			//call child's child
+			if(rel->pdstchip)human_read_traverse(ent,rel->pdstchip, stack,sp, &tmp, q);
+		}
+		rel = samesrcnextdst(rel);
+	}
+}
 static void human_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int sp)
 {
 	_obj* wor;struct style* geom;
 	_obj* wnd;struct style* area;
-	
+
+	//self
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	human_draw_gl41(ent,slot, wor,geom, wnd,area);
+
+	//child
+	vec4 q = {0, 0, 0, 1};
+	human_read_traverse(ent,ent, stack,sp, geom, q);
+	logtoall("\n\n\n\n", ent);
 }
 
 

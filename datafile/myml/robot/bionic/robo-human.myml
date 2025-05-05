@@ -1,4 +1,12 @@
 <entity>
+jl0:joint{}
+jl1:joint{}
+
+jr0:joint{
+#angle:60
+}
+jr1:joint{}
+
 gnd{
 fmt:dbggnd
 size:1
@@ -49,6 +57,44 @@ arg:0.0.0.0:9999
 
 
 <style>
+slotjr0{
+c:0, 0, -0.02
+q:0, 0, 0, 1
+}
+geomjr0{
+c:0.4, 0, 0
+#q:0, 0.707, 0, 0.707
+q:0.5,0.5,0.5,0.5       #v=(1,1,1) deg=120
+}
+
+slotjr1{
+c:0, 0, 0
+q:0, 0, 0, 1
+}
+geomjr1{
+c:0, 0, 0.2
+q:0, 0.707, 0, 0.707
+}
+
+slotjl0{
+c:0, 0, -0.02
+q:0, 0, 0, 1
+}
+geomjl0{
+c:-0.4, 0, 0
+#q:0, -0.707, 0, 0.707
+q:0.5,-0.5,-0.5,0.5     #v=(-1,1,1) deg=-120
+}
+
+slotjl1{
+c:0, 0, 0
+q:0, 0, 0, 1
+}
+geomjl1{
+c:0, 0, 0.2
+q:0, -0.707, 0, 0.707
+}
+
 gndhaha{
 }
 gndgeom{
@@ -90,6 +136,12 @@ q:1.0, 1.0
 
 
 <relation>
+(@jl0, rotor@geomjl1) @ (@jl1, stator@slotjl1)
+(@man, out@geomjl0) @ (@jl0, stator@slotjl0)
+
+(@jr0, rotor@geomjr1) @ (@jr1, stator@slotjr1)
+(@man, out@geomjr0) @ (@jr0, stator@slotjr0)
+
 #virtual depends on inner objects
 (virtual, gndgeom, 0) -> (gnd, gndhaha, 0)
 (virtual, mangeom, 0) -> (man, manhaha, 0)

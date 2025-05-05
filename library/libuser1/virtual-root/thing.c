@@ -168,6 +168,8 @@ void otto_register(void*);
 void robodog_register(void*);
 //.else
 void dancemat_register(void*);
+//
+void robotjoint_register(void*);
 
 //test
 void calib3d_register(void*);
@@ -657,6 +659,9 @@ void thing_init(void* addr)
 	tmp -= sizeof(_obj);
 //.else
 	dancemat_register(tmp);
+	tmp -= sizeof(_obj);
+//.
+	robotjoint_register(tmp);
 	tmp -= sizeof(_obj);
 
 
