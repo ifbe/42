@@ -251,6 +251,7 @@
 ./robot-bionic/part/robot-arm.c
 ./robot-bionic/part/robot-leg.c
 ./robot-bionic/part/robot-joint.c
+./robot-bionic/part/robot-rod.c
 ./robot-else/robo.dancemat.c
 ./robot-factory/3d-printer.c
 ./robot-factory/3d-router.c

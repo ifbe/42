@@ -358,12 +358,14 @@ static int human_event(
 
 
 
-static void human_read_traverse(_obj* ent,_obj* node, _syn* stack,int sp, struct style* geom, vec4 quat)
+static void human_read_traverse(_obj* ent,_obj* node, _syn* stack,int sp, float* v0, vec4 quat)
 {
 	logtoall("ent=%p,node=%p\n", ent, node);
 	int j;
-	vec4 q;
 	struct style tmp;
+	//
+	vec4 q1, q2, rq;
+	vec3 v1, v2, rv;
 	//
 	struct style* part;
 	struct style* bias;
@@ -383,14 +385,28 @@ static void human_read_traverse(_obj* ent,_obj* node, _syn* stack,int sp, struct
 			vec3_setlen(tmp.fs.vf, 0.1);
 			vec3_setlen(tmp.fs.vt, 0.02);
 
-			//world space vector
-			quaternion_multiplyfrom(q, quat, part->fshape.vq);
-			quaternion_rotate(tmp.fs.vr, q);
-			quaternion_rotate(tmp.fs.vf, q);
-			quaternion_rotate(tmp.fs.vt, q);
+			//rotation
+			quaternion_multiplyfrom(q1, quat, part->fshape.vq);
+			for(j=0;j<4;j++)rq[j] = bias->fshape.vq[j];
+			rq[3] = -rq[3];
+			quaternion_multiplyfrom(q2, q1, rq);
 
-			quaternion_rotatefrom(tmp.fs.vc, part->fs.vc, quat);
-			for(j=0;j<3;j++)tmp.fs.vc[j] += geom->fs.vc[j];
+			//translation
+			quaternion_rotatefrom(v1, part->fs.vc, quat);
+			for(j=0;j<3;j++)rv[j] = - bias->fs.vc[j];
+			quaternion_rotatefrom(v2, rv, q2);
+			/*
+			logtoall("%f,%f,%f    %f,%f,%f\n",
+				v1[0], v1[1], v1[2],
+				v2[0], v2[1], v2[2]
+			);
+			*/
+
+			//world space vector
+			for(j=0;j<3;j++)tmp.fs.vc[j] = v0[j] + v1[j] + v2[j];
+			quaternion_rotate(tmp.fs.vr, q2);
+			quaternion_rotate(tmp.fs.vf, q2);
+			quaternion_rotate(tmp.fs.vt, q2);
 
 			logtoall("%f,%f,%f    %f,%f,%f    %f,%f,%f,    %f,%f,%f\n",
 				tmp.fs.vr[0], tmp.fs.vr[1], tmp.fs.vr[2],
@@ -412,7 +428,7 @@ static void human_read_traverse(_obj* ent,_obj* node, _syn* stack,int sp, struct
 			//logtoall("-----%p %p %p %d    %p\n", child, rel->dst, stack, sp+2, child->ontaking);
 
 			//call child's child
-			if(rel->pdstchip)human_read_traverse(ent,rel->pdstchip, stack,sp, &tmp, q);
+			if(rel->pdstchip)human_read_traverse(ent,rel->pdstchip, stack,sp, tmp.fs.vc, q2);
 		}
 		rel = samesrcnextdst(rel);
 	}
@@ -429,7 +445,7 @@ static void human_read_byworld_bycam_bywnd(_obj* ent,void* slot, _syn* stack,int
 
 	//child
 	vec4 q = {0, 0, 0, 1};
-	human_read_traverse(ent,ent, stack,sp, geom, q);
+	human_read_traverse(ent,ent, stack,sp, geom->fs.vc, q);
 	logtoall("\n\n\n\n", ent);
 }
 

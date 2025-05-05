@@ -1,11 +1,21 @@
 <entity>
+kl0:joint{}
+kl1:joint{}
+kl2:rod{}
+
+kr0:joint{}
+kr1:joint{}
+kr2:rod{}
+
 jl0:joint{}
 jl1:joint{}
+jl2:rod{}
 
 jr0:joint{
 #angle:60
 }
 jr1:joint{}
+jr2:rod{}
 
 gnd{
 fmt:dbggnd
@@ -57,12 +67,68 @@ arg:0.0.0.0:9999
 
 
 <style>
+slotkr0{
+c:0, 0, -0.02
+q:0, 0, 0, 1
+}
+geomkr0{
+c:0.3, 0, 0.8
+#q:0, 0.707, 0, 0.707
+q:0.5,0.5,0.5,0.5       #v=(1,1,1) deg=120
+}
+
+slotkr1{
+c:0, 0, 0
+q:0, 0, 0, 1
+}
+geomkr1{
+c:0, 0, 0.15
+q:0, -0.707, 0, 0.707
+}
+
+slotkr2{
+c:0, 0.45, -0.05
+q:0, 0, 0, 1
+}
+geomkr2{
+c:0, 0, 0.02
+q:0, 0, 0.5, 0.8660254037844387
+}
+
+slotkl0{
+c:0, 0, -0.02
+q:0, 0, 0, 1
+}
+geomkl0{
+c:-0.3, 0, 0.8
+#q:0, -0.707, 0, 0.707
+q:0.5,-0.5,-0.5,0.5     #v=(-1,1,1) deg=-120
+}
+
+slotkl1{
+c:0, 0, 0
+q:0, 0, 0, 1
+}
+geomkl1{
+c:0, 0, 0.15
+q:0, 0.707, 0, 0.707
+}
+
+slotkl2{
+c:0, 0.45, -0.05
+q:0, 0, 0, 1
+}
+geomkl2{
+c:0, 0, 0.02
+q:0, 0, -0.5, 0.8660254037844387
+}
+
 slotjr0{
 c:0, 0, -0.02
 q:0, 0, 0, 1
 }
 geomjr0{
-c:0.4, 0, 0
+c:0.3, 0, 0
 #q:0, 0.707, 0, 0.707
 q:0.5,0.5,0.5,0.5       #v=(1,1,1) deg=120
 }
@@ -72,8 +138,17 @@ c:0, 0, 0
 q:0, 0, 0, 1
 }
 geomjr1{
-c:0, 0, 0.2
-q:0, 0.707, 0, 0.707
+c:0, 0, 0.15
+q:0, -0.707, 0, 0.707
+}
+
+slotjr2{
+c:0, 0.45, -0.05
+q:0, 0, 0, 1
+}
+geomjr2{
+c:0, 0, 0.02
+q:0, 0, 0, 1
 }
 
 slotjl0{
@@ -81,7 +156,7 @@ c:0, 0, -0.02
 q:0, 0, 0, 1
 }
 geomjl0{
-c:-0.4, 0, 0
+c:-0.3, 0, 0
 #q:0, -0.707, 0, 0.707
 q:0.5,-0.5,-0.5,0.5     #v=(-1,1,1) deg=-120
 }
@@ -91,8 +166,17 @@ c:0, 0, 0
 q:0, 0, 0, 1
 }
 geomjl1{
-c:0, 0, 0.2
-q:0, -0.707, 0, 0.707
+c:0, 0, 0.15
+q:0, 0.707, 0, 0.707
+}
+
+slotjl2{
+c:0, 0.45, -0.05
+q:0, 0, 0, 1
+}
+geomjl2{
+c:0, 0, 0.02
+q:0, 0, 0, 1
 }
 
 gndhaha{
@@ -110,7 +194,7 @@ mangeom{
 c: 0.0, 0.0, 1.0
 r: 0.3, 0.0, 0.0
 f: 0.0, 0.2, 0.0
-t: 0.0, 0.0, 1.0
+t: 0.0, 0.0, 0.1
 }
 
 freemodl{
@@ -136,9 +220,19 @@ q:1.0, 1.0
 
 
 <relation>
+(@kl1, rotor@geomkl2) @ (@kl2, a@slotkl2)
+(@kl0, rotor@geomkl1) @ (@kl1, stator@slotkl1)
+(@man, out@geomkl0) @ (@kl0, stator@slotkl0)
+
+(@kr1, rotor@geomkr2) @ (@kr2, a@slotkr2)
+(@kr0, rotor@geomkr1) @ (@kr1, stator@slotkr1)
+(@man, out@geomkr0) @ (@kr0, stator@slotkr0)
+
+(@jl1, rotor@geomjl2) @ (@jl2, a@slotjl2)
 (@jl0, rotor@geomjl1) @ (@jl1, stator@slotjl1)
 (@man, out@geomjl0) @ (@jl0, stator@slotjl0)
 
+(@jr1, rotor@geomjr2) @ (@jr2, a@slotjr2)
 (@jr0, rotor@geomjr1) @ (@jr1, stator@slotjr1)
 (@man, out@geomjr0) @ (@jr0, stator@slotjr0)
 
