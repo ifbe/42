@@ -323,6 +323,14 @@ void updatearg(u32 shader, struct gl41data* data)
 	}
 #endif
 */
+	if(dst->camtype){
+		iii = glGetUniformLocation(shader, "camtype");
+		if(iii >= 0){
+			//logtoall("iii=%d,lighttype=%d\n",iii,dst->lighttype);
+			glUniform1i(iii, dst->camtype);
+		}
+	}
+
 	if(dst->lighttype){
 		iii = glGetUniformLocation(shader, "lighttype");
 		if(iii >= 0){

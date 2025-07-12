@@ -69,11 +69,11 @@ struct privdata{
 
 
 
-void printvec4(float* s)
+static void printvec4(float* s)
 {
 	logtoall("%f, %f, %f, %f\n", s[0], s[1], s[2], s[3]);
 }
-void printstyle(struct fstyle* sty)
+static void printstyle(struct fstyle* sty)
 {
 	printvec4(sty->vl);
 	printvec4(sty->vr);
@@ -84,7 +84,7 @@ void printstyle(struct fstyle* sty)
 	printvec4(sty->vq);
 	printvec4(sty->vc);
 }
-void printmat4(float* f)
+static void printmat4(float* f)
 {
 	printvec4(&f[0]);
 	printvec4(&f[4]);

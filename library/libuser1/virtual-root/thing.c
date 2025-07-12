@@ -50,6 +50,7 @@ void freecam_register(void*);
 void orthcam_register(void*);
 void vrbox_register(void*);
 void vrglass_register(void*);
+void equicam_register(void*);
 
 //dxgl
 //.fbo
@@ -376,6 +377,9 @@ void thing_init(void* addr)
 	tmp -= sizeof(_obj);
 
 	vrglass_register(tmp);
+	tmp -= sizeof(_obj);
+
+	equicam_register(tmp);
 	tmp -= sizeof(_obj);
 
 

@@ -423,13 +423,13 @@ void carveplanet_verttex(float vbuf[][6], u16* ibuf, int accx, int accy,
 		for(j=0;j<=accx;j++)
 		{
 			/*
-			0: 0			#north pole cnt=accx: same vert diff texuv
-			1: tau/64
-			32: tau/2
-			63: tau*63/64
-			64: tau			#south pole cnt=accx: same vert diff texuv
+			       0: a=270 xyz=( 0,-1, 0) uvw=(.  0, ?)
+			accx*1/4: a=180 xyz=(-1, 0, 0) uvw=(0.25, ?)
+			accx*2/4: a= 90 xyz=( 0, 1, 0) uvw=(0.50, ?)
+			accx*3/4: a=  0 xyz=( 1, 0, 0) uvw=(0.75, ?)
+			accx*4/4: a=-90 xyz=( 0,-1, 0) uvw=(0.25, ?)
 			*/
-			s = tau*j/accx;
+			s = PI*3/2 - tau*j/accx;
 			c = getcos(s);
 			s = getsin(s);
 

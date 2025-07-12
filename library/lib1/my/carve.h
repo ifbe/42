@@ -44,7 +44,10 @@
 #define vbuffmt_4444   0x4444
 #define vbuffmt_44444  0x44444
 #define vbuffmt_444444 0x444444
-//
+//camtype
+#define _wvp_proj_ 10
+#define _equi_rect_proj_ 20
+//lighttype
 #define _pbrcolor_ 10
 #define _dirlight_ 20
 #define _spotlight_ 21
@@ -274,6 +277,7 @@ struct gldst
 	u32 depth;
 */
 	//shader
+	int camtype;
 	int lighttype;
 
 	//uniform

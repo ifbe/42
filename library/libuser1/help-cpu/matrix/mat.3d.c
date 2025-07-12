@@ -1,8 +1,8 @@
 #include "const/config.h"
 #include "libuser.h"
 void printmat4(void*);
-void world2view_rh2lh(mat4 m, struct fstyle* s);
-void view2world_lh2rh(mat4 m, struct fstyle* s);
+void world2view_lefthand(mat4 m, struct fstyle* s);
+void view2world_lefthand(mat4 m, struct fstyle* s);
 //
 void view2clip_orthznzp(mat4 m, struct fstyle* s);
 void clip2view_orthznzp(mat4 m, struct fstyle* s);
@@ -24,7 +24,7 @@ void clip2view_projz0z1_reversez(mat4 m, struct fstyle* s);
 void world2clip_orthz0z1(mat4 mat, struct fstyle* sty)
 {
 	mat4 t;
-	world2view_rh2lh(t, sty);
+	world2view_lefthand(t, sty);
 #if REVERSE_Z==1
 	view2clip_orthz0z1_reversez(mat, sty);
 #else
@@ -40,7 +40,7 @@ void clip2world_orthz0z1(mat4 mat, struct fstyle* sty)
 #else
 	clip2view_orthz0z1(q, sty);
 #endif
-	view2world_lh2rh(mat, sty);
+	view2world_lefthand(mat, sty);
 	mat4_multiply(mat, q);
 }
 void world2clip_orthz0z1_transpose(mat4 mat, struct fstyle* sty)
@@ -60,7 +60,7 @@ void clip2world_orthz0z1_transpose(mat4 mat, struct fstyle* sty)
 void world2clip_orthznzp(mat4 mat, struct fstyle* sty)
 {
 	mat4 t;
-	world2view_rh2lh(t, sty);
+	world2view_lefthand(t, sty);
 
 	view2clip_orthznzp(mat, sty);
 	mat4_multiply(mat, t);
@@ -85,7 +85,7 @@ void clip2world_orthznzp_transpose(mat4 mat, struct fstyle* sty)
 void world2clip_projz0z1(mat4 mat, struct fstyle* sty)
 {
 	mat4 t;
-	world2view_rh2lh(t, sty);
+	world2view_lefthand(t, sty);
 #if REVERSE_Z==1
 	view2clip_projz0z1_reversez(mat, sty);
 #else
@@ -106,7 +106,7 @@ void clip2world_projz0z1(mat4 mat, struct fstyle* frus)
 #else
 	clip2view_projz0z1(q, frus);
 #endif
-	view2world_lh2rh(mat, frus);
+	view2world_lefthand(mat, frus);
 	mat4_multiply(mat, q);
 }
 void clip2world_projz0z1_transpose(mat4 mat, struct fstyle* frus)
@@ -121,7 +121,7 @@ void clip2world_projz0z1_transpose(mat4 mat, struct fstyle* frus)
 void world2clip_projznzp(mat4 mat, struct fstyle* frus)
 {
 	mat4 t;
-	world2view_rh2lh(t, frus);
+	world2view_lefthand(t, frus);
 
 	view2clip_projznzp(mat, frus);
 	mat4_multiply(mat, t);
@@ -135,7 +135,7 @@ void clip2world_projznzp(mat4 mat, struct fstyle* frus)
 {
 	mat4 q;
 	clip2view_projznzp(q, frus);
-	view2world_lh2rh(mat, frus);
+	view2world_lefthand(mat, frus);
 	mat4_multiply(mat, q);
 }
 void clip2world_projznzp_transpose(mat4 mat, struct fstyle* frus)
@@ -154,7 +154,7 @@ void frustum2viewandclip(struct fstyle* frus, mat4 w2v, mat4 w2c)
 #else
 	view2clip_projz0z1(w2c, frus);
 #endif
-	world2view_rh2lh(w2v, frus);
+	world2view_lefthand(w2v, frus);
 	mat4_multiply(w2c, w2v);
 }
 void frustum2viewandclip_transpose(struct fstyle* frus, mat4 w2v, mat4 w2c)
@@ -172,8 +172,8 @@ void testmats(struct fstyle* frus)
 	mat4 m;
 	mat4 n;
 
-	view2world_lh2rh(m, frus);
-	world2view_rh2lh(n, frus);
+	view2world_lefthand(m, frus);
+	world2view_lefthand(n, frus);
 	mat4_multiply(n,m);
 	printmat4(n);
 

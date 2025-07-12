@@ -1,10 +1,9 @@
 <entity>
 equirect{
 fmt:equirect
-arg:datafile/jpg/360d/texball-atlantic.jpg
+arg:datafile/jpg/360d/360d-park.jpg
 }
-freecam{
-fmt:freecam
+equicam:equicam{
 }
 virtual{
 fmt:virtual
@@ -28,15 +27,15 @@ skyhaha{
 }
 skygeom{
 c: 0.0, 0.0, 0.0
-r: 1000000.0, 0.0, 0.0
-f: 0.0, 1000000.0, 0.0
-t: 0.0, 0.0, 1000000.0
+r: 10000.0, 0.0, 0.0
+f: 0.0, 10000.0, 0.0
+t: 0.0, 0.0, 10000.0
 }
 
 freemodl{
 }
 freegeom{
-c: 0.0, -2000.0, 0.0
+c: 0.0, 0.0, 0.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
@@ -58,8 +57,8 @@ q:1.0, 1.0
 <relation>
 #virtual depends on inner objects
 (virtual, skygeom, 0) -> (equirect, skyhaha, 0)
-(virtual, freegeom, 0) -> (freecam, freemodl, 0)
+(virtual, freegeom, 0) -> (equicam, freemodl, 0)
 
 #glwnd depends on ctx + cam
-(opengl, freerect, 0) -> (freecam, freefrus, 0)
+(opengl, freerect, 0) -> (equicam, freefrus, 0)
 </relation>

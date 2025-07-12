@@ -137,11 +137,28 @@ GLSL_VERSION
 GLSL_PRECISION
 "layout(location = 0)in vec3 vertex;\n"
 "layout(location = 1)in vec2 texuvw;\n"
+"uniform int camtype;\n"
+"uniform mat4 cammv_;\n"
 "uniform mat4 cammvp;\n"
 "out vec2 uvw;\n"
+"const float MYPI=3.1415926589793;\n"
 "void main(){\n"
 	"uvw = texuvw;\n"
-	"gl_Position = cammvp * vec4(vertex, 1.0);\n"
+	"switch(camtype){\n"
+	"case 20:\n"
+	"vec4 tmp = cammv_ * vec4(vertex, 1.0);\n"
+	"float tx = tmp.x;\n"
+	"float ty = tmp.y;\n"
+	"float tz = tmp.z;\n"
+	"float sq2 = length(vec2(tx, ty));\n"
+	"float sq3 = length(vec2(sq2, tz));\n"
+	"float tu = -atan(-tx, ty)/MYPI;\n"
+	"float tv = atan(tz, sq2)*2/MYPI;\n"
+	"float tw = (1000000-sq3) / (1000000-100);\n"
+	"gl_Position = vec4(tu, tv, tw, 1.0);\n"
+	"break;\n"
+	"default:gl_Position = cammvp * vec4(vertex, 1.0);\n"
+	"}\n"
 "}\n";
 char* equirect_glsl_fs =
 GLSL_VERSION
@@ -151,7 +168,7 @@ GLSL_PRECISION
 "uniform sampler2D tex0;\n"
 "void main(){\n"
 	"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
-	//"FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n"
+	//"FragColor = vec4(uvw, 1.0, 1.0);\n"
 "}\n";
 static void equirect_gl41prep(struct own* my)
 {
