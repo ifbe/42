@@ -1,0 +1,124 @@
+<entity>
+ground{
+fmt:ground
+}
+tree{
+fmt:rccar
+}
+rabbit{
+fmt:stl3d
+arg:datafile/stl/bunny-lowpoly.stl
+}
+freecam{
+fmt:freecam
+auxline:1
+}
+sidecam{
+fmt:freecam
+}
+gameroot{
+fmt:virtual
+}
+
+camrts{
+fmt:camrts
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<style>
+gndslot{
+}
+gndgeom{
+c: 0.0, 0.0, -1.0
+r: 10000.0, 0.0, 0.0
+f: 0.0, 10000.0, 0.0
+t: 0.0, 0.0, 10.0
+}
+
+treeslot{
+}
+treegeom{
+c: 300.0, 300.0, 0.0
+r: 100.0, 0.0, 0.0
+f: 0.0, 100.0, 0.0
+t: 0.0, 0.0, 100.0
+}
+
+rabslot{
+}
+rabgeom{
+c: 0.0, 100.0, 0.0
+r: 100.0, 0.0, 0.0
+f: 0.0, 100.0, 0.0
+t: 0.0, 0.0, 100.0
+}
+
+freeslot{
+}
+freegeom{
+c: 0.0, 1000.0, 6000.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 707.0,-707.0
+t: 0.0, 707.0, 707.0
+L: 0.0, 0.0, 0.0,-0.7
+R: 0.0, 0.0, 0.0, 0.7
+B: 0.0, 0.0, 0.0,-2.1
+T: 0.0, 0.0, 0.0,-0.7
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000000000.0
+}
+
+sideslot{
+}
+sidegeom{
+c: 0.0, -1000.0, 2000.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+L: 0.0, 0.0, 0.0,-0.7
+R: 0.0, 0.0, 0.0, 0.7
+B: 0.0, 0.0, 0.0,-0.7
+T: 0.0, 0.0, 0.0, 0.7
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000000000.0
+}
+
+fullrect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+
+siderect{
+c:0.0, 0.0
+q:0.4, 0.4
+}
+</style>
+
+
+<relation>
+#gameroot depends on
+(gameroot, gndgeom, 0) @ (ground, gndslot, 0)
+(gameroot, treegeom, 0) @ (tree, treeslot, 0)
+(gameroot, rabgeom, 0) @ (rabbit, rabslot, 0)
+(gameroot, freegeom, 0) @ (freecam, freeslot, in)
+(gameroot, sidegeom, 0) @ (sidecam, sideslot, in)
+
+#manager
+(opengl, fullrect, game) @ (freecam, 0, 0)
+(@opengl, @siderect) @ (@sidecam, 0)
+
+#camrts
+#(freecam, 0, mind) @ (camrts, 0, 0)
+</relation>

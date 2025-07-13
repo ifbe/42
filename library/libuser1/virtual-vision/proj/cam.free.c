@@ -321,11 +321,14 @@ void freecam_ratio(
 	_obj* wnd, struct style* area)
 {
 	struct fstyle* rect = &area->fshape;
-	struct fstyle* frus = &geom->frus;
 	float dx = rect->vq[0] * wnd->whdf.width;
 	float dy = rect->vq[1] * wnd->whdf.height;
-	frus->vb[3] = frus->vl[3] * dy / dx;
-	frus->vt[3] = frus->vr[3] * dy / dx;
+
+	struct fstyle* frus = &geom->frus;
+	float centery = (frus->vb[3] + frus->vt[3])/2;
+	float delta = (frus->vr[3] - frus->vl[3]) / 2 * dy / dx;
+	frus->vb[3] = centery - delta;
+	frus->vt[3] = centery + delta;
 }
 void freecam_shape2frustum(struct fstyle* s, struct fstyle* d)
 {
