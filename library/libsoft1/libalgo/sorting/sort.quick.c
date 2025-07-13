@@ -6,31 +6,34 @@
 
 
 
-void sort_quick(u8* buf, int len)
+void inline sort_quick_swap(u8* a, u8* b)
 {
-	int j,k,tmp;
-	if(len<2)return;
+	u8 tmp = *a;
+	*a = *b;
+	*b = tmp;
+}
+void sort_quick_u8(u8* buf, int len)
+{
+	if(len <= 1)return;
+	if(len <= 2){
+		if(buf[0] > buf[1])sort_quick_swap(&buf[0], &buf[1]);
+		return;
+	}
 
-	j = 0;
-	k = len-1;
-	while(1)
-	{
-		while( (j<k) && (buf[0]<=buf[k]) )k--;
-		while( (j<k) && (buf[0]>=buf[j]) )j++;
-		if(j<k)
-		{
-			tmp = buf[j];
-			buf[j] = buf[k];
-			buf[k] = tmp;
-		}
-		else
-		{
-			tmp = buf[0];
-			buf[0] = buf[k];
-			buf[k] = tmp;
-			break;
+	int l = 0;
+	int r = len-1;
+	u8 pivot = buf[(l+r)/2];
+	while(l <= r){
+		while(l <= r && buf[r] > pivot)r--;
+		while(l <= r && buf[l] < pivot)l++;
+		if(l <= r){
+			if(l < r)sort_quick_swap(&buf[l], &buf[r]);
+			l++;
+			r--;
 		}
 	}
-	sort_quick(buf, k);
-	sort_quick(buf+k, len-k);
+
+	//now r<l
+	sort_quick_u8(buf, r+1);
+	sort_quick_u8(buf+l, len-l);
 }
