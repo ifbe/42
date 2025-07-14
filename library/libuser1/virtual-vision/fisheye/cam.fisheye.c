@@ -44,41 +44,41 @@ struct privdata{
 
 
 
-void equicam_move(vec3 dst, vec3 src, float t)
+void fisheyecam_move(vec3 dst, vec3 src, float t)
 {
 	dst[0] += src[0] * t;
 	dst[1] += src[1] * t;
 	dst[2] += src[2] * t;
 }
-void equicam_rotate(vec3 a, vec3 b, vec3 axis, float angle)
+void fisheyecam_rotate(vec3 a, vec3 b, vec3 axis, float angle)
 {
 	quaternion_operation(a, axis, angle);
 	quaternion_operation(b, axis, angle);
 }
-static int equicam_event_obb_char(
+static int fisheyecam_event_obb_char(
 	_obj* act, struct style* part,
 	_obj* win, struct style* geom,
 	struct event* ev, int len)
 {
 	struct fstyle* obb = &geom->fshape;
 	switch(ev->why){
-		case 'a':equicam_move(obb->vc, obb->vr,-1.0);break;
-		case 'd':equicam_move(obb->vc, obb->vr, 1.0);break;
-		case 's':equicam_move(obb->vc, obb->vf,-1.0);break;
-		case 'w':equicam_move(obb->vc, obb->vf, 1.0);break;
-		case 'f':equicam_move(obb->vc, obb->vt,-1.0);break;
-		case 'r':equicam_move(obb->vc, obb->vt, 1.0);break;
+		case 'a':fisheyecam_move(obb->vc, obb->vr,-1.0);break;
+		case 'd':fisheyecam_move(obb->vc, obb->vr, 1.0);break;
+		case 's':fisheyecam_move(obb->vc, obb->vf,-1.0);break;
+		case 'w':fisheyecam_move(obb->vc, obb->vf, 1.0);break;
+		case 'f':fisheyecam_move(obb->vc, obb->vt,-1.0);break;
+		case 'r':fisheyecam_move(obb->vc, obb->vt, 1.0);break;
 
-		case 'j':equicam_rotate(obb->vr, obb->vf, obb->vt, 0.05);break;
-		case 'l':equicam_rotate(obb->vr, obb->vf, obb->vt,-0.05);break;
-		case 'i':equicam_rotate(obb->vf, obb->vt, obb->vr, 0.05);break;
-		case 'k':equicam_rotate(obb->vf, obb->vt, obb->vr,-0.05);break;
-		case 'u':equicam_rotate(obb->vr, obb->vt, obb->vf,-0.05);break;
-		case 'o':equicam_rotate(obb->vr, obb->vt, obb->vf, 0.05);break;
+		case 'j':fisheyecam_rotate(obb->vr, obb->vf, obb->vt, 0.05);break;
+		case 'l':fisheyecam_rotate(obb->vr, obb->vf, obb->vt,-0.05);break;
+		case 'i':fisheyecam_rotate(obb->vf, obb->vt, obb->vr, 0.05);break;
+		case 'k':fisheyecam_rotate(obb->vf, obb->vt, obb->vr,-0.05);break;
+		case 'u':fisheyecam_rotate(obb->vr, obb->vt, obb->vf,-0.05);break;
+		case 'o':fisheyecam_rotate(obb->vr, obb->vt, obb->vf, 0.05);break;
 	}
 	return 0;
 }
-static int equicam_event_obb_point(
+static int fisheyecam_event_obb_point(
 	_obj* act, struct style* part,
 	_obj* wor, struct style* geom,
 	_obj* wnd, struct style* area,
@@ -108,27 +108,27 @@ static int equicam_event_obb_point(
 		quaternion_operation(obb->vf, up, (t[0] - act->whdf.ixn)/100.0);
 		quaternion_operation(obb->vt, up, (t[0] - act->whdf.ixn)/100.0);
 
-		//equicam_rotate(obb->vr, obb->vf, up, (t[0] - act->whdf.ixn)/100.0);
-		//equicam_rotate(obb->vf, obb->vt, obb->vr, (t[1] - act->whdf.iyn)/100.0);
+		//fisheyecam_rotate(obb->vr, obb->vf, up, (t[0] - act->whdf.ixn)/100.0);
+		//fisheyecam_rotate(obb->vf, obb->vt, obb->vr, (t[1] - act->whdf.iyn)/100.0);
 		act->whdf.ixn = t[0];
 		act->whdf.iyn = t[1];
 	}
 	return 0;
 }
-static int equicam_event_obb(
+static int fisheyecam_event_obb(
 	_obj* act, struct style* part,
 	_obj* wor, struct style* geom,
 	_obj* wnd, struct style* area,
 	struct event* ev, int len)
 {
 	int t = (ev->what&0xff);
-	if(_char_ == ev->what)return equicam_event_obb_char(act,part, wor,geom, ev,len);
-	else if('p' == t)return equicam_event_obb_point(act,part, wor,geom, wnd,area, ev,len);
-	else if('t' == t)return equicam_event_obb_point(act,part, wor,geom, wnd,area, ev,len);
+	if(_char_ == ev->what)return fisheyecam_event_obb_char(act,part, wor,geom, ev,len);
+	else if('p' == t)return fisheyecam_event_obb_point(act,part, wor,geom, wnd,area, ev,len);
+	else if('t' == t)return fisheyecam_event_obb_point(act,part, wor,geom, wnd,area, ev,len);
 
 	return 0;
 }
-static int equicam_event_frus(
+static int fisheyecam_event_frus(
 	_obj* act, struct style* part,
 	_obj* wor, struct style* geom,
 	_obj* wnd, struct style* area,
@@ -179,7 +179,7 @@ static int equicam_event_frus(
 
 
 
-void equicam_ratio(
+void fisheyecam_ratio(
 	_obj* wrd, struct style* geom,
 	_obj* wnd, struct style* area)
 {
@@ -190,7 +190,7 @@ void equicam_ratio(
 	frus->vb[3] = frus->vl[3] * dy / dx;
 	frus->vt[3] = frus->vr[3] * dy / dx;
 }
-void equicam_shape2frustum(struct fstyle* s, struct fstyle* d)
+void fisheyecam_shape2frustum(struct fstyle* s, struct fstyle* d)
 {
 	float x,y,z,n;
 	d->vc[0] = s->vc[0];
@@ -261,7 +261,7 @@ static void printmat4(float* f)
 	printvec4(&f[8]);
 	printvec4(&f[12]);
 }
-static void equicam_frus2wvp(
+static void fisheyecam_frus2wvp(
 	_obj* act, struct style* part,
 	_obj* wrd, struct style* geom)
 {
@@ -273,7 +273,7 @@ static void equicam_frus2wvp(
 
 
 
-static void equicam_gl41_cam(
+static void fisheyecam_gl41_cam(
 	_obj* act, struct style* part,
 	_obj* wrd, struct style* geom,
 	_obj* wnd, struct style* area)
@@ -282,7 +282,7 @@ static void equicam_gl41_cam(
 	struct privdata* own = act->priv_ptr;
 
 	struct gl41data* data = &own->gl41cam;
-    data->dst.camtype = _equi_rect_proj_;
+    data->dst.camtype = _fish_eye_proj_;
 
 	data->dst.arg[0].fmt = 'm';
 	data->dst.arg[0].name = "cammv_";
@@ -292,7 +292,7 @@ static void equicam_gl41_cam(
 	data->dst.arg[1].data = frus->vc;
 	wnd->gl41list.world[0].camera[0] = data;
 }
-static int equicam_gl41_mesh(
+static int fisheyecam_gl41_mesh(
 	_obj* act, struct style* part,
 	_obj* win, struct style* geom,
 	_obj* ctx, struct style* none)
@@ -301,7 +301,7 @@ static int equicam_gl41_mesh(
 
 	if(own->feature & FEATURE_AUXLINE){
 		//logtoall("FEATURE_AUXLINE\n");
-		equicam_shape2frustum(&geom->fshape, &geom->frustum);
+		fisheyecam_shape2frustum(&geom->fshape, &geom->frustum);
 
 		//frustum
 		gl41frustum_color(ctx, &geom->frus, own->linecolor);
@@ -315,7 +315,7 @@ static int equicam_gl41_mesh(
 
 
 
-static int equicam_byworld_bycam_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp)
+static int fisheyecam_byworld_bycam_bywnd_read(_obj* ent,void* slot, _syn* stack,int sp)
 {
 //[-6,-5]: wnd,area -> cam,togl
 //[-4,-3]: cam,gl41 -> wor,geom		//the camera taking photo
@@ -330,7 +330,7 @@ static int equicam_byworld_bycam_bywnd_read(_obj* ent,void* slot, _syn* stack,in
 	case _rgba_:
 		return 0;
 	case _gl41list_:
-		//equicam_gl41_mesh(ent,slot, wor,geom, wnd,area);
+		//fisheyecam_gl41_mesh(ent,slot, wor,geom, wnd,area);
         break;
 	}
 	return 0;
@@ -340,7 +340,7 @@ static int equicam_byworld_bycam_bywnd_read(_obj* ent,void* slot, _syn* stack,in
 
 
 //world - camera - window
-static int equicam_visitworld(
+static int fisheyecam_visitworld(
 _obj* wor,struct style* geom,
 _obj* ent,void* slot,
 _obj* wnd,struct style* area,
@@ -359,10 +359,10 @@ _syn* stack,int sp)
 		gl41data_after(wnd);
 
 		//camera matrix
-		equicam_ratio(wor, geom, wnd, area);
-		equicam_shape2frustum(&geom->fshape, &geom->frustum);
-		equicam_frus2wvp(ent,slot, wor,geom);
-		equicam_gl41_cam(ent,slot, wor,geom, wnd,area);
+		fisheyecam_ratio(wor, geom, wnd, area);
+		fisheyecam_shape2frustum(&geom->fshape, &geom->frustum);
+		fisheyecam_frus2wvp(ent,slot, wor,geom);
+		fisheyecam_gl41_cam(ent,slot, wor,geom, wnd,area);
 		break;
 	}
 	return 0;
@@ -371,7 +371,7 @@ _syn* stack,int sp)
 
 
 
-static int equicam_bywnd_read(_obj* ent,void* slot, _obj* wnd,struct style* area, _syn* stack,int sp)
+static int fisheyecam_bywnd_read(_obj* ent,void* slot, _obj* wnd,struct style* area, _syn* stack,int sp)
 {
 	//logtoall("@%s: stack=%p,sp=%d\n",__func__,stack,sp);
 	struct privdata* own = ent->priv_ptr;
@@ -388,11 +388,11 @@ static int equicam_bywnd_read(_obj* ent,void* slot, _obj* wnd,struct style* area
 //[+0,+1]: cam,towr -> wor,geom
 	_obj* wor = stack[sp+1].pchip;
 	struct style* geom = stack[sp+1].pfoot;
-	equicam_visitworld(wor,geom, ent,slot, wnd,area, stack,sp);
+	fisheyecam_visitworld(wor,geom, ent,slot, wnd,area, stack,sp);
 	return 0;
-//logtoall("@equicam_bywnd_read.end\n");
+//logtoall("@fisheyecam_bywnd_read.end\n");
 }
-static int equicam_bywnd_write(_obj* ent,void* ef, _obj* wnd,void* wf, struct event* ev)
+static int fisheyecam_bywnd_write(_obj* ent,void* ef, _obj* wnd,void* wf, struct event* ev)
 {
 //find world from camera
 	struct privdata* own = ent->priv_ptr;
@@ -401,8 +401,8 @@ static int equicam_bywnd_write(_obj* ent,void* ef, _obj* wnd,void* wf, struct ev
 	_obj* wor = rel->pchip;
 	struct style* geom = rel->pfoot;
 	switch(own->evtype){
-	case 'f':return equicam_event_frus(ent,0, wor,geom, wnd,wf, ev,0);break;
-	default:return equicam_event_obb(ent,0, wor,geom, wnd,wf, ev,0);break;
+	case 'f':return fisheyecam_event_frus(ent,0, wor,geom, wnd,wf, ev,0);break;
+	default:return fisheyecam_event_obb(ent,0, wor,geom, wnd,wf, ev,0);break;
 	}
 	return 0;
 }
@@ -410,9 +410,9 @@ static int equicam_bywnd_write(_obj* ent,void* ef, _obj* wnd,void* wf, struct ev
 
 
 
-static int equicam_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
+static int fisheyecam_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
-	//logtoall("@equicam_read begin\n");
+	//logtoall("@fisheyecam_read begin\n");
 	if(0 == stack)return 0;
 
 	_obj* caller = stack[sp-2].pchip;
@@ -423,16 +423,16 @@ static int equicam_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int 
 	switch(caller->type){
 	case _wnd_:
 	case _render_:
-		equicam_bywnd_read(ent,foot, caller, area, stack,sp);
+		fisheyecam_bywnd_read(ent,foot, caller, area, stack,sp);
 		break;
 	default:
-		equicam_byworld_bycam_bywnd_read(ent,foot, stack,sp);
+		fisheyecam_byworld_bycam_bywnd_read(ent,foot, stack,sp);
 		break;
 	}
-	//logtoall("@equicam_read end\n");
+	//logtoall("@fisheyecam_read end\n");
 	return 0;
 }
-static int equicam_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
+static int fisheyecam_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
 {
 	struct privdata* own = ent->priv_ptr;
 	struct event* ev = buf;
@@ -441,14 +441,14 @@ static int equicam_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int 
 	void* selffoot = stack[sp-1].pfoot;
 	_obj* callnode = stack[sp-2].pchip;
 	void* callfoot = stack[sp-2].pfoot;
-	return equicam_bywnd_write(selfnode,selffoot, callnode,callfoot, buf);
+	return fisheyecam_bywnd_write(selfnode,selffoot, callnode,callfoot, buf);
 }
-static void equicam_detach(struct halfrel* self, struct halfrel* peer)
+static void fisheyecam_detach(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void equicam_attach(struct halfrel* self, struct halfrel* peer)
+static void fisheyecam_attach(struct halfrel* self, struct halfrel* peer)
 {
-    logtoall("@equicam_attach\n");
+    logtoall("@fisheyecam_attach\n");
 
 	_obj* ent = self->pchip;
 	struct privdata* own = ent->priv_ptr;
@@ -467,36 +467,36 @@ static void equicam_attach(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void equicam_search(_obj* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static void fisheyecam_search(_obj* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 }
-static void equicam_modify(_obj* act)
+static void fisheyecam_modify(_obj* act)
 {
 }
-static void equicam_delete(_obj* act)
+static void fisheyecam_delete(_obj* act)
 {
 }
-static void equicam_create(_obj* act, void* arg, int argc, u8** argv)
+static void fisheyecam_create(_obj* act, void* arg, int argc, u8** argv)
 {
-    logtoall("@equicam_create\n");
+    logtoall("@fisheyecam_create\n");
 	struct privdata* own = act->priv_ptr = memoryalloc(0x2000, 0);
 }
 
 
 
 
-void equicam_register(_obj* p)
+void fisheyecam_register(_obj* p)
 {
-	p->type = hex64('e', 'q', 'u', 'i', 'c', 'a', 'm', 0);
+	p->type = hex64('f', 'i', 's', 'h', 'e', 'y', 'e', 0);
 	p->vfmt = _orig_;
 
-	p->oncreate = (void*)equicam_create;
-	p->ondelete = (void*)equicam_delete;
-	p->onreader = (void*)equicam_search;
-	p->onwriter = (void*)equicam_modify;
+	p->oncreate = (void*)fisheyecam_create;
+	p->ondelete = (void*)fisheyecam_delete;
+	p->onreader = (void*)fisheyecam_search;
+	p->onwriter = (void*)fisheyecam_modify;
 
-	p->onattach = (void*)equicam_attach;
-	p->ondetach = (void*)equicam_detach;
-	p->ontaking = (void*)equicam_taking;
-	p->ongiving = (void*)equicam_giving;
+	p->onattach = (void*)fisheyecam_attach;
+	p->ondetach = (void*)fisheyecam_detach;
+	p->ontaking = (void*)fisheyecam_taking;
+	p->ongiving = (void*)fisheyecam_giving;
 }

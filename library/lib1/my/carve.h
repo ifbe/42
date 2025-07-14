@@ -47,6 +47,7 @@
 //camtype
 #define _wvp_proj_ 10
 #define _equi_rect_proj_ 20
+#define _fish_eye_proj_ 30
 //lighttype
 #define _pbrcolor_ 10
 #define _dirlight_ 20

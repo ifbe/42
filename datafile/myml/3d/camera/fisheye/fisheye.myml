@@ -1,0 +1,64 @@
+<entity>
+equirect{
+fmt:equirect
+arg:datafile/jpg/360d/360d-park.jpg
+}
+equicam:fisheye{
+}
+virtual{
+fmt:virtual
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<style>
+skyhaha{
+}
+skygeom{
+c: 0.0, 0.0, 0.0
+r: 100000.0, 0.0, 0.0
+f: 0.0, 100000.0, 0.0
+t: 0.0, 0.0, 100000.0
+}
+
+freemodl{
+}
+freegeom{
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+L: 0.0, 0.0, 0.0, -2.0
+R: 0.0, 0.0, 0.0, 2.0
+B: 0.0, 0.0, 0.0, -2.0
+T: 0.0, 0.0, 0.0, 2.0
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000000000.0
+}
+
+freerect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<relation>
+#virtual depends on inner objects
+(virtual, skygeom, 0) -> (equirect, skyhaha, 0)
+(virtual, freegeom, 0) -> (equicam, freemodl, 0)
+
+#glwnd depends on ctx + cam
+(opengl, freerect, 0) -> (equicam, freefrus, 0)
+</relation>

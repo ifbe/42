@@ -496,7 +496,7 @@
 ./virtual-vision/proj/cam.free.c
 ./virtual-vision/proj/cam.vbox.c
 ./virtual-vision/proj/vglass.c
-./virtual-vision/special/special.tiltshift.c
+./virtual-vision/fisheye/cam.fisheye.c
 ./virtual-vision/vr/vr.cylinder.c
 ./virtual-vision/vr/vr.eac.c
 ./vm-board/pc/pc.c
