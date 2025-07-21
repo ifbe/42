@@ -1,12 +1,12 @@
 <entity>
-equirect{
-fmt:equirect
+equirect:equirect{
 arg:datafile/jpg/360d/360d-park.jpg
+vs:datafile/shader/equirect/equi.vs
+fs:datafile/shader/equirect/equi.fs
 }
 equicam:equicam{
 }
-virtual{
-fmt:virtual
+virtual:virtual{
 }
 </entity>
 
@@ -55,10 +55,8 @@ q:1.0, 1.0
 
 
 <relation>
-#virtual depends on inner objects
-(virtual, skygeom, 0) -> (equirect, skyhaha, 0)
-(virtual, freegeom, 0) -> (equicam, freemodl, 0)
+(@virtual, @skygeom) -> (@equirect, @skyhaha)
+(@virtual, @freegeom) -> (@equicam, @freemodl)
 
-#glwnd depends on ctx + cam
-(opengl, freerect, 0) -> (equicam, freefrus, 0)
+(@opengl, @freerect) -> (@equicam, @freefrus)
 </relation>

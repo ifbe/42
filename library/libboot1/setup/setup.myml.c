@@ -585,7 +585,7 @@ int role_fromtext_foot(struct footlist foot[], int flen, u8* buf, int len)
 
 			if( (0 == subhash) | (_mass_ == subhash) ){
 				decstr2float(buf+propdata, &sty->physic.inertiatensor[3][3]);
-				logtoall("%f(%x)\n", sty->physic.inertiatensor[3][3], *(u32*)&sty->physic.inertiatensor[3][3]);
+				//logtoall("float=%f(%x)\n", sty->physic.inertiatensor[3][3], *(u32*)&sty->physic.inertiatensor[3][3]);
 			}
 
 			continue;

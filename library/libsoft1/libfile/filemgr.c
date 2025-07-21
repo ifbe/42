@@ -96,9 +96,12 @@ int file_mount_part(_obj* ptbl, u64 pf){
 
 	//1.get metadata from it
 	if(0 == ptbl->ontaking)return 0;
+
+	int ret = ptbl->ontaking((void*)ptbl,0, 0,0, 0,_info_, 0,0);
+
 	struct parsedptbl tmp[0x80];
-	int ret = ptbl->ontaking((void*)ptbl,0, 0,0, 0,_part_, tmp,0);
-	logtoall("partition count=%x\n",ret);
+	ret = ptbl->ontaking((void*)ptbl,0, 0,0, 0,_part_, tmp,0);
+	logtoall("partition count=%x, pf=%llx\n", ret, pf);
 	if(ret <= 0)return 0;
 
 	//2.try to expand it
@@ -199,7 +202,7 @@ int parse_type_and_addr(u8* input, u64* type, u64* addr)
 		*addr = 0;
 		return 0;
 	}
-	logtoall("part2:%s\n", input+at+1);
+	//logtoall("part2:%s\n", input+at+1);
 
 	*type = 0;
 	parse_type(input, at, type);
@@ -216,36 +219,45 @@ int parse_type_and_addr(u8* input, u64* type, u64* addr)
 #define _vdisk_ hex64('v','d','i','s','k', 0, 0, 0)
 #define _ptbl_ hex32('p','t','b','l')
 #define _fsys_ hex32('f','s','y','s')
-int filelist(char* path)
+int filelist(u8* path)
 {
 	int j;
-
-	//logtoall("----blkdev----\n");
-	//osfile_list(0);
-
-	logtoall("----raw----\n");
-	for(j=0;j<diskcount;j++){
-		logtoall("%d: node=%p,slot=%p\n", j, perdisk[j].node, perdisk[j].slot);
+	u64 type=0, addr=0;
+	if(path){
+		parse_type_and_addr(path, &type, &addr);
 	}
-	if(0 == j)logtoall("no disk registered\n\n");
 
-	logtoall("----vdisk----\n");
-	for(j=0;j<vdcount;j++){
-		logtoall("%d: node=%p,slot=%p\n", j, pervdisk[j].node, pervdisk[j].slot);
+	if( (0 == type) || (_disk_ == type) || (_raw_ == type) ){
+		logtoall("----raw----\n");
+		for(j=0;j<diskcount;j++){
+			logtoall("%d: node=%p,slot=%p\n", j, perdisk[j].node, perdisk[j].slot);
+		}
+		if(0 == j)logtoall("no disk registered\n\n");
 	}
-	if(0 == j)logtoall("no vdisk registered\n\n");
 
-	logtoall("----ptbl----\n");
-	for(j=0;j<ptblcount;j++){
-		logtoall("%d: node=%p,slot=%p\n", j, perptbl[j].node, perptbl[j].slot);
+	if( (0 == type) || (_vdisk_ == type) ){
+		logtoall("----vdisk----\n");
+		for(j=0;j<vdcount;j++){
+			logtoall("%d: node=%p,slot=%p\n", j, pervdisk[j].node, pervdisk[j].slot);
+		}
+		if(0 == j)logtoall("no vdisk registered\n\n");
 	}
-	if(0 == j)logtoall("no ptbl registered\n\n");
 
-	logtoall("----fsys----\n");
-	for(j=0;j<fsyscount;j++){
-		logtoall("%d: node=%p,slot=%p\n", j, perfsys[j].node, perfsys[j].slot);
+	if( (0 == type) || (_ptbl_ == type) ){
+		logtoall("----ptbl----\n");
+		for(j=0;j<ptblcount;j++){
+			logtoall("%d: node=%p,slot=%p\n", j, perptbl[j].node, perptbl[j].slot);
+		}
+		if(0 == j)logtoall("no ptbl registered\n\n");
 	}
-	if(0 == j)logtoall("no fsys registered\n\n");
+
+	if( (0 == type) || (_fsys_ == type) ){
+		logtoall("----fsys----\n");
+		for(j=0;j<fsyscount;j++){
+			logtoall("%d: node=%p,slot=%p\n", j, perfsys[j].node, perfsys[j].slot);
+		}
+		if(0 == j)logtoall("no fsys registered\n\n");
+	}
 	return 0;
 }
 
@@ -256,7 +268,9 @@ int filemount(u8* path, u8* slot)
 	parse_type_and_addr(path, &type, &addr);
 	logtoall("type=%.8s, addr=%p\n", &type, addr);
 
-	//mount "/dev/sda", mount "\\.\physicaldrive0", mount ...
+	//mount "/dev/sda"
+	//mount "\\.\physicaldrive0"
+	//mount ...
 	if(0 == type){
 		_obj* f = system_alloc_frompath(_file_, path);
 		system_create(f, 0, 0, 0);
@@ -265,6 +279,7 @@ int filemount(u8* path, u8* slot)
 		return 0;
 	}
 
+	//mount disk@7fff00 part@188000
 	u64 type2=0, addr2=0;
 	if(slot)parse_type_and_addr(slot, &type2, &addr2);
 	if(type2)logtoall("type2=%.8s, addr2=%p\n", &type2, addr2);
@@ -298,13 +313,21 @@ int filemount(u8* path, u8* slot)
 
 int filecommand(int argc, u8** argv)
 {
-	logtoall("@filecommand\n");
-	if(0 == ncmp(argv[1], "list", 4)){
-		filelist(0);
+	//logtoall("@filecommand: argc=%d\n", argc);
+	if(argc > 1){
+		if(0 == ncmp(argv[1], "list", 4)){
+			filelist(argv[2]);
+			return 0;
+		}
+		else if(0 == ncmp(argv[1], "mount", 5)){
+			filemount(argv[2], argv[3]);
+			return 0;
+		}
 	}
-	if(0 == ncmp(argv[1], "mount", 5)){
-		filemount(argv[2], argv[3]);
-		filelist(0);
-	}
+
+	logtoall("example:\n");
+	logtoall("file list /dev/sda\n");
+	logtoall("file mount /dev/sda\n");
+	logtoall("file mount disk@111 part@222\n");
 	return 0;
 }

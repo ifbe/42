@@ -1,5 +1,5 @@
 #include "libuser.h"
-#define OWNBUF listptr.buf0
+int copypath(u8* dst, u8* src);
 void carveplanet_verttex(void*, void*, int accx, int accy, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 void dx11data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
@@ -13,7 +13,7 @@ struct own{
 	struct dx11data dx11;
 	struct gl41data gl41;
 };
-static void equirect_prep(struct own* my, char* str)
+static void equirect_prep_tex(struct own* my, char* str)
 {
 	my->tex.data = memoryalloc(4096*2048*4, 4);
 	if(0 == my->tex.data)return;
@@ -110,7 +110,7 @@ static void equirect_dx11draw(
 	_obj* win, struct style* geom,
 	_obj* ctx, struct style* none)
 {
-	struct own* my = act->OWNBUF;
+	struct own* my = act->priv_ptr;
 	if(0 == my)return;
 
 	struct mysrc* src = &my->dx11.src;
@@ -150,10 +150,11 @@ GLSL_PRECISION
 		"vec3 front = vec3(0,1,0);\n"
 		"float len = length(vec);\n"
 		"float angle = acos(dot(front, vec) / len);\n"
+		"float range = MYPI / 2;\n"
 		"vec2 uv = vec2(tmp1.x, tmp1.z);\n"
-		"uv *= angle / (MYPI*2/3) / length(uv);\n"
+		"uv *= angle / range / length(uv);\n"
 		"float w = (10000000-len) / (10000000-1);\n"
-		"if(angle>MYPI*2/3)w=99;\n"
+		"if(angle > range)w=99;\n"
 		"gl_Position = vec4(uv, w, 1.0);\n"
 		"break;\n"
 	"case 20:\n"
@@ -183,13 +184,25 @@ GLSL_PRECISION
 	//"FragColor = vec4(texture(tex0, vec2(outuv.x, outuv.y)).bgr, 1.0);\n"
 	//"FragColor = vec4(outuv, 0.0, 1.0);\n"
 "}\n";
-static void equirect_gl41prep(struct own* my)
+static void equirect_gl41prep(struct own* my, char* vs, char* fs)
 {
 	struct gl41data* data = &my->gl41;
 
-	//shader
-	data->src.vs = equirect_glsl_vs;
-	data->src.fs = equirect_glsl_fs;
+	if(0 == vs){
+		data->src.vs = equirect_glsl_vs;
+	}
+	else{
+		data->src.vs = memoryalloc(0x10000, 0);
+		loadglslfromfile(vs, 0, data->src.vs, 0x10000);
+	}
+
+	if(0 == fs){
+		data->src.fs = equirect_glsl_fs;
+	}
+	else{
+		data->src.fs = memoryalloc(0x10000, 0);
+		loadglslfromfile(fs, 0, data->src.fs, 0x10000);
+	}
 	data->src.shader_enq = 42;
 
 	//texture
@@ -233,7 +246,7 @@ static void equirect_gl41draw(
 	//gl41line_sphere(ctx, 0xff00ff, vc, vr, vf, vu);
 	//gl41line_prism4(ctx, 0xff00ff, vc, vr, vf, vu);
 
-	struct own* my = act->OWNBUF;
+	struct own* my = act->priv_ptr;
 	if(0 == my)return;
 
 	struct mysrc* src = &my->gl41.src;
@@ -404,18 +417,33 @@ static void equirect_delete(_obj* act)
 {
 	if(0 == act)return;
 }
-static void equirect_create(_obj* act, void* str)
+static void equirect_create(_obj* act, void* str, int argc, u8** argv)
 {
 	if(0 == act)return;
 
-	struct own* my = act->OWNBUF = memoryalloc(0x1000, 0);
+	char vs[128] = {};
+	char fs[128] = {};
+	for(int j=0;j<argc;j++){
+		//logtoall("(((%.8s)))\n", argv[j]);
+		if(ncmp(argv[j], "vs:", 3) == 0){
+			copypath((u8*)vs, argv[j]+3);
+		}
+		else if(ncmp(argv[j], "fs:", 3) == 0){
+			copypath((u8*)fs, argv[j]+3);
+		}
+	}
+
+	struct own* my = act->priv_ptr = memoryalloc(0x1000, 0);
 	if(0 == my)return;
 
 	if(0 == str)str = "datafile/jpg/texball-earth.jpg";
-	equirect_prep(my, str);
+	equirect_prep_tex(my, str);
 
 	equirect_dx11prep(my);
-	equirect_gl41prep(my);
+
+	equirect_gl41prep(my,
+		vs[0] ? vs : 0,
+		fs[0] ? fs : 0);
 }
 
 

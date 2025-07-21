@@ -79,6 +79,12 @@ libuser1:
 
 
 
+macdd:
+	dd if=/dev/zero of=test.img bs=1048576 count=64
+macmkfs:
+	$(eval DISK := $(shell hdiutil attach -nomount test.img))
+	newfs_msdos -F 32 $(DISK)
+	hdiutil detach $(DISK)
 macmount:
 	hdiutil attach -mountpoint mntdir test.img
 	mkdir -p mntdir/efi/boot
@@ -96,6 +102,20 @@ macall:
 	make -s macumount
 
 
+
+#----------------img----------------
+vhd:
+	qemu-img convert -f raw -O vpc -o subformat=fixed test.img test.vhd
+vmdk:
+	qemu-img convert -f raw -O vmdk test.img test.vmdk
+hdd:
+	qemu-img convert -f raw -O parallels test.img test.hdd
+vhd2img:
+	qemu-img convert -f vpc -O raw test.vhd test.img
+
+#----------------run----------------
+qemu:
+	../../../thelive/software/virt/qemu/efi.sh "qemu-system-x86_64" $(shell pwd)/test.img $(shell pwd)/test.vhd
 
 
 clean:
