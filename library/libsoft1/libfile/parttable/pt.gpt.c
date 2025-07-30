@@ -36,14 +36,28 @@ struct parsed{
 
 
 
-int check_gpt(u8* addr)
+//"EFI PART"
+int check_gpt_efipart(void* addr)
 {
+	if(*(u64*)addr == _EFI_PART_)return 1;
+	return 0;
+}
+int check_gpt(u8* addr, int len)
+{
+	if(len < 0x200)return 0;
+
 	//[1fe, 1ff] = (0x55，0xaa)
 	if(0x55 != addr[0x1fe])return 0;
 	if(0xaa != addr[0x1ff])return 0;
 
-	//[200, 207] = "EFI PART"
-	if(*(u64*)(addr+0x200) != _EFI_PART_)return 0;
+	int efi_part = 0;
+	if(len >= 0x400){
+		efi_part = check_gpt_efipart(addr+0x200);
+	}
+	if( (0 == efi_part) && (len >= 0x2000) ){
+		efi_part = check_gpt_efipart(addr+0x1000);
+	}
+	if(0 == efi_part)return 0;
 
 	//检查crc32校验正确还是错误
 	//
@@ -78,30 +92,37 @@ int parse_gpt_one(struct gptpart* part, struct parsed* out)
 		out->count = part->lba_end - part->lba_start+1;
 	}
 	else{
-		logtoall("[%016llx,%016llx]:	type=%.8s, name=%s\n", part->lba_start, part->lba_end, &type, part->name);
+		char name[128];
+		for(int j=0;j<24;j++)name[j] = part->name[j*2];
+		logtoall("[%016llx,%016llx]:	type=%.8s, name=%s\n", part->lba_start, part->lba_end, &type,  name);
 	}
 	return 1;
 }
 int parse_gpt(u8* src, struct parsed* out)
 {
-	int j;
-	int ret,cnt;
-	u32 hcrc,bcrc;
-	u8* tmp;
-	logtoall("@parse_gpt\n");
+	int pagesize = 0;
+	if(check_gpt_efipart(src+0x200))pagesize = 0x200;
+	else if(check_gpt_efipart(src+0x1000))pagesize = 0x1000;
+	if(0 == pagesize)return 0;
 
-	j = src[0x20c];
-	if(j >= 0x14)j -= 0x14;
-	hcrc = crc32(0, src + 0x200, 0x10);
-	hcrc = crc32(hcrc, src + 0x214, 4);
-	hcrc = crc32(hcrc, src + 0x214, j);
-	logtoall("head crc:	%x, %x\n", *(u32*)(src+0x210), hcrc);
-	logtoall("body crc:	%x, %x\n", *(u32*)(src+0x258), crc32(0, src+0x400, 0x4000));
+	logtoall("@parse_gpt: pagesize=%d\n", pagesize);
 
-	cnt = 0;
+	u8* sector1 = src + pagesize;
+	u8* sector2 = src + pagesize * 2;
+
+	u32 hcrc;
+	hcrc = crc32(0, sector1, 0x10);
+	hcrc = crc32(hcrc, sector1 + 0x14, 4);
+
+	int j = sector1[0xc];
+	hcrc = crc32(hcrc, sector1 + 0x14, (j>=0x14) ? (j-0x14) : j);
+
+	logtoall("head crc:	%x, %x\n", *(u32*)(sector1+0x10), hcrc);
+	logtoall("body crc:	%x, %x\n", *(u32*)(sector1+0x58), crc32(0, sector2, 0x4000));
+
+	int ret, cnt = 0;
 	for(j=0;j<0x80;j++){
-		tmp = src + 0x400 + 0x80*j;
-		ret = parse_gpt_one((void*)tmp, out ? &out[cnt] : 0);
+		ret = parse_gpt_one((void*)(sector2+0x80*j), out ? &out[cnt] : 0);
 		if(ret)cnt += 1;
 	}
 	return cnt;
@@ -174,22 +195,22 @@ static int gptclient_showpart(_obj* art,void* foot, void* buf,int len)
 
 
 
-int gptclient_ontake(_obj* art,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len)
+int gptclient_ontake(_obj* art,void* foot, _syn* stack,int sp, p64 arg,int cmd, u8* buf,int len)
 {
-	//logtoall("@gptclient_take\n");
+	//logtoall("@gptclient_ontake:obj=%p,slot=%p,arg=%llx,cmd=%x,buf=%p,len=%x\n", art,foot, arg,cmd, buf,len);
 
-	switch(idx){
+	switch(cmd){
 	case _info_:return gptclient_showinfo(art);
 	case _part_:return gptclient_showpart(art,foot, buf,len);
 	}
 
 	//logtoall("foot=%x\n",foot);
-	u64 offs = (u64)foot + arg;		//foot->offs + arg		//partoffs + dataoffs
+	u64 offs = (u64)foot + arg;		//partoffs + dataoffs
 	int ret = take_data_from_peer(art,_src_, stack,sp+2, offs,_pos_, buf,len);
 	//logtoall("gpt.ret=%x\n",ret);
 	return ret;
 }
-int gptclient_ongive(_obj* art,void* foot, _syn* stack,int sp, p64 arg,int idx, u8* buf,int len)
+int gptclient_ongive(_obj* art,void* foot, _syn* stack,int sp, p64 arg,int cmd, u8* buf,int len)
 {
 	return 0;
 }
@@ -197,6 +218,7 @@ int gptclient_detach(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
+#define gptmaxsize (0x2000+0x4000)
 int gptclient_attach(struct halfrel* self, struct halfrel* peer)
 {
 	_obj* ele = self->pchip;
@@ -208,16 +230,16 @@ int gptclient_attach(struct halfrel* self, struct halfrel* peer)
 		int ret;
 		struct item* xxx = peer->pchip;
 		if(xxx->ontaking){
-			ret = xxx->ontaking(xxx,peer->pfoot, 0,0, 0,_pos_, buf, 0x4800);
+			ret = xxx->ontaking(xxx,peer->pfoot, 0,0, 0,_pos_, buf, gptmaxsize);
 		}
 		else if((_sys_ == xxx->tier)|(_art_ == xxx->tier)){
 			_obj* obj = peer->pchip;
-			ret = file_reader(obj,0, 0,_pos_, buf,0x4800);
+			ret = file_reader(obj,0, 0,_pos_, buf,gptmaxsize);
 		}
 		else{
-			ret = take_data_from_peer(ele,_src_, 0,0, 0,_pos_, buf,0x4800);
+			ret = take_data_from_peer(ele,_src_, 0,0, 0,_pos_, buf,gptmaxsize);
 		}
-		if(ret != 0x4800)return 0;
+		if(ret != gptmaxsize)return 0;
 
 		//check self type, parse or mount
 		parse_gpt(buf, 0);

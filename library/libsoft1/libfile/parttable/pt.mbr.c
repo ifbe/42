@@ -189,17 +189,17 @@ static int mbrclient_showpart(_obj* art,void* foot, void* buf,int len)
 
 static int mbrclient_ontake(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, u8* buf, int len)
 {
-	logtoall("@mbrclient_ontake:obj=%p,slot=%p,arg=%llx,cmd=%x,buf=%p,len=%x\n", art,foot, arg,cmd, buf,len);
+	//logtoall("@mbrclient_ontake:obj=%p,slot=%p,arg=%llx,cmd=%x,buf=%p,len=%x\n", art,foot, arg,cmd, buf,len);
 
 	switch(cmd){
 	case _info_:return mbrclient_showinfo(art);
 	case _part_:return mbrclient_showpart(art,foot, buf,len);
 	}
 
-	u64 offs = (u64)foot + arg;		//foot->offs + idx		//partoffs + dataoffs
+	u64 offs = (u64)foot + arg;		//partoffs + dataoffs
 	return take_data_from_peer(art,_src_, stack,sp+2, offs,_pos_, buf,len);
 }
-static int mbrclient_ongive(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
+static int mbrclient_ongive(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int cmd, u8* buf, int len)
 {
 	return 0;
 }

@@ -73,7 +73,7 @@ int parse_stl(void*);
 int check_applept(void*);
 int parse_applept(void*, int);
 #define _gpt_ hex32('g','p','t',0)
-int check_gpt(void*);
+int check_gpt(void*, int);
 int parse_gpt(void*, int);
 #define _mbr_ hex32('m','b','r',0)
 int check_mbr(void*);
@@ -185,7 +185,7 @@ u64 file_check(u8* buf, int len)
 	}
 
 	//parttable
-	else if(check_gpt(buf) != 0){
+	else if(check_gpt(buf, len) != 0){
 		type = _gpt_;
 		//parse_gpt(buf, len);
 	}

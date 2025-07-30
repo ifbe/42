@@ -58,7 +58,7 @@ void lowlevel_output(char* buf, int len)
 
 		usleep(1);
 		retry++;
-		if(retry > 9)break;
+		if(retry > 999)break;
 	}
 	fprintf(stderr, "errno=%d,ret=%d,len=%d@stdout\n",errno,ret,len);
 	fprintf(stderr, "{[(%.*s)]}\n", len, buf);

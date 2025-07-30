@@ -11,18 +11,21 @@ struct _perdisk{
 	void* slot;
 }perdisk[16];
 static int diskcount = 0;
+
 //virt disk
 struct _pervd{
 	_obj* node;
 	void* slot;
 }pervdisk[16];
 static int vdcount = 0;
+
 //part table
 struct _perptbl{
 	_obj* node;
 	void* slot;
 }perptbl[16];
 static int ptblcount = 0;
+
 //file system
 struct _perfsys{
 	_obj* node;
@@ -101,7 +104,7 @@ int file_mount_part(_obj* ptbl, u64 pf){
 
 	struct parsedptbl tmp[0x80];
 	ret = ptbl->ontaking((void*)ptbl,0, 0,0, 0,_part_, tmp,0);
-	logtoall("partition count=%x, pf=%llx\n", ret, pf);
+	logtoall("partition count=%x, pf=%p\n", ret, pf);
 	if(ret <= 0)return 0;
 
 	//2.try to expand it
@@ -140,7 +143,7 @@ int file_mount_vdisk(_obj* vdisk, u64 vf){
 	return 0;
 }
 
-int file_mount_raw(_obj* disk, u64 df){
+int file_mount_raw(_obj* disk, void* df){
 	//1.get metadata from it
 
 	//2.try to expand it
@@ -148,7 +151,7 @@ int file_mount_raw(_obj* disk, u64 df){
 	if(0 == tmp)return -1;
 	artery_create(tmp, 0, 0, 0);
 
-	struct relation* rel = relationcreate(tmp,0,_art_,_src_, disk,0,_dev_,_dst_);
+	struct relation* rel = relationcreate(tmp,0,_art_,_src_, disk,df,_dev_,_dst_);
 	if(0 == rel)return -2;
 	relationattach((void*)&rel->dst, (void*)&rel->src);
 
@@ -199,7 +202,6 @@ int parse_type_and_addr(u8* input, u64* type, u64* addr)
 
 	if(at<0){
 		*type = 0;
-		*addr = 0;
 		return 0;
 	}
 	//logtoall("part2:%s\n", input+at+1);
@@ -222,90 +224,144 @@ int parse_type_and_addr(u8* input, u64* type, u64* addr)
 int filelist(u8* path)
 {
 	int j;
-	u64 type=0, addr=0;
+	u64 type=0, index=0xffff;
 	if(path){
-		parse_type_and_addr(path, &type, &addr);
+		parse_type_and_addr(path, &type, &index);
 	}
 
 	if( (0 == type) || (_disk_ == type) || (_raw_ == type) ){
 		logtoall("----raw----\n");
-		for(j=0;j<diskcount;j++){
-			logtoall("%d: node=%p,slot=%p\n", j, perdisk[j].node, perdisk[j].slot);
+		if(diskcount){
+			if(index < 0xff && index < diskcount){
+				_obj* node = perdisk[index].node;
+				void* slot = perdisk[index].slot;
+				if(node && node->ontaking){
+					int ret = node->ontaking(node, slot, 0,0, 0,_info_, 0,0);
+				}
+			}
+			else{
+				for(j=0;j<diskcount;j++){
+					logtoall("%d: node=%p,slot=%p\n", j, perdisk[j].node, perdisk[j].slot);
+				}
+			}
 		}
-		if(0 == j)logtoall("no disk registered\n\n");
+		else{
+			logtoall("no disk registered\n");
+		}
+		logtoall("\n");
 	}
 
 	if( (0 == type) || (_vdisk_ == type) ){
 		logtoall("----vdisk----\n");
-		for(j=0;j<vdcount;j++){
-			logtoall("%d: node=%p,slot=%p\n", j, pervdisk[j].node, pervdisk[j].slot);
+		if(vdcount){
+			if(index < 0xff && index < vdcount){
+				_obj* node = pervdisk[index].node;
+				void* slot = pervdisk[index].slot;
+				if(node && node->ontaking){
+					int ret = node->ontaking(node, slot, 0,0, 0,_info_, 0,0);
+				}
+			}
+			else{
+				for(j=0;j<vdcount;j++){
+					logtoall("%d: node=%p,slot=%p\n", j, pervdisk[j].node, pervdisk[j].slot);
+				}
+			}
 		}
-		if(0 == j)logtoall("no vdisk registered\n\n");
+		else{
+			logtoall("no vdisk registered\n");
+		}
+		logtoall("\n");
 	}
 
 	if( (0 == type) || (_ptbl_ == type) ){
 		logtoall("----ptbl----\n");
-		for(j=0;j<ptblcount;j++){
-			logtoall("%d: node=%p,slot=%p\n", j, perptbl[j].node, perptbl[j].slot);
+		if(ptblcount){
+			if(index < 0xff && index < vdcount){
+				_obj* node = perptbl[index].node;
+				void* slot = perptbl[index].slot;
+				if(node && node->ontaking){
+					int ret = node->ontaking(node, slot, 0,0, 0,_info_, 0,0);
+				}
+			}
+			else{
+				for(j=0;j<ptblcount;j++){
+					logtoall("%d: node=%p,slot=%p\n", j, perptbl[j].node, perptbl[j].slot);
+				}
+			}
 		}
-		if(0 == j)logtoall("no ptbl registered\n\n");
+		else{
+			logtoall("no ptbl registered\n");
+		}
+		logtoall("\n");
 	}
 
 	if( (0 == type) || (_fsys_ == type) ){
 		logtoall("----fsys----\n");
-		for(j=0;j<fsyscount;j++){
-			logtoall("%d: node=%p,slot=%p\n", j, perfsys[j].node, perfsys[j].slot);
+		if(fsyscount){
+			if(index < 0xff && index < fsyscount){
+				_obj* node = perfsys[index].node;
+				void* slot = perfsys[index].slot;
+				if(node && node->ontaking){
+					int ret = node->ontaking(node, slot, 0,0, 0,_info_, 0,0);
+				}
+			}
+			else{
+				for(j=0;j<fsyscount;j++){
+					logtoall("%d: node=%p,slot=%p\n", j, perfsys[j].node, perfsys[j].slot);
+				}
+			}
 		}
-		if(0 == j)logtoall("no fsys registered\n\n");
+		else{
+			logtoall("no fsys registered\n");
+		}
+		logtoall("\n");
 	}
 	return 0;
 }
 
-//file mount srcpath srcpart [dstpath] [dstpart]
+
+//file probe "/dev/sda"
+//file probe "\\.\physicaldrive0"
+int fileprobe(u8* path)
+{
+	_obj* f = system_alloc_frompath(_file_, path);
+	system_create(f, 0, 0, 0);
+
+	filemanager_registerdisk(f, 0);
+	return 0;
+}
+
+
+//file mount disk@111 part@222
 int filemount(u8* path, u8* slot)
 {
-	u64 type=0, addr=0;
-	parse_type_and_addr(path, &type, &addr);
-	logtoall("type=%.8s, addr=%p\n", &type, addr);
-
-	//mount "/dev/sda"
-	//mount "\\.\physicaldrive0"
-	//mount ...
-	if(0 == type){
-		_obj* f = system_alloc_frompath(_file_, path);
-		system_create(f, 0, 0, 0);
-
-		filemanager_registerdisk(f, 0);
-		return 0;
-	}
-
+	u64 type=0, index=0;
+	parse_type_and_addr(path, &type, &index);
+	logtoall("type=%.8s, index=%llx\n", &type, index);
+/*
 	//mount disk@7fff00 part@188000
 	u64 type2=0, addr2=0;
 	if(slot)parse_type_and_addr(slot, &type2, &addr2);
 	if(type2)logtoall("type2=%.8s, addr2=%p\n", &type2, addr2);
-
+*/
 	//mount disk@434140
 	if( (_disk_ == type) | (_raw_ == type) ){
-		_obj* d = (_obj*)addr;
-		file_mount_raw(d, addr2);
+		if(index < diskcount)file_mount_raw(perdisk[index].node, perdisk[index].slot);
 	}
 
 	//mount vdisk@434140
-	if(_vdisk_ == type){
-		_obj* v = (_obj*)addr;
-		file_mount_raw(v, addr2);
+	else if(_vdisk_ == type){
+		if(index < vdcount)file_mount_raw(pervdisk[index].node, pervdisk[index].slot);
 	}
 
 	//mount ptbl@fff3450.part@0
 	else if(_ptbl_ == type){
-		_obj* p = (_obj*)addr;
-		file_mount_part(p, addr2);
+		if(index < ptblcount)file_mount_part(perptbl[index].node, (u64)perptbl[index].slot);
 	}
 
 	//mount fsys#3.inode#875
 	else if(_fsys_ == type){
-		_obj* f = (_obj*)addr;
-		file_mount_fsys(f, addr2);
+		if(index < fsyscount)file_mount_fsys(perfsys[index].node, (u64)perfsys[index].slot);
 	}
 
 	return 0;
@@ -316,7 +372,11 @@ int filecommand(int argc, u8** argv)
 	//logtoall("@filecommand: argc=%d\n", argc);
 	if(argc > 1){
 		if(0 == ncmp(argv[1], "list", 4)){
-			filelist(argv[2]);
+			filelist((argc>2) ? argv[2] : 0);
+			return 0;
+		}
+		else if(0 == ncmp(argv[1], "probe", 5)){
+			fileprobe(argv[2]);
 			return 0;
 		}
 		else if(0 == ncmp(argv[1], "mount", 5)){
@@ -326,8 +386,8 @@ int filecommand(int argc, u8** argv)
 	}
 
 	logtoall("example:\n");
-	logtoall("file list /dev/sda\n");
-	logtoall("file mount /dev/sda\n");
+	logtoall("file list\n");
+	logtoall("file probe /dev/sda\n");
 	logtoall("file mount disk@111 part@222\n");
 	return 0;
 }
