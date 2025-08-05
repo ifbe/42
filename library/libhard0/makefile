@@ -261,6 +261,7 @@ barex64_c = \
 2soc/bareusb/xhci/xhci-driver.c \
 2soc/barestor/ahci/ahci-driver.c \
 2soc/barestor/nvme/nvme-driver.c \
+2soc/barestor/sata/sata.c \
 3board/pc/barepc.c
 barex64_o = $(patsubst %.c, %.o, $(barex64_c))
 

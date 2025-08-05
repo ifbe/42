@@ -77,6 +77,7 @@
 #define _ide_ hex32('i','d','e',0)
 #define _ahci_ hex32('a','h','c','i')
 #define _nvme_ hex32('n','v','m','e')
+#define _sata_ hex32('s','a','t','a')
 //
 #define _uhci_ hex32('u','h','c','i')
 #define _ohci_ hex32('o','h','c','i')

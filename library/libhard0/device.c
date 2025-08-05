@@ -190,6 +190,7 @@ int device_writer(struct item* dev,void* foot, p64 arg,int cmd, void* buf,int le
 int device_attach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* peer)
 {
 	logtoall("@deviceattach\n");
+	if(ent->onattach)ent->onattach(self, peer);
 	return 0;
 }
 int device_detach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* peer)

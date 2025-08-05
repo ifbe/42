@@ -243,11 +243,14 @@ int mbrclient_attach(struct halfrel* self, struct halfrel* peer)
 
 
 
-int mbrclient_reader(_obj* art,void* foot, p64 arg,int idx, u8* buf,int len)
+static int mbrclient_reader(_obj* art,void* foot, p64 arg,int cmd, u8* buf,int len)
 {
+	switch(cmd){
+	case _info_:return mbrclient_showinfo(art);
+	}
 	return 0;
 }
-int mbrclient_writer(_obj* art,void* foot, p64 arg,int idx, u8* buf,int len)
+static int mbrclient_writer(_obj* art,void* foot, p64 arg,int cmd, u8* buf,int len)
 {
 	return 0;
 }
@@ -264,6 +267,8 @@ int mbrclient_create(_obj* art)
 	logtoall("@mbrclient_create\n");
 	art->listptr.buf0 = memoryalloc(0x100000, 0);
 
+	art->onreader = (void*)mbrclient_reader;
+	art->onwriter = (void*)mbrclient_writer;
 	art->ongiving = (void*)mbrclient_ongive;
 	art->ontaking = (void*)mbrclient_ontake;
 	return 0;

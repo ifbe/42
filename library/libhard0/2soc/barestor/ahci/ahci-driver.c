@@ -2,8 +2,8 @@
 #define ahci_print(fmt, ...) logtoall("<%08lld,ahci>" fmt, timeread_us(), ##__VA_ARGS__)
 u32 in32(u16 port);
 void out32(u16 port, u32 data);
-void filemanager_registerdisk(void*,void*);
-
+//void filemanager_registerdisk(void*,void*);
+void* sata_alloc();
 
 
 
@@ -576,10 +576,10 @@ static int ahci_readdata(struct item* ahci,void* foot,struct halfrel* stack,int 
 	//ahci_print("ret=%d\n",ret);
 	return len;
 }
-static int ahci_readinfo(struct item* ahci,void* foot,struct halfrel* stack,int sp, void* buf,int len)
+static int ahci_readinfo(struct item* ahci,void* foot, void* buf,int len)
 {
 	struct perahci* my = (void*)(ahci->priv_256b);
-	//logtoall("@ahci_readinfo: %p,%p\n",ahci,foot);
+	logtoall("@ahci_readinfo: %p,%p\n",ahci,foot);
 
 	if(0 == buf)buf = my->onemega + receivebuf;
 	int ret = ahci_identify(foot, buf);
@@ -589,10 +589,22 @@ static int ahci_readinfo(struct item* ahci,void* foot,struct halfrel* stack,int 
 
 
 
+static int ahci_reader(struct item* ahci,void* foot, p64 arg,int cmd, void* buf,int len)
+{
+	logtoall("%s: cmd=%x\n", __FUNCTION__, cmd);
+	if(_info_ == cmd){
+		return ahci_readinfo(ahci,foot, buf,len);
+	}
+	return 0;
+}
+static int ahci_writer(struct item* ahci,void* foot,struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len)
+{
+	return 0;
+}
 static int ahci_ontake(struct item* ahci,void* foot,struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	//logtoall("ahci_ontake:%llx,%x,%p,%x\n",arg,cmd,buf,len);
-	if(_info_ == cmd)return ahci_readinfo(ahci,foot, stack,sp, buf,len);
+	if(_info_ == cmd)return ahci_readinfo(ahci,foot, buf,len);
 
 	if(0 == buf){
 		ahci_print("error: buf=0\n");
@@ -730,7 +742,18 @@ int ahci_contractor(struct item* dev, int who, u8* buf, int len)
 	int ret = ahci_identify(port, (void*)buf);
 	if(ret < 0)return -1;
 
-	filemanager_registerdisk(dev,port);
+	struct item* sata = sata_alloc();
+	if(0 == sata)return -2;
+
+	if(0 == sata->oncreate)return -3;
+	sata->oncreate(sata, 0, 0, 0);
+
+	if(0 == sata->onattach)return -4;
+	struct relation* rel2 = relationcreate(sata,0, _dev_,_src_, dev,port, _dev_,0);
+	if(0 == rel2)return -5;
+
+	relationattach((struct halfrel*)&rel2->src, (struct halfrel*)&rel2->dst);
+	
 	return 0;
 }
 int ahci_list(struct item* dev, int total, u8* ptr, int max, u8* buf, int len)
@@ -821,6 +844,8 @@ void ahci_mmioinit(struct item* dev, struct HBA_MEM* abar)
 
 	dev->kind = _stor_;
 	dev->type = _ahci_;
+	dev->onreader = (void*)ahci_reader;
+	dev->onwriter = (void*)ahci_writer;
 	dev->ongiving = (void*)ahci_ongive;
 	dev->ontaking = (void*)ahci_ontake;
 

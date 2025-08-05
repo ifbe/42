@@ -254,11 +254,14 @@ int gptclient_attach(struct halfrel* self, struct halfrel* peer)
 
 
 
-int gptclient_reader(_obj* art,void* foot, p64 arg,int idx, u8* buf,int len)
+static int gptclient_reader(_obj* art,void* foot, p64 arg,int cmd, u8* buf,int len)
 {
+	switch(cmd){
+	case _info_:return gptclient_showinfo(art);
+	}
 	return 0;
 }
-int gptclient_writer(_obj* art,void* foot, p64 arg,int idx, u8* buf,int len)
+static int gptclient_writer(_obj* art,void* foot, p64 arg,int cmd, u8* buf,int len)
 {
 	return 0;
 }
@@ -275,6 +278,8 @@ int gptclient_create(_obj* art, u8* url)
 	logtoall("@gptclient_create\n");
 	art->listptr.buf0 = memoryalloc(0x10000, 0);
 
+	art->onreader = (void*)gptclient_reader;
+	art->onwriter = (void*)gptclient_writer;
 	art->ongiving = (void*)gptclient_ongive;
 	art->ontaking = (void*)gptclient_ontake;
 	return 0;

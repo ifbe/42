@@ -230,16 +230,21 @@ int filelist(u8* path)
 	}
 
 	if( (0 == type) || (_disk_ == type) || (_raw_ == type) ){
-		logtoall("----raw----\n");
 		if(diskcount){
+			logtoall("index=%d diskcount=%d\n", index, diskcount);
 			if(index < 0xff && index < diskcount){
 				_obj* node = perdisk[index].node;
 				void* slot = perdisk[index].slot;
-				if(node && node->ontaking){
-					int ret = node->ontaking(node, slot, 0,0, 0,_info_, 0,0);
+				if(node){
+					int ret = 0;
+					if(node->onreader)ret = node->onreader(node, slot, 0,_info_, 0,0);
+					//else ret = artery_reader(node, slot, 0,_info_, 0,0);
+				}
+				else{
 				}
 			}
 			else{
+				logtoall("----raw----\n");
 				for(j=0;j<diskcount;j++){
 					logtoall("%d: node=%p,slot=%p\n", j, perdisk[j].node, perdisk[j].slot);
 				}
@@ -248,20 +253,20 @@ int filelist(u8* path)
 		else{
 			logtoall("no disk registered\n");
 		}
-		logtoall("\n");
 	}
 
 	if( (0 == type) || (_vdisk_ == type) ){
-		logtoall("----vdisk----\n");
 		if(vdcount){
+			logtoall("index=%d vdcount=%d\n", index, vdcount);
 			if(index < 0xff && index < vdcount){
 				_obj* node = pervdisk[index].node;
 				void* slot = pervdisk[index].slot;
-				if(node && node->ontaking){
-					int ret = node->ontaking(node, slot, 0,0, 0,_info_, 0,0);
+				if(node && node->onreader){
+					int ret = node->onreader(node, slot, 0,_info_, 0,0);
 				}
 			}
 			else{
+				logtoall("----vdisk----\n");
 				for(j=0;j<vdcount;j++){
 					logtoall("%d: node=%p,slot=%p\n", j, pervdisk[j].node, pervdisk[j].slot);
 				}
@@ -270,20 +275,20 @@ int filelist(u8* path)
 		else{
 			logtoall("no vdisk registered\n");
 		}
-		logtoall("\n");
 	}
 
 	if( (0 == type) || (_ptbl_ == type) ){
-		logtoall("----ptbl----\n");
 		if(ptblcount){
-			if(index < 0xff && index < vdcount){
+			logtoall("index=%d ptblcount=%d\n", index, ptblcount);
+			if(index < 0xff && index < ptblcount){
 				_obj* node = perptbl[index].node;
 				void* slot = perptbl[index].slot;
-				if(node && node->ontaking){
-					int ret = node->ontaking(node, slot, 0,0, 0,_info_, 0,0);
+				if(node && node->onreader){
+					int ret = node->onreader(node, slot, 0,_info_, 0,0);
 				}
 			}
 			else{
+				logtoall("----ptbl----\n");
 				for(j=0;j<ptblcount;j++){
 					logtoall("%d: node=%p,slot=%p\n", j, perptbl[j].node, perptbl[j].slot);
 				}
@@ -292,20 +297,20 @@ int filelist(u8* path)
 		else{
 			logtoall("no ptbl registered\n");
 		}
-		logtoall("\n");
 	}
 
 	if( (0 == type) || (_fsys_ == type) ){
-		logtoall("----fsys----\n");
 		if(fsyscount){
+			logtoall("index=%d fsyscount=%d\n", index, fsyscount);
 			if(index < 0xff && index < fsyscount){
 				_obj* node = perfsys[index].node;
 				void* slot = perfsys[index].slot;
-				if(node && node->ontaking){
-					int ret = node->ontaking(node, slot, 0,0, 0,_info_, 0,0);
+				if(node && node->onreader){
+					int ret = node->onreader(node, slot, 0,_info_, 0,0);
 				}
 			}
 			else{
+				logtoall("----fsys----\n");
 				for(j=0;j<fsyscount;j++){
 					logtoall("%d: node=%p,slot=%p\n", j, perfsys[j].node, perfsys[j].slot);
 				}
@@ -314,7 +319,6 @@ int filelist(u8* path)
 		else{
 			logtoall("no fsys registered\n");
 		}
-		logtoall("\n");
 	}
 	return 0;
 }
