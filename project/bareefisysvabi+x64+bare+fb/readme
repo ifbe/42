@@ -1,0 +1,2 @@
+debug:
+	x86_64-elf-addr2line -C -f -p -e bootx64.so 0x494a1

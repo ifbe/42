@@ -7,8 +7,9 @@ void out8(u32 port, u8 data);
 //
 u8* getoemid();
 //
-//void stdin_setboardseiral(void* node);
-void stdout_setboardseiral(void* node);
+//void stdin_setboardserial(void* node);
+void stdout_setboardserial(void* node);
+void stdev_setboardserial(void* node);
 
 
 
@@ -77,13 +78,13 @@ void initboardserial()
 
 
 
-static void boardserial_read(struct item* e1000,void* foot, p64 arg,int cmd, void* buf,int len)
+static int boardserial_read(struct item* e1000,void* foot, p64 arg,int cmd, void* buf,int len)
 {
-    boardserial_input(buf,len);
+    return boardserial_input(buf,len);
 }
-static void boardserial_write(struct item* e1000,void* foot, p64 arg,int cmd, void* buf,int len)
+static int boardserial_write(struct item* e1000,void* foot, p64 arg,int cmd, void* buf,int len)
 {
-    boardserial_output(buf,len);
+    return boardserial_output(buf,len);
 }
 
 
@@ -100,7 +101,9 @@ void initboarddebug(struct item* dev)
 
         dev->onreader = (void*)boardserial_read;
         dev->onwriter = (void*)boardserial_write;
-        stdout_setboardseiral(dev);
+        stdout_setboardserial(dev);
+		//asm("int3");
+		stdev_setboardserial(dev);
 	}
 }
 void exitboarddebug(struct item* dev)

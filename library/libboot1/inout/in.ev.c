@@ -1,9 +1,5 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
+#include "libboot.h"
 void* pollenv();
-void logtoall(char*, ...);
 
 
 
@@ -22,9 +18,15 @@ void freestdev()
 }
 
 
+static struct item* boardserialnode = 0;
+void stdev_setboardserial(void* node)
+{
+	//asm("int3");
+	boardserialnode = node;
+}
 
 
-void eventwrite(u64 why, u64 what, u64 where, u64 when)
+void* eventwrite(u64 why, u64 what, u64 where, u64 when)
 {
 	int this,temp;
 	static u64* p;
@@ -38,7 +40,7 @@ void eventwrite(u64 why, u64 what, u64 where, u64 when)
 		//full
 		__sync_lock_release(&lock);
 		logtoall("droping event: %llx,%llx,%llx,%llx\n", why, what, where, when);
-		return;
+		return 0;
 	}
 
 	//put event to place
@@ -53,13 +55,29 @@ void eventwrite(u64 why, u64 what, u64 where, u64 when)
 
 	//debug
 	//logtoall("%llx,%llx,%llx,%llx\n", p[0], p[1], p[2], p[3]);
+	return p;
 }
+
+
+static u64 tmpev[4];
 void* eventread()
 {
-	int ret;
-	if(enq == deq)return pollenv();
+	//from queue
+	if(enq != deq){
+		int ret = deq;
+		deq = (deq+0x20)%0x40000;
+		return eventqueue + ret;
+	}
 
-	ret = deq;
-	deq = (deq+0x20)%0x40000;
-	return eventqueue + ret;
+	//from serial
+	if(boardserialnode){
+		int ret = boardserialnode->onreader(boardserialnode,0, 0,0, (u8*)&tmpev[0], 1);
+		if(ret > 0){
+			tmpev[1] = hex32('c','h','a','r');
+			return tmpev;
+		}
+	}
+
+	//from env
+	return pollenv();
 }

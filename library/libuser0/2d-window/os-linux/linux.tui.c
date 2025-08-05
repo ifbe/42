@@ -7,7 +7,7 @@
 #include<sys/ioctl.h>
 #include<sys/select.h>
 #include"libuser.h"
-void stdout_sethelpseiral(void*);
+void stdout_sethelpserial(void*);
 int lowlevel_input();
 void* supply_alloc();
 void* supply_recycle(void*);
@@ -133,12 +133,12 @@ void window_take(_obj* wnd,void* foot, struct halfrel* stack,int sp, p64 arg,int
 	//read context
 	tuinode_take(wnd,0, stack,sp, arg,key, buf,len);
 
-	stdout_sethelpseiral(0);
+	stdout_sethelpserial(0);
 
 	//update screen
 	windowdraw(wnd);
 
-	//stdout_sethelpseiral((void*)1);
+	//stdout_sethelpserial((void*)1);
 
 	usleep(50*1000);
 }

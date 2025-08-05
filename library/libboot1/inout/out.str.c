@@ -11,7 +11,7 @@ void window_give(void*,void*, void*,int, void*,int, void*,int);
 
 #define MAXLINE 16
 static int lastline[MAXLINE];
-static u8* outputqueue;
+static u8* outputqueue = 0;
 static int enq = 0;
 void initstdout(void* addr)
 {
@@ -40,11 +40,11 @@ static void* helpserialnode = (void*)1;
 static struct item* boardserialnode = 0;
 static void* logfilenode = 0;
 static struct item* windownode = 0;
-void stdout_sethelpseiral(void* node)
+void stdout_sethelpserial(void* node)
 {
 	helpserialnode = node;
 }
-void stdout_setboardseiral(void* node)
+void stdout_setboardserial(void* node)
 {
 	boardserialnode = node;
 }
@@ -54,39 +54,46 @@ void stdout_setwindow(void* node)
 }
 
 
+//update enq, update head and tail
+int havelf = 0;
+void updatelinetrack(int tmp, int len)
+{
+	int j,k;
+	havelf = 0;
+	lastline[0] += len;
+	for(j=lastline[1];j<lastline[0]-1;j++){
+		if('\n' == outputqueue[j]){
+			havelf = 1;
+			for(k=MAXLINE-1;k>0;k--)lastline[k] = lastline[k-1];
+			lastline[1] = j+1;
+		}
+	}
+}
 
 
 void logtomem(u8* fmt, ...)
 {
-	int j,k,len;
+	int len;
 	__builtin_va_list arg;
+
+	//temp position
+	u8* ptr = outputqueue+enq;
+	int tmp = enq;
 
 	//va start
 	__builtin_va_start(arg, fmt);
 
 	//convert
-	len = myvsnprintf(outputqueue+enq, 0x1000, fmt, arg);
-
-	//va end
-	__builtin_va_end(arg);
-
-	//update enq, update head and tail
-	if(enq < lastline[1]){
-		lastline[1] = 0;
-		lastline[0] = enq;
-	}
+	len = myvsnprintf(ptr, 0x1000, fmt, arg);
 
 	enq += len;
 	if(enq > 0x3f000)enq = 0;
 
-	lastline[0] += len;
-	for(j=lastline[1];j<lastline[0]-1;j++){
-		if('\n' == outputqueue[j]){
-			for(k=MAXLINE-1;k>0;k--)lastline[k] = lastline[k-1];
-			lastline[1] = j+1;
-		}
-	}
+	//va end
+	__builtin_va_end(arg);
 
+	//
+	updatelinetrack(tmp, len);
 }
 int logtoall(void* fmt, ...)
 {
@@ -94,34 +101,23 @@ int logtoall(void* fmt, ...)
 	__builtin_va_list arg;
 
 	//temp position
-	u8* ptr;
-	ptr = outputqueue+enq;
+	u8* ptr = outputqueue+enq;
+	int tmp = enq;
 
 	//va start
 	__builtin_va_start(arg, fmt);
 
 	//convert
-	len = myvsnprintf(outputqueue+enq, 0x1000, fmt, arg);
-
-	//va end
-	__builtin_va_end(arg);
-
-	//update enq, update head and tail
-	if(enq < lastline[1]){
-		lastline[1] = 0;
-		lastline[0] = enq;
-	}
+	len = myvsnprintf(ptr, 0x1000, fmt, arg);
 
 	enq += len;
 	if(enq > 0x3f000)enq = 0;
 
-	lastline[0] += len;
-	for(j=lastline[1];j<lastline[0]-1;j++){
-		if('\n' == outputqueue[j]){
-			for(k=MAXLINE-1;k>0;k--)lastline[k] = lastline[k-1];
-			lastline[1] = j+1;
-		}
-	}
+	//va end
+	__builtin_va_end(arg);
+
+	//
+	updatelinetrack(tmp, len);
 
 //----------------write to every thing that can help debug----------------
 	//write debugport
@@ -139,7 +135,7 @@ int logtoall(void* fmt, ...)
 	}
 */
 	//write screen
-	if(windownode){
+	if(windownode && havelf){
 		for(j=1;j<MAXLINE;j++){
 			window_give(
 				windownode,windownode,

@@ -494,7 +494,7 @@ static int usbstor_readdata_piece(struct item* usb, u8* buf, u64 bytecur, int by
 
 
 
-static int usbstor_readinfo(struct item* usb,void* foot,struct halfrel* stack,int sp, void* buf,int len)
+static int usbstor_readinfo(struct item* usb,void* foot, void* buf,int len)
 {
 	//logtoall("@usbstor_readinfo: %p,%p\n",usb,foot);
 
@@ -549,10 +549,19 @@ static int usbstor_readdata(struct item* usb,void* foot,struct halfrel* stack,in
 
 
 
+static int usbstor_reader(struct item* usb,void* foot, p64 arg,int cmd, void* buf,int len)
+{
+	if(_info_ == cmd)return usbstor_readinfo(usb,foot, buf,len);
+	return 0;
+}
+static int usbstor_writer(struct item* usb,void* foot, p64 arg,int off, void* buf,int len)
+{
+	return 0;
+}
 static int usbstor_ontake(struct item* usb,void* foot,struct halfrel* stack,int sp, p64 arg,int cmd, void* buf,int len)
 {
 	//logtoall("usbstor_readfile:%llx,%x,%p,%x\n",arg,cmd,buf,len);
-	if(_info_ == cmd)return usbstor_readinfo(usb,foot, stack,sp, buf,len);
+	if(_info_ == cmd)return usbstor_readinfo(usb,foot, buf,len);
 
 	if(0 == buf){
 		logtoall("error: buf=0\n");
@@ -702,6 +711,8 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 //------------------------important infomation------------------
 	usb->kind = _usb_;
 	usb->type = _stor_;
+	usb->onreader = (void*)usbstor_reader;
+	usb->onwriter = (void*)usbstor_writer;
 	usb->ongiving = (void*)usbstor_ongive;
 	usb->ontaking = (void*)usbstor_ontake;
 
