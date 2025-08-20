@@ -1,4 +1,6 @@
 #include "libsoft.h"
+int openreadclose(void* name, int off, void* mem, int len);
+int pem2der(u8* src, int len, u8* dst, int max);
 
 
 
@@ -22,7 +24,10 @@ static u8 clientcipher[34] = {
 0x00, 0x35,		//TLS_RSA_WITH_AES_256_CBC_SHA
 0x00, 0x0a		//TLS_RSA_WITH_3DES_EDE_CBC_SHA
 };
-
+struct privdata{
+	u8* pem;
+	u8* der;
+};
 
 
 
@@ -531,5 +536,12 @@ int tls1v3master_dartte(_obj* art)
 int tls1v3master_create(_obj* art, u8* url)
 {
 	logtoall("@tls1v3master_create\n");
+
+	struct privdata* priv = (void*)art->priv_256b;
+	priv->pem = memoryalloc(0x10000, 0);
+	priv->der = memoryalloc(0x10000, 0);
+
+	int ret = openreadclose(url, 0, priv->pem, 0x2000);
+	pem2der(priv->pem, ret, priv->der, 0x1000);
 	return 0;
 }

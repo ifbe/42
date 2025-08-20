@@ -7,11 +7,22 @@ void* pulser_alloc();
 void pulser(void*);
 void* poller_alloc();
 void poller(void*);
+//
+int pem2der(u8* src, int len, u8* dst, int max);
+int openreadclose(void* name, int off, void* mem, int len);
 
 
 static _obj* worker = 0;
 
 
+void parse_pem(u8* path)
+{
+	u8 pem[0x10000];
+	u8 der[0x10000];
+
+	int ret = openreadclose(path, 0, pem, 0x2000);
+	pem2der(pem, ret, der, 0x1000);
+}
 int subcmd_eachcmd(struct item* wrk, u8* arg)
 {
 	void* thr = 0;
@@ -19,6 +30,10 @@ int subcmd_eachcmd(struct item* wrk, u8* arg)
 		logtoall("./a.out myml xxxx.myml\n");
 		logtoall("./a.out mython xxxx.my\n");
 		logtoall("./a.out ...\n");
+		return 0;
+	}
+	else if(0 == ncmp(arg, "pem", 3)){
+		parse_pem(arg+4);
 		return 0;
 	}
 	else if(0 == ncmp(arg, "myml", 4)){
@@ -126,13 +141,14 @@ int subcmd_create(struct item* wrk, void* arg, int argc, u8** argv)
 			poller(mpoller);
 		}
 	}
+	else{
+		int j;
+		for(j=1;j<argc;j++){
+			subcmd_eachcmd(wrk, argv[j]);
+		}
 
-	int j;
-	for(j=1;j<argc;j++){
-		subcmd_eachcmd(wrk, argv[j]);
+		decide_loop_or_exit();
 	}
-
-	decide_loop_or_exit();
 	return 0;
 }
 int subcmd_delete(struct item* wrk)
