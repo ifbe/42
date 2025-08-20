@@ -5,7 +5,6 @@
 #define _mmioedit_ hex64('m','m','i','o','e','d','i','t')
 void* style_alloc();
 void* style_recycle();
-void inithardware();
 void haltwaitforint();
 
 
@@ -254,9 +253,6 @@ static int kernel_idleloop(struct item* wrk)
 
 int kernel_create(struct item* wrk, void* arg, int argc, u8** argv)
 {
-	//hardware prepare
-	inithardware();
-
 	//
 	_obj* wnd = supply_findtype(_wnd_);
 	if(0 == wnd){

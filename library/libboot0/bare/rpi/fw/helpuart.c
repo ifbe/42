@@ -3,7 +3,7 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 void* mmiobase();
-
+void* uartaddr();
 
 
 
@@ -26,7 +26,20 @@ void* mmiobase();
 #define GPPUD           ((volatile unsigned int*)(mmio+0x00200094))
 #define GPPUDCLK0       ((volatile unsigned int*)(mmio+0x00200098))
 #define GPPUDCLK1       ((volatile unsigned int*)(mmio+0x0020009C))
-//
+/*
+#define AUX_ENABLE      0x04
+#define AUX_MU_IO       0x40
+#define AUX_MU_IER      0x44
+#define AUX_MU_IIR      0x48
+#define AUX_MU_LCR      0x4C
+#define AUX_MU_MCR      0x50
+#define AUX_MU_LSR      0x54
+#define AUX_MU_MSR      0x58
+#define AUX_MU_SCRATCH  0x5C
+#define AUX_MU_CNTL     0x60
+#define AUX_MU_STAT     0x64
+#define AUX_MU_BAUD     0x68
+*/
 #define AUX_ENABLE      ((volatile unsigned int*)(mmio+0x00215004))
 #define AUX_MU_IO       ((volatile unsigned int*)(mmio+0x00215040))
 #define AUX_MU_IER      ((volatile unsigned int*)(mmio+0x00215044))
@@ -44,10 +57,25 @@ void* mmiobase();
 #define CALC_BAUD(baud) ((COREFREQ/(baud*8))-1)
 
 
+static u32 mmioget(void* addr)
+{
+	return *(volatile u32*)addr;
+}
+static void mmioset(void* addr, u32 data)
+{
+	*(volatile u32*)addr = data;
+}
 
 
 static u8* mmio = 0;
 void miniuart_putc(unsigned int c) {
+/*
+	do{
+		asm volatile("nop");
+	}while( ! (mmioget(AUX_MU_LSR) & 0x20) );
+
+	mmioset(mmio+AUX_MU_IO, c);
+*/
 	do{
 		asm volatile("nop");
 	}while(!(*AUX_MU_LSR&0x20));
@@ -55,6 +83,11 @@ void miniuart_putc(unsigned int c) {
 	*AUX_MU_IO = c;
 }
 int miniuart_getc() {
+/*
+	if( ! (mmioget(AUX_MU_LSR) & 0x1) )return 0xffff;
+
+	return mmioget(AUX_MU_IO);
+*/
 	if(!(*AUX_MU_LSR&0x01))return 0xffff;
 
 	return *AUX_MU_IO;
@@ -91,6 +124,16 @@ void initserial()
 {
 	register unsigned int r;
 	mmio = mmiobase();
+
+/*
+	mmioset(AUX_ENABLE, mmioget(AUX_ENABLE) | 1);       // enable UART1, AUX mini uart
+	mmioset(AUX_MU_CNTL, 0);
+	mmioset(AUX_MU_LCR, 3);       // 8 bits
+	mmioset(AUX_MU_MCR, 0);
+	mmioset(AUX_MU_IER, 0);
+	mmioset(AUX_MU_IIR, 0xc6);    // disable interrupts
+	mmioset(AUX_MU_BAUD, CALC_BAUD(115200));    // 115200 baud
+*/
 
 	/* initialize UART */
 	*AUX_ENABLE |= 1;       // enable UART1, AUX mini uart

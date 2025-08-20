@@ -1,8 +1,3 @@
-#define UART0 0x201000
-#define UART2 0x201400
-#define UART3 0x201600
-#define UART4 0x201800
-#define UART5 0x201a00
 //
 #define DR     0x00	//Data Register
 #define RSRECR 0x04	//?

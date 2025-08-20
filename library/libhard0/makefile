@@ -70,7 +70,8 @@ barepi64_c = \
 2soc/chipbcm/rpi/rpi.gpio.c \
 2soc/chipbcm/rpi/rpi.i2c.c \
 2soc/chipbcm/rpi/rpi.spi.c \
-2soc/chipbcm/rpi/rpi.uart.c \
+2soc/chipbcm/rpi/rpi.uart.mini.c \
+2soc/chipbcm/rpi/rpi.uart.pl011.c \
 2soc/chipbcm/rpi/rpi.bt.c \
 2soc/chipbcm/rpi/rpi.pcie.c \
 2soc/chipbcm/rpi/rpi.usb.innerxhci.c \

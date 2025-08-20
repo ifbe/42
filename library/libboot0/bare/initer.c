@@ -1,4 +1,5 @@
 #include "libuser.h"
+void inithardware();
 
 
 
@@ -64,4 +65,7 @@ void birth(void* addr, int size)
 	//libuser
 	supply_init(addr+0xc00000, eachtier);
 	entity_init(addr+0xe00000, eachtier);
+
+	//hardware prepare
+	inithardware();
 }

@@ -1,7 +1,4 @@
 #include "libhard.h"
-//hw
-int inithardware();
-int freehardware();
 //i2c
 _obj* i2c_alloc(u64, u8*);
 int i2c_create(_obj* obj, void*, int, u8**);
@@ -53,8 +50,6 @@ void device_init(u8* addr, int size)
 void device_exit()
 {
 	logtoall("[4,6):device exiting\n");
-
-	freehardware();
 
 	logtoall("[4,6):device exited\n");
 }
