@@ -6,6 +6,8 @@
 #define _hfs_ hex32('h','f','s',0)
 #define _ext_ hex32('e','x','t',0)
 //
+#define _slip_ hex32('s','l','i','p')
+//
 #define _gcode_ hex64('g','c','o','d','e',0,0,0)
 #define _Gcode_ hex64('G','c','o','d','e',0,0,0)
 #define _modbus_ hex64('m','o','d','b','u','s',0,0)
@@ -715,6 +717,15 @@ int partymaster_attach(struct halfrel* self, struct halfrel* peer);
 int partymaster_detach(struct halfrel* self, struct halfrel* peer);
 int partymaster_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len);
 int partymaster_read( _obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len);
+//slip
+int slip_take(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len);
+int slip_give(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len);
+int slip_detach(struct halfrel* self, struct halfrel* peer);
+int slip_attach(struct halfrel* self, struct halfrel* peer);
+int slip_read(_obj* art,void* foot, p64 arg, int idx, void* buf, int len);
+int slip_write(_obj* art,void* foot, p64 arg, int idx, u8* buf, int len);
+int slip_delete(_obj* art);
+int slip_create(_obj* ele, void* arg, int argc, u8** argv);
 //
 int parsetypefromurl(u8* url, u8* type);
 int ncmp(void*, void*, int);
@@ -1178,6 +1189,10 @@ int artery_create(_obj* obj, void* url, int argc, u8** argv)
 	case _party_:
 		partyclient_create(obj, url, argc, argv);
 		break;
+
+	case _slip_:
+		slip_create(obj, url, argc, argv);
+		break;
 	}
 
 	return 0;
@@ -1292,6 +1307,8 @@ int artery_attach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* pe
 
 	case _party_:return partyclient_attach(self, peer);break;
 	case _PARTY_:return partymaster_attach(self, peer);break;
+
+	case _slip_:return slip_attach(self, peer);break;
 	}//switch
 	return 0;
 }
@@ -1386,6 +1403,8 @@ int artery_detach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* pe
 
 	case _party_:return partyclient_detach(self, peer);break;
 	case _PARTY_:return partymaster_detach(self, peer);break;
+
+	case _slip_:return slip_detach(self, peer);break;
 	}//switch
 	return 0;
 }
@@ -1510,6 +1529,8 @@ int artery_takeby(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, vo
 	case _TLS1_3_:tls1v3master_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _Tls1_3_:tls1v3server_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _tls1_3_:tls1v3client_read(art,foot, stack,sp, arg,idx, buf,len);break;
+
+	case _slip_:slip_take(art,foot, stack,sp, arg,idx, buf,len);break;
 	}//switch
 	return 0;
 }
@@ -1634,6 +1655,8 @@ int artery_giveby(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, vo
 	case _TLS1_3_:return tls1v3master_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _Tls1_3_:return tls1v3server_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _tls1_3_:return tls1v3client_write(art,foot, stack,sp, arg,idx, buf,len);break;
+
+	case _slip_:return slip_give(art,foot, stack,sp, arg,idx, buf,len);break;
 	}//switch
 	return 0;
 }

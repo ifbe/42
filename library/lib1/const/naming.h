@@ -110,6 +110,8 @@
 //
 #define _src_ hex32('s','r','c',0)
 #define _dst_ hex32('d','s','t',0)
+#define _pkg_ hex32('p','k','g',0)
+//
 #define _clk_ hex32('c','l','k',0)
 #define _buf_ hex32('b','u','f',0)
 //
