@@ -8,8 +8,11 @@ void pulser(void*);
 void* poller_alloc();
 void poller(void*);
 //
-int pem2der(u8* src, int len, u8* dst, int max);
+int pem2der(u8* src, int len, u8* dst, int* dlen);
+int der2key(u8* src, int len);
 int openreadclose(void* name, int off, void* mem, int len);
+int openwriteclose(void* name, int off, void* mem, int len);
+int mysnprintf(void*, int, void*, ...);
 
 
 static _obj* worker = 0;
@@ -19,9 +22,44 @@ void parse_pem(u8* path)
 {
 	u8 pem[0x10000];
 	u8 der[0x10000];
+	u8 name[128];
 
-	int ret = openreadclose(path, 0, pem, 0x2000);
-	pem2der(pem, ret, der, 0x1000);
+	int filesize = openreadclose(path, 0, pem, 0x2000);
+	logtoall("filesize=%x\n", filesize);
+
+	int dcnt = 0;
+	int dlen = 0;
+	int curr = 0;
+	int used = 0;
+	while(1){
+		used = pem2der(pem+curr, filesize-curr, der, &dlen);
+		logtoall("[%x,%x)%d\n", curr, curr+used, dcnt);
+		if(used <= 0)break;
+
+		//logtoall("dcnt=%d\n", dcnt);
+		printmemory(der, dlen);
+
+		mysnprintf(name, 128, "%d.der", dcnt);
+		openwriteclose(name, 0, der, dlen);
+
+		if(curr+used+10 >= filesize){
+			logtoall("%s: used=%x size=%x\n", __FUNCTION__, curr+used, filesize);
+			break;
+		}
+
+		curr += used;
+		dcnt++;
+	}
+}
+void parse_der(u8* path)
+{
+	u8 der[0x10000];
+	u8 name[128];
+
+	int filesize = openreadclose(path, 0, der, 0x10000);
+	logtoall("%s: filesize=%x\n", __FUNCTION__, filesize);
+
+	der2key(der, filesize);
 }
 int subcmd_eachcmd(struct item* wrk, u8* arg)
 {
@@ -34,6 +72,10 @@ int subcmd_eachcmd(struct item* wrk, u8* arg)
 	}
 	else if(0 == ncmp(arg, "pem", 3)){
 		parse_pem(arg+4);
+		return 0;
+	}
+	else if(0 == ncmp(arg, "der", 3)){
+		parse_der(arg+4);
 		return 0;
 	}
 	else if(0 == ncmp(arg, "myml", 4)){
@@ -101,12 +143,19 @@ int subcmd_eachcmd(struct item* wrk, u8* arg)
 
 void decide_loop_or_exit()
 {
-	int j;
+	int j, cnt=0;
 	_obj* chosen = 0;
 	for(j=-1;j>-16;j--){
-		logtoall("%d@%p: tier=%.8s kind=%.8s type=%.8s vfmt=%.8s\n", j, &worker[j], &worker[j].tier, &worker[j].kind, &worker[j].type, &worker[j].vfmt);
+		//logtoall("%d@%p: tier=%.8s kind=%.8s type=%.8s vfmt=%.8s\n", j, &worker[j], &worker[j].tier, &worker[j].kind, &worker[j].type, &worker[j].vfmt);
 		if( (0 == chosen) && (_main_ == worker[j].vfmt) )chosen = &worker[j];
+		if(0 != worker[j].type)cnt++;
 	}
+
+	if(cnt <= 1){
+		logtoall("no new node created, exit now\n");
+		return;
+	}
+
 	if(0 == chosen){
 		logtoall("main thread not set, create one\n");
 		chosen = bootup_alloc_fromtype(_poller_);

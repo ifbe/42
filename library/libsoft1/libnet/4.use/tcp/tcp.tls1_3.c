@@ -1,6 +1,6 @@
 #include "libsoft.h"
 int openreadclose(void* name, int off, void* mem, int len);
-int pem2der(u8* src, int len, u8* dst, int max);
+int pem2der(u8* src, int len, u8* dst, int* dlen);
 
 
 
@@ -542,6 +542,6 @@ int tls1v3master_create(_obj* art, u8* url)
 	priv->der = memoryalloc(0x10000, 0);
 
 	int ret = openreadclose(url, 0, priv->pem, 0x2000);
-	pem2der(priv->pem, ret, priv->der, 0x1000);
+	pem2der(priv->pem, ret, priv->der, 0);
 	return 0;
 }
