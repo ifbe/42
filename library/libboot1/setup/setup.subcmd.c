@@ -8,10 +8,14 @@ void pulser(void*);
 void* poller_alloc();
 void poller(void*);
 //
+void* style_alloc();
+//
 int pem2der(u8* src, int len, u8* dst, int* dlen);
 int der2key(u8* src, int len);
+//
 int openreadclose(void* name, int off, void* mem, int len);
 int openwriteclose(void* name, int off, void* mem, int len);
+//
 int mysnprintf(void*, int, void*, ...);
 
 
@@ -61,6 +65,26 @@ void parse_der(u8* path)
 
 	der2key(der, filesize);
 }
+void show_pic(u8* path)
+{
+	//1
+	_obj* pic = entity_alloc_fromtype(hex64('p', 'i', 'c', 't', 'u', 'r', 'e', 0));
+	entity_create(pic, path, 0, 0);
+	struct style* mgr_to_wnd = style_alloc();
+
+	//2
+	_obj* wnd = supply_alloc_fromtype(hex32('w','n','d',0));
+	supply_create(wnd, 0, 0, 0);
+	struct style* wnd_to_mgr = style_alloc();
+	wnd_to_mgr->fshape.vc[0] = 0.0;
+	wnd_to_mgr->fshape.vc[1] = 0.0;
+	wnd_to_mgr->fshape.vq[0] = 1.0;
+	wnd_to_mgr->fshape.vq[1] = 1.0;
+
+	//3
+	struct relation* rel0 = relationcreate(pic,mgr_to_wnd, _ent_,0, wnd,wnd_to_mgr, _sup_,0);
+	relationattach((void*)&rel0->srcchip, (void*)&rel0->dstchip);
+}
 int subcmd_eachcmd(struct item* wrk, u8* arg)
 {
 	void* thr = 0;
@@ -76,6 +100,12 @@ int subcmd_eachcmd(struct item* wrk, u8* arg)
 	}
 	else if(0 == ncmp(arg, "der", 3)){
 		parse_der(arg+4);
+		return 0;
+	}
+	else if(0 == ncmp(arg, "pic", 3)){
+		show_pic(arg+4);
+		void* p = poller_alloc();
+		if(p)poller(p);
 		return 0;
 	}
 	else if(0 == ncmp(arg, "myml", 4)){
@@ -109,14 +139,17 @@ int subcmd_eachcmd(struct item* wrk, u8* arg)
 	else if(0 == ncmp(arg, "waiter", 6)){
 		void* p = waiter_alloc();
 		if(p)waiter(p);
+		return 0;
 	}
 	else if(0 == ncmp(arg, "pulser", 6)){
 		void* p = pulser_alloc();
 		if(p)pulser(p);
+		return 0;
 	}
 	else if(0 == ncmp(arg, "poller", 6)){
 		void* p = poller_alloc();
 		if(p)poller(p);
+		return 0;
 	}
 
 	int j;

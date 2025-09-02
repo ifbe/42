@@ -1,5 +1,6 @@
 #include "libuser.h"
 #define CTXBUF priv_ptr
+void gl41data_whcam(_obj* wnd, struct style* area);
 void gl41data_insert(_obj* ctx, int type, struct mysrc* src, int cnt);
 
 
@@ -170,21 +171,54 @@ static void picture_read_byworld_bycam_bywnd(_obj* ent,void* foot, _syn* stack,i
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	picture_draw_gl41(ent,foot, wor,geom, wnd,area);
 }
-
-
-
-
-static void picture_taking(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
+static void picture_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct style* area)
 {
-	_obj* wnd = stack[sp-2].pchip;
+	int j;
+	struct fstyle fs;
+
+	switch(wnd->vfmt){
+	case _tui_:
+	case _tui256_:
+		break;
+	case _rgba8888_:
+	case _bgra8888_:
+		break;
+	case _dx11list_:
+	case _mt20list_:
+	case _vk12list_:
+		break;
+	case _gl41list_:
+		for(j=0;j<3;j++)fs.vc[j] = fs.vr[j] = fs.vf[j] = fs.vt[j] = 0.0;
+		fs.vc[0] = (area->fs.vc[0]+area->fs.vq[0]) * wnd->whdf.fbwidth / 2.0;
+		fs.vc[1] = (area->fs.vc[1]+area->fs.vq[1]) * wnd->whdf.fbheight / 2.0;
+		fs.vr[0] = (area->fs.vq[0]-area->fs.vc[0]) * wnd->whdf.fbwidth / 2.0;
+		fs.vf[1] = (area->fs.vq[1]-area->fs.vc[1]) * wnd->whdf.fbheight/ 2.0;
+		fs.vt[2] = 1.0;
+		gl41data_before(wnd);
+		gl41data_whcam(wnd, area);
+		picture_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+		gl41data_after(wnd);
+		break;
+	}
+}
+
+
+
+
+static void picture_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
+{
+	_obj* caller = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->type){
+	int j;
+	struct fstyle fs;
+	switch(caller->type){
 	case _wnd_:
 	case _render_:
+		picture_read_bywnd(ent,slot, caller,area);
 		break;
 	default:
-		picture_read_byworld_bycam_bywnd(ent,foot, stack,sp);
+		picture_read_byworld_bycam_bywnd(ent,slot, stack,sp);
 		break;
 	}
 }

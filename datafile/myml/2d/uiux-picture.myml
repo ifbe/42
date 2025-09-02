@@ -1,7 +1,7 @@
 <entity>
 picture{
 fmt:picture
-arg:datafile/jpg/earth.jpg
+arg:datafile/jpg/earth/earth-albedo-2048.jpg
 }
 freecam{
 fmt:freecam
@@ -57,9 +57,10 @@ q:1.0, 1.0
 
 <relation>
 #virtual depends on inner objects
-(virtual, skygeom, 0) -> (picture, skyhaha, 0)
-(virtual, freegeom, 0) -> (freecam, freemodl, 0)
+#(virtual, skygeom, 0) -> (picture, skyhaha, 0)
+#(virtual, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on ctx + cam
-(opengl, freerect, 0) -> (freecam, freefrus, 0)
+#(opengl, freerect, 0) -> (freecam, freefrus, 0)
+(opengl, freerect, 0) -> (picture, freefrus, 0)
 </relation>
