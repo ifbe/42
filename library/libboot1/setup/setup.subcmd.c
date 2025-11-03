@@ -10,6 +10,12 @@ void poller(void*);
 //
 void* style_alloc();
 //
+void md5sum(u8* dst, u8* src, int len);
+void sha1sum(u8* dst, u8* src, int len);
+void sha256sum(u8* dst, u8* src, int len);
+void sha512sum(u8* dst, u8* src, int len);
+u32 crc32(u32 crc, u8* buf, u32 len);
+//
 int pem2der(u8* src, int len, u8* dst, int* dlen);
 int der2key(u8* src, int len);
 //
@@ -58,12 +64,39 @@ void parse_pem(u8* path)
 void parse_der(u8* path)
 {
 	u8 der[0x10000];
-	u8 name[128];
-
 	int filesize = openreadclose(path, 0, der, 0x10000);
 	logtoall("%s: filesize=%x\n", __FUNCTION__, filesize);
 
 	der2key(der, filesize);
+}
+void calc_hash(u8* path)
+{
+	u8 data[0x10000];
+	int size = openreadclose(path, 0, data, 0x10000);
+	logtoall("%s: filesize=%x\n", __FUNCTION__, size);
+
+	u8 md5val[16];
+	md5sum(md5val, data, size);
+	logtoall("md5=\n");
+	printmemory(md5val, 16);
+
+	u8 sha1val[20];
+	sha1sum(sha1val, data, size);
+	logtoall("sha1=\n");
+	printmemory(sha1val, 20);
+
+	u8 sha256val[32];
+	sha256sum(sha256val, data, size);
+	logtoall("sha256=\n");
+	printmemory(sha256val, 32);
+
+	u8 sha512val[32];
+	sha512sum(sha512val, data, size);
+	logtoall("sha512val=\n");
+	printmemory(sha512val, 64);
+
+	u32 crc32val = crc32(0, data, size);
+	logtoall("crc32=%x\n", crc32val);
 }
 void show_pic(u8* path)
 {
@@ -100,6 +133,10 @@ int subcmd_eachcmd(struct item* wrk, u8* arg)
 	}
 	else if(0 == ncmp(arg, "der", 3)){
 		parse_der(arg+4);
+		return 0;
+	}
+	else if(0 == ncmp(arg, "hash=", 4)){
+		calc_hash(arg+5);
 		return 0;
 	}
 	else if(0 == ncmp(arg, "pic", 3)){
