@@ -221,13 +221,19 @@ static void fslist_draw_gl41(
 				tr[j] = kr[j]*scale;
 				tf[j] = kf[j]*scale;
 			}
-			gl41solid_rect(wnd, bg, tc,tr,tf);
-
+			gl41solid_rect(wnd, bg|0x3f000000, tc,tr,tf);
+// if(cnt==0){
+// 	logtoall("%f,%f,%f\n", tc[0],tc[1],tc[2]);
+// }
 			for(j=0;j<3;j++){
 				tc[j] += vt[j]/100.0;
-				//tr[j] *= 0.25;
-				//tf[j] *= 0.25;
+				//tr[j] /= 2;
+				//tf[j] /= 2;
 			}
+// if(cnt==0){
+// 	logtoall("%f,%f,%f\n", tc[0],tc[1],tc[2]);
+// }
+			//gl41solid_rect(wnd, 0xffff, tc,tr,tf);
 			//gl41string_center(wnd,fg, tc,tr,tf, list->buf+head,tail-head);
 			gl41string_center_linebreak(wnd,fg, tc,tr,tf, 0.25, 0.25, list->buf+head,tail-head);
 

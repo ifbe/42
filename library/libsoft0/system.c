@@ -126,6 +126,14 @@ void system_recycle()
 }
 void* system_alloc()
 {
+	/*
+	if(mempool){
+		alloc_mempool()
+	}
+	else{	//use default
+		memoryalloc();
+	}
+	*/
 	void* addr = &sysobj[objlen];
 	objlen -= 1;
 	return addr;

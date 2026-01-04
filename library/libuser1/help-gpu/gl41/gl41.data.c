@@ -92,7 +92,8 @@ void gl41data_whcam(_obj* wnd, struct fstyle* area)
 		v[y] = 0.0;
 	}
 
-	//x@[0,w), y@[0,h), z@[0,1024) -> x@[-1,1], y@[-1,1], z@[0.9,0.1]
+	//reverse-z: low=-1,high=1 -> far=0,near=1
+	//x@[0,w), y@[0,h), z@[0,0) -> x@[-1,1], y@[-1,1], z@[0,1]
 	v[0] = wnd->whdf.fbwidth/2;
 	v[1] = wnd->whdf.fbheight/2;
 	v[2] = 500.0;
@@ -100,9 +101,12 @@ void gl41data_whcam(_obj* wnd, struct fstyle* area)
 	m[0][3] =-1.0;
 	m[1][1] = 2.0 / ((area->vq[1]-area->vc[1]) * wnd->whdf.fbheight);
 	m[1][3] =-1.0;
-	m[2][2] =-0.8 / 2;
-	m[2][3] = 0.9;
+	m[2][2] = 0.5;
+	m[2][3] = 0.5;
 	m[3][3] = 1.0;
+	// for(y=0;y<4;y++){
+	// 	logtoall("%f,%f,%f,%f\n", m[y][0], m[y][1], m[y][2], m[y][3]);
+	// }
 	mat4_transpose(m);
 	//logtoall("%f,%f\n", m[0][0], m[1][1]);
 

@@ -23,6 +23,7 @@ struct httpparsed{
 };
 void httpparser(u8* buf, int len, struct httpparsed* p)
 {
+	//logtoall("%.*s\n", len, buf);
 	int j,k;
 	p->GET = 0;
 	p->POST = 0;
@@ -324,7 +325,7 @@ int httpmaster_write_bysrc(_obj* art,void* foot, _syn* stack,int sp, p64 arg, in
 }
 int httpmaster_write(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len)
 {
-	logtoall("@httpmaster_write:%p,%p\n", art, foot);
+	logtoall("@httpmaster_write:obj=%p foot=%.4s@%p len=%x\n", art, &stack[sp-1].foottype,foot, len);
 	switch(stack[sp-1].foottype){
 	case _dst_:return httpmaster_write_bydst(art,foot, stack,sp, arg,idx, buf,len);
 	default:return httpmaster_write_bysrc(art,foot, stack,sp, arg,idx, buf,len);
@@ -341,6 +342,7 @@ int httpmaster_detach(struct halfrel* self, struct halfrel* peer)
 }
 int httpmaster_attach(struct halfrel* self, struct halfrel* peer)
 {
+	logtoall("%s\n", __FUNCTION__);
 	return 0;
 }
 int httpmaster_delete(_obj* ele)
@@ -349,5 +351,6 @@ int httpmaster_delete(_obj* ele)
 }
 int httpmaster_create(_obj* ele, u8* url)
 {
+	logtoall("%s\n", __FUNCTION__);
 	return 0;
 }

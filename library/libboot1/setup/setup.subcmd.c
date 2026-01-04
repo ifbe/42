@@ -118,6 +118,20 @@ void show_pic(u8* path)
 	struct relation* rel0 = relationcreate(pic,mgr_to_wnd, _ent_,0, wnd,wnd_to_mgr, _sup_,0);
 	relationattach((void*)&rel0->srcchip, (void*)&rel0->dstchip);
 }
+void serve_webapp()
+{
+	_obj* sys = system_alloc_frompath(_TCP_, (u8*)"0.0.0.0:9999");
+
+	_obj* art = artery_alloc_fromtype(_HTTP_);
+	artery_create(art, 0, 0, 0);
+
+	struct relation* rel0 = relationcreate(art,0, _art_, _src_, sys,0, _sys_, _dst_);
+	relationattach((void*)&rel0->srcchip, (void*)&rel0->dstchip);
+
+	_obj* thr = bootup_alloc_fromtype(_poller_);
+	bootup_create(thr, 0, 0, 0);
+	bootup_delete(thr);
+}
 int subcmd_eachcmd(struct item* wrk, u8* arg)
 {
 	void* thr = 0;
@@ -171,6 +185,10 @@ int subcmd_eachcmd(struct item* wrk, u8* arg)
 		thr = bootup_alloc_fromtype(_guiapp_);
 		bootup_create(thr, 0, 1, &arg);
 		bootup_delete(thr);
+		return 0;
+	}
+	else if(0 == ncmp(arg, "webapp", 6)){
+		serve_webapp();
 		return 0;
 	}
 	else if(0 == ncmp(arg, "waiter", 6)){
