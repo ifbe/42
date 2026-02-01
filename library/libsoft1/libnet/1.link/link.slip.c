@@ -41,7 +41,7 @@ int slip_decode(u8* buf, int len, struct privdata* priv)
 {
 	priv->status = status_wait;
 
-	int j;
+	int j=0;
 	for(int j=0;j<len;j++){
 		if(0xdb == priv->lastbyte){
 			if(0xdc == buf[j]){

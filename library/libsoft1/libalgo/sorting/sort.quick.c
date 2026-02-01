@@ -6,7 +6,7 @@
 
 
 
-void inline sort_quick_swap(u8* a, u8* b)
+static void sort_quick_swap(u8* a, u8* b)
 {
 	u8 tmp = *a;
 	*a = *b;

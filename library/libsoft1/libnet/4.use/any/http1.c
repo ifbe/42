@@ -224,21 +224,33 @@ int httpmaster_write_bydst(_obj* art,void* foot, _syn* stack,int sp, p64 arg, in
 	int ret;
 	u8 tmp[0x400];
 
-if(0 == idx){
-	struct httpparsed* parsed = (void*)arg;
+	if(idx){	//need response header
+		if(arg){	//arg is response header
+			struct httpparsed* parsed = (void*)arg;
 
-	char* type = "text/plain";
-	if(parsed->Content_Type)type = (char*)parsed->Content_Type;
+			char* type = "text/plain";
+			if(parsed->Content_Type)type = (char*)parsed->Content_Type;
 
-	ret = mysnprintf(tmp, 0x1000,
-		"HTTP/1.1 200 OK\r\n"
-		"Content-type: %s\r\n"
-		"Content-Length: %d\r\n"
-		"\r\n",
-		type, parsed->Content_Length
-	);
-	give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
-}
+			ret = mysnprintf(tmp, 0x1000,
+				"HTTP/1.1 200 OK\r\n"
+				"Content-type: %s\r\n"
+				"Content-Length: %d\r\n"
+				"\r\n",
+				type, parsed->Content_Length
+			);
+			give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
+		}
+		else{	//no arg, treat as plain text
+			ret = mysnprintf(tmp, 0x1000,
+				"HTTP/1.1 200 OK\r\n"
+				"Content-type: text/plain\r\n"
+				"Content-Length: %d\r\n"
+				"\r\n",
+				len
+			);
+			give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
+		}
+	}
 	give_data_into_peer(art,_src_, stack,sp, 0,0, buf,len);
 	return 0;
 }

@@ -125,8 +125,14 @@ void serve_webapp()
 	_obj* art = artery_alloc_fromtype(_HTTP_);
 	artery_create(art, 0, 0, 0);
 
+	_obj* app = entity_alloc_fromtype(hex64('f','s','l','i','s','t',0,0));
+	entity_create(app, 0, 0, 0);
+
 	struct relation* rel0 = relationcreate(art,0, _art_, _src_, sys,0, _sys_, _dst_);
 	relationattach((void*)&rel0->srcchip, (void*)&rel0->dstchip);
+
+	struct relation* rel1 = relationcreate(app,0, _ent_, _src_, art,0, _art_, _dst_);
+	relationattach((void*)&rel1->srcchip, (void*)&rel1->dstchip);
 
 	_obj* thr = bootup_alloc_fromtype(_poller_);
 	bootup_create(thr, 0, 0, 0);

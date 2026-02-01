@@ -270,6 +270,16 @@ static void fslist_read_bywnd(_obj* ent,struct style* slot, _obj* wnd,struct sty
 }
 
 
+static void fslist_write_byhttp(_obj* ent,void* foot, _syn* stack,int sp)
+{
+	struct privdata* priv = (void*)ent->priv_256b;
+	struct str* path = priv->pathbuf;
+	struct str* list = priv->listbuf;
+	list->len = readfolder(path->buf,0, 0,0, list->buf,0x10000);
+	//logtoall("%s\n", list->buf);
+
+	give_data_into_peer(ent,_src_, stack,sp, 0,1, list->buf, list->len);
+}
 
 
 static void fslist_taking(_obj* ent,void* slot, _syn* stack,int sp, p64 arg,int key, void* buf,int len)
@@ -298,6 +308,9 @@ static void fslist_giving(_obj* ent,void* foot, _syn* stack,int sp, p64 arg,int 
 	case _wnd_:
 	case _render_:
 		if(0 == key)fslist_write_bywnd(ent,slot, wnd,area, buf);
+		break;
+	case _HTTP_:
+		fslist_write_byhttp(ent,foot, stack,sp);
 		break;
 	}
 }
