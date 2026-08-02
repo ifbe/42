@@ -254,8 +254,8 @@ logtoall("3\n");
 	void* s5 = artery_alloc_fromtype(_Socks_);
 	if(0 == s5)return 0;
 	artery_create(s5, 0, 0, 0);
-	relationcreate(s5, 0, _art_, 'a', child, 0, _sys_, _dst_);
-	relationcreate(s5, 0, _art_, 'b', sys, 0, _sys_, _dst_);
+	relationcreate(child, 0, _sys_, _dst_, s5, 0, _art_, 'a');
+	relationcreate(sys, 0, _sys_, _dst_, s5, 0, _art_, 'b');
 logtoall("4\n");
 	//tell client, ok now
 	give_data_into_peer(art,_src_, stack,sp, arg,idx, socks5_server1,10);

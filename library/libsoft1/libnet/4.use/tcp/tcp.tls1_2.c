@@ -1169,7 +1169,7 @@ int tls1v2master_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int 
 	if(0 == ele)return 0;
 	artery_create(ele, 0, 0, 0);
 
-	relationcreate(ele, 0, _art_, _src_, child, 0, _sys_, _dst_);
+	relationcreate(child, 0, _sys_, _dst_, ele, 0, _art_, _src_);
 	stack[sp-2].pchip = child;
 	stack[sp-1].pchip = ele;
 	stack[sp-1].foottype = _src_;

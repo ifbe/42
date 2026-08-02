@@ -30,9 +30,8 @@ depth:1024
 
 
 <artery>
-reline{
-fmt:reline
-}
+reline1:reline{}
+reline2:reline{}
 conv{
 fmt:str2vec
 }
@@ -108,9 +107,12 @@ q:1.0, 1.0
 (@virtual, @freegeom) -> (@freecam, @freemodl)
 
 #glwnd depends on cam
-(@opengl, mvp@freerect) -> (@freecam, 0)
+(@udphost, dst) -> (@reline1, src)
+(@reline1, dst) -> (@conv, str)
 
-(@uart, dst) -> (@reline, src)
-(@reline, dst) -> (@conv, str)
+(@uart, dst) -> (@reline2, src)
+(@reline2, dst) -> (@conv, str)
+
 (@conv, vec) -> (@drone, quat)
+(@opengl, mvp@freerect) -> (@freecam, 0)
 </relation>

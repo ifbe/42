@@ -66,7 +66,7 @@ int filemanager_registerpart(_obj* node, void* foot)
 			if(0 == fsys)continue;
 			artery_create(fsys, 0, 0, 0);
 
-			rel = relationcreate(fsys,0,_art_,_src_, node,(void*)(tmp[j].start<<9),_art_,_dst_);
+			rel = relationcreate(node,(void*)(tmp[j].start<<9),_art_,_dst_, fsys,0,_art_,_src_);
 			if(0 == rel)continue;
 
 			relationattach((void*)&rel->dst, (void*)&rel->src);
@@ -92,7 +92,7 @@ int filemanager_registerdisk(void* node, void* foot)
 	if(0 == tmp)return -1;
 	artery_create(tmp, 0, 0, 0);
 
-	struct relation* rel = relationcreate(tmp,0,_art_,_src_, node,foot,_dev_,_dst_);
+	struct relation* rel = relationcreate(node,foot,_dev_,_dst_, tmp,0,_art_,_src_);
 	if(0 == rel)return -2;
 	relationattach((void*)&rel->dst, (void*)&rel->src);
 

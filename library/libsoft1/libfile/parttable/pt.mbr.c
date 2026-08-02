@@ -151,7 +151,7 @@ int mount_mbr_one(_obj* art, struct mbrpart* part)
 		if(0 == tmp)return 0;
 		artery_create(tmp, 0,0, 0);
 
-		struct relation* rel = relationcreate(tmp,0,_art_,_src_, art,(void*)(start<<9),_art_,_dst_);
+		struct relation* rel = relationcreate(art,(void*)(start<<9),_art_,_dst_, tmp,0,_art_,_src_);
 		if(0 == rel)return 0;
 		relationattach((void*)&rel->dst, (void*)&rel->src);
 		break;

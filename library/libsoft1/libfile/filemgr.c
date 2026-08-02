@@ -122,7 +122,7 @@ int file_mount_part(_obj* ptbl, u64 pf){
 			if(0 == fsys)continue;
 			artery_create(fsys, 0, 0, 0);
 
-			rel = relationcreate(fsys,0,_art_,_src_, ptbl,(void*)(tmp[j].start<<9),_art_,_dst_);
+			rel = relationcreate(ptbl,(void*)(tmp[j].start<<9),_art_,_dst_, fsys,0,_art_,_src_);
 			if(0 == rel)continue;
 
 			relationattach((void*)&rel->dst, (void*)&rel->src);
@@ -151,7 +151,7 @@ int file_mount_raw(_obj* disk, void* df){
 	if(0 == tmp)return -1;
 	artery_create(tmp, 0, 0, 0);
 
-	struct relation* rel = relationcreate(tmp,0,_art_,_src_, disk,df,_dev_,_dst_);
+	struct relation* rel = relationcreate(disk,df,_dev_,_dst_, tmp,0,_art_,_src_);
 	if(0 == rel)return -2;
 	relationattach((void*)&rel->dst, (void*)&rel->src);
 

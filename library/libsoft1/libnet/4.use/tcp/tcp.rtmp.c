@@ -91,7 +91,7 @@ int rtmpmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int id
 	if(0 == tel)return 0;
 	artery_create(tel, 0, 0, 0);
 
-	relationcreate(tel, 0, _art_, _src_, child, 0, _sys_, _dst_);
+	relationcreate(child, 0, _sys_, _dst_, tel, 0, _art_, _src_);
 	return 0;
 }
 int rtmpmaster_detach(struct halfrel* self, struct halfrel* peer)

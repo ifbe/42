@@ -956,8 +956,8 @@ void overview_drag(_obj* win, int x0, int y0, int x1, int y1)
 			act_d = &entity[x1+(y1*16)];
 			if((act_d->type) && (act_s->type)){
 				relationcreate(
-					act_d, 0, _ent_, 0,
-					act_s, 0, _ent_, 0
+					act_s, 0, _ent_, 0,
+					act_d, 0, _ent_, 0
 				);
 			}
 			else if(0 == act_s->type){
@@ -999,8 +999,8 @@ void overview_drag(_obj* win, int x0, int y0, int x1, int y1)
 			win_d = &supply[x1 + (y1-8)*16];
 			if((win_d->type) && (win_s->type)){
 				relationcreate(
-					win_d, 0, _sup_, 0,
-					win_s, 0, _sup_, 0
+					win_s, 0, _sup_, 0,
+					win_d, 0, _sup_, 0
 				);
 			}
 /*			else if(win_s->type){
@@ -1026,17 +1026,17 @@ void overview_drag(_obj* win, int x0, int y0, int x1, int y1)
 		else if(y1 < 8)
 		{
 			act_d = &entity[x1 + (y1*16)];
-			relationcreate(act_d, 0, _ent_, 0, ele_s, 0, _art_, 0);
+			relationcreate(ele_s, 0, _art_, 0, act_d, 0, _ent_, 0);
 		}
 		else if(y1 < 16)
 		{
 			win_d = &supply[x1 + (y1-8)*16];
-			relationcreate(win_d, 0, _sup_, 0, ele_s, 0, _art_, 0);
+			relationcreate(ele_s, 0, _art_, 0, win_d, 0, _sup_, 0);
 		}
 		else if(y1 < 24)
 		{
 			ele_d = &ele[x1 + (y1-16)*16];
-			relationcreate(ele_d, 0, _art_, 0, ele_s, 0, _art_, 0);
+			relationcreate(ele_s, 0, _art_, 0, ele_d, 0, _art_, 0);
 		}
 		else if(y1 < 32)
 		{
@@ -1057,17 +1057,17 @@ void overview_drag(_obj* win, int x0, int y0, int x1, int y1)
 		else if(y1 < 8)
 		{
 			act_d = &entity[x1+(y1*16)];
-			relationcreate(act_d, 0, _ent_, 0, obj_s, 0, _sys_, 0);
+			relationcreate(obj_s, 0, _sys_, 0, act_d, 0, _ent_, 0);
 		}
 		else if(y1 < 16)
 		{
 			win_d = &supply[x1 + (y1-8)*16];
-			relationcreate(win_d, 0, _sup_, 0, obj_s, 0, _sys_, 0);
+			relationcreate(obj_s, 0, _sys_, 0, win_d, 0, _sup_, 0);
 		}
 		else if(y1 < 24)
 		{
 			ele_d = &ele[x1 + (y1-16)*16];
-			relationcreate(ele_d, 0, _art_, 0, obj_s, 0, _sys_, 0);
+			relationcreate(obj_s, 0, _sys_, 0, ele_d, 0, _art_, 0);
 		}
 		else if(y1 < 32)
 		{

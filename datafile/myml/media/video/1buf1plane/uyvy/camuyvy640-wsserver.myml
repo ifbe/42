@@ -1,0 +1,34 @@
+<system>
+tcphost{
+fmt:TCP
+arg:``:9999
+}
+</system>
+
+
+<artery>
+server{
+fmt:WS
+}
+goslow{
+fmt:goslow
+}
+dbghex{
+fmt:dbghex
+}
+</artery>
+
+
+<supply>
+usbcam{
+fmt:cam
+}
+</supply>
+
+
+<relation>
+(@usbcam, dst) -> (@goslow, src)
+
+(@tcphost, dst) -> (@server, src)
+(@server, tar) -> (@goslow, dst)
+</relation>

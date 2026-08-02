@@ -100,7 +100,7 @@ int tcptravclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg,int 
 			system_create(ccc, tmp, 0, 0);
 			logtoall("ccc=%llx\n",ccc);
 			if(ccc){
-				relationcreate(art, 0, _art_, _ccc_, ccc, 0, _sys_, _dst_);
+				relationcreate(ccc, 0, _sys_, _dst_, art, 0, _art_, _ccc_);
 				break;
 			}
 			sleep_us(1000*1000);
@@ -115,7 +115,7 @@ int tcptravclient_write(_obj* art,void* foot, _syn* stack,int sp, void* arg,int 
 		sss = system_alloc_frompath(_TCP_, (u8*)tmp);
 		if(sss){
 			system_create(sss, tmp, 0, 0);
-			relationcreate(art, 0, _art_, _sss_, sss, 0, _sys_, _dst_);
+			relationcreate(sss, 0, _sys_, _dst_, art, 0, _art_, _sss_);
 		}
 
 		art->vfmt = _c_friend_;

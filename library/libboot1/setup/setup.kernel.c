@@ -69,13 +69,13 @@ static void kernel_wndctx(_obj* wnd)
 
 	//relation
 	struct relation* rel;
-	rel = relationcreate(termnode,termfoot, _ent_,0, wnd,toterm, _ent_,0);
+	rel = relationcreate(wnd,toterm, _ent_,0, termnode,termfoot, _ent_,0);
 	relationattach((void*)&rel->srcchip, (void*)&rel->dstchip);
 
-	//rel = relationcreate(gamenode,gamefoot, _ent_,0, wnd,togame, _ent_,0);
+	//rel = relationcreate(wnd,togame, _ent_,0, gamenode,gamefoot, _ent_,0);
 	//relationattach((void*)&rel->srcchip, (void*)&rel->dstchip);
 
-	//rel = relationcreate(editnode,editfoot, _ent_,0, wnd,toedit, _ent_,0);
+	//rel = relationcreate(wnd,toedit, _ent_,0, editnode,editfoot, _ent_,0);
 	//relationattach((void*)&rel->srcchip, (void*)&rel->dstchip);
 }
 

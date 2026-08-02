@@ -51,34 +51,35 @@ void quaternion_multiply(float* l, float* r)
 }
 void quaternion_rotatefrom(float* o, float* v, float* q)
 {
-	//t = 2 * cross(q.xyz, v)
-	//v' = v + q.w * t + cross(q.xyz, t)
-	float t[3];
-	t[0] = (q[1]*v[2]-q[2]*v[1]) * 2;
-	t[1] = (q[2]*v[0]-q[0]*v[2]) * 2;
-	t[2] = (q[0]*v[1]-q[1]*v[0]) * 2;
+	float qx = q[0];
+	float qy = q[1];
+	float qz = q[2];
+	float qw = q[3];
 
-	o[0] = v[0] + q[3]*t[0] + q[1]*t[2]-q[2]*t[1];
-	o[1] = v[1] + q[3]*t[1] + q[2]*t[0]-q[0]*t[2];
-	o[2] = v[2] + q[3]*t[2] + q[0]*t[1]-q[1]*t[0];
+	//t = 2 * cross(q.xyz, v)
+	float t[3];
+	t[0] = (qy*v[2]-qz*v[1]) * 2;
+	t[1] = (qz*v[0]-qx*v[2]) * 2;
+	t[2] = (qx*v[1]-qy*v[0]) * 2;
+
+	//v' = v + q.w * t + cross(q.xyz, t)
+	o[0] = v[0] + qw*t[0] + qy*t[2]-qz*t[1];
+	o[1] = v[1] + qw*t[1] + qz*t[0]-qx*t[2];
+	o[2] = v[2] + qw*t[2] + qx*t[1]-qy*t[0];
 }
 void quaternion_integral(float* q, float* w)
 {
-#define qx q[0]
-#define qy q[1]
-#define qz q[2]
-#define qw q[3]
-#define wx w[0]
-#define wy w[1]
-#define wz w[2]
-	float px = qx;
-	float py = qy;
-	float pz = qz;
-	float pw = qw;
-	qx += (  0 *px +wz *py -wy *pz +wx *pw);
-	qy += (-wz *px + 0 *py +wx *pz +wy *pw);
-	qz += ( wy *px -wx *py + 0 *px +wz *pw);
-	qw += (-wx *px -wy *py -wz *pz + 0 *pw);
+	float wx = w[0];
+	float wy = w[1];
+	float wz = w[2];
+	float qx = q[0];
+	float qy = q[1];
+	float qz = q[2];
+	float qw = q[3];
+	q[0] += (  0 *qx +wz *qy -wy *qz +wx *qw);
+	q[1] += (-wz *qx + 0 *qy +wx *qz +wy *qw);
+	q[2] += ( wy *qx -wx *qy + 0 *qx +wz *qw);
+	q[3] += (-wx *qx -wy *qy -wz *qz + 0 *qw);
 }
 //v <- v, q
 void quaternion_rotate(float* v, float* q)
@@ -173,16 +174,21 @@ void quaternion4axisandangle(float* q, float* a, float angle)
 //in(qx,qy,qz,qw) -> out(pitch_x,roll_y,yaw_z)
 void quaternion2eulerian(float* q, float* e)
 {
+	float qx = q[0];
+	float qy = q[1];
+	float qz = q[2];
+	float qw = q[3];
+
 	//atan2(2(xw+yz), 1-2(xx+yy))
-	e[0] = arctanyx( (q[0]*q[3]+q[1]*q[2])*2 , 1-(q[0]*q[0]+q[1]*q[1])*2 );
+	e[0] = arctanyx( (qx*qw + qy*qz)*2 , 1-(qx*qx + qy*qy)*2 );
 	e[0] *= 180.0/PI;
 
 	//atan2(2(zw+xy), 1-2(yy+zz))
-	e[2] = arctanyx( (q[2]*q[3]+q[0]*q[1])*2 , 1-(q[1]*q[1]+q[2]*q[2])*2 );
+	e[2] = arctanyx( (qz*qw + qx*qy)*2 , 1-(qy*qy + qz*qz)*2 );
 	e[2] *= 180.0/PI;
 
 	//asin(2(yw-xz))
-	e[1] = arcsin(  (q[1]*q[3]-q[0]*q[2])*2 );
+	e[1] = arcsin(  (qy*qw - qx*qz)*2 );
 	e[1] *= 180.0/PI;
 }
 //out(qx,qy,qz,qw) <- in(pitch_x,roll_y,yaw_z)
@@ -206,39 +212,47 @@ void quaternion4eulerian(float* q, float* e)
 
 void quaternion2worldspacebodyaxis(float* q, float* r, float* f, float* t)
 {
+	float qx = q[0];
+	float qy = q[1];
+	float qz = q[2];
+	float qw = q[3];
 	if(r){
-	r[0] = 1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0;
-	r[1] =       (q[0]*q[1] + q[2]*q[3]) * 2.0;
-	r[2] =       (q[0]*q[2] - q[1]*q[3]) * 2.0;
+	r[0] = 1.0 - (qy*qy + qz*qz) * 2.0;
+	r[1] =       (qx*qy + qz*qw) * 2.0;
+	r[2] =       (qx*qz - qy*qw) * 2.0;
 	}
 	if(f){
-	f[0] =       (q[0]*q[1] - q[2]*q[3]) * 2.0;
-	f[1] = 1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0;
-	f[2] =       (q[1]*q[2] + q[0]*q[3]) * 2.0;
+	f[0] =       (qx*qy - qz*qw) * 2.0;
+	f[1] = 1.0 - (qx*qx + qz*qz) * 2.0;
+	f[2] =       (qy*qz + qx*qw) * 2.0;
 	}
 	if(t){
-	t[0] =       (q[0]*q[2] + q[1]*q[3]) * 2.0;
-	t[1] =       (q[1]*q[2] - q[0]*q[3]) * 2.0;
-	t[2] = 1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0;
+	t[0] =       (qx*qz + qy*qw) * 2.0;
+	t[1] =       (qy*qz - qx*qw) * 2.0;
+	t[2] = 1.0 - (qx*qx + qy*qy) * 2.0;
 	}
 }
 
 void quaternion2bodyspaceworldaxis(float* q, float* r, float* f, float* t)
 {
+	float qx = q[0];
+	float qy = q[1];
+	float qz = q[2];
+	float qw = q[3];
 	if(r){
-	r[0] = 1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0;
-	r[1] =       (q[0]*q[1] - q[2]*q[3]) * 2.0;
-	r[2] =       (q[0]*q[2] + q[1]*q[3]) * 2.0;
+	r[0] = 1.0 - (qy*qy + qz*qz) * 2.0;
+	r[1] =       (qx*qy - qz*qw) * 2.0;
+	r[2] =       (qx*qz + qy*qw) * 2.0;
 	}
 	if(f){
-	f[0] =       (q[0]*q[1] + q[2]*q[3]) * 2.0;
-	f[1] = 1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0;
-	f[2] =       (q[1]*q[2] - q[0]*q[3]) * 2.0;
+	f[0] =       (qx*qy + qz*qw) * 2.0;
+	f[1] = 1.0 - (qx*qx + qz*qz) * 2.0;
+	f[2] =       (qy*qz - qx*qw) * 2.0;
 	}
 	if(t){
-	t[0] =       (q[0]*q[2] - q[1]*q[3]) * 2.0;
-	t[1] =       (q[1]*q[2] + q[0]*q[3]) * 2.0;
-	t[2] = 1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0;
+	t[0] =       (qx*qz - qy*qw) * 2.0;
+	t[1] =       (qy*qz + qx*qw) * 2.0;
+	t[2] = 1.0 - (qx*qx + qy*qy) * 2.0;
 	}
 }
 
@@ -247,17 +261,22 @@ void quaternion2matthree(float* q, float* m)
 {
 	//not change axis: r=m[*][0], f=m[*][1], t=m[*][2]
 	//    change axis: r=m[0][*], f=m[1][*], t=m[2][*]
-	m[0] = 1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0;
-	m[1] =       (q[0]*q[1] - q[2]*q[3]) * 2.0;
-	m[2] =       (q[0]*q[2] + q[1]*q[3]) * 2.0;
+	float qx = q[0];
+	float qy = q[1];
+	float qz = q[2];
+	float qw = q[3];
 
-	m[3] =       (q[0]*q[1] + q[2]*q[3]) * 2.0;
-	m[4] = 1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0;
-	m[5] =       (q[1]*q[2] - q[0]*q[3]) * 2.0;
+	m[0] = 1.0 - (qy*qy + qz*qz) * 2.0;
+	m[1] =       (qx*qy - qz*qw) * 2.0;
+	m[2] =       (qx*qz + qy*qw) * 2.0;
 
-	m[6] =       (q[0]*q[2] - q[1]*q[3]) * 2.0;
-	m[7] =       (q[1]*q[2] + q[0]*q[3]) * 2.0;
-	m[8] = 1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0;
+	m[3] =       (qx*qy + qz*qw) * 2.0;
+	m[4] = 1.0 - (qx*qx + qz*qz) * 2.0;
+	m[5] =       (qy*qz - qx*qw) * 2.0;
+
+	m[6] =       (qx*qz - qy*qw) * 2.0;
+	m[7] =       (qy*qz + qx*qw) * 2.0;
+	m[8] = 1.0 - (qx*qx + qy*qy) * 2.0;
 }
 //out(qx,qy,qz,qw) <- in(matrix)
 void quaternion4matthree(float* q, float (*m)[3])
@@ -276,19 +295,24 @@ void quaternion2matfour(float* q, float* m)
 {
 	//not change axis: r=m[*][0], f=m[*][1], t=m[*][2]
 	//    change axis: r=m[0][*], f=m[1][*], t=m[2][*]
-	m[ 0] = 1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0;
-	m[ 1] =       (q[0]*q[1] - q[2]*q[3]) * 2.0;
-	m[ 2] =       (q[0]*q[2] + q[1]*q[3]) * 2.0;
+	float qx = q[0];
+	float qy = q[1];
+	float qz = q[2];
+	float qw = q[3];
+
+	m[ 0] = 1.0 - (qy*qy + qz*qz) * 2.0;
+	m[ 1] =       (qx*qy - qz*qw) * 2.0;
+	m[ 2] =       (qx*qz + qy*qw) * 2.0;
 	m[ 3] = 0.0;
 
-	m[ 4] =       (q[0]*q[1] + q[2]*q[3]) * 2.0;
-	m[ 5] = 1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0;
-	m[ 6] =       (q[1]*q[2] - q[0]*q[3]) * 2.0;
+	m[ 4] =       (qx*qy + qz*qw) * 2.0;
+	m[ 5] = 1.0 - (qx*qx + qz*qz) * 2.0;
+	m[ 6] =       (qy*qz - qx*qw) * 2.0;
 	m[ 7] = 0.0;
 
-	m[ 8] =       (q[0]*q[2] - q[1]*q[3]) * 2.0;
-	m[ 9] =       (q[1]*q[2] + q[0]*q[3]) * 2.0;
-	m[10] = 1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0;
+	m[ 8] =       (qx*qz - qy*qw) * 2.0;
+	m[ 9] =       (qy*qz + qx*qw) * 2.0;
+	m[10] = 1.0 - (qx*qx + qy*qy) * 2.0;
 	m[11] = 0.0;
 
 	m[12] = 0.0;

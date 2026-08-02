@@ -257,8 +257,8 @@ void role_fromtext_relation(
 					&dst.nodetype,dst.chip, &dst.foottype,dst.foot
 				);
 				rel = relationcreate(
-					(void*)dst.chip, (void*)dst.foot, dst.nodetype, dst.foottype,
-					(void*)src.chip, (void*)src.foot, src.nodetype, src.foottype
+					(void*)src.chip, (void*)src.foot, src.nodetype, src.foottype,
+					(void*)dst.chip, (void*)dst.foot, dst.nodetype, dst.foottype
 				);
 				relationattach((void*)&rel->srcchip, (void*)&rel->dstchip);
 				logtoall("\n");

@@ -621,7 +621,7 @@ int ahci_contractor(struct item* dev, int who, u8* buf, int len)
 	sata->oncreate(sata, 0, 0, 0);
 
 	if(0 == sata->onattach)return -4;
-	struct relation* rel2 = relationcreate(sata,0, _dev_,_src_, dev,port, _dev_,0);
+	struct relation* rel2 = relationcreate(dev,port, _dev_,0, sata,0, _dev_,_src_);
 	if(0 == rel2)return -5;
 
 	relationattach((struct halfrel*)&rel2->src, (struct halfrel*)&rel2->dst);

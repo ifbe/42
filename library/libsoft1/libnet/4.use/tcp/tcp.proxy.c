@@ -178,7 +178,7 @@ int proxymaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 	artery_create(Proxy, 0, 0, 0);
 
 	//child -> servant
-	relationcreate(Proxy, 0, _art_, 'c', Tcp, 0, _sys_, _dst_);
+	relationcreate(Tcp, 0, _sys_, _dst_, Proxy, 0, _art_, 'c');
 
 
 //2: copy host
@@ -209,13 +209,13 @@ int proxymaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 			socks = artery_alloc_fromtype(_socks_);
 			if(0 == socks)break;
 			artery_create(socks, perobj->data, 0, 0);
-			relationcreate(Proxy, 0, _art_, 's', socks, 0, _art_, _dst_);
+			relationcreate(socks, 0, _art_, _dst_, Proxy, 0, _art_, 's');
 
 			//tcpclient -> socksclient
 			client = system_alloc_frompath(_tcp_, artobj->data);
 			if(0 == client)break;
 			system_create(client, artobj->data, 0, 0);
-			rel = relationcreate(socks, 0, _art_, _src_, client, 0, _sys_, _dst_);
+			rel = relationcreate(client, 0, _sys_, _dst_, socks, 0, _art_, _src_);
 
 			//fake ready from tcpclient to socksclient
 			relationattach((void*)rel->dst, (void*)rel->src);
@@ -226,7 +226,7 @@ int proxymaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 			client = system_alloc_frompath(_tcp_, artobj->data);
 			if(0 == client)break;
 			system_create(client, perobj->data, 0, 0);
-			rel = relationcreate(Proxy, 0, _art_, 's', client, 0, _sys_, _dst_);
+			rel = relationcreate(client, 0, _sys_, _dst_, Proxy, 0, _art_, 's');
 
 			//fake ready from tcpclient to proxyserver
 			stack[sp-2].pchip = client;

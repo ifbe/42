@@ -27,11 +27,11 @@ int term_create(struct item* wrk, u8* arg, int argc, u8** argv)
 	artery_create(xxx, 0, 0, 0);
 
 	//composer and input
-	struct relation* crel = relationcreate(xxx,0, _art_,_dst_, ccc,0, _sup_,_dst_);
+	struct relation* crel = relationcreate(ccc,0, _sup_,_dst_, xxx,0, _art_,_dst_);
 	relationattach((void*)&crel->srcchip, (void*)&crel->dstchip);
 
 	//composer and target
-	struct relation* srel = relationcreate(xxx,0, _art_,_src_, sss,0, _sys_,_dst_);
+	struct relation* srel = relationcreate(sss,0, _sys_,_dst_, xxx,0, _art_,_src_);
 	relationattach((void*)&srel->srcchip, (void*)&srel->dstchip);
 
 	//wait

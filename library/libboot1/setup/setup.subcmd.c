@@ -115,7 +115,7 @@ void show_pic(u8* path)
 	wnd_to_mgr->fshape.vq[1] = 1.0;
 
 	//3
-	struct relation* rel0 = relationcreate(pic,mgr_to_wnd, _ent_,0, wnd,wnd_to_mgr, _sup_,0);
+	struct relation* rel0 = relationcreate(wnd,wnd_to_mgr, _sup_,0, pic,mgr_to_wnd, _ent_,0);
 	relationattach((void*)&rel0->srcchip, (void*)&rel0->dstchip);
 }
 void serve_webapp()
@@ -128,10 +128,10 @@ void serve_webapp()
 	_obj* app = entity_alloc_fromtype(hex64('f','s','l','i','s','t',0,0));
 	entity_create(app, 0, 0, 0);
 
-	struct relation* rel0 = relationcreate(art,0, _art_, _src_, sys,0, _sys_, _dst_);
+	struct relation* rel0 = relationcreate(sys,0, _sys_, _dst_, art,0, _art_, _src_);
 	relationattach((void*)&rel0->srcchip, (void*)&rel0->dstchip);
 
-	struct relation* rel1 = relationcreate(app,0, _ent_, _src_, art,0, _art_, _dst_);
+	struct relation* rel1 = relationcreate(art,0, _art_, _dst_, app,0, _ent_, _src_);
 	relationattach((void*)&rel1->srcchip, (void*)&rel1->dstchip);
 
 	_obj* thr = bootup_alloc_fromtype(_poller_);

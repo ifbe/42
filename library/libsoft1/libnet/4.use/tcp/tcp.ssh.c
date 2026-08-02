@@ -879,7 +879,7 @@ int sshmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx
 
 	art = artery_alloc_fromtype(_Ssh_);
 	artery_create(art, 0, 0, 0);
-	relationcreate(art, 0, _art_, _src_, child, 0, _sys_, _dst_);
+	relationcreate(child, 0, _sys_, _dst_, art, 0, _art_, _src_);
 	return 0;
 }
 int sshmaster_detach(struct halfrel* self, struct halfrel* peer)

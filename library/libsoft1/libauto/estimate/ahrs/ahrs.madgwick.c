@@ -39,6 +39,7 @@ static float invSqrt(float x) {
 	y = y * (1.5f - (halfx * y * y));
 	return y;
 }
+//ENU
 void madgwickupdate6(struct perimu* per, float* pg, float* pa)
 {
 	float recipNorm;
@@ -54,7 +55,8 @@ void madgwickupdate6(struct perimu* per, float* pg, float* pa)
 	qDot3 = 0.5f * (qw * gy - qx * gz + qz * gx);
 	qDot4 = 0.5f * (qw * gz + qx * gy - qy * gx);
 
-
+	int avalid = (ax != 0.0f) || (ay != 0.0f) || (az != 0.0f);
+	if (avalid) {
 	// Normalise accelerometer measurement
 	recipNorm = invSqrt(ax * ax + ay * ay + az * az);
 	ax *= recipNorm;
@@ -79,23 +81,30 @@ void madgwickupdate6(struct perimu* per, float* pg, float* pa)
 
 
 	// Gradient decent algorithm corrective step
-	s0 = _4qw*qyqy + _2qy*ax + _4qw*qxqx - _2qx*ay;
-	s1 = _4qx*qzqz - _2qz*ax + 4.0*qwqw*qx - _2qw*ay - _4qx + _8qx*qxqx + _8qx*qyqy + _4qx*az;
-	s2 = 4.0f * qwqw*qy + _2qw*ax + _4qy*qzqz - _2qz*ay - _4qy + _8qy*qxqx + _8qy*qyqy + _4qy*az;
-	s3 = 4.0f * qxqx*qz - _2qx*ax + 4.0*qyqy * qz - _2qy*ay;
+	// NED version
+	// s0 = _4qw*qyqy + _2qy*ax + _4qw*qxqx - _2qx*ay;
+	// s1 = _4qx*qzqz - _2qz*ax + 4.0*qwqw*qx - _2qw*ay - _4qx + _8qx*qxqx + _8qx*qyqy + _4qx*az;
+	// s2 = 4.0f * qwqw*qy + _2qw*ax + _4qy*qzqz - _2qz*ay - _4qy + _8qy*qxqx + _8qy*qyqy + _4qy*az;
+	// s3 = 4.0f * qxqx*qz - _2qx*ax + 4.0*qyqy * qz - _2qy*ay;
+	// ENU versio
+	s0 = _4qw*qyqy - _2qy*ax + _4qw*qxqx + _2qx*ay;
+	s1 = _4qx*qzqz + _2qz*ax + 4.0*qwqw*qx + _2qw*ay - _4qx + _8qx*qxqx + _8qx*qyqy - _4qx*az;
+	s2 = 4.0f * qwqw*qy - _2qw*ax + _4qy*qzqz + _2qz*ay - _4qy + _8qy*qxqx + _8qy*qyqy - _4qy*az;
+	s3 = 4.0f * qxqx*qz + _2qx*ax + 4.0*qyqy * qz + _2qy*ay;
+
+	// normalize
 	recipNorm = invSqrt(s0*s0 + s1*s1 + s2*s2 + s3*s3); // normalise step magnitude
 	s0 *= recipNorm;
 	s1 *= recipNorm;
 	s2 *= recipNorm;
 	s3 *= recipNorm;
 
-
 	// Apply feedback step
 	qDot1 -= beta * s0;
 	qDot2 -= beta * s1;
 	qDot3 -= beta * s2;
 	qDot4 -= beta * s3;
-
+	}
 
 	// Integrate rate of change of quaternion to yield quaternion
 	qw += qDot1 * per->dt;
@@ -130,9 +139,11 @@ void madgwickupdate9(struct perimu* per, float* pg, float* pa, float* pm)
 	qDot3 = 0.5f * (qw * gy - qx * gz + qz * gx);
 	qDot4 = 0.5f * (qw * gz + qx * gy - qy * gx);
 
-
+	int avalid = (ax != 0.0f) || (ay != 0.0f) || (az != 0.0f);
+	int mvalid = (mx != 0.0f) || (my != 0.0f) || (mz != 0.0f);
+	if (avalid && mvalid) {
 	// Normalise accelerometer measurement
-	norm = -squareroot(ax * ax + ay * ay + az * az);
+	norm = squareroot(ax * ax + ay * ay + az * az);
 	ax /= norm;
 	ay /= norm;
 	az /= norm;   
@@ -216,7 +227,7 @@ void madgwickupdate9(struct perimu* per, float* pg, float* pa, float* pm)
 	qDot2 -= beta * s1 / norm;
 	qDot3 -= beta * s2 / norm;
 	qDot4 -= beta * s3 / norm;
-
+	}
 
 	// Integrate rate of change of quaternion to yield quaternion
 	qw += qDot1 * per->dt;

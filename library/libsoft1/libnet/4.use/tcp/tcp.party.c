@@ -492,7 +492,7 @@ found:
 	if(ret < 0)goto fail;
 
 	//if not connected: connect
-	relationcreate(art, &peruser[ret], _art_, name, xxx, 0, _sys_, _dst_);
+	relationcreate(xxx, 0, _sys_, _dst_, art, &peruser[ret], _art_, name);
 
 	//send status messge
 	ret = mysnprintf(tmp, 128,

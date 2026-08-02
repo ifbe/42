@@ -174,7 +174,7 @@ static void browser_event(
 				logtoall("err@http\n");
 				return;
 			}
-			struct relation* rel1 = relationcreate(act, 0, _ent_, _http_, http, 0, _art_, _dst_);
+			struct relation* rel1 = relationcreate(http, 0, _art_, _dst_, act, 0, _ent_, _http_);
 			if(0 == rel1){
 				logtoall("err@rel1\n");
 				return;
@@ -187,7 +187,7 @@ static void browser_event(
 				return;
 			}
 			system_create(sock, buf+7, 0, 0);
-			struct relation* rel2 = relationcreate(http, 0, _art_, _src_, sock, 0, _sys_, _dst_);
+			struct relation* rel2 = relationcreate(sock, 0, _sys_, _dst_, http, 0, _art_, _src_);
 			if(0 == rel2){
 				logtoall("err@rel2\n");
 				return;

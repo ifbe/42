@@ -272,7 +272,7 @@ int httpmaster_write_bysrc(_obj* art,void* foot, _syn* stack,int sp, p64 arg, in
 		if(0 == Ws)return 0;
 		artery_create(Ws, 0, 0, 0);
 
-		struct relation* rel = relationcreate(Ws, 0, _art_, _src_, Tcp, 0, _sys_, _dst_);
+		struct relation* rel = relationcreate(Tcp, 0, _sys_, _dst_, Ws, 0, _art_, _src_);
 		if(0 == rel)return 0;
 		stack[sp-2].pchip = Tcp;
 		stack[sp-1].pchip = Ws;

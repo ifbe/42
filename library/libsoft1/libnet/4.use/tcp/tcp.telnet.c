@@ -165,7 +165,7 @@ int telnetmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int 
 	if(0 == tel)return 0;
 	artery_create(tel, 0, 0, 0);
 
-	relationcreate(tel, 0, _art_, _src_, child, 0, _sys_, _dst_);
+	relationcreate(child, 0, _sys_, _dst_, tel, 0, _art_, _src_);
 	stack[sp-2].pchip = child;
 	stack[sp-1].pchip = tel;
 	stack[sp-1].foottype = _src_;

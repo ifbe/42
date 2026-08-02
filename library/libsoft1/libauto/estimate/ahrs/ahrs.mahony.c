@@ -45,6 +45,7 @@ static float invSqrt(float x) {
 	y = y * (1.5f - (halfx * y * y));
 	return y;
 }
+//ENU, not NED
 void mahonyupdate3(
 	float gx, float gy, float gz,
 	float deltaT)
@@ -68,16 +69,14 @@ void mahonyupdate3(
 	qy *= invnorm;
 	qz *= invnorm;
 }
+//ENU, not NED
 void mahonyupdate6(
 	float gx, float gy, float gz,
 	float ax, float ay, float az,
 	float deltaT)
 {
-	if( (ax == 0.0f) && (ay == 0.0f) && (az == 0.0f) ){
-		mahonyupdate3(gx, gy, gz, deltaT);
-		return;
-	}
-
+	int avalid = (ax != 0.0f) || (ay != 0.0f) || (az != 0.0f);
+	if (avalid) {
 	float recipNorm;
 	float halfvx, halfvy, halfvz;
 	float halfex, halfey, halfez;
@@ -118,6 +117,7 @@ void mahonyupdate6(
 	gx += twoKp * halfex;
 	gy += twoKp * halfey;
 	gz += twoKp * halfez;
+	}
 
 	//use new gyro val
 	mahonyupdate3(gx, gy, gz, deltaT);
@@ -128,8 +128,15 @@ void mahonyupdate9(
 	float mx, float my, float mz,
 	float deltaT)
 {
-	if( (mx == 0.0f) && (my == 0.0f) && (mz == 0.0f) ){
+	int mvalid = (mx != 0.0f) || (my != 0.0f) || (mz != 0.0f);
+	if(!mvalid){
 		mahonyupdate6(gx, gy, gz, ax, ay, az, deltaT);
+		return;
+	}
+
+	int avalid = (ax != 0.0f) || (ay != 0.0f) || (az != 0.0f);
+	if (!avalid) {
+		mahonyupdate3(gx, gy, gz, deltaT);
 		return;
 	}
 

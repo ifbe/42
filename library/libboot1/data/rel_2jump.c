@@ -254,8 +254,8 @@ int relationdelete(struct relation* this)
 	return 0;
 }
 void* relationcreate(
-	void* dc, void* df, u32 dctype, u32 dftype,
-	void* sc, void* sf, u32 sctype, u32 sftype)
+	void* sc, void* sf, u32 sctype, u32 sftype,
+	void* dc, void* df, u32 dctype, u32 dftype)
 {
 	struct item* h1;
 	struct item* h2;
