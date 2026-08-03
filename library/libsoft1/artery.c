@@ -58,6 +58,8 @@
 #define _mahony_  hex64('m','a','h','o','n','y', 0 , 0 )
 #define _madgwick_ hex64('m','a','d','g','w','i','c','k')
 //
+#define _jpgenc_ hex64('j','p','g','e','n','c',0,0)
+//
 int ann_create(_obj* ele, void* arg, int argc, u8** argv);
 int ann_delete(_obj* ele, void* arg);
 int ann_attach(struct halfrel* self, struct halfrel* peer);
@@ -726,6 +728,15 @@ int slip_read(_obj* art,void* foot, p64 arg, int idx, void* buf, int len);
 int slip_write(_obj* art,void* foot, p64 arg, int idx, u8* buf, int len);
 int slip_delete(_obj* art);
 int slip_create(_obj* ele, void* arg, int argc, u8** argv);
+//jpgenc
+int jpgenc_take(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len);
+int jpgenc_give(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, u8* buf, int len);
+int jpgenc_detach(struct halfrel* self, struct halfrel* peer);
+int jpgenc_attach(struct halfrel* self, struct halfrel* peer);
+int jpgenc_read(_obj* art,void* foot, p64 arg, int idx, void* buf, int len);
+int jpgenc_write(_obj* art,void* foot, p64 arg, int idx, u8* buf, int len);
+int jpgenc_delete(_obj* art);
+int jpgenc_create(_obj* ele, void* arg, int argc, u8** argv);
 //
 int parsetypefromurl(u8* url, u8* type);
 int ncmp(void*, void*, int);
@@ -1193,6 +1204,10 @@ int artery_create(_obj* obj, void* url, int argc, u8** argv)
 	case _slip_:
 		slip_create(obj, url, argc, argv);
 		break;
+
+	case _jpgenc_:
+		jpgenc_create(obj, url, argc, argv);
+		break;
 	}
 
 	return 0;
@@ -1309,6 +1324,8 @@ int artery_attach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* pe
 	case _PARTY_:return partymaster_attach(self, peer);break;
 
 	case _slip_:return slip_attach(self, peer);break;
+
+	case _jpgenc_:return jpgenc_attach(self, peer);break;
 	}//switch
 	return 0;
 }
@@ -1405,6 +1422,8 @@ int artery_detach(_obj* ent,void* foot, struct halfrel* self, struct halfrel* pe
 	case _PARTY_:return partymaster_detach(self, peer);break;
 
 	case _slip_:return slip_detach(self, peer);break;
+
+	case _jpgenc_:return jpgenc_detach(self, peer);break;
 	}//switch
 	return 0;
 }
@@ -1531,6 +1550,8 @@ int artery_takeby(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, vo
 	case _tls1_3_:tls1v3client_read(art,foot, stack,sp, arg,idx, buf,len);break;
 
 	case _slip_:slip_take(art,foot, stack,sp, arg,idx, buf,len);break;
+
+	case _jpgenc_:jpgenc_take(art,foot, stack,sp, arg,idx, buf,len);break;
 	}//switch
 	return 0;
 }
@@ -1657,6 +1678,8 @@ int artery_giveby(_obj* art,void* foot, _syn* stack,int sp, p64 arg, int idx, vo
 	case _tls1_3_:return tls1v3client_write(art,foot, stack,sp, arg,idx, buf,len);break;
 
 	case _slip_:return slip_give(art,foot, stack,sp, arg,idx, buf,len);break;
+
+	case _jpgenc_:return jpgenc_give(art,foot, stack,sp, arg,idx, buf,len);break;
 	}//switch
 	return 0;
 }

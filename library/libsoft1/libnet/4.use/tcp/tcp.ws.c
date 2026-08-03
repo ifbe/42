@@ -720,7 +720,12 @@ int wsmaster_read(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, 
 int wsmaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	logtoall("@wsmaster_write: %llx, %.4s, %d\n", art, &foot, len);
-    printmemory(buf, len<16?len:16);
+	printmemory(buf, len<16?len:16);
+
+	if(_src_ != stack[sp-1].foottype){
+		logtoall("%s error: reject not from src\n", __FUNCTION__);
+		return 0;
+	}
 
 	//server
 	_obj* Ws = artery_alloc_fromtype(_Ws_);

@@ -444,9 +444,12 @@
 #define _drag_ptrtbl_ hex64('d','r','a','g','c','h','*','*')
 //
 #define _rgb_ hex32('r','g','b',0)
-#define _bgr_ hex32('b','g','r',0)
 #define _rgbx_ hex32('r','g','b','x')
 #define _rgba_ hex32('r','g','b','a')
+//
+#define _bgr_ hex32('b','g','r',0)
+#define _bgrx_ hex32('b','g','r','x')
+#define _bgra_ hex32('b','g','r','a')
 //
 #define _bgra8880_ hex64('b', 'g', 'r', 'a', '8', '8', '8', '0')
 #define _rgba8880_ hex64('r', 'g', 'b', 'a', '8', '8', '8', '0')

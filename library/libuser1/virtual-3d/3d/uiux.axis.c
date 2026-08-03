@@ -1,5 +1,4 @@
 #include "libuser.h"
-#define _tar_ hex32('t','a','r', 0)
 
 
 

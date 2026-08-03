@@ -372,6 +372,22 @@ int createcamera(struct mydata* my){
 		stmcfg.pixelFormat = libcamera::formats::YVU420;
 		stmcfg.stride = my->w;
 		break;
+	case _bgr_:
+		stmcfg.pixelFormat = libcamera::formats::BGR888;
+		stmcfg.stride = my->w;
+		break;
+	case _bgra_:
+		stmcfg.pixelFormat = libcamera::formats::BGRX8888;
+		stmcfg.stride = my->w;
+		break;
+	case _rgb_:
+		stmcfg.pixelFormat = libcamera::formats::RGB888;
+		stmcfg.stride = my->w;
+		break;
+	case _rgba_:
+		stmcfg.pixelFormat = libcamera::formats::RGBX8888;
+		stmcfg.stride = my->w;
+		break;
 	}
 
 	//check is it valid
@@ -424,6 +440,18 @@ int createcamera(struct mydata* my){
 		break;
 	case libcamera::formats::YVU420:
 		my->fmt = _y4_v_u_;
+		break;
+	case libcamera::formats::BGR888:
+		my->fmt = _bgr_;
+		break;
+	case libcamera::formats::BGRX8888:
+		my->fmt = _bgra_;
+		break;
+	case libcamera::formats::RGB888:
+		my->fmt = _rgb_;
+		break;
+	case libcamera::formats::RGBX8888:
+		my->fmt = _rgba_;
 		break;
 	case libcamera::formats::SBGGR16:
 	default:
@@ -594,7 +622,7 @@ static_assert(sizeof(struct mydata) < 0x1000, "struct mydata too big");
 		}
 		if(0 == ncmp(argv[j], (void*)"format:", 7)){
 			copyfmt64(argv[j]+7, (u8*)&fmt);
-			logtoall((void*)"libcam_create: fmtin=%.8s, fmtout=%.8s", argv[j]+7, &fmt);
+			logtoall((void*)"libcam_create: fmtin=%.8s, fmtout=%.8s\n", argv[j]+7, &fmt);
 		}
 		if(0 == ncmp(argv[j], (void*)"width:", 6)){
 			decstr2u32(argv[j]+6, &w);

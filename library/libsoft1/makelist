@@ -240,8 +240,10 @@
 ./libmedia/2picture/pic.bmp.c
 ./libmedia/2picture/pic.flif.c
 ./libmedia/2picture/pic.heif.c
-./libmedia/2picture/pic.jpg.c
-./libmedia/2picture/pic.png.c
+./libmedia/2picture/pic.jpg.dec.c
+./libmedia/2picture/pic.jpg.enc.c
+./libmedia/2picture/pic.png.dec.c
+./libmedia/2picture/pic.png.enc.c
 ./libmedia/3anim/picanim.annexb.c
 ./libmedia/3anim/picanim.avcc.c
 ./libmedia/3anim/picanim.gif.c
