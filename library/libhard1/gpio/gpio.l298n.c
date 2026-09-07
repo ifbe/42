@@ -29,6 +29,18 @@ g19-i2s-fs      ----________----g16-used-sdmode
 g26-motor-rn-p  ----________----g20-i2s-din
 0v              ----________----g21-i2s-dout
 */
+#define PIN_LFE 0
+#define PIN_LF0 1
+#define PIN_LF1 2
+#define PIN_LBE 3
+#define PIN_LB0 4
+#define PIN_LB1 5
+#define PIN_RFE 6
+#define PIN_RF0 7
+#define PIN_RF1 8
+#define PIN_RBE 9
+#define PIN_RB0 10
+#define PIN_RB1 11
 static char pintable[4][3] = {
 	{22, 4,27},	//left,front
 	{13, 5, 6},	//left,back
@@ -99,12 +111,16 @@ signed char action_simple[][4] = {
 signed char action_omni_o[][4] = {
 	{ 1, 1, 1, 1},	//w
 	{-1,-1,-1,-1},	//x
-	{-1, 1,-1, 1},	//a
-	{ 1,-1, 1,-1},	//d
-	{ 1, 0, 1, 0},	//e
-	{-1, 0,-1, 0},	//z
-	{ 0, 1, 0, 1},	//q
-	{ 0,-1, 0,-1},	//c
+	{-1, 1, 1,-1},	//a
+	{ 1,-1,-1, 1},	//d
+	//{ 1, 0, 1, 0},	//e
+	//{-1, 0,-1, 0},	//z
+	//{ 0, 1, 0, 1},	//q
+	//{ 0,-1, 0,-1},	//c
+	{ 1, 0, 0, 1},	//e
+	{-1, 0, 0,-1},	//z
+	{ 0, 1, 1, 0},	//q
+	{ 0,-1,-1, 0},	//c
 	{-1,-1, 1, 1},	//j
 	{ 1, 1,-1,-1},	//k
 	{}
@@ -121,7 +137,8 @@ void action2pinval(signed char* act, char (*pv)[2])
 	int en,val;
 	for(k=0;k<4;k++){
 		en = act[k]&1;
-		pin_value[k*3+0][1] = en;
+		//pin_value[k*3+0][1] = en;
+		pin_value[k*3+0][1] = 1;
 
 		if(en){
 			val = (act[k]>0) ? 1 : 0;
@@ -130,6 +147,11 @@ void action2pinval(signed char* act, char (*pv)[2])
 			pin_value[k*3+2][1] = val;
 		}
 	}
+}
+void stop2pinval()
+{
+	int j;
+	for(j=0;j<12;j++)pin_value[j][1] = 0;
 }
 
 
@@ -238,7 +260,8 @@ int l298n_give(_obj* obj,void* foot, _syn* stack,int sp, p64 arg, int idx, void*
 		break;
 	}
 
-	action2pinval(action_stop[0], pin_value);
+	//action2pinval(action_stop[0], pin_value);
+	stop2pinval();
 	writing_data_into_peer(obj, _chip_, 0, _pin_value_, pin_value,12);
 	return 0;
 }
@@ -278,17 +301,58 @@ int l298n_write(_obj* obj,void* foot,p64 arg, int idx, u8* buf, int len)
 }
 int l298n_create(_obj* obj, void* arg, int argc, u8** argv)
 {
-	logtoall("@l298n_create\n");
+	logtoall("@l298n_create: argc=%d\n", argc);
 	struct privdata* priv = (void*)obj->priv_256b;
 
 	int j;
 	int type = 1;
 	for(j=0;j<argc;j++){
+		logtoall("%.4s\n", argv[j]);
 		if(0 == ncmp(argv[j], "wheel:", 6)){
 			if(0 == ncmp(argv[j]+6, "none", 4))type = 0;
 			else if(0 == ncmp(argv[j]+6, "simple", 6))type = 1;
 			else if(0 == ncmp(argv[j]+6, "omni_o", 6))type = 2;
 			logtoall("wheel=%d\n", type);
+		}
+		//left front
+		else if(0 == ncmp(argv[j], "lfe", 3)){
+			logtoall("lfe=%c\n", argv[j][4]);
+		}
+		else if(0 == ncmp(argv[j], "lfp", 3)){
+			logtoall("lfp=%c\n", argv[j][4]);
+		}
+		else if(0 == ncmp(argv[j], "lfn", 3)){
+			logtoall("lfn=%c\n", argv[j][4]);
+		}
+		//left near
+		else if(0 == ncmp(argv[j], "lne", 3)){
+			logtoall("lne=%c\n", argv[j][4]);
+		}
+		else if(0 == ncmp(argv[j], "lnp", 3)){
+			logtoall("lnp=%c\n", argv[j][4]);
+		}
+		else if(0 == ncmp(argv[j], "lnn", 3)){
+			logtoall("lnn=%c\n", argv[j][4]);
+		}
+		//right front
+		else if(0 == ncmp(argv[j], "rfe", 3)){
+			logtoall("rfe=%c\n", argv[j][4]);
+		}
+		else if(0 == ncmp(argv[j], "rfp", 3)){
+			logtoall("rfp=%c\n", argv[j][4]);
+		}
+		else if(0 == ncmp(argv[j], "rfn", 3)){
+			logtoall("rfn=%c\n", argv[j][4]);
+		}
+		//right near
+		else if(0 == ncmp(argv[j], "rne", 3)){
+			logtoall("rne=%c\n", argv[j][4]);
+		}
+		else if(0 == ncmp(argv[j], "rnp", 3)){
+			logtoall("rnp=%c\n", argv[j][4]);
+		}
+		else if(0 == ncmp(argv[j], "rnn", 3)){
+			logtoall("rnn=%c\n", argv[j][4]);
 		}
 	}
 

@@ -51,17 +51,27 @@ int vehicleclient_std(_obj* art,void* foot, u8* buf, int len)
 	ch[1] = *(u32*)buf;
 
 	switch(ch[1]){
+	case 'w':
 	case 0x415b1b:
 		ch[1] = 'w';
 		break;
+	case 's':
 	case 0x425b1b:
 		ch[1] = 's';
 		break;
+	case 'a':
 	case 0x445b1b:
 		ch[1] = 'a';
 		break;
+	case 'd':
 	case 0x435b1b:
 		ch[1] = 'd';
+		break;
+	case 'j':
+		ch[1] = 'j';
+		break;
+	case 'k':
+		ch[1] = 'k';
 		break;
 	}
 
@@ -132,7 +142,12 @@ int vehicleclient_delete(_obj* ele)
 void vehicleserver_sock(_obj* art,void* foot, _syn* stack,int sp, void* buf,int len)
 {
 	u32* in = buf;
-	give_data_into_peer(art,_drv_, stack,sp, 0,0, &in[1],1);
+	give_data_into_peer(art,_drv_, stack,sp, 0,0, &in[0],4);
+}
+void vehicleserver_std(_obj* art,void* foot, _syn* stack,int sp, void* buf,int len)
+{
+	u32* in = buf;
+	give_data_into_peer(art,_drv_, stack,sp, 0,0, &in[0],4);
 }
 
 
@@ -149,6 +164,9 @@ int vehicleserver_giveby(_obj* art,void* foot, _syn* stack,int sp, void* arg, in
 	switch(stack[sp-1].foottype){
 	case _sock_:
 		vehicleserver_sock(art,0, stack,sp, buf,len);
+		break;
+	case _std_:
+		vehicleserver_std(art,0, stack,sp, buf,len);
 		break;
 	}
 	return 0;
@@ -196,16 +214,16 @@ static void pollerthread(_obj* ele)
 {
 	u64 time;
 	float v[4];
-	u8 buf[16];
+	u8 buf[128];
 	while(1){
 		//1.time
 		time = dateread();
 		logtoall("time=%llx\n", time);
-
+/*
 		*(u32*)(buf+0) = _time_;
 		*(u32*)(buf+4) = time&0xffffffff;
 		give_data_into_peer_temp_stack(ele, _sock_, 0,0, buf, 8);
-
+*/
 		//2.volt
 		take_data_from_peer_temp_stack(ele, _volt_, 0,0, v, 4);
 
@@ -214,7 +232,7 @@ static void pollerthread(_obj* ele)
 		v[2] *= 2.0;
 		v[3] *= 3.0;
 		logtoall("volt=%f,%f,%f,%f\n", v[0], v[1], v[2], v[3]);
-
+/*
 		*(u32*)(buf+0) = _v0v2_;
 		*(u32*)(buf+4) = *(u32*)&v[3];
 		give_data_into_peer_temp_stack(ele, _sock_, 0,0, buf, 8);
@@ -222,6 +240,9 @@ static void pollerthread(_obj* ele)
 		*(u32*)(buf+0) = _v0v1_;
 		*(u32*)(buf+4) = *(u32*)&v[1];
 		give_data_into_peer_temp_stack(ele, _sock_, 0,0, buf, 8);
+*/
+		int ret = mysnprintf(buf, 99, "time(%lld) volt(%f %f %f %f)\n", time, v[0], v[1], v[2], v[3]);
+		give_data_into_peer_temp_stack(ele, _sock_, 0,0, buf, ret);
 
 		//period
 		sleep_us(1000*1000);
