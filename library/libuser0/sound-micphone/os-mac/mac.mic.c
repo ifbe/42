@@ -58,7 +58,7 @@ int micphone_delete(_obj* win)
 }
 int micphone_create(_obj* win)
 {
-	ibuf = memoryalloc(0x100000, 0);
+	ibuf = memory_alloc_align(0x100000, 0);
 	icur = 0;
 
 	//thread

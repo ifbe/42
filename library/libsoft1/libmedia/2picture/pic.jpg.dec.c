@@ -210,14 +210,14 @@ void njDone(void);
 #endif
 
 #if 1
-	void memoryfree(void*);
-	void* memoryalloc(int);
-	void* memorysetup(void*,int,int);
-	void* memorycopy(void*,void*,int);
-    #define njAllocMem memoryalloc
-    #define njFreeMem  memoryfree
-    #define njFillMem  memorysetup
-    #define njCopyMem  memorycopy
+	void memory_free(void*);
+	void* memory_alloc(int);
+	void* memory_setval(void*,int,int);
+	void* memory_copy(void*,void*,int);
+    #define njAllocMem memory_alloc
+    #define njFreeMem  memory_free
+    #define njFillMem  memory_setval
+    #define njCopyMem  memory_copy
 	#define NULL 0
 #elif NJ_USE_LIBC
     #include <stdlib.h>

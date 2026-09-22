@@ -220,10 +220,10 @@ int test_delete(_obj* act)
 }
 int test_create(_obj* act)
 {
-	act->listptr.buf0 = memoryalloc(0x1000, 0);
+	act->listptr.buf0 = memory_alloc_align(0x1000, 0);
 	test_prepgl(act->listptr.buf0);
 
-	act->listptr.buf1 = memoryalloc(0x20000, 0);
+	act->listptr.buf1 = memory_alloc_align(0x20000, 0);
 	test_preppcm(act->listptr.buf1);
 
 	return 0;

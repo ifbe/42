@@ -279,13 +279,13 @@ static void bintree_modify(_obj* act)
 static void bintree_delete(_obj* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memoryfree(act->listptr.buf0);
+	if(_copy_ == act->type)memory_free(act->listptr.buf0);
 }
 static void bintree_create(_obj* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->listptr.buf0 = node;
-	if(_copy_ == act->type)act->listptr.buf0 = memoryalloc(256, 0);
+	if(_copy_ == act->type)act->listptr.buf0 = memory_alloc_align(256, 0);
 }
 
 

@@ -4,15 +4,12 @@ int miniuart_getc();
 
 
 
-static struct event ev[2];
-void* pollenv()
+static void* entry = 0;
+static void* stack = 0;
+void setentryandstack(void* e, void* s)
 {
-	int ret = miniuart_getc();
-	if(ret > 0xff)return 0;
-
-	ev->why = ret;
-	ev->what = _char_;
-	return ev;
+	entry = e;
+	stack = s;
 }
 
 
@@ -26,6 +23,20 @@ void* getdtb()
 void setdtb(void* p)
 {
 	dtb = p;
+}
+
+
+
+
+static struct event ev[2];
+void* pollenv()
+{
+	int ret = miniuart_getc();
+	if(ret > 0xff)return 0;
+
+	ev->why = ret;
+	ev->what = _char_;
+	return ev;
 }
 
 
@@ -94,4 +105,6 @@ void freerunenv()
 }
 void initrunenv()
 {
+	logtoall("entry=%p stack=%p\n", entry, stack);
+	logtoall("dtb=%p", dtb);
 }

@@ -230,8 +230,8 @@ int htmlroot_delete(_obj* win)
 }
 int htmlroot_create(_obj* win, void* str)
 {
-	void** ctx = memoryalloc(0x1000, 0);
-	void*  buf = memoryalloc(0x100000, 0);
+	void** ctx = memory_alloc_align(0x1000, 0);
+	void*  buf = memory_alloc_align(0x100000, 0);
 
 	ctx[0] = buf+0x00000;
 	ctx[1] = buf+0x10000;

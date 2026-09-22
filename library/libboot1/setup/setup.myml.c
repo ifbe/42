@@ -782,7 +782,7 @@ int myml_create(struct item* obj, void* arg, int argc, u8** argv)
 {
 	logtoall("myml_create: %p enter\n",obj);
 	int j;
-	struct mymlctx* priv = memoryalloc(0x100000, 0);
+	struct mymlctx* priv = memory_alloc_align(0x100000, 0);
 	obj->priv_ptr = priv;
 
 	if(arg){

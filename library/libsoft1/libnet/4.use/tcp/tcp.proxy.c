@@ -79,7 +79,7 @@ int proxyserver_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 			if(perobj->buf){
 				//this is http proxy: send cached request directly
 				give_data_into_peer(art,'s', stack,sp, 0,0, perobj->buf, perobj->len);
-				memoryfree(perobj->buf);
+				memory_free(perobj->buf);
 				perobj->buf = 0;
 			}
 			else{
@@ -194,7 +194,7 @@ int proxymaster_write(_obj* art,void* foot, _syn* stack,int sp, void* arg, int i
 	}
 	if(0 != ncmp(buf, "CONNECT ", 8)){
 		perobj->len = len;
-		perobj->buf = memoryalloc(len, 0);
+		perobj->buf = memory_alloc_align(len, 0);
 
 		ptr = perobj->buf;
 		for(j=0;j<len;j++)ptr[j] = buf[j];

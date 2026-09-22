@@ -21,10 +21,8 @@ int gpio_write(_obj* obj,void* foot, p64 arg,int cmd, u8* buf,int len);
 
 
 
-static struct item* dev;
+static struct item* dev = 0;
 static int devlen = 0;
-static void* aaa;
-static int aaalen = 0;
 
 
 
@@ -40,10 +38,6 @@ void device_init(u8* addr, int size)
 	dev = (void*)(addr+0x000000);
 	devlen = maxdevlen-1;
 	for(j=0;j<maxdevlen;j++)dev[j].tier = _dev_;
-
-//#define maxaaalen
-	aaa = (void*)(addr+0x100000);
-	aaalen = 0;
 
 	logtoall("[4,6):device inited\n");
 }

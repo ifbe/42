@@ -80,7 +80,7 @@ static void dbggnd_gl41_prep(struct privdata* own, char* vs, char* fs)
 	vtx->vbuf_w = 4*3*2;
 	vtx->vbuf_h = 6;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
+	vtx->vbuf = memory_alloc_align(vtx->vbuf_len, 0);
 
 	//
 	data->dst.arg[0].fmt = 'f';
@@ -244,7 +244,7 @@ static void dbggnd_create(_obj* act, void* str, int argc, u8** argv)
 {
 	if(0 == act)return;
 
-	struct privdata* own = act->priv_ptr = memoryalloc(0x1000, 0);
+	struct privdata* own = act->priv_ptr = memory_alloc_align(0x1000, 0);
 	if(0 == own)return;
 
 	own->size = 1000;

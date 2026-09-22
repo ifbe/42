@@ -1,0 +1,21 @@
+### loader mode ###
+carrybin: start.s + main.c + jump to 0x100000
+    output.efi = a thin loader + kernel.bin
+
+carryzip: start.s + main.c + unzip + jump to 0x100000
+    output.efi = a decompresser loader + kernel.gz(or xz/bzip...)
+
+loader: work as a complex loader like grub2
+
+
+### kernel mode ###
+msabi: do nothing + jump to efi_main
+    compiler = clang(#mingw64 bug: attribute interrupt)
+    linker = x86_64-w64-mingw32-gcc
+    abi = rcx rdx r8 r9 ...
+
+sysvabi: relocate + jump to efi_main
+    compiler = x86_64-elf-gcc
+    abi = rdi rsi rdx rcx r8 r9 ...
+
+common: efi_main and other kernel code

@@ -744,13 +744,8 @@ int cmp(void*, void*);
 
 
 
-#define datahome qqq
-//static struct item* obj = 0;
-//static void* ppp = 0;
 static struct item* ele = 0;
 static int elelen = 0;
-//static void* qqq = 0;
-//static int qqqlen = 0;
 
 
 
@@ -766,8 +761,6 @@ void artery_init(u8* addr, int size)
 	ele = (void*)(addr+0x000000);
 	elelen = maxitem-1;
 	for(j=0;j<maxitem;j++)ele[j].tier = _art_;
-
-	//qqq = (void*)(addr+0x100000);
 
 	//artery_create(0, (u8*)"HACK://0.0.0.0:2222");
 	//artery_create(0, (u8*)"QUIC://0.0.0.0:4444");

@@ -213,7 +213,7 @@ int vmdk_attach(struct halfrel* self, struct halfrel* peer)
 int vmdk_delete(_obj* art)
 {
 	if(art->priv_ptr){
-		memoryfree(art->priv_ptr);
+		memory_free(art->priv_ptr);
 		art->priv_ptr = 0;
 	}
 	return 0;
@@ -224,7 +224,7 @@ int vmdk_create(_obj* art)
 	art->ongiving = (void*)vmdk_ongive;
 	art->ontaking = (void*)vmdk_ontake;
 
-	struct pervd* vd = art->priv_ptr = memoryalloc(0x100000, 0);
+	struct pervd* vd = art->priv_ptr = memory_alloc_align(0x100000, 0);
 	vd->cachepos_gd = 0xffffffff;
 	vd->cachepos_gt = 0xffffffff;
 	return 0;

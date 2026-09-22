@@ -339,12 +339,12 @@ int digital_create(_obj* scene, void* arg, int argc, u8** argv)
 	if(0 == arg)return 0;
 
 	//borrow this as filebuf
-	scene->PERPIN = memoryalloc(0x10000, 0);
+	scene->PERPIN = memory_alloc_align(0x10000, 0);
 	ret = openreadclose(arg, 0, scene->PERPIN, 0x10000);
 	if(ret <= 0)return 0;
 
 	//parse xyz
-	scene->VERTEX = memoryalloc(0x10000, 0);
+	scene->VERTEX = memory_alloc_align(0x10000, 0);
 	parsewiring(scene->PERPIN, scene->VERTEX);
 	return 0;
 }

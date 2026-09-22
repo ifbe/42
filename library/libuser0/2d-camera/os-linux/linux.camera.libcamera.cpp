@@ -599,7 +599,7 @@ int libcam_delete(_obj* cam)
 		deletecamera(my);
 		sleep_us(1000);
 
-		memoryfree(cam->priv_ptr);
+		memory_free(cam->priv_ptr);
 		cam->priv_ptr = 0;
 	}
 	return 0;
@@ -607,7 +607,7 @@ int libcam_delete(_obj* cam)
 int libcam_create(_obj* cam, void* arg, int argc, u8** argv)
 {
 static_assert(sizeof(struct mydata) < 0x1000, "struct mydata too big");
-	struct mydata* my = (struct mydata*)memoryalloc(0x1000, 0);
+	struct mydata* my = (struct mydata*)memory_alloc_align(0x1000, 0);
 	my->myobj = cam;
 	my->log = 0;
 

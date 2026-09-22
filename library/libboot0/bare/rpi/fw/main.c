@@ -1,5 +1,8 @@
 #include "libboot.h"
-void* setdtb();
+void setentryandstack(void* entry, void* stack);
+void setdtb(void*);
+//
+void example_rpi();
 
 
 
@@ -19,16 +22,11 @@ hdmi_group:0=1
 */
 int main(u32 dtb)
 {
+	u8 tmp;
+	setentryandstack(main, &tmp);
 	setdtb((void*)(u64)dtb);
 
-	//init world, store args
-	void* all = origin_alloc_fromarg(_start_, main, 0 ,0);
-	origin_create(all, 0, 0, 0);
-	//call subcmd, until return
-	void* thr = bootup_alloc_fromtype(_kernel_);
-	bootup_create(thr, 0, 0, 0);
+	example_rpi();
 
-	bootup_delete(thr);
-	origin_delete(all);
 	return 0;
 }

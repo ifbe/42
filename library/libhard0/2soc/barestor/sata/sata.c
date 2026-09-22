@@ -216,7 +216,7 @@ static int sata_delete(struct item* sata)
 }
 static int sata_create(struct item* sata)
 {
-	struct privdata* priv = memoryalloc(0x100000, 0);
+	struct privdata* priv = memory_alloc_align(0x100000, 0);
     sata->priv_ptr = priv;
 
     logtoall("%s: item=%p priv=%p\n", __FUNCTION__, sata, priv);

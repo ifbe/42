@@ -179,13 +179,13 @@ static void motor_modify(_obj* act)
 static void motor_delete(_obj* act)
 {
 	if(0 == act)return;
-	//if(_copy_ == act->type)memoryfree(act->buf);
+	//if(_copy_ == act->type)memory_free(act->buf);
 }
 static void motor_create(_obj* act)
 {
 	if(0 == act)return;
 	//if(_orig_ == act->type)act->buf = buffer;
-	//if(_copy_ == act->type)act->buf = memoryalloc(256, 0);
+	//if(_copy_ == act->type)act->buf = memory_alloc_align(256, 0);
 }
 
 

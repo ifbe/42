@@ -462,13 +462,13 @@ static void weiqi_modify(_obj* act)
 static void weiqi_delete(_obj* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memoryfree(act->listptr.buf0);
+	if(_copy_ == act->type)memory_free(act->listptr.buf0);
 }
 static void weiqi_create(_obj* act, void* str)
 {
 	if(0 == act)return;
 
-	u8* buf = memoryalloc(sizeof(struct perweiqi), 0);
+	u8* buf = memory_alloc_align(sizeof(struct perweiqi), 0);
 	act->listptr.buf0 = buf;
 	if(0 == buf)return;
 

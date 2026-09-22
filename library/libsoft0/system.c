@@ -57,8 +57,6 @@ int cmp(void*, void*);
 //
 static struct item* sysobj = 0;
 static int objlen = 0;
-static void* ppp = 0;
-static int ppplen = 0;
 
 
 
@@ -75,8 +73,6 @@ void system_init(u8* addr, int size)
 	sysobj = (void*)(addr+0x000000);
 	objlen = maxitem-1;
 	for(j=0;j<maxitem;j++)sysobj[j].tier = _sys_;
-
-	ppp = (void*)(addr+0x100000);
 
 	initrandom(addr);
 	initsignal(addr);
@@ -131,7 +127,7 @@ void* system_alloc()
 		alloc_mempool()
 	}
 	else{	//use default
-		memoryalloc();
+		memory_alloc_align();
 	}
 	*/
 	void* addr = &sysobj[objlen];

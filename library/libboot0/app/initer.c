@@ -27,25 +27,12 @@ void bootup_init(void*,int);
 //libboot0
 void origin_exit();
 void origin_init(void*,int);
-void death()
-{
-	//libuser
-	entity_exit();
-	supply_exit();
 
-	//libsoft
-	artery_exit();
-	system_exit();
 
-	//libhard
-	driver_exit();
-	device_exit();
 
-	//libboot
-	bootup_exit();
-	origin_exit();
-}
-void birth(void* addr, int size)
+
+//
+void birth_at(void* addr, int size)
 {
 	int eachtier = 0x200000;
 
@@ -64,4 +51,69 @@ void birth(void* addr, int size)
 	//libuser
 	supply_init(addr+0xc00000, eachtier);
 	entity_init(addr+0xe00000, eachtier);
+}
+void birth()
+{
+	int len = 0x1000000;
+	u8* buf = memory_alloc_align(len, 0);
+	birth_at(buf, len);
+}
+void death()
+{
+	//libuser
+	entity_exit();
+	supply_exit();
+
+	//libsoft
+	artery_exit();
+	system_exit();
+
+	//libhard
+	driver_exit();
+	device_exit();
+
+	//libboot
+	bootup_exit();
+	origin_exit();
+}
+
+
+
+
+//
+void example_unix(int argc, char** argv)
+{
+	birth();
+
+	//init world, store args
+	void* all = origin_alloc_fromarg(_main_, 0, argc, (u8**)argv);
+	origin_create(all, 0, argc, (u8**)argv);
+	//call subcmd, until return
+	void* thr = bootup_alloc_fromtype(_subcmd_);
+	bootup_create(thr, 0, argc, (u8**)argv);
+
+	//mainloop
+
+	bootup_delete(thr);
+	origin_delete(all);
+
+	death();
+}
+void example_win(int argc, char** argv)
+{
+	birth();
+
+	//init world, store args
+	void* all = origin_alloc_fromarg(_win32_, 0, argc, (u8**)argv);
+	origin_create(all, 0, argc, (u8**)argv);
+	//call subcmd, until return
+	void* thr = bootup_alloc_fromtype(_subcmd_);
+	bootup_create(thr, 0, argc, (u8**)argv);
+
+	//main loop
+
+	bootup_delete(thr);
+	origin_delete(all);
+
+	death();
 }

@@ -20,8 +20,8 @@ static void vrglass_delete(_obj* act)
 }
 static void vrglass_create(_obj* act, void* str)
 {
-	act->MATBUF = memoryalloc(64*2, 0);
-	act->CAMBUF = memoryalloc(0x1000, 0);
+	act->MATBUF = memory_alloc_align(64*2, 0);
+	act->CAMBUF = memory_alloc_align(0x1000, 0);
 }
 
 

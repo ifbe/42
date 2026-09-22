@@ -63,11 +63,11 @@ static int mnist_create(_obj* act, void* arg, int argc, u8** argv)
 	if(0 == label)return 0;
 
 	copypath(path, image);
-	priv->image = memoryalloc(0x800000, 0);
+	priv->image = memory_alloc_align(0x800000, 0);
 	openreadclose(path, 0, priv->image, 0x800000);
 
 	copypath(path, label);
-	priv->label = memoryalloc(0x10000, 0);
+	priv->label = memory_alloc_align(0x10000, 0);
 	openreadclose(path, 0, priv->label, 0x10000);
 	return 0;
 }

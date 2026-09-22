@@ -479,7 +479,7 @@ static void fisheyecam_delete(_obj* act)
 static void fisheyecam_create(_obj* act, void* arg, int argc, u8** argv)
 {
     logtoall("@fisheyecam_create\n");
-	struct privdata* own = act->priv_ptr = memoryalloc(0x2000, 0);
+	struct privdata* own = act->priv_ptr = memory_alloc_align(0x2000, 0);
 }
 
 

@@ -974,7 +974,7 @@ static void rubikscube_delete(_obj* act)
 {
 	if(0 == act)return;
 	if(act->DATA){
-		memoryfree(act->DATA);
+		memory_free(act->DATA);
 		act->DATA = 0;
 	}
 }
@@ -986,7 +986,7 @@ static void rubikscube_create(_obj* act, void* str)
 //printmemory(str,4);
 
 	//malloc
-	buf = act->DATA = memoryalloc(6 * level * level, 0);
+	buf = act->DATA = memory_alloc_align(6 * level * level, 0);
 	if(0 == buf)return;
 
 	//read

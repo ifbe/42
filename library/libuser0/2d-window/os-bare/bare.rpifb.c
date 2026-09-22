@@ -1,6 +1,9 @@
 #include "libuser.h"
+void* memory_rsvd_framebuffer(int*);
+//
 void* supply_alloc();
 void* supply_recycle(void*);
+//
 int wndmgr_take(void*,void*, void*,int, p64,int, void*,int);
 int wndmgr_give(void*,void*, void*,int, p64,int, void*,int);
 //
@@ -90,7 +93,8 @@ void window_create(_obj* wnd)
 	wnd->whdf.fbwidth = pitch;
 	//wnd->whdf.fbheight = 0;
 
-	wnd->rgbanode.buf = (void*)0x4000000;
+	int tmp;
+	wnd->rgbanode.buf = memory_rsvd_framebuffer(&tmp);
 }
 
 

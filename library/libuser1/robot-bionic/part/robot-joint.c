@@ -187,7 +187,7 @@ static void robotjoint_writer(_obj* ent,void* foot, p64 arg,int key, void* buf,i
 static void robotjoint_delete(_obj* act)
 {
 	if(0 == act)return;
-	//if(_copy_ == act->type)memoryfree(act->buf);
+	//if(_copy_ == act->type)memory_free(act->buf);
 }
 static void robotjoint_create(_obj* act, void* str, int argc, u8** argv)
 {

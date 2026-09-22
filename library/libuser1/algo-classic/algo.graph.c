@@ -365,21 +365,21 @@ static void graph_delete(_obj* act)
 
 	//geom
 	if(perobj->ibuf){
-		memoryfree(perobj->ibuf);
+		memory_free(perobj->ibuf);
 		perobj->ibuf = 0;
 	}
 	if(perobj->vbuf){
-		memoryfree(perobj->vbuf);
+		memory_free(perobj->vbuf);
 		perobj->vbuf = 0;
 	}
 
 	//node
 	if(perobj->ibuf){
-		memoryfree(perobj->ibuf);
+		memory_free(perobj->ibuf);
 		perobj->ibuf = 0;
 	}
 	if(perobj->nbuf){
-		memoryfree(perobj->nbuf);
+		memory_free(perobj->nbuf);
 		perobj->nbuf = 0;
 	}
 }
@@ -390,12 +390,12 @@ static void graph_create(_obj* act, void* str)
 	struct perobj* perobj = (void*)act->priv_256b;
 
 	//node
-	perobj->nbuf = memoryalloc(0x1000, 0);
-	perobj->wbuf = memoryalloc(0x1000, 0);
+	perobj->nbuf = memory_alloc_align(0x1000, 0);
+	perobj->wbuf = memory_alloc_align(0x1000, 0);
 
 	//geom
-	perobj->vbuf = memoryalloc(0x1000, 0);
-	perobj->ibuf = memoryalloc(0x1000, 0);
+	perobj->vbuf = memory_alloc_align(0x1000, 0);
+	perobj->ibuf = memory_alloc_align(0x1000, 0);
 }
 
 

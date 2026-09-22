@@ -6,18 +6,33 @@
 
 
 
-//
-static EFI_HANDLE H;
-static EFI_SYSTEM_TABLE* T;
-//memmap
-#define BYTE_PER_DESC 0x30
-#define DESC_PER_UEFI 4096
-struct meminfo_t{
-	UINTN byteperdesc;
-	UINTN byteperuefi;
-	u8 memmap[BYTE_PER_DESC * DESC_PER_UEFI];
-}__attribute__((packed));
-static struct meminfo_t meminfo;
+static void* entry = 0;
+static void* stack = 0;
+void setentryandstack(void* e, void* s)
+{
+	entry = e;
+	stack = s;
+}
+
+
+
+
+static EFI_HANDLE EFI_H;
+static EFI_SYSTEM_TABLE* EFI_T;
+void gethandleandefitab(void** handle, void** table)
+{
+	*handle = EFI_H;
+	*table = EFI_T;
+}
+void sethandleandefitab(void* handle, void* table)
+{
+	EFI_H = handle;
+	EFI_T = table;
+}
+
+
+
+
 //devmap
 static u8 table_mps[]     = {0x2f, 0x2d, 0x9d, 0xeb, 0x88, 0x2d, 0xd3, 0x11, 0x9a, 0x16, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d};
 static u8 table_acpi[]    = {0x30, 0x2d, 0x9d, 0xeb, 0x88, 0x2d, 0xd3, 0x11, 0x9a, 0x16, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d};
@@ -26,43 +41,6 @@ static u8 table_smbios[]  = {0x31, 0x2d, 0x9d, 0xeb, 0x88, 0x2d, 0xd3, 0x11, 0x9
 static u8 table_smbios3[] = {0x44, 0x15, 0xfd, 0xf2, 0x94, 0x97, 0x2c, 0x4a, 0x99, 0x2e, 0xe5, 0xbb, 0xcf, 0x20, 0xe3, 0x94};
 static u8 table_sal[]     = {0x32, 0x2d, 0x9d, 0xeb, 0x88, 0x2d, 0xd3, 0x11, 0x9a, 0x16, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d};
 static void* rsdptr = 0;
-//screen
-static void* lfb = 0;
-static u64 fmt;
-static int w = 0;
-static int h = 0;
-static int fbw = 0;
-static int fbh = 0;
-
-
-
-
-void gethandleandefitab(void** handle, void** table)
-{
-	*handle = H;
-	*table = T;
-}
-void sethandleandefitab(void* handle, void* table)
-{
-	H = handle;
-	T = table;
-}
-
-
-
-
-u32 memmap_type()
-{
-	return _efi_;
-}
-void* memmap_addr()
-{
-	return &meminfo;
-}
-
-
-
-
 u32 devmap_type()
 {
 	return _acpi_;
@@ -71,18 +49,50 @@ void* devmap_addr()
 {
     return rsdptr;
 }
-
-
-
-
-void getscreen(void** _buf, u64* _fmt, int* _w, int* _h, int* _fbw, int* _fbh)
+void uefi_tables()
 {
-	*_buf = lfb;
-	*_fmt = fmt;
-	*_w = w;
-	*_h = h;
-	*_fbw = fbw;
-	*_fbh = fbh;
+	logtoall("efitable{\n");
+	int j;
+	for(j=0;j<EFI_T->NumberOfTableEntries;j++){
+		if(0 == ncmp(&EFI_T->ConfigurationTable[j].VendorGuid, &table_mps, 16)){
+			logtoall("@%p: mps\n", EFI_T->ConfigurationTable[j].VendorTable);
+			printmemory(EFI_T->ConfigurationTable[j].VendorTable, 16);
+			continue;
+		}
+		if(0 == ncmp(&EFI_T->ConfigurationTable[j].VendorGuid, &table_acpi, 16)){
+			logtoall("@%p: acpi\n", EFI_T->ConfigurationTable[j].VendorTable);
+			printmemory(EFI_T->ConfigurationTable[j].VendorTable, 16);
+			rsdptr = EFI_T->ConfigurationTable[j].VendorTable;
+			continue;
+		}
+		if(0 == ncmp(&EFI_T->ConfigurationTable[j].VendorGuid, &table_acpi2, 16)){
+			logtoall("@%p: acpi2\n", EFI_T->ConfigurationTable[j].VendorTable);
+			printmemory(EFI_T->ConfigurationTable[j].VendorTable, 16);
+			rsdptr = EFI_T->ConfigurationTable[j].VendorTable;
+			continue;
+		}
+		if(0 == ncmp(&EFI_T->ConfigurationTable[j].VendorGuid, &table_smbios, 16)){
+			logtoall("@%p: smbios\n", EFI_T->ConfigurationTable[j].VendorTable);
+			printmemory(EFI_T->ConfigurationTable[j].VendorTable, 16);
+			continue;
+		}
+		if(0 == ncmp(&EFI_T->ConfigurationTable[j].VendorGuid, &table_smbios3, 16)){
+			logtoall("@%p: smbios3\n", EFI_T->ConfigurationTable[j].VendorTable);
+			printmemory(EFI_T->ConfigurationTable[j].VendorTable, 16);
+			continue;
+		}
+		if(0 == ncmp(&EFI_T->ConfigurationTable[j].VendorGuid, &table_sal, 16)){
+			logtoall("@%p: sal\n", EFI_T->ConfigurationTable[j].VendorTable);
+			printmemory(EFI_T->ConfigurationTable[j].VendorTable, 16);
+			continue;
+		}
+		else{
+			u32* p = (u32*)&EFI_T->ConfigurationTable[j].VendorGuid;
+			logtoall("@%p: unknown: 0x%x,0x%x,0x%x,0x%x\n", EFI_T->ConfigurationTable[j].VendorTable, p[0], p[1], p[2], p[3]);
+			printmemory(EFI_T->ConfigurationTable[j].VendorTable, 16);
+		}
+	}
+	logtoall("}\n");
 }
 
 
@@ -90,18 +100,18 @@ void getscreen(void** _buf, u64* _fmt, int* _w, int* _h, int* _fbw, int* _fbh)
 
 int bootservice_input(void* buf)
 {
-	if(0 == H)return 0;
+	if(0 == EFI_H)return 0;
 
 	int ret;
 	while(1){
-		ret = T->ConIn->ReadKeyStroke(T->ConIn, buf);
+		ret = EFI_T->ConIn->ReadKeyStroke(EFI_T->ConIn, buf);
 		if(ret == EFI_SUCCESS)return 1;
 	}
 	return 0;
 }
 int bootservice_output(char* buf, int len)
 {
-	if(0 == H)return 0;
+	if(0 == EFI_H)return 0;
 
 	int j;
 	unsigned short temp[2] = {0,0};
@@ -109,12 +119,12 @@ int bootservice_output(char* buf, int len)
 	{
 		if(buf[j] == '\n')
 		{
-			T->ConOut->OutputString(T->ConOut, L"\r\n");
+			EFI_T->ConOut->OutputString(EFI_T->ConOut, L"\r\n");
 		}
 		else
 		{
 			temp[0] = buf[j];
-			T->ConOut->OutputString(T->ConOut, temp);
+			EFI_T->ConOut->OutputString(EFI_T->ConOut, temp);
 		}
 	}
 	return 0;
@@ -125,70 +135,42 @@ int bootservice_output(char* buf, int len)
 
 void uefi_version()
 {
-	logtoall("efiver=%x\n", T->Hdr.Revision);
+	logtoall("efiver=%x\n", EFI_T->Hdr.Revision);
 }
 void runtimeservice_reboot()
 {
 	//wrong
-	T->RuntimeServices->ResetSystem(0, 0, 0, 0);
+	EFI_T->RuntimeServices->ResetSystem(0, 0, 0, 0);
 }
 void runtimeservice_gettime()
 {
 	//wrong
-	T->RuntimeServices->GetTime(0, 0);
+	EFI_T->RuntimeServices->GetTime(0, 0);
 }
 
 
 
 
-void uefi_tables()
+
+
+
+
+//screen
+static void* lfb = 0;
+static u64 fmt;
+static int w = 0;
+static int h = 0;
+static int fbw = 0;
+static int fbh = 0;
+void getscreen(void** _buf, u64* _fmt, int* _w, int* _h, int* _fbw, int* _fbh)
 {
-	//uefi version
-	int j;
-	for(j=0;j<T->NumberOfTableEntries;j++){
-		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_mps, 16)){
-			logtoall("@%p: mps\n", T->ConfigurationTable[j].VendorTable);
-			printmemory(T->ConfigurationTable[j].VendorTable, 16);
-			continue;
-		}
-		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_acpi, 16)){
-			logtoall("@%p: acpi\n", T->ConfigurationTable[j].VendorTable);
-			printmemory(T->ConfigurationTable[j].VendorTable, 16);
-			rsdptr = T->ConfigurationTable[j].VendorTable;
-			continue;
-		}
-		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_acpi2, 16)){
-			logtoall("@%p: acpi2\n", T->ConfigurationTable[j].VendorTable);
-			printmemory(T->ConfigurationTable[j].VendorTable, 16);
-			rsdptr = T->ConfigurationTable[j].VendorTable;
-			continue;
-		}
-		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_smbios, 16)){
-			logtoall("@%p: smbios\n", T->ConfigurationTable[j].VendorTable);
-			printmemory(T->ConfigurationTable[j].VendorTable, 16);
-			continue;
-		}
-		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_smbios3, 16)){
-			logtoall("@%p: smbios3\n", T->ConfigurationTable[j].VendorTable);
-			printmemory(T->ConfigurationTable[j].VendorTable, 16);
-			continue;
-		}
-		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_sal, 16)){
-			logtoall("@%p: sal\n", T->ConfigurationTable[j].VendorTable);
-			printmemory(T->ConfigurationTable[j].VendorTable, 16);
-			continue;
-		}
-		else{
-			u32* p = (u32*)&T->ConfigurationTable[j].VendorGuid;
-			logtoall("@%p: unknown: 0x%x,0x%x,0x%x,0x%x\n", T->ConfigurationTable[j].VendorTable, p[0], p[1], p[2], p[3]);
-			printmemory(T->ConfigurationTable[j].VendorTable, 16);
-		}
-	}
+	*_buf = lfb;
+	*_fmt = fmt;
+	*_w = w;
+	*_h = h;
+	*_fbw = fbw;
+	*_fbh = fbh;
 }
-
-
-
-
 static u64 parseinfo(EFI_GRAPHICS_PIXEL_FORMAT format, EFI_PIXEL_BITMASK bitmask)
 {
 	switch(format){
@@ -217,13 +199,13 @@ int bootservice_graphic()
 	//locate protocol
 	EFI_GRAPHICS_OUTPUT_PROTOCOL* gop = 0;
 	EFI_GUID gopGuid = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
-	T->BootServices->LocateProtocol(&gopGuid, NULL, (void**)&gop);
+	EFI_T->BootServices->LocateProtocol(&gopGuid, NULL, (void**)&gop);
 	if(0 == gop)return 0;
 /*
 	EFI_HANDLE* hbuf;
 
 	//where is
-	ret = T->BootServices->LocateHandleBuffer(
+	ret = EFI_T->BootServices->LocateHandleBuffer(
 		ByProtocol,
 		&gEfiGraphicsOutputProtocolGuid,
 		NULL,
@@ -235,7 +217,7 @@ int bootservice_graphic()
 		return 0;
 	}
 
-	ret = T->BootServices->HandleProtocol(
+	ret = EFI_T->BootServices->HandleProtocol(
 		hbuf[0],
 		&gEfiGraphicsOutputProtocolGuid,
 		(void**)&gop
@@ -246,6 +228,7 @@ int bootservice_graphic()
 	}
 */
 
+	logtoall("resolution{\n");
 	//prefer 1024x768
 	num = 0;
 	chosen = -1;
@@ -266,6 +249,7 @@ int bootservice_graphic()
 		);
 		num++;
 	}
+	logtoall("}\n");
 
 
 	//fallback current
@@ -330,13 +314,34 @@ int bootservice_graphic()
 
 
 
+
+
+
+
+//memmap
+#define BYTE_PER_DESC 0x30
+#define DESC_PER_UEFI 4096
+struct meminfo_t{
+	UINTN byteperdesc;
+	UINTN byteperuefi;
+	u8 memmap[BYTE_PER_DESC * DESC_PER_UEFI];
+}__attribute__((packed));
+static struct meminfo_t meminfo;
+u32 memmap_type()
+{
+	return _efi_;
+}
+void* memmap_addr()
+{
+	return &meminfo;
+}
 int bootservice_exit()
 {
 	//GetMemoryMap
 	UINT32 ver;
 	UINTN key;
 	meminfo.byteperuefi = BYTE_PER_DESC * DESC_PER_UEFI;
-	int ret = T->BootServices->GetMemoryMap(
+	int ret = EFI_T->BootServices->GetMemoryMap(
 		&meminfo.byteperuefi,
 		(EFI_MEMORY_DESCRIPTOR*)meminfo.memmap,
 		&key,
@@ -353,6 +358,7 @@ int bootservice_exit()
 			key, ver
 		);
 
+		logtoall("memmap{\n");
 		int j;
 		EFI_MEMORY_DESCRIPTOR* desc;
 		for(j=0;j<meminfo.byteperuefi / meminfo.byteperdesc;j++){
@@ -366,6 +372,7 @@ int bootservice_exit()
 				desc->Attribute
 			);
 		}
+		logtoall("}\n");
 	}
 
 	//ExitBootService
@@ -374,7 +381,7 @@ int bootservice_exit()
 		//key may change after each call to exitbootservice
 
 		meminfo.byteperuefi = BYTE_PER_DESC * DESC_PER_UEFI;
-		ret = T->BootServices->GetMemoryMap(
+		ret = EFI_T->BootServices->GetMemoryMap(
 			&meminfo.byteperuefi,
 			(EFI_MEMORY_DESCRIPTOR*)meminfo.memmap,
 			&key,
@@ -386,7 +393,7 @@ int bootservice_exit()
 			continue;
 		}
 
-		ret = T->BootServices->ExitBootServices(H, key);
+		ret = EFI_T->BootServices->ExitBootServices(EFI_H, key);
 		if(EFI_SUCCESS != ret){
 			logtoall("error:%d,retry:%d@ExitBootServices\n", ret, j);
 			continue;
@@ -406,6 +413,9 @@ void freerunenv()
 }
 void initrunenv()
 {
+	logtoall("entry=%p stack=%p\n", entry, stack);
+	logtoall("handle=%x table=%p\n", EFI_H, EFI_T);
+
 	uefi_version();
 
 	uefi_tables();
@@ -417,5 +427,5 @@ void initrunenv()
 	bootservice_exit();
 
 	//nomore bootservice
-	H = 0;
+	EFI_H = 0;
 }

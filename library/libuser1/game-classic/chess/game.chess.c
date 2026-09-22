@@ -217,14 +217,14 @@ static void chess_modify(_obj* act)
 static void chess_delete(_obj* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memoryfree(act->listptr.buf0);
+	if(_copy_ == act->type)memory_free(act->listptr.buf0);
 }
 static void chess_create(_obj* act)
 {
 	int j,k;
 	if(0 == act)return;
 	if(_orig_ == act->type)act->listptr.buf0 = buffer;
-	if(_copy_ == act->type)act->listptr.buf0 = memoryalloc(64, 0);
+	if(_copy_ == act->type)act->listptr.buf0 = memory_alloc_align(64, 0);
 
 	for(k=0;k<8;k++)
 	{

@@ -79,8 +79,6 @@ int window_give(void*,void*, void*,int, p64,int, void*,int);
 //
 static _obj* supply = 0;
 static int suplen = 0;
-static struct style* pinid = 0;
-static int pinlen = 0;
 
 
 
@@ -96,9 +94,6 @@ void supply_init(u8* addr, int size)
 	supply = (void*)(addr+0x000000);
 	suplen = maxitem-1;
 	for(j=0;j<maxitem;j++)supply[j].tier = _sup_;
-
-//#define maxfoot 
-	pinid = (void*)(addr+0x100000);
 
 	initstd(supply);
 	initwindow(supply);
@@ -117,25 +112,6 @@ void supply_exit()
 	freejoy();
 
 	logtoall("[c,e):supply exited\n");
-}
-
-
-
-
-void* pinid_alloc()
-{
-#define maxlen 0x200
-	int j;
-	u8* buf;
-
-	buf = (void*)pinid + pinlen;
-	for(j=0;j<maxlen;j++)buf[j] = 0;
-
-	pinlen += maxlen;
-	return buf;
-}
-void pinid_recycle()
-{
 }
 
 

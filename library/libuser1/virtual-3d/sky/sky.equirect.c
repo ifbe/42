@@ -15,7 +15,7 @@ struct own{
 };
 static void equirect_prep_tex(struct own* my, char* str)
 {
-	my->tex.data = memoryalloc(4096*2048*4, 4);
+	my->tex.data = memory_alloc_align(4096*2048*4, 4);
 	if(0 == my->tex.data)return;
 
 	int j = loadtexfromfile(&my->tex, str);
@@ -95,14 +95,14 @@ static void equirect_dx11prep(struct own* my)
 	vtx->vbuf_w = 4*6;
 	vtx->vbuf_h = (accx+1)*(accy+1);
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
+	vtx->vbuf = memory_alloc_align(vtx->vbuf_len, 0);
 	src->vbuf_enq = 0;
 
 	vtx->ibuf_fmt = 0x222;
 	vtx->ibuf_w = 2*3;
 	vtx->ibuf_h = accx*(accy-2)*2 + accx*2;
 	vtx->ibuf_len = (vtx->ibuf_w) * (vtx->ibuf_h);
-	vtx->ibuf = memoryalloc(vtx->ibuf_len, 0);
+	vtx->ibuf = memory_alloc_align(vtx->ibuf_len, 0);
 	src->ibuf_enq = 0;
 }
 static void equirect_dx11draw(
@@ -192,7 +192,7 @@ static void equirect_gl41prep(struct own* my, char* vs, char* fs)
 		data->src.vs = equirect_glsl_vs;
 	}
 	else{
-		data->src.vs = memoryalloc(0x10000, 0);
+		data->src.vs = memory_alloc_align(0x10000, 0);
 		loadglslfromfile(vs, 0, data->src.vs, 0x10000);
 	}
 
@@ -200,7 +200,7 @@ static void equirect_gl41prep(struct own* my, char* vs, char* fs)
 		data->src.fs = equirect_glsl_fs;
 	}
 	else{
-		data->src.fs = memoryalloc(0x10000, 0);
+		data->src.fs = memory_alloc_align(0x10000, 0);
 		loadglslfromfile(fs, 0, data->src.fs, 0x10000);
 	}
 	data->src.shader_enq = 42;
@@ -223,14 +223,14 @@ static void equirect_gl41prep(struct own* my, char* vs, char* fs)
 	vtx->vbuf_w = 4*6;
 	vtx->vbuf_h = (accx+1)*(accy+1);
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
+	vtx->vbuf = memory_alloc_align(vtx->vbuf_len, 0);
 	data->src.vbuf_enq = 0;
 
 	vtx->ibuf_fmt = 0x222;
 	vtx->ibuf_w = 2*3;
 	vtx->ibuf_h = accx*(accy-2)*2 + accx*2;
 	vtx->ibuf_len = (vtx->ibuf_w) * (vtx->ibuf_h);
-	vtx->ibuf = memoryalloc(vtx->ibuf_len, 0);
+	vtx->ibuf = memory_alloc_align(vtx->ibuf_len, 0);
 	data->src.ibuf_enq = 0;
 }
 static void equirect_gl41draw(
@@ -433,7 +433,7 @@ static void equirect_create(_obj* act, void* str, int argc, u8** argv)
 		}
 	}
 
-	struct own* my = act->priv_ptr = memoryalloc(0x1000, 0);
+	struct own* my = act->priv_ptr = memory_alloc_align(0x1000, 0);
 	if(0 == my)return;
 
 	if(0 == str)str = "datafile/jpg/texball-earth.jpg";

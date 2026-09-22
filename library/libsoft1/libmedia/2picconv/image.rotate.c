@@ -48,6 +48,6 @@ int rotate_delete(_obj* ele)
 int rotate_create(_obj* ele, u8* arg)
 {
 	logtoall("@rotate_create\n");
-	ele->priv_ptr = memoryalloc(0x100000, 0);
+	ele->priv_ptr = memory_alloc_align(0x100000, 0);
 	return 1;
 }

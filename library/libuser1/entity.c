@@ -282,8 +282,6 @@ int touchobj_giving(void*,void*, void*,int, p64,int, void*,int);
 
 static _obj* entity = 0;
 static int actlen = 0;
-static struct style* style = 0;
-static int stylen = 0;
 
 
 
@@ -299,8 +297,6 @@ void entity_init(u8* addr, int size)
 	entity = (void*)(addr+0x000000);
 	actlen = maxsz-1;
 	for(j=0;j<maxsz;j++)entity[j].tier = _ent_;
-
-	style = (void*)(addr+0x100000);
 
 	formem_init(addr);
 	forcpu_init(addr);
@@ -320,7 +316,6 @@ void entity_exit()
 	forcpu_exit();
 	formem_exit();
 
-	style = 0;
 	entity = 0;
 
 	logtoall("[e,f):entity exited\n");
@@ -335,24 +330,6 @@ void* entity_findfmt(u64 fmt){
 		if(fmt == tmp->type)return tmp;
 	}
 	return 0;
-}
-
-
-
-void* style_alloc()
-{
-#define maxlen (sizeof(struct style))
-	int j;
-	u8* buf;
-
-	buf = (void*)style + stylen;
-	for(j=0;j<maxlen;j++)buf[j] = 0;
-
-	stylen += maxlen;
-	return buf;
-}
-void style_recycle()
-{
 }
 
 

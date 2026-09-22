@@ -1,4 +1,6 @@
 #include "libuser.h"
+void* memory_rsvd_framebuffer(int*);
+//
 void* supply_alloc();
 void* supply_recycle(void*);
 
@@ -45,8 +47,8 @@ void window_create(_obj* win)
 	win->fbwidth = 320;
 	//win->fbheight = ;
 
-	win->len = 320*200;
-	win->buf = (void*)(u64)0x2000000;
+	int tmp;
+	wnd->rgbanode.buf = memory_rsvd_framebuffer(&tmp);
 }
 
 

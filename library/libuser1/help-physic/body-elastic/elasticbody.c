@@ -250,8 +250,8 @@ int elastic_create(_obj* scene, void* arg, int argc, u8** argv)
 	logtoall("@elastic_create\n");
 	if(0 == arg)return 0;
 
-	scene->listptr.buf0 = memoryalloc(0x10000, 0);
-	scene->listptr.buf1 = memoryalloc(0x10000, 0);
+	scene->listptr.buf0 = memory_alloc_align(0x10000, 0);
+	scene->listptr.buf1 = memory_alloc_align(0x10000, 0);
 
 	buf = scene->listptr.buf0;
 	if(0 == buf)return 0;

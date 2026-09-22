@@ -242,7 +242,7 @@ int gpio_create(_obj* obj, void* arg, int argc, void** argv)
 
     struct privdata* priv = (void*)obj->priv_256b;
     priv->chip = gpiochip;
-    priv->request = memoryalloc(0x1000, 0);
+    priv->request = memory_alloc_align(0x1000, 0);
     
     // 初始化所有指针为 NULL
     for (int i = 0; i < 100; i++) {

@@ -322,7 +322,7 @@ static void spotlight_mesh_prepare(struct mysrc* src)
 	vtx->vbuf_w = 6*4;
 	vtx->vbuf_h = 6;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
+	vtx->vbuf = memory_alloc_align(vtx->vbuf_len, 0);
 }
 
 
@@ -431,7 +431,7 @@ static void spotlight_create(_obj* act, void* str)
 {
 	if(0 == act)return;
 
-	struct sunbuf* sun = act->priv_ptr = memoryalloc(0x10000, 0);
+	struct sunbuf* sun = act->priv_ptr = memory_alloc_align(0x10000, 0);
 	if(0 == sun)return;
 
 	sun->u_rgb = 0xff0000;

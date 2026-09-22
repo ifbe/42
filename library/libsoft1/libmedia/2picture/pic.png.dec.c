@@ -23,10 +23,10 @@ freely, subject to the following restrictions:
 		3. This notice may not be removed or altered from any source
 		distribution.
 */
-void memoryfree(void*);
-void* memoryalloc(int);
-void* memorysetup(void*,int,int);
-void* memorycopy(void*,void*,int);
+void memory_free(void*);
+void* memory_alloc_align(int);
+void* memory_setval(void*,int,int);
+void* memory_copy(void*,void*,int);
 
 #define MAKE_BYTE(b) ((b) & 0xFF)
 #define MAKE_DWORD(a,b,c,d) ((MAKE_BYTE(a) << 24) | (MAKE_BYTE(b) << 16) | (MAKE_BYTE(c) << 8) | MAKE_BYTE(d))
@@ -304,8 +304,8 @@ static void huffman_tree_create_lengths(upng_t* upng, huffman_tree* tree, const 
 	unsigned treepos = 0;	/*position in the tree (1 of the numcodes columns) */
 
 	/* initialize local vectors */
-	memorysetup(blcount, 0, sizeof(blcount));
-	memorysetup(nextcode, 0, sizeof(nextcode));
+	memory_setval(blcount, 0, sizeof(blcount));
+	memory_setval(nextcode, 0, sizeof(nextcode));
 
 	/*step 1: count number of instances of each code length */
 	for (bits = 0; bits < tree->numcodes; bits++) {
@@ -403,8 +403,8 @@ static void get_tree_inflate_dynamic(upng_t* upng, huffman_tree* codetree, huffm
 	}
 
 	/* clear bitlen arrays */
-	memorysetup(bitlen, 0, sizeof(bitlen));
-	memorysetup(bitlenD, 0, sizeof(bitlenD));
+	memory_setval(bitlen, 0, sizeof(bitlen));
+	memory_setval(bitlenD, 0, sizeof(bitlenD));
 
 	/*the bit pointer is or will go past the memory */
 	hlit = read_bits(bp, in, 5) + 257;	/*number of literal/length codes + 257. Unlike the spec, the value 257 is added to it here already */
@@ -977,7 +977,7 @@ static upng_format determine_format(upng_t* upng) {
 static void upng_free_source(upng_t* upng)
 {
 	if (upng->source.owning != 0) {
-		memoryfree((void*)upng->source.buffer);
+		memory_free((void*)upng->source.buffer);
 	}
 
 	upng->source.buffer = 0;
@@ -1081,7 +1081,7 @@ upng_error upng_decode(upng_t* upng)
 
 	/* release old result, if any */
 	if (upng->buffer != 0) {
-		memoryfree(upng->buffer);
+		memory_free(upng->buffer);
 		upng->buffer = 0;
 		upng->size = 0;
 	}
@@ -1131,7 +1131,7 @@ upng_error upng_decode(upng_t* upng)
 	}
 
 	/* allocate enough space for the (compressed and filtered) image data */
-	compressed = memoryalloc(compressed_size);
+	compressed = memory_alloc_align(compressed_size);
 	if (compressed == 0) {
 		SET_ERROR(upng, UPNG_ENOMEM);
 		return upng->error;
@@ -1149,7 +1149,7 @@ upng_error upng_decode(upng_t* upng)
 
 		/* parse chunks */
 		if (upng_chunk_type(chunk) == CHUNK_IDAT) {
-			memorycopy(compressed + compressed_index, data, length);
+			memory_copy(compressed + compressed_index, data, length);
 			compressed_index += length;
 		} else if (upng_chunk_type(chunk) == CHUNK_IEND) {
 			break;
@@ -1160,9 +1160,9 @@ upng_error upng_decode(upng_t* upng)
 
 	/* allocate space to store inflated (but still filtered) data */
 	inflated_size = ((upng->width * (upng->height * upng_get_bpp(upng) + 7)) / 8) + upng->height;
-	inflated = memoryalloc(inflated_size);
+	inflated = memory_alloc_align(inflated_size);
 	if (inflated == 0) {
-		memoryfree(compressed);
+		memory_free(compressed);
 		SET_ERROR(upng, UPNG_ENOMEM);
 		return upng->error;
 	}
@@ -1170,19 +1170,19 @@ upng_error upng_decode(upng_t* upng)
 	/* decompress image data */
 	error = uz_inflate(upng, inflated, inflated_size, compressed, compressed_size);
 	if (error != UPNG_EOK) {
-		memoryfree(compressed);
-		memoryfree(inflated);
+		memory_free(compressed);
+		memory_free(inflated);
 		return upng->error;
 	}
 
 	/* free the compressed compressed data */
-	memoryfree(compressed);
+	memory_free(compressed);
 
 	/* allocate final image buffer */
 	upng->size = (upng->height * upng->width * upng_get_bpp(upng) + 7) / 8;
-	upng->buffer = memoryalloc(upng->size);
+	upng->buffer = memory_alloc_align(upng->size);
 	if (upng->buffer == 0) {
-		memoryfree(inflated);
+		memory_free(inflated);
 		upng->size = 0;
 		SET_ERROR(upng, UPNG_ENOMEM);
 		return upng->error;
@@ -1190,10 +1190,10 @@ upng_error upng_decode(upng_t* upng)
 
 	/* unfilter scanlines */
 	post_process_scanlines(upng, upng->buffer, inflated, upng);
-	memoryfree(inflated);
+	memory_free(inflated);
 
 	if (upng->error != UPNG_EOK) {
-		memoryfree(upng->buffer);
+		memory_free(upng->buffer);
 		upng->buffer = 0;
 		upng->size = 0;
 	} else {
@@ -1210,7 +1210,7 @@ static upng_t* upng_new(void)
 {
 	upng_t* upng;
 
-	upng = memoryalloc(sizeof(upng_t));
+	upng = memory_alloc_align(sizeof(upng_t));
 	if (upng == 0) {
 		return 0;
 	}
@@ -1240,14 +1240,14 @@ void upng_free(upng_t* upng)
 {
 	/* deallocate image buffer */
 	if (upng->buffer != 0) {
-		memoryfree(upng->buffer);
+		memory_free(upng->buffer);
 	}
 
 	/* deallocate source buffer, if necessary */
 	upng_free_source(upng);
 
 	/* deallocate struct itself */
-	memoryfree(upng);
+	memory_free(upng);
 }
 
 upng_t* upng_new_from_bytes(unsigned char* buffer, unsigned long size)

@@ -34,7 +34,7 @@ static void texball_copypath(u8* dst, u8* src)
 static void texball_prep(struct own* my, u8* albedo, u8* height)
 {
 	//albedo
-	my->albedotex.data = memoryalloc(8192*4096*4, 4);
+	my->albedotex.data = memory_alloc_align(8192*4096*4, 4);
 	if(0 == my->albedotex.data)return;
 
 	int ret = loadtexfromfile(&my->albedotex, albedo);
@@ -44,7 +44,7 @@ static void texball_prep(struct own* my, u8* albedo, u8* height)
 
 
 	//height
-	my->heighttex.data = memoryalloc(4096*2048*4, 4);
+	my->heighttex.data = memory_alloc_align(4096*2048*4, 4);
 	if(0 == my->heighttex.data)return;
 
 	ret = loadtexfromfile(&my->heighttex, height);
@@ -135,14 +135,14 @@ static void texball_dx11prep(struct own* my)
 	vtx->vbuf_w = 4*9;
 	vtx->vbuf_h = (accx+1)*(accy+1);
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
+	vtx->vbuf = memory_alloc_align(vtx->vbuf_len, 0);
 	src->vbuf_enq = 0;
 
 	vtx->ibuf_fmt = 0x222;
 	vtx->ibuf_w = 2*3;
 	vtx->ibuf_h = accx*(accy-2)*2 + accx*2;
 	vtx->ibuf_len = (vtx->ibuf_w) * (vtx->ibuf_h);
-	vtx->ibuf = memoryalloc(vtx->ibuf_len, 0);
+	vtx->ibuf = memory_alloc_align(vtx->ibuf_len, 0);
 	src->ibuf_enq = 0;
 }
 static void texball_dx11draw(
@@ -324,14 +324,14 @@ static void texball_gl41prep(struct own* my)
 	vtx->vbuf_w = 4*9;
 	vtx->vbuf_h = (accx+1)*(accy+1);
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
+	vtx->vbuf = memory_alloc_align(vtx->vbuf_len, 0);
 	data->src.vbuf_enq = 0;
 
 	vtx->ibuf_fmt = 0x222;
 	vtx->ibuf_w = 2*3;
 	vtx->ibuf_h = accx*(accy-2)*2 + accx*2;
 	vtx->ibuf_len = (vtx->ibuf_w) * (vtx->ibuf_h);
-	vtx->ibuf = memoryalloc(vtx->ibuf_len, 0);
+	vtx->ibuf = memory_alloc_align(vtx->ibuf_len, 0);
 	data->src.ibuf_enq = 0;
 }
 static void texball_gl41draw(
@@ -529,7 +529,7 @@ static void texball_create(_obj* act, void* arg, int argc, u8** argv)
 {
 	if(0 == act)return;
 
-	struct own* my = act->OWNBUF = memoryalloc(0x1000, 0);
+	struct own* my = act->OWNBUF = memory_alloc_align(0x1000, 0);
 	if(0 == my)return;
 
 	my->distance_per_value[0] = 0.0;

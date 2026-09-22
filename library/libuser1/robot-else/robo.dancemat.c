@@ -239,7 +239,7 @@ static void dancemat_modify(_obj* act)
 static void dancemat_delete(_obj* act)
 {
 	if(0 == act)return;
-	//if(_copy_ == act->type)memoryfree(act->buf);
+	//if(_copy_ == act->type)memory_free(act->buf);
 }
 static void dancemat_create(_obj* act, u8* arg, int argc, u8** argv)
 {
@@ -266,15 +266,15 @@ static void dancemat_create(_obj* act, u8* arg, int argc, u8** argv)
 		}
 	}
 
-	act->VBUF = memoryalloc(0x1000, 0);
+	act->VBUF = memory_alloc_align(0x1000, 0);
 
-	nbuf = act->NBUF = memoryalloc(0x1000, 0);
+	nbuf = act->NBUF = memory_alloc_align(0x1000, 0);
 	for(j=0;j<288;j++){
 		nbuf[j] = (random_read() & 0xfff);
 		//logtoall("%d\n", nbuf[j]);
 	}
 
-	ibuf = act->IBUF = memoryalloc(0x1000, 0);
+	ibuf = act->IBUF = memory_alloc_align(0x1000, 0);
 	j = 0;
 	for(y=0;y<120;y+=24){
 		for(x=1;x<18;x+=4){

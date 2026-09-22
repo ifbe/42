@@ -209,13 +209,13 @@ static void skydome_attach(struct halfrel* self, struct halfrel* peer)
 	src->vbuf_w = 4*6;
 	src->vbuf_h = 128+1;
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memoryalloc(src->vbuf_len, 0);
+	src->vbuf = memory_alloc_align(src->vbuf_len, 0);
 
 	src->ibuf_fmt = 0x222;
 	src->ibuf_w = 2*3;
 	src->ibuf_h = 256;
 	src->ibuf_len = (src->ibuf_w) * (src->ibuf_h);
-	src->ibuf = memoryalloc(src->ibuf_len, 0);
+	src->ibuf = memory_alloc_align(src->ibuf_len, 0);
 */
 }
 
@@ -235,7 +235,7 @@ static void skydome_delete(_obj* act)
 static void skydome_create(_obj* act)
 {
 	if(0 == act)return;
-	act->CTXBUF = memoryalloc(0x1000, 0);
+	act->CTXBUF = memory_alloc_align(0x1000, 0);
 }
 
 

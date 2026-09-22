@@ -105,14 +105,14 @@ static void poker_delete(_obj* act)
 {
 	if(0 == act)return;
 	if(act->listptr.buf0){
-		memoryfree(act->listptr.buf0);
+		memory_free(act->listptr.buf0);
 		act->listptr.buf0 = 0;
 	}
 }
 static void poker_create(_obj* act)
 {
 	if(0 == act)return;
-	act->listptr.buf0 = memoryalloc(108, 0);
+	act->listptr.buf0 = memory_alloc_align(108, 0);
 }
 
 

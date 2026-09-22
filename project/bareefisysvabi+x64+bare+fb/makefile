@@ -9,7 +9,7 @@ AS=as
 AF=
 #c
 CC=gcc
-CF=-c -fPIC -ffreestanding -fno-stack-protector -mno-sse2 -mno-red-zone -Wno-address-of-packed-member -I$(library)/lib1
+CF=-c -fPIC -ffreestanding -fno-stack-protector -mno-red-zone -Wno-address-of-packed-member -I$(library)/lib1
 CF_GNUEFI=-fshort-wchar -DGNU_EFI_USE_MS_ABI -I$(library)/lib0/gnu-efi -I$(library)/lib0/gnu-efi/inc -I$(library)/lib0/gnu-efi/inc/x86_64 -I$(library)/lib0/gnu-efi/inc/protocol
 #link
 LD=ld
@@ -30,7 +30,8 @@ endif
 linux:pe
 cross:pe
 pe:so
-	$(CP) -j .text -j .sdata -j .data -j .dynamic -j .dynsym -j .rel -j .rela -j .reloc --target=efi-app-x86_64 bootx64.so bootx64.efi
+	#if(binutils>=2.45)replace --target to --output-target
+	$(CP) -j .text -j .sdata -j .data -j .dynamic -j .dynsym -j .rel -j .rela -j .reloc --output-target=efi-app-x86_64 bootx64.so bootx64.efi
 so:elf
 	mv libboot0/start.o .
 	mv libboot0/main.o .

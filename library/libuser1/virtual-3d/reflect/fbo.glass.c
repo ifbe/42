@@ -295,7 +295,7 @@ void glass_gl41geom_prepare(struct mysrc* src)
 	vtx->vbuf_w = 6*4;
 	vtx->vbuf_h = 6;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
+	vtx->vbuf = memory_alloc_align(vtx->vbuf_len, 0);
 
 	src->vbuf_enq = 0;
 }
@@ -387,13 +387,13 @@ static void glass_delete(_obj* act)
 {
 	if(0 == act)return;
 	if(act->CTXBUF){
-		memoryfree(act->CTXBUF);
+		memory_free(act->CTXBUF);
 		act->CTXBUF = 0;
 	}
 }
 static void glass_create(_obj* act, void* str)
 {
-	struct glassbuf* glass = act->CTXBUF = memoryalloc(0x10000, 0);
+	struct glassbuf* glass = act->CTXBUF = memory_alloc_align(0x10000, 0);
 	if(0 == glass)return;
 
 	glass_gl41fbo_prepare(&glass->dest.src);

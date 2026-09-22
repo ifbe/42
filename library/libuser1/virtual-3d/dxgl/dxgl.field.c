@@ -255,13 +255,13 @@ static void field_modify(_obj* act)
 static void field_delete(_obj* act)
 {
 	if(act->listptr.buf0){
-		memoryfree(act->listptr.buf0);
+		memory_free(act->listptr.buf0);
 		act->listptr.buf0 = 0;
 	}
 }
 static void field_create(_obj* act)
 {
-	float* buf = act->listptr.buf0 = memoryalloc(0x100000, 0);
+	float* buf = act->listptr.buf0 = memory_alloc_align(0x100000, 0);
 }
 
 

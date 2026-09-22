@@ -811,16 +811,16 @@ void fullwindow_create(_obj* ogl, void* arg, int argc, char** argv)
 	priv->rendermode = rendermode;
 
 	struct gl41world* world = priv->world;
-	world[0].camera = memoryalloc(0x10000, 0);
-	world[0].light  = memoryalloc(0x10000, 0);
-	world[0].solid  = memoryalloc(0x10000, 0);
-	world[0].opaque = memoryalloc(0x10000, 0);
+	world[0].camera = memory_alloc_align(0x10000, 0);
+	world[0].light  = memory_alloc_align(0x10000, 0);
+	world[0].solid  = memory_alloc_align(0x10000, 0);
+	world[0].opaque = memory_alloc_align(0x10000, 0);
 
 	if((_gbuf_ == priv->rendermode)|(_ppll_ == priv->rendermode)){
-		world[1].camera = memoryalloc(0x10000, 0);
-		world[1].light  = memoryalloc(0x10000, 0);
-		world[1].solid  = memoryalloc(0x10000, 0);
-		world[1].opaque = memoryalloc(0x10000, 0);
+		world[1].camera = memory_alloc_align(0x10000, 0);
+		world[1].light  = memory_alloc_align(0x10000, 0);
+		world[1].solid  = memory_alloc_align(0x10000, 0);
+		world[1].opaque = memory_alloc_align(0x10000, 0);
 	}
 
 	//glDepthRange(0.0, 1.0);		//this seems not working, matrix set z=[0,1], but z=0 mapped to 0.5 !

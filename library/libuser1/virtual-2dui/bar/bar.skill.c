@@ -80,7 +80,7 @@ void skillbar_ctxforwnd(struct gl41data* data, char* str)
 	//texture
 	data->dst.texname[0] = "tex0";
 	data->src.tex[0].fmt = hex32('r','g','b','a');
-	data->src.tex[0].data = memoryalloc(2048*2048*4, 0);
+	data->src.tex[0].data = memory_alloc_align(2048*2048*4, 0);
 	loadtexfromfile(&data->src.tex[0], str);
 	data->src.tex_enq[0] = 42;
 
@@ -93,7 +93,7 @@ void skillbar_ctxforwnd(struct gl41data* data, char* str)
 	vtx->vbuf_w = 6*4;
 	vtx->vbuf_h = 0;
 	vtx->vbuf_len = (vtx->vbuf_w) * 6*16*16;
-	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
+	vtx->vbuf = memory_alloc_align(vtx->vbuf_len, 0);
 	data->src.vbuf_enq = 42;
 }
 
@@ -233,14 +233,14 @@ static void skillbar_modify(_obj* act)
 static void skillbar_delete(_obj* act)
 {
 	if(0 == act)return;
-	memoryfree(act->listptr.buf0);
+	memory_free(act->listptr.buf0);
 	act->listptr.buf0 = 0;
 }
 static void skillbar_create(_obj* act, void* str)
 {
 	if(0 == act)return;
 
-	struct gl41data* data = act->listptr.buf0 = memoryalloc(0x1000, 0);
+	struct gl41data* data = act->listptr.buf0 = memory_alloc_align(0x1000, 0);
 	if(0 == str)str = "datafile/jpg/cartoon.jpg";
 	skillbar_ctxforwnd(data, str);
 }

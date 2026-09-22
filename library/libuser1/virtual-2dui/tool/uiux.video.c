@@ -135,7 +135,7 @@ static void video_dx11prep(struct own* my)
 	vtx->vbuf_w = 6*4;
 	vtx->vbuf_h = 6;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
+	vtx->vbuf = memory_alloc_align(vtx->vbuf_len, 0);
 }
 void video_dx11draw(
 	_obj* act, struct style* part,
@@ -299,7 +299,7 @@ static void video_gl41prep(struct own* my)
 	vtx->vbuf_w = 6*4;
 	vtx->vbuf_h = 6;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
+	vtx->vbuf = memory_alloc_align(vtx->vbuf_len, 0);
 
 	data->dst.arg[0].fmt = 'm';
 	data->dst.arg[0].name = "ccm";
@@ -609,7 +609,7 @@ static void video_create(_obj* act, void* arg, int argc, u8** argv)
 {
 	if(0 == act)return;
 
-	struct own* own = act->OWNBUF = memoryalloc(0x1000, 0);
+	struct own* own = act->OWNBUF = memory_alloc_align(0x1000, 0);
 	if(0 == own)return;
 
 	int x,y,j;

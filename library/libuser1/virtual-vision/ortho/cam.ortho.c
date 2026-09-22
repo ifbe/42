@@ -48,7 +48,7 @@ static void orthcam_create(_obj* act, void* arg, int argc, u8** argv)
 {
     logtoall("@orthcam_create\n");
 	struct privdata* priv = (void*)act->priv_256b;
-	priv->gl41cam = memoryalloc(0x1000, 0);
+	priv->gl41cam = memory_alloc_align(0x1000, 0);
 	priv->evtype = 0;
 
 	int j;

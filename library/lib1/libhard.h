@@ -23,8 +23,8 @@ int sleep_ns(int);
 int sleep_us(int);
 int sleep_ms(int);
 //
-void* memoryalloc(int, int);
-int memoryfree(void*);
+void* memory_alloc_align(int, int);
+int memory_free(void*);
 //
 int printmemory(void*, int);
 int printmmio(void*, int);

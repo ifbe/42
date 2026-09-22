@@ -275,11 +275,11 @@ int analog_create(_obj* scene, void* arg, int argc, u8** argv)
 	logtoall("@analog_create\n");
 	if(0 == arg)return 0;
 
-	scene->listptr.buf0 = memoryalloc(0x10000, 0);
+	scene->listptr.buf0 = memory_alloc_align(0x10000, 0);
 	ret = openreadclose(arg, 0, scene->listptr.buf0, 0x10000);
 	if(ret <= 0)return 0;
 
-	scene->listptr.buf1 = memoryalloc(0x10000, 0);
+	scene->listptr.buf1 = memory_alloc_align(0x10000, 0);
 	parsewiring(scene->listptr.buf0, scene->listptr.buf1);
 	return 0;
 }

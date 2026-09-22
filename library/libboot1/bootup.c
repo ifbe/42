@@ -1,6 +1,4 @@
 #include "libboot.h"
-void freestdev();
-void initstdev(void*);
 void freestdrel();
 void initstdrel(void*);
 //
@@ -30,7 +28,7 @@ void myml_init(void*);
 void myml_create(struct item*, u8*, int, u8**);
 void myml_delete(struct item*);
 //
-void mython_init(void*);
+void mython_init();
 void mython_create(struct item*, u8*, int, u8**);
 //
 void term_init(void*);
@@ -45,7 +43,7 @@ void subcmd_create(struct item*, u8*, int, u8**);
 
 
 
-static struct item* wrk;
+static struct item* wrk = 0;
 static int wrklen = 0;
 
 
@@ -56,23 +54,26 @@ void bootup_init(u8* addr, int size)
 {
 	logtoall("[2,4):bootup initing\n");
 
-	int j;
-	for(j=0;j<0x200000;j++)addr[j]=0;
+	if(addr){		//pre alloc memory pool
+		int j;
+		for(j=0;j<0x200000;j++)addr[j]=0;
 
-	wrk = (void*)(addr+0x000000);
-	wrklen = maxitem-1;
-	for(j=0;j<maxitem;j++)wrk[j].tier = _wrk_;
+		wrk = (void*)(addr+0x000000);
+		wrklen = maxitem-1;
+		for(j=0;j<maxitem;j++)wrk[j].tier = _wrk_;
 
-	initstdev( addr+0x100000);
-	initstdrel(addr+0x180000);
+		initstdrel(addr+0x180000);
 
-	subcmd_init(wrk);
+		subcmd_init(wrk);
 
-	kernel_init(addr - 0x200000);
-	mython_init(addr - 0x200000);
+		kernel_init(addr - 0x200000);
+		mython_init();
 
-	poller_init(addr - 0x200000);
-	waiter_init(addr - 0x200000);
+		poller_init(addr - 0x200000);
+		waiter_init(addr - 0x200000);
+	}
+	else{		//all use memory alloc
+	}
 
 	logtoall("[2,4):bootup inited\n");
 }
@@ -80,7 +81,6 @@ void bootup_exit()
 {
 	logtoall("[2,4):bootup exiting\n");
 
-	freestdev();
 	freestdrel();
 
 	logtoall("[2,4):bootup exited\n");

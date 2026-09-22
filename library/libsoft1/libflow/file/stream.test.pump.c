@@ -45,7 +45,7 @@ static void funcaddr(_obj* art)
 {
 	struct halfrel stack[12];
 	struct perobj* per = (void*)art->priv_256b;
-	per->buf = memoryalloc(0x100000, 4);
+	per->buf = memory_alloc_align(0x100000, 4);
 	while(1){
 		int ret = openreadclose(per->path, 0, per->buf, 0x100000);
 
@@ -54,7 +54,7 @@ static void funcaddr(_obj* art)
 		sleep_us(1000*1000);
 	}
 
-	memoryfree(per->buf);
+	memory_free(per->buf);
 	per->buf = 0;
 }
 

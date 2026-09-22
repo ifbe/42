@@ -72,4 +72,5 @@ void freeserial()
 }
 void initserial()
 {
+	printf("serial inited\n");
 }

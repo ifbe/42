@@ -189,7 +189,7 @@ static void balance_search(_obj* act)
 static void balance_delete(_obj* act)
 {
 	if(0 == act)return;
-	//if(_copy_ == act->type)memoryfree(act->buf);
+	//if(_copy_ == act->type)memory_free(act->buf);
 }
 static void balance_create(_obj* act)
 {

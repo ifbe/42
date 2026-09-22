@@ -1,4 +1,6 @@
 #include "libboot.h"
+void freestdev();
+void initstdev(void*);
 void freestdin();
 void initstdin(void*);
 void freestdout();
@@ -17,29 +19,40 @@ int openwriteclose(void*, int, void*, int);
 
 
 
-static struct item* ori;
+static struct item* ori = 0;
 static int orilen = 0;
 
 
 
 
-#define maxitem (0x100000/sizeof(struct item))
+#define maxitem (0x80000/sizeof(struct item))
 void origin_init(u8* addr, int size)
 {
 	//logtoall("[0,2):origin initing\n");		//dont uncomment, wont output before init stdout
 
-	int j;
-	for(j=0;j<0x200000;j++)addr[j]=0;
+	if(addr){
+		int j;
+		for(j=0;j<0x200000;j++)addr[j]=0;
 
-	ori = (void*)(addr+0x000000);
-	orilen = maxitem-1;
-	for(j=0;j<maxitem;j++)ori[j].tier = _ori_;
+		ori = (void*)(addr+0x000000);
+		orilen = maxitem-1;
+		for(j=0;j<maxitem;j++)ori[j].tier = _ori_;
 
-	initstdout(addr+0x180000);
-	initstdin( addr+0x100000);
+		initstdout(addr+0x180000);
+		initstdin( addr+0x100000);
+		initstdev( addr+0x80000);
 
-	initserial();
-	initrunenv();
+		initserial();
+		initrunenv();
+	}
+	else{
+		initstdout(0);
+		initstdin(0);
+		initstdev(0);
+
+		initserial();
+		initrunenv();
+	}
 
 	logtoall("[0,2):origin inited\n");
 }
@@ -50,6 +63,7 @@ void origin_exit()
 	freerunenv();
 	freeserial();
 
+	freestdev();
 	freestdin();
 	freestdout();
 
@@ -84,15 +98,13 @@ void* origin_alloc_fromarg(u64 type, void* func, int argc, u8** argv)
 	int j;
 	struct item* tmp=0;
 
+	logtoall("type=%.8s, func@%p, argc=%d, argv@%p\n\n", &type, func, argc, argv);
 	switch(type){
 	//app
 	case _main_:
 	case _win32_:
 	case _ndkmain_:{
-		tmp = memoryalloc(0x1000000, 0);
-		//openreadclose("universe.bin", 0, ori, 0x1000000);
-		birth(tmp);
-		logtoall("type=%.8s, func@%p, argc=%d, argv@%p\n\n", &type, func, argc, argv);
+		tmp = origin_alloc();
 		tmp->type = type;
 		return tmp;
 	}
@@ -100,10 +112,7 @@ void* origin_alloc_fromarg(u64 type, void* func, int argc, u8** argv)
 	//bare
 	case _start_:
 	case _efimain_:{
-		tmp = (void*)(0x1000000);
-		birth(tmp);
-		logtoall("type=%.8s, func@%p, argc=%d, argv@%p\n\n", &type, func, argc, argv);
-
+		tmp = origin_alloc();
 		tmp->type = type;
 		tmp->priv_ptr = argv;
 		return tmp;
@@ -111,12 +120,14 @@ void* origin_alloc_fromarg(u64 type, void* func, int argc, u8** argv)
 
 	//kmod
 	case _kext_:{
+		tmp = origin_alloc();
 		tmp->type = type;
 		return tmp;
 	}
 
 	//lib
 	case _lib42_:{
+		tmp = origin_alloc();
 		tmp->type = type;
 		return tmp;
 	}
@@ -139,16 +150,12 @@ int origin_delete(_obj* obj)
 	switch(obj->type){
 	case _start_:
 	case _efimain_:{
-		death();
 		break;
 	}
 	case _main_:
 	case _win32_:
 	case _ndkmain_:{
-		death();
-
-		//openwriteclose("universe.bin", 0, ori, 0x1000000);
-		memoryfree(ori);
+		break;
 	}
 	}
 	return 0;

@@ -151,11 +151,11 @@ int slip_delete(_obj* art)
 {
 	struct privdata* priv = (void*)art->priv_256b;
 	if(priv->decoded){
-		memoryfree(priv->decoded);
+		memory_free(priv->decoded);
 		priv->decoded = 0;
 	}
 	if(priv->encoded){
-		memoryfree(priv->encoded);
+		memory_free(priv->encoded);
 		priv->encoded = 0;
 	}
 	return 0;
@@ -163,8 +163,8 @@ int slip_delete(_obj* art)
 int slip_create(_obj* art, u8* url)
 {
 	struct privdata* priv = (void*)art->priv_256b;
-	priv->decoded = memoryalloc(0x1000, 0);
-	priv->encoded = memoryalloc(0x1000, 0);
+	priv->decoded = memory_alloc_align(0x1000, 0);
+	priv->encoded = memory_alloc_align(0x1000, 0);
 	priv->lastbyte = 0;
 	priv->tmpcur = 0;
 	return 0;

@@ -1,4 +1,6 @@
 #include "libuser.h"
+void* memory_rsvd_framebuffer(int*);
+//
 void stdout_setwindow(void* node);
 void getscreen(void** _buf, u64* _fmt, int* _w, int* _h, int* _fbw, int* _fbh);
 //
@@ -138,7 +140,8 @@ void window_create(_obj* wnd)
 	wnd->whdf.fbwidth = w*4;
 	//wnd->fbheight = 0;
 
-	wnd->rgbanode.buf = (void*)0x4000000;
+	int tmp;
+	wnd->rgbanode.buf = memory_rsvd_framebuffer(&tmp);
 
 	//early console
 	stdout_setwindow(wnd);

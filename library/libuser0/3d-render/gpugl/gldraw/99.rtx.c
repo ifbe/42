@@ -77,6 +77,6 @@ void cmdqwindow_create(_obj* ogl)
 {
 	ogl->vfmt = _gl41cmdq_;
 
-	ogl->gl41cmdq.data = memoryalloc(0x100000, 0);
-	ogl->gl41cmdq.code = memoryalloc(0x100000, 0);
+	ogl->gl41cmdq.data = memory_alloc_align(0x100000, 0);
+	ogl->gl41cmdq.code = memory_alloc_align(0x100000, 0);
 }

@@ -1,5 +1,4 @@
 #include "libuser.h"
-#define _tar_ hex32('t','a','r', 0)
 int areauv2worldxyz(float* v, struct fstyle* sty);
 int obb_ray(struct fstyle* sty, vec3 ray[], vec3 out[]);
 int gl41data_convert(_obj* wnd, struct style* area, struct event* ev, vec3 v);

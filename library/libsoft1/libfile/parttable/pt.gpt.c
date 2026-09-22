@@ -268,7 +268,7 @@ static int gptclient_writer(_obj* art,void* foot, p64 arg,int cmd, u8* buf,int l
 int gptclient_delete(_obj* ele)
 {
 	if(ele->listptr.buf0){
-		memoryfree(ele->listptr.buf0);
+		memory_free(ele->listptr.buf0);
 		ele->listptr.buf0 = 0;
 	}
 	return 0;
@@ -276,7 +276,7 @@ int gptclient_delete(_obj* ele)
 int gptclient_create(_obj* art, u8* url)
 {
 	logtoall("@gptclient_create\n");
-	art->listptr.buf0 = memoryalloc(0x10000, 0);
+	art->listptr.buf0 = memory_alloc_align(0x10000, 0);
 
 	art->onreader = (void*)gptclient_reader;
 	art->onwriter = (void*)gptclient_writer;

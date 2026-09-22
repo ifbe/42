@@ -178,14 +178,14 @@ static void klotski_delete(_obj* act)
 {
 	if(0 == act)return;
 	if(act->listptr.buf0){
-		memoryfree(act->listptr.buf0);
+		memory_free(act->listptr.buf0);
 		act->listptr.buf0 = 0;
 	}
 }
 static void klotski_create(_obj* act)
 {
 	if(0 == act)return;
-	act->listptr.buf0 = memoryalloc(20, 0);
+	act->listptr.buf0 = memory_alloc_align(20, 0);
 
 	data[0][1] = data[0][2] = data[1][1] = data[1][2] = caocao;
 	data[0][0] = data[1][0] = machao;

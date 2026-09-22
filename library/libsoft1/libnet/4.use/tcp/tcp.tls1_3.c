@@ -474,7 +474,7 @@ int tls1v3client_dartte(_obj* art)
 int tls1v3client_create(_obj* art, u8* url)
 {
 	logtoall("@tls1v3client_create\n");
-	art->priv_ptr = memoryalloc(0x100000, 0);
+	art->priv_ptr = memory_alloc_align(0x100000, 0);
 	return 0;
 }
 
@@ -538,8 +538,8 @@ int tls1v3master_create(_obj* art, u8* url)
 	logtoall("@tls1v3master_create\n");
 
 	struct privdata* priv = (void*)art->priv_256b;
-	priv->pem = memoryalloc(0x10000, 0);
-	priv->der = memoryalloc(0x10000, 0);
+	priv->pem = memory_alloc_align(0x10000, 0);
+	priv->der = memory_alloc_align(0x10000, 0);
 
 	int ret = openreadclose(url, 0, priv->pem, 0x2000);
 	pem2der(priv->pem, ret, priv->der, 0);

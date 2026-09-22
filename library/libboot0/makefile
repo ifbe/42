@@ -5,7 +5,7 @@ CF:=-c -O2 -fPIC
 
 
 
-#--------bare rpi os--------
+#--------bare rpi kernel--------
 barerpi_c = \
 bare/rpi/fw/main.c \
 bare/rpi/fw/helpenv.c \
@@ -23,9 +23,9 @@ barerpi:$(barerpi_o)
 
 
 
-#--------bare bios os--------
+#--------bare bios kernel--------
 barebioslive_c = \
-bare/bios/live/entry.c \
+bare/bios/live/main.c \
 bare/bios/live/helpenv.c \
 bare/bios/live/helpkbd.c \
 bare/bios/live/helpuart.c \
@@ -40,12 +40,29 @@ barebioslive:$(barebioslive_o)
 
 
 
-#--------bare efi os--------
+#--------bare efi loader--------
+bareeficarrybin_c = \
+bare/efi/kernel/main.c \
+bare/efi/kernel/helpenv.c \
+bare/efi/kernel/helpkbd.c \
+bare/efi/kernel/helpuart.c \
+bare/initer.c \
+bare/memory.c \
+origin.c
+bareeficarrybin_o = $(patsubst %.c, %.o, $(bareeficarrybin_c))
+
+.PHONY:bareeficarrybin
+bareeficarrybin:$(bareeficarrybin_o)
+
+
+
+
+#--------bare efi kernel--------
 bareefimsabi_c = \
-bare/efi/common/main.c \
-bare/efi/common/helpenv.c \
-bare/efi/common/helpkbd.c \
-bare/efi/common/helpuart.c \
+bare/efi/kernel/main.c \
+bare/efi/kernel/helpenv.c \
+bare/efi/kernel/helpkbd.c \
+bare/efi/kernel/helpuart.c \
 bare/initer.c \
 bare/memory.c \
 origin.c
@@ -60,11 +77,11 @@ bare/efi/sysvabi/start.S
 bareefisysvabi_s_o = $(patsubst %.S, %.o, $(bareefisysvabi_s))
 
 bareefisysvabi_c = \
-bare/efi/common/helpenv.c \
-bare/efi/common/helpkbd.c \
-bare/efi/common/helpuart.c \
-bare/efi/common/main.c \
 bare/efi/sysvabi/start.S \
+bare/efi/kernel/main.c \
+bare/efi/kernel/helpenv.c \
+bare/efi/kernel/helpkbd.c \
+bare/efi/kernel/helpuart.c \
 bare/initer.c \
 bare/memory.c \
 origin.c
@@ -74,25 +91,11 @@ bareefisysvabi_c_o = $(patsubst %.c, %.o, $(bareefisysvabi_c))
 bareefisysvabi:$(bareefisysvabi_s_o) $(bareefisysvabi_c_o)
 
 
-bareeficarrybin_c = \
-bare/efi/common/main.c \
-bare/efi/common/helpenv.c \
-bare/efi/common/helpkbd.c \
-bare/efi/common/helpuart.c \
-bare/initer.c \
-bare/memory.c \
-origin.c
-bareeficarrybin_o = $(patsubst %.c, %.o, $(bareeficarrybin_c))
-
-.PHONY:bareeficarrybin
-bareeficarrybin:$(bareeficarrybin_o)
-
-
 
 
 #--------app myos--------
 myos_c = \
-app/myos/entry.c \
+app/myos/main.c \
 origin.c
 myos_o = $(patsubst %.c, %.o, $(myos_c))
 
@@ -104,7 +107,7 @@ myos:$(myos_o)
 
 #--------app efi--------
 efiapp_c = \
-app/efi/entry.c \
+app/efi/main.c \
 app/efi/helpenv.c \
 app/efi/helpuart.c \
 bare/initer.c \
@@ -120,7 +123,7 @@ efiapp:$(efiapp_o)
 
 #--------app libc--------
 none_c = \
-app/none/entry.c \
+app/none/main.c \
 app/none/helpenv.c \
 app/none/helpuart.c \
 app/initer.c \
@@ -133,7 +136,7 @@ none:$(none_o)
 
 
 wincmd_c = \
-app/win/entry.c \
+app/win/main.c \
 app/win/helpenv.c \
 app/win/helpuart.c \
 app/initer.c \

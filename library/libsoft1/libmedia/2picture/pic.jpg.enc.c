@@ -2,8 +2,8 @@
 #include "libsoft.h"
 int copyfourcc(void*, void*);
 int decstr2u32(void*, void*);
-void* memoryalloc(int, int);
-void memorycopy(void*, const void*, int);
+void* memory_alloc_align(int, int);
+void memory_copy(void*, const void*, int);
 
 
 
@@ -81,9 +81,9 @@ typedef signed long long   int64_t;
 
 #define tje_log logtoall
 
-#define memcpy memorycopy
+#define memcpy memory_copy
 
-#define malloc(expr) memoryalloc(expr, 0)
+#define malloc(expr) memory_alloc_align(expr, 0)
 
 #define assert(expr) \
 	do { \
@@ -1262,6 +1262,6 @@ int jpgenc_create(_obj* ele, u8* arg, int argc, char** argv)
 		per->width, per->height, &per->fmt, per->quality, per->log);
 
 	per->cnt = 0;
-	per->buf = memoryalloc(0x100000, 0);
+	per->buf = memory_alloc_align(0x100000, 0);
 	return 1;
 }

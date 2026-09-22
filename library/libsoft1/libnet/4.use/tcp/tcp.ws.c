@@ -473,7 +473,7 @@ int wsserver_onrecv_pkt(_obj* art,void* foot, _syn* stack,int sp, void* buf, int
 	else{
 		if(0 == per->decryptcache){
 			per->decryptcount = 0;
-			per->decryptcache = memoryalloc(0x100000, 0);
+			per->decryptcache = memory_alloc_align(0x100000, 0);
 		}
 
 		for(j=0;j<datalen;j++){
@@ -496,7 +496,7 @@ int wsserver_onrecv_pkt(_obj* art,void* foot, _syn* stack,int sp, void* buf, int
 int wsserver_onrecv_cache(struct perserver* per, u8* buf, int len)
 {
 	if(0 == per->recvcache){
-		per->recvcache = memoryalloc(0x100000, 0);
+		per->recvcache = memory_alloc_align(0x100000, 0);
 		if(0 == per->recvcache)return -1;
 	}
 

@@ -257,7 +257,7 @@ static int mbrclient_writer(_obj* art,void* foot, p64 arg,int cmd, u8* buf,int l
 int mbrclient_delete(_obj* art)
 {
 	if(art->listptr.buf0){
-		memoryfree(art->listptr.buf0);
+		memory_free(art->listptr.buf0);
 		art->listptr.buf0 = 0;
 	}
 	return 0;
@@ -265,7 +265,7 @@ int mbrclient_delete(_obj* art)
 int mbrclient_create(_obj* art)
 {
 	logtoall("@mbrclient_create\n");
-	art->listptr.buf0 = memoryalloc(0x100000, 0);
+	art->listptr.buf0 = memory_alloc_align(0x100000, 0);
 
 	art->onreader = (void*)mbrclient_reader;
 	art->onwriter = (void*)mbrclient_writer;

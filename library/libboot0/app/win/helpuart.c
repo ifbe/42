@@ -569,4 +569,6 @@ void initserial()
 		printf("error@hStdout\n");
 		exit(-1);
 	}
+
+	printf("serial inited\n");
 }

@@ -485,7 +485,7 @@ int extclient_create(_obj* art)
 {
 	logtoall("@extclient_create\n");
 
-	struct perfs* per = memoryalloc(0x200000, 0);
+	struct perfs* per = memory_alloc_align(0x200000, 0);
 	art->priv_ptr = per;
 
 	art->onreader = (void*)extclient_reader;

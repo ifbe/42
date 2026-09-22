@@ -404,14 +404,14 @@ static void mario_delete(_obj* act)
 {
 	if(0 == act)return;
 	if(act->listptr.buf0){
-		memoryfree(act->listptr.buf0);
+		memory_free(act->listptr.buf0);
 		act->listptr.buf0 = 0;
 	}
 }
 static void mario_create(_obj* act, void* str)
 {
 	if(0 == act)return;
-	struct gl41data* data = act->listptr.buf0 = memoryalloc(0x1000, 0);
+	struct gl41data* data = act->listptr.buf0 = memory_alloc_align(0x1000, 0);
 	if(0 == data)return;
 
 	//shader
@@ -422,7 +422,7 @@ static void mario_create(_obj* act, void* str)
 	//texture
 	struct texture* tex = &data->src.tex[0];
 	tex->fmt = hex32('r','g','b','a');
-	tex->data = memoryalloc(2048*2048*4, 0);
+	tex->data = memory_alloc_align(2048*2048*4, 0);
 	if(0 == str)str = "datafile/jpg/cartoon.jpg";
 	loadtexfromfile(tex, str);
 	data->src.tex_enq[0] = 42;
@@ -436,7 +436,7 @@ static void mario_create(_obj* act, void* str)
 	vtx->vbuf_w = 6*4;
 	vtx->vbuf_h = 0;
 	vtx->vbuf_len = (vtx->vbuf_w) * 6*16*16;
-	vtx->vbuf = memoryalloc(vtx->vbuf_len, 0);
+	vtx->vbuf = memory_alloc_align(vtx->vbuf_len, 0);
 
 	//
 	data->dst.texname[0] = "tex0";

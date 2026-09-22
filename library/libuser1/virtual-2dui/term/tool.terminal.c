@@ -457,7 +457,7 @@ static void terminal_create(_obj* act, void* arg, int argc, u8** argv)
 	act->whdf.ix0 = 0;
 	act->whdf.iy0 = 0;
 
-	//struct str* dat = act->RAWBUF = memoryalloc(0x100000, 0);
+	//struct str* dat = act->RAWBUF = memory_alloc_align(0x100000, 0);
 	//dat->len = 0;
 
 	struct uartterm* term = (void*)act->priv_256b;
@@ -474,7 +474,7 @@ static void terminal_create(_obj* act, void* arg, int argc, u8** argv)
 	term->bg = 0;
 	term->fg = 7;
 	term->len = 0x100000;
-	term->buf = memoryalloc(0x100000, 0);
+	term->buf = memory_alloc_align(0x100000, 0);
 
 	term->scrolling = 1;
 	term->tick = dateread();

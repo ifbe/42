@@ -190,7 +190,7 @@ static void voxel_delete(_obj* act)
 }
 static void voxel_create(_obj* act)
 {
-	act->TABBUF = memoryalloc(0x1000, 0);
+	act->TABBUF = memory_alloc_align(0x1000, 0);
 	act->TABLEN = 0;
 }
 

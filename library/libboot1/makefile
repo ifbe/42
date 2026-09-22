@@ -2,14 +2,14 @@ CC:=gcc
 CF:="-c -O2 -fPIC -I.."
 DIR:=$(shell pwd)
 SRC= \
-data/bignode_self.c \
-data/bignode_slot.c \
+data/node.c \
+data/foot.c \
 data/rel_0jump.c \
 data/rel_1jump.c \
 data/rel_2jump.c \
 data/rel_3jump.c \
-data/linklist.c \
-data/rbtree.c \
+data/algo_linklist.c \
+data/algo_rbtree.c \
 inout/in.ev.c \
 inout/in.str.c \
 inout/out.str.c \

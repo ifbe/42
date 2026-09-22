@@ -48,10 +48,8 @@ int l298n_give(  struct item* dri,void* foot, _syn* stack,int sp, p64 arg,int id
 
 
 
-static struct item* dri;
+static struct item* dri = 0;
 static int drilen = 0;
-static void* bbb;
-static int bbblen = 0;
 
 
 
@@ -67,8 +65,6 @@ void driver_init(u8* addr, int size)
 	dri = (void*)(addr+0x000000);
 	drilen = maxitem-1;
 	for(j=0;j<maxitem;j++)dri[j].tier = _dri_;
-
-	bbb = (void*)(addr+0x100000);
 
 	//drivercreate(_usb_, 0);
 	logtoall("[6,8):driver inited\n");
